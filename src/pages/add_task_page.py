@@ -14,5 +14,8 @@ async def pick_file() -> None:
         result = result[0]
 
     logger.info(f'[开始任务] 选择了 {result}')
-    await run.io_bound(Rename().process, Path(result))
-    ui.notify(f'开始任务 {result}！')
+    data = await run.io_bound(Rename().process, Path(result))
+    if isinstance(data, str):
+        ui.notify(data)
+    else:
+        ui.notify(f'开始任务 {result}！')

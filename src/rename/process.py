@@ -179,6 +179,9 @@ class Rename:
                         self.R[item_path] = t / f'{ft} - {item_name}'
 
     def process(self, path: Path, is_anime: bool = False):
+        if not self.search.TMDB_KEY:
+            return '你还没有配置TMDB的Key！任务失败！请先前往配置界面！'
+
         _uuid = str(uuid.uuid4())
 
         # 【Step.0】 开始处理

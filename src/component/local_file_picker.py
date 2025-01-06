@@ -2,7 +2,8 @@ import platform
 from pathlib import Path
 from typing import Optional
 
-from nicegui import events, ui
+from nicegui import ui, events
+
 from ..element.red import RedButton, RedToogle
 
 
@@ -106,4 +107,7 @@ class local_file_picker(ui.dialog):
 
     async def _handle_ok(self):
         rows = await self.grid.get_selected_rows()
-        self.submit([r['path'] for r in rows])
+        if not rows:
+            self.submit([self.path])
+        else:
+            self.submit([r['path'] for r in rows])
