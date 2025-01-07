@@ -1,91 +1,124 @@
 import json
+from pathlib import Path
+from typing import Any, Dict, List
 
 from nicegui import ui
+from nicegui.events import GenericEventArguments
 
-from ..utils.path import TASK_PATH
-
-columns = [
-    {
-        "name": "_id",
-        "label": "编号",
-        "field": "_id",
-        "required": True,
-        "align": "center",
-    },
-    {
-        "name": "col1",
-        "label": "文件夹名称",
-        "field": "col1",
-        "required": True,
-        "align": "center",
-    },
-    {
-        "name": "col2",
-        "label": "番剧名称",
-        "field": "col2",
-        "required": True,
-        "align": "center",
-    },
-    {
-        "name": "col3",
-        "label": "季度",
-        "field": "col3",
-        "required": True,
-        "align": "center",
-    },
-]
+from ..rename.process import Rename
+from ..utils.path import TASK_PATH, RECORD_PATH
 
 
 @ui.refreshable
 def create_table():
     rows = []
-    for i in list(TASK_PATH.iterdir()):
+    columns: List[Dict[str, Any]] = [
+        {'name': 'id', 'label': 'ID', 'field': 'id'},
+        {'name': 'value', 'label': '操作', 'field': 'value'},
+        {'name': 'path', 'label': '传入路径', 'field': 'path'},
+        {'name': 'name', 'label': '识别剧集', 'field': 'name'},
+        {'name': 'season', 'label': '季度', 'field': 'season'},
+        {'name': 'status', 'label': '状态', 'field': 'status'},
+        {'name': 'uuid', 'label': 'UUID', 'field': 'uuid'},
+        {'name': 'is_anime', 'label': '是否为动漫', 'field': 'is_anime'},
+    ]
+    for j in columns:
+        j['align'] = 'center'
+        j['sortable'] = True
+
+    for index, i in enumerate(list(TASK_PATH.iterdir())):
         with open(i, 'r', encoding='utf-8') as f:
             task_data = json.load(f)
-
-        rows.append(
-            {
-                "_id": task_data['uuid'],
-                "col1": task_data['path'],
-                "col2": task_data['name'],
-                "col3": task_data['season_id'],
-                "id": task_data['uuid'],
-            }
-        )
+            if task_data['error']:
+                status = task_data['error']
+            else:
+                status = '成功'
+            rows.append(
+                {
+                    'id': index,
+                    'path': task_data['path'],
+                    'name': task_data['name'],
+                    'uuid': task_data['uuid'],
+                    'season': task_data['season_id'],
+                    'status': status,
+                    'is_anime': task_data['is_anime'],
+                    'value': '操作',
+                }
+            )
 
     table = (
         ui.table(columns=columns, rows=rows)
         .classes('w-full h-full')
         .style('max-height: 85%')
     )
+    table._props['visible-columns'] = [
+        'id',
+        'path',
+        'name',
+        'season',
+        'status',
+        'value',
+    ]
+
     table.add_slot(
-        'header',
-        r'''
-        <q-tr :props="props">
-            <q-th auto-width />
-            <q-th v-for="col in props.cols" :key="col.name" :props="props">
-                {{ col.label }}
-            </q-th>
-        </q-tr>
-    ''',
+        'body-cell-value',
+        """
+        <q-td :props="props">
+            <q-btn @click="$parent.$emit('retry', props)" label="重试" color='green' class="q-mr-sm"/>
+            <q-btn @click="$parent.$emit('edit', props)" label="编辑" color='blue' class="q-mr-sm"/>
+            <q-btn @click="$parent.$emit('del', props)" label="删除" color='red' class="q-mr-sm"/>
+        </q-td>
+    """,  # noqa: E501
     )
+
     table.add_slot(
-        'body',
-        r'''
-        <q-tr :props="props">
-            <q-td auto-width>
-                <q-btn size="sm" color="accent" round dense
-                    @click="props.expand = !props.expand"
-                    :icon="props.expand ? 'remove' : 'add'" />
-            </q-td>
-            <q-td v-for="col in props.cols" :key="col.name" :props="props">
-                {{ col.value }}
-            </q-td>
-        </q-tr>
-        <q-tr v-show="props.expand" :props="props">
-            <q-td colspan="100%">
-                <div class="text-left">This is {{ props.row.name }}.</div>
-            </q-td>
-        </q-tr>
-    ''',
+        'body-cell-id',
+        '''
+        <q-td
+            :props="props"
+            :class="{
+            'bg-green-4 text-white': props.row.status === '成功',
+            'bg-red-4 text-white': props.row.status !== '成功'
+            }"
+        >
+        {{props.value}}
+        </q-td>''',  # noqa: E501
     )
+
+    table.on('action', lambda msg: print(msg))
+    table.on('retry', lambda ev: handle_retry(ev))
+    table.on('edit', lambda ev: handle_edit(ev))
+    table.on('del', lambda ev: handle_delete(ev))
+
+
+def handle_edit(ev: GenericEventArguments):
+    ui.notify('编辑任务！')
+
+
+def handle_retry(ev: GenericEventArguments):
+    arg = ev.args
+    row_data = arg['row']
+    path = row_data['path']
+    is_anime = row_data['is_anime']
+    data = Rename().process(Path(path), is_anime)
+    if isinstance(data, str):
+        ui.notify(data)
+    else:
+        ui.notify('重新开始任务！')
+    handle_delete(ev, is_notify=False)
+
+
+def handle_delete(ev: GenericEventArguments, is_notify: bool = True):
+    arg = ev.args
+    row_data = arg['row']
+    uuid = row_data['uuid']
+
+    path1 = TASK_PATH / f'{uuid}.json'
+    path2 = RECORD_PATH / f'{uuid}.json'
+
+    path1.unlink()
+    path2.unlink()
+    if is_notify:
+        ui.notify(f'删除任务记录{uuid}成功!')
+
+    create_table.refresh()

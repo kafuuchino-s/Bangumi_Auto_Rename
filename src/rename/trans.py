@@ -43,4 +43,4 @@ class Trans:
                     logger.error('[处理迁移] 模式错误！仅支持剪切, 复制, 链接')
             except Exception as e:
                 logger.error(str(e))
-                continue
+                return str(e)

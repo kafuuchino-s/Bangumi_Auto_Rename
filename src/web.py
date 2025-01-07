@@ -1,10 +1,26 @@
-from nicegui import ui
+from pathlib import Path
 
+from fastapi import Request
+from nicegui import ui, app
+
+from .models import TaskModel
 from .main_page import main_page
+from .rename.process import Rename
 from .utils.utils import no_scroll_bar
+from .pages.data_table_page import create_table
 
 
 @ui.page('/')
 def main():
     ui.add_head_html(no_scroll_bar)
     main_page()
+
+
+@app.post('/sendTask')
+async def _send_task(request: Request):
+    data: TaskModel = await request.json()
+    path = data['path']
+    is_anime = data['is_anime']
+    Rename().process(Path(path), is_anime)
+    create_table.refresh()
+    return {'code': 200, 'data': '提交任务成功, 具体信息可以查看WebUI！'}

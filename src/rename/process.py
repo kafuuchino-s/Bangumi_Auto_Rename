@@ -12,7 +12,6 @@ from ..logger import logger
 from .get_info import Search
 from ..utils.path import TASK_PATH
 from ..config.config_manager import cm
-from ..pages.data_table_page import create_table
 from .utils import S0_TAG, EXTRA_TAG, IGNORE_DIR, VIDEO_SUFFIX, IGNORE_SUFFIX
 from .cleaner import (
     remove_tag,
@@ -179,10 +178,15 @@ class Rename:
                         self.R[item_path] = t / f'{ft} - {item_name}'
 
     def process(self, path: Path, is_anime: bool = False):
-        if not self.search.TMDB_KEY:
-            return '你还没有配置TMDB的Key！任务失败！请先前往配置界面！'
-
         _uuid = str(uuid.uuid4())
+
+        if not self.search.TMDB_KEY:
+            return self.error_reply(
+                _uuid,
+                '你还没有配置TMDB的Key！任务失败！请先前往配置界面！',
+                path,
+                is_anime,
+            )
 
         # 【Step.0】 开始处理
         logger.info(f'[处理任务] 开始处理{path.name}!')
@@ -322,8 +326,40 @@ class Rename:
             'name': name,
             'season_id': season_id,
             'uuid': str(_uuid),
+            'error': None,
+        }
+        trans_result = Trans(self.R, _uuid).trans_file()
+        if isinstance(trans_result, str):
+            return self.error_reply(
+                _uuid,
+                trans_result,
+                path,
+                is_anime,
+                name,
+                season_id,
+            )
+        with open(task_path, 'w', encoding='UTF-8') as file:
+            json.dump(task_data, file, indent=4, ensure_ascii=False)
+        return True
+
+    def error_reply(
+        self,
+        _uuid: str,
+        error: str,
+        path: Path,
+        is_anime: bool,
+        name: Optional[str] = None,
+        season_id: Optional[int] = None,
+    ):
+        task_path = TASK_PATH / f'{_uuid}.json'
+        task_data = {
+            'path': str(path),
+            'is_anime': is_anime,
+            'name': name,
+            'season_id': season_id,
+            'uuid': str(_uuid),
+            'error': error,
         }
         with open(task_path, 'w', encoding='UTF-8') as file:
             json.dump(task_data, file, indent=4, ensure_ascii=False)
-        create_table.refresh()
-        Trans(self.R, _uuid).trans_file()
+        return error

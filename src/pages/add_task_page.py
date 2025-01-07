@@ -5,17 +5,17 @@ from nicegui import ui, run
 
 from ..logger import logger
 from ..rename.process import Rename
+from ..pages.data_table_page import create_table
 from ..component.local_file_picker import local_file_picker
 
 
 async def pick_file() -> None:
-    result = await local_file_picker('~', multiple=True)
-    if isinstance(result, Sequence):
-        result = result[0]
-
-    logger.info(f'[开始任务] 选择了 {result}')
-    data = await run.io_bound(Rename().process, Path(result))
-    if isinstance(data, str):
-        ui.notify(data)
-    else:
-        ui.notify(f'开始任务 {result}！')
+    result: Sequence[str] = await local_file_picker('~', multiple=True)
+    for p in result:
+        logger.info(f'[开始任务] 选择了 {result}')
+        data = await run.io_bound(Rename().process, Path(p))
+        create_table.refresh()
+        if isinstance(data, str):
+            ui.notify(data)
+        else:
+            ui.notify(f'开始任务 {result}！')
