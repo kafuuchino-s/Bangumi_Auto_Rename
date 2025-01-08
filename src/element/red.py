@@ -1,6 +1,7 @@
-from typing import Any, Dict, List, Union, Optional
+from typing import Any, Dict, List, Union, Literal, Optional
 
 from nicegui import ui
+from nicegui.context import context
 from nicegui.events import (
     Handler,
     ClickEventArguments,
@@ -8,6 +9,50 @@ from nicegui.events import (
 )
 
 from .color import MAINC
+
+ARG_MAP = {
+    'close_button': 'closeBtn',
+    'multi_line': 'multiLine',
+}
+
+
+def notify(
+    message: Any,
+    *,
+    position: Literal[
+        'top-left',
+        'top-right',
+        'bottom-left',
+        'bottom-right',
+        'top',
+        'bottom',
+        'left',
+        'right',
+        'center',
+    ] = 'top',
+    close_button: Union[bool, str] = False,
+    type: Optional[
+        Literal[  # pylint: disable=redefined-builtin
+            'positive',
+            'negative',
+            'warning',
+            'info',
+            'ongoing',
+        ]
+    ] = 'warning',
+    color: Optional[str] = None,
+    multi_line: bool = False,
+    **kwargs: Any,
+) -> None:
+    options = {
+        ARG_MAP.get(key, key): value
+        for key, value in locals().items()
+        if key != 'kwargs' and value is not None
+    }
+    options['message'] = str(message)
+    options.update(kwargs)
+    client = context.client
+    client.outbox.enqueue_message('notify', options, client.id)
 
 
 class RedDropDownButton(ui.dropdown_button):

@@ -177,8 +177,18 @@ class Rename:
                         ft = f'S{ss}E{ep}'
                         self.R[item_path] = t / f'{ft} - {item_name}'
 
-    def process(self, path: Path, is_anime: bool = False):
-        _uuid = str(uuid.uuid4())
+    def process(
+        self,
+        path: Path,
+        is_anime: bool = False,
+        _tuuid: Optional[str] = None,
+        cus_name: Optional[str] = None,
+        cus_season_id: Optional[int] = None,
+    ):
+        if _tuuid:
+            _uuid = _tuuid
+        else:
+            _uuid = str(uuid.uuid4())
 
         if not self.search.TMDB_KEY:
             return self.error_reply(
@@ -217,6 +227,10 @@ class Rename:
         if path.is_file() and path.suffix.lower() not in VIDEO_SUFFIX:
             logger.info(f'[处理任务] {path.name} 不是一个视频文件, 跳过!')
             return
+
+        # 【特殊改】
+        if cus_name:
+            rtpath_name = cus_name
 
         # 【Step.2】
         # 如果是电影
@@ -297,6 +311,9 @@ class Rename:
                     path,
                     titles,
                 )
+
+                if cus_season_id:
+                    season_id = cus_season_id
 
                 repeat = find_unique_parts_in_videos(path)
                 for item_path in path.iterdir():

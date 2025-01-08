@@ -1,10 +1,11 @@
 from nicegui import ui
+
 from .utils.path import IMAGE
 from .utils.utils import unpack_style
-from .pages.data_table_page import create_table
 from .pages.add_task_page import pick_file
 from .pages.config_page import config_page
-from .element.red import RedButton, RedDropDownButton
+from .pages.data_table_page import create_table
+from .element.red import RedButton, RedDropDownButton, notify
 
 
 def main_page():
@@ -63,14 +64,14 @@ def main_page():
             ):
                 ui.item(
                     'Item 1',
-                    on_click=lambda: ui.notify('You clicked item 1'),
+                    on_click=lambda: notify('You clicked item 1'),
                 )
                 ui.item(
                     'Item 2',
-                    on_click=lambda: ui.notify('You clicked item 2'),
+                    on_click=lambda: notify('You clicked item 2'),
                 )
 
-    with ui.splitter(value=10).classes('flex h-screen w-full gap-0') as sp:
+    with ui.splitter(value=8).classes('flex h-screen w-full gap-0') as sp:
         with sp.before:
             with ui.tabs().props('vertical').classes('w-full').style(
                 'flex-wrap: nowrap'
@@ -80,8 +81,8 @@ def main_page():
                     icon='published_with_changes',
                 )
                 add_task_tab = ui.tab(
-                    '添加任务',
-                    icon='published_with_changes',
+                    '基本信息',
+                    icon='info',
                 )
         with sp.after:
             with ui.tab_panels(

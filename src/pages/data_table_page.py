@@ -5,6 +5,8 @@ from typing import Any, Dict, List
 from nicegui import ui
 from nicegui.events import GenericEventArguments
 
+from ..element.red import notify
+from .edit_page import edit_page
 from ..rename.process import Rename
 from ..utils.path import TASK_PATH, RECORD_PATH
 
@@ -48,8 +50,8 @@ def create_table():
 
     table = (
         ui.table(columns=columns, rows=rows)
-        .classes('w-full h-full')
-        .style('max-height: 85%')
+        .classes('w-full h-full rounded')
+        .style('max-height: 85%; border-radius: 10px;separator: cell')
     )
     table._props['visible-columns'] = [
         'id',
@@ -64,9 +66,9 @@ def create_table():
         'body-cell-value',
         """
         <q-td :props="props">
-            <q-btn @click="$parent.$emit('retry', props)" label="重试" color='green' class="q-mr-sm"/>
-            <q-btn @click="$parent.$emit('edit', props)" label="编辑" color='blue' class="q-mr-sm"/>
-            <q-btn @click="$parent.$emit('del', props)" label="删除" color='red' class="q-mr-sm"/>
+            <q-btn @click="$parent.$emit('retry', props)" label="重试" color='green-6' class="q-mr-sm rounded" style="border-radius: 5rem"/>
+            <q-btn @click="$parent.$emit('edit', props)" label="编辑" color='blue-6' class="q-mr-sm rounded" style="border-radius: 5rem"/>
+            <q-btn @click="$parent.$emit('del', props)" label="删除" color='red-6' class="q-mr-sm rounded" style="border-radius: 5rem"/>
         </q-td>
     """,  # noqa: E501
     )
@@ -91,8 +93,11 @@ def create_table():
     table.on('del', lambda ev: handle_delete(ev))
 
 
-def handle_edit(ev: GenericEventArguments):
-    ui.notify('编辑任务！')
+async def handle_edit(ev: GenericEventArguments):
+    arg = ev.args
+    uuid = arg['row']['uuid']
+    await edit_page(uuid)
+    create_table.refresh()
 
 
 def handle_retry(ev: GenericEventArguments):
@@ -102,9 +107,9 @@ def handle_retry(ev: GenericEventArguments):
     is_anime = row_data['is_anime']
     data = Rename().process(Path(path), is_anime)
     if isinstance(data, str):
-        ui.notify(data)
+        notify(data)
     else:
-        ui.notify('重新开始任务！')
+        notify('重新开始任务！')
     handle_delete(ev, is_notify=False)
 
 
@@ -116,9 +121,12 @@ def handle_delete(ev: GenericEventArguments, is_notify: bool = True):
     path1 = TASK_PATH / f'{uuid}.json'
     path2 = RECORD_PATH / f'{uuid}.json'
 
-    path1.unlink()
-    path2.unlink()
+    if path1.exists():
+        path1.unlink()
+    if path2.exists():
+        path2.unlink()
+
     if is_notify:
-        ui.notify(f'删除任务记录{uuid}成功!')
+        notify(f'删除任务记录{uuid}成功!')
 
     create_table.refresh()

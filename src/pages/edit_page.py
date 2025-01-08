@@ -1,0 +1,96 @@
+from pathlib import Path
+from types import SimpleNamespace
+
+from nicegui import ui
+
+from ..logger import logger
+from ..rename.process import Rename
+from ..utils.utils import get_task, write_task
+from ..element.red import RedButton, RedToogle, notify
+
+TASK_MAP = {
+    'is_anime': '是否为动画',
+    'name': '剧集名称',
+    'season_id': '季度',
+}
+
+
+class EditPage(ui.dialog):
+
+    def __init__(self, uuid: str) -> None:
+        super().__init__()
+        self.uuid = uuid
+
+        _s = 'width: 40%; flex-wrap: nowrap;'
+        task_data = get_task(uuid)
+        if task_data is None:
+            return notify('任务数据不存在！')
+
+        self.data = SimpleNamespace(**task_data)
+        with self, ui.card().style(_s).classes('flex'):
+            ui.label('编辑').style('font-size: 20px; font-weight: bold')
+            ui.separator()
+            for key in task_data:
+                if key not in ['is_anime', 'name', 'season_id']:
+                    continue
+                with ui.column(wrap=False).classes('flex no-wrap w-full'):
+                    with ui.row(wrap=False).classes(
+                        'flex justify-space-between w-full'
+                    ):
+                        with ui.row(wrap=False, align_items='baseline') as row:
+                            row.classes('flex w-full')
+                            # 配置标签
+                            label = TASK_MAP.get(key, key)
+                            ui.label(label).style('min-width: 120px')
+                            if key != 'is_anime':
+                                ui.input(
+                                    value=getattr(self.data, key),
+                                    on_change=lambda e, c=key: self._change(
+                                        c,
+                                        e.value,
+                                    ),
+                                ).props('filled').props('dense').style(
+                                    'flex-grow: 2'
+                                ).bind_value(
+                                    self.data,
+                                    key,
+                                )
+                            else:
+                                is_anime = getattr(self.data, 'is_anime')
+                                is_anime = '是' if is_anime else '否'
+                                tg = RedToogle(
+                                    ['是', '否'],
+                                    value=is_anime,
+                                    on_change=lambda e, c=key: self._change(
+                                        c,
+                                        e.value,
+                                    ),
+                                )
+                                tg.style('font-size: 10px')
+                                tg.classes('flex no-wrap w-full')
+
+            ui.separator()
+
+            with ui.row(wrap=False).classes('w-full justify-end'):
+                RedButton('取消', on_click=self.close).props('outline')
+                RedButton('确认修改', on_click=self._handle_ok)
+
+    def _change(self, key: str, value: str) -> None:
+        setattr(self.data, key, value)
+
+    def _handle_ok(self):
+        write_task(self.uuid, self.data.__dict__)
+        logger.info(f'[任务] 任务{self.uuid}已修改为： {self.data.__dict__}')
+        notify('修改成功！重新开始识别！')
+        self.close()
+        Rename().process(
+            Path(getattr(self.data, 'path')),
+            getattr(self.data, 'is_anime'),
+            getattr(self.data, 'uuid'),
+            getattr(self.data, 'name'),
+            getattr(self.data, 'season_id'),
+        )
+
+
+async def edit_page(uuid: str) -> None:
+    await EditPage(uuid)
