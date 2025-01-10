@@ -108,6 +108,6 @@ class local_file_picker(ui.dialog):
     async def _handle_ok(self):
         rows = await self.grid.get_selected_rows()
         if not rows:
-            self.submit([self.path])
+            self.submit([str(self.path)])
         else:
             self.submit([r['path'] for r in rows])

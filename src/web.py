@@ -1,3 +1,4 @@
+from typing import cast
 from pathlib import Path
 
 from fastapi import Request
@@ -18,9 +19,13 @@ def main():
 
 @app.post('/sendTask')
 async def _send_task(request: Request):
-    data: TaskModel = await request.json()
+    data: TaskModel = cast(TaskModel, dict(await request.form()))
     path = data['path']
     is_anime = data['is_anime']
-    Rename().process(Path(path), is_anime)
+    _path = Path(path)
+    if not _path.exists():
+        return {'code': 404, 'data': '路径不存在！'}
+
+    Rename().process(_path, is_anime)
     create_table.refresh()
     return {'code': 200, 'data': '提交任务成功, 具体信息可以查看WebUI！'}
