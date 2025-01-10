@@ -335,7 +335,7 @@ class Rename:
                 )
 
                 if cus_season_id:
-                    season_id = cus_season_id
+                    season_id = int(cus_season_id)
 
                 repeat = find_unique_parts_in_videos(path)
                 for item_path in path.iterdir():

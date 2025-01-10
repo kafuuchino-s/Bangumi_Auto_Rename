@@ -232,7 +232,7 @@ def remove_similar_part(common_parts: List[str], filename: str):
         if len(common_part) > 3:  # 确保只移除长度大于3的部分
             pattern = re.escape(common_part)
             filename = re.sub(pattern, '', filename).strip()
-    print(f'【移除相似部分】：{filename}')
+    logger.info(f'【移除相似部分】：{filename}')
     return filename
 
 
