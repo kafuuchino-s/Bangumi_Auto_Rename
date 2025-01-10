@@ -3,7 +3,7 @@ import json
 import uuid
 from pathlib import Path
 from difflib import SequenceMatcher
-from typing import Dict, List, Optional
+from typing import Dict, List, Union, Optional
 
 from jikanpy import Jikan
 
@@ -180,7 +180,7 @@ class Rename:
     def process(
         self,
         path: Path,
-        is_anime: bool = False,
+        _is_anime: Union[bool, str] = False,
         _tuuid: Optional[str] = None,
         cus_name: Optional[str] = None,
         cus_season_id: Optional[int] = None,
@@ -189,6 +189,18 @@ class Rename:
             _uuid = _tuuid
         else:
             _uuid = str(uuid.uuid4())
+
+        if isinstance(_is_anime, str):
+            if 'real' in _is_anime or 'no' in _is_anime:
+                is_anime = False
+            elif 'anime' in _is_anime:
+                is_anime = True
+            elif _is_anime:
+                is_anime = True
+            else:
+                is_anime = False
+        else:
+            is_anime = _is_anime
 
         if not self.search.TMDB_KEY:
             return self.error_reply(
@@ -199,7 +211,7 @@ class Rename:
             )
 
         # 【Step.0】 开始处理
-        logger.info(f'[处理任务] 开始处理{path.name}!')
+        logger.info(f'[处理任务] 开始处理{path.name}')
 
         # 【Step.1】
         # 先移除无用的标签, 方便之后搜索
@@ -221,11 +233,11 @@ class Rename:
 
         rtpath_name = remove_season(rtpath_name)
         rtpath_name = rtpath_name.strip('!')
-        logger.info(f'[处理任务] 去除标签后: {rtpath_name}!')
+        logger.info(f'[处理任务] 去除标签后: {rtpath_name}')
 
         # 如果该路径不是一个视频文件或者不是一个文件夹, 则跳过
         if path.is_file() and path.suffix.lower() not in VIDEO_SUFFIX:
-            logger.info(f'[处理任务] {path.name} 不是一个视频文件, 跳过!')
+            logger.info(f'[处理任务] {path.name} 不是一个视频文件, 跳过')
             return
 
         # 【特殊改】
@@ -242,8 +254,13 @@ class Rename:
             logger.info(f'[处理任务] 搜索到的电影名称: {name}')
 
             if not name:
-                logger.warning(f'[处理任务] 未搜索到电影信息, 跳过{rtpath_name}!')
-                return
+                logger.warning(f'[处理任务] 未搜索到电影信息, 跳过{rtpath_name}')
+                return self.error_reply(
+                    _uuid,
+                    f'[TMDB] 未搜索到电影信息, 跳过{rtpath_name}',
+                    path,
+                    is_anime,
+                )
 
             if is_anime:
                 _WORK_PATH = self.ANIME_MOVIE_PATH
@@ -296,8 +313,13 @@ class Rename:
                 _WORK_PATH = self.BANGUMI_PATH
 
             if not name:
-                logger.warning(f'[处理任务] 未搜索到剧集信息, 跳过{rtpath_name}!')
-                return
+                logger.warning(f'[处理任务] 未搜索到剧集信息, 跳过{rtpath_name}')
+                return self.error_reply(
+                    _uuid,
+                    f'[TMDB] 未搜索到剧集信息, 跳过{rtpath_name}',
+                    path,
+                    is_anime,
+                )
 
             # 开始重命名内部文件
             if tv_info:

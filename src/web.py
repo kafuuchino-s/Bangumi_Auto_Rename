@@ -22,9 +22,14 @@ async def _send_task(request: Request):
     data: TaskModel = cast(TaskModel, dict(await request.form()))
     path = data['path']
     is_anime = data['is_anime']
+    no_process = data['no_process']
+
+    if no_process:
+        return {'code': 202, 'data': f'{path}忽略, 不处理！'}
+
     _path = Path(path)
     if not _path.exists():
-        return {'code': 404, 'data': '路径不存在！'}
+        return {'code': 404, 'data': f'路径{path}不存在！'}
 
     Rename().process(_path, is_anime)
     create_table.refresh()
