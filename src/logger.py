@@ -1,19 +1,59 @@
 import logging
+from logging.handlers import TimedRotatingFileHandler
 
 import structlog
 
-structlog.configure(
+from .utils.path import log_path
+
+file_handler = TimedRotatingFileHandler(
+    filename=log_path,
+    when="midnight",
+    interval=1,
+    backupCount=7,
+    encoding="utf-8",
+)
+file_handler.suffix = "%Y-%m-%d"
+file_formatter = structlog.stdlib.ProcessorFormatter(
     processors=[
+        structlog.stdlib.ProcessorFormatter.remove_processors_meta,
+        structlog.contextvars.merge_contextvars,
+        structlog.processors.TimeStamper(fmt="%Y-%m-%d %H:%M:%S"),
+        structlog.stdlib.add_log_level,
+        structlog.processors.UnicodeDecoder(),
+        structlog.processors.JSONRenderer(ensure_ascii=False),
+    ]
+)
+file_handler.setFormatter(file_formatter)
+
+# 配置控制台日志格式化器（带颜色）
+console_formatter = structlog.stdlib.ProcessorFormatter(
+    processors=[
+        structlog.stdlib.ProcessorFormatter.remove_processors_meta,
         structlog.contextvars.merge_contextvars,
         structlog.processors.add_log_level,
         structlog.processors.StackInfoRenderer(),
         structlog.dev.set_exc_info,
         structlog.processors.TimeStamper(fmt="%Y-%m-%d %H:%M:%S", utc=False),
         structlog.dev.ConsoleRenderer(),
+    ]
+)
+console_handler = logging.StreamHandler()
+console_handler.setFormatter(console_formatter)
+
+logging.basicConfig(
+    level=logging.INFO,
+    # format="%(message)s",
+    handlers=[file_handler, console_handler],
+)
+
+structlog.configure(
+    processors=[
+        structlog.stdlib.filter_by_level,  # 过滤日志级别
+        structlog.stdlib.ProcessorFormatter.wrap_for_formatter,  # 使用格式化器包装
     ],
     wrapper_class=structlog.make_filtering_bound_logger(logging.NOTSET),
     context_class=dict,
-    logger_factory=structlog.PrintLoggerFactory(),
+    logger_factory=structlog.stdlib.LoggerFactory(),
     cache_logger_on_first_use=False,
 )
 

@@ -73,7 +73,7 @@ class EditPage(ui.dialog):
 
             with ui.row(wrap=False).classes('w-full justify-end'):
                 RedButton('取消', on_click=self.close).props('outline')
-                RedButton('确认修改', on_click=self._handle_ok)
+                RedButton('确认修改并重新任务', on_click=self._handle_ok)
 
     def _change(self, key: str, value: str) -> None:
         setattr(self.data, key, value)

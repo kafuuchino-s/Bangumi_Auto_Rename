@@ -55,8 +55,8 @@ class local_file_picker(ui.dialog):
                 .on('cellDoubleClicked', self.handle_double_click)
             )
             with ui.row().classes('w-full justify-end'):
-                RedButton('Cancel', on_click=self.close).props('outline')
-                RedButton('Ok', on_click=self._handle_ok)
+                RedButton('取消', on_click=self.close).props('outline')
+                RedButton('确定', on_click=self._handle_ok)
         self.update_grid()
 
     def add_drives_toggle(self):

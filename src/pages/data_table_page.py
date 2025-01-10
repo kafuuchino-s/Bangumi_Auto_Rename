@@ -51,7 +51,7 @@ def create_table():
     table = (
         ui.table(columns=columns, rows=rows)
         .classes('w-full h-full rounded')
-        .style('max-height: 85%; border-radius: 10px;separator: cell')
+        .style('max-height: 90%; border-radius: 10px;separator: cell')
     )
     table._props['visible-columns'] = [
         'id',

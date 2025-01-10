@@ -4,8 +4,10 @@ from .utils.path import IMAGE
 from .utils.utils import unpack_style
 from .pages.add_task_page import pick_file
 from .pages.config_page import config_page
+from .pages.download_log import download_log
+from .__version__ import __url__, __version__
 from .pages.data_table_page import create_table
-from .element.red import RedButton, RedDropDownButton, notify
+from .element.red import RedButton, RedDropDownButton
 
 
 def main_page():
@@ -13,6 +15,7 @@ def main_page():
     with ui.header(wrap=False, bordered=True, elevated=True) as header:
         header_style = {
             'background-color': 'rgb(214, 77, 77)',
+            # 'background-color': '#FFFFFF',
             'height': '50px',
             'align-items': 'center',
             'flex-wrap': 'nowrap',
@@ -46,7 +49,7 @@ def main_page():
                         }
                     )
                 )
-                ui.label("v0.2").style(
+                ui.label(f"v{__version__}").style(
                     unpack_style(
                         {
                             'font-size': '10px',
@@ -56,19 +59,22 @@ def main_page():
                 )
         with ui.row(wrap=False, align_items='center') as button_row:
             button_row.classes('gap-2').style('margin-right: 10px;')
-            RedButton("添加任务", on_click=pick_file)
-            RedButton("配置", on_click=config_page)
+            RedButton("➕ 添加任务", on_click=pick_file)
+            RedButton("📄 配置", on_click=config_page)
             with RedDropDownButton(
-                '菜单!',
+                '🎀 菜单',
                 auto_close=True,
             ):
                 ui.item(
-                    'Item 1',
-                    on_click=lambda: notify('You clicked item 1'),
+                    '📁 项目地址',
+                    on_click=lambda: ui.navigate.to(
+                        target=__url__,
+                        new_tab=True,
+                    ),
                 )
                 ui.item(
-                    'Item 2',
-                    on_click=lambda: notify('You clicked item 2'),
+                    '🚩 下载日志',
+                    on_click=download_log,
                 )
 
     with ui.splitter(value=8).classes('flex h-screen w-full gap-0') as sp:
