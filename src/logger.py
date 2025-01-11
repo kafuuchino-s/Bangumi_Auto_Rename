@@ -41,7 +41,7 @@ console_handler = logging.StreamHandler()
 console_handler.setFormatter(console_formatter)
 
 logging.basicConfig(
-    level=logging.INFO,
+    level=logging.DEBUG,
     # format="%(message)s",
     handlers=[file_handler, console_handler],
 )

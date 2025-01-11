@@ -307,7 +307,7 @@ def to_sim_max(all_similaritys: List[Dict[float, int]]):
             max_key = _max_key
             max_value = _max_value
 
-    if max_key > 0.5:
+    if max_key > 0.6:
         season_id = max_value
     else:
         season_id = 1

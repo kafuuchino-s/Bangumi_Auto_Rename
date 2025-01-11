@@ -53,31 +53,33 @@ class Rename:
         titles: Optional[List[Dict]],
     ):
         season_id = 1
+        path_name = path.name
         all_similaritys: List[Dict] = []
 
         for season in tv_info['seasons']:
-            season_id = season['season_number']
-            target_fold = work_path / f'Season{season_id}'
+            info_season_id = season['season_number']
+            target_fold = work_path / f'Season{info_season_id}'
             target_fold.mkdir(parents=True, exist_ok=True)
 
-            if season_id == 0 or season_id == 1:
-                season_id = 1
-
             sname: str = season['name']
-            logger.info(f'[处理任务] 季度名: {sname}')
+            logger.info(f'[处理任务] Season{info_season_id} 季度名: {sname}')
 
-            if sname.startswith('Season') and re.search(r'\d', sname):
-                int_season = extract_season(sname)
-                logger.info(f'[处理任务] 提取信息季号:{int_season}')
-                int_rtpath_name = extract_season(path.name)
-                logger.info(f'[处理任务] 提取标题季号:{int_rtpath_name}')
-                if int_season == int_rtpath_name:
-                    season_id = int_rtpath_name
-                    break
+            '''
+            int_season = extract_season(sname)
+            logger.info(f'[处理任务] 提取信息季号:{int_season}')
+            '''
+
+            int_rtpath_name = extract_season(path_name)
+            logger.info(f'[处理任务] 提取标题季号:{int_rtpath_name}')
+            if info_season_id == int_rtpath_name:
+                season_id = int_rtpath_name
+                break
 
             # 如果不是Season1的情况下，sname处于路径之中，则直接跳过
             if not (sname.strip().startswith('Season') and '1' in sname):
                 if sname in path.name:
+                    logger.info(f'[处理任务] 季度名称处于标题中：{sname}')
+                    season_id = info_season_id
                     break
 
                 if titles:
@@ -91,10 +93,11 @@ class Rename:
                             'French',
                         ]:
                             ename = title['title']
+                            path_name = path_name.replace(ename, '')
                             similarity = SequenceMatcher(
                                 None,
                                 sname,
-                                remove_tag(ename),
+                                remove_tag(path_name),
                             ).ratio()
 
                             # logger.debug(f'相似度{tindex}：{similarity}')
@@ -102,6 +105,7 @@ class Rename:
                         all_similaritys.append(similaritys)
         else:
             if all_similaritys:
+                logger.info(f'[处理任务] 相似度：{all_similaritys}')
                 season_id = to_sim_max(all_similaritys)
 
         logger.info(f'[处理任务] 识别季号：{season_id}')
