@@ -71,8 +71,9 @@ class Rename:
                 logger.info(f'[处理任务] 提取信息季号:{int_season}')
                 int_rtpath_name = extract_season(path.name)
                 logger.info(f'[处理任务] 提取标题季号:{int_rtpath_name}')
-                season_id = int_rtpath_name
-                break
+                if int_season == int_rtpath_name:
+                    season_id = int_rtpath_name
+                    break
 
             # 如果不是Season1的情况下，sname处于路径之中，则直接跳过
             if not (sname.strip().startswith('Season') and '1' in sname):

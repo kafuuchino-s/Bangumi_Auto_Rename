@@ -5,6 +5,8 @@ from typing import Dict, List, Optional
 
 from ..logger import logger
 from .utils import (
+    NUM_MAP,
+    ROMA_MAP,
     cn_num,
     keywords,
     code_partten,
@@ -167,10 +169,17 @@ def extract_season(text: str):
             return season_number
 
     for p in season_partten:
-        if p != r'第([\d一二三四五六七八九零]{1,2})(季|部分|部)':
-            match = re.search(p, text)
-            if match:
-                return int(match.group(1))
+        match = re.search(p, text)
+        if match:
+            if p == r'(First|Second|Third|Fourth|Fifth) Season':
+                return NUM_MAP.get(match.group(1), 1)
+            elif p == r'第([\d一二三四五六七八九零]{1,2})(季|部分|部)':
+                continue
+            elif p == r' (I{2,3})' or p == r' (I{1,3}V)' or p == r' (VI{2,3})':
+                return ROMA_MAP.get(match.group(1), 1)
+            else:
+                if match:
+                    return int(match.group(1))
 
     # 未找到匹配项
     return 1

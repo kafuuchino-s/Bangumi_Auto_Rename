@@ -11,6 +11,7 @@ dependencies = [
     "nicegui>=2.9.1",
     "pywin32>=308",
     "structlog>=24.4.0",
+    "frozenlist>=1.5.0",
 ]
 requires-python = ">=3.9"
 readme = "README.md"
@@ -22,6 +23,10 @@ distribution = false
 
 [tool.pdm.scripts]
 start = "src/start.py"
+
+[[tool.pdm.source]]
+name = "TUNA"
+url = "https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple"
 
 [tool.isort]
 profile = "black"

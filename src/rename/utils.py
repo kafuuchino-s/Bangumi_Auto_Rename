@@ -91,13 +91,31 @@ cn_num = {
     '万': 10000,
 }
 season_partten = [
-    r'I{2,5}',
+    r' (I{2,3})',
+    r' (I{1,3}V)',
+    r' (VI{2,3})',
     r'S([\d]{1,2})',
     r'第([\d一二三四五六七八九零]{1,2})(季|部分|部)',
     r'([\d]{1,2})nd Season',
     r'Season ([\d]{1,2})',
     r' ([\d]{1,2})',
+    r'(First|Second|Third|Fourth|Fifth) Season',
 ]
+NUM_MAP = {
+    'First': 1,
+    'Second': 2,
+    'Third': 3,
+    'Fourth': 4,
+    'Fifth': 5,
+}
+ROMA_MAP = {
+    'II': 2,
+    'III': 3,
+    'IV': 4,
+    'V': 5,
+    'VI': 6,
+    'VII': 7,
+}
 code_partten = [
     r'Ma[\d]{1,2}[pP]',
     r'[\d]{3,4}[pP]',
