@@ -97,7 +97,7 @@ class Rename:
                                 remove_tag(ename),
                             ).ratio()
 
-                            # print(f'相似度{tindex}：{similarity}')
+                            # logger.debug(f'相似度{tindex}：{similarity}')
                             similaritys[similarity] = season_id
                         all_similaritys.append(similaritys)
         else:

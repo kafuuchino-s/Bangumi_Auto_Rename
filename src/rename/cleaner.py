@@ -182,7 +182,7 @@ def extract_season(text: str):
                     return int(match.group(1))
 
     # 未找到匹配项
-    return 1
+    return -1
 
 
 def find_common_substrings_in_all(
@@ -212,7 +212,7 @@ def find_common_substrings_in_all(
         if all(substring in filename for filename in filenames):
             final_common_substrings.append(substring)
 
-    print(f'【相似部分】：{final_common_substrings}')
+    logger.debug(f'【相似部分】：{final_common_substrings}')
     return final_common_substrings
 
 
@@ -241,7 +241,7 @@ def remove_similar_part(common_parts: List[str], filename: str):
         if len(common_part) > 3:  # 确保只移除长度大于3的部分
             pattern = re.escape(common_part)
             filename = re.sub(pattern, '', filename).strip()
-    logger.info(f'【移除相似部分】：{filename}')
+    logger.debug(f'【移除相似部分】：{filename}')
     return filename
 
 
