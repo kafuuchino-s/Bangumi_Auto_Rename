@@ -185,6 +185,46 @@ class Rename:
         cus_name: Optional[str] = None,
         cus_season_id: Optional[int] = None,
     ):
+        if path.is_dir():
+            is_video = False
+            for sub_path in path.iterdir():
+                if not sub_path.is_dir() and sub_path.suffix in VIDEO_SUFFIX:
+                    is_video = True
+
+            if is_video:
+                self._process(
+                    path,
+                    _is_anime,
+                    _tuuid,
+                    cus_name,
+                    cus_season_id,
+                )
+            else:
+                for sub_path in path.iterdir():
+                    self._process(
+                        sub_path,
+                        _is_anime,
+                        _tuuid,
+                        cus_name,
+                        cus_season_id,
+                    )
+        else:
+            self._process(
+                path,
+                _is_anime,
+                _tuuid,
+                cus_name,
+                cus_season_id,
+            )
+
+    def _process(
+        self,
+        path: Path,
+        _is_anime: Union[bool, str] = False,
+        _tuuid: Optional[str] = None,
+        cus_name: Optional[str] = None,
+        cus_season_id: Optional[int] = None,
+    ):
         if _tuuid:
             _uuid = _tuuid
         else:
@@ -357,7 +397,6 @@ class Rename:
                             work_path,
                             season_id,
                         )
-
         task_path = TASK_PATH / f'{_uuid}.json'
         task_data = {
             'path': str(path),
@@ -368,6 +407,7 @@ class Rename:
             'error': None,
         }
         trans_result = Trans(self.R, _uuid).trans_file()
+        self.R = {}
         if isinstance(trans_result, str):
             return self.error_reply(
                 _uuid,

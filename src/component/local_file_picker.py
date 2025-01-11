@@ -67,6 +67,37 @@ class local_file_picker(ui.dialog):
             self.drives_toggle = RedToogle(
                 drives, value=drives[0], on_change=self.update_drive
             )
+        elif platform.system() == 'Darwin':  # macOS
+            import os
+
+            # On macOS, we can list mount points in '/Volumes'
+            drives = [
+                drive
+                for drive in os.listdir('/Volumes')
+                if os.path.isdir(os.path.join('/Volumes', drive))
+            ]
+            self.drives_toggle = RedToogle(
+                drives, value=drives[0], on_change=self.update_drive
+            )
+
+        elif platform.system() == 'Linux':
+            import os
+
+            # On Linux, you can list mounted drives via '/mnt' or '/media'
+            drives = [
+                drive
+                for drive in os.listdir('/mnt')
+                if os.path.isdir(os.path.join('/mnt', drive))
+            ]
+            if not drives:
+                drives = [
+                    drive
+                    for drive in os.listdir('/media')
+                    if os.path.isdir(os.path.join('/media', drive))
+                ]
+            self.drives_toggle = RedToogle(
+                drives, value=drives[0], on_change=self.update_drive
+            )
 
     def update_drive(self):
         self.path = Path(self.drives_toggle.value).expanduser()  # type: ignore
