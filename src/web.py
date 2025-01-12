@@ -4,6 +4,7 @@ from pathlib import Path
 from fastapi import Request
 from nicegui import ui, app
 
+from .logger import logger
 from .models import TaskModel
 from .main_page import main_page
 from .rename.process import Rename
@@ -20,17 +21,22 @@ def main():
 @app.post('/sendTask')
 async def _send_task(request: Request):
     data: TaskModel = cast(TaskModel, dict(await request.form()))
+    logger.info(f'[收到任务] {data}')
     path = data['path']
     is_anime = data['is_anime']
     no_process = data['no_process']
 
     if no_process:
+        logger.info(f'[结束任务] {path}忽略, 不处理！')
         return {'code': 202, 'data': f'{path}忽略, 不处理！'}
 
     _path = Path(path)
     if not _path.exists():
+        logger.error(f'[结束任务] 路径{path}不存在！')
         return {'code': 404, 'data': f'路径{path}不存在！'}
 
     Rename().process(_path, is_anime)
     create_table.refresh()
+
+    logger.info(f'[结束任务] {path}处理完成！')
     return {'code': 200, 'data': '提交任务成功, 具体信息可以查看WebUI！'}
