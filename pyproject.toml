@@ -22,7 +22,7 @@ license = {text = "GPLv3"}
 distribution = false
 
 [tool.pdm.scripts]
-start = "src/start.py"
+start = "src.start"
 
 [[tool.pdm.source]]
 name = "TUNA"

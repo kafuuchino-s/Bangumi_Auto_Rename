@@ -1,7 +1,7 @@
 import re
 import difflib
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Dict, List, Tuple, Optional
 
 from ..logger import logger
 from .utils import (
@@ -100,7 +100,7 @@ def remove_tag(title: str, skip=False):
     return s.strip()
 
 
-def divide_by_year(filename: str) -> str:
+def divide_by_year(filename: str) -> Tuple[str, int]:
     '''
     该步骤将文件名中，按照年份分割，并提取年份前面的内容。
 
@@ -112,11 +112,11 @@ def divide_by_year(filename: str) -> str:
     '''
     match = re.findall(r'\d+', filename)
     for i in match:
-        if float(i) >= 1901:
+        if 2035 >= float(i) >= 1901:
             name = filename.split(i)
-            return name[0]
+            return name[0], int(i)
     else:
-        return filename
+        return filename, 0
 
 
 def remove_season(s: str):

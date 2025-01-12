@@ -2,11 +2,10 @@ import sys
 from pathlib import Path
 
 sys.path.append(str(Path(__file__).parents[2]))
-__package__ = 'Bangumi_Auto_Rename.src'
-
-from Bangumi_Auto_Rename.src.web import ui  # noqa: E402 # type: ignore
+# __package__ = 'Bangumi_Auto_Rename.src'
 
 from .logger import logger  # noqa: E402
+from .web import ui  # noqa: E402 # type: ignore
 
 if __name__ == '__mp_main__':
     logger.info('程序启动中...')

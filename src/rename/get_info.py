@@ -13,13 +13,18 @@ class Search:
         self.TMDB_KEY = cm.get_config('api_key')
         tmdb.API_KEY = self.TMDB_KEY
 
-    def get_moive_info(self, query: str):
+    def get_moive_info(
+        self,
+        query: str,
+        year: int,
+    ):
         for i in range(3):
             try:
                 search = tmdb.Search()
                 search.movie(
                     query=query,
                     language='zh-CN',
+                    year=year if year != 0 else None,
                 )
                 target_list = search.__dict__['results']
                 if target_list:
@@ -35,7 +40,11 @@ class Search:
                 logger.warning(f'[电影搜索] 网络错误, 重试第{i + 1}次中...')
         return '', None
 
-    def get_tv_info(self, query: str):
+    def get_tv_info(
+        self,
+        query: str,
+        year: int,
+    ):
         for i in range(3):
             try:
                 for _ in range(3):
@@ -43,6 +52,7 @@ class Search:
                     search.tv(
                         query=query,
                         language='zh-CN',
+                        first_air_date_year=year if year != 0 else None,
                     )
                     target_list = search.__dict__['results']
                     if target_list:

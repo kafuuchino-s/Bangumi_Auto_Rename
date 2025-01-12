@@ -260,6 +260,7 @@ class Rename:
 
         # 【Step.1】
         # 先移除无用的标签, 方便之后搜索
+        year = 0
         rtpath_name = remove_tag(path.name)
         # 如果标签移除后啥都没有, 说明文件名也是标签的一部分
         if not rtpath_name:
@@ -274,7 +275,7 @@ class Rename:
         # 先用.分割之后, 按照年份分割后按照季度分割
         if rtpath_name.count('.') >= 3:
             rtpath_name = ' '.join(rtpath_name.split('.'))
-            rtpath_name = divide_by_year(rtpath_name)
+            rtpath_name, year = divide_by_year(rtpath_name)
 
         rtpath_name = remove_season(rtpath_name)
         rtpath_name = rtpath_name.strip('!')
@@ -295,8 +296,15 @@ class Rename:
         path_file_num = len([i for i in path.iterdir() if i.is_file()])
         if (path.is_dir() and path_file_num <= 6) or path.is_file():
             logger.info('[处理任务] 该文件可能为电影！')
-            name, moive_info = self.search.get_moive_info(rtpath_name)
+            name, moive_info = self.search.get_moive_info(rtpath_name, year)
             logger.info(f'[处理任务] 搜索到的电影名称: {name}')
+
+            if not name and year != 0:
+                name, moive_info = self.search.get_moive_info(
+                    rtpath_name,
+                    year,
+                )
+                logger.info(f'[处理任务] 未搜索到结果, 删除year后重试: {name}')
 
             if not name:
                 logger.warning(f'[处理任务] 未搜索到电影信息, 跳过{rtpath_name}')
@@ -327,8 +335,11 @@ class Rename:
         # 如果是剧集类型
         else:
             logger.info('[处理任务] 该文件可能为剧集类型！')
-            name, tv_info = self.search.get_tv_info(rtpath_name)
+            name, tv_info = self.search.get_tv_info(rtpath_name, year)
             logger.info(f'[处理任务] 搜索到的电视剧名称: {name}')
+            if not name and year != 0:
+                name, tv_info = self.search.get_tv_info(rtpath_name, 0)
+                logger.info(f'[处理任务] 未搜索到结果, 删除year后重试: {name}')
             if is_anime:
                 if not name:
                     logger.info('[处理任务] TMDB未搜索到!转为MyAnimeList搜索！')
