@@ -22,9 +22,13 @@ def main():
 async def _send_task(request: Request):
     data: TaskModel = cast(TaskModel, dict(await request.form()))
     logger.info(f'[收到任务] {data}')
-    path = data['path']
-    is_anime = data['is_anime']
-    no_process = data['no_process']
+    path = data.get('path')
+    is_anime = data.get('is_anime', True)
+    no_process = data.get('no_process', '')
+
+    if not path:
+        logger.error('[结束任务] 路径为空！')
+        return {'code': 400, 'data': '路径为空！'}
 
     if no_process:
         logger.info(f'[结束任务] {path}忽略, 不处理！')
