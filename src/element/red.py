@@ -102,3 +102,6 @@ class RedToogle(ui.toggle):
             clearable=clearable,
         )
         self._props['toggle-color'] = MAINC
+        self._props['no-wrap'] = True
+        self._props['stack'] = True
+        self._props['spread'] = False

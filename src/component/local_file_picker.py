@@ -36,27 +36,39 @@ class local_file_picker(ui.dialog):
             ).expanduser()
         self.show_hidden_files = show_hidden_files
 
-        with self, ui.card():
-            self.add_drives_toggle()
-            self.grid = (
-                ui.aggrid(
-                    {
-                        'columnDefs': [
+        _s = 'flex-wrap: nowrap; min-width: 400px; max-width: 730px'
+        self.classes('flex w-full').style(_s)
+        with (
+            self,
+            ui.card().classes('flex w-full').style(_s),
+        ):
+            with ui.column(align_items='center') as c1:
+                c1.classes('flex w-full')
+                c1.style('flex-wrap: nowrap; flex-shrink: 0; flex-basis: auto')
+                with ui.row().classes('w-full nowrap') as r1:
+                    r1.style('flex-wrap: nowrap')
+                    self.add_drives_toggle()
+                    rs = 'multiple' if multiple else 'single'
+                    self.grid = (
+                        ui.aggrid(
                             {
-                                'field': 'name',
-                                'headerName': 'File',
-                            }
-                        ],
-                        'rowSelection': 'multiple' if multiple else 'single',
-                    },
-                    html_columns=[0],
-                )
-                .classes('w-96')
-                .on('cellDoubleClicked', self.handle_double_click)
-            )
-            with ui.row().classes('w-full justify-end'):
-                RedButton('取消', on_click=self.close).props('outline')
-                RedButton('确定', on_click=self._handle_ok)
+                                'columnDefs': [
+                                    {
+                                        'field': 'name',
+                                        'headerName': 'File',
+                                    }
+                                ],
+                                'rowSelection': rs,
+                            },
+                            html_columns=[0],
+                        )
+                        .classes('w-1/2')
+                        .style(_s)
+                        .on('cellDoubleClicked', self.handle_double_click)
+                    )
+                with ui.row().classes('w-full justify-end'):
+                    RedButton('取消', on_click=self.close).props('outline')
+                    RedButton('确定', on_click=self._handle_ok)
         self.update_grid()
 
     def add_drives_toggle(self):
@@ -64,6 +76,8 @@ class local_file_picker(ui.dialog):
             import win32api
 
             drives = win32api.GetLogicalDriveStrings().split('\000')[:-1]
+
+            # drives = [str(i) for i in Path(drives[0]).iterdir()]
             self.drives_toggle = RedToogle(
                 drives, value=drives[0], on_change=self.update_drive
             )
@@ -83,24 +97,25 @@ class local_file_picker(ui.dialog):
         elif platform.system() == 'Linux':
             import os
 
-            # On Linux, you can list mounted drives via '/mnt' or '/media'
             drives = [
                 drive
-                for drive in os.listdir('/mnt')
-                if os.path.isdir(os.path.join('/mnt', drive))
+                for drive in os.listdir('/media')
+                if os.path.isdir(os.path.join('/media', drive))
             ]
-            if not drives:
-                drives = [
-                    drive
-                    for drive in os.listdir('/media')
-                    if os.path.isdir(os.path.join('/media', drive))
-                ]
-            self.drives_toggle = RedToogle(
-                drives, value=drives[0], on_change=self.update_drive
+            # drives = [f'{i}' for i in drives]
+            self.drives_toggle = RedToogle(drives, value=drives[0])
+            self.drives_toggle.on_value_change(
+                lambda e: self.update_drive('/media'),
             )
+        self.drives_toggle.classes(add="column", remove="row inline")
+        # self.drives_toggle.classes('w-1/2')
 
-    def update_drive(self):
-        self.path = Path(self.drives_toggle.value).expanduser()  # type: ignore
+    def update_drive(self, main: Optional[str] = None):
+        if main is None:
+            path_str = self.drives_toggle.value
+        else:
+            path_str = f'{main}/{self.drives_toggle.value}'
+        self.path = Path(path_str).expanduser()  # type: ignore
         self.update_grid()
 
     def update_grid(self) -> None:
@@ -109,7 +124,6 @@ class local_file_picker(ui.dialog):
             paths = [p for p in paths if not p.name.startswith('.')]
         paths.sort(key=lambda p: p.name.lower())
         paths.sort(key=lambda p: not p.is_dir())
-
         self.grid.options['rowData'] = [
             {
                 'name': f'📁 {p.name}' if p.is_dir() else p.name,
