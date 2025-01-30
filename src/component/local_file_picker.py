@@ -120,6 +120,8 @@ class local_file_picker(ui.dialog):
 
     def update_grid(self) -> None:
         paths = list(self.path.glob('*'))
+        paths.sort(key=lambda p: p.stat().st_mtime, reverse=True)
+
         if not self.show_hidden_files:
             paths = [p for p in paths if not p.name.startswith('.')]
         paths.sort(key=lambda p: p.name.lower())

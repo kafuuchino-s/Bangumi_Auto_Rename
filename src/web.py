@@ -22,7 +22,7 @@ def main():
 async def _send_task(request: Request):
     data: TaskModel = cast(TaskModel, dict(await request.form()))
     logger.info(f'[收到任务] {data}')
-    path = data.get('path')
+    path = data.get('path').encode('latin1').decode('utf-8')
     is_anime = data.get('is_anime', True)
     no_process = data.get('no_process', '')
 
