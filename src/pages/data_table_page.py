@@ -29,7 +29,10 @@ def create_table():
         j['align'] = 'center'
         j['sortable'] = True
 
-    for index, i in enumerate(list(TASK_PATH.iterdir())):
+    sorted_files = sorted(
+        TASK_PATH.iterdir(), key=lambda x: x.stat().st_mtime, reverse=True
+    )
+    for index, i in enumerate(sorted_files):
         task_data = get_task(i.stem)
         if task_data['error']:
             status = task_data['error']
