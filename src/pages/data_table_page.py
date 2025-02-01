@@ -1,4 +1,3 @@
-import json
 from pathlib import Path
 from typing import Any, Dict, List
 
@@ -7,6 +6,7 @@ from nicegui.events import GenericEventArguments
 
 from ..element.red import notify
 from .edit_page import edit_page
+from ..utils.utils import get_task
 from ..rename.process import Rename
 from ..utils.path import TASK_PATH, RECORD_PATH
 
@@ -23,30 +23,31 @@ def create_table():
         {'name': 'status', 'label': '状态', 'field': 'status'},
         {'name': 'uuid', 'label': 'UUID', 'field': 'uuid'},
         {'name': 'is_anime', 'label': '是否为动漫', 'field': 'is_anime'},
+        {'name': 'is_movie', 'label': '是否为电影', 'field': 'is_movie'},
     ]
     for j in columns:
         j['align'] = 'center'
         j['sortable'] = True
 
     for index, i in enumerate(list(TASK_PATH.iterdir())):
-        with open(i, 'r', encoding='utf-8') as f:
-            task_data = json.load(f)
-            if task_data['error']:
-                status = task_data['error']
-            else:
-                status = '成功'
-            rows.append(
-                {
-                    'id': index,
-                    'path': task_data['path'],
-                    'name': task_data['name'],
-                    'uuid': task_data['uuid'],
-                    'season': task_data['season_id'],
-                    'status': status,
-                    'is_anime': task_data['is_anime'],
-                    'value': '操作',
-                }
-            )
+        task_data = get_task(i.stem)
+        if task_data['error']:
+            status = task_data['error']
+        else:
+            status = '成功'
+        rows.append(
+            {
+                'id': index,
+                'path': task_data['path'],
+                'name': task_data['name'],
+                'uuid': task_data['uuid'],
+                'season': task_data['season_id'],
+                'status': status,
+                'is_anime': task_data['is_anime'],
+                'is_movie': task_data['is_movie'],
+                'value': '操作',
+            }
+        )
 
     table = (
         ui.table(columns=columns, rows=rows)
@@ -105,7 +106,8 @@ def handle_retry(ev: GenericEventArguments):
     row_data = arg['row']
     path = row_data['path']
     is_anime = row_data['is_anime']
-    data = Rename().process(Path(path), is_anime)
+    is_movie = row_data['is_movie']
+    data = Rename().process(Path(path), is_anime, is_movie)
     if isinstance(data, str):
         notify(data)
     else:

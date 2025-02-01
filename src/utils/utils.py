@@ -17,13 +17,27 @@ def get_record(uuid: str) -> Optional[dict]:
         return None
 
 
-def get_task(uuid: str) -> Optional[dict]:
+def custom_sort(key):
+    if key == 'is_anime':
+        return (0, key)
+    elif key == 'is_movie':
+        return (1, key)
+    else:
+        return (2, key)
+
+
+def get_task(uuid: str) -> dict:
     path = TASK_PATH / f'{uuid}.json'
     if path.exists():
         with open(path, 'r', encoding='utf-8') as f:
-            return json.load(f)
+            data = json.load(f)
+            if 'is_movie' not in data:
+                data['is_movie'] = None
+            sorted_keys = sorted(data.keys(), key=custom_sort)
+            sorted_dict = {key: data[key] for key in sorted_keys}
+            return sorted_dict
     else:
-        return None
+        return {}
 
 
 def write_task(uuid: str, data: dict) -> None:

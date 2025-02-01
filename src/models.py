@@ -5,3 +5,4 @@ class TaskModel(TypedDict):
     path: str
     is_anime: bool
     no_process: str
+    tag: str

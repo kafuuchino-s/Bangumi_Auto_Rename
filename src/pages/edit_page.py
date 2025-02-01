@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Optional
 from types import SimpleNamespace
 
 from nicegui import ui
@@ -12,7 +13,28 @@ TASK_MAP = {
     'is_anime': '是否为动画',
     'name': '剧集名称',
     'season_id': '季度',
+    'is_movie': '是否为电影',
 }
+
+
+def value_to_text(value: Optional[bool]) -> str:
+    if value is None:
+        return '自动'
+    elif value:
+        return '是'
+    else:
+        return '否'
+
+
+def text_to_value(text: str) -> Optional[bool]:
+    if text == '是':
+        return True
+    elif text == '否':
+        return False
+    elif text == '自动':
+        return None
+    else:
+        return None
 
 
 class EditPage(ui.dialog):
@@ -31,7 +53,7 @@ class EditPage(ui.dialog):
             ui.label('编辑').style('font-size: 20px; font-weight: bold')
             ui.separator()
             for key in task_data:
-                if key not in ['is_anime', 'name', 'season_id']:
+                if key not in ['is_anime', 'name', 'season_id', 'is_movie']:
                     continue
                 with ui.column(wrap=False).classes('flex no-wrap w-full'):
                     with ui.row(wrap=False).classes(
@@ -42,7 +64,7 @@ class EditPage(ui.dialog):
                             # 配置标签
                             label = TASK_MAP.get(key, key)
                             ui.label(label).style('min-width: 120px')
-                            if key != 'is_anime':
+                            if key != 'is_anime' and key != 'is_movie':
                                 ui.input(
                                     value=getattr(self.data, key),
                                     on_change=lambda e, c=key: self._change(
@@ -56,11 +78,11 @@ class EditPage(ui.dialog):
                                     key,
                                 )
                             else:
-                                is_anime = getattr(self.data, 'is_anime')
-                                is_anime = '是' if is_anime else '否'
+                                value = getattr(self.data, key)
+
                                 tg = RedToogle(
-                                    ['是', '否'],
-                                    value=is_anime,
+                                    ['是', '否', '自动'],
+                                    value=value_to_text(value),
                                     on_change=lambda e, c=key: self._change(
                                         c,
                                         e.value,
@@ -85,7 +107,8 @@ class EditPage(ui.dialog):
         self.close()
         Rename().process(
             Path(getattr(self.data, 'path')),
-            getattr(self.data, 'is_anime'),
+            text_to_value(getattr(self.data, 'is_anime')),
+            text_to_value(getattr(self.data, 'is_movie')),
             getattr(self.data, 'uuid'),
             getattr(self.data, 'name'),
             getattr(self.data, 'season_id'),

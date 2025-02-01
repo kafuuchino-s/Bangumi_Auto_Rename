@@ -13,7 +13,7 @@ class Search:
         self.TMDB_KEY = cm.get_config('api_key')
         tmdb.API_KEY = self.TMDB_KEY
 
-    def get_moive_info(
+    def get_movie_info(
         self,
         query: str,
         year: int,

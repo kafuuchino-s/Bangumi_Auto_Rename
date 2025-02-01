@@ -35,7 +35,7 @@ class Rename:
         self.BANGUMI_PATH = Path(cm.get_config('bangumi_path'))
         self.MOVIE_PATH = Path(cm.get_config('movie_path'))
         self.ANIME_PATH = Path(cm.get_config('anime_path'))
-        self.ANIME_MOVIE_PATH = Path(cm.get_config('anime_moive_path'))
+        self.ANIME_MOVIE_PATH = Path(cm.get_config('anime_movie_path'))
 
         self.ANIME_MOVIE_PATH.mkdir(parents=True, exist_ok=True)
         self.MOVIE_PATH.mkdir(parents=True, exist_ok=True)
@@ -185,7 +185,8 @@ class Rename:
     def process(
         self,
         path: Path,
-        _is_anime: Union[bool, str] = False,
+        _is_anime: Optional[bool] = None,
+        _is_movie: Optional[bool] = None,
         _tuuid: Optional[str] = None,
         cus_name: Optional[str] = None,
         cus_season_id: Optional[int] = None,
@@ -200,6 +201,7 @@ class Rename:
                 self._process(
                     path,
                     _is_anime,
+                    _is_movie,
                     _tuuid,
                     cus_name,
                     cus_season_id,
@@ -209,6 +211,7 @@ class Rename:
                     self._process(
                         sub_path,
                         _is_anime,
+                        _is_movie,
                         _tuuid,
                         cus_name,
                         cus_season_id,
@@ -217,6 +220,7 @@ class Rename:
             self._process(
                 path,
                 _is_anime,
+                _is_movie,
                 _tuuid,
                 cus_name,
                 cus_season_id,
@@ -225,7 +229,8 @@ class Rename:
     def _process(
         self,
         path: Path,
-        _is_anime: Union[bool, str] = False,
+        is_anime: Optional[bool] = None,
+        is_movie: Optional[bool] = None,
         _tuuid: Optional[str] = None,
         cus_name: Optional[str] = None,
         cus_season_id: Optional[int] = None,
@@ -235,24 +240,13 @@ class Rename:
         else:
             _uuid = str(uuid.uuid4())
 
-        if isinstance(_is_anime, str):
-            if 'real' in _is_anime or 'no' in _is_anime:
-                is_anime = False
-            elif 'anime' in _is_anime:
-                is_anime = True
-            elif _is_anime:
-                is_anime = True
-            else:
-                is_anime = False
-        else:
-            is_anime = _is_anime
-
         if not self.search.TMDB_KEY:
             return self.error_reply(
                 _uuid,
                 '你还没有配置TMDB的Key！任务失败！请先前往配置界面！',
                 path,
                 is_anime,
+                is_movie,
             )
 
         # 【Step.0】 开始处理
@@ -290,22 +284,66 @@ class Rename:
         if cus_name:
             rtpath_name = cus_name
 
+        # 【Step.1.5】
+        # 判断类型是否为电影
+        season_id = 1
+        pos = 0
+        logger.info('[处理任务] 未传入任务类型，开始判断该文件是否为电影！')
+
+        s1_name, s1_info = self.search.get_tv_info(rtpath_name, year)
+        logger.info(f'[处理任务] 搜索到的电视剧名称: {s1_name}')
+        if not s1_name and year != 0:
+            s1_name, s1_info = self.search.get_tv_info(rtpath_name, 0)
+            logger.info(f'[处理任务] 未搜索到结果, 删除year后重试: {s1_name}')
+
+        s2_name, s2_info = self.search.get_movie_info(rtpath_name, year)
+        logger.info(f'[处理任务] 搜索到的电影名称: {s2_name}')
+
+        if not s2_name and year != 0:
+            s2_name, s2_info = self.search.get_movie_info(
+                rtpath_name,
+                year,
+            )
+            logger.info(f'[处理任务] 未搜索到结果, 删除year后重试: {s2_name}')
+
+        if s1_name:
+            pos += 1
+        elif s2_name:
+            pos -= 1
+
+        season_id = extract_season(rtpath_name)
+        if season_id == -1:
+            pos -= 0.6
+            if path.is_file():
+                pos -= 0.5
+        else:
+            pos += 0.6
+            if path.is_file():
+                pos += 0.5
+
+        if path.is_dir():
+            path_file_num = len([i for i in path.iterdir() if i.is_file()])
+            if path_file_num > 6:
+                pos += 0.4
+            else:
+                pos -= 0.4
+
+        if pos > 0 or (is_movie is not None and not is_movie):
+            logger.info('[处理任务] 该文件可能为电视剧！')
+            is_movie = False
+            tv_info = s1_info
+            movie_info = None
+            name = s1_name
+        else:
+            logger.info('[处理任务] 该文件可能为电影！')
+            is_movie = True
+            tv_info = None
+            movie_info = s2_info
+            name = s2_name
+
         # 【Step.2】
         # 如果是电影
-        season_id = 1
-        path_file_num = len([i for i in path.iterdir() if i.is_file()])
-        if (path.is_dir() and path_file_num <= 6) or path.is_file():
-            logger.info('[处理任务] 该文件可能为电影！')
-            name, moive_info = self.search.get_moive_info(rtpath_name, year)
-            logger.info(f'[处理任务] 搜索到的电影名称: {name}')
-
-            if not name and year != 0:
-                name, moive_info = self.search.get_moive_info(
-                    rtpath_name,
-                    year,
-                )
-                logger.info(f'[处理任务] 未搜索到结果, 删除year后重试: {name}')
-
+        if is_movie:
             if not name:
                 logger.warning(f'[处理任务] 未搜索到电影信息, 跳过{rtpath_name}')
                 return self.error_reply(
@@ -313,6 +351,7 @@ class Rename:
                     f'[TMDB] 未搜索到电影信息, 跳过{rtpath_name}',
                     path,
                     is_anime,
+                    is_movie,
                 )
 
             if is_anime:
@@ -321,8 +360,8 @@ class Rename:
                 _WORK_PATH = self.MOVIE_PATH
 
             # 开始拆分
-            if moive_info:
-                first_data = moive_info['release_date']
+            if movie_info:
+                first_data = movie_info['release_date']
                 first_year = first_data.split('-')[0]
                 work_path = _WORK_PATH / f'{name} ({first_year})'
                 work_path.mkdir(parents=True, exist_ok=True)
@@ -334,12 +373,6 @@ class Rename:
                         self.R[item_path] = work_path / f'{name} - {item_name}'
         # 如果是剧集类型
         else:
-            logger.info('[处理任务] 该文件可能为剧集类型！')
-            name, tv_info = self.search.get_tv_info(rtpath_name, year)
-            logger.info(f'[处理任务] 搜索到的电视剧名称: {name}')
-            if not name and year != 0:
-                name, tv_info = self.search.get_tv_info(rtpath_name, 0)
-                logger.info(f'[处理任务] 未搜索到结果, 删除year后重试: {name}')
             if is_anime:
                 if not name:
                     logger.info('[处理任务] TMDB未搜索到!转为MyAnimeList搜索！')
@@ -375,6 +408,7 @@ class Rename:
                     f'[TMDB] 未搜索到剧集信息, 跳过{rtpath_name}',
                     path,
                     is_anime,
+                    is_movie,
                 )
 
             # 开始重命名内部文件
@@ -430,6 +464,7 @@ class Rename:
                 trans_result,
                 path,
                 is_anime,
+                is_movie,
                 name,
                 season_id,
             )
@@ -442,7 +477,8 @@ class Rename:
         _uuid: str,
         error: str,
         path: Path,
-        is_anime: bool,
+        is_anime: Optional[bool] = None,
+        is_movie: Optional[bool] = None,
         name: Optional[str] = None,
         season_id: Optional[int] = None,
     ):
@@ -450,6 +486,7 @@ class Rename:
         task_data = {
             'path': str(path),
             'is_anime': is_anime,
+            'is_movie': is_movie,
             'name': name,
             'season_id': season_id,
             'uuid': str(_uuid),

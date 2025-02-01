@@ -11,6 +11,9 @@ from .rename.process import Rename
 from .utils.utils import no_scroll_bar
 from .pages.data_table_page import create_table
 
+ANI_TAG = ['动漫', 'anime', '动画']
+MOVIE_TAG = ['电影', 'movie', '剧场', '剧场版']
+
 
 @ui.page('/')
 def main():
@@ -23,8 +26,9 @@ async def _send_task(request: Request):
     data: TaskModel = cast(TaskModel, dict(await request.form()))
     logger.info(f'[收到任务] {data}')
     path = data.get('path').encode('latin1').decode('utf-8')
-    is_anime = data.get('is_anime', True)
+    is_anime = data.get('is_anime', '')
     no_process = data.get('no_process', '')
+    tag = data.get('tag', '')
 
     if not path:
         logger.error('[结束任务] 路径为空！')
@@ -39,7 +43,25 @@ async def _send_task(request: Request):
         logger.error(f'[结束任务] 路径{path}不存在！')
         return {'code': 404, 'data': f'路径{path}不存在！'}
 
-    Rename().process(_path, is_anime)
+    tag_list = [str(i).strip().lower() for i in tag.split(',')]
+    if not is_anime:
+        for i in ANI_TAG:
+            if i in tag_list:
+                is_anime = True
+                break
+        else:
+            is_anime = False
+    else:
+        is_anime = None
+
+    for i in MOVIE_TAG:
+        if i in tag_list:
+            is_movie = True
+            break
+    else:
+        is_movie = None
+
+    Rename().process(_path, is_anime, is_movie)
     create_table.refresh()
 
     logger.info(f'[结束任务] {path}处理完成！')

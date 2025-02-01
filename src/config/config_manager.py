@@ -8,7 +8,7 @@ CONFIG_DEFAULT = {
     'bangumi_path': '',
     'movie_path': '',
     'anime_path': '',
-    'anime_moive_path': '',
+    'anime_movie_path': '',
     'mode': '链接',
 }
 
@@ -17,7 +17,7 @@ CN_MAP = {
     'bangumi_path': '🎬 电视剧路径',
     'movie_path': '🎬 电影路径',
     'anime_path': '🎬 动漫路径',
-    'anime_moive_path': '🎬 动漫电影路径',
+    'anime_movie_path': '🎬 动漫电影路径',
     'mode': '💿 重命名模式',
 }
 
@@ -51,6 +51,14 @@ class ConfigManager:
         for key in CONFIG_DEFAULT:
             if key not in self.config:
                 self.config[key] = CONFIG_DEFAULT[key]
+
+        # 清空不存在的key
+        for key in list(self.config.keys()):
+            if key not in CONFIG_DEFAULT:
+                del self.config[key]
+
+        # 按照默认key排序
+        self.config = {key: self.config[key] for key in CONFIG_DEFAULT}
 
         # 重新写回
         self.write_config()
