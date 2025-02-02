@@ -3,7 +3,7 @@ import json
 import uuid
 from pathlib import Path
 from difflib import SequenceMatcher
-from typing import Dict, List, Union, Optional
+from typing import Dict, List, Optional
 
 from jikanpy import Jikan
 
@@ -21,6 +21,7 @@ from .cleaner import (
     divide_by_year,
     extract_number,
     extract_season,
+    remove_episode,
     extract_base_num,
     match_and_extract,
     remove_similar_part,
@@ -272,6 +273,7 @@ class Rename:
             rtpath_name, year = divide_by_year(rtpath_name)
 
         rtpath_name = remove_season(rtpath_name)
+        rtpath_name = remove_episode(rtpath_name)
         rtpath_name = rtpath_name.strip('!')
         logger.info(f'[处理任务] 去除标签后: {rtpath_name}')
 
@@ -427,26 +429,35 @@ class Rename:
                 if cus_season_id:
                     season_id = int(cus_season_id)
 
-                repeat = find_unique_parts_in_videos(path)
-                for item_path in path.iterdir():
-                    if item_path.is_dir():
-                        repeat = find_unique_parts_in_videos(item_path)
-                        for sub_item in item_path.iterdir():
+                if path.is_file():
+                    self.process_sub(
+                        rtpath_name,
+                        None,
+                        path,
+                        work_path,
+                        season_id,
+                    )
+                else:
+                    repeat = find_unique_parts_in_videos(path)
+                    for item_path in path.iterdir():
+                        if item_path.is_dir():
+                            repeat = find_unique_parts_in_videos(item_path)
+                            for sub_item in item_path.iterdir():
+                                self.process_sub(
+                                    rtpath_name,
+                                    repeat,
+                                    sub_item,
+                                    work_path,
+                                    season_id,
+                                )
+                        else:
                             self.process_sub(
                                 rtpath_name,
                                 repeat,
-                                sub_item,
+                                item_path,
                                 work_path,
                                 season_id,
                             )
-                    else:
-                        self.process_sub(
-                            rtpath_name,
-                            repeat,
-                            item_path,
-                            work_path,
-                            season_id,
-                        )
         task_path = TASK_PATH / f'{_uuid}.json'
         task_data = {
             'path': str(path),

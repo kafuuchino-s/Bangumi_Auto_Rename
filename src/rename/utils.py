@@ -101,6 +101,13 @@ season_partten = [
     r' ([\d]{1,2})',
     r'(First|Second|Third|Fourth|Fifth) Season',
 ]
+episode_partten = [
+    r'[Ee]([\d]{1,2})',
+    r'第([\d一二三四五六七八九零]{1,2})话',
+    r'([\d]{1,2})[Ee]pisode',
+    r'([\d]{1,2})[Ee]ps',
+    r'\[(\d{1,2})\]',
+]
 NUM_MAP = {
     'First': 1,
     'Second': 2,

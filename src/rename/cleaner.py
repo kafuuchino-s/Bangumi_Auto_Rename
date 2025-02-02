@@ -11,6 +11,7 @@ from .utils import (
     keywords,
     code_partten,
     season_partten,
+    episode_partten,
     bracket_patterns,
 )
 
@@ -130,6 +131,18 @@ def remove_season(s: str):
     Shangri / 香格里拉.E01
     '''
     for p in season_partten:
+        s = re.sub(p, '', s)
+    return s.strip()
+
+
+def remove_episode(s: str):
+    '''
+    该步骤将文件名中, 类似剧集的内容剔除
+    Shangri / 香格里拉.E01
+    将会变为
+    Shangri / 香格里拉.
+    '''
+    for p in episode_partten:
         s = re.sub(p, '', s)
     return s.strip()
 
