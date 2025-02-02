@@ -30,6 +30,11 @@ async def _send_task(request: Request):
     no_process = data.get('no_process', '')
     tag = data.get('tag', '')
 
+    tag_list = [str(i).strip().lower() for i in tag.split(',')]
+
+    if 'no_process' in tag_list:
+        no_process = True
+
     if not path:
         logger.error('[结束任务] 路径为空！')
         return {'code': 400, 'data': '路径为空！'}
@@ -43,7 +48,6 @@ async def _send_task(request: Request):
         logger.error(f'[结束任务] 路径{path}不存在！')
         return {'code': 404, 'data': f'路径{path}不存在！'}
 
-    tag_list = [str(i).strip().lower() for i in tag.split(',')]
     if not is_anime:
         for i in ANI_TAG:
             if i in tag_list:
