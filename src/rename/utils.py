@@ -15,6 +15,7 @@ EXTRA_TAG = [
     'Fans',
     '访谈',
     'Preview',
+    'Picture Drama',
     '预告',
     '特典',
     '映像',

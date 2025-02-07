@@ -146,15 +146,26 @@ class Rename:
                     if re.search(rf'{ex.lower()}', n_item_name_l):
                         t = work_path / 'extra'
                         self.R[item_path] = t / item_name
+                        logger.info(
+                            f'[处理任务] 识别{n_item_name_l},'
+                            f'移动到extra文件夹：{item_path.name}'
+                        )
                         break
                 else:
                     for s0 in S0_TAG:
                         if re.search(rf'{s0.lower()}[\d]{{0,3}}', item_name_l):
                             t = work_path / 'Season0'
                             self.R[item_path] = t / item_name
+                            logger.info(
+                                f'[处理任务] 识别{n_item_name_l},'
+                                f'移动到Season0文件夹：{item_path.name}'
+                            )
                             break
                     else:
                         _item_name = remove_code(remove_season(item_name_l))
+                        logger.info(
+                            f'[处理任务] 开始对{_item_name}处理, 寻找集数中...")'
+                        )
                         epp = extract_base_num(_item_name)
                         if epp is None:
                             ep = extract_number(_item_name)
@@ -430,6 +441,7 @@ class Rename:
                     season_id = int(cus_season_id)
 
                 if path.is_file():
+                    logger.info(f'[处理任务] 开始对 [单文件] {path.name}处理')
                     self.process_sub(
                         rtpath_name,
                         None,
@@ -438,14 +450,16 @@ class Rename:
                         season_id,
                     )
                 else:
+                    logger.info(f'[处理任务] 开始对 [文件夹] {path.name}处理')
                     repeat = find_unique_parts_in_videos(path)
                     for item_path in path.iterdir():
+                        logger.info(f'[处理任务] 处理嵌套文件夹 {item_path.name}')
                         if item_path.is_dir():
-                            repeat = find_unique_parts_in_videos(item_path)
+                            repeat_2 = find_unique_parts_in_videos(item_path)
                             for sub_item in item_path.iterdir():
                                 self.process_sub(
                                     rtpath_name,
-                                    repeat,
+                                    repeat_2,
                                     sub_item,
                                     work_path,
                                     season_id,

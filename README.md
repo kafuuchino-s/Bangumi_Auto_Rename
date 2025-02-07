@@ -71,7 +71,7 @@
 - 填入示例如下
 
 ```shell
-curl -d "tag=%G&path=%F" http://127.0.0.1:5999/sendTask -f
+curl -d "path="%F"&tag="%G"" http://127.0.0.1:5999/sendTask -f
 ```
 
 ### 四、更新
