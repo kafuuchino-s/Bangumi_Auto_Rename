@@ -10,6 +10,7 @@ CONFIG_DEFAULT = {
     'anime_path': '',
     'anime_movie_path': '',
     'mode': '链接',
+    'docker_mnt': '/media',
 }
 
 CN_MAP = {
@@ -19,6 +20,7 @@ CN_MAP = {
     'anime_path': '🎬 动漫路径',
     'anime_movie_path': '🎬 动漫电影路径',
     'mode': '💿 重命名模式',
+    'docker_mnt': '📁 Docker挂载路径',
 }
 
 

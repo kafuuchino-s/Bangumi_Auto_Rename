@@ -4,6 +4,7 @@ from typing import Optional
 
 from nicegui import ui, events
 
+from ..config.config_manager import cm
 from ..element.red import RedButton, RedToogle
 
 
@@ -97,15 +98,16 @@ class local_file_picker(ui.dialog):
         elif platform.system() == 'Linux':
             import os
 
+            docker_path = cm.get_config('docker_mnt')
             drives = [
                 drive
-                for drive in os.listdir('/media')
-                if os.path.isdir(os.path.join('/media', drive))
+                for drive in os.listdir(docker_path)
+                if os.path.isdir(os.path.join(docker_path, drive))
             ]
             # drives = [f'{i}' for i in drives]
             self.drives_toggle = RedToogle(drives, value=drives[0])
             self.drives_toggle.on_value_change(
-                lambda e: self.update_drive('/media'),
+                lambda e: self.update_drive(docker_path),
             )
         self.drives_toggle.classes(add="column", remove="row inline")
         # self.drives_toggle.classes('w-1/2')
