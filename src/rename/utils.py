@@ -1,6 +1,8 @@
 IGNORE_DIR = ['cd', 'scan']
 IGNORE_SUFFIX = ['.rar', '.zip', '.7z', '.webp', '.jpg', '.png']
 EXTRA_TAG = [
+    'NCOP',
+    'NCED',
     'Menu',
     'Teaser',
     'IV',

@@ -142,8 +142,12 @@ class Rename:
                     logger.info(f'[处理任务] 忽略文件：{item_path.name}')
                     break
             else:
+                p = r'[a-zA-Z\u4e00-\u9fa5]'
                 for ex in EXTRA_TAG:
-                    if re.search(rf'{ex.lower()}', n_item_name_l):
+                    if re.search(
+                        rf'(?<!{p}){ex.lower()}(?!{p})',
+                        n_item_name_l,
+                    ):
                         t = work_path / 'extra'
                         self.R[item_path] = t / item_name
                         logger.info(
