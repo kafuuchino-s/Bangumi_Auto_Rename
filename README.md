@@ -88,7 +88,7 @@
 
 ### 三、AI功能详细说明
 
-**注意：** AI识别为实验性功能，请勿在移动模式中启用！！
+**注意：** 🚨 AI识别为实验性功能，请勿在**移动模式**中启用！！
 
 #### 配置AI功能
 1. 在配置页面的"AI识别配置"部分：
@@ -138,7 +138,7 @@
 - 填入示例如下
 
 ```shell
-curl -d "path="%F"&tag="%G"" http://127.0.0.1:5999/sendTask -f
+curl --data-urlencode "path=%F" --data-urlencode "tag=%G" "http://127.0.0.1:5999/sendTask" -f
 ```
 
 ### 五、更新
