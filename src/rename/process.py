@@ -82,9 +82,14 @@ class Rename:
             # 如果不是Season1的情况下，sname处于路径之中，则直接跳过
             if not (sname.strip().startswith('Season') and '1' in sname):
                 if sname in path.name:
-                    logger.info(f'[处理任务] 季度名称处于标题中：{sname}')
-                    season_id = info_season_id
-                    break
+                    sname_list = sname.split(' ')
+                    path_name_list = path.stem.split(' ')
+                    if len(sname_list) == len(path_name_list):
+                        logger.info(f'[处理任务] 季度名称处于标题中：{sname}')
+                        season_id = info_season_id
+                        break
+                    else:
+                        logger.info(f'[处理任务] 季度名称与路径名称长度不同：{sname}')
 
                 if titles:
                     # 或者计算相似度
