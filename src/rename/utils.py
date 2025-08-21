@@ -101,7 +101,7 @@ season_partten = [
     r'第([\d一二三四五六七八九零]{1,2})(季|部分|部)',
     r'([\d]{1,2})nd Season',
     r'Season ([\d]{1,2})',
-    r' ([\d]{1,2})',
+    r' ([\d]{1,2}) ',
     r'(First|Second|Third|Fourth|Fifth) Season',
 ]
 episode_partten = [
