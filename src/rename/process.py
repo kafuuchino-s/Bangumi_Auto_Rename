@@ -457,6 +457,7 @@ class Rename:
                 for item_path in path.iterdir():
                     item_name = item_path.name
                     self.R[item_path] = work_path / f'{name} - {item_name}'
+            season_id = 0
         # 如果是剧集类型
         else:
             if is_anime:
