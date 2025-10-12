@@ -213,11 +213,6 @@ class UnifiedAITester:
                 test_case["anime_info"], test_case["local_files"]
             )
 
-            # TODO
-            if ai_result is None:
-                result["error"] = "AI分析失败，返回None"
-                return result
-
             # 加载期望结果并验证
             expected = self._load_expected_result()
             validation = self._validate_ai_result(ai_result, expected)
@@ -257,6 +252,7 @@ class UnifiedAITester:
         except Exception as e:
             logger.error(f"[AI识别测试] AI测试异常: {str(e)}")
             result["error"] = str(e)
+            result["result_status"] = "ai_failed"
         finally:
             # 恢复原始配置
             self._restore_config()
@@ -274,7 +270,7 @@ class UnifiedAITester:
         logger.info("[AI识别测试] 开始OpenAI API多格式测试")
 
         # 要测试的输出格式
-        formats_to_test = ["function_calling", "structured_output", "json_object"]
+        formats_to_test = ["structured_output", "json_object", "function_calling"]
         format_results = []
         successful_formats = []
 
@@ -309,7 +305,7 @@ class UnifiedAITester:
 
     def _get_recommended_format(self, format_results: List[Dict[str, Any]]) -> str:
         """根据测试结果推荐最佳格式"""
-        priority_order = ["function_calling", "structured_output", "json_object"]
+        priority_order = ["structured_output", "json_object", "function_calling"]
 
         # 当前使用简单测试用例，不允许出错，只要有错误就标记为失败
         perfect_formats = []  # 完全正确的格式

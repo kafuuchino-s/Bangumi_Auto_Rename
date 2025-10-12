@@ -3,7 +3,7 @@ from types import SimpleNamespace
 
 from nicegui import ui
 
-from ..logger import logger
+from ..logger import logger, update_log_level_from_config
 from ..config.config_manager import CN_MAP, cm
 from ..element.red import RedButton, RedToogle
 from ..component.local_file_picker import local_file_picker
@@ -32,6 +32,7 @@ class ConfigPage(ui.dialog):
                 "anime_movie_path",
                 "mode",
                 "docker_mnt",
+                "log_level",
             ]
             for cn in basic_configs:
                 self._create_config_row(cn)
@@ -44,15 +45,18 @@ class ConfigPage(ui.dialog):
             )
             ai_configs = [
                 "ai_enabled",
+                "ai_auto_save",
                 "ai_provider",
                 "ai_confidence_threshold",
                 "openai_output_format",  # OpenAI输出格式选择
                 "ai_api_key",
                 "ai_base_url",
                 "ai_model",
+                "ai_temperature",
                 "gemini_api_key",
                 "gemini_base_url",
                 "gemini_model",
+                "gemini_temperature",
             ]
             for cn in ai_configs:
                 self._create_config_row(cn)
@@ -104,6 +108,24 @@ class ConfigPage(ui.dialog):
                             ["High", "Medium", "Low"],
                             value=cm.get_config(cn),
                             on_change=lambda e, c=cn: self._change(c, e.value),
+                        )
+                        tg.style("font-size: 10px")
+                        tg.classes("flex no-wrap w-full")
+                    elif cn == "log_level":
+                        tg = RedToogle(
+                            ["DEBUG", "INFO", "WARNING", "ERROR"],
+                            value=cm.get_config(cn),
+                            on_change=lambda e, c=cn: self._change(c, e.value),
+                        )
+                        tg.style("font-size: 10px")
+                        tg.classes("flex no-wrap w-full")
+                    elif cn == "ai_auto_save":
+                        tg = RedToogle(
+                            ["启用", "禁用"],
+                            value="启用" if cm.get_config(cn) else "禁用",
+                            on_change=lambda e, c=cn: self._change(
+                                c, e.value == "启用"
+                            ),
                         )
                         tg.style("font-size: 10px")
                         tg.classes("flex no-wrap w-full")
@@ -182,6 +204,12 @@ class ConfigPage(ui.dialog):
 
         logger.info('[配置] 配置已修改为： {}'.format(config_show))
         ui.notify("✅ 配置保存成功", type="positive")
+        # 更新运行时日志级别
+        try:
+            update_log_level_from_config()
+            logger.info(f"[配置] 运行时日志级别已更新为 {cm.get_config('log_level')}")
+        except Exception as e:
+            logger.error(f"[配置] 更新运行时日志级别失败: {e}")
         self.close()
 
     def _get_current_ui_config(self) -> dict:
@@ -189,6 +217,7 @@ class ConfigPage(ui.dialog):
         current_config = {}
         ai_config_keys = [
             "ai_enabled",
+            "ai_auto_save",
             "ai_provider",
             "ai_confidence_threshold",
             "openai_output_format",
@@ -198,6 +227,8 @@ class ConfigPage(ui.dialog):
             "gemini_api_key",
             "gemini_base_url",
             "gemini_model",
+            "ai_temperature",
+            "gemini_temperature",
         ]
         for key in ai_config_keys:
             # 优先使用界面中的值，如果没有则使用配置文件中的值
