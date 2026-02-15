@@ -78,6 +78,23 @@ class ConfigPage(ui.dialog):
 
             ui.separator().style("margin: 20px 0;")
 
+            # 字幕同步配置
+            ui.label("字幕同步（ffsubsync）").style(
+                "font-size: 16px; font-weight: bold; margin-top: 10px;"
+            )
+            subtitle_sync_configs = [
+                "subtitle_sync_enabled",
+                "subtitle_sync_mode",
+                "subtitle_sync_executable",
+                "subtitle_sync_extra_args",
+                "subtitle_sync_timeout_seconds",
+                "subtitle_sync_overwrite_policy",
+            ]
+            for cn in subtitle_sync_configs:
+                self._create_config_row(cn)
+
+            ui.separator().style("margin: 20px 0;")
+
             # Emby通知配置
             ui.label("Emby通知配置").style(
                 "font-size: 16px; font-weight: bold; margin-top: 10px;"
@@ -176,6 +193,61 @@ class ConfigPage(ui.dialog):
                         )
                         tg.style("font-size: 10px")
                         tg.classes("flex no-wrap w-full")
+                    elif cn == "subtitle_sync_enabled":
+                        tg = RedToogle(
+                            ["启用", "禁用"],
+                            value="启用" if cm.get_config(cn) else "禁用",
+                            on_change=lambda e, c=cn: self._change(
+                                c, e.value == "启用"
+                            ),
+                        )
+                        tg.style("font-size: 10px")
+                        tg.classes("flex no-wrap w-full")
+                    elif cn == "subtitle_sync_mode":
+                        tg = RedToogle(
+                            ["best_effort", "strict"],
+                            value=cm.get_config(cn) or "best_effort",
+                            on_change=lambda e, c=cn: self._change(c, e.value),
+                        )
+                        tg.style("font-size: 10px")
+                        tg.classes("flex no-wrap w-full")
+                    elif cn == "subtitle_sync_overwrite_policy":
+                        tg = RedToogle(
+                            ["follow_global", "overwrite", "skip"],
+                            value=cm.get_config(cn) or "follow_global",
+                            on_change=lambda e, c=cn: self._change(c, e.value),
+                        )
+                        tg.style("font-size: 10px")
+                        tg.classes("flex no-wrap w-full")
+                    elif cn == "subtitle_sync_timeout_seconds":
+                        ui.number(
+                            value=int(cm.get_config(cn) or 120),
+                            min=10,
+                            step=1,
+                            on_change=lambda e, c=cn: self._change(
+                                c, int(e.value) if e.value else 120
+                            ),
+                        ).props('filled dense').style('flex-grow: 2').bind_value(
+                            self.config, cn
+                        )
+                    elif cn == "subtitle_sync_executable":
+                        ui.input(
+                            value=cm.get_config(cn) or "ffsubsync",
+                            on_change=lambda e, c=cn: self._change(c, e.value),
+                        ).props("filled").props("dense").style(
+                            "flex-grow: 2"
+                        ).bind_value(
+                            self.config, cn
+                        )
+                    elif cn == "subtitle_sync_extra_args":
+                        ui.input(
+                            value=cm.get_config(cn) or "",
+                            on_change=lambda e, c=cn: self._change(c, e.value),
+                        ).props("filled").props("dense").style(
+                            "flex-grow: 2"
+                        ).bind_value(
+                            self.config, cn
+                        )
                     elif cn == "overwrite_existing":
                         tg = RedToogle(
                             ["启用", "禁用"],

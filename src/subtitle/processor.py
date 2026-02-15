@@ -9,13 +9,15 @@ import json
 import re
 import uuid
 from pathlib import Path
-from typing import Dict, List, Optional, Set, Tuple
+from typing import Any, Dict, List, Optional, Set, Tuple
 
 from ..ai.client import AIClient
+from ..config.config_manager import cm
 from ..logger import logger
 from ..rename.trans import Trans
 from ..utils.path import RECORD_PATH, TASK_PATH
 from .extractor import ExtractedSubtitle, SubtitleExtractor
+from .syncer import FFsubsyncRunner
 
 # 语言代码映射：字幕组常用标签 -> (Emby标准代码, 是否简体)
 LANGUAGE_MAP: Dict[str, Tuple[str, bool]] = {
@@ -66,24 +68,7 @@ class SubtitleProcessor:
     def __init__(self):
         self.extractor = SubtitleExtractor()
         self.ai_client = AIClient()
-
-    @staticmethod
-    def _extract_language_from_suffix_part(suffix_part: str) -> Optional[str]:
-        """从文件名后缀片段中提取语言标签。
-
-        例如：
-            ".sc.ass" -> "sc"
-            ".chs.forced.ass" -> "chs"
-            ".ass" -> None
-
-        Args:
-            suffix_part: 从 "{video_stem}" 之后截取的字符串（含前导点）
-        """
-        parts = [p for p in suffix_part.lower().split(".") if p]
-        for p in parts:
-            if p in LANGUAGE_MAP:
-                return p
-        return None
+        self.syncer = FFsubsyncRunner()
 
     def _normalize_language(self, lang: Optional[str]) -> Tuple[str, bool]:
         """
@@ -210,10 +195,13 @@ class SubtitleProcessor:
         }
 
         # 创建任务UUID到任务信息的映射
-        task_by_uuid: Dict[str, Dict] = {t["uuid"]: t for t in processed_tasks}
+        task_by_uuid: Dict[str, Dict[str, Any]] = {
+            t["uuid"]: t for t in processed_tasks
+        }
 
         file_mapping: Dict[Path, Path] = {}
-        mapping_details = []
+        mapping_details: List[Dict[str, Any]] = []
+        sync_items: List[Dict[str, Any]] = []
 
         for mapping in ai_result.mappings:
             # 找到对应的字幕文件
@@ -288,10 +276,13 @@ class SubtitleProcessor:
 
             # 获取该视频的目标目录（支持电影合集中每部电影不同目录）
             video_targets = task.get("video_targets", {})
-            if video_name in video_targets:
-                target_dir = Path(video_targets[video_name]).parent
+            video_target = video_targets.get(video_name)
+            if video_target:
+                target_dir = Path(video_target).parent
+                video_path = Path(video_target)
             else:
                 target_dir = Path(task["target_dir"])
+                video_path = target_dir / video_name
 
             # 转换语言代码为 Emby 标准格式
             emby_lang, is_simplified = self._normalize_language(mapping.language)
@@ -306,14 +297,22 @@ class SubtitleProcessor:
             target_path = target_dir / target_name
 
             file_mapping[subtitle_file.temp_path] = target_path
-            mapping_details.append(
+            mapping_detail = {
+                "subtitle": mapping.subtitle_path,
+                "video": video_name,
+                "target": target_name,
+                "task_uuid": mapping.task_uuid,
+                "task_title": task.get("title", ""),
+                "language": emby_lang,
+                "sync_status": "disabled",
+            }
+            mapping_details.append(mapping_detail)
+            sync_items.append(
                 {
-                    "subtitle": mapping.subtitle_path,
-                    "video": video_name,
-                    "target": target_name,
-                    "task_uuid": mapping.task_uuid,
-                    "task_title": task.get("title", ""),
-                    "language": emby_lang,
+                    "source_path": subtitle_file.temp_path,
+                    "target_path": target_path,
+                    "video_path": video_path,
+                    "detail": mapping_detail,
                 }
             )
             logger.info(
@@ -325,8 +324,46 @@ class SubtitleProcessor:
             self.extractor.cleanup(archive_path)
             return self._error_result(_uuid, "无法建立字幕映射", archive_path)
 
+        sync_summary = {
+            "enabled": False,
+            "mode": cm.get_config("subtitle_sync_mode") or "best_effort",
+            "attempted": 0,
+            "success": 0,
+            "fallback": 0,
+            "skipped": len(sync_items),
+            "disabled": len(sync_items),
+            "failed": 0,
+            "strict_failed": False,
+            "strict_error": "",
+        }
+
+        final_mapping = dict(file_mapping)
+        if cm.get_config("subtitle_sync_enabled"):
+            sync_summary, final_mapping = self._apply_subtitle_sync(
+                archive_path=archive_path,
+                sync_items=sync_items,
+                original_mapping=file_mapping,
+            )
+            if sync_summary.get("strict_failed"):
+                self.extractor.cleanup(archive_path)
+                return self._error_result(
+                    _uuid,
+                    sync_summary.get("strict_error", "字幕对齐失败"),
+                    archive_path,
+                    {
+                        "sync_summary": sync_summary,
+                        "mappings": mapping_details,
+                    },
+                )
+
         # Step 7: 执行文件传输（字幕强制使用复制模式）
-        trans = Trans(file_mapping, _uuid, force_mode="复制")
+        force_overwrite = self._resolve_sync_overwrite_policy()
+        trans = Trans(
+            final_mapping,
+            _uuid,
+            force_mode="复制",
+            force_overwrite=force_overwrite,
+        )
         trans_result = trans.trans_file()
 
         # Step 8: 清理临时文件
@@ -343,9 +380,10 @@ class SubtitleProcessor:
             "matched_tasks": list(matched_task_uuids),
             "matched_task": ", ".join(matched_tasks_info),
             "confidence": ai_result.confidence,
-            "matched_count": len(file_mapping),
+            "matched_count": len(final_mapping),
             "total_subtitles": len(subtitle_files),
             "mappings": mapping_details,
+            "sync_summary": sync_summary,
         }
 
         task_path = TASK_PATH / f"{_uuid}.json"
@@ -361,11 +399,109 @@ class SubtitleProcessor:
             )
 
         logger.info(
-            f"[字幕处理] 完成! 成功匹配 {len(file_mapping)} 个字幕文件 "
+            f"[字幕处理] 完成! 成功匹配 {len(final_mapping)} 个字幕文件 "
             f"到 {len(matched_task_uuids)} 个任务"
         )
 
         return result
+
+    def _apply_subtitle_sync(
+        self,
+        archive_path: Path,
+        sync_items: List[Dict[str, Any]],
+        original_mapping: Dict[Path, Path],
+    ) -> Tuple[Dict[str, Any], Dict[Path, Path]]:
+        """执行字幕对齐步骤，返回统计信息和最终映射"""
+        sync_mode = cm.get_config("subtitle_sync_mode") or "best_effort"
+        if sync_mode not in {"best_effort", "strict"}:
+            sync_mode = "best_effort"
+
+        summary = {
+            "enabled": True,
+            "mode": sync_mode,
+            "attempted": 0,
+            "success": 0,
+            "fallback": 0,
+            "skipped": 0,
+            "disabled": 0,
+            "failed": 0,
+            "strict_failed": False,
+            "strict_error": "",
+        }
+
+        final_mapping = dict(original_mapping)
+
+        for item in sync_items:
+            summary["attempted"] += 1
+            source_path: Path = item["source_path"]
+            target_path: Path = item["target_path"]
+            video_path: Path = item["video_path"]
+            detail: Dict[str, Any] = item["detail"]
+
+            if not video_path.exists():
+                message = (
+                    f"参考视频不存在: {video_path} (字幕: {detail.get('subtitle', '')})"
+                )
+                logger.warning(f"[字幕同步] {message}")
+                if sync_mode == "strict":
+                    summary["failed"] += 1
+                    summary["strict_failed"] = True
+                    summary["strict_error"] = message
+                    detail["sync_status"] = "skipped"
+                    break
+                summary["skipped"] += 1
+                detail["sync_status"] = "skipped"
+                continue
+
+            sync_output_dir = (
+                self.extractor.get_extract_dir(archive_path) / ".ffsubsync"
+            )
+            sync_output_dir.mkdir(parents=True, exist_ok=True)
+
+            sync_result = self.syncer.sync_subtitle(
+                video_path=video_path,
+                subtitle_path=source_path,
+                output_dir=sync_output_dir,
+            )
+
+            if sync_result.success and sync_result.output_path:
+                final_mapping.pop(source_path, None)
+                final_mapping[sync_result.output_path] = target_path
+                detail["sync_status"] = "synced"
+                summary["success"] += 1
+                logger.info(
+                    f"[字幕同步] 对齐成功: {detail.get('subtitle', '')} -> "
+                    f"{sync_result.output_path.name}"
+                )
+                continue
+
+            if sync_mode == "strict":
+                summary["failed"] += 1
+                summary["strict_failed"] = True
+                summary["strict_error"] = (
+                    f"字幕对齐失败: {detail.get('subtitle', '')} ({sync_result.reason})"
+                )
+                detail["sync_status"] = "fallback"
+                logger.error(f"[字幕同步] {summary['strict_error']}")
+                break
+
+            summary["fallback"] += 1
+            detail["sync_status"] = "fallback"
+            logger.warning(
+                f"[字幕同步] 对齐失败，回退原字幕: {detail.get('subtitle', '')} "
+                f"({sync_result.reason})"
+            )
+
+        return summary, final_mapping
+
+    def _resolve_sync_overwrite_policy(self) -> Optional[bool]:
+        """解析字幕同步覆盖策略"""
+        policy = cm.get_config("subtitle_sync_overwrite_policy")
+        if policy == "overwrite":
+            return True
+        if policy == "skip":
+            return False
+        return None
 
     def _load_processed_tasks(self, max_tasks: int = 10) -> List[Dict]:
         """
@@ -469,7 +605,13 @@ class SubtitleProcessor:
 
         return tasks
 
-    def _error_result(self, _uuid: str, error: str, archive_path: Path) -> Dict:
+    def _error_result(
+        self,
+        _uuid: str,
+        error: str,
+        archive_path: Path,
+        extra: Optional[Dict[str, Any]] = None,
+    ) -> Dict:
         """生成错误结果"""
         logger.error(f"[字幕处理] {error}")
 
@@ -479,6 +621,8 @@ class SubtitleProcessor:
             "archive_path": str(archive_path),
             "error": error,
         }
+        if extra:
+            result.update(extra)
 
         task_path = TASK_PATH / f"{_uuid}.json"
         with open(task_path, "w", encoding="UTF-8") as f:

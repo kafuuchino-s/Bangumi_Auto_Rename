@@ -30,6 +30,13 @@ CONFIG_DEFAULT = {
     "ai_auto_save": False,  # 是否自动保存AI分析结果
     "log_level": "INFO",  # 日志等级
     "queue_max_workers": 1,  # 队列并行处理数
+    # 字幕同步（ffsubsync）配置
+    "subtitle_sync_enabled": False,
+    "subtitle_sync_mode": "best_effort",  # best_effort | strict
+    "subtitle_sync_executable": "ffsubsync",
+    "subtitle_sync_extra_args": "",
+    "subtitle_sync_timeout_seconds": 120,
+    "subtitle_sync_overwrite_policy": "follow_global",  # follow_global | overwrite | skip
     "skip_tags": "iyuu,辅种,reseed,skip,no_process",  # 跳过处理的标签
     # Emby通知配置
     "emby_enabled": False,  # 是否启用Emby通知
@@ -65,6 +72,12 @@ CN_MAP = {
     "ai_auto_save": "💾 自动保存AI分析",
     "log_level": "📝 日志等级",
     "queue_max_workers": "🔢 队列并行数（建议1-5）",
+    "subtitle_sync_enabled": "🎯 启用字幕自动对齐(ffsubsync)",
+    "subtitle_sync_mode": "⚙️ 字幕对齐模式",
+    "subtitle_sync_executable": "🛠️ ffsubsync 可执行文件",
+    "subtitle_sync_extra_args": "➕ ffsubsync 额外参数",
+    "subtitle_sync_timeout_seconds": "⏱️ 对齐超时秒数",
+    "subtitle_sync_overwrite_policy": "📝 字幕覆盖策略",
     "skip_tags": "🚫 跳过处理的标签（逗号分隔）",
     # Emby通知配置
     "emby_enabled": "📺 启用Emby通知",

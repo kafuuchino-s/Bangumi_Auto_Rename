@@ -60,3 +60,4 @@ hachoir>=3.3.0
 google>=3.0.0
 google-genai>=0.8.0
 rarfile>=4.0
+ffsubsync>=0.4.30

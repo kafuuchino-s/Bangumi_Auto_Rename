@@ -25,6 +25,7 @@ def create_subtitle_table() -> None:
         {'name': 'archive', 'label': '压缩包', 'field': 'archive'},
         {'name': 'matched_task', 'label': '匹配动漫', 'field': 'matched_task'},
         {'name': 'matched_count', 'label': '匹配数', 'field': 'matched_count'},
+        {'name': 'sync', 'label': '对齐', 'field': 'sync'},
         {'name': 'status', 'label': '状态', 'field': 'status'},
         {'name': 'uuid', 'label': 'UUID', 'field': 'uuid'},
     ]
@@ -49,12 +50,22 @@ def create_subtitle_table() -> None:
         status = '成功' if task_data.get('status') == 'success' else '失败'
         archive_name = Path(task_data.get('archive_path', '')).name
 
+        sync_summary = task_data.get('sync_summary') or {}
+        if sync_summary.get('enabled'):
+            attempted = sync_summary.get('attempted', 0)
+            success = sync_summary.get('success', 0)
+            fallback = sync_summary.get('fallback', 0)
+            sync_text = f"{success}/{attempted}, 回退{fallback}"
+        else:
+            sync_text = '-'
+
         subtitle_rows.append({
             'id': index,
             'archive': archive_name,
             'archive_path': task_data.get('archive_path', ''),
             'matched_task': task_data.get('matched_task', '-'),
             'matched_count': f"{task_data.get('matched_count', 0)}/{task_data.get('total_subtitles', 0)}",
+            'sync': sync_text,
             'status': status,
             'uuid': task_data.get('uuid', ''),
             'value': '操作',
@@ -77,7 +88,7 @@ def create_subtitle_table() -> None:
         .style('max-height: 90%; border-radius: 10px;')
     )
     table._props['visible-columns'] = [
-        'id', 'archive', 'matched_task', 'matched_count', 'status', 'value',
+        'id', 'archive', 'matched_task', 'matched_count', 'sync', 'status', 'value',
     ]
 
     table.add_slot(

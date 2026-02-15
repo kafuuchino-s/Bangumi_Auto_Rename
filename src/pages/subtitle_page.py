@@ -207,20 +207,57 @@ class SubtitleUploadDialog(ui.dialog):
                                 f"字幕: {result.get('matched_count', 0)}/"
                                 f"{result.get('total_subtitles', 0)}"
                             ).style("font-size: 13px; color: #666;")
+                            sync_summary = result.get("sync_summary") or {}
+                            if sync_summary.get("enabled"):
+                                ui.label(
+                                    f"对齐: 尝试{sync_summary.get('attempted', 0)} / "
+                                    f"成功{sync_summary.get('success', 0)} / "
+                                    f"回退{sync_summary.get('fallback', 0)} / "
+                                    f"跳过{sync_summary.get('skipped', 0)}"
+                                ).style("font-size: 12px; color: #888;")
                         else:
                             ui.label(
                                 f"错误: {result.get('error', '未知错误')}"
                             ).style("font-size: 13px; color: red;")
+                            sync_summary = result.get("sync_summary") or {}
+                            if sync_summary.get("enabled"):
+                                ui.label(
+                                    f"对齐: 尝试{sync_summary.get('attempted', 0)} / "
+                                    f"成功{sync_summary.get('success', 0)} / "
+                                    f"回退{sync_summary.get('fallback', 0)} / "
+                                    f"跳过{sync_summary.get('skipped', 0)}"
+                                ).style("font-size: 12px; color: #aa6666;")
 
             ui.separator()
 
             # 统计信息
             total_matched = sum(r.get("matched_count", 0) for r in results)
             total_subtitles = sum(r.get("total_subtitles", 0) for r in results)
+            total_sync_attempted = sum(
+                (r.get("sync_summary") or {}).get("attempted", 0)
+                for r in results
+            )
+            total_sync_success = sum(
+                (r.get("sync_summary") or {}).get("success", 0)
+                for r in results
+            )
+            total_sync_fallback = sum(
+                (r.get("sync_summary") or {}).get("fallback", 0)
+                for r in results
+            )
+            total_sync_skipped = sum(
+                (r.get("sync_summary") or {}).get("skipped", 0)
+                for r in results
+            )
             ui.label(
                 f"总计: {success_count}/{total_count} 个压缩包成功, "
                 f"{total_matched}/{total_subtitles} 个字幕匹配"
             ).style("color: #666; font-size: 13px;")
+            if total_sync_attempted > 0:
+                ui.label(
+                    f"对齐统计: 尝试{total_sync_attempted} / 成功{total_sync_success} / "
+                    f"回退{total_sync_fallback} / 跳过{total_sync_skipped}"
+                ).style("color: #666; font-size: 13px;")
 
             ui.separator()
 
@@ -253,6 +290,15 @@ class SubtitleUploadDialog(ui.dialog):
                     )
                     ui.label(f"置信度: {result.get('confidence', '')}")
 
+                    sync_summary = result.get("sync_summary") or {}
+                    if sync_summary.get("enabled"):
+                        ui.label(
+                            f"对齐统计: 尝试{sync_summary.get('attempted', 0)} / "
+                            f"成功{sync_summary.get('success', 0)} / "
+                            f"回退{sync_summary.get('fallback', 0)} / "
+                            f"跳过{sync_summary.get('skipped', 0)}"
+                        ).style("color: #666;")
+
                     # 显示映射详情
                     if result.get("mappings"):
                         ui.label("映射详情:").style(
@@ -269,6 +315,16 @@ class SubtitleUploadDialog(ui.dialog):
                                     ui.label("→").style("color: gray")
                                     ui.label(f"{m['target']}").style(
                                         "font-size: 12px; color: #333;"
+                                    )
+                                    sync_status = m.get("sync_status", "disabled")
+                                    sync_label_map = {
+                                        "synced": "对齐成功",
+                                        "fallback": "回退原字幕",
+                                        "skipped": "跳过",
+                                        "disabled": "未启用",
+                                    }
+                                    ui.label(sync_label_map.get(sync_status, sync_status)).style(
+                                        "font-size: 11px; color: #999;"
                                     )
 
                 else:
