@@ -25,7 +25,11 @@ class OpenAIClient(BaseAIClient):
         self.output_format = cm.get_config("openai_output_format") or "text"
 
         if self.enabled and self.api_key:
-            self.client = OpenAI(api_key=self.api_key, base_url=self.base_url)
+            self.client = OpenAI(
+                api_key=self.api_key,
+                base_url=self.base_url,
+                timeout=120.0,  # 请求超时 120 秒
+            )
         else:
             self.client = None
 

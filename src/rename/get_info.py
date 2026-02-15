@@ -206,3 +206,203 @@ class Search:
                 sleep(5)
                 logger.warning(f'[电视剧搜索] 网络错误, 重试第{i + 1}次中...')
         return '', None
+
+    def search_movie_collection(
+        self,
+        query: str,
+    ) -> tuple[str, Optional[Dict[str, Any]]]:
+        """
+        搜索电影合集
+
+        Args:
+            query: 搜索关键词（合集名称）
+
+        Returns:
+            (合集名称, 合集信息字典) 或 ('', None)
+        """
+        for i in range(3):
+            try:
+                search = tmdb.Search()
+                search.collection(query=query, language='zh-CN')
+                results = search.__dict__['results']
+                if results:
+                    collection = results[0]
+                    collection_id = collection['id']
+                    collection_name = collection['name']
+                    # 获取合集详细信息
+                    col = tmdb.Collections(collection_id)
+                    col.info(language='zh-CN')
+                    logger.info(f'[合集搜索] 找到合集: {collection_name}')
+                    return collection_name, col.__dict__
+                return '', None
+            except:  # noqa:E722, B001
+                sleep(5)
+                logger.warning(f'[合集搜索] 网络错误, 重试第{i + 1}次中...')
+        return '', None
+
+    def get_movie_info_by_title(
+        self,
+        title: str,
+        year: Optional[int] = None,
+    ) -> Optional[Dict[str, Any]]:
+        """
+        根据标题搜索单个电影
+
+        Args:
+            title: 电影标题
+            year: 年份（可选）
+
+        Returns:
+            电影信息字典或None
+        """
+        for i in range(3):
+            try:
+                search = tmdb.Search()
+                search.movie(
+                    query=title,
+                    language='zh-CN',
+                    year=year if year else None,
+                )
+                results = search.__dict__['results']
+                if results:
+                    movie = results[0]
+                    movie_obj = tmdb.Movies(movie['id'])
+                    movie_obj.info(language='zh-CN')
+                    logger.info(f'[电影搜索] 找到电影: {movie_obj.title}')
+                    return movie_obj.__dict__
+                return None
+            except:  # noqa:E722, B001
+                sleep(5)
+                logger.warning(f'[电影搜索] 网络错误, 重试第{i + 1}次中...')
+        return None
+
+    def search_movies_by_title(
+        self,
+        title: str,
+        year: Optional[int] = None,
+        limit: int = 5,
+    ) -> Optional[List[Dict[str, Any]]]:
+        """
+        根据标题搜索电影，返回多个候选结果
+
+        Args:
+            title: 电影标题
+            year: 年份（可选）
+            limit: 返回结果数量限制
+
+        Returns:
+            电影信息列表或None
+        """
+        # 清理标题，去掉常见前缀
+        clean_title = self._clean_movie_title(title)
+
+        for i in range(3):
+            try:
+                search = tmdb.Search()
+                search.movie(
+                    query=clean_title,
+                    language='zh-CN',
+                    year=year if year else None,
+                )
+                results = search.__dict__['results']
+                if results:
+                    return results[:limit]
+
+                # 如果清理后的标题搜不到，尝试原标题
+                if clean_title != title:
+                    search = tmdb.Search()
+                    search.movie(
+                        query=title,
+                        language='zh-CN',
+                        year=year if year else None,
+                    )
+                    results = search.__dict__['results']
+                    if results:
+                        return results[:limit]
+
+                return None
+            except:  # noqa:E722, B001
+                sleep(5)
+                logger.warning(f'[电影搜索] 网络错误, 重试第{i + 1}次中...')
+        return None
+
+    def _clean_movie_title(self, title: str) -> str:
+        """
+        清理电影标题，去掉常见的前缀和后缀
+
+        Args:
+            title: 原始标题
+
+        Returns:
+            清理后的标题
+        """
+        import re
+
+        # 需要去除的前缀
+        prefixes = [
+            r'^剧场版\s*',
+            r'^劇場版\s*',
+            r'^theatrical\s*',
+            r'^movie\s*',
+            r'^film\s*',
+        ]
+
+        clean = title
+        for prefix in prefixes:
+            clean = re.sub(prefix, '', clean, flags=re.IGNORECASE)
+
+        return clean.strip()
+
+    def search_tv_by_query(
+        self,
+        query: str,
+        year: Optional[int] = None,
+        limit: int = 5,
+    ) -> Optional[List[Dict[str, Any]]]:
+        """
+        根据关键词搜索电视剧，返回多个候选结果
+
+        Args:
+            query: 搜索关键词
+            year: 年份（可选）
+            limit: 返回结果数量限制
+
+        Returns:
+            电视剧信息列表或None
+        """
+        for i in range(3):
+            try:
+                search = tmdb.Search()
+                search.tv(
+                    query=query,
+                    language='zh-CN',
+                    first_air_date_year=year if year and year != 0 else None,
+                )
+                results = search.__dict__['results']
+                if results:
+                    return results[:limit]
+                return None
+            except:  # noqa:E722, B001
+                sleep(5)
+                logger.warning(f'[电视剧搜索] 网络错误, 重试第{i + 1}次中...')
+        return None
+
+    def get_tv_info_by_id(self, tv_id: int) -> Optional[Dict[str, Any]]:
+        """
+        根据 TMDB ID 获取电视剧详细信息
+
+        Args:
+            tv_id: TMDB 电视剧 ID
+
+        Returns:
+            电视剧信息字典或 None
+        """
+        for i in range(3):
+            try:
+                tv = tmdb.TV(tv_id)
+                tv.info(language='zh-CN')
+                return tv.__dict__
+            except:  # noqa:E722, B001
+                sleep(5)
+                logger.warning(f'[电视剧信息] 网络错误, 重试第{i + 1}次中...')
+        return None

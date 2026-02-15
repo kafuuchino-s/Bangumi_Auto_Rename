@@ -1,13 +1,12 @@
-from pathlib import Path
 from typing import Optional
 from types import SimpleNamespace
 
 from nicegui import ui
 
-from ..logger import logger
-from ..rename.process import Rename
-from ..utils.utils import get_task, write_task
 from ..element.red import RedButton, RedToogle, notify
+from ..logger import logger
+from ..queue.task_queue import get_queue_manager
+from ..utils.utils import get_task, write_task
 
 TASK_MAP = {
     'is_anime': '是否为动画',
@@ -124,31 +123,31 @@ class EditPage(ui.dialog):
     def _handle_ok(self):
         write_task(self.uuid, self.data.__dict__)
         logger.info(f'[任务] 任务{self.uuid}已修改为： {self.data.__dict__}')
-        notify('修改成功！重新开始识别！')
         self.close()
 
-        # 根据use_ai设置决定是否使用AI
+        queue_mgr = get_queue_manager()
+        path = getattr(self.data, 'path')
+
+        # 检查是否已在队列中
+        if queue_mgr.is_path_in_queue(path):
+            notify('该任务已在队列中！')
+            return
+
+        # 获取use_ai设置
         use_ai = getattr(self.data, 'use_ai', True)
-        if not use_ai:
-            # 临时禁用AI
-            from ..config.config_manager import cm
 
-            original_ai_enabled = cm.get_config('ai_enabled')
-            cm.set_config('ai_enabled', False)
+        # 加入队列
+        queue_mgr.enqueue(
+            path=path,
+            is_anime=text_to_value(getattr(self.data, 'is_anime')),
+            is_movie=text_to_value(getattr(self.data, 'is_movie')),
+            original_uuid=getattr(self.data, 'uuid'),
+            cus_name=getattr(self.data, 'name'),
+            cus_season_id=getattr(self.data, 'season_id'),
+            use_ai=use_ai if not use_ai else None,  # 仅当禁用AI时传递
+        )
 
-        try:
-            Rename().process(
-                Path(getattr(self.data, 'path')),
-                text_to_value(getattr(self.data, 'is_anime')),
-                text_to_value(getattr(self.data, 'is_movie')),
-                getattr(self.data, 'uuid'),
-                getattr(self.data, 'name'),
-                getattr(self.data, 'season_id'),
-            )
-        finally:
-            if not use_ai:
-                # 恢复AI设置
-                cm.set_config('ai_enabled', original_ai_enabled)
+        notify('修改成功！任务已加入队列！')
 
 
 async def edit_page(uuid: str) -> None:

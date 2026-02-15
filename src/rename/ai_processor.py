@@ -1,11 +1,15 @@
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Tuple
 
 from ..logger import logger
 from .utils import VIDEO_SUFFIX
+
 from ..ai.client import AIClient
 from ..ai.models import AIAnalysisResult
 from ..ai.video_analyzer import VideoAnalyzer
+from .cleaner import extract_part, is_promotional_content
+from .filename_builder import FilenameBuilder, EpisodeMetadata
+from ..subtitle.processor import SubtitleProcessor
 
 
 class AIProcessor:
@@ -14,6 +18,7 @@ class AIProcessor:
     def __init__(self):
         self.ai_client = AIClient()
         self.video_analyzer = VideoAnalyzer()
+        self.subtitle_processor = SubtitleProcessor()
 
     def analyze_anime_files(
         self, path: Path, anime_info: Dict
@@ -57,14 +62,19 @@ class AIProcessor:
     def apply_ai_mapping(
         self,
         ai_result: AIAnalysisResult | None,
+        anime_info: Dict,
         base_path: Path,
         work_path: Path,
     ) -> Dict[Path, Path]:
         """
-        应用AI分析结果生成全新的文件映射，并处理关联文件。
+        以 TMDB 为主应用AI分析结果生成文件映射。
+
+        遍历 TMDB 的季度和集数，在 AI 映射中查找对应的本地文件，
+        只处理 TMDB 中存在的集数，忽略 AI 返回的不存在于 TMDB 的集数。
 
         Args:
             ai_result: 验证后的AI分析结果
+            anime_info: TMDB动漫信息（包含seasons列表）
             base_path: 媒体文件扫描的根目录
             work_path: 目标工作目录路径
 
@@ -75,6 +85,10 @@ class AIProcessor:
             logger.info("[AI处理] 无有效AI分析结果，返回空映射")
             return {}
 
+        if not anime_info or "seasons" not in anime_info:
+            logger.warning("[AI处理] 无有效TMDB信息，返回空映射")
+            return {}
+
         new_mapping: Dict[Path, Path] = {}
         all_local_files = (
             list(base_path.rglob("*"))
@@ -82,97 +96,216 @@ class AIProcessor:
             else list(base_path.parent.iterdir())
         )
 
-        try:
-            # 记录季度映射信息
-            if ai_result.season_mapping:
-                logger.info("[AI处理] AI季度映射:")
-                for season_map in ai_result.season_mapping:
-                    logger.info(
-                        f"  {season_map.local_group_name} -> TMDB季度: {season_map.maps_to_tmdb_seasons}"
-                    )
+        # 构建 AI 映射的快速查找索引: (season, episode) -> mapping
+        ai_mapping_index: Dict[tuple[int, int], object] = {}
+        for mapping in ai_result.file_mapping:
+            key = (mapping.tmdb_season, mapping.tmdb_episode)
+            ai_mapping_index[key] = mapping
 
+        # 记录季度映射信息，并提取 AI 识别的相关季度
+        relevant_seasons: set[int] = set()
+        if ai_result.season_mapping:
+            logger.info("[AI处理] AI季度映射:")
+            for season_map in ai_result.season_mapping:
+                logger.info(
+                    f"  {season_map.local_group_name} -> TMDB季度: {season_map.maps_to_tmdb_seasons}"
+                )
+                # 收集 AI 识别的相关季度
+                for s in season_map.maps_to_tmdb_seasons:
+                    relevant_seasons.add(s)
+
+        # 如果 AI 没有返回 season_mapping，从 file_mapping 中提取相关季度
+        if not relevant_seasons:
             for mapping in ai_result.file_mapping:
-                relative_path_str = mapping.file_path
-                tmdb_season = mapping.tmdb_season
-                tmdb_episode = mapping.tmdb_episode
-                episode_type = mapping.episode_type
-                confidence = mapping.confidence
+                relevant_seasons.add(mapping.tmdb_season)
 
-                # 从相对路径还原绝对路径
-                source_path = (base_path / relative_path_str).resolve()
+        # 从 work_path 提取剧集标题
+        series_title = FilenameBuilder.extract_title_from_folder(work_path.name)
 
-                if not source_path.exists():
-                    logger.warning(f"[AI处理] AI返回的文件路径不存在: {source_path}")
+        try:
+            # 以 TMDB 季度为主遍历，但只处理 AI 识别的相关季度
+            tmdb_seasons = anime_info.get("seasons", [])
+            matched_count = 0
+            missing_count = 0
+
+            for season in tmdb_seasons:
+                season_num = season.get("season_number", 0)
+                # 优先使用 episodes 数组长度，因为 episode_count 可能为 0
+                episodes = season.get("episodes", [])
+                episode_count = len(episodes) if episodes else season.get("episode_count", 0)
+
+                # 跳过 AI 未识别的季度
+                if season_num not in relevant_seasons:
                     continue
 
-                # 根据类型确定目标目录
-                if episode_type == "special":
-                    target_dir = work_path / "Season0"
-                elif episode_type == "movie":
-                    target_dir = work_path / "Movies"
-                else:
-                    target_dir = work_path / f"Season{tmdb_season}"
-
-                target_dir.mkdir(parents=True, exist_ok=True)
-
-                # 生成新的文件名
-                if episode_type in ["special", "ova"]:
-                    new_video_filename = f"S00E{tmdb_episode:02d}{source_path.suffix}"
-                elif episode_type == "movie":
-                    new_video_filename = source_path.name
-                else:
-                    new_video_filename = (
-                        f"S{tmdb_season:02d}E{tmdb_episode:02d}{source_path.suffix}"
-                    )
-
-                # 1. 添加视频文件自身的映射
-                target_video_path = target_dir / new_video_filename
-                new_mapping[source_path] = target_video_path
                 logger.info(
-                    f"[AI处理] AI映射: {source_path.name} -> {new_video_filename} "
-                    f"(类型: {episode_type}, 置信度: {confidence})"
+                    f"[AI处理] 处理 Season {season_num}，TMDB 共 {episode_count} 集"
                 )
 
-                # 2. 查找并添加关联文件的映射
-                video_filename = source_path.stem
-                for other_file in all_local_files:
-                    if not other_file.is_file() or other_file == source_path:
+                # 遍历该季度的每一集
+                for ep_num in range(1, episode_count + 1):
+                    key = (season_num, ep_num)
+
+                    # 在 AI 映射中查找对应的本地文件
+                    if key not in ai_mapping_index:
+                        logger.warning(
+                            f"[AI处理] 缺失: S{season_num:02d}E{ep_num:02d} "
+                            f"- 未在本地文件中找到匹配"
+                        )
+                        missing_count += 1
                         continue
 
-                    # 检查是否为关联文件：完整文件名包含"视频文件名."的就是关联文件
-                    if other_file.name.startswith(f"{video_filename}."):
-                        # 提取关联文件的后缀部分（保留所有后缀，如 .lang.ass）
-                        suffix_part = other_file.name[
-                            len(video_filename) :  # noqa: E203
-                        ]
+                    mapping = ai_mapping_index[key]
+                    relative_path_str = mapping.file_path
+                    episode_type = mapping.episode_type
+                    confidence = mapping.confidence
 
-                        # 构建关联文件的新文件名：新视频文件名（不含扩展名）+ 关联文件后缀
-                        new_video_stem = new_video_filename.rsplit(".", 1)[0]
-                        new_associated_filename = f"{new_video_stem}{suffix_part}"
+                    # 从相对路径还原绝对路径
+                    source_path = (base_path / relative_path_str).resolve()
 
-                        target_associated_path = target_dir / new_associated_filename
-                        new_mapping[other_file] = target_associated_path
-                        logger.info(
-                            f"[AI处理] 发现并映射关联文件: {other_file.name} -> {new_associated_filename}"
+                    if not source_path.exists():
+                        logger.warning(
+                            f"[AI处理] S{season_num:02d}E{ep_num:02d} "
+                            f"- 文件路径不存在: {source_path}"
                         )
+                        missing_count += 1
+                        continue
+
+                    # 确定目标目录
+                    target_dir = (
+                        work_path / FilenameBuilder.build_season_folder(season_num)
+                    )
+                    target_dir.mkdir(parents=True, exist_ok=True)
+
+                    # 提取分集信息
+                    part = extract_part(source_path.name)
+
+                    # 生成新的文件名
+                    meta = EpisodeMetadata(
+                        title=series_title,
+                        season=season_num,
+                        episode=ep_num,
+                        part=part,
+                        file_ext=source_path.suffix,
+                    )
+                    new_video_filename = FilenameBuilder.build_episode_filename(meta)
+
+                    # 添加视频文件映射
+                    target_video_path = target_dir / new_video_filename
+                    new_mapping[source_path] = target_video_path
+                    matched_count += 1
+
+                    logger.info(
+                        f"[AI处理] 匹配: {source_path.name} -> {new_video_filename} "
+                        f"(置信度: {confidence})"
+                    )
+
+                    # 查找并添加关联文件的映射
+                    self._add_associated_files(
+                        source_path,
+                        new_video_filename,
+                        target_dir,
+                        all_local_files,
+                        new_mapping,
+                    )
+
+            logger.info(
+                f"[AI处理] TMDB匹配完成: 匹配 {matched_count} 集, 缺失 {missing_count} 集"
+            )
 
         except Exception as e:
-            logger.error(f"[AI处理] 应用AI映射时发生严重错误: {str(e)}", exc_info=True)
-            return {}  # 发生错误时返回空映射，避免部分成功导致的数据不一致
+            logger.error(
+                f"[AI处理] 应用AI映射时发生严重错误: {str(e)}", exc_info=True
+            )
+            return {}
 
         return new_mapping
 
+    def _add_associated_files(
+        self,
+        source_path: Path,
+        new_video_filename: str,
+        target_dir: Path,
+        all_local_files: List[Path],
+        new_mapping: Dict[Path, Path],
+    ) -> None:
+        """
+        查找并添加关联文件（如字幕）的映射
+
+        Args:
+            source_path: 源视频文件路径
+            new_video_filename: 新视频文件名
+            target_dir: 目标目录
+            all_local_files: 所有本地文件列表
+            new_mapping: 映射字典（会被修改）
+        """
+        video_filename = source_path.stem
+        source_resolved = source_path.resolve()
+
+        for other_file in all_local_files:
+            if not other_file.is_file():
+                continue
+
+            # 跳过源文件本身
+            if other_file.resolve() == source_resolved:
+                continue
+
+            # 跳过已经在映射中的文件
+            if other_file in new_mapping:
+                continue
+
+            # 检查是否为关联文件（如 E01.chs.ass, E01.jpn.srt）
+            # 关联文件的格式: {video_stem}.{extra}.{ext}
+            if other_file.name.startswith(f"{video_filename}."):
+                # 排除视频文件本身（如 E01.mkv 不应匹配 E01.mp4）
+                from .utils import VIDEO_SUFFIX
+                if other_file.suffix.lower() in VIDEO_SUFFIX:
+                    continue
+
+                suffix_part = other_file.name[len(video_filename):]
+                new_video_stem = new_video_filename.rsplit(".", 1)[0]
+
+                # 把 .sc/.tc/.chs/.cht 等转换为 Emby 语言码，并按字幕导入规则命名
+                emby_lang, is_simplified = self.subtitle_processor._normalize_language(
+                    self.subtitle_processor._extract_language_from_suffix_part(suffix_part)
+                )
+
+                subtitle_ext = other_file.suffix.lower()
+                if is_simplified:
+                    new_associated_filename = (
+                        f"{new_video_stem}.{emby_lang}.default{subtitle_ext}"
+                    )
+                else:
+                    new_associated_filename = f"{new_video_stem}.{emby_lang}{subtitle_ext}"
+
+                target_associated_path = target_dir / new_associated_filename
+                new_mapping[other_file] = target_associated_path
+                logger.info(
+                    f"[AI处理] 关联文件: {other_file.name} -> {new_associated_filename}"
+                )
+
     def _collect_video_files(self, path: Path) -> List[Path]:
-        """收集指定路径下的所有视频文件"""
+        """收集指定路径下的所有视频文件（过滤宣传内容）"""
         video_files = []
+        skipped_promo = 0
 
         if path.is_file():
             if path.suffix.lower() in VIDEO_SUFFIX:
-                video_files.append(path)
+                if is_promotional_content(path.name):
+                    logger.debug(f"[AI处理] 跳过宣传内容: {path.name}")
+                else:
+                    video_files.append(path)
         else:
             for item in path.rglob("*"):
                 if item.is_file() and item.suffix.lower() in VIDEO_SUFFIX:
-                    video_files.append(item)
+                    if is_promotional_content(item.name):
+                        logger.debug(f"[AI处理] 跳过宣传内容: {item.name}")
+                        skipped_promo += 1
+                    else:
+                        video_files.append(item)
+
+        if skipped_promo > 0:
+            logger.info(f"[AI处理] 跳过 {skipped_promo} 个宣传内容文件")
 
         return sorted(video_files)
 

@@ -13,7 +13,9 @@ class ConfigPage(ui.dialog):
 
     def __init__(self) -> None:
         super().__init__()
-        self.config = SimpleNamespace(**cm.config)
+        # 使用 get_config 获取配置值，确保路径转换生效
+        config_dict = {key: cm.get_config(key) for key in cm.config}
+        self.config = SimpleNamespace(**config_dict)
 
         _s = "width: 60%; flex-wrap: nowrap; max-height: 80vh; overflow-y: auto;"
         with self, ui.card().style(_s).classes("flex"):
@@ -31,8 +33,12 @@ class ConfigPage(ui.dialog):
                 "anime_path",
                 "anime_movie_path",
                 "mode",
+                "overwrite_existing",
                 "docker_mnt",
+                "host_path_prefix",
                 "log_level",
+                "queue_max_workers",
+                "skip_tags",
             ]
             for cn in basic_configs:
                 self._create_config_row(cn)
@@ -69,6 +75,26 @@ class ConfigPage(ui.dialog):
                 RedButton("⚙️ 测试OpenAI API功能", on_click=self._test_openai_api).props(
                     "outline"
                 )
+
+            ui.separator().style("margin: 20px 0;")
+
+            # Emby通知配置
+            ui.label("Emby通知配置").style(
+                "font-size: 16px; font-weight: bold; margin-top: 10px;"
+            )
+            emby_configs = [
+                "emby_enabled",
+                "emby_host",
+                "emby_api_key",
+            ]
+            for cn in emby_configs:
+                self._create_config_row(cn)
+
+            # Emby测试按钮
+            with ui.row(wrap=False).classes("w-full justify-center mt-4 gap-2"):
+                RedButton(
+                    "🧪 测试Emby连接", on_click=self._test_emby_connection
+                ).props("outline")
 
             ui.separator()
 
@@ -119,7 +145,38 @@ class ConfigPage(ui.dialog):
                         )
                         tg.style("font-size: 10px")
                         tg.classes("flex no-wrap w-full")
+                    elif cn == "queue_max_workers":
+                        ui.number(
+                            value=int(cm.get_config(cn) or 1),
+                            min=1,
+                            step=1,
+                            on_change=lambda e, c=cn: self._change(
+                                c, int(e.value) if e.value else 1
+                            ),
+                        ).props('filled dense').style('flex-grow: 2').bind_value(
+                            self.config, cn
+                        )
                     elif cn == "ai_auto_save":
+                        tg = RedToogle(
+                            ["启用", "禁用"],
+                            value="启用" if cm.get_config(cn) else "禁用",
+                            on_change=lambda e, c=cn: self._change(
+                                c, e.value == "启用"
+                            ),
+                        )
+                        tg.style("font-size: 10px")
+                        tg.classes("flex no-wrap w-full")
+                    elif cn == "emby_enabled":
+                        tg = RedToogle(
+                            ["启用", "禁用"],
+                            value="启用" if cm.get_config(cn) else "禁用",
+                            on_change=lambda e, c=cn: self._change(
+                                c, e.value == "启用"
+                            ),
+                        )
+                        tg.style("font-size: 10px")
+                        tg.classes("flex no-wrap w-full")
+                    elif cn == "overwrite_existing":
                         tg = RedToogle(
                             ["启用", "禁用"],
                             value="启用" if cm.get_config(cn) else "禁用",
@@ -210,6 +267,14 @@ class ConfigPage(ui.dialog):
             logger.info(f"[配置] 运行时日志级别已更新为 {cm.get_config('log_level')}")
         except Exception as e:
             logger.error(f"[配置] 更新运行时日志级别失败: {e}")
+        # 更新Emby通知服务配置
+        try:
+            from ..notification.emby_notify import refresh_emby_notifier
+
+            refresh_emby_notifier()
+            logger.info("[配置] Emby通知服务配置已更新")
+        except Exception as e:
+            logger.error(f"[配置] 更新Emby通知服务配置失败: {e}")
         self.close()
 
     def _get_current_ui_config(self) -> dict:
@@ -557,6 +622,45 @@ class ConfigPage(ui.dialog):
                 RedButton("关闭", on_click=dialog.close)
 
         dialog.open()
+
+    async def _test_emby_connection(self):
+        """测试Emby连接"""
+        try:
+            ui.notify("🧪 正在测试Emby连接...", type="info")
+
+            from ..notification.emby_notify import EmbyNotifier
+
+            # 临时保存原配置
+            original_host = cm.get_config("emby_host")
+            original_key = cm.get_config("emby_api_key")
+
+            # 临时应用当前界面配置
+            if hasattr(self.config, "emby_host"):
+                cm.set_config("emby_host", getattr(self.config, "emby_host"))
+            if hasattr(self.config, "emby_api_key"):
+                cm.set_config("emby_api_key", getattr(self.config, "emby_api_key"))
+
+            try:
+                notifier = EmbyNotifier()
+
+                import asyncio
+
+                success, message = await asyncio.get_event_loop().run_in_executor(
+                    None, notifier.test_connection
+                )
+
+                if success:
+                    ui.notify(f"✅ {message}", type="positive")
+                else:
+                    ui.notify(f"❌ {message}", type="negative")
+            finally:
+                # 恢复原配置
+                cm.set_config("emby_host", original_host)
+                cm.set_config("emby_api_key", original_key)
+
+        except Exception as e:
+            logger.error(f"[配置] Emby连接测试失败: {str(e)}")
+            ui.notify(f"❌ 测试失败: {str(e)}", type="negative")
 
 
 async def config_page() -> None:

@@ -26,20 +26,17 @@ class GeminiClient(BaseAIClient):
  
         if self.enabled and self.api_key:
             try:
-                # 构建http_options以支持自定义base_url
-                http_options = HttpOptions()
+                # 构建http_options以支持自定义base_url和超时
+                http_options = HttpOptions(timeout=120000)  # 超时 120 秒
                 if (
                     self.base_url
                     and self.base_url != "https://generativelanguage.googleapis.com"
                 ):
                     http_options.base_url = self.base_url
 
-                if http_options:
-                    self.client = genai.Client(
-                        api_key=self.api_key, http_options=http_options
-                    )
-                else:
-                    self.client = genai.Client(api_key=self.api_key)
+                self.client = genai.Client(
+                    api_key=self.api_key, http_options=http_options
+                )
 
                 logger.info(f"[Gemini客户端] 初始化成功，使用API地址: {self.base_url}")
             except Exception as e:

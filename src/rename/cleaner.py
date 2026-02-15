@@ -13,7 +13,71 @@ from .utils import (
     season_partten,
     episode_partten,
     bracket_patterns,
+    PROMO_TAGS,
+    S0_TAG,
 )
+
+
+def is_complex_filename(filename: str) -> bool:
+    """
+    判断文件名是否复杂，需要使用 AI 辅助提取标题。
+
+    复杂文件名的特征：
+    1. 包含多个方括号（字幕组、分辨率、编码等）
+    2. 包含特典标签（OVA、OAD、SP 等）
+    3. 包含多种括号类型混合
+
+    Args:
+        filename: 文件名
+
+    Returns:
+        True 如果文件名复杂，需要 AI 辅助
+    """
+    # 统计方括号数量
+    bracket_count = len(re.findall(r'\[.*?\]', filename))
+    if bracket_count >= 2:
+        return True
+
+    # 检查是否包含特典标签
+    for tag in S0_TAG:
+        # 使用更宽松的边界匹配：SP01、OVA02 等也能匹配
+        # 只要求前后不是字母即可
+        if re.search(rf'(?<![a-zA-Z]){tag}(?![a-zA-Z])', filename, re.IGNORECASE):
+            return True
+
+    # 检查是否包含多种括号类型
+    bracket_types = 0
+    for pattern in bracket_patterns:
+        if re.search(pattern, filename):
+            bracket_types += 1
+    if bracket_types >= 2:
+        return True
+
+    return False
+
+
+def is_promotional_content(filename: str) -> bool:
+    """
+    检测文件是否为宣传内容（NCOP、NCED、PV、CM 等）
+
+    这些内容通常不在 TMDB 的 Season 0 中，应该跳过处理。
+
+    Args:
+        filename: 文件名
+
+    Returns:
+        True 如果是宣传内容，否则 False
+    """
+    for tag in PROMO_TAGS:
+        # 使用边界匹配，避免误判
+        # 匹配格式如: [NCOP], (PV01), [CM 01], NCOP.mkv 等
+        pattern = rf'[\[\(\s\._]{re.escape(tag)}\d*[\]\)\s\._]'
+        if re.search(pattern, filename, re.IGNORECASE):
+            return True
+        # 也检查文件名开头的情况
+        if filename.upper().startswith(tag.upper()):
+            return True
+    return False
 
 
 def _clean_title_case_insensitive(title: str):
@@ -360,3 +424,71 @@ def chinese_to_arabic(cn: str) -> int:
             tmp += x
     val += tmp
     return val
+
+
+def extract_video_format(filename: str) -> Optional[str]:
+    """
+    从文件名提取视频格式 (1080p/720p/4K 等)
+
+    示例:
+        "[SubGroup] Title [1080p].mkv" -> "1080p"
+        "Title.2160p.mkv" -> "4K"
+        "Title [4K HDR].mkv" -> "4K"
+        "Title.720p.HEVC.mkv" -> "720p"
+
+    Returns:
+        标准化的格式字符串 (如 "1080p", "720p", "4K") 或 None
+    """
+    # 按优先级匹配
+    format_patterns = [
+        (r'2160[pP]', '4K'),
+        (r'4[kK]', '4K'),
+        (r'1080[pP]', '1080p'),
+        (r'720[pP]', '720p'),
+        (r'480[pP]', '480p'),
+    ]
+
+    for pattern, normalized in format_patterns:
+        if re.search(pattern, filename):
+            return normalized
+
+    return None
+
+
+def extract_part(filename: str) -> Optional[str]:
+    """
+    从文件名提取分集信息 (Part1/Part2 等)
+
+    示例:
+        "Title - Part 1.mkv" -> "Part1"
+        "Title pt2.mkv" -> "Part2"
+        "Title (Part A).mkv" -> "PartA"
+        "Title - 前编.mkv" -> "Part1"
+        "Title - 后编.mkv" -> "Part2"
+
+    Returns:
+        标准化的分集字符串 (如 "Part1", "Part2") 或 None
+    """
+    # 英文 Part 模式 (支持空格、横线、下划线、点分隔)
+    match = re.search(r'[Pp]art[\s\-_\.]*([1-9A-Za-z])', filename)
+    if match:
+        return f"Part{match.group(1).upper()}"
+
+    # pt1, pt2 模式
+    match = re.search(r'[Pp]t[\s\-_]*([1-9])', filename)
+    if match:
+        return f"Part{match.group(1)}"
+
+    # 日语/中文模式
+    if re.search(r'前[篇编]', filename):
+        return "Part1"
+    if re.search(r'[後后][篇编]', filename):
+        return "Part2"
+    if re.search(r'上[篇编]', filename):
+        return "Part1"
+    if re.search(r'下[篇编]', filename):
+        return "Part2"
+    if re.search(r'中[篇编]', filename):
+        return "Part2"
+
+    return None

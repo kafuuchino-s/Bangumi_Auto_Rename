@@ -1,4 +1,5 @@
 import json
+import platform
 from urllib.parse import urlparse
 from typing import Any, Dict, Union
 
@@ -11,7 +12,9 @@ CONFIG_DEFAULT = {
     "anime_path": "",
     "anime_movie_path": "",
     "mode": "链接",
+    "overwrite_existing": False,  # 是否覆盖已存在的文件
     "docker_mnt": "/media",
+    "host_path_prefix": "",  # Windows宿主机路径前缀，用于qBittorrent路径转换
     "ai_provider": "openai",
     "ai_api_key": "",
     "ai_base_url": "https://api.openai.com/v1",
@@ -26,7 +29,16 @@ CONFIG_DEFAULT = {
     "openai_output_format": "function_calling",  # OpenAI输出格式选择
     "ai_auto_save": False,  # 是否自动保存AI分析结果
     "log_level": "INFO",  # 日志等级
+    "queue_max_workers": 1,  # 队列并行处理数
+    "skip_tags": "iyuu,辅种,reseed,skip,no_process",  # 跳过处理的标签
+    # Emby通知配置
+    "emby_enabled": False,  # 是否启用Emby通知
+    "emby_host": "http://localhost:8096",  # Emby服务器地址
+    "emby_api_key": "",  # Emby API密钥
 }
+
+# 需要自动添加 docker_mnt 前缀的路径配置项
+PATH_CONFIG_KEYS = {"bangumi_path", "movie_path", "anime_path", "anime_movie_path"}
 
 CN_MAP = {
     "api_key": "🔑 TMDB API密钥",
@@ -35,7 +47,9 @@ CN_MAP = {
     "anime_path": "🎬 动漫路径",
     "anime_movie_path": "🎬 动漫电影路径",
     "mode": "💿 重命名模式",
+    "overwrite_existing": "🔄 覆盖已存在文件",
     "docker_mnt": "📁 Docker挂载路径",
+    "host_path_prefix": "📁 宿主机路径前缀",
     "ai_provider": "🤖 AI提供商",
     "ai_api_key": "🤖 OpenAI API密钥",
     "ai_base_url": "🌐 OpenAI API地址",
@@ -50,6 +64,12 @@ CN_MAP = {
     "gemini_temperature": "🔥 Gemini温度",
     "ai_auto_save": "💾 自动保存AI分析",
     "log_level": "📝 日志等级",
+    "queue_max_workers": "🔢 队列并行数（建议1-5）",
+    "skip_tags": "🚫 跳过处理的标签（逗号分隔）",
+    # Emby通知配置
+    "emby_enabled": "📺 启用Emby通知",
+    "emby_host": "🌐 Emby服务器地址",
+    "emby_api_key": "🔑 Emby API密钥",
 }
 
 
@@ -96,12 +116,54 @@ class ConfigManager:
 
     def get_config(self, key: str) -> str:
         if key in self.config:
-            return self.config[key]
+            value = self.config[key]
+            # 对路径配置项，自动转换 Windows 路径到 Docker 路径
+            if key in PATH_CONFIG_KEYS and value and isinstance(value, str):
+                value = self._convert_path_for_current_platform(value)
+            return value
         elif key in CONFIG_DEFAULT:
             self.update_config()
             return self.config[key]
         else:
             return ''
+
+    def _convert_path_for_current_platform(self, path: str) -> str:
+        """
+        根据当前运行环境转换路径
+
+        Windows 运行: 不转换
+        Linux/Docker 运行: 将 Windows 路径转换为 Docker 路径
+        例如: H:\\Emby\\Anime -> /media/Emby/Anime
+        """
+        if platform.system() != 'Linux':
+            return path
+
+        host_prefix = self.config.get('host_path_prefix', '')
+        docker_mnt = self.config.get('docker_mnt', '/media').rstrip('/')
+
+        # 如果已经是 Linux 路径，直接返回
+        if path.startswith('/'):
+            return path
+
+        # 如果配置了宿主机路径前缀，进行转换
+        if host_prefix:
+            host_prefix = host_prefix.rstrip('\\').rstrip('/')
+            if path.startswith(host_prefix):
+                # 移除宿主机前缀，替换为 docker_mnt
+                relative_path = path[len(host_prefix):]
+                relative_path = relative_path.replace('\\', '/')
+                return docker_mnt + relative_path
+
+        # 如果包含反斜杠但没有匹配前缀，尝试智能转换
+        if '\\' in path:
+            # 去掉盘符（如 H:）
+            if len(path) >= 2 and path[1] == ':':
+                path = path[2:]
+            path = path.replace('\\', '/')
+            return docker_mnt + path
+
+        # 相对路径，添加 docker_mnt 前缀
+        return f"{docker_mnt}/{path}"
 
     def set_config(self, key: str, value: Union[str, bool]) -> bool:
         if key in CONFIG_DEFAULT:
@@ -109,7 +171,7 @@ class ConfigManager:
             if key.endswith('_base_url') and value and isinstance(value, str):
                 value = self._normalize_url(value)
 
-            # 设置值
+            # 设置值（路径直接保存，不做转换）
             self.config[key] = value
             # 重新写回
             self.write_config()

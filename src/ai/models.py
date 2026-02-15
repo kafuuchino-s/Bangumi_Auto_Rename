@@ -3,6 +3,42 @@ from typing import List, Literal, Optional
 from pydantic import Field, BaseModel, field_validator
 
 
+def _make_gemini_compatible_schema(schema: dict) -> dict:
+    """
+    将Pydantic生成的JSON Schema转换为Gemini API兼容格式
+    - 移除additionalProperties
+    - 内联展开$defs/$ref引用
+    """
+    def remove_additional_properties(obj):
+        """递归移除所有additionalProperties"""
+        if isinstance(obj, dict):
+            obj.pop('additionalProperties', None)
+            for value in obj.values():
+                remove_additional_properties(value)
+        elif isinstance(obj, list):
+            for item in obj:
+                remove_additional_properties(item)
+
+    def inline_refs(schema):
+        """将$defs/$ref引用内联展开为完整定义"""
+        defs = schema.pop('$defs', {})
+
+        def resolve(obj):
+            if isinstance(obj, dict):
+                if '$ref' in obj:
+                    ref_name = obj['$ref'].split('/')[-1]
+                    return resolve(defs[ref_name].copy())
+                return {k: resolve(v) for k, v in obj.items()}
+            elif isinstance(obj, list):
+                return [resolve(item) for item in obj]
+            return obj
+
+        return resolve(schema)
+
+    remove_additional_properties(schema)
+    return inline_refs(schema)
+
+
 class SeasonMapping(BaseModel):
     """季度映射对象"""
 
@@ -51,6 +87,83 @@ class EpisodeMapping(BaseModel):
         populate_by_name = True
 
 
+class MovieFileMapping(BaseModel):
+    """电影文件映射（用于电影合集）"""
+
+    file_path: str = Field(..., description="本地文件的相对路径")
+    movie_title: str = Field(default="", description="电影标题（用于TMDB搜索）")
+
+    @field_validator("movie_title", mode="before")
+    @classmethod
+    def validate_movie_title(cls, v):
+        """处理movie_title可能是null的情况（如特典文件）"""
+        if v is None or v == "null":
+            return ""
+        return str(v)
+    movie_number: Optional[int] = Field(
+        default=None, description="系列中的电影编号（如有）"
+    )
+    year: Optional[int] = Field(default=None, description="电影年份（如有）")
+    confidence: Literal["High", "Medium", "Low"] = Field(
+        default="Medium", description="置信度等级"
+    )
+
+    @field_validator("movie_number", mode="before")
+    @classmethod
+    def validate_movie_number(cls, v):
+        """处理movie_number可能是字符串或null的情况"""
+        if v is None or v == "null":
+            return None
+        if isinstance(v, str):
+            try:
+                return int(v)
+            except ValueError:
+                return None
+        return v
+
+    @field_validator("year", mode="before")
+    @classmethod
+    def validate_year(cls, v):
+        """处理year可能是字符串或null的情况"""
+        if v is None or v == "null":
+            return None
+        if isinstance(v, str):
+            try:
+                return int(v)
+            except ValueError:
+                return None
+        return v
+
+    class Config:
+        populate_by_name = True
+
+
+class MovieCollectionResult(BaseModel):
+    """电影合集AI分析结果"""
+
+    is_collection: bool = Field(..., description="是否为电影合集")
+    collection_name: str = Field(..., description="合集名称")
+    confidence: Literal["High", "Medium", "Low"] = Field(
+        ..., description="总体置信度等级"
+    )
+    reason: str = Field(..., description="分析理由说明")
+    file_mapping: List[MovieFileMapping] = Field(
+        default_factory=list, description="电影文件映射列表"
+    )
+    extra_notes: Optional[str] = Field(default=None, description="额外特殊情况说明")
+
+    class Config:
+        populate_by_name = True
+
+    @classmethod
+    def model_json_schema(
+        cls, by_alias: bool = True, ref_template: str = '#/$defs/{model}'
+    ):
+        """生成Gemini API兼容的JSON Schema"""
+        schema = super().model_json_schema(by_alias=by_alias, ref_template=ref_template)
+        return _make_gemini_compatible_schema(schema)
+
+
 class AIAnalysisResult(BaseModel):
     """AI分析结果"""
 
@@ -87,29 +200,60 @@ class AIAnalysisResult(BaseModel):
     def model_json_schema(
         cls, by_alias: bool = True, ref_template: str = '#/$defs/{model}'
     ):
-        """
-        生成Gemini API兼容的JSON Schema
-        移除additionalProperties以避免Gemini API错误
-        """
+        """生成Gemini API兼容的JSON Schema"""
         schema = super().model_json_schema(by_alias=by_alias, ref_template=ref_template)
-
-        def remove_additional_properties(obj):
-            """递归移除所有additionalProperties"""
-            if isinstance(obj, dict):
-                # 移除additionalProperties
-                obj.pop('additionalProperties', None)
-                # 递归处理嵌套对象
-                for key, value in obj.items():
-                    remove_additional_properties(value)
-            elif isinstance(obj, list):
-                for item in obj:
-                    remove_additional_properties(item)
-
-        remove_additional_properties(schema)
-        return schema
+        return _make_gemini_compatible_schema(schema)
 
     # 为了向后兼容，保留schema方法
     @classmethod
     def schema(cls, by_alias: bool = True, ref_template: str = '#/definitions/{model}'):
         """向后兼容的schema方法"""
         return cls.model_json_schema(by_alias=by_alias, ref_template=ref_template)
+
+
+# ============ 字幕映射模型 ============
+
+
+class SubtitleMapping(BaseModel):
+    """单个字幕文件映射"""
+
+    # 字幕在压缩包中的原始路径（包含文件夹结构）
+    subtitle_path: str = Field(..., description="字幕在压缩包中的相对路径")
+    # 匹配到的任务UUID
+    task_uuid: str = Field(..., description="匹配到的任务UUID")
+    # 对应的视频文件名
+    video: str = Field(..., description="对应的视频文件名")
+    # 语言标签
+    language: Optional[str] = Field(
+        default=None,
+        description="语言标签，如 chs(简体), cht(繁体), jpn(日语), eng(英语)",
+    )
+
+
+class SubtitleMappingResult(BaseModel):
+    """字幕映射AI分析结果（支持多季度/多任务）"""
+
+    mappings: List[SubtitleMapping] = Field(
+        default_factory=list, description="字幕到视频的映射列表，每个字幕可映射到不同任务"
+    )
+    unmatched_files: List[str] = Field(
+        default_factory=list,
+        description="无法匹配的字幕文件路径列表（如任务中没有对应集数）"
+    )
+    confidence: Literal["High", "Medium", "Low"] = Field(
+        default="Medium", description="匹配置信度"
+    )
+    reason: Optional[str] = Field(default=None, description="匹配理由说明")
+
+    class Config:
+        populate_by_name = True
+
+    @classmethod
+    def model_json_schema(
+        cls, by_alias: bool = True, ref_template: str = "#/$defs/{model}"
+    ):
+        """生成Gemini API兼容的JSON Schema"""
+        schema = super().model_json_schema(
+            by_alias=by_alias, ref_template=ref_template
+        )
+        return _make_gemini_compatible_schema(schema)

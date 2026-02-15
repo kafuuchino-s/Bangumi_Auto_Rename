@@ -9,8 +9,9 @@ LOG_PATH = DATA_PATH / 'log'
 RECORD_PATH = DATA_PATH / 'record'
 TASK_PATH = DATA_PATH / 'task'
 AI_ANALYSIS_PATH = DATA_PATH / 'ai_analysis'
+SUBTITLE_UPLOAD_PATH = DATA_PATH / 'subtitle_upload'
 
 log_path = LOG_PATH / 'BAR.log'
-for i in [DATA_PATH, LOG_PATH, RECORD_PATH, TASK_PATH, AI_ANALYSIS_PATH]:
+for i in [DATA_PATH, LOG_PATH, RECORD_PATH, TASK_PATH, AI_ANALYSIS_PATH, SUBTITLE_UPLOAD_PATH]:
     if not i.exists():
         i.mkdir(parents=True)

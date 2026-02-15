@@ -1,56 +1,11 @@
-from pathlib import Path
 from typing import Optional, Sequence
 
-from nicegui import ui, run
+from nicegui import ui
 
-from ..logger import logger
-from ..rename.process import Rename
-from ..pages.data_table_page import create_table
 from ..element.red import RedButton, RedToogle, notify
+from ..logger import logger
+from ..queue.task_queue import get_queue_manager
 from ..component.local_file_picker import local_file_picker
-
-
-class choose_is_anime(ui.dialog):
-    def __init__(
-        self,
-    ) -> None:
-        super().__init__()
-        self.is_anime = True
-
-        _s = 'width: 40%; flex-wrap: nowrap;'
-        with self, ui.card().style(_s).classes('flex'):
-            ui.label('任务配置').style('font-size: 20px; font-weight: bold')
-            ui.separator()
-            with ui.column(wrap=False).classes('flex no-wrap w-full'):
-                with ui.row(wrap=False) as row1:
-                    row1.classes('flex justify-space-between w-full')
-                    with ui.row(wrap=False, align_items='baseline') as row:
-                        row.classes('flex w-full')
-                        # 配置标签
-                        label = '是否为动画类型'
-                        ui.label(label).style('min-width: 120px')
-                        tg = RedToogle(
-                            ['是', '否'],
-                            value='是',
-                            on_change=lambda e: self._change(
-                                e.value,
-                            ),
-                        )
-                        tg.style('font-size: 10px')
-                        tg.classes('flex no-wrap w-full')
-
-            ui.separator()
-
-            with ui.row(wrap=False).classes('w-full justify-end'):
-                RedButton('取消', on_click=self.close).props('outline')
-                RedButton('确认提交', on_click=self._handle_ok)
-
-    def _change(self, value: str) -> None:
-        self.is_anime = True if value == '是' else False
-
-    def _handle_ok(self) -> None:
-        self.close()
-        self.submit(self.is_anime)
 
 
 async def pick_file() -> None:
@@ -58,19 +13,29 @@ async def pick_file() -> None:
         '~',
         multiple=True,
     )
-    is_anime: bool = await choose_is_anime()
     if result is None:
         return notify('取消添加任务！')
 
+    queue_mgr = get_queue_manager()
+    added_count = 0
+
     for p in result:
-        logger.info(f'[开始任务] 选择了 {result}')
-        data = await run.io_bound(
-            Rename().process,
-            Path(p),
-            is_anime,
+        logger.info(f'[开始任务] 选择了 {p}')
+
+        # 检查是否已在队列中
+        if queue_mgr.is_path_in_queue(p):
+            notify(f'路径已在队列中: {p}')
+            continue
+
+        # 加入队列，is_anime=None 表示自动判断
+        queue_mgr.enqueue(
+            path=p,
+            is_anime=None,
         )
-        create_table.refresh()
-        if isinstance(data, str):
-            notify(data)
-        else:
-            notify(f'开始任务 {result}！')
+        added_count += 1
+
+    # 队列会自动通知UI刷新
+    if added_count > 0:
+        notify(f'已将 {added_count} 个任务加入队列！')
+    else:
+        notify('没有新任务加入队列')

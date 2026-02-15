@@ -1,13 +1,15 @@
 from nicegui import ui
 
-from .utils.path import IMAGE
-from .utils.utils import unpack_style
+from .__version__ import __url__, __version__
+from .element.red import RedButton, RedDropDownButton
 from .pages.add_task_page import pick_file
 from .pages.config_page import config_page
+from .pages.data_table_page import create_table, create_subtitle_table
 from .pages.download_log import download_log
-from .__version__ import __url__, __version__
-from .pages.data_table_page import create_table
-from .element.red import RedButton, RedDropDownButton
+from .pages.subtitle_page import pick_subtitle_file
+from .queue.task_queue import get_queue_manager
+from .utils.path import IMAGE
+from .utils.utils import unpack_style
 
 
 def main_page():
@@ -60,7 +62,8 @@ def main_page():
         with ui.row(wrap=False, align_items='center') as button_row:
             button_row.classes('gap-2').style('margin-right: 10px;')
             RedButton("➕ 添加任务", on_click=pick_file)
-            RedButton("📄 配置", on_click=config_page)
+            RedButton("📄 字幕导入", on_click=pick_subtitle_file)
+            RedButton("⚙️ 配置", on_click=config_page)
             with RedDropDownButton(
                 '🎀 菜单',
                 auto_close=True,
@@ -86,6 +89,10 @@ def main_page():
                     '已完成任务',
                     icon='published_with_changes',
                 )
+                subtitle_task_tab = ui.tab(
+                    '字幕导入',
+                    icon='subtitles',
+                )
                 add_task_tab = ui.tab(
                     '基本信息',
                     icon='info',
@@ -99,5 +106,10 @@ def main_page():
             ).classes('w-full h-full'):
                 with ui.tab_panel(finish_task_tab).classes('max-w-full'):
                     create_table()
+                    # 注册队列回调，实时刷新表格
+                    queue_mgr = get_queue_manager()
+                    queue_mgr.add_refresh_callback(create_table.refresh)
+                with ui.tab_panel(subtitle_task_tab).classes('max-w-full'):
+                    create_subtitle_table()
                 with ui.tab_panel(add_task_tab):
                     ui.label('添加任务')
