@@ -8,7 +8,7 @@
 
 - ✨并且你可以通过简单的配置，让qBittorrent每次下载结束之后**自动执行转换！**
 
-- 🤖**AI识别功能**：支持OpenAI和Google Gemini双引擎，智能分析动漫文件映射关系，解决BD分集与TMDB数据不一致的问题！
+- 🤖**AI识别主流程**：支持OpenAI和Google Gemini双引擎，智能分析动漫/剧集/电影映射关系，解决BD分集与TMDB数据不一致的问题！
 
 - 🥳支持复杂的目录结构！以VCB-Studio的**Re:从零开始的异世界生活**剧集合集为例：
 
@@ -22,7 +22,7 @@
 
 可以看到大的集合里面同时包括以下**子文件夹**内容：第一季、第二季、电影冰结之绊、电影雪之回忆，而你只需要运行该程序，即可自动分门别类，**电影/番剧**会被格式化后**分别的**、正确的**复制/硬链接**到**你指定的文件夹**！
 
-## 实验性功能：AI识别
+## AI主流程说明（当前WEB版本）
 
 🧠 **智能分析能力**
 - 自动识别字幕组的分季与TMDB官方分季的差异
@@ -30,12 +30,13 @@
 - 根据视频时长判断内容类型（正片/特典/PV等）
 - 提供置信度评估，低置信度结果会单独记录
 
-🔧 **灵活配置选项**
+🔧 **可配置项**
 - **AI提供商选择**：OpenAI / Google Gemini
-- **OpenAI配置**：支持兼容API、多种输出格式、自定义模型
-- **Gemini配置**：原生API支持、高效结构化输出
-- **智能阈值**：可调节置信度阈值
-- **功能开关**：支持启用/禁用AI功能
+- **OpenAI配置**：支持兼容API、自定义模型、自动输出格式路由
+- **Gemini配置**：原生API支持、自动输出格式路由与结构化输出
+- **AI阈值与保存**：可调节置信度阈值，支持自动保存AI分析快照
+- **运行模式**：WEB版默认 `ai_force_strict=true`（AI不可用/低置信度/冲突会直接失败）
+- **Telegram通知**：支持批次汇总通知（可配置成功/失败触发）
 
 ## 使用效果
 
@@ -58,7 +59,7 @@
 - **Google Gemini API**：申请Google AI Studio API密钥
   - 推荐模型：gemini-2.5-flash（速度快，效果优秀）
   - 原生结构化输出，解析更准确
-- 如不配置AI功能，程序将使用传统规则进行识别
+- 如不配置可用的AI提供商（或密钥不可用），任务会按 `ai_unavailable` 失败（默认严格模式）
 
 ### 一、安装 (WEB版本)
 
@@ -86,45 +87,67 @@
   - **AI配置**（可选）：选择AI提供商、配置API密钥、选择模型等
 - 点击添加任务即可使用
 
-### 三、AI功能详细说明
+### 三、AI主流程详细说明
 
-**注意：** 🚨 AI识别为实验性功能，请勿在**移动模式**中启用！！
+**注意：** 🚨 WEB版默认 `ai_force_strict=true`，AI不可用或结果不满足阈值时任务会失败（不会自动回退到传统规则）。
 
 #### 配置AI功能
 1. 在配置页面的"AI识别配置"部分：
-   - **启用AI识别**：开启/关闭AI功能
    - **AI提供商选择**：选择OpenAI或Google Gemini
    - **置信度阈值**：设置结果采用的最低置信度要求
+   - **自动保存AI分析**：启用后会把样例落盘到 `data/ai_analysis`
 
 2. **OpenAI配置**（选择OpenAI提供商时）：
    - **API密钥**：填入你的OpenAI兼容API密钥
    - **API地址**：默认为OpenAI官方URL，可改为其他兼容服务(一般以/v1结尾)
    - **模型选择**：推荐使用Deepseek-R1(deepseek-reasoner)
-   - **输出格式**：选择Function Calling、JSON Object、Structured Output或Text
-   - **API测试**：一键测试当前API支持的功能特性
+   - **输出格式与自动路由**：支持 Function Calling / JSON Object / Structured Output / Text，并可自动回退
+   - **API测试**：一键测试当前API支持的格式能力，并可写入推荐格式
 
 3. **Google Gemini配置**（选择Gemini提供商时）：
    - **API密钥**：填入你的Google AI Studio API密钥
    - **API地址**：默认为AI Studio Gemini URL，可改为Vertex或其它兼容服务
    - **模型选择**：推荐使用gemini-2.5-flash
-   - **原生结构化输出**：默认启用，无需额外配置
+   - **输出格式与自动路由**：支持 structured_output / json_object / text 自动切换
+   - **Gemini API测试**：可单独测试 Gemini 多格式可用性
 
-#### AI识别优势
+#### AI主流程优势
 - **智能映射**：自动分析本地文件与TMDB数据的对应关系
 - **特殊处理**：识别OVA、特典、剧场版等特殊内容
 - **时长分析**：根据视频时长匹配元数据
 - **置信度评估**：提供分析结果的可信度评分
-- **格式适配**：支持多种输出格式，确保最佳兼容性
+- **格式适配**：支持多种输出格式自动路由，降低供应商差异影响
+- **可观测性**：任务记录 `ai_attempted / ai_used / ai_confidence / failure_reason / pipeline_mode`
 
 #### 注意事项
-- AI功能需要网络连接和API调用费用
+- AI主流程需要网络连接和API调用费用
 - 不同AI提供商的费用和速度有所差异
-- 低置信度结果会在日志中特别标记
-- 可以在编辑任务时选择是否使用AI识别
-- 如果AI分析失败，会自动回退到传统规则识别
-- 建议先使用API测试功能验证配置是否正确
+- 低置信度或映射冲突结果会在日志与任务记录中标记失败原因
+- 编辑任务页可修改 `is_anime / is_movie / 名称 / 季度` 后重试
+- 默认严格模式下，AI分析失败不会自动回退到传统规则
+- 建议先使用 OpenAI/Gemini API 测试功能验证配置是否正确
 
-### 四、在qBittorrent下载完成后自动调用该程序
+### 四、字幕导入与自动对齐（ffsubsync）
+
+#### 功能说明
+- 支持直接导入字幕文件（如 `.ass/.srt/.ssa`）或字幕压缩包（如 `.zip/.rar`）
+- 可基于最近任务记录自动匹配目标视频并重命名到对应目录
+- 支持 `ffsubsync` 自动时间轴对齐，适配不同片源时轴偏移
+- 普通重命名任务中的关联字幕会按“复制”方式写入目标目录（不会受主传输模式影响）
+
+#### 配置入口
+在配置页面的 **字幕同步（ffsubsync）** 区域可设置：
+- `subtitle_sync_enabled`：是否启用自动对齐
+- `subtitle_sync_mode`：`best_effort`（失败回退原字幕）/ `strict`（失败即终止）
+- `subtitle_sync_executable`：`ffsubsync` 可执行文件路径
+- `subtitle_sync_extra_args`：额外参数
+- `subtitle_sync_timeout_seconds`：超时秒数
+- `subtitle_sync_overwrite_policy`：覆盖策略（follow_global/overwrite/skip）
+
+#### 依赖说明
+- 使用自动对齐前请确保系统可调用 `ffsubsync`（可执行文件在 PATH 中，或在配置中填绝对路径）。
+
+### 五、在qBittorrent下载完成后自动调用该程序
 
 > ⚠注意：箭头处的命令需要根据上面命令行自己写一下，照抄无效！（下面有提供示例）
 
@@ -135,13 +158,24 @@
 
 - 这里的命令相比于上面的命令行，需要做一些小的调整，首先一点是`path=`的输入，**一定**要用`"%F"`替换（上图可能是`%D`，那是错误的，不要关心图上的命令），这样就是每次种子实际下载的路径了
 - 一个是`tag=`的输入，**可以**用`"$G"`替换，代表着创建种子时候的标签，这里如果下载的是动漫剧集，需要带上`anime`的标签，如果是电影，带上`movie`的标签，方便自动整理到对应路径，如果无任何标签，是否是电影会**自动判断**，是否是动漫则**默认为否**，如果不需要处理，可以传入`no_process`的标签
-- 填入示例如下
+- 填入示例如下（按你的系统选择其一）
 
 ```shell
+# Linux / macOS (curl)
 curl --data-urlencode "path=%F" --data-urlencode "tag=%G" "http://127.0.0.1:5999/sendTask" -f
 ```
 
-### 五、更新
+```powershell
+# Windows (PowerShell，推荐)
+powershell -NoProfile -ExecutionPolicy Bypass -Command "Invoke-RestMethod -Uri 'http://localhost:5999/sendTask' -Method Post -Body @{ path='%F' } | Out-Null"
+```
+
+```powershell
+# Windows (PowerShell，带 tag)
+powershell -NoProfile -ExecutionPolicy Bypass -Command "Invoke-RestMethod -Uri 'http://localhost:5999/sendTask' -Method Post -Body @{ path='%F'; tag='%G' } | Out-Null"
+```
+
+### 六、更新
 
 - 进入文件夹内，`cd Bangumi_Auto_Rename`
 - 执行`git pull`
@@ -149,7 +183,7 @@ curl --data-urlencode "path=%F" --data-urlencode "tag=%G" "http://127.0.0.1:5999
 ## 需要注意的
 
 - 该程序依靠**TMDB API**（因为Emby也是一样的，可以保证精准度），因此对**网络环境**有一定要求！
-- **AI功能**需要额外的API调用费用，但可以显著提高动漫识别准确率
+- **AI主流程**需要额外的API调用费用，但可以显著提高动漫识别准确率
   - OpenAI API：官方按token计费，部分提供商有免费的Deepseek R1额度
   - Google Gemini API：有免费额度，gemini-2.5-flash速度快
   - 该功能仍在开发中，欢迎各位提供测试用例
