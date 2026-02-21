@@ -1,5 +1,7 @@
 import json
 import platform
+import threading
+from contextlib import contextmanager
 from urllib.parse import urlparse
 from typing import Any, Dict, Union
 
@@ -24,9 +26,25 @@ CONFIG_DEFAULT = {
     "gemini_base_url": "https://generativelanguage.googleapis.com",
     "gemini_model": "gemini-2.5-flash",
     "gemini_temperature": 0.5,  # Gemini温度
-    "ai_enabled": False,
+    "ai_force_strict": True,
     "ai_confidence_threshold": "Medium",
-    "openai_output_format": "function_calling",  # OpenAI输出格式选择
+    "openai_output_format": "function_calling",  # OpenAI输出格式选择（兼容旧配置）
+    "openai_auto_routing_enabled": True,  # OpenAI自动路由
+    "openai_auto_format_order": [
+        "function_calling",
+        "json_object",
+        "structured_output",
+        "text",
+    ],  # OpenAI自动路由顺序
+    "openai_format_stats": {},  # OpenAI格式测试统计
+    "gemini_output_format": "structured_output",  # Gemini输出格式选择（兼容旧配置）
+    "gemini_auto_routing_enabled": True,  # Gemini自动路由
+    "gemini_auto_format_order": [
+        "structured_output",
+        "json_object",
+        "text",
+    ],  # Gemini自动路由顺序
+    "gemini_format_stats": {},  # Gemini格式测试统计
     "ai_auto_save": False,  # 是否自动保存AI分析结果
     "log_level": "INFO",  # 日志等级
     "queue_max_workers": 1,  # 队列并行处理数
@@ -42,6 +60,13 @@ CONFIG_DEFAULT = {
     "emby_enabled": False,  # 是否启用Emby通知
     "emby_host": "http://localhost:8096",  # Emby服务器地址
     "emby_api_key": "",  # Emby API密钥
+    # Telegram通知配置
+    "telegram_enabled": False,  # 是否启用Telegram通知
+    "telegram_bot_token": "",  # Telegram Bot Token
+    "telegram_chat_id": "",  # Telegram Chat ID
+    "telegram_notify_on_success": True,  # 成功时通知
+    "telegram_notify_on_failure": True,  # 失败时通知
+    "telegram_base_url": "https://api.telegram.org",  # Telegram API地址
 }
 
 # 需要自动添加 docker_mnt 前缀的路径配置项
@@ -64,9 +89,16 @@ CN_MAP = {
     "gemini_api_key": "💎 Gemini API密钥",
     "gemini_base_url": "🌐 Gemini API地址",
     "gemini_model": "💎 Gemini模型",
-    "ai_enabled": "🚀 启用AI识别",
+    "ai_force_strict": "🚨 AI严格模式（运维）",
     "ai_confidence_threshold": "📊 AI置信度阈值",
     "openai_output_format": "🎯 OpenAI输出格式",
+    "openai_auto_routing_enabled": "🧭 OpenAI自动路由",
+    "openai_auto_format_order": "📈 OpenAI自动路由顺序",
+    "openai_format_stats": "🧪 OpenAI格式测试统计",
+    "gemini_output_format": "💎 Gemini输出格式",
+    "gemini_auto_routing_enabled": "🧭 Gemini自动路由",
+    "gemini_auto_format_order": "📈 Gemini自动路由顺序",
+    "gemini_format_stats": "🧪 Gemini格式测试统计",
     "ai_temperature": "🔥 OpenAI温度",
     "gemini_temperature": "🔥 Gemini温度",
     "ai_auto_save": "💾 自动保存AI分析",
@@ -83,51 +115,90 @@ CN_MAP = {
     "emby_enabled": "📺 启用Emby通知",
     "emby_host": "🌐 Emby服务器地址",
     "emby_api_key": "🔑 Emby API密钥",
+    # Telegram通知配置
+    "telegram_enabled": "启用Telegram通知",
+    "telegram_bot_token": "Telegram Bot Token",
+    "telegram_chat_id": "Telegram Chat ID",
+    "telegram_notify_on_success": "成功时发送Telegram通知",
+    "telegram_notify_on_failure": "失败时发送Telegram通知",
+    "telegram_base_url": "Telegram API地址",
 }
 
 
 class ConfigManager:
     def __init__(self) -> None:
+        self._io_lock = threading.RLock()
+        self._runtime_local = threading.local()
+
         if not CONFIG_PATH.exists():
             with open(CONFIG_PATH, 'w', encoding='UTF-8') as file:
                 json.dump(CONFIG_DEFAULT, file, indent=4, ensure_ascii=False)
 
         self.update_config()
 
+    def _get_runtime_overrides(self) -> Dict[str, Any]:
+        overrides = getattr(self._runtime_local, 'config_overrides', None)
+        if overrides is None:
+            overrides = {}
+            self._runtime_local.config_overrides = overrides
+        return overrides
+
+    @contextmanager
+    def temporary_config(self, overrides: Dict[str, Any]):
+        """线程内临时配置覆盖，不落盘，适用于并发测试场景。"""
+        runtime_overrides = self._get_runtime_overrides()
+        backup = dict(runtime_overrides)
+        runtime_overrides.update(overrides)
+
+        try:
+            yield
+        finally:
+            runtime_overrides.clear()
+            runtime_overrides.update(backup)
+
     def write_config(self):
-        # 使用缓存文件避免强行关闭造成文件损坏
-        temp_file_path = CONFIG_PATH.parent / f'{CONFIG_PATH.name}.bak'
+        with self._io_lock:
+            # 使用缓存文件避免强行关闭造成文件损坏
+            temp_file_path = CONFIG_PATH.parent / f'{CONFIG_PATH.name}.bak'
 
-        if temp_file_path.exists():
-            temp_file_path.unlink()
+            if temp_file_path.exists():
+                temp_file_path.unlink()
 
-        with open(temp_file_path, 'w', encoding='UTF-8') as file:
-            json.dump(self.config, file, indent=4, ensure_ascii=False)
+            with open(temp_file_path, 'w', encoding='UTF-8') as file:
+                json.dump(self.config, file, indent=4, ensure_ascii=False)
 
-        CONFIG_PATH.unlink()
-        temp_file_path.rename(CONFIG_PATH)
+            CONFIG_PATH.unlink()
+            temp_file_path.rename(CONFIG_PATH)
 
     def update_config(self):
-        # 打开config.json
-        with open(CONFIG_PATH, 'r', encoding='UTF-8') as f:
-            self.config: Dict[str, Any] = json.load(f)
-        # 对没有的值，添加默认值
-        for key in CONFIG_DEFAULT:
-            if key not in self.config:
-                self.config[key] = CONFIG_DEFAULT[key]
+        with self._io_lock:
+            # 打开config.json
+            with open(CONFIG_PATH, 'r', encoding='UTF-8') as f:
+                self.config: Dict[str, Any] = json.load(f)
+            # 对没有的值，添加默认值
+            for key in CONFIG_DEFAULT:
+                if key not in self.config:
+                    self.config[key] = CONFIG_DEFAULT[key]
 
-        # 清空不存在的key
-        for key in list(self.config.keys()):
-            if key not in CONFIG_DEFAULT:
-                del self.config[key]
+            # 清空不存在的key
+            for key in list(self.config.keys()):
+                if key not in CONFIG_DEFAULT:
+                    del self.config[key]
 
-        # 按照默认key排序
-        self.config = {key: self.config[key] for key in CONFIG_DEFAULT}
+            # 按照默认key排序
+            self.config = {key: self.config[key] for key in CONFIG_DEFAULT}
 
-        # 重新写回
-        self.write_config()
+            # 重新写回
+            self.write_config()
 
-    def get_config(self, key: str) -> str:
+    def get_config(self, key: str) -> Any:
+        runtime_overrides = self._get_runtime_overrides()
+        if key in runtime_overrides:
+            value = runtime_overrides[key]
+            if key in PATH_CONFIG_KEYS and value and isinstance(value, str):
+                value = self._convert_path_for_current_platform(value)
+            return value
+
         if key in self.config:
             value = self.config[key]
             # 对路径配置项，自动转换 Windows 路径到 Docker 路径
@@ -136,7 +207,10 @@ class ConfigManager:
             return value
         elif key in CONFIG_DEFAULT:
             self.update_config()
-            return self.config[key]
+            value = self.config[key]
+            if key in PATH_CONFIG_KEYS and value and isinstance(value, str):
+                value = self._convert_path_for_current_platform(value)
+            return value
         else:
             return ''
 
@@ -179,18 +253,19 @@ class ConfigManager:
         return f"{docker_mnt}/{path}"
 
     def set_config(self, key: str, value: Union[str, bool]) -> bool:
-        if key in CONFIG_DEFAULT:
-            # 对URL类型的配置项进行特殊处理
-            if key.endswith('_base_url') and value and isinstance(value, str):
-                value = self._normalize_url(value)
+        with self._io_lock:
+            if key in CONFIG_DEFAULT:
+                # 对URL类型的配置项进行特殊处理
+                if key.endswith('_base_url') and value and isinstance(value, str):
+                    value = self._normalize_url(value)
 
-            # 设置值（路径直接保存，不做转换）
-            self.config[key] = value
-            # 重新写回
-            self.write_config()
-            return True
-        else:
-            return False
+                # 设置值（路径直接保存，不做转换）
+                self.config[key] = value
+                # 重新写回
+                self.write_config()
+                return True
+            else:
+                return False
 
     def _normalize_url(self, url: str) -> str:
         """

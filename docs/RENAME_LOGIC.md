@@ -576,7 +576,7 @@ Anime Movie/
     "anime_movie_path": "动漫电影存放路径",
     "mode": "链接|复制|移动",
 
-    "ai_enabled": true,
+    "ai_force_strict": true,
     "ai_provider": "openai|gemini",
     "ai_api_key": "API密钥",
     "ai_base_url": "API地址",

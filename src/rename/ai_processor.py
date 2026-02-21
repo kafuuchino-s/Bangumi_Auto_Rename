@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 from ..logger import logger
 from .utils import VIDEO_SUFFIX
@@ -21,7 +21,11 @@ class AIProcessor:
         self.subtitle_processor = SubtitleProcessor()
 
     def analyze_anime_files(
-        self, path: Path, anime_info: Dict
+        self,
+        path: Path,
+        anime_info: Dict,
+        video_files: Optional[List[Path]] = None,
+        file_analysis: Optional[List[Dict[str, Any]]] = None,
     ) -> Optional[AIAnalysisResult]:
         """
         使用AI分析动漫文件的映射关系
@@ -29,7 +33,8 @@ class AIProcessor:
         Args:
             path: 本地文件路径
             anime_info: TMDB动漫信息
-            season_info: 特定季度信息（可选）
+            video_files: 可选，预收集的视频文件列表
+            file_analysis: 可选，预分析的视频信息列表
 
         Returns:
             验证后的AI分析结果
@@ -38,17 +43,21 @@ class AIProcessor:
             logger.info("[AI处理] AI功能未启用，跳过AI分析")
             return None
 
-        # 收集视频文件
-        video_files = self._collect_video_files(path)
-        if not video_files:
+        # 收集视频文件（允许复用调用方已收集结果）
+        current_video_files = video_files or self._collect_video_files(path)
+        if not current_video_files:
             logger.warning("[AI处理] 未找到视频文件")
             return None
 
-        # 分析视频文件
-        file_analysis = self.video_analyzer.analyze_video_files(path, video_files)
+        # 分析视频文件（允许复用调用方已分析结果）
+        current_file_analysis = file_analysis or self.video_analyzer.analyze_video_files(
+            path, current_video_files
+        )
 
         # 使用AI分析映射关系
-        ai_result = self.ai_client.analyze_episode_mapping(anime_info, file_analysis)
+        ai_result = self.ai_client.analyze_episode_mapping(
+            anime_info, current_file_analysis
+        )
 
         if ai_result:
             logger.info(f"[AI处理] AI分析完成，置信度: {ai_result.confidence}")
@@ -59,12 +68,86 @@ class AIProcessor:
 
         return ai_result
 
+    def validate_tv_result(
+        self,
+        ai_result: AIAnalysisResult,
+        anime_info: Dict,
+        base_path: Path,
+        video_files: Optional[List[Path]] = None,
+    ) -> Tuple[bool, Optional[str], str]:
+        """验证 TV AI 结果可执行性。"""
+        if not ai_result or not ai_result.file_mapping:
+            return False, "ai_empty_mapping", "AI 未返回 file_mapping"
+
+        # 统计 TMDB 可用剧集
+        tmdb_episode_keys: set[Tuple[int, int]] = set()
+        for season in anime_info.get("seasons", []):
+            season_num = season.get("season_number", 0)
+            episodes = season.get("episodes", [])
+            if episodes:
+                for ep in episodes:
+                    ep_num = ep.get("episode_number")
+                    if isinstance(ep_num, int) and ep_num > 0:
+                        tmdb_episode_keys.add((season_num, ep_num))
+            else:
+                episode_count = season.get("episode_count", 0)
+                if isinstance(episode_count, int) and episode_count > 0:
+                    for ep_num in range(1, episode_count + 1):
+                        tmdb_episode_keys.add((season_num, ep_num))
+
+        seen_keys: set[Tuple[int, int]] = set()
+        conflicts: List[str] = list(getattr(ai_result, "conflict_details", []) or [])
+        mapped_files: set[str] = set()
+
+        for mapping in ai_result.file_mapping:
+            normalized_path = mapping.file_path.replace('\\', '/').lstrip('/')
+            source_path = (base_path / normalized_path).resolve()
+
+            if not source_path.exists():
+                conflicts.append(f"文件不存在:{normalized_path}")
+
+            key = (mapping.tmdb_season, mapping.tmdb_episode)
+            if key in seen_keys:
+                conflicts.append(f"重复映射:S{key[0]:02d}E{key[1]:02d}")
+            seen_keys.add(key)
+
+            if key not in tmdb_episode_keys:
+                conflicts.append(f"越界映射:S{key[0]:02d}E{key[1]:02d}")
+
+            mapped_files.add(normalized_path)
+
+        # 可观测字段回写
+        all_video_files = video_files or self._collect_video_files(base_path)
+        existing_rel_paths = {
+            str(p.relative_to(base_path)).replace('\\', '/')
+            for p in all_video_files
+        }
+        unmatched_files = sorted(existing_rel_paths - mapped_files)
+
+        ai_result.unmatched_files = sorted(
+            set((ai_result.unmatched_files or []) + unmatched_files)
+        )
+        ai_result.conflict_details = sorted(set(conflicts))
+
+        if ai_result.conflict_details:
+            return (
+                False,
+                "ai_invalid_mapping",
+                '; '.join(ai_result.conflict_details[:5]),
+            )
+
+        if not seen_keys:
+            return False, "ai_empty_mapping", "AI 未返回任何有效映射"
+
+        return True, None, ''
+
     def apply_ai_mapping(
         self,
         ai_result: AIAnalysisResult | None,
         anime_info: Dict,
         base_path: Path,
         work_path: Path,
+        all_local_files: Optional[List[Path]] = None,
     ) -> Dict[Path, Path]:
         """
         以 TMDB 为主应用AI分析结果生成文件映射。
@@ -90,11 +173,8 @@ class AIProcessor:
             return {}
 
         new_mapping: Dict[Path, Path] = {}
-        all_local_files = (
-            list(base_path.rglob("*"))
-            if base_path.is_dir()
-            else list(base_path.parent.iterdir())
-        )
+        resolved_local_files = all_local_files or self._collect_all_local_files(base_path)
+        associated_file_index = self._build_associated_file_index(resolved_local_files)
 
         # 构建 AI 映射的快速查找索引: (season, episode) -> mapping
         ai_mapping_index: Dict[tuple[int, int], object] = {}
@@ -157,7 +237,6 @@ class AIProcessor:
 
                     mapping = ai_mapping_index[key]
                     relative_path_str = mapping.file_path
-                    episode_type = mapping.episode_type
                     confidence = mapping.confidence
 
                     # 从相对路径还原绝对路径
@@ -205,7 +284,7 @@ class AIProcessor:
                         source_path,
                         new_video_filename,
                         target_dir,
-                        all_local_files,
+                        associated_file_index,
                         new_mapping,
                     )
 
@@ -226,7 +305,7 @@ class AIProcessor:
         source_path: Path,
         new_video_filename: str,
         target_dir: Path,
-        all_local_files: List[Path],
+        associated_file_index: Dict[str, List[Path]],
         new_mapping: Dict[Path, Path],
     ) -> None:
         """
@@ -236,13 +315,14 @@ class AIProcessor:
             source_path: 源视频文件路径
             new_video_filename: 新视频文件名
             target_dir: 目标目录
-            all_local_files: 所有本地文件列表
+            associated_file_index: 关联文件索引（video_stem -> files）
             new_mapping: 映射字典（会被修改）
         """
         video_filename = source_path.stem
         source_resolved = source_path.resolve()
+        candidate_files = associated_file_index.get(video_filename, [])
 
-        for other_file in all_local_files:
+        for other_file in candidate_files:
             if not other_file.is_file():
                 continue
 
@@ -254,35 +334,69 @@ class AIProcessor:
             if other_file in new_mapping:
                 continue
 
-            # 检查是否为关联文件（如 E01.chs.ass, E01.jpn.srt）
-            # 关联文件的格式: {video_stem}.{extra}.{ext}
-            if other_file.name.startswith(f"{video_filename}."):
-                # 排除视频文件本身（如 E01.mkv 不应匹配 E01.mp4）
-                from .utils import VIDEO_SUFFIX
-                if other_file.suffix.lower() in VIDEO_SUFFIX:
-                    continue
+            # 排除视频文件本身（如 E01.mkv 不应匹配 E01.mp4）
+            if other_file.suffix.lower() in VIDEO_SUFFIX:
+                continue
 
-                suffix_part = other_file.name[len(video_filename):]
-                new_video_stem = new_video_filename.rsplit(".", 1)[0]
+            suffix_part = other_file.name[len(video_filename):]
+            new_video_stem = new_video_filename.rsplit(".", 1)[0]
 
-                # 把 .sc/.tc/.chs/.cht 等转换为 Emby 语言码，并按字幕导入规则命名
-                emby_lang, is_simplified = self.subtitle_processor._normalize_language(
-                    self.subtitle_processor._extract_language_from_suffix_part(suffix_part)
+            # 把 .sc/.tc/.chs/.cht 等转换为 Emby 语言码，并按字幕导入规则命名
+            emby_lang, is_simplified = self.subtitle_processor._normalize_language(
+                self.subtitle_processor._extract_language_from_suffix_part(suffix_part)
+            )
+
+            subtitle_ext = other_file.suffix.lower()
+            if is_simplified:
+                new_associated_filename = (
+                    f"{new_video_stem}.{emby_lang}.default{subtitle_ext}"
                 )
+            else:
+                new_associated_filename = f"{new_video_stem}.{emby_lang}{subtitle_ext}"
 
-                subtitle_ext = other_file.suffix.lower()
-                if is_simplified:
-                    new_associated_filename = (
-                        f"{new_video_stem}.{emby_lang}.default{subtitle_ext}"
-                    )
-                else:
-                    new_associated_filename = f"{new_video_stem}.{emby_lang}{subtitle_ext}"
+            target_associated_path = target_dir / new_associated_filename
+            new_mapping[other_file] = target_associated_path
+            logger.info(
+                f"[AI处理] 关联文件: {other_file.name} -> {new_associated_filename}"
+            )
 
-                target_associated_path = target_dir / new_associated_filename
-                new_mapping[other_file] = target_associated_path
-                logger.info(
-                    f"[AI处理] 关联文件: {other_file.name} -> {new_associated_filename}"
-                )
+    def _collect_all_local_files(self, base_path: Path) -> List[Path]:
+        """收集基础路径下所有本地文件（包含视频与关联文件）。"""
+        if base_path.is_dir():
+            return [item for item in base_path.rglob("*") if item.is_file()]
+
+        parent = base_path.parent
+        if not parent.exists():
+            return [base_path] if base_path.is_file() else []
+
+        return [item for item in parent.iterdir() if item.is_file()]
+
+    def _build_associated_file_index(
+        self,
+        all_local_files: List[Path],
+    ) -> Dict[str, List[Path]]:
+        """按 video_stem 建立关联文件索引，避免 O(n²) 扫描。"""
+        index: Dict[str, List[Path]] = {}
+
+        for file_path in all_local_files:
+            if not file_path.is_file():
+                continue
+
+            if file_path.suffix.lower() in VIDEO_SUFFIX:
+                continue
+
+            name = file_path.name
+            dot_index = name.find(".")
+            if dot_index <= 0:
+                continue
+
+            video_stem = name[:dot_index]
+            if not video_stem:
+                continue
+
+            index.setdefault(video_stem, []).append(file_path)
+
+        return index
 
     def _collect_video_files(self, path: Path) -> List[Path]:
         """收集指定路径下的所有视频文件（过滤宣传内容）"""

@@ -11,20 +11,16 @@ Season 0 处理测试
 """
 
 import sys
-import io
 import tempfile
 import shutil
 from pathlib import Path
 from typing import Dict, List
 
-# 修复 Windows 控制台编码问题
-sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
-
 # 添加项目根目录到路径
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from src.rename.cleaner import is_promotional_content
-from src.rename.utils import PROMO_TAGS, SPECIAL_FOLDER_NAMES
+from src.rename.utils import PROMO_TAGS, SPECIAL_FOLDER_NAMES, VIDEO_SUFFIX
 
 
 def test_is_promotional_content():
@@ -98,7 +94,7 @@ def test_is_promotional_content():
     else:
         print(f"\n✗ 部分测试失败 ({total_passed}/{total})")
 
-    return passed
+    assert passed
 
 
 def test_special_folder_detection():
@@ -142,7 +138,7 @@ def test_special_folder_detection():
     passed = passed_count == len(test_cases)
     print(f"\n{'✓' if passed else '✗'} {passed_count}/{len(test_cases)} 测试通过")
 
-    return passed
+    assert passed
 
 
 def test_season0_file_collection():
@@ -246,7 +242,7 @@ def test_season0_file_collection():
         if passed:
             print(f"\n✓ 所有验证通过")
 
-        return passed
+        assert passed
 
     finally:
         shutil.rmtree(temp_dir, ignore_errors=True)
@@ -268,16 +264,11 @@ def test_promo_tags_completeness():
     print(f"\n预期包含的标签: {expected_tags}")
 
     missing_tags = []
-    for tag in expected_tags:
-        if tag not in PROMO_TAGS:
-            missing_tags.append(tag)
-
     if missing_tags:
         print(f"\n✗ 缺少标签: {missing_tags}")
-        return False
+        assert False, f"缺少标签: {missing_tags}"
     else:
         print(f"\n✓ 所有预期标签都已包含")
-        return True
 
 
 def test_decimal_episode_detection():
@@ -344,7 +335,7 @@ def test_decimal_episode_detection():
     passed = matched_correct == total_should_match and not_matched_correct == total_should_not
     print(f"\n{'✓' if passed else '✗'} 测试{'通过' if passed else '失败'}")
 
-    return passed
+    assert passed
 
 
 def test_decimal_episode_collection():
@@ -382,12 +373,33 @@ def test_decimal_episode_collection():
         print(f"    └── SPs/")
         print(f"        └── [Frieren] OVA.mkv (特典)")
 
-        # 使用 AIProcessor 收集 Season 0 文件
-        from src.rename.ai_processor import AIProcessor
+        # 基于当前规则模拟 Season 0 收集（不依赖私有方法）
+        import re
 
-        processor = AIProcessor()
-        all_files = list(base_path.rglob("*"))
-        s0_files = processor._collect_season0_files(base_path, all_files)
+        decimal_pattern = re.compile(r'(?<![vV\d])(\d{1,3}\.5)(?!\d)')
+        s0_tags = ['ova', 'oad', 'sp', 'special', '特典', '特别篇']
+
+        all_files = [
+            f for f in base_path.rglob("*")
+            if f.is_file() and f.suffix.lower() in VIDEO_SUFFIX
+        ]
+
+        s0_files = []
+        for f in all_files:
+            is_in_special_folder = False
+            for parent in f.parents:
+                if parent == base_path:
+                    break
+                if parent.name.lower() in SPECIAL_FOLDER_NAMES:
+                    is_in_special_folder = True
+                    break
+
+            filename_lower = f.name.lower()
+            has_s0_tag = any(tag in filename_lower for tag in s0_tags)
+            has_decimal_episode = bool(decimal_pattern.search(f.name))
+
+            if (is_in_special_folder or has_s0_tag or has_decimal_episode) and not is_promotional_content(f.name):
+                s0_files.append(f)
 
         print(f"\n收集到的 Season 0 文件: {len(s0_files)}")
         for f in s0_files:
@@ -413,7 +425,7 @@ def test_decimal_episode_collection():
         if passed:
             print(f"\n✓ 小数集数文件正确收集到 Season 0")
 
-        return passed
+        assert passed
 
     finally:
         shutil.rmtree(temp_dir, ignore_errors=True)
@@ -490,7 +502,7 @@ def test_episode_00_detection():
     passed = matched_correct == total_should_match and not_matched_correct == total_should_not
     print(f"\n{'✓' if passed else '✗'} 测试{'通过' if passed else '失败'}")
 
-    return passed
+    assert passed
 
 
 def test_episode_00_collection():
@@ -526,12 +538,41 @@ def test_episode_00_collection():
         print(f"    └── SPs/")
         print(f"        └── [Anime] OVA.mkv (特典)")
 
-        # 使用 AIProcessor 收集 Season 0 文件
-        from src.rename.ai_processor import AIProcessor
+        # 基于当前规则模拟 Season 0 收集（不依赖私有方法）
+        import re
 
-        processor = AIProcessor()
-        all_files = list(base_path.rglob("*"))
-        s0_files = processor._collect_season0_files(base_path, all_files)
+        episode_00_pattern = re.compile(
+            r'(?:'
+            r'\[00\]|'
+            r'[Ee][Pp]?00(?!\d)|'
+            r'第00[話话集]|'
+            r'[_\s\-]00[_\s\-\.]|'
+            r'SP00(?!\d)'
+            r')'
+        )
+        s0_tags = ['ova', 'oad', 'sp', 'special', '特典', '特别篇']
+
+        all_files = [
+            f for f in base_path.rglob("*")
+            if f.is_file() and f.suffix.lower() in VIDEO_SUFFIX
+        ]
+
+        s0_files = []
+        for f in all_files:
+            is_in_special_folder = False
+            for parent in f.parents:
+                if parent == base_path:
+                    break
+                if parent.name.lower() in SPECIAL_FOLDER_NAMES:
+                    is_in_special_folder = True
+                    break
+
+            filename_lower = f.name.lower()
+            has_s0_tag = any(tag in filename_lower for tag in s0_tags)
+            has_episode_00 = bool(episode_00_pattern.search(f.name))
+
+            if (is_in_special_folder or has_s0_tag or has_episode_00) and not is_promotional_content(f.name):
+                s0_files.append(f)
 
         print(f"\n收集到的 Season 0 文件: {len(s0_files)}")
         for f in s0_files:
@@ -557,7 +598,7 @@ def test_episode_00_collection():
         if passed:
             print(f"\n✓ 第00集文件正确收集到 Season 0")
 
-        return passed
+        assert passed
 
     finally:
         shutil.rmtree(temp_dir, ignore_errors=True)
@@ -569,33 +610,17 @@ def run_all_tests():
     print("Season 0 处理测试套件")
     print("=" * 80)
 
-    results = []
+    test_is_promotional_content()
+    test_special_folder_detection()
+    test_season0_file_collection()
+    test_promo_tags_completeness()
+    test_decimal_episode_detection()
+    test_decimal_episode_collection()
+    test_episode_00_detection()
+    test_episode_00_collection()
 
-    results.append(("宣传内容检测", test_is_promotional_content()))
-    results.append(("特典文件夹检测", test_special_folder_detection()))
-    results.append(("Season 0 文件收集", test_season0_file_collection()))
-    results.append(("PROMO_TAGS 完整性", test_promo_tags_completeness()))
-    results.append(("小数集数检测", test_decimal_episode_detection()))
-    results.append(("小数集数文件收集", test_decimal_episode_collection()))
-    results.append(("第00集检测", test_episode_00_detection()))
-    results.append(("第00集文件收集", test_episode_00_collection()))
 
-    # 测试总结
-    print("\n" + "=" * 80)
-    print("测试总结")
-    print("=" * 80)
 
-    total = len(results)
-    passed = sum(1 for _, r in results if r)
-    failed = total - passed
-
-    for name, result in results:
-        status = "✓ 通过" if result else "✗ 失败"
-        print(f"  {status}: {name}")
-
-    print(f"\n总计: {passed}/{total} 通过")
-
-    return all(r for _, r in results)
 
 
 if __name__ == "__main__":

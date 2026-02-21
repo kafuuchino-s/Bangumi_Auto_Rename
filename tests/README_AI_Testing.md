@@ -256,7 +256,7 @@ python tests/test_ai_recognition.py --mode auto --input auto_MyAnime_gemini_2025
 
 ### 常见问题
 
-1. **AI功能未启用**: 检查配置文件中的ai_enabled设置
+1. **AI客户端不可用**: 检查提供商、API密钥与网络配置
 2. **API密钥未配置**: 确保正确配置对应AI提供商的API密钥
 3. **网络连接问题**: 检查API地址和网络连接
 4. **文件路径错误**: 确保指定的路径存在且包含视频文件

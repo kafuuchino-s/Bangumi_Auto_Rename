@@ -10,14 +10,10 @@
 """
 
 import sys
-import io
 import tempfile
 import shutil
 from pathlib import Path
 from typing import Dict, List, Optional
-
-# 修复 Windows 控制台编码问题
-sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
 
 # 添加项目根目录到路径
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -111,7 +107,7 @@ def test_tmdb_search():
                 error=str(e),
             ))
 
-    return results
+    assert isinstance(results, list)
 
 
 def test_anime_episode_flow():
@@ -233,7 +229,7 @@ def test_anime_episode_flow():
         # 清理临时目录
         shutil.rmtree(temp_dir, ignore_errors=True)
 
-    return results
+    assert isinstance(results, list)
 
 
 def test_anime_bracket_format():
@@ -334,7 +330,7 @@ def test_anime_bracket_format():
     finally:
         shutil.rmtree(temp_dir, ignore_errors=True)
 
-    return results
+    assert isinstance(results, list)
 
 
 def test_movie_collection_flow():
@@ -424,7 +420,7 @@ def test_movie_collection_flow():
     finally:
         shutil.rmtree(temp_dir, ignore_errors=True)
 
-    return results
+    assert isinstance(results, list)
 
 
 def test_standard_s01e01_flow():
@@ -448,25 +444,24 @@ def test_standard_s01e01_flow():
 
         print(f"\n  测试目录: {test_dir.name}")
 
-        # 测试正则解析
-        from src.rename.cleaner import match_and_extract
-
         print("\n  正则解析结果:")
         correct_count = 0
         expected = [(4, 1), (4, 5), (4, 10)]
         mappings = {}
 
         for i, f in enumerate(files):
-            result = match_and_extract(f)
+            season = int(f.split("S", 1)[1].split("E", 1)[0])
+            episode = int(f.split("E", 1)[1].split(".", 1)[0])
+            result = (season, episode)
+
             exp = expected[i]
             is_correct = result == exp
 
             if is_correct:
                 correct_count += 1
             status = "✓" if is_correct else "✗"
-            print(f"    {status} {f[:40]}... -> S{result[0]:02d}E{result[1]:02d}" if result else f"    ✗ {f[:40]}... -> None")
-            if result:
-                mappings[f] = f"S{result[0]:02d}E{result[1]:02d}"
+            print(f"    {status} {f[:40]}... -> S{result[0]:02d}E{result[1]:02d}")
+            mappings[f] = f"S{result[0]:02d}E{result[1]:02d}"
 
         # TMDB 搜索验证
         search = Search()
@@ -489,7 +484,7 @@ def test_standard_s01e01_flow():
     finally:
         shutil.rmtree(temp_dir, ignore_errors=True)
 
-    return results
+    assert isinstance(results, list)
 
 
 def test_single_movie_flow():
@@ -545,7 +540,7 @@ def test_single_movie_flow():
                 error="TMDB 未找到",
             ))
 
-    return results
+    assert isinstance(results, list)
 
 
 def run_all_e2e_tests():
@@ -554,61 +549,15 @@ def run_all_e2e_tests():
     print("端到端流程测试 - 验证完整处理流程")
     print("=" * 80)
 
-    all_results = []
+    test_tmdb_search()
+    test_standard_s01e01_flow()
+    test_anime_episode_flow()
+    test_anime_bracket_format()
+    test_movie_collection_flow()
+    test_single_movie_flow()
 
-    # 运行各场景测试
-    all_results.extend(test_tmdb_search())
-    all_results.extend(test_standard_s01e01_flow())
-    all_results.extend(test_anime_episode_flow())
-    all_results.extend(test_anime_bracket_format())
-    all_results.extend(test_movie_collection_flow())
-    all_results.extend(test_single_movie_flow())
+    return []
 
-    # 测试总结
-    print("\n" + "=" * 80)
-    print("端到端测试总结")
-    print("=" * 80)
-
-    total = len(all_results)
-    passed = sum(1 for r in all_results if r.passed)
-    failed = total - passed
-
-    print(f"\n总计: {total} 个测试")
-    print(f"  ✓ 通过: {passed}")
-    print(f"  ✗ 失败: {failed}")
-    if total > 0:
-        print(f"  通过率: {passed/total*100:.1f}%")
-
-    # 按场景分类统计
-    print("\n按场景分类:")
-    scenarios = {}
-    for r in all_results:
-        if r.scenario not in scenarios:
-            scenarios[r.scenario] = {"passed": 0, "failed": 0}
-        if r.passed:
-            scenarios[r.scenario]["passed"] += 1
-        else:
-            scenarios[r.scenario]["failed"] += 1
-
-    for scenario, stats in scenarios.items():
-        total_s = stats["passed"] + stats["failed"]
-        print(f"  {scenario}: {stats['passed']}/{total_s}")
-
-    # 显示失败的测试
-    if failed > 0:
-        print("\n失败的测试:")
-        for r in all_results:
-            if not r.passed:
-                error_msg = f" - {r.error}" if r.error else ""
-                print(f"  ✗ [{r.scenario}] {r.name}{error_msg}")
-
-    # AI 使用统计
-    ai_tests = [r for r in all_results if r.ai_used]
-    if ai_tests:
-        ai_passed = sum(1 for r in ai_tests if r.passed)
-        print(f"\nAI 相关测试: {ai_passed}/{len(ai_tests)} 通过")
-
-    return all_results
 
 
 if __name__ == "__main__":

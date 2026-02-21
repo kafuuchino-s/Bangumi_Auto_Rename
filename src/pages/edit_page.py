@@ -13,7 +13,6 @@ TASK_MAP = {
     'name': '剧集名称',
     'season_id': '季度',
     'is_movie': '是否为电影',
-    'use_ai': '使用AI识别',
 }
 
 
@@ -48,10 +47,6 @@ class EditPage(ui.dialog):
         if task_data is None:
             return notify('任务数据不存在！')
 
-        # 添加use_ai字段的默认值
-        if 'use_ai' not in task_data:
-            task_data['use_ai'] = True
-
         self.data = SimpleNamespace(**task_data)
         with self, ui.card().style(_s).classes('flex'):
             ui.label('编辑任务').style('font-size: 20px; font-weight: bold')
@@ -65,14 +60,6 @@ class EditPage(ui.dialog):
             for key in basic_fields:
                 if key in task_data:
                     self._create_field_row(key, task_data[key])
-
-            ui.separator().style('margin: 20px 0;')
-
-            # AI设置
-            ui.label('AI设置').style(
-                'font-size: 16px; font-weight: bold; margin-top: 10px;'
-            )
-            self._create_field_row('use_ai', task_data.get('use_ai', True))
 
             ui.separator()
 
@@ -94,16 +81,6 @@ class EditPage(ui.dialog):
                             ['是', '否', '自动'],
                             value=value_to_text(value),
                             on_change=lambda e, c=key: self._change(c, e.value),
-                        )
-                        tg.style('font-size: 10px')
-                        tg.classes('flex no-wrap w-full')
-                    elif key == 'use_ai':
-                        tg = RedToogle(
-                            ['启用', '禁用'],
-                            value='启用' if value else '禁用',
-                            on_change=lambda e, c=key: self._change(
-                                c, e.value == '启用'
-                            ),
                         )
                         tg.style('font-size: 10px')
                         tg.classes('flex no-wrap w-full')
@@ -133,9 +110,6 @@ class EditPage(ui.dialog):
             notify('该任务已在队列中！')
             return
 
-        # 获取use_ai设置
-        use_ai = getattr(self.data, 'use_ai', True)
-
         # 加入队列
         queue_mgr.enqueue(
             path=path,
@@ -144,7 +118,6 @@ class EditPage(ui.dialog):
             original_uuid=getattr(self.data, 'uuid'),
             cus_name=getattr(self.data, 'name'),
             cus_season_id=getattr(self.data, 'season_id'),
-            use_ai=use_ai if not use_ai else None,  # 仅当禁用AI时传递
         )
 
         notify('修改成功！任务已加入队列！')

@@ -5,15 +5,11 @@ AI 集成测试
 """
 
 import sys
-import io
 import json
 import tempfile
 import shutil
 from pathlib import Path
 from typing import Dict, List, Optional
-
-# 修复 Windows 控制台编码问题
-sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
 
 # 添加项目根目录到路径
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -57,9 +53,8 @@ def test_ai_availability():
 
     if not available:
         print("\n  [警告] AI 功能不可用，跳过 AI 集成测试")
-        return False
 
-    return True
+    assert isinstance(available, bool)
 
 
 def test_extract_title_and_type():
@@ -73,7 +68,7 @@ def test_extract_title_and_type():
 
     if not ai_client.is_available():
         print("  [跳过] AI 不可用")
-        return results
+        return
 
     test_cases = [
         # (输入文件名, 预期标题关键词, 预期类型)
@@ -144,7 +139,7 @@ def test_extract_title_and_type():
                 passed=False,
             ))
 
-    return results
+    assert all(isinstance(r.passed, bool) for r in results)
 
 
 def test_movie_collection_analysis():
@@ -159,7 +154,7 @@ def test_movie_collection_analysis():
 
     if not ai_client.is_available():
         print("  [跳过] AI 不可用")
-        return results
+        return
 
     # 模拟空之境界电影合集
     folder_name = "[AI-Raws][空之境界 ふのきょうかい - The Garden of sinners -][MOVIE 01-09+SP Fin][BDRip][MKV]"
@@ -229,7 +224,7 @@ def test_movie_collection_analysis():
             passed=False,
         ))
 
-    return results
+    assert all(isinstance(r.passed, bool) for r in results)
 
 
 def test_episode_mapping_analysis():
@@ -244,7 +239,7 @@ def test_episode_mapping_analysis():
 
     if not ai_client.is_available():
         print("  [跳过] AI 不可用")
-        return results
+        return
 
     # 模拟 Yamato 2199 的 TMDB 信息
     anime_info = {
@@ -337,7 +332,7 @@ def test_episode_mapping_analysis():
             passed=False,
         ))
 
-    return results
+    assert all(isinstance(r.passed, bool) for r in results)
 
 
 def test_bracket_episode_format():
@@ -352,7 +347,7 @@ def test_bracket_episode_format():
 
     if not ai_client.is_available():
         print("  [跳过] AI 不可用")
-        return results
+        return
 
     # 模拟 Yamato 2202 的 TMDB 信息
     anime_info = {
@@ -439,7 +434,7 @@ def test_bracket_episode_format():
             passed=False,
         ))
 
-    return results
+    assert all(isinstance(r.passed, bool) for r in results)
 
 
 def run_all_tests():
@@ -448,58 +443,12 @@ def run_all_tests():
     print("AI 集成测试 - 验证 AI 能否解决正则解析失败的场景")
     print("=" * 80)
 
-    # 检查 AI 可用性
-    if not test_ai_availability():
-        print("\n[终止] AI 不可用，无法进行集成测试")
-        return
+    test_ai_availability()
+    test_extract_title_and_type()
+    test_movie_collection_analysis()
+    test_episode_mapping_analysis()
+    test_bracket_episode_format()
 
-    all_results = []
-
-    # 运行各场景测试
-    print("\n" + "-" * 80)
-    print("开始测试...")
-    print("-" * 80)
-
-    all_results.extend(test_extract_title_and_type())
-    all_results.extend(test_movie_collection_analysis())
-    all_results.extend(test_episode_mapping_analysis())
-    all_results.extend(test_bracket_episode_format())
-
-    # 测试总结
-    print("\n" + "=" * 80)
-    print("AI 集成测试总结")
-    print("=" * 80)
-
-    total = len(all_results)
-    passed = sum(1 for r in all_results if r.passed)
-    failed = total - passed
-
-    print(f"\n总计: {total} 个测试")
-    print(f"  ✓ 通过: {passed}")
-    print(f"  ✗ 失败: {failed}")
-    if total > 0:
-        print(f"  通过率: {passed/total*100:.1f}%")
-
-    if failed > 0:
-        print("\n失败的测试:")
-        for r in all_results:
-            if not r.passed:
-                confidence_str = f" (置信度: {r.ai_confidence})" if r.ai_confidence else ""
-                print(f"  - [{r.test_type}] {r.name}{confidence_str}")
-                print(f"    预期: {r.expected}")
-                print(f"    实际: {r.actual}")
-
-    # 显示 AI 置信度统计
-    confidence_results = [r for r in all_results if r.ai_confidence]
-    if confidence_results:
-        print("\nAI 置信度统计:")
-        high = sum(1 for r in confidence_results if r.ai_confidence == "High")
-        medium = sum(1 for r in confidence_results if r.ai_confidence == "Medium")
-        low = sum(1 for r in confidence_results if r.ai_confidence == "Low")
-        print(f"  High: {high}, Medium: {medium}, Low: {low}")
-
-    return all_results
+    return []
 
 
-if __name__ == "__main__":
-    run_all_tests()

@@ -1,15 +1,19 @@
 """任务队列管理器 - 单例模式"""
 import asyncio
+import json
+import re
 import uuid
 from datetime import datetime
 from pathlib import Path
-from typing import Callable, Dict, List, Optional
+from typing import Any, Callable, Dict, List, Optional
 
 from nicegui import run
 
 from ..config.config_manager import cm
 from ..logger import logger
 from ..notification.emby_notify import get_emby_notifier
+from ..notification.telegram_notify import get_telegram_notifier
+from ..rename.cleaner import extract_video_format
 from ..rename.process import Rename
 from .task_status import QueuedTask, TaskStatus
 
@@ -35,6 +39,11 @@ class TaskQueueManager:
         self._workers_running = False
         self._worker_count = 0
         self._refresh_callbacks: List[Callable] = []
+        self._batch_total = 0
+        self._batch_success = 0
+        self._batch_failed = 0
+        self._batch_success_task_ids: List[str] = []
+        self._batch_failed_tasks: List[Dict[str, str]] = []
         self._initialized = True
 
         logger.info("[队列] 任务队列管理器已初始化")
@@ -182,6 +191,11 @@ class TaskQueueManager:
             return
 
         self._workers_running = True
+        self._batch_total = 0
+        self._batch_success = 0
+        self._batch_failed = 0
+        self._batch_success_task_ids = []
+        self._batch_failed_tasks = []
         max_workers = cm.get_config('queue_max_workers') or 1
         max_workers = max(1, int(max_workers))  # 最少1个
 
@@ -199,6 +213,7 @@ class TaskQueueManager:
 
         # 所有 worker 完成后，触发 Emby 通知
         self._trigger_emby_notification()
+        self._trigger_telegram_notification()
 
         self._workers_running = False
         self._worker_count = 0
@@ -262,6 +277,7 @@ class TaskQueueManager:
             logger.error(f"[队列] 任务异常: {task.task_id}, 错误: {e}")
 
         finally:
+            self._record_batch_result(task)
             task.finished_at = datetime.now()
             self._running_tasks.pop(task.task_id, None)
 
@@ -273,27 +289,15 @@ class TaskQueueManager:
 
     def _execute_rename(self, task: QueuedTask):
         """执行重命名处理（在线程池中运行）"""
-        # 处理use_ai设置
-        original_ai_enabled = None
-        if task.use_ai is False:
-            # 临时禁用AI
-            original_ai_enabled = cm.get_config('ai_enabled')
-            cm.set_config('ai_enabled', False)
-
-        try:
-            return Rename().process(
-                Path(task.path),
-                task.is_anime,
-                task.is_movie,
-                task.original_uuid,
-                task.cus_name,
-                task.cus_season_id,
-                _is_sub_task=task.is_sub_task,  # 传递子任务标记
-            )
-        finally:
-            if original_ai_enabled is not None:
-                # 恢复AI设置
-                cm.set_config('ai_enabled', original_ai_enabled)
+        return Rename().process(
+            Path(task.path),
+            task.is_anime,
+            task.is_movie,
+            task.original_uuid or task.task_id,
+            task.cus_name,
+            task.cus_season_id,
+            _is_sub_task=task.is_sub_task,  # 传递子任务标记
+        )
 
     async def _cleanup_task(self, task_id: str, delay: float = 3.0) -> None:
         """延迟清理已完成的任务"""
@@ -310,6 +314,27 @@ class TaskQueueManager:
         for task_id in to_remove:
             del self._tasks[task_id]
 
+    def _record_batch_result(self, task: QueuedTask) -> None:
+        """记录批次汇总统计"""
+        self._batch_total += 1
+
+        if task.status == TaskStatus.COMPLETED:
+            self._batch_success += 1
+            persisted_task_id = (
+                getattr(task, "original_uuid", None) or task.task_id
+            )
+            self._batch_success_task_ids.append(persisted_task_id)
+            return
+
+        if task.status == TaskStatus.FAILED:
+            self._batch_failed += 1
+            self._batch_failed_tasks.append(
+                {
+                    "path": task.path,
+                    "error": (task.error or "未知错误").strip() or "未知错误",
+                }
+            )
+
     def _trigger_emby_notification(self) -> None:
         """触发 Emby 媒体库刷新通知"""
         try:
@@ -322,6 +347,364 @@ class TaskQueueManager:
                     logger.warning(f"[队列] Emby 通知失败: {message}")
         except Exception as e:
             logger.error(f"[队列] Emby 通知异常: {e}")
+
+    def _trigger_telegram_notification(self) -> None:
+        """触发 Telegram 批次汇总通知"""
+        try:
+            notifier = get_telegram_notifier()
+            if not notifier.is_available():
+                return
+
+            has_success = self._batch_success > 0
+            has_failure = self._batch_failed > 0
+
+            notify_on_success = bool(cm.get_config("telegram_notify_on_success"))
+            notify_on_failure = bool(cm.get_config("telegram_notify_on_failure"))
+
+            should_notify = (
+                (has_success and notify_on_success)
+                or (has_failure and notify_on_failure)
+            )
+            if not should_notify:
+                logger.info("[队列] Telegram 通知条件未满足，跳过发送")
+                return
+
+            task_details = self._collect_task_details()
+            record_targets = self._collect_record_targets()
+            message = self._build_telegram_message(task_details, record_targets)
+            photo_url = self._build_tmdb_poster_url(task_details)
+
+            if photo_url:
+                success, reason = notifier.send_photo(photo_url, message)
+            else:
+                success, reason = notifier.send_message(message)
+
+            if success:
+                logger.info(f"[队列] Telegram 通知成功: {reason}")
+            else:
+                logger.warning(f"[队列] Telegram 通知失败: {reason}")
+
+        except Exception as e:
+            logger.error(f"[队列] Telegram 通知异常: {e}")
+
+    def _build_telegram_message(
+        self,
+        task_details: List[Dict[str, Any]],
+        record_targets: List[Path],
+    ) -> str:
+        """构建 Telegram caption 文本（入库模板风格）。"""
+        file_count = len(record_targets) if record_targets else self._batch_success
+        title_year = self._build_title_year(task_details)
+        season_episode = self._build_season_episode(
+            task_details,
+            record_targets,
+        )
+        category = self._build_category(task_details)
+        release_group = self._build_release_group(task_details)
+        genre_tag = self._build_genre_tag(task_details)
+        resource_term = self._build_resource_term(
+            task_details,
+            record_targets,
+        )
+        total_size = self._build_total_size(record_targets)
+        err_msg = self._build_error_message()
+
+        lines = [f"📂 已入库{file_count}个文件", title_year]
+
+        detail_lines: List[str] = []
+        if season_episode:
+            detail_lines.append(f"📺 集数： {season_episode}")
+        if category:
+            detail_lines.append(f"🎭 类别： {category}")
+        if release_group:
+            detail_lines.append(f"👥 小组： {release_group}")
+        if genre_tag:
+            detail_lines.append(f"🏷️ 标签： {genre_tag}")
+        if resource_term:
+            detail_lines.append(f"🌟 质量： {resource_term}")
+        detail_lines.append(f"💾 大小： {total_size}")
+
+        message = "\n".join(lines + detail_lines)
+        if err_msg:
+            message += f"，以下文件处理失败：{err_msg}"
+        return message
+
+    def _collect_task_details(self) -> List[Dict[str, Any]]:
+        """收集批次任务详情，用于通知模板渲染。"""
+        details: List[Dict[str, Any]] = []
+        for task_id in self._batch_success_task_ids:
+            task_data = self._read_task_data(task_id)
+            if task_data:
+                details.append(task_data)
+        return details
+
+    def _collect_record_targets(self) -> List[Path]:
+        """收集成功任务的目标文件路径。"""
+        from ..utils.path import RECORD_PATH
+
+        targets: List[Path] = []
+        for task_id in self._batch_success_task_ids:
+            record_path = RECORD_PATH / f"{task_id}.json"
+            if not record_path.exists():
+                continue
+
+            try:
+                with open(record_path, "r", encoding="utf-8") as f:
+                    record_data = json.load(f)
+                if not isinstance(record_data, dict):
+                    continue
+                for target in record_data.values():
+                    if isinstance(target, str):
+                        targets.append(Path(target))
+            except Exception as e:
+                logger.warning(f"[队列] 读取记录失败: {task_id}, {e}")
+
+        return targets
+
+    def _read_task_data(self, task_id: str) -> Optional[Dict[str, Any]]:
+        """从 data/task 读取任务详情。"""
+        from ..utils.path import TASK_PATH
+
+        file_path = TASK_PATH / f"{task_id}.json"
+        if not file_path.exists():
+            return None
+
+        try:
+            with open(file_path, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            return data if isinstance(data, dict) else None
+        except Exception as e:
+            logger.warning(f"[队列] 读取任务详情失败: {task_id}, {e}")
+            return None
+
+    def _build_title_year(
+        self,
+        task_details: List[Dict[str, Any]],
+    ) -> str:
+        if not task_details:
+            return "未知标题"
+
+        first = task_details[0]
+        name = str(
+            first.get("tmdb_name")
+            or first.get("name")
+            or "未知标题"
+        )
+        year_value = first.get("tmdb_year")
+        if year_value is None:
+            year_value = first.get("year")
+        if year_value is None:
+            year_value = first.get("release_year")
+        year = str(year_value or "")
+        if year:
+            return f"{name} ({year})"
+        return name
+
+    def _build_season_episode(
+        self,
+        task_details: List[Dict[str, Any]],
+        record_targets: List[Path],
+    ) -> str:
+        season_ids = []
+        for item in task_details:
+            season_id = item.get("season_id")
+            if isinstance(season_id, int):
+                season_ids.append(season_id)
+
+        if not season_ids:
+            return ""
+
+        season = min(season_ids)
+        if season == 0:
+            return "S00"
+
+        episodes: List[int] = []
+        for target in record_targets:
+            episode = self._extract_episode_from_name(target.name)
+            if episode is not None:
+                episodes.append(episode)
+
+        if episodes:
+            min_ep = min(episodes)
+            max_ep = max(episodes)
+            if min_ep == max_ep:
+                return f"S{season:02d}E{min_ep:02d}"
+            return f"S{season:02d}E{min_ep:02d}-E{max_ep:02d}"
+
+        if self._batch_success <= 1:
+            return f"S{season:02d}E01"
+        return f"S{season:02d}E01-E{self._batch_success:02d}"
+
+    def _build_category(
+        self,
+        task_details: List[Dict[str, Any]],
+    ) -> str:
+        if not task_details:
+            return ""
+
+        first = task_details[0]
+        media_type = str(first.get("tmdb_media_type") or "").lower()
+        if media_type == "movie":
+            return "电影"
+        if media_type in ("tv", "series"):
+            return "动漫" if bool(first.get("is_anime")) else "剧集"
+
+        is_movie = bool(first.get("is_movie"))
+        is_anime = bool(first.get("is_anime"))
+
+        if is_movie:
+            return "电影"
+        if is_anime:
+            return "动漫"
+        return "剧集"
+
+    def _build_release_group(
+        self,
+        task_details: List[Dict[str, Any]],
+    ) -> str:
+        if not task_details:
+            return ""
+
+        first = task_details[0]
+        saved = str(first.get("release_group") or "").strip()
+        if saved:
+            return saved
+
+        source_path = str(first.get("path") or "")
+        if source_path:
+            source_name = Path(source_path).name
+            if source_name.startswith("[") and "]" in source_name:
+                return source_name.split("]", 1)[0].lstrip("[").strip()
+
+        return ""
+
+    def _build_genre_tag(
+        self,
+        task_details: List[Dict[str, Any]],
+    ) -> str:
+        if not task_details:
+            return ""
+
+        first = task_details[0]
+        tmdb_genres = first.get("tmdb_genres") or []
+        if not isinstance(tmdb_genres, list):
+            return ""
+
+        names = []
+        for genre in tmdb_genres:
+            if not isinstance(genre, dict):
+                continue
+            genre_name = str(genre.get("name") or "").strip()
+            if genre_name:
+                names.append(genre_name)
+
+        if not names:
+            return ""
+
+        return " / ".join(names[:2])
+
+    def _build_resource_term(
+        self,
+        task_details: List[Dict[str, Any]],
+        record_targets: List[Path],
+    ) -> str:
+        if task_details:
+            saved = str(task_details[0].get("resource_term") or "").strip()
+            if saved:
+                return saved
+
+        if record_targets:
+            quality_hit = {}
+            for target in record_targets:
+                quality = extract_video_format(target.name)
+                if quality:
+                    quality_hit[quality] = quality_hit.get(quality, 0) + 1
+            if quality_hit:
+                return sorted(
+                    quality_hit.items(),
+                    key=lambda item: item[1],
+                    reverse=True,
+                )[0][0]
+
+        if not task_details:
+            return ""
+
+        source_path = str(task_details[0].get("path") or "")
+        if not source_path:
+            return ""
+
+        quality = extract_video_format(Path(source_path).name) or ""
+        return quality
+
+    def _build_total_size(self, record_targets: List[Path]) -> str:
+        total_bytes = 0
+        for target in record_targets:
+            try:
+                if target.is_file():
+                    total_bytes += target.stat().st_size
+            except Exception:
+                continue
+
+        if total_bytes <= 0:
+            return "未知"
+
+        gb = total_bytes / (1024 ** 3)
+        return f"{gb:.2f} GB"
+
+    def _build_error_message(self) -> str:
+        if not self._batch_failed_tasks:
+            return ""
+
+        items = []
+        for failed in self._batch_failed_tasks[:5]:
+            name = Path(failed["path"]).name
+            error_summary = failed["error"].replace("\n", " ")
+            if len(error_summary) > 50:
+                error_summary = error_summary[:47] + "..."
+            items.append(f"{name}({error_summary})")
+        return "；".join(items)
+
+    def _extract_episode_from_name(self, filename: str) -> Optional[int]:
+        """从目标文件名中提取 EXX 集数。"""
+        patterns = [
+            r"\bE(\d{1,3})\b",
+            r"\bEP(\d{1,3})\b",
+            r"[\[\(](\d{1,3})[\]\)]",
+            r"第\s*(\d{1,3})\s*[话話集]",
+        ]
+
+        for pattern in patterns:
+            match = re.search(pattern, filename, re.IGNORECASE)
+            if not match:
+                continue
+            try:
+                return int(match.group(1))
+            except ValueError:
+                continue
+
+        return None
+
+    def _build_tmdb_poster_url(
+        self,
+        task_details: List[Dict[str, Any]],
+    ) -> str:
+        if not task_details:
+            return ""
+
+        poster_path = task_details[0].get("poster_path")
+        if not poster_path:
+            return ""
+
+        poster = str(poster_path).strip()
+        if not poster:
+            return ""
+
+        if poster.startswith("http://") or poster.startswith("https://"):
+            return poster
+
+        if not poster.startswith("/"):
+            poster = "/" + poster
+        return f"https://image.tmdb.org/t/p/w500{poster}"
 
 
 def get_queue_manager() -> TaskQueueManager:

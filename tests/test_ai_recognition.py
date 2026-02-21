@@ -319,7 +319,6 @@ class DataProcessor:
     def _print_ai_config_status(self):
         """打印AI配置状态"""
         print("请检查以下配置：")
-        print(f"  - AI启用状态: {cm.get_config('ai_enabled')}")
         print(f"  - AI提供商: {cm.get_config('ai_provider')}")
 
         if cm.get_config('ai_provider') == 'gemini':

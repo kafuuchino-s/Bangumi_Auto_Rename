@@ -24,6 +24,8 @@ RUN printf '%s\n' \
 
 # 只复制源码
 COPY src/ ./src/
+# 复制AI测试样例（配置页 OpenAI 多格式测试依赖）
+COPY tests/example_test_case.json tests/example_expected.json ./tests/
 
 EXPOSE 5999
 CMD ["python3", "-m", "src.start"]

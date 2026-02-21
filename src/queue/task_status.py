@@ -35,7 +35,7 @@ class QueuedTask:
     cus_name: Optional[str] = None
     cus_season_id: Optional[int] = None
 
-    # AI设置（用于编辑页面临时禁用AI）
+    # AI设置（保留字段兼容旧任务数据）
     use_ai: Optional[bool] = None
 
     # 是否为子任务（由父任务拆分出来的，不会再拆分）

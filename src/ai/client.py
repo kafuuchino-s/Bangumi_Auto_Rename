@@ -1,5 +1,7 @@
 import json
 import re
+from datetime import datetime
+from pathlib import Path
 from typing import Dict, List, Optional, Type
 
 from pydantic import BaseModel
@@ -7,6 +9,7 @@ from google.genai.types import GenerateContentConfig
 
 from ..logger import logger
 from .models import AIAnalysisResult, MovieCollectionResult, SubtitleMappingResult
+from ..utils.path import AI_ANALYSIS_PATH
 from ..config.config_manager import cm
 from .gemini_client import GeminiClient
 from .openai_client import OpenAIClient
@@ -18,7 +21,7 @@ class AIClient:
 
     def __init__(self):
         self.provider = cm.get_config("ai_provider") or "openai"
-        self.enabled = bool(cm.get_config("ai_enabled"))
+        self.enabled = True
         self.confidence_threshold = cm.get_config("ai_confidence_threshold")
 
         # 根据提供商创建相应的客户端
@@ -195,7 +198,7 @@ class AIClient:
             validation_key: 用于验证响应完整性的JSON键名，默认为"title"
             schema: 可选的Pydantic模型类，用于结构化输出
         """
-        output_format = cm.get_config("openai_output_format") or "text"
+        output_format = cm.get_config("openai_output_format") or "function_calling"
 
         for attempt in range(max_retries + 1):
             try:
@@ -282,7 +285,7 @@ class AIClient:
                     # 使用结构化输出
                     config = GenerateContentConfig(
                         response_mime_type="application/json",
-                        response_schema=schema.model_json_schema(),
+                        response_schema=schema.gemini_json_schema(),
                         temperature=client.temperature,
                         max_output_tokens=16384,  # 限制输出长度
                     )
@@ -349,6 +352,16 @@ class AIClient:
         result = self._client.analyze_episode_mapping(anime_info, local_files)
 
         # 统一在此处保存分析数据
+        self._save_analysis_snapshot(
+            analysis_kind="tv_episode_mapping",
+            source_name=anime_info.get("name", "unknown"),
+            source_payload=anime_info,
+            local_files=local_files,
+            result=result,
+            force=not bool(result),
+        )
+
+        # 保持兼容：沿用 provider 客户端原保存逻辑（受 ai_auto_save 控制）
         self._client._save_analysis_data(anime_info, local_files, result)
 
         return result
@@ -406,8 +419,7 @@ class AIClient:
                 duration_str = f" (时长: {file_info['duration']:.1f}分钟)"
             files_info += f"  {file_info['path']}{duration_str}\n"
 
-        prompt = f"""
-请分析以下动漫的本地文件与TMDB数据的对应关系：
+        prompt = f"""请分析以下动漫的本地文件与TMDB数据的对应关系：
 
 {tmdb_info}
 
@@ -431,9 +443,14 @@ class AIClient:
 3. **多季度处理**：
    - 本地目录可能将多季合并，需要根据集数范围判断
    - 本地目录可能使用总集号（如 E14 可能是 S2E01）
-   - 不同季度可能仅用名称区分（如 "Okawari"、"Okaeri" 等后缀）
+   - 不同季度可能仅用名称区分（如 \"Okawari\"、\"Okaeri\" 等后缀）
 
 4. **只输出匹配到的文件**，未匹配到 TMDB 的文件不要输出
+
+5. **可观测性要求（必须满足）**：
+   - 返回 `unmatched_files`，列出所有未匹配文件路径（相对路径）
+   - 返回 `conflict_details`，说明冲突/不确定原因（重复映射、集数越界、文件不存在等）
+   - 如果 confidence 为 High/Medium，`file_mapping` 必须尽量覆盖可匹配文件
 
 """
         return prompt
@@ -507,6 +524,8 @@ class AIClient:
 - 只输出 JSON，不要有任何解释或额外文字
 - reason 字段简短说明（10-30字）
 - extra_notes 通常为 null
+- 返回 `unmatched_files`（未匹配文件）和 `conflict_details`（冲突原因）
+- 若 confidence 为 High/Medium 且 is_collection=true，应尽量覆盖全部正片文件
 
 请严格按照以下JSON格式返回:
 {{
@@ -523,8 +542,11 @@ class AIClient:
             "confidence": "High/Medium/Low"
         }}
     ],
+    "unmatched_files": ["未匹配文件路径"],
+    "conflict_details": ["冲突原因"],
     "extra_notes": null
 }}"""
+
 
         system_prompt = (
             "你是一个专业的电影文件分析助手。你的任务是分析电影合集目录，"
@@ -555,11 +577,36 @@ class AIClient:
                         json_str = json_match.group()
                         data = json.loads(json_str)
                         collection_result = MovieCollectionResult(**data)
+
+                        # 兜底补全可观测字段
+                        if not collection_result.unmatched_files:
+                            mapped = {
+                                i.file_path.replace('\\\\', '/').lstrip('/')
+                                for i in collection_result.file_mapping
+                            }
+                            local = {
+                                f.get('path', '').replace('\\\\', '/').lstrip('/')
+                                for f in local_files
+                                if f.get('path')
+                            }
+                            collection_result.unmatched_files = sorted(local - mapped)
+
                         logger.info(
                             f"[AI电影合集] 分析完成: "
                             f"is_collection={collection_result.is_collection}, "
                             f"collection_name={collection_result.collection_name}, "
-                            f"置信度={collection_result.confidence}"
+                            f"置信度={collection_result.confidence}, "
+                            f"unmatched={len(collection_result.unmatched_files)}, "
+                            f"conflicts={len(collection_result.conflict_details)}"
+                        )
+
+                        self._save_analysis_snapshot(
+                            analysis_kind="movie_collection",
+                            source_name=folder_name,
+                            source_payload={"folder_name": folder_name},
+                            local_files=local_files,
+                            result=collection_result,
+                            force=False,
                         )
                         return collection_result
                 except json.JSONDecodeError as e:
@@ -569,10 +616,71 @@ class AIClient:
                     logger.error(f"[AI电影合集] 模型验证失败: {e}")
                     logger.debug(f"[AI电影合集] 解析的数据: {data if 'data' in dir() else 'N/A'}")
 
+            self._save_analysis_snapshot(
+                analysis_kind="movie_collection",
+                source_name=folder_name,
+                source_payload={"folder_name": folder_name},
+                local_files=local_files,
+                result=None,
+                force=True,
+            )
             return None
         except Exception as e:
             logger.error(f"[AI电影合集] 分析失败: {e}")
+            self._save_analysis_snapshot(
+                analysis_kind="movie_collection",
+                source_name=folder_name,
+                source_payload={"folder_name": folder_name},
+                local_files=local_files,
+                result=None,
+                force=True,
+            )
             return None
+
+    def _save_analysis_snapshot(
+        self,
+        analysis_kind: str,
+        source_name: str,
+        source_payload: Dict,
+        local_files: List[Dict],
+        result: Optional[BaseModel],
+        force: bool = False,
+    ) -> None:
+        """保存 AI 分析快照；失败场景可强制落盘。"""
+        if not (force or cm.get_config("ai_auto_save")):
+            return
+
+        try:
+            AI_ANALYSIS_PATH.mkdir(parents=True, exist_ok=True)
+            safe_name = (
+                source_name.replace('/', '_').replace('\\', '_').strip() or "unknown"
+            )
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            filename = (
+                f"{safe_name}_{analysis_kind}_{self.provider}_{timestamp}.json"
+            )
+            output_path = Path(AI_ANALYSIS_PATH) / filename
+
+            payload = {
+                "metadata": {
+                    "created_at": datetime.now().isoformat(),
+                    "analysis_kind": analysis_kind,
+                    "provider": self.provider,
+                    "source_name": source_name,
+                    "file_count": len(local_files),
+                    "forced": force,
+                },
+                "source": source_payload,
+                "local_files": local_files,
+                "analysis_result": result.model_dump() if result else None,
+            }
+
+            with open(output_path, "w", encoding="utf-8") as f:
+                json.dump(payload, f, ensure_ascii=False, indent=2)
+
+            logger.info(f"[AI快照] 已保存: {output_path}")
+        except Exception as e:
+            logger.error(f"[AI快照] 保存失败: {e}")
 
     def analyze_subtitle_mapping(
         self,

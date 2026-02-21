@@ -8,12 +8,8 @@
 """
 
 import sys
-import io
 from pathlib import Path
 from typing import Dict, List
-
-# 修复 Windows 控制台编码问题
-sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
 
 # 添加项目根目录到路径
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -188,7 +184,7 @@ def test_tmdb_first_matching():
     else:
         print("\n  ✗ 验证失败")
 
-    return passed
+    assert passed
 
 
 def test_ai_processor_apply_mapping():
@@ -280,19 +276,14 @@ def test_ai_processor_apply_mapping():
         else:
             print("\n  ✗ 验证失败")
 
-        return passed
+        assert passed
 
     finally:
         shutil.rmtree(temp_dir, ignore_errors=True)
 
 
+
 if __name__ == "__main__":
     print("\n")
-    result1 = test_tmdb_first_matching()
-    result2 = test_ai_processor_apply_mapping()
-
-    print("\n" + "=" * 80)
-    print("测试总结")
-    print("=" * 80)
-    print(f"  逻辑验证: {'✓ 通过' if result1 else '✗ 失败'}")
-    print(f"  实际调用: {'✓ 通过' if result2 else '✗ 失败'}")
+    test_tmdb_first_matching()
+    test_ai_processor_apply_mapping()

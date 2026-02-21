@@ -1,6 +1,12 @@
 from typing import List, Literal, Optional
 
-from pydantic import Field, BaseModel, field_validator
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    field_validator,
+    model_validator,
+)
 
 
 def _make_gemini_compatible_schema(schema: dict) -> dict:
@@ -64,9 +70,7 @@ class SeasonMapping(BaseModel):
 
         return v
 
-    class Config:
-        # Gemini API兼容配置
-        populate_by_name = True
+    model_config = ConfigDict(populate_by_name=True, extra='forbid')
 
 
 class EpisodeMapping(BaseModel):
@@ -82,9 +86,7 @@ class EpisodeMapping(BaseModel):
         default="Medium", description="置信度等级"
     )
 
-    class Config:
-        # Gemini API兼容配置
-        populate_by_name = True
+    model_config = ConfigDict(populate_by_name=True, extra='forbid')
 
 
 class MovieFileMapping(BaseModel):
@@ -134,8 +136,7 @@ class MovieFileMapping(BaseModel):
                 return None
         return v
 
-    class Config:
-        populate_by_name = True
+    model_config = ConfigDict(populate_by_name=True, extra='forbid')
 
 
 class MovieCollectionResult(BaseModel):
@@ -150,13 +151,27 @@ class MovieCollectionResult(BaseModel):
     file_mapping: List[MovieFileMapping] = Field(
         default_factory=list, description="电影文件映射列表"
     )
+    unmatched_files: List[str] = Field(
+        default_factory=list,
+        description="未匹配到电影的本地文件路径列表",
+    )
+    conflict_details: List[str] = Field(
+        default_factory=list,
+        description="映射冲突信息（重复文件、缺失标题等）",
+    )
     extra_notes: Optional[str] = Field(default=None, description="额外特殊情况说明")
 
-    class Config:
-        populate_by_name = True
+    model_config = ConfigDict(populate_by_name=True, extra='forbid')
+
+    @model_validator(mode="after")
+    def validate_collection_mapping(self):
+        if self.is_collection and self.confidence in ["High", "Medium"]:
+            if not self.file_mapping:
+                raise ValueError("电影合集高/中置信度结果必须包含 file_mapping")
+        return self
 
     @classmethod
-    def model_json_schema(
+    def gemini_json_schema(
         cls, by_alias: bool = True, ref_template: str = '#/$defs/{model}'
     ):
         """生成Gemini API兼容的JSON Schema"""
@@ -178,6 +193,14 @@ class AIAnalysisResult(BaseModel):
     file_mapping: List[EpisodeMapping] = Field(
         default_factory=list, description="剧集映射列表"
     )
+    unmatched_files: List[str] = Field(
+        default_factory=list,
+        description="未匹配到 TMDB 的本地文件路径列表",
+    )
+    conflict_details: List[str] = Field(
+        default_factory=list,
+        description="映射冲突信息（重复映射、越界集数等）",
+    )
     extra_notes: Optional[str] = Field(default=None, description="额外特殊情况说明")
 
     @field_validator("file_mapping")
@@ -191,13 +214,10 @@ class AIAnalysisResult(BaseModel):
                 raise ValueError("高置信度结果必须包含映射信息")
         return v
 
-    class Config:
-        # Gemini API不支持additionalProperties，所以不设置extra
-        # JSON序列化时使用字段别名
-        populate_by_name = True
+    model_config = ConfigDict(populate_by_name=True, extra='forbid')
 
     @classmethod
-    def model_json_schema(
+    def gemini_json_schema(
         cls, by_alias: bool = True, ref_template: str = '#/$defs/{model}'
     ):
         """生成Gemini API兼容的JSON Schema"""
@@ -208,7 +228,7 @@ class AIAnalysisResult(BaseModel):
     @classmethod
     def schema(cls, by_alias: bool = True, ref_template: str = '#/definitions/{model}'):
         """向后兼容的schema方法"""
-        return cls.model_json_schema(by_alias=by_alias, ref_template=ref_template)
+        return cls.gemini_json_schema(by_alias=by_alias, ref_template=ref_template)
 
 
 # ============ 字幕映射模型 ============
@@ -245,11 +265,10 @@ class SubtitleMappingResult(BaseModel):
     )
     reason: Optional[str] = Field(default=None, description="匹配理由说明")
 
-    class Config:
-        populate_by_name = True
+    model_config = ConfigDict(populate_by_name=True, extra='forbid')
 
     @classmethod
-    def model_json_schema(
+    def gemini_json_schema(
         cls, by_alias: bool = True, ref_template: str = "#/$defs/{model}"
     ):
         """生成Gemini API兼容的JSON Schema"""

@@ -15,7 +15,7 @@ class BaseAIClient(ABC):
 
     def __init__(self, provider_name: str):
         self.provider_name = provider_name
-        self.enabled = bool(cm.get_config("ai_enabled"))
+        self.enabled = True
         self.confidence_threshold = cm.get_config("ai_confidence_threshold")
         self.auto_save = bool(cm.get_config("ai_auto_save"))
         self.save_path = AI_ANALYSIS_PATH

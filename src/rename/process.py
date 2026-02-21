@@ -1,12 +1,8 @@
-import re
 import json
+import re
 import uuid
 from pathlib import Path
-from difflib import SequenceMatcher
-from typing import Dict, List, Tuple, Union, Optional
-from concurrent.futures import ThreadPoolExecutor, Future
-
-from jikanpy import Jikan
+from typing import Dict, List, Optional, Tuple, Union
 
 from .trans import Trans
 from ..logger import logger
@@ -14,34 +10,31 @@ from .get_info import Search
 from ..utils.path import TASK_PATH
 from .ai_processor import AIProcessor
 from ..config.config_manager import cm
-from ..ai.models import AIAnalysisResult
 from ..ai.client import AIClient
+from ..ai.models import MovieCollectionResult
 from ..ai.video_analyzer import VideoAnalyzer
-from .utils import S0_TAG, EXTRA_TAG, IGNORE_DIR, VIDEO_SUFFIX, IGNORE_SUFFIX, episode_partten
+from .utils import VIDEO_SUFFIX
 from .cleaner import (
-    remove_tag,
-    to_sim_max,
-    remove_code,
-    remove_season,
     divide_by_year,
-    extract_number,
-    extract_season,
-    remove_episode,
-    extract_base_num,
-    match_and_extract,
-    remove_similar_part,
-    find_unique_parts_in_videos,
-    extract_video_format,
     extract_part,
-    is_complex_filename,
+    extract_video_format,
+    remove_episode,
+    remove_season,
+    remove_tag,
 )
-from .filename_builder import (
-    FilenameBuilder,
-    MovieMetadata,
-    EpisodeMetadata,
-)
+from .filename_builder import FilenameBuilder, MovieMetadata
 
-jikan = Jikan()
+FAILURE_MESSAGES = {
+    "ai_unavailable": "[AI] AI服务不可用或未配置",
+    "ai_timeout": "[AI] AI分析超时或失败",
+    "ai_low_confidence": "[AI] AI置信度不足",
+    "ai_empty_mapping": "[AI] 未生成可执行映射",
+    "ai_invalid_mapping": "[AI] AI返回映射存在冲突或越界",
+    "tmdb_not_found": "[TMDB] 未搜索到匹配结果",
+    "invalid_path": "[路径] 输入路径无效",
+    "tmdb_key_missing": "你还没有配置TMDB的Key！任务失败！请先前往配置界面！",
+    "trans_failed": "[迁移] 文件迁移失败",
+}
 
 
 class Rename:
@@ -55,198 +48,10 @@ class Rename:
         self.MOVIE_PATH.mkdir(parents=True, exist_ok=True)
         self.ANIME_PATH.mkdir(parents=True, exist_ok=True)
         self.BANGUMI_PATH.mkdir(parents=True, exist_ok=True)
+
         self.search = Search()
         self.ai_processor = AIProcessor()
-
-        self.R = {}
-
-    def get_season_id(
-        self,
-        tv_info: Dict,
-        work_path: Path,
-        path: Path,
-        titles: Optional[List[Dict]],
-    ):
-        season_id = 1
-        path_name = path.name
-        all_similaritys: List[Dict] = []
-
-        for season in tv_info['seasons']:
-            info_season_id = season['season_number']
-
-            # 检查季度是否有集数，只有有集数的季度才创建文件夹
-            episodes = season.get('episodes', [])
-            episode_count = len(episodes) if episodes else season.get('episode_count', 0)
-            if episode_count > 0:
-                target_fold = work_path / FilenameBuilder.build_season_folder(info_season_id)
-                target_fold.mkdir(parents=True, exist_ok=True)
-
-            sname: str = season['name']
-            logger.info(f'[处理任务] Season{info_season_id} 季度名: {sname}')
-
-            '''
-            int_season = extract_season(sname)
-            logger.info(f'[处理任务] 提取信息季号:{int_season}')
-            '''
-
-            int_rtpath_name = extract_season(path_name)
-            logger.info(f'[处理任务] 提取标题季号:{int_rtpath_name}')
-            if info_season_id == int_rtpath_name:
-                season_id = int_rtpath_name
-                break
-
-            # 如果不是Season1的情况下，sname处于路径之中，则直接跳过
-            if not (sname.strip().startswith('Season') and '1' in sname):
-                if sname in path.name:
-                    sname_list = sname.split(' ')
-                    path_name_list = path.stem.split(' ')
-                    if len(sname_list) == len(path_name_list):
-                        logger.info(f'[处理任务] 季度名称处于标题中：{sname}')
-                        season_id = info_season_id
-                        break
-                    else:
-                        logger.info(f'[处理任务] 季度名称与路径名称长度不同：{sname}')
-
-                if titles:
-                    # 或者计算相似度
-                    for title in titles:
-                        similaritys = {}
-                        if title['type'] in [
-                            'Default',
-                            'Synonym',
-                            'English',
-                            'French',
-                        ]:
-                            ename = title['title']
-                            path_name = path_name.replace(ename, '')
-                            similarity = SequenceMatcher(
-                                None,
-                                sname,
-                                remove_tag(path_name),
-                            ).ratio()
-
-                            # logger.debug(f'相似度{tindex}：{similarity}')
-                            similaritys[similarity] = season_id
-                        all_similaritys.append(similaritys)
-        else:
-            if all_similaritys:
-                logger.info(f'[处理任务] 相似度：{all_similaritys}')
-                season_id = to_sim_max(all_similaritys)
-
-        logger.info(f'[处理任务] 识别季号：{season_id}')
-        return season_id
-
-    def process_sub(
-        self,
-        itme_path_main_name: str,
-        item_repeat: Optional[List[str]],
-        item_path: Path,
-        work_path: Path,
-        season_id: int,
-    ):
-        item_name = item_path.name
-        if item_repeat:
-            item_name_remove = remove_similar_part(item_repeat, item_path.stem)
-        else:
-            item_name_remove = item_path.stem
-
-        item_name_l = item_name_remove.lower()
-        item_suffix = item_path.suffix.lower()
-
-        n_item_name_l = item_name.replace(itme_path_main_name, '').lower()
-        logger.info(f'[处理任务] 移去主要内容后的文件名Lower：{n_item_name_l}')
-
-        for ignore_dir in IGNORE_DIR:
-            if ignore_dir in item_path.name:
-                logger.info(f'[处理任务] 忽略文件夹：{item_path.name}')
-                break
-        else:
-            for ignore_tag in IGNORE_SUFFIX:
-                if ignore_tag in item_suffix:
-                    logger.info(f'[处理任务] 忽略文件：{item_path.name}')
-                    break
-            else:
-                # 不再处理 extra 目录，只处理 TMDB 有信息的文件
-                # 检查是否为 Season 0 特典
-                is_season0 = False
-                for s0 in S0_TAG:
-                    if re.search(rf'{s0.lower()}[\d]{{0,3}}', item_name_l):
-                        is_season0 = True
-                        break
-
-                _item_name = remove_code(remove_season(item_name_l))
-                logger.info(
-                    f'[处理任务] 开始对{_item_name}处理, 寻找集数中...")'
-                )
-
-                # 优先尝试 S01E01 格式
-                epp = extract_base_num(_item_name)
-                if epp is not None:
-                    ep = int(epp)
-                else:
-                    # 然后尝试 episode_partten 中的模式
-                    ep = None
-                    for pattern in episode_partten:
-                        match = re.search(pattern, _item_name)
-                        if match:
-                            ep_str = match.group(1)
-                            if ep_str.isdigit():
-                                ep = int(ep_str)
-                            else:
-                                # 中文数字处理
-                                from .cleaner import chinese_to_number
-                                ep = chinese_to_number(ep_str)
-                            if ep is not None:
-                                logger.info(
-                                    f'[处理任务] 使用 episode_partten 匹配到集数: {ep}'
-                                )
-                                break
-
-                    # 最后回退到 extract_number
-                    if ep is None:
-                        ep = extract_number(_item_name)
-
-                if ep is None:
-                    if _item_name.isdigit():
-                        ep = int(_item_name)
-                    else:
-                        # 无法识别集数，跳过此文件
-                        logger.info(f'[处理任务] 无法识别集数，跳过文件：{item_path.name}')
-                        return
-                else:
-                    ep = int(ep)
-
-                # 如果是 Season 0 特典，覆盖 season_id
-                if is_season0:
-                    season_id = 0
-                    logger.info(f'[处理任务] 识别为Season0特典：{item_path.name}')
-
-                _idata = match_and_extract(item_name)
-                if _idata:
-                    season_id, ep = _idata[0], _idata[1]
-
-                t = work_path / FilenameBuilder.build_season_folder(season_id)
-                t.mkdir(parents=True, exist_ok=True)
-
-                # 从 work_path 提取剧集标题
-                series_title = FilenameBuilder.extract_title_from_folder(
-                    work_path.name
-                )
-
-                # 提取分集信息
-                part = extract_part(item_name)
-
-                # 使用 Movie Pilot 格式生成文件名
-                meta = EpisodeMetadata(
-                    title=series_title,
-                    season=int(season_id),
-                    episode=int(ep),
-                    part=part,
-                    file_ext=item_path.suffix,
-                )
-                new_filename = FilenameBuilder.build_episode_filename(meta)
-                self.R[item_path] = t / new_filename
-        logger.info(f'[处理任务] 处理完成{item_name}')
+        self.R: Dict[Path, Path] = {}
 
     def process(
         self,
@@ -271,13 +76,14 @@ class Rename:
             _is_sub_task: 是否为子任务（由父任务拆分出来的）
         """
         if path.is_dir():
-            is_video = False
-            for sub_path in path.iterdir():
-                if not sub_path.is_dir() and sub_path.suffix in VIDEO_SUFFIX:
-                    is_video = True
+            has_direct_video = any(
+                (not sub_path.is_dir())
+                and sub_path.suffix.lower() in VIDEO_SUFFIX
+                for sub_path in path.iterdir()
+            )
 
-            if is_video:
-                self._process(
+            if has_direct_video:
+                return self._process(
                     path,
                     _is_anime,
                     _is_movie,
@@ -285,237 +91,50 @@ class Rename:
                     cus_name,
                     cus_season_id,
                 )
-            else:
-                # 如果不是子任务，将子文件夹作为独立任务加入队列
-                # 这样多个 worker 可以并行处理
-                if not _is_sub_task:
-                    from ..queue.task_queue import get_queue_manager
-                    queue_mgr = get_queue_manager()
 
-                    sub_folders = [
-                        sp for sp in path.iterdir()
-                        if sp.is_dir() or sp.suffix in VIDEO_SUFFIX
-                    ]
-                    logger.info(
-                        f"[处理任务] 发现 {len(sub_folders)} 个子文件夹，"
-                        "分别加入队列并行处理"
-                    )
+            # 非视频直系目录：父任务拆成并行子任务
+            if not _is_sub_task:
+                from ..queue.task_queue import get_queue_manager
 
-                    for sub_path in sub_folders:
-                        queue_mgr.enqueue(
-                            path=str(sub_path),
-                            is_anime=_is_anime,
-                            is_movie=_is_movie,
-                            _is_sub_task=True,  # 标记为子任务
-                        )
-                    # 父任务不需要继续处理
-                    return
-                else:
-                    # 子任务，直接串行处理其内部的子文件夹
-                    for sub_path in path.iterdir():
-                        self._process(
-                            sub_path,
-                            _is_anime,
-                            _is_movie,
-                            _tuuid,
-                            cus_name,
-                            cus_season_id,
-                        )
-        else:
-            self._process(
-                path,
-                _is_anime,
-                _is_movie,
-                _tuuid,
-                cus_name,
-                cus_season_id,
-            )
-
-    def check_task_type(
-        self,
-        _uuid: str,
-        rtpath_name: str,
-        year: int,
-        path: Path,
-        is_anime: Optional[bool] = None,
-        is_movie: Optional[bool] = None,
-        _ai_retry: bool = False,
-        _ai_future: Optional[Future] = None,
-    ) -> Union[Tuple[str, Dict, bool, bool], str]:
-        season_id = 1
-        pos = 0
-        logger.info('[处理任务] 未传入任务类型，开始判断该文件是否为电影！')
-
-        # 对于复杂文件名，并行启动 AI 提取
-        ai_future = _ai_future
-        if not _ai_retry and ai_future is None:
-            ai_client = AIClient()
-            if ai_client.is_available() and is_complex_filename(path.name):
-                logger.info('[处理任务] 检测到复杂文件名，并行启动AI提取...')
-                executor = ThreadPoolExecutor(max_workers=1)
-                ai_future = executor.submit(
-                    ai_client.extract_title_and_type, path.name
+                queue_mgr = get_queue_manager()
+                sub_paths = [
+                    sub_path
+                    for sub_path in path.iterdir()
+                    if sub_path.is_dir()
+                    or sub_path.suffix.lower() in VIDEO_SUFFIX
+                ]
+                logger.info(
+                    f"[处理任务] 发现 {len(sub_paths)} 个子路径，分别加入队列并行处理"
                 )
-
-        s1_name, s1_info = self._search_tv_with_ai_selection(path.name, rtpath_name, year)
-        logger.info(f'[处理任务] 搜索到的电视剧名称: {s1_name}')
-
-        s2_name, s2_info = self.search.get_movie_info(rtpath_name, year)
-        logger.info(f'[处理任务] 搜索到的电影名称: {s2_name}')
-
-        if not s2_name and year != 0:
-            s2_name, s2_info = self.search.get_movie_info(
-                rtpath_name,
-                year,
-            )
-            logger.info(f'[处理任务] 未搜索到结果, 删除year后重试: {s2_name}')
-
-        # 如果都搜索不到，尝试使用AI提取标题和类型
-        if not s1_name and not s2_name and not _ai_retry:
-            # 优先使用已经启动的并行任务结果
-            if ai_future is not None:
-                logger.info('[处理任务] TMDB搜索失败，等待AI提取结果...')
-                try:
-                    ai_result = ai_future.result(timeout=30)
-                except Exception as e:
-                    logger.warning(f'[处理任务] AI提取超时或失败: {e}')
-                    ai_result = None
-            else:
-                # 非复杂文件名但 TMDB 失败，同步调用 AI
-                ai_client = AIClient()
-                if ai_client.is_available():
-                    logger.info('[处理任务] TMDB搜索失败，尝试使用AI提取标题...')
-                    ai_result = ai_client.extract_title_and_type(path.name)
-                else:
-                    ai_result = None
-
-            if ai_result:
-                ai_title, ai_type = ai_result
-                if ai_title and ai_title != rtpath_name:
-                    logger.info(
-                        f'[处理任务] AI提取标题: {ai_title}，'
-                        f'类型: {ai_type}，重新搜索TMDB'
+                for sub_path in sub_paths:
+                    queue_mgr.enqueue(
+                        path=str(sub_path),
+                        is_anime=_is_anime,
+                        is_movie=_is_movie,
+                        _is_sub_task=True,
                     )
-                    # 根据AI判断的类型设置is_movie
-                    ai_is_movie = None
-                    if ai_type == 'movie':
-                        ai_is_movie = True
-                    elif ai_type == 'tv':
-                        ai_is_movie = False
-                    # 用AI提取的标题和类型重新搜索
-                    return self.check_task_type(
-                        _uuid,
-                        ai_title,
-                        year,
-                        path,
-                        is_anime,
-                        ai_is_movie if ai_is_movie is not None else is_movie,
-                        _ai_retry=True,  # 防止无限循环
-                    )
+                return True
 
-        season_id = extract_season(rtpath_name)
-
-        # 检测电影关键词，倾向于判定为电影
-        movie_keywords = ['MOVIE', 'FILM', '剧场版', '劇場版', '电影', '電影']
-        path_name_lower = path.name.lower()
-        for kw in movie_keywords:
-            if kw.lower() in path_name_lower:
-                pos -= 1.0  # 强烈倾向于电影
-                logger.info(f'[处理任务] 检测到电影关键词 "{kw}"，倾向判定为电影')
-                break
-
-        if s1_name:
-            pos += 1
-        elif s2_name:
-            pos -= 1
-
-        if season_id == -1:
-            pos -= 0.6
-            if path.is_file():
-                pos -= 0.5
-        else:
-            pos += 0.6
-            if path.is_file():
-                pos += 0.5
-
-        if path.is_dir():
-            path_file_num = len([i for i in path.iterdir() if i.is_file()])
-            if path_file_num > 6:
-                pos += 0.4
-            else:
-                pos -= 0.4
-
-        # 如果明确指定了 is_movie=True，直接按电影处理
-        if is_movie is True:
-            logger.info('[处理任务] 该文件被指定为电影！')
-            info = s2_info
-            name = s2_name
-
-            if not info:
-                logger.warning(f'[处理任务] 未搜索到电影信息, 跳过{rtpath_name}')
-                return self.error_reply(
-                    _uuid,
-                    f'[TMDB] 未搜索到电影信息, 跳过{rtpath_name}',
-                    path,
-                    is_anime,
+            # 子任务不再继续拆分，串行处理
+            for sub_path in path.iterdir():
+                self._process(
+                    sub_path,
+                    _is_anime,
+                    _is_movie,
+                    _tuuid,
+                    cus_name,
+                    cus_season_id,
                 )
+            return True
 
-            if is_anime is None:
-                genres = info.get('genres', [])
-                for g in genres:
-                    genre_name = g['name'].lower()
-                    if genre_name in ('animation', 'anime', '动画', 'アニメ'):
-                        is_anime = True
-                        logger.info(f'[处理任务] 检测到动画类型: {g["name"]}, is_anime=True')
-                        break
-                else:
-                    is_anime = False
-        elif pos > 0 or (is_movie is not None and not is_movie):
-            logger.info('[处理任务] 该文件可能为电视剧！')
-            is_movie = False
-            info = s1_info
-            name = s1_name
-
-            if not info:
-                logger.warning(f'[处理任务] 未搜索到电视剧信息, 跳过{rtpath_name}')
-                return f'[TMDB] 未搜索到电视剧信息, 跳过{rtpath_name}'
-
-            if is_anime is None:
-                genres = info.get('genres', [])
-                for g in genres:
-                    genre_name = g['name'].lower()
-                    if genre_name in ('animation', 'anime', '动画', 'アニメ'):
-                        is_anime = True
-                        logger.info(f'[处理任务] 检测到动画类型: {g["name"]}, is_anime=True')
-                        break
-                else:
-                    is_anime = False
-        else:
-            logger.info('[处理任务] 该文件可能为电影！')
-            is_movie = True
-            info = s2_info
-            name = s2_name
-
-            if not info:
-                logger.warning(f'[处理任务] 未搜索到电影信息, 跳过{rtpath_name}')
-                return self.error_reply(
-                    _uuid,
-                    f'[TMDB] 未搜索到电影信息, 跳过{rtpath_name}',
-                    path,
-                    is_anime,
-                )
-
-            if is_anime is None:
-                genres = info.get('genres', [])
-                for g in genres:
-                    genre_name = g['name'].lower()
-                    if genre_name in ('animation', 'anime', '动画', 'アニメ'):
-                        is_anime = True
-                        logger.info(f'[处理任务] 检测到动画类型: {g["name"]}, is_anime=True')
-                        break
-                else:
-                    is_anime = False
-        return name, info, is_anime, is_movie
+        return self._process(
+            path,
+            _is_anime,
+            _is_movie,
+            _tuuid,
+            cus_name,
+            cus_season_id,
+        )
 
     def _process(
         self,
@@ -526,38 +145,51 @@ class Rename:
         cus_name: Optional[str] = None,
         cus_season_id: Optional[int] = None,
     ):
-        if _tuuid:
-            _uuid = _tuuid
-        else:
-            _uuid = str(uuid.uuid4())
+        _uuid = _tuuid or str(uuid.uuid4())
 
         if not self.search.TMDB_KEY:
             return self.error_reply(
                 _uuid,
-                '你还没有配置TMDB的Key！任务失败！请先前往配置界面！',
+                self._failure_message("tmdb_key_missing"),
                 path,
                 _is_anime,
                 _is_movie,
+                failure_reason="tmdb_key_missing",
+                ai_attempted=False,
+                ai_used=False,
+                ai_confidence=None,
             )
 
-        # 【Step.0】 开始处理
-        logger.info(f'[处理任务] 开始处理{path.name}')
+        if not path.exists():
+            return self.error_reply(
+                _uuid,
+                self._failure_message("invalid_path", str(path)),
+                path,
+                _is_anime,
+                _is_movie,
+                failure_reason="invalid_path",
+                ai_attempted=False,
+                ai_used=False,
+                ai_confidence=None,
+            )
 
-        # 【Step.1】
-        # 先移除无用的标签, 方便之后搜索
+        # 最小 deterministic 守卫：非视频文件直接跳过
+        if path.is_file() and path.suffix.lower() not in VIDEO_SUFFIX:
+            logger.info(f'[处理任务] {path.name} 不是视频文件，跳过')
+            return True
+
+        logger.info(f'[处理任务] 开始处理 {path.name}')
+
+        # Step.1 清洗标题
         year = 0
         rtpath_name = remove_tag(path.name)
-        # 如果标签移除后啥都没有, 说明文件名也是标签的一部分
         if not rtpath_name:
             rtpath_name = remove_tag(path.name, True)
-        # 按照空白、换行符或者连字符（-）分割成列表
-        path_atri = re.split(r'[\s-]+', rtpath_name)
-        # 如果该列表大于3, 不额外处理
-        if len(path_atri) > 3:
-            # path_atri.pop(0)
-            rtpath_name = ' '.join(path_atri)
-        # 如果该列表中有多个点, 则认为是一种规范命名的文件
-        # 先用.分割之后, 按照年份分割后按照季度分割
+
+        path_attrs = re.split(r'[\s-]+', rtpath_name)
+        if len(path_attrs) > 3:
+            rtpath_name = ' '.join(path_attrs)
+
         if rtpath_name.count('.') >= 3:
             rtpath_name = ' '.join(rtpath_name.split('.'))
             rtpath_name, year = divide_by_year(rtpath_name)
@@ -565,412 +197,503 @@ class Rename:
         rtpath_name = remove_season(rtpath_name)
         rtpath_name = remove_episode(rtpath_name)
         rtpath_name = rtpath_name.strip('!')
-        logger.info(f'[处理任务] 去除标签后: {rtpath_name}')
 
-        # 如果该路径不是一个视频文件或者不是一个文件夹, 则跳过
-        if path.is_file() and path.suffix.lower() not in VIDEO_SUFFIX:
-            logger.info(f'[处理任务] {path.name} 不是一个视频文件, 跳过')
-            return
-
-        # 【特殊改】
         if cus_name:
             rtpath_name = cus_name
 
-        # 【Step.1.5】
-        # 判断类型是否为电影
+        logger.info(f'[处理任务] 清洗后标题: {rtpath_name}')
+
+        # AI 严格模式：默认强制，可由运维紧急开关关闭
+        ai_force_strict = bool(cm.get_config('ai_force_strict'))
+        ai_client = AIClient()
+        ai_available = ai_client.is_available()
+
+        if not ai_available:
+            if ai_force_strict:
+                return self.error_reply(
+                    _uuid,
+                    self._failure_message("ai_unavailable"),
+                    path,
+                    _is_anime,
+                    _is_movie,
+                    failure_reason="ai_unavailable",
+                    ai_attempted=True,
+                    ai_used=False,
+                    ai_confidence=None,
+                )
+
+            logger.warning(
+                "[处理任务] AI服务不可用且 ai_force_strict=False，"
+                "当前版本无非AI回退流程，按 ai_unavailable 失败返回"
+            )
+            return self.error_reply(
+                _uuid,
+                self._failure_message("ai_unavailable"),
+                path,
+                _is_anime,
+                _is_movie,
+                failure_reason="ai_unavailable",
+                ai_attempted=True,
+                ai_used=False,
+                ai_confidence=None,
+            )
+
         task_type = self.check_task_type(
-            _uuid,
             rtpath_name,
             year,
             path,
             _is_anime,
             _is_movie,
+            ai_client,
         )
         if isinstance(task_type, str):
             return self.error_reply(
                 _uuid,
-                task_type,
+                self._failure_message(task_type),
                 path,
                 _is_anime,
                 _is_movie,
+                failure_reason=task_type,
+                ai_attempted=True,
+                ai_used=False,
+                ai_confidence=None,
             )
 
-        name, info, is_anime, is_movie = (
-            task_type[0],
-            task_type[1],
-            task_type[2],
-            task_type[3],
-        )
+        name, info, is_anime, is_movie, type_ai_confidence = task_type
 
-        # 【Step.2】
-        # 如果是电影
+        # Step.3 构建映射（TV/Movie 均 AI-strict）
+        self.R = {}
+        season_id = 0 if is_movie else 1
+        task_ai_confidence = type_ai_confidence
+        ai_used = True
+        release_group = ""
+        resource_term = ""
+
         if is_movie:
-            if is_anime:
-                _WORK_PATH = self.ANIME_MOVIE_PATH
-            else:
-                _WORK_PATH = self.MOVIE_PATH
+            work_root = self.ANIME_MOVIE_PATH if is_anime else self.MOVIE_PATH
 
-            # 检查是否是电影合集（文件夹中包含多个视频文件）
+            # 电影合集：AI 合集分析作为唯一主路径
             if path.is_dir():
                 video_files = [
-                    f for f in path.iterdir()
+                    f
+                    for f in path.rglob('*')
                     if f.is_file() and f.suffix.lower() in VIDEO_SUFFIX
                 ]
-                if len(video_files) > 1:
-                    # 尝试使用AI分析电影合集
-                    ai_client = AIClient()
-                    if ai_client.is_available():
-                        logger.info(
-                            f'[处理任务] 检测到多个视频文件({len(video_files)}个)，'
-                            '尝试AI分析电影合集'
-                        )
-                        # 分析视频文件
-                        local_files = VideoAnalyzer.analyze_video_files(
-                            path, video_files
-                        )
-                        collection_result = ai_client.analyze_movie_collection(
-                            path.name, local_files
-                        )
+            else:
+                video_files = [path]
 
-                        if collection_result and collection_result.is_collection:
-                            logger.info(
-                                f'[处理任务] AI识别为电影合集: '
-                                f'{collection_result.collection_name}'
-                            )
-                            # 处理电影合集，获取每部电影的信息
-                            processed_movies = self._process_movie_collection(
-                                path,
-                                collection_result,
-                                _WORK_PATH,
-                                is_anime,
-                            )
-
-                            if not processed_movies:
-                                logger.warning('[处理任务] 电影合集无有效电影')
-                                return self.error_reply(
-                                    _uuid,
-                                    '[电影合集] 无有效电影可处理',
-                                    path,
-                                    is_anime,
-                                    is_movie,
-                                    collection_result.collection_name,
-                                    0,
-                                )
-
-                            # 为每部电影创建独立的任务记录
-                            first_error = None
-                            for i, movie_info in enumerate(processed_movies):
-                                movie_uuid = _uuid if i == 0 else uuid.uuid4()
-                                movie_R = {movie_info['file_path']: movie_info['target_file']}
-
-                                trans_result = Trans(movie_R, movie_uuid).trans_file()
-
-                                if isinstance(trans_result, str):
-                                    # 记录第一个错误
-                                    if first_error is None:
-                                        first_error = trans_result
-                                    logger.error(
-                                        f"[电影合集] 传输失败: {movie_info['movie_name']}: {trans_result}"
-                                    )
-                                    continue
-
-                                # 保存任务记录
-                                task_path = TASK_PATH / f"{movie_uuid}.json"
-                                task_data = {
-                                    "path": str(path),
-                                    "is_anime": is_anime,
-                                    "is_movie": True,
-                                    "is_collection": True,
-                                    "collection_name": collection_result.collection_name,
-                                    "name": movie_info['movie_name'],
-                                    "year": movie_info['movie_year'],
-                                    "season_id": 0,
-                                    "uuid": str(movie_uuid),
-                                    "error": None,
-                                    "use_ai": True,
-                                }
-                                with open(task_path, "w", encoding="UTF-8") as file:
-                                    json.dump(task_data, file, indent=4, ensure_ascii=False)
-
-                                logger.info(
-                                    f"[电影合集] 任务创建: {movie_info['movie_name']} ({movie_uuid})"
-                                )
-
-                            # 如果全部失败，返回错误
-                            if first_error and len(processed_movies) == 1:
-                                return self.error_reply(
-                                    _uuid,
-                                    first_error,
-                                    path,
-                                    is_anime,
-                                    is_movie,
-                                    collection_result.collection_name,
-                                    0,
-                                )
-
-                            return True
-
-            # 单个电影或AI合集分析失败，使用传统方式处理
-            if not name:
-                logger.warning(f'[处理任务] 未搜索到电影信息, 跳过{rtpath_name}')
+            if not video_files:
                 return self.error_reply(
                     _uuid,
-                    f'[TMDB] 未搜索到电影信息, 跳过{rtpath_name}',
+                    self._failure_message("ai_empty_mapping", "未发现可处理的视频文件"),
                     path,
                     is_anime,
                     is_movie,
+                    name,
+                    season_id,
+                    failure_reason="ai_empty_mapping",
+                    ai_attempted=True,
+                    ai_used=False,
+                    ai_confidence=task_ai_confidence,
                 )
 
-            first_data = info['release_date']
-            first_year = first_data.split('-')[0] if first_data else None
-            work_path = FilenameBuilder.build_movie_work_path(_WORK_PATH, name, first_year)
-            work_path.mkdir(parents=True, exist_ok=True)
-
-            if path.is_file():
-                # 提取视频格式和分集信息
-                video_format = extract_video_format(path.name)
-                part = extract_part(path.name)
-                meta = MovieMetadata(
-                    title=name,
-                    year=first_year,
-                    video_format=video_format,
-                    part=part,
-                    file_ext=path.suffix,
+            if path.is_dir() and len(video_files) > 1:
+                logger.info(
+                    f"[处理任务] 检测到电影合集候选，共 {len(video_files)} 个视频文件"
                 )
-                new_filename = FilenameBuilder.build_movie_filename(meta)
-                self.R[path] = work_path / new_filename
-            else:
-                for item_path in path.iterdir():
-                    if item_path.suffix.lower() in VIDEO_SUFFIX:
-                        video_format = extract_video_format(item_path.name)
-                        part = extract_part(item_path.name)
-                        meta = MovieMetadata(
-                            title=name,
-                            year=first_year,
-                            video_format=video_format,
-                            part=part,
-                            file_ext=item_path.suffix,
-                        )
-                        new_filename = FilenameBuilder.build_movie_filename(meta)
-                        self.R[item_path] = work_path / new_filename
-                    else:
-                        # 非视频文件保持原名
-                        self.R[item_path] = work_path / item_path.name
-            season_id = 0
-        # 如果是剧集类型
-        else:
-            if is_anime:
-                if not name:
-                    logger.info('[处理任务] TMDB未搜索到!转为MyAnimeList搜索！')
-                    search_result = jikan.search(
-                        'anime',
-                        rtpath_name,
-                        page=1,
-                    )
-                    for i in search_result['data']:
-                        if i['type'] == 'Anime':
-                            data = i
-                            break
-                    else:
-                        for i in search_result['data']:
-                            if i['type'] == 'TV':
-                                data = i
-                                break
-                        else:
-                            data = search_result['data'][0]
-                    titles = data['titles']
-                    logger.info((f'[处理任务] MyAnimeList识别结果: {titles}'))
-                else:
-                    titles = None
-                _WORK_PATH = self.ANIME_PATH
-            else:
-                titles = [{'type': 'Default', 'title': name}]
-                _WORK_PATH = self.BANGUMI_PATH
-
-            if not name:
-                logger.warning(f'[处理任务] 未搜索到剧集信息, 跳过{rtpath_name}')
-                return self.error_reply(
-                    _uuid,
-                    f'[TMDB] 未搜索到剧集信息, 跳过{rtpath_name}',
-                    path,
-                    is_anime,
-                    is_movie,
+                # 目录中可能包含子目录，base_path 需要是目录本身
+                local_files = VideoAnalyzer.analyze_video_files(path, video_files)
+                collection_result = ai_client.analyze_movie_collection(
+                    path.name,
+                    local_files,
                 )
 
-            first_data: str = info['first_air_date']
-            first_year = first_data.split('-')[0]
-            work_path = _WORK_PATH / f'{name} ({first_year})'
-
-            # 只有 AI 不可用时才使用相似度计算季度
-            if not self.ai_processor.ai_client.is_available():
-                season_id = self.get_season_id(
-                    info,
-                    work_path,
-                    path,
-                    titles,
-                )
-            else:
-                # AI 可用时，先设置默认值，后续由 AI 确定季度
-                season_id = 1
-
-            if cus_season_id:
-                season_id = int(cus_season_id)
-
-            # 【AI增强处理】
-            # 如果启用了AI，使用AI分析文件映射（不再限制动漫类型）
-            if self.ai_processor.ai_client.is_available():
-                logger.info("[处理任务] 启用AI分析文件映射")
-                logger.info("[处理任务] 填充详细季信息")
-                tv_info = self.search.fill_season_info(info)
-
-                # AI 重试机制
-                max_retries = 3
-                ai_result: AIAnalysisResult | None = None
-
-                for attempt in range(1, max_retries + 1):
-                    logger.info(f"[处理任务] AI分析尝试 {attempt}/{max_retries}")
-                    ai_result = self.ai_processor.analyze_anime_files(path, tv_info)
-
-                    if ai_result:
-                        # 检查AI置信度阈值
-                        confidence_threshold = cm.get_config("ai_confidence_threshold")
-                        should_use_ai = False
-
-                        if (
-                            confidence_threshold == "High"
-                            and ai_result.confidence == "High"
-                        ):
-                            should_use_ai = True
-                        elif confidence_threshold == "Medium" and ai_result.confidence in [
-                            "High",
-                            "Medium",
-                        ]:
-                            should_use_ai = True
-                        elif confidence_threshold == "Low":
-                            should_use_ai = True
-
-                        if should_use_ai:
-                            logger.info("[处理任务] 使用AI分析结果进行文件映射")
-
-                            # 从 AI 季度映射中提取主要季度，更新 season_id
-                            if ai_result.season_mapping:
-                                first_mapping = ai_result.season_mapping[0]
-                                if first_mapping.maps_to_tmdb_seasons:
-                                    season_id = first_mapping.maps_to_tmdb_seasons[0]
-                                    logger.info(f"[处理任务] AI识别主季度: {season_id}")
-
-                            # AI流程独立生成映射
-                            self.R = self.ai_processor.apply_ai_mapping(
-                                ai_result=ai_result,
-                                anime_info=tv_info,
-                                base_path=path,
-                                work_path=work_path,
-                            )
-
-                            if self.R:
-                                # 从实际映射结果中提取 season_id
-                                # 检查所有映射的目标路径，提取季度信息
-                                detected_seasons = set()
-                                for target_path in self.R.values():
-                                    # 目标路径格式: .../Season X/...
-                                    parts = target_path.parts
-                                    for part in parts:
-                                        if part.startswith('Season '):
-                                            try:
-                                                s_num = int(part.replace('Season ', ''))
-                                                detected_seasons.add(s_num)
-                                            except ValueError:
-                                                pass
-
-                                if detected_seasons:
-                                    # 如果只有 Season 0，则 season_id = 0
-                                    # 否则取最小的非零季度（优先显示主季度）
-                                    if detected_seasons == {0}:
-                                        season_id = 0
-                                        logger.info("[处理任务] 所有文件映射到 Season 0")
-                                    else:
-                                        non_zero = [s for s in detected_seasons if s > 0]
-                                        if non_zero:
-                                            season_id = min(non_zero)
-                                        logger.info(
-                                            f"[处理任务] 检测到季度: {detected_seasons}, "
-                                            f"使用 season_id={season_id}"
-                                        )
-
-                                # AI 成功返回映射，跳出重试循环
-                                break
-                            else:
-                                logger.warning(
-                                    f"[处理任务] AI第{attempt}次尝试未返回有效映射"
-                                )
-                        else:
-                            logger.warning(
-                                f"[处理任务] AI第{attempt}次尝试置信度不足: "
-                                f"{ai_result.confidence}"
-                            )
-                    else:
-                        logger.warning(f"[处理任务] AI第{attempt}次尝试失败")
-
-                    if attempt < max_retries:
-                        logger.info("[处理任务] 准备重试AI分析...")
-                else:
-                    # 所有重试都失败
-                    logger.error(
-                        f"[处理任务] AI分析失败，已重试{max_retries}次，任务失败"
-                    )
+                if not collection_result:
                     return self.error_reply(
                         _uuid,
-                        f"[AI] 分析失败，已重试{max_retries}次",
+                        self._failure_message("ai_timeout"),
                         path,
                         is_anime,
                         is_movie,
                         name,
                         season_id,
+                        failure_reason="ai_timeout",
+                        ai_attempted=True,
+                        ai_used=False,
+                        ai_confidence=task_ai_confidence,
                     )
-            else:
-                # AI未启用，使用传统处理方式
-                self._process_traditional(path, rtpath_name, work_path, season_id)
 
-        task_path = TASK_PATH / f"{_uuid}.json"
-        task_data = {
-            "path": str(path),
-            "is_anime": is_anime,
-            "is_movie": is_movie,
-            "name": name,
-            "season_id": season_id,
-            "uuid": str(_uuid),
-            "error": None,
-            "use_ai": self.ai_processor.ai_client.is_available(),
-        }
+                task_ai_confidence = collection_result.confidence
+                if not self._is_confidence_acceptable(collection_result.confidence):
+                    return self.error_reply(
+                        _uuid,
+                        self._failure_message(
+                            "ai_low_confidence",
+                            f"合集置信度={collection_result.confidence}",
+                        ),
+                        path,
+                        is_anime,
+                        is_movie,
+                        name,
+                        season_id,
+                        failure_reason="ai_low_confidence",
+                        ai_attempted=True,
+                        ai_used=True,
+                        ai_confidence=collection_result.confidence,
+                    )
+
+                valid, reason, detail = self._validate_movie_collection_result(
+                    collection_result,
+                    video_files,
+                    path,
+                )
+                if not valid:
+                    return self.error_reply(
+                        _uuid,
+                        self._failure_message(reason or "ai_invalid_mapping", detail),
+                        path,
+                        is_anime,
+                        is_movie,
+                        name,
+                        season_id,
+                        failure_reason=reason or "ai_invalid_mapping",
+                        ai_attempted=True,
+                        ai_used=True,
+                        ai_confidence=collection_result.confidence,
+                    )
+
+                processed_movies, unresolved = self._process_movie_collection(
+                    path,
+                    collection_result,
+                    work_root,
+                    ai_client,
+                )
+
+                if unresolved:
+                    detail = f"未能完成全部电影映射: {', '.join(unresolved[:3])}"
+                    return self.error_reply(
+                        _uuid,
+                        self._failure_message("ai_empty_mapping", detail),
+                        path,
+                        is_anime,
+                        is_movie,
+                        name,
+                        season_id,
+                        failure_reason="ai_empty_mapping",
+                        ai_attempted=True,
+                        ai_used=True,
+                        ai_confidence=collection_result.confidence,
+                    )
+
+                if not processed_movies:
+                    return self.error_reply(
+                        _uuid,
+                        self._failure_message("ai_empty_mapping"),
+                        path,
+                        is_anime,
+                        is_movie,
+                        name,
+                        season_id,
+                        failure_reason="ai_empty_mapping",
+                        ai_attempted=True,
+                        ai_used=True,
+                        ai_confidence=collection_result.confidence,
+                    )
+
+                for index, movie_data in enumerate(processed_movies):
+                    movie_uuid = _uuid if index == 0 else str(uuid.uuid4())
+                    movie_map = {
+                        movie_data['file_path']: movie_data['target_file']
+                    }
+                    trans_result = Trans(movie_map, movie_uuid).trans_file()
+                    if isinstance(trans_result, str):
+                        return self.error_reply(
+                            movie_uuid,
+                            self._failure_message("trans_failed", trans_result),
+                            movie_data['file_path'],
+                            is_anime,
+                            True,
+                            movie_data['movie_name'],
+                            0,
+                            failure_reason="trans_failed",
+                            ai_attempted=True,
+                            ai_used=True,
+                            ai_confidence=movie_data.get(
+                                'ai_confidence',
+                                collection_result.confidence,
+                            ),
+                            extra_task_data={
+                                "is_collection": True,
+                                "collection_name": (
+                                    collection_result.collection_name
+                                ),
+                            },
+                        )
+
+                    self._write_task_data(
+                        {
+                            "path": str(path),
+                            "is_anime": is_anime,
+                            "is_movie": True,
+                            "is_collection": True,
+                            "collection_name": collection_result.collection_name,
+                            "name": movie_data['movie_name'],
+                            "year": movie_data['movie_year'],
+                            "season_id": 0,
+                            "uuid": str(movie_uuid),
+                            "error": None,
+                            "use_ai": True,
+                            "ai_attempted": True,
+                            "ai_used": True,
+                            "ai_confidence": movie_data.get(
+                                'ai_confidence',
+                                collection_result.confidence,
+                            ),
+                            "failure_reason": None,
+                            "pipeline_mode": "ai_strict",
+                            "tmdb_id": movie_data.get("tmdb_id"),
+                            "poster_path": movie_data.get("poster_path"),
+                            "tmdb_name": movie_data.get("tmdb_name"),
+                            "tmdb_year": movie_data.get("tmdb_year"),
+                            "tmdb_media_type": movie_data.get(
+                                "tmdb_media_type"
+                            ),
+                            "tmdb_genres": movie_data.get("tmdb_genres"),
+                            "release_group": movie_data.get(
+                                "release_group"
+                            ),
+                            "resource_term": movie_data.get(
+                                "resource_term"
+                            ),
+                        }
+                    )
+
+                return True
+
+            # 单电影：候选搜索 + AI 选择已在 check_task_type 中完成
+            first_data = info.get('release_date', '')
+            first_year = first_data.split('-')[0] if first_data else None
+            work_path = FilenameBuilder.build_movie_work_path(
+                work_root,
+                name,
+                first_year,
+            )
+            work_path.mkdir(parents=True, exist_ok=True)
+
+            for source_video in video_files:
+                video_format = extract_video_format(source_video.name)
+                part = extract_part(source_video.name)
+                meta = MovieMetadata(
+                    title=name,
+                    year=first_year,
+                    video_format=video_format,
+                    part=part,
+                    file_ext=source_video.suffix,
+                )
+                new_filename = FilenameBuilder.build_movie_filename(meta)
+                self.R[source_video] = work_path / new_filename
+
+            primary_source_name = video_files[0].name if video_files else path.name
+            release_group = self._extract_release_group(primary_source_name)
+            resource_term = self._extract_resource_term(primary_source_name)
+
+            if not self.R:
+                return self.error_reply(
+                    _uuid,
+                    self._failure_message("ai_empty_mapping"),
+                    path,
+                    is_anime,
+                    is_movie,
+                    name,
+                    season_id,
+                    failure_reason="ai_empty_mapping",
+                    ai_attempted=True,
+                    ai_used=False,
+                    ai_confidence=task_ai_confidence,
+                )
+
+            season_id = 0
+
+        else:
+            # TV：AI 映射为唯一主路径
+            work_root = self.ANIME_PATH if is_anime else self.BANGUMI_PATH
+            first_data = info.get('first_air_date', '')
+            first_year = first_data.split('-')[0] if first_data else None
+            work_path = FilenameBuilder.build_tv_work_path(
+                work_root,
+                name,
+                first_year,
+            )
+
+            tv_info = self.search.fill_season_info(info)
+            video_files = self.ai_processor._collect_video_files(path)
+            primary_source_name = video_files[0].name if video_files else path.name
+            release_group = self._extract_release_group(primary_source_name)
+            resource_term = self._extract_resource_term(primary_source_name)
+            if not video_files:
+                return self.error_reply(
+                    _uuid,
+                    self._failure_message("ai_empty_mapping", "未发现可处理的视频文件"),
+                    path,
+                    is_anime,
+                    is_movie,
+                    name,
+                    season_id,
+                    failure_reason="ai_empty_mapping",
+                    ai_attempted=True,
+                    ai_used=False,
+                    ai_confidence=task_ai_confidence,
+                )
+
+            all_local_files = self.ai_processor._collect_all_local_files(path)
+
+            ai_result = self.ai_processor.analyze_anime_files(
+                path,
+                tv_info,
+                video_files=video_files,
+            )
+            if not ai_result:
+                return self.error_reply(
+                    _uuid,
+                    self._failure_message("ai_timeout"),
+                    path,
+                    is_anime,
+                    is_movie,
+                    name,
+                    season_id,
+                    failure_reason="ai_timeout",
+                    ai_attempted=True,
+                    ai_used=False,
+                    ai_confidence=task_ai_confidence,
+                )
+
+            task_ai_confidence = ai_result.confidence
+            if not self._is_confidence_acceptable(ai_result.confidence):
+                return self.error_reply(
+                    _uuid,
+                    self._failure_message(
+                        "ai_low_confidence",
+                        f"结果置信度={ai_result.confidence}",
+                    ),
+                    path,
+                    is_anime,
+                    is_movie,
+                    name,
+                    season_id,
+                    failure_reason="ai_low_confidence",
+                    ai_attempted=True,
+                    ai_used=True,
+                    ai_confidence=ai_result.confidence,
+                )
+
+            valid, reason, detail = self.ai_processor.validate_tv_result(
+                ai_result,
+                tv_info,
+                path,
+                video_files=video_files,
+            )
+            if not valid:
+                return self.error_reply(
+                    _uuid,
+                    self._failure_message(reason or "ai_invalid_mapping", detail),
+                    path,
+                    is_anime,
+                    is_movie,
+                    name,
+                    season_id,
+                    failure_reason=reason or "ai_invalid_mapping",
+                    ai_attempted=True,
+                    ai_used=True,
+                    ai_confidence=ai_result.confidence,
+                )
+
+            self.R = self.ai_processor.apply_ai_mapping(
+                ai_result=ai_result,
+                anime_info=tv_info,
+                base_path=path,
+                work_path=work_path,
+                all_local_files=all_local_files,
+            )
+            if not self.R:
+                return self.error_reply(
+                    _uuid,
+                    self._failure_message("ai_empty_mapping"),
+                    path,
+                    is_anime,
+                    is_movie,
+                    name,
+                    season_id,
+                    failure_reason="ai_empty_mapping",
+                    ai_attempted=True,
+                    ai_used=True,
+                    ai_confidence=ai_result.confidence,
+                )
+
+            season_id = self._detect_season_id_from_mapping(self.R)
+            if cus_season_id is not None:
+                # 仅影响任务展示，不覆盖 AI 映射本身
+                season_id = int(cus_season_id)
+
+        # Step.4 迁移与任务落盘
         from ..subtitle.extractor import SUBTITLE_EXTENSIONS
 
-        video_mapping = {}
-        subtitle_mapping = {}
+        video_mapping: Dict[Path, Path] = {}
+        subtitle_mapping: Dict[Path, Path] = {}
         for source_path, target_path in self.R.items():
             if source_path.suffix.lower() in SUBTITLE_EXTENSIONS:
                 subtitle_mapping[source_path] = target_path
             else:
                 video_mapping[source_path] = target_path
 
-        # 先执行视频重命名（按主 mode），并写 record 供字幕导入使用
         trans_result = Trans(video_mapping, _uuid).trans_file()
         self.R = {}
         if isinstance(trans_result, str):
             return self.error_reply(
                 _uuid,
-                trans_result,
+                self._failure_message("trans_failed", trans_result),
                 path,
                 is_anime,
                 is_movie,
                 name,
                 season_id,
+                failure_reason="trans_failed",
+                ai_attempted=True,
+                ai_used=ai_used,
+                ai_confidence=task_ai_confidence,
             )
 
-        # 写入 task 记录（字幕导入会读取 data/task + data/record）
-        with open(task_path, "w", encoding="UTF-8") as file:
-            json.dump(task_data, file, indent=4, ensure_ascii=False)
+        self._write_task_data(
+            {
+                "path": str(path),
+                "is_anime": is_anime,
+                "is_movie": is_movie,
+                "name": name,
+                "year": first_year,
+                "season_id": season_id,
+                "uuid": str(_uuid),
+                "error": None,
+                "use_ai": ai_used,
+                "ai_attempted": True,
+                "ai_used": ai_used,
+                "ai_confidence": task_ai_confidence,
+                "failure_reason": None,
+                "pipeline_mode": "ai_strict",
+                "tmdb_id": info.get("id") if isinstance(info, dict) else None,
+                "poster_path": (
+                    info.get("poster_path") if isinstance(info, dict) else None
+                ),
+                "tmdb_name": name,
+                "tmdb_year": first_year,
+                "tmdb_media_type": "movie" if is_movie else "tv",
+                "tmdb_genres": (
+                    info.get("genres", []) if isinstance(info, dict) else []
+                ),
+                "release_group": release_group,
+                "resource_term": resource_term,
+            }
+        )
 
-        # 再把字幕按“字幕导入”方式强制复制到最终目录
+        # 字幕文件按“字幕导入”方式强制复制
         if subtitle_mapping:
             sub_trans = Trans(
                 subtitle_mapping,
@@ -985,93 +708,469 @@ class Rename:
 
         return True
 
+    def check_task_type(
+        self,
+        rtpath_name: str,
+        year: int,
+        path: Path,
+        is_anime: Optional[bool] = None,
+        is_movie: Optional[bool] = None,
+        ai_client: Optional[AIClient] = None,
+    ) -> Union[Tuple[str, Dict, bool, bool, Optional[str]], str]:
+        """AI-first 类型判定：TV/Movie 均采用候选 + AI 选择。"""
+        ai_client = ai_client or AIClient()
+        if not ai_client.is_available():
+            return "ai_unavailable"
+
+        ai_extract = ai_client.extract_title_and_type(path.name)
+        if not ai_extract:
+            return "ai_timeout"
+
+        ai_title, ai_type = ai_extract
+        logger.info(
+            f"[处理任务] AI标题类型提取: title={ai_title}, type={ai_type}"
+        )
+
+        queries: List[str] = []
+        if ai_title:
+            queries.append(ai_title)
+        if rtpath_name and rtpath_name not in queries:
+            queries.append(rtpath_name)
+
+        tv_name = ''
+        tv_info: Optional[Dict] = None
+        tv_confidence: Optional[str] = None
+        tv_reason = "tmdb_not_found"
+
+        movie_name = ''
+        movie_info: Optional[Dict] = None
+        movie_confidence: Optional[str] = None
+        movie_reason = "tmdb_not_found"
+
+        has_tv_hint = self._has_tv_hint(path.name)
+        has_movie_hint = self._has_movie_hint(path.name)
+        forced_by_flag = is_movie is not None
+
+        search_tv_chain = True
+        search_movie_chain = True
+
+        if forced_by_flag:
+            search_tv_chain = not is_movie
+            search_movie_chain = bool(is_movie)
+        elif ai_type == 'movie' and not has_tv_hint:
+            search_tv_chain = False
+        elif ai_type == 'tv' and not has_movie_hint:
+            search_movie_chain = False
+        elif has_tv_hint and not has_movie_hint:
+            search_movie_chain = False
+        elif has_movie_hint and not has_tv_hint:
+            search_tv_chain = False
+
+        if search_tv_chain:
+            for query in queries:
+                _name, _info, _conf, _reason = self._search_tv_with_ai_selection(
+                    path.name,
+                    query,
+                    year,
+                    ai_client,
+                )
+                if _info:
+                    tv_name, tv_info, tv_confidence = _name, _info, _conf
+                    break
+                if _reason and _reason != "tmdb_not_found":
+                    tv_reason = _reason
+
+        if search_movie_chain:
+            for query in queries:
+                _name, _info, _conf, _reason = self._search_movie_with_ai_selection(
+                    path.name,
+                    query,
+                    year,
+                    ai_client,
+                )
+                if _info:
+                    movie_name, movie_info, movie_confidence = _name, _info, _conf
+                    break
+                if _reason and _reason != "tmdb_not_found":
+                    movie_reason = _reason
+
+        # 主链路未命中时，执行一次保护性补搜
+        if not tv_info and not movie_info:
+            if not search_tv_chain:
+                for query in queries:
+                    _name, _info, _conf, _reason = self._search_tv_with_ai_selection(
+                        path.name,
+                        query,
+                        year,
+                        ai_client,
+                    )
+                    if _info:
+                        tv_name, tv_info, tv_confidence = _name, _info, _conf
+                        break
+                    if _reason and _reason != "tmdb_not_found":
+                        tv_reason = _reason
+
+            if not search_movie_chain:
+                for query in queries:
+                    _name, _info, _conf, _reason = self._search_movie_with_ai_selection(
+                        path.name,
+                        query,
+                        year,
+                        ai_client,
+                    )
+                    if _info:
+                        movie_name, movie_info, movie_confidence = _name, _info, _conf
+                        break
+                    if _reason and _reason != "tmdb_not_found":
+                        movie_reason = _reason
+
+        if is_movie is not None:
+            final_is_movie = is_movie
+        elif ai_type == 'movie':
+            final_is_movie = True
+        elif ai_type == 'tv':
+            final_is_movie = False
+        elif has_tv_hint and not has_movie_hint:
+            final_is_movie = False
+        elif has_movie_hint and not has_tv_hint:
+            final_is_movie = True
+        elif tv_info and not movie_info:
+            final_is_movie = False
+        elif movie_info and not tv_info:
+            final_is_movie = True
+        else:
+            final_is_movie = False
+
+        # 规则仅做冲突保护
+        if final_is_movie and not movie_info and tv_info:
+            logger.warning('[处理任务] 电影链路无TMDB结果，保护性切换到TV')
+            final_is_movie = False
+        elif not final_is_movie and not tv_info and movie_info:
+            logger.warning('[处理任务] TV链路无TMDB结果，保护性切换到Movie')
+            final_is_movie = True
+
+        if final_is_movie:
+            if not movie_info:
+                return movie_reason if movie_reason.startswith('ai_') else 'tmdb_not_found'
+            selected_name = movie_name
+            selected_info = movie_info
+            selected_confidence = movie_confidence
+        else:
+            if not tv_info:
+                return tv_reason if tv_reason.startswith('ai_') else 'tmdb_not_found'
+            selected_name = tv_name
+            selected_info = tv_info
+            selected_confidence = tv_confidence
+
+        final_is_anime = (
+            is_anime
+            if is_anime is not None
+            else self._detect_anime_genre(selected_info)
+        )
+
+        return (
+            selected_name,
+            selected_info,
+            bool(final_is_anime),
+            bool(final_is_movie),
+            selected_confidence,
+        )
+
+    def _search_tv_with_ai_selection(
+        self,
+        folder_name: str,
+        query: str,
+        year: int,
+        ai_client: AIClient,
+    ) -> Tuple[str, Optional[Dict], Optional[str], str]:
+        candidates = self.search.search_tv_by_query(query, year, limit=5)
+        if not candidates and year != 0:
+            candidates = self.search.search_tv_by_query(query, None, limit=5)
+
+        if not candidates:
+            return '', None, None, 'tmdb_not_found'
+
+        if len(candidates) == 1:
+            selected = candidates[0]
+            selection_confidence = 'High'
+        else:
+            selected, selection_confidence = self._ai_select_tv(
+                ai_client,
+                folder_name,
+                query,
+                candidates,
+            )
+            if not selected:
+                return '', None, selection_confidence, 'ai_low_confidence'
+            if not self._is_confidence_acceptable(selection_confidence):
+                return '', None, selection_confidence, 'ai_low_confidence'
+
+        tv_info = self.search.get_tv_info_by_id(selected['id'])
+        if not tv_info:
+            return '', None, selection_confidence, 'tmdb_not_found'
+
+        name = tv_info.get('name', selected.get('name', ''))
+        logger.info(
+            f"[电视剧搜索] 选择: {name} (confidence={selection_confidence})"
+        )
+        return name, tv_info, selection_confidence, ''
+
+    def _search_movie_with_ai_selection(
+        self,
+        filename: str,
+        query: str,
+        year: int,
+        ai_client: AIClient,
+    ) -> Tuple[str, Optional[Dict], Optional[str], str]:
+        candidates = self.search.search_movies_by_title(query, year, limit=5)
+        if not candidates and year != 0:
+            candidates = self.search.search_movies_by_title(query, None, limit=5)
+
+        if not candidates:
+            return '', None, None, 'tmdb_not_found'
+
+        if len(candidates) == 1:
+            selected = candidates[0]
+            selection_confidence = 'High'
+        else:
+            selected, selection_confidence = self._ai_select_movie(
+                ai_client,
+                filename,
+                query,
+                candidates,
+            )
+            if not selected:
+                return '', None, selection_confidence, 'ai_low_confidence'
+            if not self._is_confidence_acceptable(selection_confidence):
+                return '', None, selection_confidence, 'ai_low_confidence'
+
+        movie_info = self.search.get_movie_info_by_id(selected['id'])
+        if not movie_info:
+            return '', None, selection_confidence, 'tmdb_not_found'
+
+        movie_name = movie_info.get('title', selected.get('title', ''))
+        logger.info(
+            f"[电影搜索] 选择: {movie_name} (confidence={selection_confidence})"
+        )
+        return movie_name, movie_info, selection_confidence, ''
+
+    def _ai_select_movie(
+        self,
+        ai_client: AIClient,
+        filename: str,
+        extracted_title: str,
+        candidates: List[Dict],
+    ) -> Tuple[Optional[Dict], Optional[str]]:
+        """让 AI 从电影候选列表中选择最匹配项（返回候选和置信度）。"""
+        if not ai_client.is_available():
+            return None, None
+
+        candidates_info = []
+        for index, movie in enumerate(candidates, start=1):
+            candidates_info.append(
+                (
+                    f"{index}. {movie.get('title', '')}"
+                    f" ({movie.get('original_title', '')})"
+                    f" [{movie.get('release_date', '')}]"
+                )
+            )
+
+        prompt = f"""请从以下 TMDB 电影候选中选择最匹配的一项。
+
+原始文件名: {filename}
+提取标题: {extracted_title}
+
+候选列表:
+{chr(10).join(candidates_info)}
+
+请严格返回 JSON：
+{{
+  "index": 1,
+  "confidence": "High/Medium/Low",
+  "reason": "简短说明"
+}}
+"""
+
+        system_prompt = (
+            "你是电影匹配助手。根据文件名和标题选择最匹配的 TMDB 候选。"
+            "必须只返回 JSON。"
+        )
+
+        try:
+            if ai_client.provider.lower() == "gemini":
+                result = ai_client._call_gemini_simple(
+                    system_prompt,
+                    prompt,
+                    max_retries=1,
+                    validation_key="index",
+                )
+            else:
+                result = ai_client._call_openai_simple(
+                    system_prompt,
+                    prompt,
+                    max_retries=1,
+                    validation_key="index",
+                )
+
+            parsed = self._parse_selection_result(result)
+            if not parsed:
+                return None, None
+
+            idx = parsed['index'] - 1
+            confidence = parsed['confidence']
+            if 0 <= idx < len(candidates):
+                logger.info(
+                    f"[AI选择] 电影 {filename} -> 候选#{idx + 1}, "
+                    f"confidence={confidence}"
+                )
+                return candidates[idx], confidence
+        except Exception as e:
+            logger.warning(f"[AI选择] 电影选择失败: {e}")
+
+        return None, None
+
+    def _ai_select_tv(
+        self,
+        ai_client: AIClient,
+        folder_name: str,
+        query: str,
+        candidates: List[Dict],
+    ) -> Tuple[Optional[Dict], Optional[str]]:
+        """让 AI 从电视剧候选列表中选择最匹配项（返回候选和置信度）。"""
+        if not ai_client.is_available():
+            return None, None
+
+        candidates_info = []
+        for index, tv in enumerate(candidates, start=1):
+            candidates_info.append(
+                (
+                    f"{index}. {tv.get('name', '')}"
+                    f" ({tv.get('original_name', '')})"
+                    f" [{tv.get('first_air_date', '')}]"
+                )
+            )
+
+        prompt = f"""请从以下 TMDB 电视剧/动漫候选中选择最匹配的一项。
+
+原始目录名: {folder_name}
+搜索关键词: {query}
+
+候选列表:
+{chr(10).join(candidates_info)}
+
+请严格返回 JSON：
+{{
+  "index": 1,
+  "confidence": "High/Medium/Low",
+  "reason": "简短说明"
+}}
+"""
+
+        system_prompt = (
+            "你是动漫与电视剧匹配助手。根据目录名选择最匹配的 TMDB 候选。"
+            "必须只返回 JSON。"
+        )
+
+        try:
+            if ai_client.provider.lower() == "gemini":
+                result = ai_client._call_gemini_simple(
+                    system_prompt,
+                    prompt,
+                    max_retries=1,
+                    validation_key="index",
+                )
+            else:
+                result = ai_client._call_openai_simple(
+                    system_prompt,
+                    prompt,
+                    max_retries=1,
+                    validation_key="index",
+                )
+
+            parsed = self._parse_selection_result(result)
+            if not parsed:
+                return None, None
+
+            idx = parsed['index'] - 1
+            confidence = parsed['confidence']
+            if 0 <= idx < len(candidates):
+                logger.info(
+                    f"[AI选择] 电视剧 {folder_name} -> 候选#{idx + 1}, "
+                    f"confidence={confidence}"
+                )
+                return candidates[idx], confidence
+        except Exception as e:
+            logger.warning(f"[AI选择] 电视剧选择失败: {e}")
+
+        return None, None
+
     def _process_movie_collection(
         self,
         path: Path,
-        collection_result,
+        collection_result: MovieCollectionResult,
         work_path: Path,
-        is_anime: bool,
-    ) -> List[Dict]:
-        """
-        处理电影合集，返回每部电影的处理信息
-
-        Args:
-            path: 源文件夹路径
-            collection_result: AI分析的MovieCollectionResult
-            work_path: 工作目录（电影根目录）
-            is_anime: 是否为动漫
-
-        Returns:
-            处理成功的电影信息列表，每个元素包含:
-            - movie_name: 电影名称
-            - movie_year: 年份
-            - file_path: 源文件路径
-            - target_file: 目标文件路径
-        """
-        import tmdbsimple as tmdb
-        from ..ai.models import MovieCollectionResult
-        from ..ai.client import AIClient
-
+        ai_client: AIClient,
+    ) -> Tuple[List[Dict], List[str]]:
+        """处理电影合集，返回处理成功的电影和未解决项。"""
         if not isinstance(collection_result, MovieCollectionResult):
             logger.error("[电影合集] 无效的合集分析结果")
-            return []
+            return [], ["invalid_collection_result"]
 
-        logger.info(
-            f"[电影合集] 开始处理合集: {collection_result.collection_name}, "
-            f"包含{len(collection_result.file_mapping)}个文件映射"
-        )
-
-        processed_movies = []
-        ai_client = AIClient()
+        processed_movies: List[Dict] = []
+        unresolved: List[str] = []
 
         for mapping in collection_result.file_mapping:
-            file_path = path / mapping.file_path
+            normalized_rel = mapping.file_path.replace('\\', '/').lstrip('/')
+            file_path = (path / normalized_rel).resolve()
             if not file_path.exists():
-                logger.warning(f"[电影合集] 文件不存在: {mapping.file_path}")
+                unresolved.append(f"文件不存在:{mapping.file_path}")
                 continue
 
-            # 搜索 TMDB 获取候选列表
             candidates = self.search.search_movies_by_title(
                 mapping.movie_title,
                 mapping.year,
                 limit=5,
             )
-
             if not candidates:
-                logger.info(
-                    f"[电影合集] TMDB未找到: {mapping.movie_title}, 跳过"
-                )
+                unresolved.append(f"TMDB无结果:{mapping.movie_title}")
                 continue
 
-            # 如果只有一个结果，直接使用
             if len(candidates) == 1:
                 selected = candidates[0]
+                selected_confidence = mapping.confidence
             else:
-                # 多个候选，让 AI 选择最匹配的
-                selected = self._ai_select_movie(
+                selected, selected_confidence = self._ai_select_movie(
                     ai_client,
                     file_path.name,
                     mapping.movie_title,
                     candidates,
                 )
                 if not selected:
-                    selected = candidates[0]  # fallback 到第一个
+                    unresolved.append(f"AI未选中候选:{mapping.movie_title}")
+                    continue
+                if not self._is_confidence_acceptable(selected_confidence):
+                    unresolved.append(
+                        (
+                            "候选置信度不足:"
+                            f"{mapping.movie_title}({selected_confidence})"
+                        )
+                    )
+                    continue
 
-            # 获取电影详细信息
-            movie_obj = tmdb.Movies(selected['id'])
-            movie_obj.info(language='zh-CN')
-            movie_name = movie_obj.title
-            release_date = getattr(movie_obj, 'release_date', '')
+            movie_info = self.search.get_movie_info_by_id(selected['id'])
+            if not movie_info:
+                unresolved.append(f"无法获取详情:{mapping.movie_title}")
+                continue
+
+            movie_name = movie_info.get('title', selected.get('title', ''))
+            release_date = movie_info.get('release_date', '')
             movie_year = release_date.split('-')[0] if release_date else None
+            movie_genres = movie_info.get('genres', [])
 
-            logger.info(f'[电影搜索] 选择电影: {movie_name}')
-
-            # 创建电影文件夹
             movie_folder = FilenameBuilder.build_movie_folder(movie_name, movie_year)
             target_folder = work_path / movie_folder
             target_folder.mkdir(parents=True, exist_ok=True)
 
-            # 提取视频格式和分集信息
             video_format = extract_video_format(file_path.name)
             part = extract_part(file_path.name)
             meta = MovieMetadata(
@@ -1084,269 +1183,252 @@ class Rename:
             new_filename = FilenameBuilder.build_movie_filename(meta)
             target_file = target_folder / new_filename
 
-            # 记录处理信息
-            processed_movies.append({
-                'movie_name': movie_name,
-                'movie_year': movie_year,
-                'file_path': file_path,
-                'target_file': target_file,
-            })
+            processed_movies.append(
+                {
+                    'movie_name': movie_name,
+                    'movie_year': movie_year,
+                    'file_path': file_path,
+                    'target_file': target_file,
+                    'ai_confidence': selected_confidence or mapping.confidence,
+                    'tmdb_id': movie_info.get('id', selected.get('id')),
+                    'poster_path': movie_info.get('poster_path'),
+                    'tmdb_name': movie_name,
+                    'tmdb_year': movie_year,
+                    'tmdb_media_type': 'movie',
+                    'tmdb_genres': movie_genres,
+                    'release_group': self._extract_release_group(
+                        file_path.name
+                    ),
+                    'resource_term': self._extract_resource_term(
+                        file_path.name
+                    ),
+                }
+            )
 
             logger.info(
-                f"[电影合集] 映射: {file_path.name} -> {movie_folder}/{target_file.name}"
+                f"[电影合集] 映射: {file_path.name} -> "
+                f"{movie_folder}/{target_file.name}"
             )
 
-        # 不处理未被映射的文件（TMDB 无信息的文件不处理）
-        # 只记录日志
-        mapped_files = {m['file_path'] for m in processed_movies}
-        for item in path.iterdir():
-            if item not in mapped_files and item.is_file():
-                logger.info(f"[电影合集] 跳过未映射文件: {item.name}")
+        return processed_movies, unresolved
 
-        return processed_movies
-
-    def _ai_select_movie(
+    def _validate_movie_collection_result(
         self,
-        ai_client,
-        filename: str,
-        extracted_title: str,
-        candidates: List[Dict],
-    ) -> Optional[Dict]:
-        """
-        让 AI 从 TMDB 候选列表中选择最匹配的电影
+        collection_result: MovieCollectionResult,
+        video_files: List[Path],
+        base_path: Path,
+    ) -> Tuple[bool, Optional[str], str]:
+        """验证电影合集 AI 结果可执行性。"""
+        if not collection_result.is_collection:
+            return False, "ai_empty_mapping", "AI未识别为电影合集"
 
-        Args:
-            ai_client: AI 客户端
-            filename: 原始文件名
-            extracted_title: AI 提取的标题
-            candidates: TMDB 候选电影列表
+        if not collection_result.file_mapping:
+            return False, "ai_empty_mapping", "合集映射为空"
 
-        Returns:
-            选中的电影信息或 None
-        """
-        if not ai_client.is_available():
+        existing_rel_paths = {
+            str(p.relative_to(base_path)).replace('\\', '/')
+            for p in video_files
+        }
+
+        mapped_rel_paths = set()
+        conflicts: List[str] = []
+        low_conf_items: List[str] = []
+
+        for mapping in collection_result.file_mapping:
+            rel_path = mapping.file_path.replace('\\', '/').lstrip('/')
+
+            if not mapping.movie_title.strip():
+                conflicts.append(f"缺少电影标题:{rel_path}")
+
+            if rel_path in mapped_rel_paths:
+                conflicts.append(f"重复文件映射:{rel_path}")
+            mapped_rel_paths.add(rel_path)
+
+            if rel_path not in existing_rel_paths:
+                conflicts.append(f"文件不存在:{rel_path}")
+
+            if not self._is_confidence_acceptable(mapping.confidence):
+                low_conf_items.append(
+                    f"{rel_path}({mapping.confidence})"
+                )
+
+        if hasattr(collection_result, 'conflict_details'):
+            collection_result.conflict_details = sorted(
+                set(collection_result.conflict_details + conflicts)
+            )
+
+        unmatched = sorted(existing_rel_paths - mapped_rel_paths)
+        if hasattr(collection_result, 'unmatched_files'):
+            collection_result.unmatched_files = unmatched
+
+        if low_conf_items:
+            detail = (
+                "文件映射置信度不足: "
+                + ', '.join(low_conf_items[:5])
+            )
+            return False, "ai_low_confidence", detail
+
+        if conflicts:
+            return False, "ai_invalid_mapping", '; '.join(conflicts[:5])
+
+        if not mapped_rel_paths:
+            return False, "ai_empty_mapping", "合集映射未命中任何本地文件"
+
+        return True, None, ''
+
+    def _detect_season_id_from_mapping(self, mapping: Dict[Path, Path]) -> int:
+        detected_seasons = set()
+        for target_path in mapping.values():
+            for part in target_path.parts:
+                if not part.startswith('Season '):
+                    continue
+                try:
+                    detected_seasons.add(int(part.replace('Season ', '')))
+                except ValueError:
+                    continue
+
+        if not detected_seasons:
+            return 1
+        if detected_seasons == {0}:
+            return 0
+
+        non_zero = sorted(s for s in detected_seasons if s > 0)
+        return non_zero[0] if non_zero else 0
+
+    def _detect_anime_genre(self, info: Dict) -> bool:
+        genres = info.get('genres', [])
+        for genre in genres:
+            genre_name = str(genre.get('name', '')).lower()
+            if genre_name in ('animation', 'anime', '动画', 'アニメ'):
+                return True
+        return False
+
+    def _has_tv_hint(self, name: str) -> bool:
+        tv_hint_patterns = [
+            r'\bS\d{1,2}E\d{1,3}\b',
+            r'\bE\d{1,3}\b',
+            r'第[\d一二三四五六七八九十零]{1,3}[话話集]',
+            r'\b(OVA|OAD|SPECIALS?)\b',
+            r'\bSP\d{0,3}\b',
+            r'\bS00\b',
+            r'Season[\s._-]*0',
+            r'第0季',
+            r'特别篇',
+            r'特典',
+        ]
+        return any(
+            re.search(pattern, name, re.IGNORECASE)
+            for pattern in tv_hint_patterns
+        )
+
+    def _has_movie_hint(self, name: str) -> bool:
+        movie_keywords = [
+            'MOVIE',
+            'FILM',
+            '剧场版',
+            '劇場版',
+            '电影',
+            '電影',
+        ]
+        lower_name = name.lower()
+        return any(keyword.lower() in lower_name for keyword in movie_keywords)
+
+    def _is_confidence_acceptable(self, confidence: Optional[str]) -> bool:
+        if not confidence:
+            return False
+
+        rank = {'Low': 1, 'Medium': 2, 'High': 3}
+        threshold = cm.get_config('ai_confidence_threshold') or 'Medium'
+        return rank.get(confidence, 0) >= rank.get(threshold, 2)
+
+    def _extract_release_group(self, filename: str) -> str:
+        """从文件名提取字幕组/发布组（如 [LoliHouse]）。"""
+        if not filename:
+            return ""
+
+        match = re.match(r"^\s*\[([^\]]+)\]", filename)
+        if not match:
+            return ""
+
+        return match.group(1).strip()
+
+    def _extract_resource_term(self, filename: str) -> str:
+        """从文件名提取质量信息（分辨率 + 编码/音频标签）。"""
+        if not filename:
+            return ""
+
+        parts: List[str] = []
+        video_format = extract_video_format(filename)
+        if video_format:
+            parts.append(video_format)
+
+        upper_name = filename.upper()
+        codec_tokens = [
+            ("HEVC", "HEVC"),
+            ("X265", "x265"),
+            ("X264", "x264"),
+            ("AV1", "AV1"),
+            ("10BIT", "10bit"),
+            ("8BIT", "8bit"),
+            ("FLAC", "FLAC"),
+            ("AAC", "AAC"),
+            ("DTS", "DTS"),
+            ("DDP", "DDP"),
+            ("AC3", "AC3"),
+            ("WEBRIP", "WebRip"),
+            ("WEB-DL", "WEB-DL"),
+            ("BDRIP", "BDRip"),
+            ("BLURAY", "BluRay"),
+        ]
+
+        for token, display in codec_tokens:
+            if token in upper_name and display not in parts:
+                parts.append(display)
+
+        return " ".join(parts)
+
+    def _parse_selection_result(
+        self,
+        result: Optional[str],
+    ) -> Optional[Dict[str, Union[int, str]]]:
+        if not result:
             return None
 
-        # 构建候选列表信息
-        candidates_info = ""
-        for i, movie in enumerate(candidates):
-            title = movie.get('title', '')
-            original_title = movie.get('original_title', '')
-            release_date = movie.get('release_date', '')
-            overview = movie.get('overview', '')[:100]
-            candidates_info += (
-                f"{i+1}. {title} ({original_title}) [{release_date}]\n"
-                f"   简介: {overview}...\n"
-            )
-
-        prompt = f"""请从以下TMDB搜索结果中选择最匹配的电影。
-
-原始文件名: {filename}
-提取的标题: {extracted_title}
-
-候选电影:
-{candidates_info}
-
-请只返回最匹配的电影编号（1-{len(candidates)}），不要有其他文字。
-例如文件名包含 "extra chorus" 就应该选择标题包含 "extra chorus" 的电影。"""
-
-        system_prompt = "你是电影匹配助手。根据文件名选择最匹配的TMDB电影。只返回数字编号。"
-
         try:
-            if ai_client.provider.lower() == "gemini":
-                result = ai_client._call_gemini_simple(
-                    system_prompt, prompt,
-                    max_retries=1,
-                    validation_key="",  # 不验证 JSON
-                )
-            else:
-                result = ai_client._call_openai_simple(
-                    system_prompt, prompt,
-                    max_retries=1,
-                    validation_key="",  # 不验证 JSON
-                )
+            parsed = json.loads(result)
+        except json.JSONDecodeError:
+            match = re.search(r'\{.*\}', result, re.DOTALL)
+            if not match:
+                return None
+            try:
+                parsed = json.loads(match.group())
+            except json.JSONDecodeError:
+                return None
 
-            if result:
-                # 提取数字
-                import re
-                match = re.search(r'\d+', result.strip())
-                if match:
-                    idx = int(match.group()) - 1
-                    if 0 <= idx < len(candidates):
-                        logger.info(
-                            f"[AI选择] 文件 {filename} -> 选择第 {idx+1} 个: "
-                            f"{candidates[idx].get('title')}"
-                        )
-                        return candidates[idx]
-        except Exception as e:
-            logger.warning(f"[AI选择] AI 选择失败: {e}")
-
-        return None
-
-    def _ai_select_tv(
-        self,
-        folder_name: str,
-        query: str,
-        candidates: List[Dict],
-    ) -> Optional[Dict]:
-        """
-        让 AI 从 TMDB 候选列表中选择最匹配的电视剧
-
-        Args:
-            folder_name: 原始文件夹名
-            query: 搜索关键词
-            candidates: TMDB 候选电视剧列表
-
-        Returns:
-            选中的电视剧信息或 None
-        """
-        from ..ai.client import AIClient
-
-        ai_client = AIClient()
-        if not ai_client.is_available():
+        if not isinstance(parsed, dict):
             return None
 
-        # 构建候选列表信息
-        candidates_info = ""
-        for i, tv in enumerate(candidates):
-            name = tv.get('name', '')
-            original_name = tv.get('original_name', '')
-            first_air_date = tv.get('first_air_date', '')
-            overview = tv.get('overview', '')[:100]
-            candidates_info += (
-                f"{i+1}. {name} ({original_name}) [{first_air_date}]\n"
-                f"   简介: {overview}...\n"
-            )
-
-        prompt = f"""请从以下TMDB搜索结果中选择最匹配的电视剧/动漫。
-
-原始文件夹名: {folder_name}
-搜索关键词: {query}
-
-候选电视剧:
-{candidates_info}
-
-请只返回最匹配的电视剧编号（1-{len(candidates)}），不要有其他文字。
-注意：
-- 文件夹名中可能包含季度信息（如 S2、第二季、Okawari 等）
-- 选择与文件夹名最相关的剧集条目
-- 如果文件夹名包含特定季度后缀（如 "Okawari"、"Okaeri"），应选择对应的条目"""
-
-        system_prompt = "你是电视剧/动漫匹配助手。根据文件夹名选择最匹配的TMDB条目。只返回数字编号。"
-
         try:
-            if ai_client.provider.lower() == "gemini":
-                result = ai_client._call_gemini_simple(
-                    system_prompt, prompt,
-                    max_retries=1,
-                    validation_key="",
-                )
-            else:
-                result = ai_client._call_openai_simple(
-                    system_prompt, prompt,
-                    max_retries=1,
-                    validation_key="",
-                )
+            index = int(parsed.get('index'))
+        except Exception:
+            return None
 
-            if result:
-                match = re.search(r'\d+', result.strip())
-                if match:
-                    idx = int(match.group()) - 1
-                    if 0 <= idx < len(candidates):
-                        logger.info(
-                            f"[AI选择] 电视剧 {folder_name} -> 选择第 {idx+1} 个: "
-                            f"{candidates[idx].get('name')}"
-                        )
-                        return candidates[idx]
-        except Exception as e:
-            logger.warning(f"[AI选择] AI 选择电视剧失败: {e}")
+        confidence = str(parsed.get('confidence', 'Medium'))
+        if confidence not in ['High', 'Medium', 'Low']:
+            confidence = 'Medium'
 
-        return None
+        return {'index': index, 'confidence': confidence}
 
-    def _search_tv_with_ai_selection(
-        self,
-        folder_name: str,
-        query: str,
-        year: int,
-    ) -> Tuple[str, Optional[Dict]]:
-        """
-        搜索电视剧，支持 AI 选择最匹配的结果
+    def _failure_message(self, reason: str, detail: Optional[str] = None) -> str:
+        base = FAILURE_MESSAGES.get(reason, FAILURE_MESSAGES['ai_timeout'])
+        if detail:
+            return f"{base}: {detail}"
+        return base
 
-        Args:
-            folder_name: 原始文件夹名
-            query: 搜索关键词
-            year: 年份
-
-        Returns:
-            (剧集名称, 剧集信息) 或 ('', None)
-        """
-        import tmdbsimple as tmdb
-
-        # 获取多个候选结果
-        candidates = self.search.search_tv_by_query(query, year, limit=5)
-
-        if not candidates:
-            # 没有年份限制再试一次
-            if year != 0:
-                candidates = self.search.search_tv_by_query(query, None, limit=5)
-
-        if not candidates:
-            return '', None
-
-        # 如果只有一个结果，直接使用
-        if len(candidates) == 1:
-            selected = candidates[0]
-        else:
-            # 多个候选，让 AI 选择
-            selected = self._ai_select_tv(folder_name, query, candidates)
-            if not selected:
-                selected = candidates[0]  # fallback
-
-        # 获取详细信息
-        tv_info = self.search.get_tv_info_by_id(selected['id'])
-        if tv_info:
-            name = tv_info.get('name', selected.get('name', ''))
-            logger.info(f'[电视剧搜索] 选择: {name}')
-            return name, tv_info
-
-        return '', None
-
-    def _process_traditional(
-        self, path: Path, rtpath_name: str, work_path: Path, season_id: int
-    ):
-        """传统处理方式"""
-        if path.is_file():
-            logger.info(f"[处理任务] 开始对 [单文件] {path.name}处理")
-            self.process_sub(
-                rtpath_name,
-                None,
-                path,
-                work_path,
-                season_id,
-            )
-        else:
-            logger.info(f"[处理任务] 开始对 [文件夹] {path.name}处理")
-            repeat = find_unique_parts_in_videos(path)
-            for item_path in path.iterdir():
-                logger.info(f"[处理任务] 处理嵌套文件夹 {item_path.name}")
-                if item_path.is_dir():
-                    repeat_2 = find_unique_parts_in_videos(item_path)
-                    for sub_item in item_path.iterdir():
-                        self.process_sub(
-                            rtpath_name,
-                            repeat_2,
-                            sub_item,
-                            work_path,
-                            season_id,
-                        )
-                else:
-                    self.process_sub(
-                        rtpath_name,
-                        repeat,
-                        item_path,
-                        work_path,
-                        season_id,
-                    )
+    def _write_task_data(self, task_data: Dict) -> None:
+        task_path = TASK_PATH / f"{task_data['uuid']}.json"
+        with open(task_path, 'w', encoding='UTF-8') as file:
+            json.dump(task_data, file, indent=4, ensure_ascii=False)
 
     def error_reply(
         self,
@@ -1357,8 +1439,12 @@ class Rename:
         is_movie: Optional[bool] = None,
         name: Optional[str] = None,
         season_id: Optional[int] = None,
+        failure_reason: Optional[str] = None,
+        ai_attempted: bool = False,
+        ai_used: bool = False,
+        ai_confidence: Optional[str] = None,
+        extra_task_data: Optional[Dict] = None,
     ):
-        task_path = TASK_PATH / f'{_uuid}.json'
         task_data = {
             'path': str(path),
             'is_anime': is_anime,
@@ -1367,7 +1453,22 @@ class Rename:
             'season_id': season_id,
             'uuid': str(_uuid),
             'error': error,
+            'use_ai': ai_used,
+            'ai_attempted': ai_attempted,
+            'ai_used': ai_used,
+            'ai_confidence': ai_confidence,
+            'failure_reason': failure_reason,
+            'pipeline_mode': 'ai_strict',
+            'tmdb_id': None,
+            'poster_path': None,
+            'tmdb_name': None,
+            'tmdb_year': None,
+            'tmdb_media_type': None,
+            'tmdb_genres': [],
+            'release_group': None,
+            'resource_term': None,
         }
-        with open(task_path, 'w', encoding='UTF-8') as file:
-            json.dump(task_data, file, indent=4, ensure_ascii=False)
+        if extra_task_data:
+            task_data.update(extra_task_data)
+        self._write_task_data(task_data)
         return error

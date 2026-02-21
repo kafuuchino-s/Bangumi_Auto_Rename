@@ -5,6 +5,7 @@
 支持功能：
 1. AI识别功能测试 - 使用项目测试用例进行完整的AI识别测试
 2. OpenAI API多格式测试 - 测试function_calling、structured_output、json_object三种输出格式
+3. Gemini API多格式测试 - 测试structured_output、json_object、text三种输出格式
 
 特点：
 - 使用当前界面配置，不保存配置
@@ -15,6 +16,8 @@
 
 import json
 import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from copy import deepcopy
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -50,9 +53,7 @@ class UnifiedAITester:
             if "api_key" in key:
                 value = len(str(value)) * '*'
             logger.debug(f"[AI识别测试] 设置配置 {key}: {value}")
-        if not cm.get_config("ai_enabled"):
-            cm.set_config("ai_enabled", True)
-            logger.debug("[AI识别测试] 未启用AI功能，暂时启用进行测试")
+
 
     def _restore_config(self):
         """恢复原始配置"""
@@ -192,70 +193,66 @@ class UnifiedAITester:
         }
 
         try:
-            # 应用当前配置
-            self._apply_current_config()
+            with cm.temporary_config(self.current_config):
+                # 加载测试用例
+                test_case = self._load_test_case()
+                if not test_case:
+                    result["error"] = "无法加载测试用例"
+                    return result
 
-            # 加载测试用例
-            test_case = self._load_test_case()
-            if not test_case:
-                result["error"] = "无法加载测试用例"
-                return result
+                # 创建AI客户端
+                ai_client = AIClient()
+                if not ai_client.is_available():
+                    result["error"] = f"AI客户端不可用 - 提供商: {ai_client.provider}"
+                    return result
 
-            # 创建AI客户端
-            ai_client = AIClient()
-            if not ai_client.is_available():
-                result["error"] = f"AI客户端不可用 - 提供商: {ai_client.provider}"
-                return result
+                # 执行AI分析
+                logger.info(f"[AI识别测试] 开始AI分析 - 提供商: {ai_client.provider}")
+                ai_result = ai_client.analyze_episode_mapping(
+                    test_case["anime_info"], test_case["local_files"]
+                )
 
-            # 执行AI分析
-            logger.info(f"[AI识别测试] 开始AI分析 - 提供商: {ai_client.provider}")
-            ai_result = ai_client.analyze_episode_mapping(
-                test_case["anime_info"], test_case["local_files"]
-            )
+                # 加载期望结果并验证
+                expected = self._load_expected_result()
+                validation = self._validate_ai_result(ai_result, expected)
 
-            # 加载期望结果并验证
-            expected = self._load_expected_result()
-            validation = self._validate_ai_result(ai_result, expected)
+                # 分类结果状态
+                if ai_result is None:
+                    result_status = "ai_failed"  # AI请求或解析失败
+                elif validation and validation.get("validation_details"):
+                    details = validation["validation_details"]
+                    accuracy = details.get("accuracy", 0)
+                    missing_files = details.get("missing_files", [])
+                    extra_files = details.get("extra_files", [])
 
-            # 分类结果状态
-            if ai_result is None:
-                result_status = "ai_failed"  # AI请求或解析失败
-            elif validation and validation.get("validation_details"):
-                details = validation["validation_details"]
-                accuracy = details.get("accuracy", 0)
-                missing_files = details.get("missing_files", [])
-                extra_files = details.get("extra_files", [])
-
-                if (
-                    accuracy == 1.0
-                    and len(missing_files) == 0
-                    and len(extra_files) == 0
-                ):
-                    result_status = "perfect"  # 完全正确
+                    if (
+                        accuracy == 1.0
+                        and len(missing_files) == 0
+                        and len(extra_files) == 0
+                    ):
+                        result_status = "perfect"  # 完全正确
+                    else:
+                        result_status = "validation_failed"  # 结果验证不正确
                 else:
-                    result_status = "validation_failed"  # 结果验证不正确
-            else:
-                result_status = "validation_failed"  # 无法验证，视为验证失败
+                    result_status = "validation_failed"  # 无法验证，视为验证失败
 
-            result.update(
-                {
-                    "success": ai_result is not None,
-                    "ai_result": ai_result,
-                    "validation": validation,
-                    "provider": ai_client.provider,
-                    "result_status": result_status,
-                }
-            )
+                result.update(
+                    {
+                        "success": ai_result is not None,
+                        "ai_result": ai_result,
+                        "validation": validation,
+                        "provider": ai_client.provider,
+                        "result_status": result_status,
+                    }
+                )
 
-            logger.info(f"[AI识别测试] AI分析完成 - 成功: {result['success']}")
+                logger.info(f"[AI识别测试] AI分析完成 - 成功: {result['success']}")
 
         except Exception as e:
             logger.error(f"[AI识别测试] AI测试异常: {str(e)}")
             result["error"] = str(e)
             result["result_status"] = "ai_failed"
         finally:
-            # 恢复原始配置
-            self._restore_config()
             result["duration"] = time.time() - start_time
 
         return result
@@ -269,43 +266,326 @@ class UnifiedAITester:
         """测试OpenAI API的多种输出格式支持"""
         logger.info("[AI识别测试] 开始OpenAI API多格式测试")
 
-        # 要测试的输出格式
-        formats_to_test = ["structured_output", "json_object", "function_calling"]
-        format_results = []
-        successful_formats = []
+        result = self._test_provider_api_formats(
+            provider="openai",
+            format_key="openai_output_format",
+            formats_to_test=["structured_output", "json_object", "function_calling"],
+        )
 
-        for output_format in formats_to_test:
-            logger.info(f"[AI识别测试] 测试输出格式: {output_format}")
+        # 记忆OpenAI可用格式与排序（用于运行时自动路由）
+        self._persist_provider_format_memory("openai", result)
 
-            # 创建临时配置，修改输出格式
+        return result
+
+    def test_gemini_api_formats(self) -> Dict[str, Any]:
+        """测试Gemini API的多种输出格式支持"""
+        logger.info("[AI识别测试] 开始Gemini API多格式测试")
+
+        result = self._test_provider_api_formats(
+            provider="gemini",
+            format_key="gemini_output_format",
+            formats_to_test=["structured_output", "json_object", "text"],
+        )
+
+        # 记忆Gemini可用格式与排序（用于运行时自动路由）
+        self._persist_provider_format_memory("gemini", result)
+
+        return result
+
+    def stress_test_openai_structured_output(
+        self,
+        rounds: int = 5,
+        max_workers: Optional[int] = None,
+    ) -> Dict[str, Any]:
+        """OpenAI structured_output 并行专项压测。"""
+        return self._stress_test_single_format(
+            provider="openai",
+            format_key="openai_output_format",
+            output_format="structured_output",
+            rounds=rounds,
+            max_workers=max_workers,
+        )
+
+    def stress_test_gemini_structured_output(
+        self,
+        rounds: int = 5,
+        max_workers: Optional[int] = None,
+    ) -> Dict[str, Any]:
+        """Gemini structured_output 并行专项压测。"""
+        return self._stress_test_single_format(
+            provider="gemini",
+            format_key="gemini_output_format",
+            output_format="structured_output",
+            rounds=rounds,
+            max_workers=max_workers,
+        )
+
+    def _stress_test_single_format(
+        self,
+        provider: str,
+        format_key: str,
+        output_format: str,
+        rounds: int,
+        max_workers: Optional[int] = None,
+    ) -> Dict[str, Any]:
+        """对指定 provider 的单一格式执行全并行压测。"""
+        total_runs = max(1, int(rounds))
+        workers = max_workers if max_workers and max_workers > 0 else total_runs
+        workers = max(1, min(workers, total_runs))
+
+        logger.info(
+            "[AI识别测试] 开始单格式并行压测: "
+            f"provider={provider}, format={output_format}, "
+            f"rounds={total_runs}, workers={workers}"
+        )
+
+        def _run_once(run_index: int) -> Dict[str, Any]:
             temp_config = self.current_config.copy()
-            temp_config["openai_output_format"] = output_format
+            temp_config["ai_provider"] = provider
+            temp_config[format_key] = output_format
 
-            # 创建临时测试器并运行测试
             temp_tester = UnifiedAITester(temp_config)
             result = temp_tester._run_single_ai_test()
             result["output_format"] = output_format
-            format_results.append(result)
+            result["run_index"] = run_index
+            return result
 
-            if result["success"]:
-                successful_formats.append(output_format)
+        indexed_results: Dict[int, Dict[str, Any]] = {}
 
-        # 汇总结果和推荐格式
+        with ThreadPoolExecutor(max_workers=workers) as executor:
+            future_to_idx = {
+                executor.submit(_run_once, run_index): run_index
+                for run_index in range(1, total_runs + 1)
+            }
+
+            for future in as_completed(future_to_idx):
+                run_index = future_to_idx[future]
+                try:
+                    indexed_results[run_index] = future.result()
+                except Exception as e:
+                    logger.error(
+                        "[AI识别测试] 单格式并行压测异常: "
+                        f"run={run_index}, provider={provider}, "
+                        f"format={output_format}, error={str(e)}"
+                    )
+                    indexed_results[run_index] = {
+                        "success": False,
+                        "error": str(e),
+                        "duration": 0,
+                        "ai_result": None,
+                        "validation": None,
+                        "config_used": {
+                            **self.current_config.copy(),
+                            "ai_provider": provider,
+                            format_key: output_format,
+                        },
+                        "provider": provider,
+                        "result_status": "ai_failed",
+                        "output_format": output_format,
+                        "run_index": run_index,
+                    }
+
+        run_results = [
+            indexed_results[idx]
+            for idx in range(1, total_runs + 1)
+            if idx in indexed_results
+        ]
+
+        success_runs = sum(1 for item in run_results if item.get("success"))
+        perfect_runs = sum(
+            1 for item in run_results if item.get("result_status") == "perfect"
+        )
+        validation_failed_runs = sum(
+            1
+            for item in run_results
+            if item.get("result_status") == "validation_failed"
+        )
+        ai_failed_runs = sum(
+            1 for item in run_results if item.get("result_status") == "ai_failed"
+        )
+
+        result = {
+            "success": success_runs > 0,
+            "provider": provider,
+            "output_format": output_format,
+            "rounds": total_runs,
+            "parallel_workers": workers,
+            "run_results": run_results,
+            "summary": {
+                "success_runs": success_runs,
+                "perfect_runs": perfect_runs,
+                "validation_failed_runs": validation_failed_runs,
+                "ai_failed_runs": ai_failed_runs,
+            },
+        }
+
+        logger.info(
+            "[AI识别测试] 单格式并行压测完成: "
+            f"provider={provider}, format={output_format}, "
+            f"summary={result['summary']}"
+        )
+        return result
+
+    def _test_provider_api_formats(
+        self,
+        provider: str,
+        format_key: str,
+        formats_to_test: List[str],
+    ) -> Dict[str, Any]:
+        """按提供商执行多格式测试并汇总结果（并行执行所有格式）"""
+
+        def _run_single_format(output_format: str) -> Dict[str, Any]:
+            logger.info(f"[AI识别测试] 测试输出格式: {output_format}")
+
+            temp_config = self.current_config.copy()
+            temp_config["ai_provider"] = provider
+            temp_config[format_key] = output_format
+
+            temp_tester = UnifiedAITester(temp_config)
+            result = temp_tester._run_single_ai_test()
+            result["output_format"] = output_format
+            return result
+
+        indexed_results: Dict[int, Dict[str, Any]] = {}
+        max_workers = max(1, len(formats_to_test))
+
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            future_to_idx = {
+                executor.submit(_run_single_format, output_format): idx
+                for idx, output_format in enumerate(formats_to_test)
+            }
+
+            for future in as_completed(future_to_idx):
+                idx = future_to_idx[future]
+                output_format = formats_to_test[idx]
+                try:
+                    indexed_results[idx] = future.result()
+                except Exception as e:
+                    logger.error(
+                        f"[AI识别测试] 输出格式 {output_format} 并行测试异常: {str(e)}"
+                    )
+                    indexed_results[idx] = {
+                        "success": False,
+                        "error": str(e),
+                        "duration": 0,
+                        "ai_result": None,
+                        "validation": None,
+                        "config_used": {
+                            **self.current_config.copy(),
+                            "ai_provider": provider,
+                            format_key: output_format,
+                        },
+                        "provider": provider,
+                        "result_status": "ai_failed",
+                        "output_format": output_format,
+                    }
+
+        format_results = [
+            indexed_results[idx]
+            for idx in range(len(formats_to_test))
+            if idx in indexed_results
+        ]
+        successful_formats = [
+            item["output_format"] for item in format_results if item.get("success")
+        ]
+
         overall_result = {
             "success": len(successful_formats) > 0,
             "format_results": format_results,
             "successful_formats": successful_formats,
-            "recommended_format": self._get_recommended_format(format_results),
+            "recommended_format": self._get_recommended_format(
+                format_results, formats_to_test
+            ),
         }
 
         logger.info(
-            f"[AI识别测试] OpenAI多格式测试完成 - 成功格式: {successful_formats}"
+            f"[AI识别测试] {provider.upper()}多格式测试完成 - 成功格式: {successful_formats}"
         )
         return overall_result
 
-    def _get_recommended_format(self, format_results: List[Dict[str, Any]]) -> str:
+    def _persist_provider_format_memory(
+        self,
+        provider: str,
+        test_result: Dict[str, Any],
+    ) -> None:
+        """保存指定提供商格式测试统计，并固定自动路由顺序。"""
+        try:
+            format_results = test_result.get("format_results", []) or []
+            if not format_results:
+                return
+
+            stats_key = f"{provider}_format_stats"
+            order_key = f"{provider}_auto_format_order"
+            enabled_key = f"{provider}_auto_routing_enabled"
+
+            fixed_orders = {
+                "openai": [
+                    "structured_output",
+                    "function_calling",
+                    "json_object",
+                    "text",
+                ],
+                "gemini": ["structured_output", "json_object", "text"],
+            }
+            allowed_formats = fixed_orders.get(provider, ["text"])
+
+            existing_stats = cm.get_config(stats_key) or {}
+            if not isinstance(existing_stats, dict):
+                existing_stats = {}
+
+            updated_stats = deepcopy(existing_stats)
+
+            for item in format_results:
+                fmt = item.get("output_format")
+                if not fmt or fmt not in allowed_formats:
+                    continue
+
+                stat = updated_stats.get(fmt, {})
+                if not isinstance(stat, dict):
+                    stat = {}
+
+                total_runs = int(stat.get("total_runs", 0) or 0) + 1
+                success_runs = int(stat.get("success_runs", 0) or 0)
+                perfect_runs = int(stat.get("perfect_runs", 0) or 0)
+
+                if item.get("success"):
+                    success_runs += 1
+
+                if item.get("result_status") == "perfect":
+                    perfect_runs += 1
+
+                stat.update(
+                    {
+                        "total_runs": total_runs,
+                        "success_runs": success_runs,
+                        "perfect_runs": perfect_runs,
+                        "last_result_status": item.get("result_status"),
+                        "last_error": item.get("error"),
+                        "last_duration": item.get("duration", 0),
+                    }
+                )
+                updated_stats[fmt] = stat
+
+            cm.set_config(enabled_key, True)
+            cm.set_config(stats_key, updated_stats)
+            cm.set_config(order_key, allowed_formats)
+
+            logger.info(
+                f"[AI识别测试] 已更新{provider.upper()}自动路由顺序: "
+                f"{allowed_formats}"
+            )
+        except Exception as e:
+            logger.error(f"[AI识别测试] 保存{provider.upper()}格式记忆失败: {e}")
+
+
+    def _get_recommended_format(
+        self,
+        format_results: List[Dict[str, Any]],
+        priority_order: Optional[List[str]] = None,
+    ) -> str:
         """根据测试结果推荐最佳格式"""
-        priority_order = ["structured_output", "json_object", "function_calling"]
+        if priority_order is None:
+            priority_order = ["structured_output", "json_object", "function_calling"]
 
         # 当前使用简单测试用例，不允许出错，只要有错误就标记为失败
         perfect_formats = []  # 完全正确的格式

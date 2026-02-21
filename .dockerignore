@@ -5,6 +5,8 @@
 data/
 docs/
 tests/
+!tests/example_test_case.json
+!tests/example_expected.json
 __pycache__/
 *.pyc
 *.pyo
