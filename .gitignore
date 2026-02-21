@@ -170,3 +170,8 @@ Bangumi_Auto_Rename.onefile-build
 
 config.json
 data
+
+# Local Claude/runtime artifacts
+/.claude/
+/log
+/nul
