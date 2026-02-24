@@ -92,6 +92,26 @@ class SubtitleProcessor:
         # 未知语言，保持原样，不标记为默认
         return (lang, False)
 
+    def _extract_language_from_suffix_part(self, suffix_part: str) -> Optional[str]:
+        """从同名后缀片段中提取语言标签（如 .chs.ass -> chs）。"""
+        if not suffix_part:
+            return None
+
+        lowered = suffix_part.lower().strip()
+        if not lowered:
+            return None
+
+        # 优先匹配更长的语言键，避免 zh 命中 zh-cn 的前缀
+        for key in sorted(LANGUAGE_MAP.keys(), key=len, reverse=True):
+            pattern = (
+                rf"(^|[.\s_\-\[\]\(\)]){re.escape(key)}"
+                rf"($|[.\s_\-\[\]\(\)])"
+            )
+            if re.search(pattern, lowered):
+                return key
+
+        return None
+
     def process(
         self,
         archive_path: Path,

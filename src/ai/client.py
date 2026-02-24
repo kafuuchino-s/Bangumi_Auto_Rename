@@ -449,7 +449,8 @@ class AIClient:
 
 5. **可观测性要求（必须满足）**：
    - 返回 `unmatched_files`，列出所有未匹配文件路径（相对路径）
-   - 返回 `conflict_details`，说明冲突/不确定原因（重复映射、集数越界、文件不存在等）
+   - `conflict_details` 仅填写“硬冲突”（例如：重复映射、集数越界、文件不存在）
+   - 证据不足/不确定但可执行的说明（例如仅凭小数集数推断）请写入 `extra_notes`，不要写入 `conflict_details`
    - 如果 confidence 为 High/Medium，`file_mapping` 必须尽量覆盖可匹配文件
 
 """

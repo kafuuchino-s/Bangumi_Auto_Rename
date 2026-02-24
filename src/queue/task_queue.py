@@ -337,6 +337,10 @@ class TaskQueueManager:
 
     def _trigger_emby_notification(self) -> None:
         """触发 Emby 媒体库刷新通知"""
+        if self._batch_success <= 0:
+            logger.info("[队列] 批次无成功任务，跳过 Emby 刷新")
+            return
+
         try:
             emby = get_emby_notifier()
             if emby.is_available():

@@ -10,6 +10,7 @@ from ..ai.video_analyzer import VideoAnalyzer
 from .cleaner import extract_part, is_promotional_content
 from .filename_builder import FilenameBuilder, EpisodeMetadata
 from ..subtitle.processor import SubtitleProcessor
+from ..subtitle.extractor import SUBTITLE_EXTENSIONS
 
 
 class AIProcessor:
@@ -96,7 +97,10 @@ class AIProcessor:
                         tmdb_episode_keys.add((season_num, ep_num))
 
         seen_keys: set[Tuple[int, int]] = set()
-        conflicts: List[str] = list(getattr(ai_result, "conflict_details", []) or [])
+        ai_reported_conflicts: List[str] = list(
+            getattr(ai_result, "conflict_details", []) or []
+        )
+        strict_conflicts: List[str] = []
         mapped_files: set[str] = set()
 
         for mapping in ai_result.file_mapping:
@@ -104,15 +108,15 @@ class AIProcessor:
             source_path = (base_path / normalized_path).resolve()
 
             if not source_path.exists():
-                conflicts.append(f"文件不存在:{normalized_path}")
+                strict_conflicts.append(f"文件不存在:{normalized_path}")
 
             key = (mapping.tmdb_season, mapping.tmdb_episode)
             if key in seen_keys:
-                conflicts.append(f"重复映射:S{key[0]:02d}E{key[1]:02d}")
+                strict_conflicts.append(f"重复映射:S{key[0]:02d}E{key[1]:02d}")
             seen_keys.add(key)
 
             if key not in tmdb_episode_keys:
-                conflicts.append(f"越界映射:S{key[0]:02d}E{key[1]:02d}")
+                strict_conflicts.append(f"越界映射:S{key[0]:02d}E{key[1]:02d}")
 
             mapped_files.add(normalized_path)
 
@@ -127,13 +131,23 @@ class AIProcessor:
         ai_result.unmatched_files = sorted(
             set((ai_result.unmatched_files or []) + unmatched_files)
         )
-        ai_result.conflict_details = sorted(set(conflicts))
+        ai_result.conflict_details = sorted(
+            set(ai_reported_conflicts + strict_conflicts)
+        )
 
-        if ai_result.conflict_details:
+        soft_conflicts = sorted(
+            set(ai_result.conflict_details) - set(strict_conflicts)
+        )
+        if soft_conflicts:
+            logger.warning(
+                f"[AI处理] 检测到AI提示的不确定项(不阻断): {'; '.join(soft_conflicts[:5])}"
+            )
+
+        if strict_conflicts:
             return (
                 False,
                 "ai_invalid_mapping",
-                '; '.join(ai_result.conflict_details[:5]),
+                '; '.join(sorted(set(strict_conflicts))[:5]),
             )
 
         if not seen_keys:
@@ -194,10 +208,9 @@ class AIProcessor:
                 for s in season_map.maps_to_tmdb_seasons:
                     relevant_seasons.add(s)
 
-        # 如果 AI 没有返回 season_mapping，从 file_mapping 中提取相关季度
-        if not relevant_seasons:
-            for mapping in ai_result.file_mapping:
-                relevant_seasons.add(mapping.tmdb_season)
+        # 无论 season_mapping 是否完整，都并入 file_mapping 中出现的季度
+        for mapping in ai_result.file_mapping:
+            relevant_seasons.add(mapping.tmdb_season)
 
         # 从 work_path 提取剧集标题
         series_title = FilenameBuilder.extract_title_from_folder(work_path.name)
@@ -336,6 +349,10 @@ class AIProcessor:
 
             # 排除视频文件本身（如 E01.mkv 不应匹配 E01.mp4）
             if other_file.suffix.lower() in VIDEO_SUFFIX:
+                continue
+
+            # 仅处理字幕关联文件
+            if other_file.suffix.lower() not in SUBTITLE_EXTENSIONS:
                 continue
 
             suffix_part = other_file.name[len(video_filename):]
