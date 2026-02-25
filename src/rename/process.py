@@ -483,10 +483,14 @@ class Rename:
             for source_video in video_files:
                 video_format = extract_video_format(source_video.name)
                 part = extract_part(source_video.name)
+                resource_term = self._extract_resource_term(source_video.name)
+                release_group = self._extract_release_group(source_video.name)
                 meta = MovieMetadata(
                     title=name,
                     year=first_year,
                     video_format=video_format,
+                    resource_term=resource_term,
+                    release_group=release_group,
                     part=part,
                     file_ext=source_video.suffix,
                 )
@@ -662,6 +666,12 @@ class Rename:
                 ai_confidence=task_ai_confidence,
             )
 
+        task_poster_path = self._resolve_task_poster_path(
+            info=info,
+            is_movie=is_movie,
+            season_id=season_id,
+        )
+
         self._write_task_data(
             {
                 "path": str(path),
@@ -679,9 +689,7 @@ class Rename:
                 "failure_reason": None,
                 "pipeline_mode": "ai_strict",
                 "tmdb_id": info.get("id") if isinstance(info, dict) else None,
-                "poster_path": (
-                    info.get("poster_path") if isinstance(info, dict) else None
-                ),
+                "poster_path": task_poster_path,
                 "tmdb_name": name,
                 "tmdb_year": first_year,
                 "tmdb_media_type": "movie" if is_movie else "tv",
@@ -1173,10 +1181,14 @@ class Rename:
 
             video_format = extract_video_format(file_path.name)
             part = extract_part(file_path.name)
+            resource_term = self._extract_resource_term(file_path.name)
+            release_group = self._extract_release_group(file_path.name)
             meta = MovieMetadata(
                 title=movie_name,
                 year=movie_year,
                 video_format=video_format,
+                resource_term=resource_term,
+                release_group=release_group,
                 part=part,
                 file_ext=file_path.suffix,
             )
@@ -1386,6 +1398,39 @@ class Rename:
                 parts.append(display)
 
         return " ".join(parts)
+
+    def _resolve_task_poster_path(
+        self,
+        info: Optional[Dict],
+        is_movie: bool,
+        season_id: Optional[int],
+    ) -> Optional[str]:
+        if not isinstance(info, dict):
+            return None
+
+        series_poster = info.get("poster_path")
+        if is_movie:
+            return series_poster
+
+        if not isinstance(season_id, int):
+            return series_poster
+
+        seasons = info.get("seasons")
+        if not isinstance(seasons, list):
+            return series_poster
+
+        for season in seasons:
+            if not isinstance(season, dict):
+                continue
+            if season.get("season_number") != season_id:
+                continue
+
+            season_poster = season.get("poster_path")
+            if isinstance(season_poster, str) and season_poster.strip():
+                return season_poster
+            break
+
+        return series_poster
 
     def _parse_selection_result(
         self,

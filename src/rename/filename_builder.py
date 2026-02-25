@@ -17,6 +17,8 @@ class MovieMetadata:
     title: str
     year: Optional[str] = None
     video_format: Optional[str] = None
+    resource_term: Optional[str] = None
+    release_group: Optional[str] = None
     part: Optional[str] = None
     file_ext: str = ".mkv"
 
@@ -30,6 +32,8 @@ class EpisodeMetadata:
     episode: int = 1
     year: Optional[str] = None
     part: Optional[str] = None
+    resource_term: Optional[str] = None
+    release_group: Optional[str] = None
     file_ext: str = ".mkv"
 
 
@@ -38,12 +42,12 @@ class FilenameBuilder:
     文件名构建器
 
     电影格式:
-        {title} ({year})/{title} ({year})-{part} - {videoFormat}{fileExt}
-        示例: 空之境界 (2007)/空之境界 (2007) - 1080p.mkv
+        {title} ({year}){-part} - {resourceTerm} - {releaseGroup}{fileExt}
+        示例: 空之境界 (2007)-Part1 - BluRay 1080p HEVC - VCB-Studio.mkv
 
     电视剧格式:
-        {title} ({year})/Season {season}/{title} - S{ss}E{ee}-{part} - 第 {episode} 集{fileExt}
-        示例: 葬送的芙莉莲 (2023)/Season 1/葬送的芙莉莲 - S01E01 - 第 1 集.mkv
+        {title} ({year})/Season {season:02d}/{title} - S{ss}E{ee}{-part} - {resourceTerm} - {releaseGroup}{fileExt}
+        示例: 葬送的芙莉莲 (2023)/Season 01/葬送的芙莉莲 - S01E01 - WEB-DL 1080p HEVC - LoliHouse.mkv
     """
 
     @staticmethod
@@ -71,9 +75,9 @@ class FilenameBuilder:
             season: 季度号
 
         Returns:
-            "Season {season}"
+            "Season {season:02d}"
         """
-        return f"Season {season}"
+        return f"Season {season:02d}"
 
     @staticmethod
     def build_movie_folder(title: str, year: Optional[str] = None) -> str:
@@ -94,29 +98,27 @@ class FilenameBuilder:
         """
         构建电影文件名
 
-        格式: {title} ({year})-{part} - {videoFormat}{fileExt}
+        格式:
+            {title} ({year}){-part} - {resourceTerm} - {releaseGroup}{fileExt}
 
         示例:
-            - 空之境界 (2007) - 1080p.mkv
-            - 空之境界 (2007)-Part1 - 1080p.mkv
-            - 空之境界 (2007).mkv (无格式信息)
+            - 空之境界 (2007) - BluRay 1080p HEVC - VCB-Studio.mkv
+            - 空之境界 (2007)-Part1 - BluRay 1080p - VCB-Studio.mkv
+            - 空之境界 (2007).mkv
         """
-        parts = []
-
-        # 基础: 标题 (年份)
-        base = FilenameBuilder.build_title_with_year(meta.title, meta.year)
-
-        # 添加分集信息 (直接连接，无空格)
+        head = FilenameBuilder.build_title_with_year(meta.title, meta.year)
         if meta.part:
-            base = f"{base}-{meta.part}"
+            head = f"{head}-{meta.part}"
 
-        parts.append(base)
+        detail = meta.resource_term or meta.video_format
+        release_group = (meta.release_group or "").strip()
 
-        # 添加视频格式
-        if meta.video_format:
-            parts.append(meta.video_format)
+        parts = [head]
+        if detail:
+            parts.append(detail)
+        if release_group:
+            parts.append(release_group)
 
-        # 用 " - " 连接并添加扩展名
         return " - ".join(parts) + meta.file_ext
 
     @staticmethod
@@ -124,27 +126,31 @@ class FilenameBuilder:
         """
         构建剧集文件名
 
-        格式: {title} - S{ss}E{ee}-{part} - 第 {episode} 集{fileExt}
+        格式:
+            {title} - S{ss}E{ee}{-part} - {resourceTerm} - {releaseGroup}{fileExt}
 
         示例:
-            - 葬送的芙莉莲 - S01E01 - 第 1 集.mkv
-            - 葬送的芙莉莲 - S01E01-Part1 - 第 1 集.mkv
+            - 葬送的芙莉莲 - S01E01 - WEB-DL 1080p HEVC - LoliHouse.mkv
+            - 葬送的芙莉莲 - S01E01-Part1 - WEB-DL 1080p - LoliHouse.mkv
+            - 葬送的芙莉莲 - S01E01.mkv
         """
         season_str = f"{meta.season:02d}"
         episode_str = f"{meta.episode:02d}"
 
-        # 季集代码
         season_episode = f"S{season_str}E{episode_str}"
-
-        # 添加分集信息
         if meta.part:
             season_episode = f"{season_episode}-{meta.part}"
 
-        # 集数标签
-        episode_label = f"第 {meta.episode} 集"
+        detail = meta.resource_term
+        release_group = (meta.release_group or "").strip()
 
-        # 构建完整文件名
-        return f"{meta.title} - {season_episode} - {episode_label}{meta.file_ext}"
+        parts = [meta.title, season_episode]
+        if detail:
+            parts.append(detail)
+        if release_group:
+            parts.append(release_group)
+
+        return " - ".join(parts) + meta.file_ext
 
     @staticmethod
     def build_tv_work_path(

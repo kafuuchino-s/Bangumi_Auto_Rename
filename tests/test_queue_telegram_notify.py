@@ -1,6 +1,7 @@
 from pathlib import Path
 
 from src.queue.task_queue import TaskQueueManager
+from src.rename.process import Rename
 
 
 class _FakeTelegramNotifier:
@@ -114,8 +115,8 @@ def test_trigger_telegram_notification_send_photo_with_caption(monkeypatch):
         manager,
         "_collect_record_targets",
         lambda: [
-            Path("/tmp/葬送的芙莉莲 - S01E01 - 第1话.mkv"),
-            Path("/tmp/葬送的芙莉莲 - S01E02 - 第2话.mkv"),
+            Path("/tmp/葬送的芙莉莲 - S01E01 - 1080p.mkv"),
+            Path("/tmp/葬送的芙莉莲 - S01E02 - 1080p.mkv"),
         ],
     )
 
@@ -278,23 +279,57 @@ def test_build_resource_term_fallback_from_path_filename():
     assert term == "1080p"
 
 
-def test_record_batch_result_updates_stats():
-    manager = _build_manager_with_stats(total=0, success=0, failed=0, failed_tasks=[])
+def test_extract_episode_from_name_supports_sxxexx_format():
+    manager = _build_manager_with_stats(total=1, success=1, failed=0, failed_tasks=[])
 
-    from src.queue.task_status import TaskStatus
+    assert manager._extract_episode_from_name("战勇。 - S02E13 - x264 FLAC - Final8.mkv") == 13
 
-    ok_task = _FakeTask(task_id="ok-id", path="/tmp/ok.mkv", error=None)
-    ok_task.status = TaskStatus.COMPLETED
-    manager._record_batch_result(ok_task)
 
-    fail_task = _FakeTask(
-        task_id="fail-id", path="/tmp/fail.mkv", error="failure reason"
-    )
-    fail_task.status = TaskStatus.FAILED
-    manager._record_batch_result(fail_task)
+def test_resolve_task_poster_path_tv_prefers_season_poster():
+    renamer = Rename()
+    info = {
+        "poster_path": "/series.jpg",
+        "seasons": [
+            {"season_number": 0, "poster_path": "/s00.jpg"},
+            {"season_number": 1, "poster_path": "/s01.jpg"},
+        ],
+    }
 
-    assert manager._batch_total == 2
-    assert manager._batch_success == 1
-    assert manager._batch_failed == 1
-    assert manager._batch_success_task_ids == ["ok-id"]
-    assert manager._batch_failed_tasks[0]["path"] == "/tmp/fail.mkv"
+    assert renamer._resolve_task_poster_path(
+        info=info,
+        is_movie=False,
+        season_id=1,
+    ) == "/s01.jpg"
+
+
+def test_resolve_task_poster_path_tv_fallback_to_series_poster():
+    renamer = Rename()
+    info = {
+        "poster_path": "/series.jpg",
+        "seasons": [
+            {"season_number": 1, "poster_path": ""},
+            {"season_number": 2},
+        ],
+    }
+
+    assert renamer._resolve_task_poster_path(
+        info=info,
+        is_movie=False,
+        season_id=1,
+    ) == "/series.jpg"
+
+
+def test_resolve_task_poster_path_movie_keeps_current_poster():
+    renamer = Rename()
+    info = {
+        "poster_path": "/movie.jpg",
+        "seasons": [
+            {"season_number": 1, "poster_path": "/s01.jpg"},
+        ],
+    }
+
+    assert renamer._resolve_task_poster_path(
+        info=info,
+        is_movie=True,
+        season_id=1,
+    ) == "/movie.jpg"

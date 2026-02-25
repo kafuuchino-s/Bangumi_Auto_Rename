@@ -1,4 +1,4 @@
-"""测试 cleaner.py 当前公开的文件名解析能力"""
+"""测试 cleaner.py 与 filename_builder.py 的命名能力"""
 
 import sys
 from pathlib import Path
@@ -15,6 +15,11 @@ from src.rename.cleaner import (  # noqa: E402
     remove_episode,
     remove_season,
     remove_tag,
+)
+from src.rename.filename_builder import (  # noqa: E402
+    EpisodeMetadata,
+    FilenameBuilder,
+    MovieMetadata,
 )
 
 
@@ -73,3 +78,78 @@ def test_remove_tag():
 def test_is_chinese_percentage_sufficient():
     assert is_chinese_percentage_sufficient("香格里拉 Shangri")
     assert not is_chinese_percentage_sufficient("Love Death Robots")
+
+
+def test_build_movie_filename_with_full_resource_snapshot():
+    meta = MovieMetadata(
+        title="Inception",
+        year="2010",
+        resource_term="BluRay 2160p HEVC 10bit HDR10 DTS",
+        release_group="FraMeSToR",
+        file_ext=".mkv",
+    )
+
+    assert (
+        FilenameBuilder.build_movie_filename(meta)
+        == "Inception (2010) - BluRay 2160p HEVC 10bit HDR10 DTS - FraMeSToR.mkv"
+    )
+
+
+def test_build_movie_filename_with_part_snapshot():
+    meta = MovieMetadata(
+        title="空之境界",
+        year="2007",
+        part="Part1",
+        resource_term="BluRay 1080p HEVC",
+        release_group="VCB-Studio",
+        file_ext=".mkv",
+    )
+
+    assert (
+        FilenameBuilder.build_movie_filename(meta)
+        == "空之境界 (2007)-Part1 - BluRay 1080p HEVC - VCB-Studio.mkv"
+    )
+
+
+def test_build_episode_filename_with_full_resource_snapshot():
+    meta = EpisodeMetadata(
+        title="葬送的芙莉莲",
+        season=1,
+        episode=1,
+        resource_term="WEB-DL 1080p HEVC 10bit AAC",
+        release_group="LoliHouse",
+        file_ext=".mkv",
+    )
+
+    assert (
+        FilenameBuilder.build_episode_filename(meta)
+        == "葬送的芙莉莲 - S01E01 - WEB-DL 1080p HEVC 10bit AAC - LoliHouse.mkv"
+    )
+
+
+def test_build_episode_filename_with_part_snapshot():
+    meta = EpisodeMetadata(
+        title="葬送的芙莉莲",
+        season=1,
+        episode=1,
+        part="Part1",
+        resource_term="WEB-DL 1080p HEVC",
+        release_group="LoliHouse",
+        file_ext=".mkv",
+    )
+
+    assert (
+        FilenameBuilder.build_episode_filename(meta)
+        == "葬送的芙莉莲 - S01E01-Part1 - WEB-DL 1080p HEVC - LoliHouse.mkv"
+    )
+
+
+def test_build_episode_filename_minimal_snapshot():
+    meta = EpisodeMetadata(
+        title="葬送的芙莉莲",
+        season=1,
+        episode=1,
+        file_ext=".mkv",
+    )
+
+    assert FilenameBuilder.build_episode_filename(meta) == "葬送的芙莉莲 - S01E01.mkv"

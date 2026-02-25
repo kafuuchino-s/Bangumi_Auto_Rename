@@ -1,3 +1,4 @@
+import re
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
@@ -7,7 +8,7 @@ from .utils import VIDEO_SUFFIX
 from ..ai.client import AIClient
 from ..ai.models import AIAnalysisResult
 from ..ai.video_analyzer import VideoAnalyzer
-from .cleaner import extract_part, is_promotional_content
+from .cleaner import extract_part, extract_video_format, is_promotional_content
 from .filename_builder import FilenameBuilder, EpisodeMetadata
 from ..subtitle.processor import SubtitleProcessor
 from ..subtitle.extractor import SUBTITLE_EXTENSIONS
@@ -15,6 +16,28 @@ from ..subtitle.extractor import SUBTITLE_EXTENSIONS
 
 class AIProcessor:
     """AI辅助处理器，用于智能分析和重命名"""
+
+    RESOURCE_TOKEN_MAP = [
+        ("HEVC", "HEVC"),
+        ("X265", "x265"),
+        ("X264", "x264"),
+        ("AV1", "AV1"),
+        ("10BIT", "10bit"),
+        ("8BIT", "8bit"),
+        ("HDR10", "HDR10"),
+        ("HDR", "HDR"),
+        ("DOLBY VISION", "Dolby Vision"),
+        ("DV", "DV"),
+        ("FLAC", "FLAC"),
+        ("AAC", "AAC"),
+        ("DTS", "DTS"),
+        ("DDP", "DDP"),
+        ("AC3", "AC3"),
+        ("WEBRIP", "WebRip"),
+        ("WEB-DL", "WEB-DL"),
+        ("BDRIP", "BDRip"),
+        ("BLURAY", "BluRay"),
+    ]
 
     def __init__(self):
         self.ai_client = AIClient()
@@ -271,6 +294,8 @@ class AIProcessor:
 
                     # 提取分集信息
                     part = extract_part(source_path.name)
+                    resource_term = self._extract_resource_term(source_path.name)
+                    release_group = self._extract_release_group(source_path.name)
 
                     # 生成新的文件名
                     meta = EpisodeMetadata(
@@ -278,6 +303,8 @@ class AIProcessor:
                         season=season_num,
                         episode=ep_num,
                         part=part,
+                        resource_term=resource_term,
+                        release_group=release_group,
                         file_ext=source_path.suffix,
                     )
                     new_video_filename = FilenameBuilder.build_episode_filename(meta)
@@ -376,6 +403,34 @@ class AIProcessor:
             logger.info(
                 f"[AI处理] 关联文件: {other_file.name} -> {new_associated_filename}"
             )
+
+    def _extract_release_group(self, filename: str) -> str:
+        """从文件名提取字幕组/发布组（如 [LoliHouse]）。"""
+        if not filename:
+            return ""
+
+        match = re.match(r"^\s*\[([^\]]+)\]", filename)
+        if not match:
+            return ""
+
+        return match.group(1).strip()
+
+    def _extract_resource_term(self, filename: str) -> str:
+        """从文件名提取质量信息（分辨率 + 编码/音频标签）。"""
+        if not filename:
+            return ""
+
+        parts: List[str] = []
+        video_format = extract_video_format(filename)
+        if video_format:
+            parts.append(video_format)
+
+        upper_name = filename.upper()
+        for token, display in self.RESOURCE_TOKEN_MAP:
+            if token in upper_name and display not in parts:
+                parts.append(display)
+
+        return " ".join(parts)
 
     def _collect_all_local_files(self, base_path: Path) -> List[Path]:
         """收集基础路径下所有本地文件（包含视频与关联文件）。"""

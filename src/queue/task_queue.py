@@ -671,6 +671,7 @@ class TaskQueueManager:
     def _extract_episode_from_name(self, filename: str) -> Optional[int]:
         """从目标文件名中提取 EXX 集数。"""
         patterns = [
+            r"\bS\d{1,2}E(\d{1,3})\b",
             r"\bE(\d{1,3})\b",
             r"\bEP(\d{1,3})\b",
             r"[\[\(](\d{1,3})[\]\)]",

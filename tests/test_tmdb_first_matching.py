@@ -282,8 +282,134 @@ def test_ai_processor_apply_mapping():
         shutil.rmtree(temp_dir, ignore_errors=True)
 
 
+def test_ai_processor_apply_mapping_enhanced_naming_snapshot():
+    """验证 AI 映射链路会生成增强后的剧集命名。"""
+    import tempfile
+    import shutil
+
+    temp_dir = Path(tempfile.mkdtemp())
+    try:
+        base_path = temp_dir / "input"
+        base_path.mkdir(parents=True)
+
+        source_video = (
+            base_path
+            / "[LoliHouse] Frieren Part 1 [WEB-DL 1080p HEVC-10bit AAC].mkv"
+        )
+        source_video.touch()
+
+        work_path = temp_dir / "output" / "葬送的芙莉莲 (2023)"
+        work_path.mkdir(parents=True)
+
+        anime_info = {
+            "name": "葬送的芙莉莲",
+            "seasons": [
+                {
+                    "season_number": 1,
+                    "episode_count": 1,
+                }
+            ],
+        }
+
+        ai_result = AIAnalysisResult(
+            confidence="High",
+            reason="命名快照",
+            file_mapping=[
+                EpisodeMapping(
+                    file_path=source_video.name,
+                    tmdb_season=1,
+                    tmdb_episode=1,
+                )
+            ],
+        )
+
+        processor = AIProcessor()
+        result = processor.apply_ai_mapping(
+            ai_result=ai_result,
+            anime_info=anime_info,
+            base_path=base_path,
+            work_path=work_path,
+        )
+
+        assert len(result) == 1
+        target = result[source_video.resolve()]
+        assert target.parent.name == "Season 01"
+        assert (
+            target.name
+            == "葬送的芙莉莲 - S01E01-Part1 - 1080p HEVC 10bit AAC WEB-DL - LoliHouse.mkv"
+        )
+
+    finally:
+        shutil.rmtree(temp_dir, ignore_errors=True)
+
+
+def test_ai_processor_apply_mapping_subtitle_uses_new_video_stem():
+    """验证 AI 映射链路中关联字幕会跟随新视频名。"""
+    import tempfile
+    import shutil
+
+    temp_dir = Path(tempfile.mkdtemp())
+    try:
+        base_path = temp_dir / "input"
+        base_path.mkdir(parents=True)
+
+        source_video = (
+            base_path
+            / "[LoliHouse] Frieren 01 [WEB-DL 1080p HEVC AAC].mkv"
+        )
+        source_video.touch()
+
+        source_subtitle = base_path / f"{source_video.name}.chs.ass"
+        source_subtitle.touch()
+
+        work_path = temp_dir / "output" / "葬送的芙莉莲 (2023)"
+        work_path.mkdir(parents=True)
+
+        anime_info = {
+            "name": "葬送的芙莉莲",
+            "seasons": [
+                {
+                    "season_number": 1,
+                    "episode_count": 1,
+                }
+            ],
+        }
+
+        ai_result = AIAnalysisResult(
+            confidence="High",
+            reason="字幕命名快照",
+            file_mapping=[
+                EpisodeMapping(
+                    file_path=source_video.name,
+                    tmdb_season=1,
+                    tmdb_episode=1,
+                )
+            ],
+        )
+
+        processor = AIProcessor()
+        all_local_files = [source_video.resolve(), source_subtitle.resolve()]
+        result = processor.apply_ai_mapping(
+            ai_result=ai_result,
+            anime_info=anime_info,
+            base_path=base_path,
+            work_path=work_path,
+            all_local_files=all_local_files,
+        )
+
+        video_target = result[source_video.resolve()]
+        subtitle_target = result[source_subtitle.resolve()]
+
+        assert subtitle_target.parent == video_target.parent
+        assert subtitle_target.name == f"{video_target.stem}.zh-CN.default.ass"
+
+    finally:
+        shutil.rmtree(temp_dir, ignore_errors=True)
+
 
 if __name__ == "__main__":
     print("\n")
     test_tmdb_first_matching()
     test_ai_processor_apply_mapping()
+    test_ai_processor_apply_mapping_enhanced_naming_snapshot()
+    test_ai_processor_apply_mapping_subtitle_uses_new_video_stem()

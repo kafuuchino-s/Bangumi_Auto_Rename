@@ -21,6 +21,8 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 from src.rename.process import Rename
 from src.rename.get_info import Search
 from src.ai.client import AIClient
+from src.ai.models import AIAnalysisResult, EpisodeMapping
+from src.rename.ai_processor import AIProcessor
 
 
 class E2ETestResult:
@@ -543,6 +545,173 @@ def test_single_movie_flow():
     assert isinstance(results, list)
 
 
+
+
+def test_e2e_ai_mapping_enhanced_episode_naming():
+    """E2E: 验证 AI 映射链路生成增强剧集命名。"""
+    print("\n" + "=" * 80)
+    print("场景 6: E2E AI映射增强命名")
+    print("验证 SxxEyy + 资源信息 + 发布组")
+    print("=" * 80)
+
+    results = []
+
+    temp_dir = Path(tempfile.mkdtemp())
+    try:
+        base_path = temp_dir / "input"
+        base_path.mkdir(parents=True)
+
+        source_video = (
+            base_path
+            / "[LoliHouse] Frieren Part 1 [WEB-DL 1080p HEVC-10bit AAC].mkv"
+        )
+        source_video.touch()
+
+        work_path = temp_dir / "output" / "葬送的芙莉莲 (2023)"
+        work_path.mkdir(parents=True)
+
+        anime_info = {
+            "name": "葬送的芙莉莲",
+            "seasons": [{"season_number": 1, "episode_count": 1}],
+        }
+
+        ai_result = AIAnalysisResult(
+            confidence="High",
+            reason="e2e 命名断言",
+            file_mapping=[
+                EpisodeMapping(
+                    file_path=source_video.name,
+                    tmdb_season=1,
+                    tmdb_episode=1,
+                )
+            ],
+        )
+
+        processor = AIProcessor()
+        mapping = processor.apply_ai_mapping(
+            ai_result=ai_result,
+            anime_info=anime_info,
+            base_path=base_path,
+            work_path=work_path,
+        )
+
+        target = mapping.get(source_video.resolve())
+        expected_name = (
+            "葬送的芙莉莲 - S01E01-Part1 - "
+            "1080p HEVC 10bit AAC WEB-DL - LoliHouse.mkv"
+        )
+        passed = target is not None and target.name == expected_name
+
+        if target:
+            print(f"  实际: {target.name}")
+        print(f"  预期: {expected_name}")
+        print(f"  结果: {'✓' if passed else '✗'}")
+
+        results.append(E2ETestResult(
+            name="AI映射增强命名",
+            scenario="E2E-AI命名",
+            tmdb_found=True,
+            ai_used=True,
+            mappings={source_video.name: target.name if target else ""},
+            passed=passed,
+            error=None if passed else "命名结果不匹配",
+        ))
+
+    finally:
+        shutil.rmtree(temp_dir, ignore_errors=True)
+
+    assert isinstance(results, list)
+    assert results and results[0].passed
+
+
+def test_e2e_ai_mapping_subtitle_follows_video_stem():
+    """E2E: 验证 AI 映射链路中字幕命名跟随新视频 stem。"""
+    print("\n" + "=" * 80)
+    print("场景 7: E2E AI映射字幕跟随命名")
+    print("验证关联字幕命名与新视频文件 stem 对齐")
+    print("=" * 80)
+
+    results = []
+
+    temp_dir = Path(tempfile.mkdtemp())
+    try:
+        base_path = temp_dir / "input"
+        base_path.mkdir(parents=True)
+
+        source_video = (
+            base_path
+            / "[LoliHouse] Frieren 01 [WEB-DL 1080p HEVC AAC].mkv"
+        )
+        source_video.touch()
+
+        source_subtitle = base_path / f"{source_video.name}.chs.ass"
+        source_subtitle.touch()
+
+        work_path = temp_dir / "output" / "葬送的芙莉莲 (2023)"
+        work_path.mkdir(parents=True)
+
+        anime_info = {
+            "name": "葬送的芙莉莲",
+            "seasons": [{"season_number": 1, "episode_count": 1}],
+        }
+
+        ai_result = AIAnalysisResult(
+            confidence="High",
+            reason="e2e 字幕命名断言",
+            file_mapping=[
+                EpisodeMapping(
+                    file_path=source_video.name,
+                    tmdb_season=1,
+                    tmdb_episode=1,
+                )
+            ],
+        )
+
+        processor = AIProcessor()
+        all_local_files = [source_video.resolve(), source_subtitle.resolve()]
+        mapping = processor.apply_ai_mapping(
+            ai_result=ai_result,
+            anime_info=anime_info,
+            base_path=base_path,
+            work_path=work_path,
+            all_local_files=all_local_files,
+        )
+
+        video_target = mapping.get(source_video.resolve())
+        subtitle_target = mapping.get(source_subtitle.resolve())
+
+        passed = (
+            video_target is not None
+            and subtitle_target is not None
+            and subtitle_target.parent == video_target.parent
+            and subtitle_target.name == f"{video_target.stem}.zh-CN.default.ass"
+        )
+
+        if subtitle_target and video_target:
+            print(f"  视频目标: {video_target.name}")
+            print(f"  字幕目标: {subtitle_target.name}")
+        print(f"  结果: {'✓' if passed else '✗'}")
+
+        results.append(E2ETestResult(
+            name="AI映射字幕跟随命名",
+            scenario="E2E-AI字幕命名",
+            tmdb_found=True,
+            ai_used=True,
+            mappings={
+                source_video.name: video_target.name if video_target else "",
+                source_subtitle.name: subtitle_target.name if subtitle_target else "",
+            },
+            passed=passed,
+            error=None if passed else "字幕命名未跟随新视频 stem",
+        ))
+
+    finally:
+        shutil.rmtree(temp_dir, ignore_errors=True)
+
+    assert isinstance(results, list)
+    assert results and results[0].passed
+
+
 def run_all_e2e_tests():
     """运行所有端到端测试"""
     print("\n" + "=" * 80)
@@ -555,9 +724,10 @@ def run_all_e2e_tests():
     test_anime_bracket_format()
     test_movie_collection_flow()
     test_single_movie_flow()
+    test_e2e_ai_mapping_enhanced_episode_naming()
+    test_e2e_ai_mapping_subtitle_follows_video_stem()
 
     return []
-
 
 
 if __name__ == "__main__":
