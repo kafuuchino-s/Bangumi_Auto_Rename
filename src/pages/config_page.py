@@ -56,6 +56,8 @@ class ConfigPage(ui.dialog):
                 "ai_api_key",
                 "ai_base_url",
                 "ai_model",
+                "openai_output_format",
+                "openai_api_interface",
                 "ai_temperature",
                 "gemini_api_key",
                 "gemini_base_url",
@@ -324,6 +326,14 @@ class ConfigPage(ui.dialog):
                         )
                         tg.style("font-size: 10px")
                         tg.classes("flex no-wrap w-full")
+                    elif cn == "openai_api_interface":
+                        tg = RedToogle(
+                            ["responses_api", "chat_completions"],
+                            value=cm.get_config(cn) or "responses_api",
+                            on_change=lambda e, c=cn: self._change(c, e.value),
+                        )
+                        tg.style("font-size: 10px")
+                        tg.classes("flex no-wrap w-full")
                     elif cn == "gemini_output_format":
                         tg = RedToogle(
                             [
@@ -377,6 +387,11 @@ class ConfigPage(ui.dialog):
                     )
                     return
 
+        old_openai_model = cm.get_config("ai_model")
+        old_gemini_model = cm.get_config("gemini_model")
+        new_openai_model = getattr(self.config, "ai_model", None)
+        new_gemini_model = getattr(self.config, "gemini_model", None)
+
         # 保存所有配置（部分运行时统计字段由测试流程自动维护，避免被弹窗旧值覆盖）
         runtime_managed_keys = {
             "openai_auto_routing_enabled",
@@ -393,6 +408,24 @@ class ConfigPage(ui.dialog):
                 cn,
                 getattr(self.config, cn),
             )
+
+        model_reset_messages = []
+        if old_openai_model != new_openai_model:
+            cm.set_config("openai_format_stats", {})
+            model_reset_messages.append("OpenAI累计测试统计已清零")
+            logger.info(
+                "[配置] 检测到OpenAI模型变更，已清空openai_format_stats: "
+                f"{old_openai_model} -> {new_openai_model}"
+            )
+
+        if old_gemini_model != new_gemini_model:
+            cm.set_config("gemini_format_stats", {})
+            model_reset_messages.append("Gemini累计测试统计已清零")
+            logger.info(
+                "[配置] 检测到Gemini模型变更，已清空gemini_format_stats: "
+                f"{old_gemini_model} -> {new_gemini_model}"
+            )
+
         config_show = cm.config.copy()
         for key in config_show.keys():
             if "api_key" in key or key == "telegram_bot_token":
@@ -400,6 +433,8 @@ class ConfigPage(ui.dialog):
 
         logger.info('[配置] 配置已修改为： {}'.format(config_show))
         ui.notify("✅ 配置保存成功", type="positive")
+        for msg in model_reset_messages:
+            ui.notify(f"🧹 {msg}", type="info")
         # 更新运行时日志级别
         try:
             update_log_level_from_config()
@@ -435,6 +470,7 @@ class ConfigPage(ui.dialog):
             "ai_provider",
             "ai_confidence_threshold",
             "openai_output_format",
+            "openai_api_interface",
             "openai_auto_routing_enabled",
             "openai_auto_format_order",
             "openai_format_stats",
@@ -600,6 +636,17 @@ class ConfigPage(ui.dialog):
                 if provider.lower() == "openai":
                     output_format = config_used.get("openai_output_format", "unknown")
                     ui.label(f"📋 输出格式: {output_format}")
+                    configured_interface = result.get("configured_interface")
+                    actual_interface = result.get("actual_interface")
+                    if configured_interface:
+                        ui.label(f"🌐 配置接口: {configured_interface}")
+                    if actual_interface:
+                        ui.label(f"🚀 实际接口: {actual_interface}")
+                    if result.get("interface_fallback"):
+                        fallback_reason = result.get("interface_fallback_reason")
+                        ui.label(
+                            f"↩️ 接口回退: 已触发 ({fallback_reason or '未提供原因'})"
+                        ).classes("text-orange")
                 elif provider.lower() == "gemini":
                     output_format = config_used.get("gemini_output_format", "unknown")
                     ui.label(f"📋 输出格式: {output_format}")
@@ -797,6 +844,23 @@ class ConfigPage(ui.dialog):
                                 status_color + " font-bold"
                             )
                             ui.label(f"耗时: {format_result.get('duration', 0):.2f}秒")
+
+                            configured_interface = format_result.get(
+                                "configured_interface"
+                            )
+                            actual_interface = format_result.get("actual_interface")
+                            if configured_interface:
+                                ui.label(f"配置接口: {configured_interface}")
+                            if actual_interface:
+                                ui.label(f"实际接口: {actual_interface}")
+                            if format_result.get("interface_fallback"):
+                                fallback_reason = format_result.get(
+                                    "interface_fallback_reason"
+                                )
+                                ui.label(
+                                    "接口回退: 已触发 "
+                                    f"({fallback_reason or '未提供原因'})"
+                                ).classes("text-orange")
 
                             # AI失败情况：显示错误信息
                             if result_status == "ai_failed":

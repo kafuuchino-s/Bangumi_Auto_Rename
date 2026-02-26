@@ -1,7 +1,7 @@
 import re
 import json
 from copy import deepcopy
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional, Union
 
 from openai import OpenAI
 from pydantic import ValidationError
@@ -24,6 +24,13 @@ class OpenAIClient(BaseAIClient):
 
         # 支持多种输出格式
         self.output_format = cm.get_config("openai_output_format") or "function_calling"
+        self.api_interface = self._resolve_api_interface(
+            cm.get_config("openai_api_interface")
+        )
+        self.last_configured_api_interface = self.api_interface
+        self.last_actual_api_interface = ""
+        self.last_api_interface_fallback = False
+        self.last_api_interface_fallback_reason = ""
         self.auto_routing_enabled = bool(
             cm.get_config("openai_auto_routing_enabled")
             if cm.get_config("openai_auto_routing_enabled") is not None
@@ -77,6 +84,13 @@ class OpenAIClient(BaseAIClient):
             system_prompt = AIClient.get_system_prompt()
 
             normalized_format = self._resolve_output_format()
+            configured_interface = self._resolve_api_interface(
+                cm.get_config("openai_api_interface")
+            )
+            self.last_configured_api_interface = configured_interface
+            self.last_actual_api_interface = ""
+            self.last_api_interface_fallback = False
+            self.last_api_interface_fallback_reason = ""
 
             # 根据输出模式补充更严格的返回约束
             if normalized_format == "structured_output":
@@ -96,10 +110,15 @@ class OpenAIClient(BaseAIClient):
             }
 
             logger.debug(
-                "[OpenAI识别] 使用输出格式降级链，首选: "
-                f"{normalized_format}, base_request={json.dumps(request_params, indent=2, ensure_ascii=False)}"
+                "[OpenAI识别] 使用输出格式降级链与接口分发，"
+                f"首选格式={normalized_format}, 配置接口={configured_interface}, "
+                f"base_request={json.dumps(request_params, indent=2, ensure_ascii=False)}"
             )
-            result = self._call_with_format_fallback(request_params, normalized_format)
+            result = self._call_with_format_fallback(
+                request_params,
+                normalized_format,
+                configured_interface,
+            )
 
             if not result:
                 logger.error("[OpenAI识别] 无法解析或验证OpenAI响应")
@@ -153,52 +172,105 @@ class OpenAIClient(BaseAIClient):
         self,
         base_request_params: Dict,
         preferred_format: str,
+        preferred_interface: str,
     ) -> Optional[AIAnalysisResult]:
-        """按输出格式降级链调用OpenAI，直到成功解析并校验为止"""
+        """按输出格式降级链调用OpenAI，直到成功解析并校验为止。"""
         format_chain = self._build_fallback_format_chain(preferred_format)
+
+        self.last_configured_api_interface = preferred_interface
+        self.last_actual_api_interface = ""
+        self.last_api_interface_fallback = False
+        self.last_api_interface_fallback_reason = ""
 
         last_error: Optional[Exception] = None
         for output_format in format_chain:
-            try:
-                request_params = dict(base_request_params)
-                self._configure_output_format(request_params, output_format)
+            request_params = dict(base_request_params)
+            self._configure_output_format(request_params, output_format)
 
-                logger.debug(
-                    "[OpenAI识别] 尝试输出格式: "
-                    f"{output_format}, request={json.dumps(request_params, indent=2, ensure_ascii=False)}"
-                )
+            logger.debug(
+                "[OpenAI识别] 尝试输出格式与接口: "
+                f"format={output_format}, configured_interface={preferred_interface}, "
+                f"request={json.dumps(request_params, indent=2, ensure_ascii=False)}"
+            )
 
-                response = self.client.chat.completions.create(**request_params)
-                response_message = response.choices[0].message
-                logger.debug(
-                    f"[OpenAI识别] format={output_format} Response content: {response_message.content}"
-                )
+            response_message: Optional[Dict[str, Any]] = None
+            fallback_error: Optional[Exception] = None
 
-                if not response_message:
-                    logger.warning(
-                        f"[OpenAI识别] format={output_format} 响应内容为空，尝试降级"
+            for interface in self._build_api_interface_chain(preferred_interface):
+                try:
+                    response_message = self._dispatch_openai_message(
+                        interface, request_params
                     )
-                    continue
-
-                result = self._extract_and_validate_json(response_message)
-                if result:
-                    if output_format != preferred_format:
-                        logger.warning(
-                            "[OpenAI识别] 输出格式已自动降级: "
-                            f"{preferred_format} -> {output_format}"
+                    self.last_actual_api_interface = interface
+                    if (
+                        interface != preferred_interface
+                        and preferred_interface == "responses_api"
+                    ):
+                        self.last_api_interface_fallback = True
+                        self.last_api_interface_fallback_reason = (
+                            str(fallback_error)
+                            if fallback_error
+                            else "responses_api 调用失败，自动回退"
                         )
-                    return result
+                        logger.warning(
+                            "[OpenAI识别] 接口已自动回退: "
+                            f"{preferred_interface} -> {interface}, "
+                            f"reason={self.last_api_interface_fallback_reason}"
+                        )
+                    break
+                except Exception as e:
+                    last_error = e
+                    if (
+                        interface == "responses_api"
+                        and preferred_interface == "responses_api"
+                    ):
+                        fallback_error = e
+                        logger.warning(
+                            "[OpenAI识别] interface=responses_api 调用失败，"
+                            f"将尝试 chat_completions 回退: {str(e)}"
+                        )
+                        continue
 
-                # structured_output 首次失败时，同格式重试一次，避免偶发的非结构化漂移
-                if output_format == "structured_output":
                     logger.warning(
-                        "[OpenAI识别] format=structured_output 首次解析失败，执行同格式重试"
+                        "[OpenAI识别] 接口调用失败，尝试降级格式: "
+                        f"format={output_format}, interface={interface}, error={str(e)}"
                     )
-                    retry_response = self.client.chat.completions.create(**request_params)
-                    retry_message = retry_response.choices[0].message
+                    response_message = None
+                    break
+
+            if not response_message:
+                continue
+
+            logger.debug(
+                "[OpenAI识别] format={} interface={} Response content: {}".format(
+                    output_format,
+                    self.last_actual_api_interface,
+                    response_message.get("content"),
+                )
+            )
+
+            result = self._extract_and_validate_json(response_message)
+            if result:
+                if output_format != preferred_format:
+                    logger.warning(
+                        "[OpenAI识别] 输出格式已自动降级: "
+                        f"{preferred_format} -> {output_format}"
+                    )
+                return result
+
+            # structured_output 首次失败时，同格式重试一次，避免偶发的非结构化漂移
+            if output_format == "structured_output":
+                logger.warning(
+                    "[OpenAI识别] format=structured_output 首次解析失败，执行同格式重试"
+                )
+                try:
+                    retry_message = self._dispatch_openai_message(
+                        self.last_actual_api_interface or preferred_interface,
+                        request_params,
+                    )
                     logger.debug(
                         "[OpenAI识别] format=structured_output retry Response content: "
-                        f"{retry_message.content}"
+                        f"{retry_message.get('content')}"
                     )
                     retry_result = self._extract_and_validate_json(retry_message)
                     if retry_result:
@@ -208,50 +280,235 @@ class OpenAIClient(BaseAIClient):
                                 f"{preferred_format} -> {output_format}"
                             )
                         return retry_result
+                except Exception as e:
+                    last_error = e
+                    logger.warning(
+                        "[OpenAI识别] format=structured_output 重试失败: "
+                        f"interface={self.last_actual_api_interface or preferred_interface}, "
+                        f"error={str(e)}"
+                    )
 
-                logger.warning(
-                    f"[OpenAI识别] format={output_format} 解析或校验失败，尝试降级"
-                )
-            except Exception as e:
-                last_error = e
-                logger.warning(
-                    f"[OpenAI识别] format={output_format} 调用失败，尝试降级: {str(e)}"
-                )
+            logger.warning(
+                f"[OpenAI识别] format={output_format} 解析或校验失败，尝试降级"
+            )
 
         if last_error:
             raise last_error
         return None
 
+    def _resolve_api_interface(self, interface_value: Optional[str]) -> str:
+        if interface_value in ["responses_api", "chat_completions"]:
+            return interface_value
+
+        if interface_value:
+            logger.warning(
+                "[OpenAI识别] 未知接口类型: "
+                f"{interface_value}，回退到 responses_api"
+            )
+        return "responses_api"
+
+    def _build_api_interface_chain(self, preferred_interface: str) -> List[str]:
+        if preferred_interface == "chat_completions":
+            return ["chat_completions"]
+        return ["responses_api", "chat_completions"]
+
+    def _dispatch_openai_message(
+        self,
+        interface: str,
+        request_params: Dict,
+    ) -> Dict[str, Any]:
+        if not self.client:
+            raise RuntimeError("OpenAI 客户端未初始化")
+
+        if interface == "responses_api":
+            return self._call_via_responses_api(request_params)
+
+        return self._call_via_chat_completions(request_params)
+
+    def _call_via_chat_completions(self, request_params: Dict) -> Dict[str, Any]:
+        if not self.client:
+            raise RuntimeError("OpenAI 客户端未初始化")
+
+        response = self.client.chat.completions.create(**request_params)
+        if not response.choices or not response.choices[0].message:
+            return {"content": "", "tool_calls": []}
+
+        message = response.choices[0].message
+        tool_calls_payload: List[Dict[str, str]] = []
+        if message.tool_calls:
+            for tool_call in message.tool_calls:
+                if not getattr(tool_call, "function", None):
+                    continue
+                tool_calls_payload.append(
+                    {
+                        "name": tool_call.function.name,
+                        "arguments": tool_call.function.arguments,
+                    }
+                )
+
+        return {
+            "content": message.content,
+            "tool_calls": tool_calls_payload,
+        }
+
+    def _call_via_responses_api(self, request_params: Dict) -> Dict[str, Any]:
+        if not self.client:
+            raise RuntimeError("OpenAI 客户端未初始化")
+
+        responses_params = self._convert_chat_request_to_responses(request_params)
+        response = self.client.responses.create(**responses_params)
+
+        tool_calls_payload: List[Dict[str, str]] = []
+        content_parts: List[str] = []
+
+        for item in response.output or []:
+            item_type = getattr(item, "type", "")
+
+            if item_type == "function_call":
+                name = getattr(item, "name", "")
+                arguments = getattr(item, "arguments", "")
+                if name and arguments is not None:
+                    tool_calls_payload.append(
+                        {"name": str(name), "arguments": str(arguments)}
+                    )
+                continue
+
+            if item_type != "message":
+                continue
+
+            for content_item in getattr(item, "content", []) or []:
+                if getattr(content_item, "type", "") == "output_text":
+                    text = getattr(content_item, "text", "")
+                    if text:
+                        content_parts.append(str(text))
+
+        if not content_parts:
+            output_text = getattr(response, "output_text", None)
+            if output_text:
+                content_parts.append(str(output_text))
+
+        content = "\n".join(part for part in content_parts if part)
+        return {"content": content, "tool_calls": tool_calls_payload}
+
+    def _convert_chat_request_to_responses(self, request_params: Dict) -> Dict:
+        messages = request_params.get("messages", [])
+        instructions = ""
+        user_parts: List[str] = []
+
+        for msg in messages:
+            role = msg.get("role")
+            content = msg.get("content")
+            if not isinstance(content, str):
+                continue
+
+            if role == "system":
+                if instructions:
+                    instructions += "\n\n"
+                instructions += content
+            elif role == "user":
+                user_parts.append(content)
+
+        responses_params: Dict[str, Union[str, float, int, Dict, List]] = {
+            "model": request_params.get("model"),
+            "input": "\n\n".join(user_parts),
+            "temperature": request_params.get("temperature"),
+        }
+
+        max_tokens = request_params.get("max_tokens")
+        if max_tokens is None:
+            max_tokens = request_params.get("max_completion_tokens")
+        if max_tokens is not None:
+            responses_params["max_output_tokens"] = max_tokens
+
+        if instructions:
+            responses_params["instructions"] = instructions
+
+        tools = request_params.get("tools")
+        if tools:
+            responses_params["tools"] = [
+                self._convert_chat_tool_to_responses(tool) for tool in tools
+            ]
+
+        tool_choice = request_params.get("tool_choice")
+        if tool_choice:
+            if isinstance(tool_choice, str):
+                responses_params["tool_choice"] = tool_choice
+            elif isinstance(tool_choice, dict):
+                choice_type = tool_choice.get("type")
+                if choice_type == "function":
+                    function_data = tool_choice.get("function", {})
+                    if isinstance(function_data, dict) and function_data.get("name"):
+                        responses_params["tool_choice"] = {
+                            "type": "function",
+                            "name": function_data["name"],
+                        }
+
+        response_format = request_params.get("response_format")
+        if isinstance(response_format, dict):
+            fmt_type = response_format.get("type")
+            if fmt_type == "json_object":
+                responses_params["text"] = {"format": {"type": "json_object"}}
+            elif fmt_type == "json_schema":
+                json_schema = response_format.get("json_schema", {})
+                responses_params["text"] = {
+                    "format": {
+                        "type": "json_schema",
+                        "name": json_schema.get("name", "ai_analysis_result"),
+                        "schema": json_schema.get("schema", {}),
+                        "strict": bool(json_schema.get("strict", True)),
+                    }
+                }
+
+        return responses_params
+
+    def _convert_chat_tool_to_responses(self, tool: Dict) -> Dict:
+        tool_type = tool.get("type")
+        if tool_type != "function":
+            return tool
+
+        function_data = tool.get("function", {})
+        return {
+            "type": "function",
+            "name": function_data.get("name"),
+            "description": function_data.get("description"),
+            "parameters": function_data.get("parameters", {}),
+            "strict": True,
+        }
+
     def _extract_and_validate_json(
-        self, response_message
+        self, response_message: Dict[str, Any]
     ) -> Optional[AIAnalysisResult]:
         """
         从OpenAI响应中提取JSON内容并使用Pydantic验证
         兼容常规内容响应和Tool-calling响应
 
         Args:
-            response_message: OpenAI响应的message对象
+            response_message: 标准化后的响应message字典
 
         Returns:
             验证后的AIAnalysisResult对象，失败返回None
         """
         json_data = None
+        tool_calls = response_message.get("tool_calls") or []
+
         # 检查是否是Tool-calling响应
-        if response_message.tool_calls:
-            tool_call = response_message.tool_calls[0]
-            if tool_call.function.name == "analyze_file_structure":
-                logger.debug(f"[OpenAI识别] 识别到Tool-calling: {tool_call.function.name}")
+        if tool_calls:
+            tool_call = tool_calls[0]
+            tool_name = tool_call.get("name")
+            if tool_name == "analyze_file_structure":
+                logger.debug(f"[OpenAI识别] 识别到Tool-calling: {tool_name}")
                 try:
-                    json_data = json.loads(tool_call.function.arguments)
+                    json_data = json.loads(tool_call.get("arguments") or "")
                 except json.JSONDecodeError as e:
                     logger.error(f"[OpenAI识别] 解析Tool-calling JSON失败: {e}")
                     logger.error(
-                        f"[OpenAI识别] 原始数据: {tool_call.function.arguments}"
+                        "[OpenAI识别] 原始数据: "
+                        f"{tool_call.get('arguments')}"
                     )
                     return None
         else:
             # 否则，从内容中提取
-            content = response_message.content
+            content = response_message.get("content")
             logger.debug(f"[OpenAI识别] 普通内容响应: {content}")
             if content:
                 json_data = self._extract_json_from_response(content)
@@ -571,6 +828,20 @@ class OpenAIClient(BaseAIClient):
                 "parameters": schema,
             },
         }
+
+    def _add_openai_json_instructions(self, base_prompt: str) -> str:
+        """兼容旧调用路径：在 prompt 末尾追加 JSON 输出约束。"""
+        return f"{base_prompt}\n\n{self._get_json_instructions().strip()}"
+
+    def _get_json_instructions(self) -> str:
+        """非 function_calling 模式下的通用 JSON 输出约束。"""
+        return """
+输出要求（必须遵守）：
+1. 只返回一个 JSON 对象，不要输出任何解释文字。
+2. 不要使用 Markdown 代码块（例如 ```json）。
+3. 顶层字段必须使用：confidence, reason, season_mapping, file_mapping, unmatched_files, conflict_details, extra_notes。
+4. 若某字段无内容，也必须返回合法空值（空数组或 null）。
+"""
 
     def _get_structured_output_instructions(self) -> str:
         """structured_output 模式下补充约束，降低输出解释文本/代码块概率。"""

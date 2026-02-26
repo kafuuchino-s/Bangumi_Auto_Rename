@@ -190,6 +190,10 @@ class UnifiedAITester:
             "ai_result": None,
             "validation": None,
             "config_used": self.current_config.copy(),
+            "configured_interface": None,
+            "actual_interface": None,
+            "interface_fallback": False,
+            "interface_fallback_reason": None,
         }
 
         try:
@@ -245,6 +249,32 @@ class UnifiedAITester:
                         "result_status": result_status,
                     }
                 )
+
+                if ai_client.provider.lower() == "openai" and hasattr(
+                    ai_client._client, "last_configured_api_interface"
+                ):
+                    result["configured_interface"] = getattr(
+                        ai_client._client,
+                        "last_configured_api_interface",
+                        None,
+                    )
+                    result["actual_interface"] = getattr(
+                        ai_client._client,
+                        "last_actual_api_interface",
+                        None,
+                    )
+                    result["interface_fallback"] = bool(
+                        getattr(
+                            ai_client._client,
+                            "last_api_interface_fallback",
+                            False,
+                        )
+                    )
+                    result["interface_fallback_reason"] = getattr(
+                        ai_client._client,
+                        "last_api_interface_fallback_reason",
+                        None,
+                    )
 
                 logger.info(f"[AI识别测试] AI分析完成 - 成功: {result['success']}")
 

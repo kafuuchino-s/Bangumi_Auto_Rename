@@ -29,6 +29,7 @@ CONFIG_DEFAULT = {
     "ai_force_strict": True,
     "ai_confidence_threshold": "Medium",
     "openai_output_format": "function_calling",  # OpenAI输出格式选择（兼容旧配置）
+    "openai_api_interface": "responses_api",  # OpenAI接口类型：responses_api/chat_completions
     "openai_auto_routing_enabled": True,  # OpenAI自动路由
     "openai_auto_format_order": [
         "function_calling",
@@ -92,6 +93,7 @@ CN_MAP = {
     "ai_force_strict": "🚨 AI严格模式（运维）",
     "ai_confidence_threshold": "📊 AI置信度阈值",
     "openai_output_format": "🎯 OpenAI输出格式",
+    "openai_api_interface": "🌐 OpenAI接口类型",
     "openai_auto_routing_enabled": "🧭 OpenAI自动路由",
     "openai_auto_format_order": "📈 OpenAI自动路由顺序",
     "openai_format_stats": "🧪 OpenAI格式测试统计",

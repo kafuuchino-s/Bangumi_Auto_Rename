@@ -12,7 +12,7 @@ python tests/test_ai_recognition.py --mode manual --path "/path/to/anime"
 python tests/test_ai_recognition.py --mode auto --path "/path/to/anime" --provider openai
 python tests/test_ai_recognition.py --mode save --path "/path/to/anime" --output test_case.json
 python tests/test_ai_recognition.py --mode manual --input test_case.json --provider gemini
-python tests/test_ai_recognition.py --mode auto --input test_case.json --provider openai --openai_output_format function_calling
+python tests/test_ai_recognition.py --mode auto --input test_case.json --provider openai --openai_output_format function_calling --openai_api_interface responses_api
 """
 
 import sys
@@ -172,11 +172,15 @@ class DataProcessor:
     """数据处理模块 - 负责AI分析和用户交互"""
 
     def __init__(
-        self, provider: Optional[str] = None, openai_output_format: Optional[str] = None
+        self,
+        provider: Optional[str] = None,
+        openai_output_format: Optional[str] = None,
+        openai_api_interface: Optional[str] = None,
     ):
         # 临时修改配置
         self.original_provider = None
         self.original_output_format = None
+        self.original_api_interface = None
         self.original_auto_save = None
 
         # 在测试期间禁用自动保存
@@ -194,6 +198,13 @@ class DataProcessor:
             cm.set_config("openai_output_format", openai_output_format)
             logger.info(f"[测试] 临时设置OpenAI输出格式为: {openai_output_format}")
 
+        if openai_api_interface is not None:
+            self.original_api_interface = cm.get_config("openai_api_interface")
+            cm.set_config("openai_api_interface", openai_api_interface)
+            logger.info(
+                f"[测试] 临时设置OpenAI接口类型为: {openai_api_interface}"
+            )
+
         self.ai_client = AIClient()
 
     def __del__(self):
@@ -202,6 +213,8 @@ class DataProcessor:
             cm.set_config("ai_provider", self.original_provider)
         if self.original_output_format is not None:
             cm.set_config("openai_output_format", self.original_output_format)
+        if self.original_api_interface is not None:
+            cm.set_config("openai_api_interface", self.original_api_interface)
         if self.original_auto_save is not None:
             cm.set_config("ai_auto_save", self.original_auto_save)
             logger.info("[测试] 恢复AI分析结果自动保存设置")
@@ -578,10 +591,17 @@ class AIRecognitionTester:
     """AI识别测试器 - 重构版本，使用模块化设计"""
 
     def __init__(
-        self, provider: Optional[str] = None, openai_output_format: Optional[str] = None
+        self,
+        provider: Optional[str] = None,
+        openai_output_format: Optional[str] = None,
+        openai_api_interface: Optional[str] = None,
     ):
         self.data_input = DataInput()
-        self.data_processor = DataProcessor(provider, openai_output_format)
+        self.data_processor = DataProcessor(
+            provider,
+            openai_output_format,
+            openai_api_interface,
+        )
         self.data_saver = DataSaver()
 
     def save_test_case(self, path: Path, output_file: str = None):
@@ -778,7 +798,7 @@ def main():
   python tests/test_ai_recognition.py --mode manual --input test_case.json --provider gemini
 
   # 从测试用例进行自动测试
-  python tests/test_ai_recognition.py --mode auto --input test_case.json --provider openai --openai_output_format function_calling
+  python tests/test_ai_recognition.py --mode auto --input test_case.json --provider openai --openai_output_format function_calling --openai_api_interface responses_api
         """,
     )
 
@@ -801,6 +821,12 @@ def main():
         "--openai_output_format",
         choices=["function_calling", "json_object", "structured_output", "text"],
         help="OpenAI输出格式选择，支持: function_calling, json_object, structured_output, text",
+    )
+
+    parser.add_argument(
+        "--openai_api_interface",
+        choices=["responses_api", "chat_completions"],
+        help="OpenAI接口类型，支持: responses_api, chat_completions",
     )
 
     parser.add_argument("--output", help="保存测试用例的文件路径 (save模式必需)")
@@ -835,7 +861,9 @@ def main():
 
     # 创建测试器
     tester = AIRecognitionTester(
-        provider=args.provider, openai_output_format=args.openai_output_format
+        provider=args.provider,
+        openai_output_format=args.openai_output_format,
+        openai_api_interface=args.openai_api_interface,
     )
 
     # 执行对应模式

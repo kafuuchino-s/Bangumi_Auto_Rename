@@ -109,7 +109,11 @@ class AIClient:
             if self.provider.lower() == "gemini":
                 result = self._call_gemini_simple(system_prompt, prompt)
             else:
-                result = self._call_openai_simple(system_prompt, prompt)
+                result = self._call_openai_simple(
+                    system_prompt,
+                    prompt,
+                    validation_key="type",
+                )
 
             if result:
                 # 清理结果，解析JSON
@@ -228,10 +232,62 @@ class AIClient:
                 elif schema and output_format == "json_object":
                     request_params["response_format"] = {"type": "json_object"}
 
-                response = client.client.chat.completions.create(**request_params)
+                interface = "responses_api"
+                if hasattr(client, "_resolve_api_interface"):
+                    interface = client._resolve_api_interface(
+                        cm.get_config("openai_api_interface")
+                    )
 
-                if response.choices and response.choices[0].message:
-                    content = response.choices[0].message.content
+                content = None
+                actual_interface = interface
+
+                if (
+                    interface == "responses_api"
+                    and hasattr(client, "_call_via_responses_api")
+                    and hasattr(client, "_convert_chat_request_to_responses")
+                ):
+                    try:
+                        message = client._call_via_responses_api(request_params)
+                        content = message.get("content") if isinstance(message, dict) else None
+                        actual_interface = "responses_api"
+                    except Exception as e:
+                        logger.warning(
+                            "[AI] 简单调用 responses_api 失败，回退 chat_completions: "
+                            f"{e}"
+                        )
+                        message = client._call_via_chat_completions(request_params)
+                        content = message.get("content") if isinstance(message, dict) else None
+                        actual_interface = "chat_completions"
+                else:
+                    message = client._call_via_chat_completions(request_params)
+                    content = message.get("content") if isinstance(message, dict) else None
+                    actual_interface = "chat_completions"
+
+                if hasattr(client, "last_configured_api_interface"):
+                    client.last_configured_api_interface = interface
+                if hasattr(client, "last_actual_api_interface"):
+                    client.last_actual_api_interface = actual_interface
+                if hasattr(client, "last_api_interface_fallback"):
+                    client.last_api_interface_fallback = (
+                        interface == "responses_api"
+                        and actual_interface == "chat_completions"
+                    )
+                if hasattr(client, "last_api_interface_fallback_reason"):
+                    client.last_api_interface_fallback_reason = (
+                        "simple_call responses_api 调用失败，自动回退 chat_completions"
+                        if (
+                            interface == "responses_api"
+                            and actual_interface == "chat_completions"
+                        )
+                        else ""
+                    )
+
+                logger.info(
+                    "[AI] 简单调用OpenAI接口: "
+                    f"configured={interface}, actual={actual_interface}"
+                )
+
+                if content:
                     # 检查返回内容是否是完整的JSON（有开闭括号）
                     if content and f'"{validation_key}"' in content and '}' in content:
                         return content
