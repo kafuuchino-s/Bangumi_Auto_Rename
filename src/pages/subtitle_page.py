@@ -68,6 +68,22 @@ class ChooseTaskDialog(ui.dialog):
 class SubtitleUploadDialog(ui.dialog):
     """字幕上传对话框（支持拖放、确认和结果展示，支持批量处理）"""
 
+    @staticmethod
+    def _should_prompt_manual_choice(total: int) -> bool:
+        """仅在单文件导入时弹出手动选择，避免批量导入被阻塞。"""
+        return total <= 1
+
+    @staticmethod
+    def _build_batch_need_confirm_result(process_result: dict) -> dict:
+        """批量导入场景下，将需手动确认的结果转为非阻塞提示。"""
+        result = dict(process_result)
+        result["status"] = "need_confirm"
+        result["error"] = (
+            "AI 无法自动匹配。为避免阻塞批量导入，已跳过手动选择；"
+            "请单独导入此压缩包后手动选择目标动漫。"
+        )
+        return result
+
     def __init__(self) -> None:
         super().__init__()
         self.upload_dir = SUBTITLE_UPLOAD_PATH
@@ -190,9 +206,15 @@ class SubtitleUploadDialog(ui.dialog):
         with self.content_container:
             with ui.scroll_area().style("max-height: 350px").classes("w-full"):
                 for result in results:
-                    is_success = result["status"] == "success"
-                    bg_color = "#e8f5e9" if is_success else "#ffebee"
-                    icon = "✅" if is_success else "❌"
+                    status = result["status"]
+                    is_success = status == "success"
+                    is_need_confirm = status == "need_confirm"
+                    bg_color = (
+                        "#e8f5e9"
+                        if is_success
+                        else ("#fff3e0" if is_need_confirm else "#ffebee")
+                    )
+                    icon = "✅" if is_success else ("⚠️" if is_need_confirm else "❌")
 
                     with ui.card().style(
                         f"background: {bg_color}; margin: 5px 0; padding: 10px;"
@@ -218,7 +240,11 @@ class SubtitleUploadDialog(ui.dialog):
                         else:
                             ui.label(
                                 f"错误: {result.get('error', '未知错误')}"
-                            ).style("font-size: 13px; color: red;")
+                            ).style(
+                                "font-size: 13px; color: #b26a00;"
+                                if is_need_confirm
+                                else "font-size: 13px; color: red;"
+                            )
                             sync_summary = result.get("sync_summary") or {}
                             if sync_summary.get("enabled"):
                                 ui.label(
@@ -226,7 +252,11 @@ class SubtitleUploadDialog(ui.dialog):
                                     f"成功{sync_summary.get('success', 0)} / "
                                     f"回退{sync_summary.get('fallback', 0)} / "
                                     f"跳过{sync_summary.get('skipped', 0)}"
-                                ).style("font-size: 12px; color: #aa6666;")
+                                ).style(
+                                    "font-size: 12px; color: #aa8844;"
+                                    if is_need_confirm
+                                    else "font-size: 12px; color: #aa6666;"
+                                )
 
             ui.separator()
 
@@ -420,26 +450,32 @@ class SubtitleUploadDialog(ui.dialog):
             )
 
             if process_result["status"] == "need_confirm":
-                # 需要用户选择任务
-                available_tasks = process_result.get("available_tasks", [])
-                dialog = ChooseTaskDialog(available_tasks)
-                selected_uuid = await dialog
+                if self._should_prompt_manual_choice(total):
+                    # 单文件导入时保留手动选择能力
+                    available_tasks = process_result.get("available_tasks", [])
+                    dialog = ChooseTaskDialog(available_tasks)
+                    selected_uuid = await dialog
 
-                if selected_uuid:
-                    # 使用选中的任务重新处理
-                    self._show_processing_view(current=i, total=total)
-                    process_result = await run.io_bound(
-                        self.processor.process,
-                        file_path,
-                        selected_uuid,
-                    )
+                    if selected_uuid:
+                        # 使用选中的任务重新处理
+                        self._show_processing_view(current=i, total=total)
+                        process_result = await run.io_bound(
+                            self.processor.process,
+                            file_path,
+                            selected_uuid,
+                        )
+                    else:
+                        # 用户取消，标记为失败
+                        process_result = {
+                            "status": "error",
+                            "archive_path": str(file_path),
+                            "error": "用户取消选择",
+                        }
                 else:
-                    # 用户取消，标记为失败
-                    process_result = {
-                        "status": "error",
-                        "archive_path": str(file_path),
-                        "error": "用户取消选择",
-                    }
+                    # 批量导入时不要因为等待人工选择而阻塞后续文件
+                    process_result = self._build_batch_need_confirm_result(
+                        process_result
+                    )
 
             self.batch_results.append(process_result)
 

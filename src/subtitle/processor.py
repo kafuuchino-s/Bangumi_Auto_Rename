@@ -70,6 +70,66 @@ class SubtitleProcessor:
         self.ai_client = AIClient()
         self.syncer = FFsubsyncRunner()
 
+    @staticmethod
+    def _normalize_archive_path(path: Optional[str]) -> str:
+        """归一化压缩包内部路径，统一分隔符并去除首尾斜杠。"""
+        if not path:
+            return ""
+        return str(path).replace("\\", "/").strip().strip("/")
+
+    def _find_subtitle_file(
+        self,
+        subtitle_files: List[ExtractedSubtitle],
+        subtitle_path: str,
+    ) -> Optional[ExtractedSubtitle]:
+        """根据 AI 返回的字幕路径查找解压后的字幕文件。"""
+        normalized_target = self._normalize_archive_path(subtitle_path)
+        if not normalized_target:
+            return None
+
+        exact_match = next(
+            (
+                sub
+                for sub in subtitle_files
+                if self._normalize_archive_path(sub.archive_path) == normalized_target
+            ),
+            None,
+        )
+        if exact_match:
+            return exact_match
+
+        filename_match = next(
+            (
+                sub
+                for sub in subtitle_files
+                if sub.filename == subtitle_path or sub.filename == Path(normalized_target).name
+            ),
+            None,
+        )
+        if filename_match:
+            return filename_match
+
+        suffix_match = next(
+            (
+                sub
+                for sub in subtitle_files
+                if self._normalize_archive_path(sub.archive_path).endswith(
+                    f"/{normalized_target}"
+                )
+                or self._normalize_archive_path(sub.archive_path).endswith(
+                    normalized_target
+                )
+            ),
+            None,
+        )
+        if suffix_match:
+            logger.info(
+                f"[字幕处理] 字幕路径修正: {subtitle_path} -> {suffix_match.archive_path}"
+            )
+            return suffix_match
+
+        return None
+
     def _normalize_language(self, lang: Optional[str]) -> Tuple[str, bool]:
         """
         将字幕组语言标签转换为 Emby 标准格式
@@ -209,11 +269,6 @@ class SubtitleProcessor:
         )
 
         # Step 6: 构建文件映射（按任务分组）
-        # 创建字幕文件路径到对象的映射
-        subtitle_by_path: Dict[str, ExtractedSubtitle] = {
-            sub.archive_path: sub for sub in subtitle_files
-        }
-
         # 创建任务UUID到任务信息的映射
         task_by_uuid: Dict[str, Dict[str, Any]] = {
             t["uuid"]: t for t in processed_tasks
@@ -225,18 +280,10 @@ class SubtitleProcessor:
 
         for mapping in ai_result.mappings:
             # 找到对应的字幕文件
-            subtitle_file = subtitle_by_path.get(mapping.subtitle_path)
-            if not subtitle_file:
-                # 尝试用文件名匹配（兼容旧格式）
-                subtitle_file = next(
-                    (
-                        sub
-                        for sub in subtitle_files
-                        if sub.filename == mapping.subtitle_path
-                        or sub.archive_path == mapping.subtitle_path
-                    ),
-                    None,
-                )
+            subtitle_file = self._find_subtitle_file(
+                subtitle_files,
+                mapping.subtitle_path,
+            )
             if not subtitle_file:
                 logger.warning(
                     f"[字幕处理] 字幕文件不存在: {mapping.subtitle_path}"

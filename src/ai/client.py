@@ -1,14 +1,20 @@
 import json
 import re
+from copy import deepcopy
 from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Optional, Type
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ValidationError
 from google.genai.types import GenerateContentConfig
 
 from ..logger import logger
-from .models import AIAnalysisResult, MovieCollectionResult, SubtitleMappingResult
+from .models import (
+    AIAnalysisResult,
+    MovieCollectionResult,
+    SubtitleMappingResult,
+    TitleExtractionResult,
+)
 from ..utils.path import AI_ANALYSIS_PATH
 from ..config.config_manager import cm
 from .gemini_client import GeminiClient
@@ -18,6 +24,27 @@ from .base_client import BaseAIClient
 
 class AIClient:
     """AI客户端工厂类，根据配置选择合适的AI提供商"""
+
+    @staticmethod
+    def _build_openai_strict_schema(schema_model: Type[BaseModel]) -> Dict:
+        """构建符合 OpenAI strict structured output 要求的 JSON Schema。"""
+        schema = deepcopy(schema_model.model_json_schema())
+
+        def ensure_required_fields(obj):
+            if isinstance(obj, dict):
+                properties = obj.get("properties")
+                if isinstance(properties, dict):
+                    obj["required"] = list(properties.keys())
+                    obj["additionalProperties"] = False
+
+                for value in obj.values():
+                    ensure_required_fields(value)
+            elif isinstance(obj, list):
+                for item in obj:
+                    ensure_required_fields(item)
+
+        ensure_required_fields(schema)
+        return schema
 
     def __init__(self):
         self.provider = cm.get_config("ai_provider") or "openai"
@@ -44,10 +71,100 @@ class AIClient:
         Returns:
             提取出的标题，如果失败则返回None
         """
-        result = self.extract_title_and_type(filename)
+        result = self.extract_title_metadata(filename)
         if result:
-            return result[0]
+            return result.title
         return None
+
+    def extract_title_metadata(
+        self, filename: str
+    ) -> Optional[TitleExtractionResult]:
+        """使用结构化输出提取标题、回退标题与内容类型。"""
+        if not self.is_available():
+            logger.warning(f"[AI提取标题] AI功能未启用或{self.provider}客户端不可用")
+            return None
+
+        logger.info(f"[AI提取标题] 使用 {self.provider.upper()} 提取标题: {filename}")
+
+        try:
+            prompt = f"""从以下文件名中提取动漫或电影的搜索标题，并判断内容类型。
+
+文件名: {filename}
+
+返回要求：
+1. title：最优先的 TMDB 查询标题
+   - 返回最可能直接搜到结果的正式作品名
+   - 不要包含字幕组名、分辨率、编码、来源、集数等噪音信息
+   - 不要包含“剧场版”“劇場版”“theatrical”“movie”等泛化前缀，除非它本身就是作品正式名的一部分
+2. fallback_title：仅当 title 搜不到时再尝试的基础回退标题
+   - 只返回一个最有价值的回退词，不是 alias 列表
+   - 当 title 本身已经足够基础，或没有更好的回退词时，返回 null
+   - 常用于去掉版本名、副标题、续作标记、修饰后缀等，让标题更基础
+3. type：根据文件名判断是 "movie"、"tv" 或 null
+
+类型判断依据：
+- 包含"劇場版"、"剧场版"、"MOVIE"、"movie"、"Film"、"theatrical"、"Movie"等关键词 → movie
+- 包含"OVA"、"OAD"但不是剧场版 → tv
+- 文件名中有明确的季度信息（S01、第一季等）→ tv
+- 文件名中有剧集编号格式（E01、第01话等）→ tv
+- 不确定时可返回 tv；若确实无法判断也可返回 null
+
+请严格按照以下JSON格式返回，不要有其他文字：
+{{
+  "title": "主搜索标题",
+  "fallback_title": "备选基础标题或null",
+  "type": "movie或tv或null"
+}}
+
+示例：
+输入: [LoliHouse] 葬送的芙莉莲 / Sousou no Frieren [01-28 Fin][WebRip 1080p]
+输出: {{"title": "葬送的芙莉莲", "fallback_title": null, "type": "tv"}}
+
+输入: [AI-Raws][劇場版 空の境界][MOVIE 01-09][BDRip]
+输出: {{"title": "空之境界", "fallback_title": null, "type": "movie"}}
+
+输入: [VCB-Studio] Fate Zero [Ma10p_1080p]
+输出: {{"title": "Fate/Zero", "fallback_title": null, "type": "tv"}}
+
+输入: [字幕组] 生徒会の一存 Lv.2 [BDRip]
+输出: {{"title": "生徒会の一存 Lv.2", "fallback_title": "生徒会の一存", "type": "tv"}}"""
+
+            system_prompt = (
+                "你是一个专业的动漫文件命名解析助手。"
+                "你的任务是从复杂的文件名中准确提取出动漫或电影的标题、"
+                "回退标题，并判断内容类型。只输出JSON格式结果，不要有任何额外的解释。"
+            )
+
+            if self.provider.lower() == "gemini":
+                result = self._call_gemini_simple(
+                    system_prompt,
+                    prompt,
+                    schema=TitleExtractionResult,
+                )
+            else:
+                result = self._call_openai_simple(
+                    system_prompt,
+                    prompt,
+                    validation_key="title",
+                    schema=TitleExtractionResult,
+                )
+
+            if not result:
+                return None
+
+            parsed = TitleExtractionResult.model_validate_json(result)
+            logger.info(
+                "[AI提取标题] 提取结果: "
+                f"title={parsed.title}, fallback_title={parsed.fallback_title}, "
+                f"type={parsed.type}"
+            )
+            return parsed
+        except ValidationError as e:
+            logger.error(f"[AI提取标题] 结构化解析失败: {e}")
+            return None
+        except Exception as e:
+            logger.error(f"[AI提取标题] 提取失败: {e}")
+            return None
 
     def extract_title_and_type(
         self, filename: str
@@ -62,128 +179,10 @@ class AIClient:
             元组 (标题, 类型)，类型为 "movie" 或 "tv" 或 None
             如果失败则返回 None
         """
-        if not self.is_available():
-            logger.warning(f"[AI提取标题] AI功能未启用或{self.provider}客户端不可用")
+        result = self.extract_title_metadata(filename)
+        if not result:
             return None
-
-        logger.info(f"[AI提取标题] 使用 {self.provider.upper()} 提取标题: {filename}")
-
-        try:
-            prompt = f"""从以下文件名中提取动漫或电影的标题名称，并判断内容类型。
-
-文件名: {filename}
-
-要求：
-1. 提取标题：返回可在 TMDB 上搜索到的标题
-   - 不要包含字幕组名、分辨率、编码等信息
-   - 不要包含 "剧场版"、"劇場版"、"theatrical"、"movie" 等前缀
-   - 使用作品的正式名称（中文名或日文名均可）
-2. 判断类型：根据文件名判断是"movie"（电影/剧场版）还是"tv"（电视剧/番剧）
-
-类型判断依据：
-- 包含"劇場版"、"剧场版"、"MOVIE"、"movie"、"Film"、"theatrical"、"Movie"等关键词 → movie
-- 包含"OVA"、"OAD"但不是剧场版 → tv (特典)
-- 文件名中有明确的季度信息（S01、第一季等）→ tv
-- 文件名中有剧集编号格式（E01、第01话等）→ tv
-- 不确定时默认为 tv
-
-请严格按照以下JSON格式返回，不要有其他文字：
-{{"title": "TMDB可搜索的标题", "type": "movie或tv"}}
-
-示例：
-输入: [LoliHouse] 葬送的芙莉莲 / Sousou no Frieren [01-28 Fin][WebRip 1080p]
-输出: {{"title": "葬送的芙莉莲", "type": "tv"}}
-
-输入: [AI-Raws][劇場版 空の境界][MOVIE 01-09][BDRip]
-输出: {{"title": "空之境界", "type": "movie"}}
-
-输入: [VCB-Studio] Fate Zero [Ma10p_1080p]
-输出: {{"title": "Fate/Zero", "type": "tv"}}
-
-输入: [字幕组] 剧场版 鬼灭之刃 无限列车篇 [BDRip]
-输出: {{"title": "鬼灭之刃 无限列车篇", "type": "movie"}}"""
-
-            system_prompt = "你是一个专业的动漫文件命名解析助手。你的任务是从复杂的文件名中准确提取出动漫或电影的标题，并判断内容类型。只输出JSON格式结果，不要有任何额外的解释。"
-
-            # 直接调用底层客户端的API
-            if self.provider.lower() == "gemini":
-                result = self._call_gemini_simple(system_prompt, prompt)
-            else:
-                result = self._call_openai_simple(
-                    system_prompt,
-                    prompt,
-                    validation_key="type",
-                )
-
-            if result:
-                # 清理结果，解析JSON
-                result = result.strip()
-                # 尝试提取JSON部分 - 使用更健壮的正则
-                import re
-
-                # 先尝试直接解析整个结果
-                try:
-                    data = json.loads(result)
-                    title = data.get("title", "").strip().strip('"\'')
-                    content_type = data.get("type", "").strip().lower()
-
-                    if content_type not in ["movie", "tv"]:
-                        content_type = None
-
-                    logger.info(
-                        f"[AI提取标题] 提取结果: {title}, 类型: {content_type}"
-                    )
-                    return (title, content_type)
-                except json.JSONDecodeError:
-                    pass
-
-                # 尝试提取 {...} 部分（支持嵌套引号）
-                json_match = re.search(r'\{.*\}', result, re.DOTALL)
-                if json_match:
-                    try:
-                        data = json.loads(json_match.group())
-                        title = data.get("title", "").strip().strip('"\'')
-                        content_type = data.get("type", "").strip().lower()
-
-                        if content_type not in ["movie", "tv"]:
-                            content_type = None
-
-                        logger.info(
-                            f"[AI提取标题] 提取结果: {title}, 类型: {content_type}"
-                        )
-                        return (title, content_type)
-                    except json.JSONDecodeError:
-                        pass
-
-                # 尝试用正则直接提取 title 和 type 字段
-                title_match = re.search(
-                    r'"title"\s*:\s*"([^"]+)"', result
-                )
-                type_match = re.search(r'"type"\s*:\s*"([^"]+)"', result)
-
-                if title_match:
-                    title = title_match.group(1).strip()
-                    content_type = None
-                    if type_match:
-                        t = type_match.group(1).strip().lower()
-                        if t in ["movie", "tv"]:
-                            content_type = t
-
-                    logger.info(
-                        f"[AI提取标题] 提取结果: {title}, 类型: {content_type}"
-                    )
-                    return (title, content_type)
-
-                # 如果都失败了，返回原始结果
-                result = result.strip().strip('"\'')
-                logger.info(f"[AI提取标题] 提取结果: {result} (类型未知)")
-                return (result, None)
-
-            return None
-
-        except Exception as e:
-            logger.error(f"[AI提取标题] 提取失败: {e}")
-            return None
+        return (result.title, result.type)
 
     def _call_openai_simple(
         self,
@@ -221,12 +220,13 @@ class AIClient:
                 }
 
                 # 根据配置和schema添加结构化输出参数
-                if schema and output_format == "structured_output":
+                if schema and output_format != "json_object":
                     request_params["response_format"] = {
                         "type": "json_schema",
                         "json_schema": {
                             "name": schema.__name__.lower(),
-                            "schema": schema.model_json_schema(),
+                            "strict": True,
+                            "schema": self._build_openai_strict_schema(schema),
                         },
                     }
                 elif schema and output_format == "json_object":

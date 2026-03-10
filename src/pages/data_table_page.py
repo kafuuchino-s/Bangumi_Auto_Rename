@@ -229,6 +229,14 @@ async def _handle_subtitle_retry(ev: GenericEventArguments, client) -> None:
         create_subtitle_table.refresh()
 
 
+def _format_bool_text(value: Any) -> str:
+    if value is True:
+        return '是'
+    if value is False:
+        return '否'
+    return '自动'
+
+
 @ui.refreshable
 def create_table():
     queue_mgr = get_queue_manager()
@@ -251,20 +259,22 @@ def create_table():
         j['align'] = 'center'
         j['sortable'] = True
 
-    sorted_files = sorted(
-        TASK_PATH.iterdir(), key=lambda x: x.stat().st_mtime, reverse=True
-    )
-    for index, i in enumerate(sorted_files):
+    task_rows_by_path: Dict[str, Dict[str, Any]] = {}
+    if TASK_PATH.exists():
+        sorted_files = sorted(
+            TASK_PATH.iterdir(), key=lambda x: x.stat().st_mtime, reverse=True
+        )
+    else:
+        sorted_files = []
+    for i in sorted_files:
         task_data = get_task(i.stem)
 
         # 跳过字幕任务（单独处理）
         if task_data.get('type') == 'subtitle':
             continue
 
-        # 兼容旧数据：使用 .get() 安全访问
         path = task_data.get('path', '')
         if not path:
-            # 跳过无效的任务数据
             continue
 
         if task_data.get('error'):
@@ -272,11 +282,9 @@ def create_table():
         else:
             status = '成功'
 
-        # 检查是否使用了AI
         ai_used = task_data.get('ai_used', task_data.get('use_ai', False))
         ai_status = '是' if ai_used else '否'
 
-        # 检查队列状态
         queue_status = queue_mgr.get_path_status(path)
         if queue_status == TaskStatus.RUNNING:
             queue_status_text = '执行中...'
@@ -286,21 +294,47 @@ def create_table():
         else:
             queue_status_text = '-'
 
-        rows.append(
-            {
-                'id': index,
-                'path': path,
-                'name': task_data.get('name', '未知'),
-                'uuid': task_data.get('uuid', ''),
-                'season': task_data.get('season_id', '-'),
-                'status': status,
-                'queue_status': queue_status_text,
-                'is_anime': task_data.get('is_anime', False),
-                'is_movie': task_data.get('is_movie', False),
-                'ai_used': ai_status,
-                'value': '操作',
-            }
-        )
+        task_rows_by_path[path] = {
+            'path': path,
+            'name': task_data.get('name', '未知'),
+            'uuid': task_data.get('uuid', ''),
+            'season': task_data.get('season_id', '-'),
+            'status': status,
+            'queue_status': queue_status_text,
+            'is_anime': task_data.get('is_anime', False),
+            'is_movie': task_data.get('is_movie', False),
+            'ai_used': ai_status,
+            'value': '操作',
+        }
+
+    for task in queue_mgr.list_active_tasks():
+        if task.path in task_rows_by_path:
+            continue
+
+        if task.status == TaskStatus.RUNNING:
+            queue_status_text = '执行中...'
+            status = '处理中'
+        else:
+            position = queue_mgr.get_queue_position(task.path)
+            queue_status_text = f'队列中 #{position}'
+            status = '等待处理'
+
+        task_rows_by_path[task.path] = {
+            'path': task.path,
+            'name': task.cus_name or Path(task.path).name,
+            'uuid': task.original_uuid or task.task_id,
+            'season': task.cus_season_id or '-',
+            'status': status,
+            'queue_status': queue_status_text,
+            'is_anime': _format_bool_text(task.is_anime),
+            'is_movie': _format_bool_text(task.is_movie),
+            'ai_used': '待处理',
+            'value': '操作',
+        }
+
+    for index, row in enumerate(task_rows_by_path.values()):
+        row['id'] = index
+        rows.append(row)
 
     table = (
         ui.table(columns=columns, rows=rows)

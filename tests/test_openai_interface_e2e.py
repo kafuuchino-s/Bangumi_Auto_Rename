@@ -72,7 +72,11 @@ def _build_main_success_payload(*_args, **_kwargs) -> Dict[str, object]:
 def _build_simple_success_payload(*_args, **_kwargs) -> Dict[str, object]:
     """简单链路可解析 payload。"""
     return {
-        "content": '{"title":"Test Anime","type":"tv"}',
+        "content": (
+            '{"title":"Test Anime",'
+            '"fallback_title":"Test",'
+            '"type":"tv"}'
+        ),
         "tool_calls": [],
     }
 
@@ -193,6 +197,7 @@ def _scenario_responses_supported() -> ScenarioResult:
         ):
             simple_result = _run_simple_chain(ai_client)
             assert simple_result is not None
+            assert simple_result == ("Test Anime", "tv")
             simple_state = _capture_interface_state(ai_client)
             _assert_state(
                 "simple_chain",
@@ -252,6 +257,7 @@ def _scenario_responses_fallback() -> ScenarioResult:
         ):
             simple_result = _run_simple_chain(ai_client)
             assert simple_result is not None
+            assert simple_result == ("Test Anime", "tv")
             simple_state = _capture_interface_state(ai_client)
             _assert_state(
                 "simple_chain",
@@ -305,6 +311,7 @@ def _scenario_chat_only() -> ScenarioResult:
         ):
             simple_result = _run_simple_chain(ai_client)
             assert simple_result is not None
+            assert simple_result == ("Test Anime", "tv")
             simple_state = _capture_interface_state(ai_client)
             _assert_state(
                 "simple_chain",

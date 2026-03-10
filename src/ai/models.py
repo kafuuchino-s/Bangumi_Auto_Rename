@@ -45,6 +45,72 @@ def _make_gemini_compatible_schema(schema: dict) -> dict:
     return inline_refs(schema)
 
 
+class TitleExtractionResult(BaseModel):
+    """标题提取结果"""
+
+    title: str = Field(..., description="主搜索标题，优先用于 TMDB 查询")
+    fallback_title: Optional[str] = Field(
+        default=None,
+        description="主标题未命中时可回退尝试的基础标题",
+    )
+    type: Optional[Literal["movie", "tv"]] = Field(
+        default=None,
+        description="内容类型，movie 或 tv",
+    )
+
+    @field_validator("title", mode="before")
+    @classmethod
+    def validate_title(cls, v):
+        if v is None:
+            raise ValueError("title不能为空")
+
+        title = str(v).strip().strip('"\'')
+        if not title:
+            raise ValueError("title不能为空")
+        return title
+
+    @field_validator("fallback_title", mode="before")
+    @classmethod
+    def validate_fallback_title(cls, v):
+        if v is None:
+            return None
+
+        fallback_title = str(v).strip().strip('"\'')
+        if not fallback_title or fallback_title.lower() == "null":
+            return None
+        return fallback_title
+
+    @field_validator("type", mode="before")
+    @classmethod
+    def validate_type(cls, v):
+        if v is None:
+            return None
+
+        content_type = str(v).strip().lower()
+        if content_type not in ["movie", "tv"]:
+            return None
+        return content_type
+
+    @model_validator(mode="after")
+    def normalize_fallback_title(self):
+        if (
+            self.fallback_title
+            and self.fallback_title.casefold() == self.title.casefold()
+        ):
+            self.fallback_title = None
+        return self
+
+    model_config = ConfigDict(populate_by_name=True, extra='forbid')
+
+    @classmethod
+    def gemini_json_schema(
+        cls, by_alias: bool = True, ref_template: str = '#/$defs/{model}'
+    ):
+        """生成Gemini API兼容的JSON Schema"""
+        schema = super().model_json_schema(by_alias=by_alias, ref_template=ref_template)
+        return _make_gemini_compatible_schema(schema)
+
+
 class SeasonMapping(BaseModel):
     """季度映射对象"""
 
@@ -248,6 +314,8 @@ class SubtitleMapping(BaseModel):
         default=None,
         description="语言标签，如 chs(简体), cht(繁体), jpn(日语), eng(英语)",
     )
+
+    model_config = ConfigDict(populate_by_name=True, extra='forbid')
 
 
 class SubtitleMappingResult(BaseModel):

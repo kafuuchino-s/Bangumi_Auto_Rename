@@ -181,6 +181,21 @@ class TaskQueueManager:
         """获取正在运行的任务数量"""
         return len(self._running_tasks)
 
+    def list_active_tasks(self) -> List[QueuedTask]:
+        """获取当前队列中待处理/执行中的任务快照。"""
+        active_tasks = [
+            task
+            for task in self._tasks.values()
+            if task.status in (TaskStatus.PENDING, TaskStatus.RUNNING)
+        ]
+        active_tasks.sort(
+            key=lambda task: (
+                task.status != TaskStatus.RUNNING,
+                task.created_at,
+            )
+        )
+        return active_tasks
+
     def is_path_in_queue(self, path: str) -> bool:
         """检查路径是否已在队列中"""
         return self.get_path_status(path) is not None

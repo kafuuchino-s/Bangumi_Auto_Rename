@@ -122,6 +122,91 @@ def _build_process_fixture(
     }
 
 
+def test_find_subtitle_file_matches_suffix_path_with_missing_root(tmp_path):
+    processor = SubtitleProcessor()
+    subtitle_path = tmp_path / "a.ass"
+    subtitle_path.write_text("subtitle", encoding="utf-8")
+    subtitle = ExtractedSubtitle(
+        temp_path=subtitle_path,
+        archive_path=(
+            "[简] 夜樱四重奏 花之歌+星之海/"
+            "[Quetzal] Yozakura Quartet - Hana no Uta/"
+            "[Quetzal] Yozakura Quartet - Hana no Uta 01.chs.ass"
+        ),
+        filename="[Quetzal] Yozakura Quartet - Hana no Uta 01.chs.ass",
+    )
+
+    matched = processor._find_subtitle_file(
+        [subtitle],
+        (
+            "[Quetzal] Yozakura Quartet - Hana no Uta/"
+            "[Quetzal] Yozakura Quartet - Hana no Uta 01.chs.ass"
+        ),
+    )
+
+    assert matched is subtitle
+
+
+def test_process_accepts_ai_subtitle_paths_without_top_level_root(monkeypatch, tmp_path):
+    processor, fixture = _build_process_fixture(
+        monkeypatch,
+        tmp_path,
+        sync_enabled=False,
+    )
+
+    nested_dir = tmp_path / "extract" / "[简] 合集" / "subs"
+    nested_dir.mkdir(parents=True, exist_ok=True)
+    source_path = nested_dir / "a.ass"
+    source_path.write_text("subtitle", encoding="utf-8")
+    subtitle = ExtractedSubtitle(
+        temp_path=source_path,
+        archive_path="[简] 合集/subs/a.ass",
+        filename="a.ass",
+    )
+
+    monkeypatch.setattr(processor.extractor, "extract", lambda archive_path: [subtitle])
+    monkeypatch.setattr(
+        processor.extractor,
+        "get_archive_structure",
+        lambda subtitle_files: {"[简] 合集/subs": ["a.ass"]},
+    )
+
+    ai_result = SimpleNamespace(
+        mappings=[
+            SimpleNamespace(
+                subtitle_path="subs/a.ass",
+                task_uuid="task-1",
+                video=fixture["video_name"],
+                language="chs",
+            )
+        ],
+        confidence="High",
+    )
+    monkeypatch.setattr(
+        processor.ai_client,
+        "analyze_subtitle_mapping",
+        lambda **kwargs: ai_result,
+    )
+
+    trans_call = {}
+
+    class FakeTrans:
+        def __init__(self, R, uuid, force_mode=None, force_overwrite=None):
+            trans_call["R"] = dict(R)
+            trans_call["force_mode"] = force_mode
+
+        def trans_file(self):
+            return {"ok": True}
+
+    monkeypatch.setattr("src.subtitle.processor.Trans", FakeTrans)
+
+    result = processor.process(tmp_path / "archive.zip")
+
+    assert result["status"] == "success"
+    assert source_path in trans_call["R"]
+    assert trans_call["force_mode"] == "复制"
+
+
 def test_sync_overwrite_policy_follow_global(monkeypatch):
     processor = SubtitleProcessor()
 
