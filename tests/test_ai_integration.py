@@ -10,13 +10,19 @@ import tempfile
 import shutil
 from pathlib import Path
 from typing import Dict, List, Optional
+from unittest.mock import patch
 
 # 添加项目根目录到路径
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from src.ai.client import AIClient
-from src.ai.models import AIAnalysisResult, MovieCollectionResult
+from src.ai.models import (
+    AIAnalysisResult,
+    MovieCollectionResult,
+    TitleExtractionResult,
+)
 from src.rename.ai_processor import AIProcessor
+from src.rename.process import Rename
 
 
 class AITestResult:
@@ -435,6 +441,324 @@ def test_bracket_episode_format():
         ))
 
     assert all(isinstance(r.passed, bool) for r in results)
+
+
+def test_title_extraction_result_normalizes_fallback_title():
+    """fallback_title 为空、null 或与 title 相同时应归一化为 None。"""
+    same_value = TitleExtractionResult(
+        title="生徒会の一存 Lv.2",
+        fallback_title="生徒会の一存 Lv.2",
+        type="tv",
+    )
+    assert same_value.fallback_title is None
+
+    empty_value = TitleExtractionResult(
+        title="生徒会の一存 Lv.2",
+        fallback_title=" ",
+        type="tv",
+    )
+    assert empty_value.fallback_title is None
+
+    null_like_value = TitleExtractionResult(
+        title="生徒会の一存 Lv.2",
+        fallback_title="null",
+        type="tv",
+    )
+    assert null_like_value.fallback_title is None
+
+
+def test_extract_title_metadata_and_compatibility_helpers():
+    """结构化标题提取应保留 extract_title / extract_title_and_type 兼容行为。"""
+    payload = (
+        '{"title":"生徒会の一存 Lv.2",'
+        '"fallback_title":"生徒会の一存",'
+        '"type":"tv"}'
+    )
+    ai_client = AIClient()
+
+    with patch.object(AIClient, "is_available", return_value=True), patch.object(
+        AIClient,
+        "_call_openai_simple",
+        return_value=payload,
+    ), patch.object(
+        AIClient,
+        "_call_gemini_simple",
+        return_value=payload,
+    ):
+        metadata = ai_client.extract_title_metadata("[字幕组] 生徒会の一存 Lv.2 [BDRip]")
+        assert metadata is not None
+        assert metadata.title == "生徒会の一存 Lv.2"
+        assert metadata.fallback_title == "生徒会の一存"
+        assert metadata.type == "tv"
+
+        assert ai_client.extract_title("[字幕组] 生徒会の一存 Lv.2 [BDRip]") == "生徒会の一存 Lv.2"
+        assert ai_client.extract_title_and_type("[字幕组] 生徒会の一存 Lv.2 [BDRip]") == (
+            "生徒会の一存 Lv.2",
+            "tv",
+        )
+
+
+def test_extract_title_metadata_without_fallback_keeps_old_behavior():
+    """未返回 fallback_title 时行为应与旧接口一致。"""
+    payload = '{"title":"Fate/Zero","fallback_title":null,"type":"tv"}'
+    ai_client = AIClient()
+
+    with patch.object(AIClient, "is_available", return_value=True), patch.object(
+        AIClient,
+        "_call_openai_simple",
+        return_value=payload,
+    ):
+        metadata = ai_client.extract_title_metadata("[VCB-Studio] Fate Zero [Ma10p_1080p]")
+        assert metadata is not None
+        assert metadata.title == "Fate/Zero"
+        assert metadata.fallback_title is None
+        assert metadata.type == "tv"
+        assert ai_client.extract_title_and_type("[VCB-Studio] Fate Zero [Ma10p_1080p]") == (
+            "Fate/Zero",
+            "tv",
+        )
+
+
+def test_check_task_type_uses_fallback_title_when_primary_misses():
+    """主标题无结果时，应继续尝试 fallback_title。"""
+    rename = Rename()
+    ai_client = AIClient()
+    title_metadata = TitleExtractionResult(
+        title="生徒会の一存 Lv.2",
+        fallback_title="生徒会の一存",
+        type="tv",
+    )
+    target_info = {
+        "id": 1,
+        "name": "生徒会的一存",
+        "genres": [{"name": "Animation"}],
+    }
+
+    with patch.object(AIClient, "is_available", return_value=True), patch.object(
+        AIClient,
+        "extract_title_metadata",
+        return_value=title_metadata,
+    ), patch.object(
+        rename,
+        "_search_tv_with_ai_selection",
+        side_effect=[
+            ("", None, None, "tmdb_not_found"),
+            ("生徒会的一存", target_info, "High", ""),
+        ],
+    ) as search_tv, patch.object(
+        rename,
+        "_search_movie_with_ai_selection",
+        return_value=("", None, None, "tmdb_not_found"),
+    ):
+        result = rename.check_task_type(
+            rtpath_name="生徒会の一存",
+            year=0,
+            path=Path("[ANK-Raws] 生徒会の一存 Lv.2 [01].mkv"),
+            ai_client=ai_client,
+        )
+
+    assert isinstance(result, tuple)
+    assert result[0] == "生徒会的一存"
+    assert search_tv.call_args_list[0].args[1] == "生徒会の一存 Lv.2"
+    assert search_tv.call_args_list[1].args[1] == "生徒会の一存"
+    assert len(search_tv.call_args_list) == 2
+
+
+def test_check_task_type_does_not_search_fallback_after_primary_hit():
+    """主标题命中时，不应额外搜索 fallback_title。"""
+    rename = Rename()
+    ai_client = AIClient()
+    title_metadata = TitleExtractionResult(
+        title="生徒会の一存 Lv.2",
+        fallback_title="生徒会の一存",
+        type="tv",
+    )
+    target_info = {
+        "id": 2,
+        "name": "生徒会的一存 Lv.2",
+        "genres": [{"name": "Animation"}],
+    }
+
+    with patch.object(AIClient, "is_available", return_value=True), patch.object(
+        AIClient,
+        "extract_title_metadata",
+        return_value=title_metadata,
+    ), patch.object(
+        rename,
+        "_search_tv_with_ai_selection",
+        return_value=("生徒会的一存 Lv.2", target_info, "High", ""),
+    ) as search_tv, patch.object(
+        rename,
+        "_search_movie_with_ai_selection",
+        return_value=("", None, None, "tmdb_not_found"),
+    ):
+        result = rename.check_task_type(
+            rtpath_name="生徒会の一存",
+            year=0,
+            path=Path("[ANK-Raws] 生徒会の一存 Lv.2 [01].mkv"),
+            ai_client=ai_client,
+        )
+
+    assert isinstance(result, tuple)
+    assert result[0] == "生徒会的一存 Lv.2"
+    assert len(search_tv.call_args_list) == 1
+    assert search_tv.call_args_list[0].args[1] == "生徒会の一存 Lv.2"
+
+
+def test_check_task_type_deduplicates_fallback_and_clean_title_queries():
+    """fallback_title 与清洗标题重复时，不应重复搜索。"""
+    rename = Rename()
+    ai_client = AIClient()
+    title_metadata = TitleExtractionResult(
+        title="生徒会の一存 Lv.2",
+        fallback_title="生徒会の一存",
+        type="tv",
+    )
+    target_info = {
+        "id": 3,
+        "name": "生徒会的一存",
+        "genres": [{"name": "Animation"}],
+    }
+
+    with patch.object(AIClient, "is_available", return_value=True), patch.object(
+        AIClient,
+        "extract_title_metadata",
+        return_value=title_metadata,
+    ), patch.object(
+        rename,
+        "_search_tv_with_ai_selection",
+        side_effect=[
+            ("", None, None, "tmdb_not_found"),
+            ("生徒会的一存", target_info, "High", ""),
+        ],
+    ) as search_tv, patch.object(
+        rename,
+        "_search_movie_with_ai_selection",
+        return_value=("", None, None, "tmdb_not_found"),
+    ):
+        result = rename.check_task_type(
+            rtpath_name="生徒会の一存",
+            year=0,
+            path=Path("[ANK-Raws] 生徒会の一存 Lv.2 [01].mkv"),
+            ai_client=ai_client,
+        )
+
+    assert isinstance(result, tuple)
+    searched_queries = [call.args[1] for call in search_tv.call_args_list]
+    assert searched_queries == ["生徒会の一存 Lv.2", "生徒会の一存"]
+
+
+def test_movie_collection_result_falls_back_to_single_movie_main_feature():
+    """单电影目录含特典时，应回退为单电影处理正片。"""
+    rename = Rename()
+    base_path = Path("[ANK-Raws] AURA")
+    movie_file = base_path / "AURA Main Movie.mkv"
+    extras_file = base_path / "AURA PV01.mkv"
+    collection_result = MovieCollectionResult(
+        is_collection=False,
+        collection_name="AURA",
+        confidence="High",
+        reason="目录仅含一部正片，其余均为特典",
+        file_mapping=[
+            {
+                "file_path": "AURA Main Movie.mkv",
+                "movie_title": "AURA",
+                "movie_number": None,
+                "year": 2013,
+                "confidence": "High",
+            }
+        ],
+        unmatched_files=["AURA PV01.mkv"],
+        conflict_details=[],
+        extra_notes=None,
+    )
+
+    single_files = rename._extract_single_movie_files_from_collection_result(
+        collection_result,
+        [movie_file, extras_file],
+        base_path,
+    )
+
+    assert single_files == [movie_file]
+
+
+
+def test_process_movie_dir_falls_back_from_collection_to_single_movie():
+    """电影合集候选若仅识别出一个正片，应按单电影完成处理。"""
+    rename = Rename()
+    temp_dir = Path(tempfile.mkdtemp())
+    try:
+        movie_dir = temp_dir / "[ANK-Raws] AURA"
+        movie_dir.mkdir()
+        main_file = movie_dir / "劇場アニメ AURA Main Movie.mkv"
+        extra_file = movie_dir / "劇場アニメ AURA PV01.mkv"
+        main_file.touch()
+        extra_file.touch()
+
+        collection_result = MovieCollectionResult(
+            is_collection=False,
+            collection_name="AURA",
+            confidence="High",
+            reason="目录仅含一部正片，其余均为特典",
+            file_mapping=[
+                {
+                    "file_path": main_file.name,
+                    "movie_title": "AURA",
+                    "movie_number": None,
+                    "year": 2013,
+                    "confidence": "High",
+                }
+            ],
+            unmatched_files=[extra_file.name],
+            conflict_details=[],
+            extra_notes=None,
+        )
+        info = {
+            "id": 42,
+            "title": "AURA～魔竜院光牙最後の闘い～",
+            "release_date": "2013-04-13",
+            "poster_path": "/poster.jpg",
+            "genres": [{"id": 16, "name": "Animation"}],
+        }
+
+        with patch.object(Rename, "check_task_type", return_value=(
+            "AURA～魔竜院光牙最後の闘い～",
+            info,
+            True,
+            True,
+            "High",
+        )), patch.object(AIClient, "is_available", return_value=True), patch.object(
+            AIClient,
+            "analyze_movie_collection",
+            return_value=collection_result,
+        ), patch(
+            "src.rename.process.VideoAnalyzer.analyze_video_files",
+            return_value=[
+                {"path": main_file.name, "duration": 83.0},
+                {"path": extra_file.name, "duration": 2.0},
+            ],
+        ), patch(
+            "src.rename.process.Trans"
+        ) as trans_cls, patch.object(
+            Rename,
+            "_write_task_data",
+        ) as write_task_data:
+            trans_cls.return_value.trans_file.return_value = None
+            result = rename.process(movie_dir)
+
+        assert result is True
+        assert trans_cls.call_count == 1
+        written_mapping = trans_cls.call_args_list[0].args[0]
+        assert list(written_mapping.keys()) == [main_file]
+        assert extra_file not in written_mapping
+        assert write_task_data.call_count == 1
+        task_payload = write_task_data.call_args_list[0][0][0]
+        assert task_payload["name"] == "AURA～魔竜院光牙最後の闘い～"
+        assert task_payload["is_movie"] is True
+        assert task_payload["ai_confidence"] == "High"
+    finally:
+        shutil.rmtree(temp_dir, ignore_errors=True)
+
 
 
 def run_all_tests():

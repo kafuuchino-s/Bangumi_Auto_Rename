@@ -197,6 +197,7 @@ class Rename:
         rtpath_name = remove_season(rtpath_name)
         rtpath_name = remove_episode(rtpath_name)
         rtpath_name = rtpath_name.strip('!')
+        cleaned_rtpath_name = rtpath_name
 
         if cus_name:
             rtpath_name = cus_name
@@ -245,6 +246,8 @@ class Rename:
             _is_anime,
             _is_movie,
             ai_client,
+            prefer_manual_title=bool(cus_name),
+            cleaned_title=cleaned_rtpath_name,
         )
         if isinstance(task_type, str):
             return self.error_reply(
@@ -342,133 +345,149 @@ class Rename:
                         ai_confidence=collection_result.confidence,
                     )
 
-                valid, reason, detail = self._validate_movie_collection_result(
-                    collection_result,
-                    video_files,
-                    path,
+                single_movie_files = (
+                    self._extract_single_movie_files_from_collection_result(
+                        collection_result,
+                        video_files,
+                        path,
+                    )
                 )
-                if not valid:
-                    return self.error_reply(
-                        _uuid,
-                        self._failure_message(reason or "ai_invalid_mapping", detail),
-                        path,
-                        is_anime,
-                        is_movie,
-                        name,
-                        season_id,
-                        failure_reason=reason or "ai_invalid_mapping",
-                        ai_attempted=True,
-                        ai_used=True,
-                        ai_confidence=collection_result.confidence,
+                if single_movie_files:
+                    ignored_count = len(video_files) - len(single_movie_files)
+                    logger.info(
+                        "[处理任务] 电影合集候选回退为单电影处理, "
+                        f"保留 {len(single_movie_files)} 个正片文件, "
+                        f"忽略 {ignored_count} 个附加内容"
                     )
-
-                processed_movies, unresolved = self._process_movie_collection(
-                    path,
-                    collection_result,
-                    work_root,
-                    ai_client,
-                )
-
-                if unresolved:
-                    detail = f"未能完成全部电影映射: {', '.join(unresolved[:3])}"
-                    return self.error_reply(
-                        _uuid,
-                        self._failure_message("ai_empty_mapping", detail),
+                    video_files = single_movie_files
+                else:
+                    valid, reason, detail = self._validate_movie_collection_result(
+                        collection_result,
+                        video_files,
                         path,
-                        is_anime,
-                        is_movie,
-                        name,
-                        season_id,
-                        failure_reason="ai_empty_mapping",
-                        ai_attempted=True,
-                        ai_used=True,
-                        ai_confidence=collection_result.confidence,
                     )
-
-                if not processed_movies:
-                    return self.error_reply(
-                        _uuid,
-                        self._failure_message("ai_empty_mapping"),
-                        path,
-                        is_anime,
-                        is_movie,
-                        name,
-                        season_id,
-                        failure_reason="ai_empty_mapping",
-                        ai_attempted=True,
-                        ai_used=True,
-                        ai_confidence=collection_result.confidence,
-                    )
-
-                for index, movie_data in enumerate(processed_movies):
-                    movie_uuid = _uuid if index == 0 else str(uuid.uuid4())
-                    movie_map = {
-                        movie_data['file_path']: movie_data['target_file']
-                    }
-                    trans_result = Trans(movie_map, movie_uuid).trans_file()
-                    if isinstance(trans_result, str):
+                    if not valid:
                         return self.error_reply(
-                            movie_uuid,
-                            self._failure_message("trans_failed", trans_result),
-                            movie_data['file_path'],
+                            _uuid,
+                            self._failure_message(reason or "ai_invalid_mapping", detail),
+                            path,
                             is_anime,
-                            True,
-                            movie_data['movie_name'],
-                            0,
-                            failure_reason="trans_failed",
+                            is_movie,
+                            name,
+                            season_id,
+                            failure_reason=reason or "ai_invalid_mapping",
                             ai_attempted=True,
                             ai_used=True,
-                            ai_confidence=movie_data.get(
-                                'ai_confidence',
-                                collection_result.confidence,
-                            ),
-                            extra_task_data={
-                                "is_collection": True,
-                                "collection_name": (
-                                    collection_result.collection_name
-                                ),
-                            },
+                            ai_confidence=collection_result.confidence,
                         )
 
-                    self._write_task_data(
-                        {
-                            "path": str(path),
-                            "is_anime": is_anime,
-                            "is_movie": True,
-                            "is_collection": True,
-                            "collection_name": collection_result.collection_name,
-                            "name": movie_data['movie_name'],
-                            "year": movie_data['movie_year'],
-                            "season_id": 0,
-                            "uuid": str(movie_uuid),
-                            "error": None,
-                            "use_ai": True,
-                            "ai_attempted": True,
-                            "ai_used": True,
-                            "ai_confidence": movie_data.get(
-                                'ai_confidence',
-                                collection_result.confidence,
-                            ),
-                            "failure_reason": None,
-                            "pipeline_mode": "ai_strict",
-                            "tmdb_id": movie_data.get("tmdb_id"),
-                            "poster_path": movie_data.get("poster_path"),
-                            "tmdb_name": movie_data.get("tmdb_name"),
-                            "tmdb_year": movie_data.get("tmdb_year"),
-                            "tmdb_media_type": movie_data.get(
-                                "tmdb_media_type"
-                            ),
-                            "tmdb_genres": movie_data.get("tmdb_genres"),
-                            "release_group": movie_data.get(
-                                "release_group"
-                            ),
-                            "resource_term": movie_data.get(
-                                "resource_term"
-                            ),
-                        }
+                    processed_movies, unresolved = self._process_movie_collection(
+                        path,
+                        collection_result,
+                        work_root,
+                        ai_client,
                     )
 
-                return True
+                    if unresolved:
+                        detail = f"未能完成全部电影映射: {', '.join(unresolved[:3])}"
+                        return self.error_reply(
+                            _uuid,
+                            self._failure_message("ai_empty_mapping", detail),
+                            path,
+                            is_anime,
+                            is_movie,
+                            name,
+                            season_id,
+                            failure_reason="ai_empty_mapping",
+                            ai_attempted=True,
+                            ai_used=True,
+                            ai_confidence=collection_result.confidence,
+                        )
+
+                    if not processed_movies:
+                        return self.error_reply(
+                            _uuid,
+                            self._failure_message("ai_empty_mapping"),
+                            path,
+                            is_anime,
+                            is_movie,
+                            name,
+                            season_id,
+                            failure_reason="ai_empty_mapping",
+                            ai_attempted=True,
+                            ai_used=True,
+                            ai_confidence=collection_result.confidence,
+                        )
+
+                    for index, movie_data in enumerate(processed_movies):
+                        movie_uuid = _uuid if index == 0 else str(uuid.uuid4())
+                        movie_map = {
+                            movie_data['file_path']: movie_data['target_file']
+                        }
+                        trans_result = Trans(movie_map, movie_uuid).trans_file()
+                        if isinstance(trans_result, str):
+                            return self.error_reply(
+                                movie_uuid,
+                                self._failure_message("trans_failed", trans_result),
+                                movie_data['file_path'],
+                                is_anime,
+                                True,
+                                movie_data['movie_name'],
+                                0,
+                                failure_reason="trans_failed",
+                                ai_attempted=True,
+                                ai_used=True,
+                                ai_confidence=movie_data.get(
+                                    'ai_confidence',
+                                    collection_result.confidence,
+                                ),
+                                extra_task_data={
+                                    "is_collection": True,
+                                    "collection_name": (
+                                        collection_result.collection_name
+                                    ),
+                                },
+                            )
+
+                        self._write_task_data(
+                            {
+                                "path": str(path),
+                                "is_anime": is_anime,
+                                "is_movie": True,
+                                "is_collection": True,
+                                "collection_name": collection_result.collection_name,
+                                "name": movie_data['movie_name'],
+                                "year": movie_data['movie_year'],
+                                "season_id": 0,
+                                "uuid": str(movie_uuid),
+                                "error": None,
+                                "use_ai": True,
+                                "ai_attempted": True,
+                                "ai_used": True,
+                                "ai_confidence": movie_data.get(
+                                    'ai_confidence',
+                                    collection_result.confidence,
+                                ),
+                                "failure_reason": None,
+                                "pipeline_mode": "ai_strict",
+                                "tmdb_id": movie_data.get("tmdb_id"),
+                                "poster_path": movie_data.get("poster_path"),
+                                "tmdb_name": movie_data.get("tmdb_name"),
+                                "tmdb_year": movie_data.get("tmdb_year"),
+                                "tmdb_media_type": movie_data.get(
+                                    "tmdb_media_type"
+                                ),
+                                "tmdb_genres": movie_data.get("tmdb_genres"),
+                                "release_group": movie_data.get(
+                                    "release_group"
+                                ),
+                                "resource_term": movie_data.get(
+                                    "resource_term"
+                                ),
+                            }
+                        )
+
+                    return True
 
             # 单电影：候选搜索 + AI 选择已在 check_task_type 中完成
             first_data = info.get('release_date', '')
@@ -724,26 +743,50 @@ class Rename:
         is_anime: Optional[bool] = None,
         is_movie: Optional[bool] = None,
         ai_client: Optional[AIClient] = None,
+        prefer_manual_title: bool = False,
+        cleaned_title: Optional[str] = None,
     ) -> Union[Tuple[str, Dict, bool, bool, Optional[str]], str]:
         """AI-first 类型判定：TV/Movie 均采用候选 + AI 选择。"""
         ai_client = ai_client or AIClient()
         if not ai_client.is_available():
             return "ai_unavailable"
 
-        ai_extract = ai_client.extract_title_and_type(path.name)
+        ai_extract = ai_client.extract_title_metadata(path.name)
         if not ai_extract:
             return "ai_timeout"
 
-        ai_title, ai_type = ai_extract
+        ai_title = ai_extract.title
+        ai_fallback_title = ai_extract.fallback_title
+        ai_type = ai_extract.type
         logger.info(
-            f"[处理任务] AI标题类型提取: title={ai_title}, type={ai_type}"
+            "[处理任务] AI标题类型提取: "
+            f"title={ai_title}, fallback_title={ai_fallback_title}, type={ai_type}"
         )
 
         queries: List[str] = []
-        if ai_title:
-            queries.append(ai_title)
-        if rtpath_name and rtpath_name not in queries:
-            queries.append(rtpath_name)
+
+        def append_query(value: Optional[str]) -> None:
+            if not value:
+                return
+
+            normalized = value.strip()
+            if not normalized:
+                return
+
+            if normalized in queries:
+                return
+
+            queries.append(normalized)
+
+        if prefer_manual_title:
+            append_query(rtpath_name)
+            append_query(ai_title)
+            append_query(ai_fallback_title)
+            append_query(cleaned_title)
+        else:
+            append_query(ai_title)
+            append_query(ai_fallback_title)
+            append_query(rtpath_name)
 
         tv_name = ''
         tv_info: Optional[Dict] = None
@@ -1223,6 +1266,34 @@ class Rename:
             )
 
         return processed_movies, unresolved
+
+    def _extract_single_movie_files_from_collection_result(
+        self,
+        collection_result: MovieCollectionResult,
+        video_files: List[Path],
+        base_path: Path,
+    ) -> List[Path]:
+        """从合集分析结果中提取可回退为单电影处理的正片文件。"""
+        if collection_result.is_collection:
+            return []
+
+        if len(collection_result.file_mapping) != 1:
+            return []
+
+        mapping = collection_result.file_mapping[0]
+        if not self._is_confidence_acceptable(mapping.confidence):
+            return []
+
+        rel_path = mapping.file_path.replace('\\', '/').lstrip('/')
+        candidates = {
+            str(p.relative_to(base_path)).replace('\\', '/'): p
+            for p in video_files
+        }
+        matched = candidates.get(rel_path)
+        if not matched:
+            return []
+
+        return [matched]
 
     def _validate_movie_collection_result(
         self,
