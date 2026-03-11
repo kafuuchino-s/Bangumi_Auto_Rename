@@ -534,8 +534,6 @@ class TaskQueueManager:
             return ""
 
         season = min(season_ids)
-        if season == 0:
-            return "S00"
 
         episodes: List[int] = []
         for target in record_targets:
@@ -549,6 +547,9 @@ class TaskQueueManager:
             if min_ep == max_ep:
                 return f"S{season:02d}E{min_ep:02d}"
             return f"S{season:02d}E{min_ep:02d}-E{max_ep:02d}"
+
+        if season == 0:
+            return "S00"
 
         if self._batch_success <= 1:
             return f"S{season:02d}E01"

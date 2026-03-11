@@ -285,6 +285,17 @@ def test_extract_episode_from_name_supports_sxxexx_format():
     assert manager._extract_episode_from_name("战勇。 - S02E13 - x264 FLAC - Final8.mkv") == 13
 
 
+def test_build_season_episode_uses_episode_number_for_season0():
+    manager = _build_manager_with_stats(total=1, success=1, failed=0, failed_tasks=[])
+
+    season_episode = manager._build_season_episode(
+        [{"season_id": 0}],
+        [Path("/tmp/超次元游戏：海王星 - S00E03 - HEVC FLAC.mkv")],
+    )
+
+    assert season_episode == "S00E03"
+
+
 def test_resolve_task_poster_path_tv_prefers_season_poster():
     renamer = Rename()
     info = {
