@@ -111,6 +111,24 @@ class TitleExtractionResult(BaseModel):
         return _make_gemini_compatible_schema(schema)
 
 
+class MovieSearchQueriesResult(BaseModel):
+    """AI生成的电影TMDB搜索查询候选"""
+
+    queries: List[str] = Field(
+        ...,
+        description="TMDB搜索查询候选列表，按优先级从高到低排序，最多5条",
+    )
+
+    model_config = ConfigDict(populate_by_name=True, extra='forbid')
+
+    @classmethod
+    def gemini_json_schema(
+        cls, by_alias: bool = True, ref_template: str = '#/$defs/{model}'
+    ):
+        schema = super().model_json_schema(by_alias=by_alias, ref_template=ref_template)
+        return _make_gemini_compatible_schema(schema)
+
+
 class SeasonMapping(BaseModel):
     """季度映射对象"""
 

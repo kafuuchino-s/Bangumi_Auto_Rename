@@ -11,6 +11,9 @@ import sys
 from pathlib import Path
 from typing import Dict, List
 
+import shutil
+import tempfile
+
 # 添加项目根目录到路径
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
@@ -407,9 +410,230 @@ def test_ai_processor_apply_mapping_subtitle_uses_new_video_stem():
         shutil.rmtree(temp_dir, ignore_errors=True)
 
 
+def test_sanitize_tv_duplicate_mappings():
+    """验证 _sanitize_tv_mappings 能清洗重复映射，而不导致整体失败。"""
+    import tempfile
+    import shutil
+
+    temp_dir = Path(tempfile.mkdtemp())
+    try:
+        base_path = temp_dir / "input"
+        base_path.mkdir(parents=True)
+
+        for i in range(1, 4):
+            (base_path / f"E{i:02d}.mkv").touch()
+
+        work_path = temp_dir / "output" / "测试动漫 (2023)"
+        work_path.mkdir(parents=True)
+
+        anime_info = {
+            "name": "测试动漫",
+            "seasons": [
+                {
+                    "season_number": 1,
+                    "episode_count": 3,
+                }
+            ],
+        }
+
+        # AI 返回的映射中，E01.mkv 被重复映射到两个不同目标
+        ai_result = AIAnalysisResult(
+            confidence="High",
+            reason="重复映射测试",
+            file_mapping=[
+                EpisodeMapping(
+                    file_path="E01.mkv",
+                    tmdb_season=1,
+                    tmdb_episode=1,
+                    confidence="High",
+                ),
+                EpisodeMapping(
+                    file_path="E01.mkv",
+                    tmdb_season=1,
+                    tmdb_episode=2,
+                    confidence="Low",
+                ),
+                EpisodeMapping(
+                    file_path="E02.mkv",
+                    tmdb_season=1,
+                    tmdb_episode=2,
+                    confidence="High",
+                ),
+                EpisodeMapping(
+                    file_path="E03.mkv",
+                    tmdb_season=1,
+                    tmdb_episode=3,
+                    confidence="High",
+                ),
+            ],
+        )
+
+        processor = AIProcessor()
+        all_local_files = list(base_path.rglob("*.mkv"))
+        result = processor.apply_ai_mapping(
+            ai_result=ai_result,
+            anime_info=anime_info,
+            base_path=base_path,
+            work_path=work_path,
+            all_local_files=all_local_files,
+        )
+
+        # 应该能继续处理，不因重复映射直接失败
+        assert len(result) >= 2, f"期望至少2个文件被成功映射，实际得到 {len(result)}"
+        # E01 应该保留到 S01E01（High confidence 优先）
+        e01_target = result.get((base_path / "E01.mkv").resolve())
+        assert e01_target is not None, "E01.mkv 应该被映射"
+        assert "S01E01" in e01_target.name, (
+            f"E01.mkv 应映射到 S01E01，实际映射到 {e01_target.name}"
+        )
+
+    finally:
+        shutil.rmtree(temp_dir, ignore_errors=True)
+
+
+def test_build_movie_search_queries_strips_chapter_prefix():
+    """验证 build_movie_search_queries 对包含章节编号的标题生成有效查询。"""
+    from src.rename.cleaner import build_movie_search_queries
+
+    # 空之境界风格：「剧场版 空の境界 第一章 俯瞰風景」
+    queries = build_movie_search_queries(
+        "劇場版 空の境界 第一章 俯瞰風景",
+        collection_name="空の境界",
+    )
+
+    assert len(queries) > 1, "应生成多个候选查询"
+    # 去除前缀后的标题应存在
+    assert any("劇場版" not in q for q in queries), (
+        f"应至少有一个不含剧场版前缀的查询: {queries}"
+    )
+    # 系列名应在候选中
+    assert any("空の境界" in q for q in queries), (
+        f"应包含系列名查询: {queries}"
+    )
+
+
+def test_build_movie_search_queries_subtitle_split():
+    """验证 build_movie_search_queries 能拆分副标题作为独立候选。"""
+    from src.rename.cleaner import build_movie_search_queries
+
+    queries = build_movie_search_queries(
+        "Kara no Kyoukai: The Garden of Sinners",
+    )
+
+    assert any("Garden of Sinners" in q for q in queries), (
+        f"应含副标题查询: {queries}"
+    )
+
+
+def test_validate_tv_result_keeps_valid_subset_when_tmdb_has_no_special():
+    """TMDB 不存在的 special 应进入 unmatched/conflict，而有效正片保留。"""
+    temp_dir = Path(tempfile.mkdtemp())
+    try:
+        base_path = temp_dir / "test_anime"
+        base_path.mkdir()
+        (base_path / "E01.mkv").touch()
+        (base_path / "SP01.mkv").touch()
+
+        anime_info = {
+            "name": "测试动漫",
+            "first_air_date": "2023-01-01",
+            "seasons": [
+                {
+                    "season_number": 1,
+                    "episode_count": 1,
+                    "episodes": [
+                        {"episode_number": 1, "name": "Episode 1", "overview": ""}
+                    ],
+                }
+            ],
+        }
+        ai_result = AIAnalysisResult(
+            confidence="High",
+            reason="测试",
+            season_mapping=[],
+            file_mapping=[
+                EpisodeMapping(file_path="E01.mkv", tmdb_season=1, tmdb_episode=1),
+                EpisodeMapping(file_path="SP01.mkv", tmdb_season=0, tmdb_episode=1),
+            ],
+        )
+
+        processor = AIProcessor()
+        ok, reason, detail = processor.validate_tv_result(
+            ai_result,
+            anime_info,
+            base_path,
+            [base_path / "E01.mkv", base_path / "SP01.mkv"],
+        )
+
+        assert ok is True
+        assert reason is None
+        assert detail == ""
+        assert [m.file_path for m in ai_result.file_mapping] == ["E01.mkv"]
+        assert "SP01.mkv" in ai_result.unmatched_files
+        assert any("越界映射" in item for item in ai_result.conflict_details)
+    finally:
+        shutil.rmtree(temp_dir, ignore_errors=True)
+
+
+
+def test_ai_processor_resolves_suffix_relative_path_during_apply_mapping():
+    """apply_ai_mapping 应能解析带冗余前缀目录的 AI 相对路径。"""
+    temp_dir = Path(tempfile.mkdtemp())
+    try:
+        base_path = temp_dir / "test_anime"
+        nested = base_path / "Season Pack"
+        nested.mkdir(parents=True)
+        source = nested / "E01.mkv"
+        source.touch()
+
+        work_path = temp_dir / "output" / "测试动漫 (2023)"
+        work_path.mkdir(parents=True)
+        anime_info = {
+            "name": "测试动漫",
+            "first_air_date": "2023-01-01",
+            "seasons": [
+                {
+                    "season_number": 1,
+                    "episode_count": 1,
+                    "episodes": [
+                        {"episode_number": 1, "name": "Episode 1", "overview": ""}
+                    ],
+                }
+            ],
+        }
+        ai_result = AIAnalysisResult(
+            confidence="High",
+            reason="测试",
+            season_mapping=[],
+            file_mapping=[
+                EpisodeMapping(
+                    file_path="test_anime/Season Pack/E01.mkv",
+                    tmdb_season=1,
+                    tmdb_episode=1,
+                )
+            ],
+        )
+
+        processor = AIProcessor()
+        mapping = processor.apply_ai_mapping(
+            ai_result=ai_result,
+            anime_info=anime_info,
+            base_path=base_path,
+            work_path=work_path,
+        )
+
+        assert list(mapping.keys()) == [source.resolve()]
+    finally:
+        shutil.rmtree(temp_dir, ignore_errors=True)
+
+
+
 if __name__ == "__main__":
     print("\n")
     test_tmdb_first_matching()
     test_ai_processor_apply_mapping()
     test_ai_processor_apply_mapping_enhanced_naming_snapshot()
     test_ai_processor_apply_mapping_subtitle_uses_new_video_stem()
+    test_sanitize_tv_duplicate_mappings()
+    test_build_movie_search_queries_strips_chapter_prefix()
+    test_build_movie_search_queries_subtitle_split()

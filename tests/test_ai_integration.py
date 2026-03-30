@@ -18,6 +18,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 from src.ai.client import AIClient
 from src.ai.models import (
     AIAnalysisResult,
+    EpisodeMapping,
     MovieCollectionResult,
     TitleExtractionResult,
 )
@@ -648,6 +649,274 @@ def test_check_task_type_deduplicates_fallback_and_clean_title_queries():
     assert searched_queries == ["生徒会の一存 Lv.2", "生徒会の一存"]
 
 
+def test_structural_subdir_inherits_parent_custom_name():
+    """结构目录应继承父级标题，而不是把 Film / Série 当成作品名。"""
+    rename = Rename()
+    parent = Path("Space Battleship Yamato 2199")
+
+    assert rename._derive_subtask_custom_name(parent, parent / "Film", None) == "Space Battleship Yamato 2199"
+    assert rename._derive_subtask_custom_name(parent, parent / "Série", None) == "Space Battleship Yamato 2199"
+    assert rename._derive_subtask_custom_name(parent, parent / "Extras", None) == "Space Battleship Yamato 2199"
+    assert rename._derive_subtask_custom_name(parent, parent / "OVA Collection", None) is None
+
+
+
+def test_search_tv_with_ai_selection_prefers_deterministic_ranked_match():
+    """TV 候选分差足够大时，应跳过 AI 直接采用确定性排序结果。"""
+    rename = Rename()
+    ai_client = AIClient()
+    ranked_top = {"id": 2, "name": "Mob Psycho 100 II", "_match_score": 128.0}
+    ranked_second = {"id": 1, "name": "Mob Psycho 100", "_match_score": 96.0}
+    tv_info = {"id": 2, "name": "Mob Psycho 100 II", "genres": []}
+
+    with patch.object(
+        rename.search,
+        "search_tv_by_query",
+        return_value=[{"id": 1, "name": "Mob Psycho 100"}, {"id": 2, "name": "Mob Psycho 100 II"}],
+    ), patch.object(
+        rename.search,
+        "rank_tv_candidates",
+        return_value=[ranked_top, ranked_second],
+    ), patch.object(
+        rename.search,
+        "_select_ranked_tv_candidate",
+        return_value=(ranked_top, "High"),
+    ), patch.object(
+        rename,
+        "_ai_select_tv",
+    ) as ai_select_tv, patch.object(
+        rename.search,
+        "get_tv_info_by_id",
+        return_value=tv_info,
+    ):
+        name, info, confidence, reason = rename._search_tv_with_ai_selection(
+            "[VCB-Studio] Mob Psycho 100 II",
+            "Mob Psycho 100 II",
+            0,
+            ai_client,
+        )
+
+    assert name == "Mob Psycho 100 II"
+    assert info == tv_info
+    assert confidence == "High"
+    assert reason == ""
+    ai_select_tv.assert_not_called()
+
+
+
+def test_check_task_type_prefers_raw_season_aware_title_before_fallback():
+    """带季度信息的原始标题应先于 fallback/base title 搜索。"""
+    rename = Rename()
+    ai_client = AIClient()
+    title_metadata = TitleExtractionResult(
+        title="Mob Psycho 100 II",
+        fallback_title="Mob Psycho 100",
+        type="tv",
+    )
+    target_info = {
+        "id": 2,
+        "name": "Mob Psycho 100 II",
+        "genres": [{"name": "Animation"}],
+    }
+
+    with patch.object(AIClient, "is_available", return_value=True), patch.object(
+        AIClient,
+        "extract_title_metadata",
+        return_value=title_metadata,
+    ), patch.object(
+        rename,
+        "_search_tv_with_ai_selection",
+        side_effect=[
+            ("Mob Psycho 100 II", target_info, "High", ""),
+        ],
+    ) as search_tv, patch.object(
+        rename,
+        "_search_movie_with_ai_selection",
+        return_value=("", None, None, "tmdb_not_found"),
+    ):
+        result = rename.check_task_type(
+            rtpath_name="Mob Psycho 100",
+            year=0,
+            path=Path("[VCB-Studio] Mob Psycho 100 II"),
+            ai_client=ai_client,
+            cleaned_title="Mob Psycho 100",
+            raw_title="Mob Psycho 100 II",
+        )
+
+    assert isinstance(result, tuple)
+    assert result[0] == "Mob Psycho 100 II"
+    searched_queries = [call.args[1] for call in search_tv.call_args_list]
+    assert searched_queries == ["Mob Psycho 100 II"]
+
+
+
+def test_rank_tv_candidates_penalizes_base_series_when_query_has_sequel_token():
+    """查询带续作 token 而候选没有时，应显著降权基础条目。"""
+    rename = Rename()
+    ranked = rename.search.rank_tv_candidates(
+        source_title="Mob Psycho 100 II",
+        query="Mob Psycho 100 II",
+        candidates=[
+            {"id": 1, "name": "Mob Psycho 100", "original_name": "Mob Psycho 100", "popularity": 50.0},
+            {"id": 2, "name": "Mob Psycho 100 II", "original_name": "Mob Psycho 100 II", "popularity": 5.0},
+        ],
+        year=None,
+    )
+
+    assert ranked[0]["id"] == 2
+    assert ranked[0]["_match_score"] - ranked[1]["_match_score"] >= 10
+
+
+
+def test_check_task_type_uses_inherited_manual_title_for_ai_extraction():
+    """结构目录继承父标题时，AI 标题提取也应使用继承标题而不是 Film/Série。"""
+    rename = Rename()
+    ai_client = AIClient()
+    title_metadata = TitleExtractionResult(
+        title="Space Battleship Yamato 2199",
+        fallback_title=None,
+        type="tv",
+    )
+    target_info = {
+        "id": 77,
+        "name": "宇宙战舰大和号2199",
+        "genres": [{"name": "Animation"}],
+    }
+
+    with patch.object(AIClient, "is_available", return_value=True), patch.object(
+        AIClient,
+        "extract_title_metadata",
+        return_value=title_metadata,
+    ) as extract_title_metadata, patch.object(
+        rename,
+        "_search_tv_with_ai_selection",
+        return_value=("宇宙战舰大和号2199", target_info, "High", ""),
+    ), patch.object(
+        rename,
+        "_search_movie_with_ai_selection",
+        return_value=("", None, None, "tmdb_not_found"),
+    ):
+        result = rename.check_task_type(
+            rtpath_name="Space Battleship Yamato 2199",
+            year=0,
+            path=Path("Film"),
+            ai_client=ai_client,
+            prefer_manual_title=True,
+            cleaned_title="Space Battleship Yamato 2199",
+            raw_title="Space Battleship Yamato 2199",
+            ai_input_name="Space Battleship Yamato 2199",
+        )
+
+    assert isinstance(result, tuple)
+    assert result[0] == "宇宙战舰大和号2199"
+    extract_title_metadata.assert_called_once_with("Space Battleship Yamato 2199")
+
+
+
+def test_check_task_type_passes_inherited_title_to_tv_search_context():
+    """结构目录继承父标题时，TV 搜索上下文也应使用继承标题。"""
+    rename = Rename()
+    ai_client = AIClient()
+    title_metadata = TitleExtractionResult(
+        title="Space Battleship Yamato 2199",
+        fallback_title=None,
+        type="tv",
+    )
+    target_info = {
+        "id": 77,
+        "name": "宇宙战舰大和号2199",
+        "genres": [{"name": "Animation"}],
+    }
+
+    with patch.object(AIClient, "is_available", return_value=True), patch.object(
+        AIClient,
+        "extract_title_metadata",
+        return_value=title_metadata,
+    ), patch.object(
+        rename,
+        "_search_tv_with_ai_selection",
+        return_value=("宇宙战舰大和号2199", target_info, "High", ""),
+    ) as search_tv, patch.object(
+        rename,
+        "_search_movie_with_ai_selection",
+        return_value=("", None, None, "tmdb_not_found"),
+    ):
+        result = rename.check_task_type(
+            rtpath_name="Space Battleship Yamato 2199",
+            year=0,
+            path=Path("Film"),
+            ai_client=ai_client,
+            prefer_manual_title=True,
+            cleaned_title="Space Battleship Yamato 2199",
+            raw_title="Space Battleship Yamato 2199",
+            ai_input_name="Space Battleship Yamato 2199",
+        )
+
+    assert isinstance(result, tuple)
+    assert search_tv.call_args_list[0].args[0] == "Space Battleship Yamato 2199"
+
+
+
+def test_search_tv_with_ai_selection_prefers_candidate_with_requested_season():
+    """当 TMDB 把续作拆成独立条目时，应优先保留包含目标季度的主条目。"""
+    rename = Rename()
+    ai_client = AIClient()
+    candidates = [
+        {"id": 75867, "name": "灵能百分百", "original_name": "モブサイコ100", "_match_score": 95.0, "popularity": 6.0},
+        {"id": 67075, "name": "灵能百分百", "original_name": "モブサイコ100", "_match_score": 94.0, "popularity": 51.0},
+    ]
+    season1_only = {
+        "id": 75867,
+        "name": "灵能百分百",
+        "genres": [],
+        "seasons": [{"season_number": 1, "episode_count": 12}],
+    }
+    main_series = {
+        "id": 67075,
+        "name": "灵能百分百",
+        "genres": [],
+        "seasons": [
+            {"season_number": 0, "episode_count": 8},
+            {"season_number": 1, "episode_count": 12},
+            {"season_number": 2, "episode_count": 13},
+        ],
+    }
+
+    with patch.object(
+        rename.search,
+        "search_tv_by_query",
+        return_value=[{"id": 75867}, {"id": 67075}],
+    ), patch.object(
+        rename.search,
+        "rank_tv_candidates",
+        return_value=candidates,
+    ), patch.object(
+        rename.search,
+        "_select_ranked_tv_candidate",
+        side_effect=lambda ranked: (None, None),
+    ), patch.object(
+        rename.search,
+        "get_tv_info_by_id",
+        side_effect=lambda tv_id: season1_only if tv_id == 75867 else main_series,
+    ), patch.object(
+        rename,
+        "_ai_select_tv",
+    ) as ai_select_tv:
+        name, info, confidence, reason = rename._search_tv_with_ai_selection(
+            "[VCB-Studio] Mob Psycho 100 II [Ma10p_1080p]",
+            "Mob Psycho 100 II",
+            0,
+            ai_client,
+        )
+
+    assert name == "灵能百分百"
+    assert info["id"] == 67075
+    assert confidence == "High"
+    assert reason == ""
+    ai_select_tv.assert_not_called()
+
+
+
 def test_movie_collection_result_falls_back_to_single_movie_main_feature():
     """单电影目录含特典时，应回退为单电影处理正片。"""
     rename = Rename()
@@ -761,18 +1030,98 @@ def test_process_movie_dir_falls_back_from_collection_to_single_movie():
 
 
 
-def run_all_tests():
-    """运行所有 AI 集成测试"""
-    print("\n" + "=" * 80)
-    print("AI 集成测试 - 验证 AI 能否解决正则解析失败的场景")
-    print("=" * 80)
+def test_ai_processor_resolves_nested_prefix_mapping_path():
+    """AI 返回带重复前缀目录的路径时，应仍能解析到唯一源文件。"""
+    processor = AIProcessor()
+    temp_dir = Path(tempfile.mkdtemp())
+    try:
+        base_path = temp_dir / "[KTXP] Mushishi Zoku Shou"
+        season_dir = base_path / "Disc1"
+        season_dir.mkdir(parents=True)
+        source_file = season_dir / "[KTXP] Mushishi Zoku Shou [01].mkv"
+        source_file.touch()
 
-    test_ai_availability()
-    test_extract_title_and_type()
-    test_movie_collection_analysis()
-    test_episode_mapping_analysis()
-    test_bracket_episode_format()
+        local_videos = [source_file]
+        relative_index = processor._build_relative_file_index(base_path, local_videos)
+        resolved, error, normalized = processor._resolve_mapping_source_path(
+            "[KTXP] Mushishi Zoku Shou/Disc1/[KTXP] Mushishi Zoku Shou [01].mkv",
+            base_path,
+            relative_index,
+        )
 
-    return []
+        assert error is None
+        assert normalized == "[KTXP] Mushishi Zoku Shou/Disc1/[KTXP] Mushishi Zoku Shou [01].mkv"
+        assert resolved == source_file.resolve()
+    finally:
+        shutil.rmtree(temp_dir, ignore_errors=True)
+
+
+
+def test_validate_tv_result_sanitizes_illegal_episode_mapping():
+    """局部越界映射应被清洗，不应拖垮整批有效映射。"""
+    processor = AIProcessor()
+    temp_dir = Path(tempfile.mkdtemp())
+    try:
+        base_path = temp_dir / "PSYCHO-PASS"
+        base_path.mkdir(parents=True)
+        valid_file = base_path / "PSYCHO-PASS 01.mkv"
+        invalid_file = base_path / "PSYCHO-PASS SP.mkv"
+        valid_file.touch()
+        invalid_file.touch()
+
+        anime_info = {
+            "name": "PSYCHO-PASS",
+            "seasons": [
+                {
+                    "season_number": 1,
+                    "episode_count": 1,
+                    "episodes": [
+                        {
+                            "episode_number": 1,
+                            "name": "Crime Coefficient",
+                            "overview": "",
+                        }
+                    ],
+                }
+            ],
+        }
+        ai_result = AIAnalysisResult(
+            confidence="High",
+            reason="test",
+            season_mapping=[],
+            file_mapping=[
+                EpisodeMapping(
+                    file_path="PSYCHO-PASS 01.mkv",
+                    tmdb_season=1,
+                    tmdb_episode=1,
+                    episode_type="regular",
+                    confidence="High",
+                ),
+                EpisodeMapping(
+                    file_path="PSYCHO-PASS SP.mkv",
+                    tmdb_season=0,
+                    tmdb_episode=1,
+                    episode_type="special",
+                    confidence="Medium",
+                ),
+            ],
+        )
+
+        ok, reason, detail = processor.validate_tv_result(
+            ai_result,
+            anime_info,
+            base_path,
+            [valid_file, invalid_file],
+        )
+
+        assert ok is True
+        assert reason is None
+        assert detail == ""
+        assert len(ai_result.file_mapping) == 1
+        assert ai_result.file_mapping[0].file_path == "PSYCHO-PASS 01.mkv"
+        assert "PSYCHO-PASS SP.mkv" in ai_result.unmatched_files
+        assert any("越界映射" in item for item in ai_result.conflict_details)
+    finally:
+        shutil.rmtree(temp_dir, ignore_errors=True)
 
 

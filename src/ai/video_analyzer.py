@@ -70,7 +70,7 @@ class VideoAnalyzer:
 
             file_info = {
                 "filename": file_path.name,
-                "path": str(file_path.relative_to(base_path)),
+                "path": file_path.relative_to(base_path).as_posix(),
                 "size": file_path.stat().st_size,
                 "duration": VideoAnalyzer.get_video_duration(file_path),
             }

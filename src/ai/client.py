@@ -12,6 +12,7 @@ from ..logger import logger
 from .models import (
     AIAnalysisResult,
     MovieCollectionResult,
+    MovieSearchQueriesResult,
     SubtitleMappingResult,
     TitleExtractionResult,
 )
@@ -183,6 +184,69 @@ class AIClient:
         if not result:
             return None
         return (result.title, result.type)
+
+    def generate_movie_search_queries(
+        self,
+        movie_title: str,
+        collection_name: Optional[str] = None,
+    ) -> Optional[List[str]]:
+        """使用AI为单部电影生成TMDB搜索查询候选列表。"""
+        if not self.is_available():
+            return None
+
+        collection_hint = (
+            f"\n所属系列: {collection_name}" if collection_name else ""
+        )
+        prompt = f"""为以下电影标题生成最多5条TMDB搜索查询候选，按命中可能性从高到低排序。
+
+电影标题: {movie_title}{collection_hint}
+
+要求：
+1. 第一条必须是最可能直接在TMDB搜到的正式标题（优先使用中文官方译名）
+2. 可以包含：去掉章节前缀的版本、原文/译文互换、去掉副标题的基础名
+3. 不要包含文件名噪音（分辨率、字幕组、编码等）
+4. 斜线分隔的多个别名（如"A/B"）应拆成独立查询
+5. 最多5条，去掉重复
+
+示例：
+标题: 空の境界 終章/空の境界, 系列: 空の境界
+输出: {{"queries": ["空之境界 终章", "空の境界 終章", "空之境界", "空の境界"]}}
+
+标题: 空の境界 第三章 痛覚残留, 系列: 空の境界
+输出: {{"queries": ["空之境界 第三章 痛觉残留", "空の境界 痛覚残留", "空之境界 痛觉残留", "空の境界 第三章 痛覚残留"]}}
+
+请严格按照JSON格式返回：
+{{"queries": ["查询1", "查询2", ...]}}"""
+
+        system_prompt = (
+            "你是一个专业的动漫数据库搜索专家，熟悉TMDB的收录规则和标题命名习惯。"
+            "只输出JSON格式结果，不要有任何额外解释。"
+        )
+
+        try:
+            if self.provider.lower() == "gemini":
+                result = self._call_gemini_simple(
+                    system_prompt,
+                    prompt,
+                    schema=MovieSearchQueriesResult,
+                )
+            else:
+                result = self._call_openai_simple(
+                    system_prompt,
+                    prompt,
+                    validation_key="queries",
+                    schema=MovieSearchQueriesResult,
+                )
+
+            if not result:
+                return None
+
+            parsed = MovieSearchQueriesResult.model_validate_json(result)
+            queries = [q for q in parsed.queries if q and q.strip()]
+            return queries if queries else None
+        except Exception as e:
+            logger.warning(f"[AI查询生成] 生成失败: {e}")
+            return None
 
     def _call_openai_simple(
         self,
@@ -495,6 +559,8 @@ class AIClient:
    - 小数集数（如 5.5、12.5）→ Season 0（总集篇）
    - 第00集、E00、[00] → Season 0（序章/先行篇）
    - **重要**: 文件名中的 SP01、OVA01 不一定对应 S0E1，需要根据标题匹配
+   - 如果 TMDB 条目是“有声小说 / audio drama / sound novel”类 special，而本地文件名更像 `Talk / Event / Cast / Seiyuu / Radio / Day Ver / Ending Talk / Recitation`，则不要强行映射，宁可放入 `unmatched_files`
+   - `Part1/Part2` 只有在能明确证明它们是同一条 TMDB special 的拆分文件时才能映射；否则放入 `unmatched_files`
 
 3. **多季度处理**：
    - 本地目录可能将多季合并，需要根据集数范围判断
@@ -503,11 +569,22 @@ class AIClient:
 
 4. **只输出匹配到的文件**，未匹配到 TMDB 的文件不要输出
 
-5. **可观测性要求（必须满足）**：
+5. **路径约束（必须满足）**：
+   - `file_mapping.file_path` 必须逐字复用输入里的相对路径
+   - 不要补 base folder 名，不要改写目录层级
+   - 不要只输出 basename
+   - 不要混用新的路径分隔符格式
+
+6. **可观测性要求（必须满足）**：
    - 返回 `unmatched_files`，列出所有未匹配文件路径（相对路径）
    - `conflict_details` 仅填写“硬冲突”（例如：重复映射、集数越界、文件不存在）
    - 证据不足/不确定但可执行的说明（例如仅凭小数集数推断）请写入 `extra_notes`，不要写入 `conflict_details`
    - 如果 confidence 为 High/Medium，`file_mapping` 必须尽量覆盖可匹配文件
+
+7. **TMDB 合法性约束**：
+   - 只能使用上面 TMDB 列表中真实存在的 `SxxExx`
+   - 不要因为文件名带 `SP / OVA / Part` 就自行发明新的 Season 0 / special 编号
+   - 对拿不准或 TMDB 中不存在的文件，宁可放入 `unmatched_files`
 
 """
         return prompt

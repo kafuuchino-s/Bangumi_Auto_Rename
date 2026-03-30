@@ -1,5 +1,5 @@
 import re
-from typing import Optional, Tuple
+from typing import List, Optional, Tuple
 
 from ..logger import logger
 from .utils import PROMO_TAGS
@@ -53,6 +53,104 @@ KEYWORDS = [
     'RIP',
     'DBD-raws',
 ]
+
+
+def _normalize_movie_query_text(value: str) -> str:
+    value = value.strip()
+    if not value:
+        return ""
+
+    value = re.sub(r'[：:·•|｜/]+', ' ', value)
+    value = re.sub(r'\s+', ' ', value)
+    return value.strip(' -_:.')
+
+
+def build_movie_search_queries(
+    title: str,
+    collection_name: Optional[str] = None,
+) -> List[str]:
+    """根据电影标题构建更稳健的 TMDB 查询候选。"""
+    queries: List[str] = []
+
+    def append_query(value: Optional[str]) -> None:
+        if not value:
+            return
+
+        normalized = _normalize_movie_query_text(value)
+        if not normalized or normalized in queries:
+            return
+
+        queries.append(normalized)
+
+    raw_title = _normalize_movie_query_text(title)
+    append_query(raw_title)
+
+    title_no_prefix = re.sub(
+        r'^(剧场版|劇場版|Movie|movie|Film|film|Theatrical|theatrical)\s+',
+        '',
+        raw_title,
+        flags=re.IGNORECASE,
+    )
+    append_query(title_no_prefix)
+
+    normalized_title = title_no_prefix
+    normalized_title = re.sub(
+        r'第\s*([0-9零〇一二三四五六七八九十百]+)\s*[章节話话篇部]\s*',
+        r'\1 ',
+        normalized_title,
+    )
+    normalized_title = re.sub(
+        r'\b(?:chapter|chap\.?)\s*([0-9]+)\b',
+        r'\1 ',
+        normalized_title,
+        flags=re.IGNORECASE,
+    )
+    append_query(normalized_title)
+
+    subtitle_variants = [
+        re.sub(r'^.+?[：:]\s*', '', title_no_prefix),
+        re.sub(r'^.+?\s+-\s+', '', title_no_prefix),
+        re.sub(r'^.+?\s+/\s+', '', title_no_prefix),
+    ]
+    # 处理无空格斜线："A/B" 拆成 A 和 B 两个候选
+    slash_match = re.search(r'^(.+?)\s*/\s*(.+)$', title_no_prefix)
+    if slash_match:
+        subtitle_variants.append(slash_match.group(1).strip())
+        subtitle_variants.append(slash_match.group(2).strip())
+    for variant in subtitle_variants:
+        append_query(variant)
+
+    if collection_name:
+        normalized_collection = _normalize_movie_query_text(collection_name)
+        append_query(normalized_collection)
+
+        suffix_candidates = []
+        for source in (title_no_prefix, normalized_title):
+            suffix = source
+            if normalized_collection:
+                escaped = re.escape(normalized_collection)
+                suffix = re.sub(
+                    rf'^({escaped})\s*[：:：\-–—/｜|]*\s*',
+                    '',
+                    suffix,
+                    flags=re.IGNORECASE,
+                )
+                suffix = re.sub(
+                    rf'\b({escaped})\b',
+                    '',
+                    suffix,
+                    flags=re.IGNORECASE,
+                )
+            suffix_candidates.append(suffix)
+
+        for suffix in suffix_candidates:
+            cleaned_suffix = _normalize_movie_query_text(suffix)
+            if not cleaned_suffix:
+                continue
+            append_query(cleaned_suffix)
+            append_query(f"{normalized_collection} {cleaned_suffix}")
+
+    return queries
 
 
 def is_promotional_content(filename: str) -> bool:

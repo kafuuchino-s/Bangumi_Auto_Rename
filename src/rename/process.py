@@ -1,5 +1,6 @@
 import json
 import re
+import unicodedata
 import uuid
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple, Union
@@ -15,6 +16,7 @@ from ..ai.models import MovieCollectionResult
 from ..ai.video_analyzer import VideoAnalyzer
 from .utils import VIDEO_SUFFIX
 from .cleaner import (
+    build_movie_search_queries,
     divide_by_year,
     extract_part,
     extract_video_format,
@@ -38,6 +40,29 @@ FAILURE_MESSAGES = {
 
 
 class Rename:
+    STRUCTURAL_DIR_TOKENS = {
+        'film',
+        'films',
+        'movie',
+        'movies',
+        'serie',
+        'series',
+        'season',
+        'seasons',
+        'sp',
+        'sps',
+        'special',
+        'specials',
+        'extra',
+        'extras',
+        'disc',
+        'discs',
+        'vol',
+        'volume',
+        'ova',
+        'oad',
+    }
+
     def __init__(self):
         self.BANGUMI_PATH = Path(cm.get_config('bangumi_path'))
         self.MOVIE_PATH = Path(cm.get_config('movie_path'))
@@ -52,6 +77,44 @@ class Rename:
         self.search = Search()
         self.ai_processor = AIProcessor()
         self.R: Dict[Path, Path] = {}
+
+    def _normalize_structural_dir_name(self, name: str) -> str:
+        normalized = unicodedata.normalize('NFKD', name or '')
+        normalized = ''.join(ch for ch in normalized if not unicodedata.combining(ch))
+        normalized = normalized.casefold()
+        normalized = re.sub(r'[^a-z0-9]+', ' ', normalized)
+        normalized = re.sub(r'\s+', ' ', normalized).strip()
+        return normalized
+
+    def _is_structural_subdir(self, path: Path) -> bool:
+        normalized = self._normalize_structural_dir_name(path.name)
+        if not normalized:
+            return False
+
+        if normalized in self.STRUCTURAL_DIR_TOKENS:
+            return True
+
+        if re.fullmatch(r'(season|disc|vol|volume)\s*\d{1,2}', normalized):
+            return True
+
+        return False
+
+    def _derive_subtask_custom_name(
+        self,
+        parent_path: Path,
+        sub_path: Path,
+        existing_name: Optional[str],
+    ) -> Optional[str]:
+        if existing_name:
+            return existing_name
+        if not self._is_structural_subdir(sub_path):
+            return None
+
+        parent_name = remove_tag(parent_path.name) or remove_tag(parent_path.name, True)
+        parent_name = remove_season(parent_name)
+        parent_name = remove_episode(parent_name)
+        parent_name = parent_name.strip('!').strip()
+        return parent_name or None
 
     def process(
         self,
@@ -111,6 +174,11 @@ class Rename:
                         path=str(sub_path),
                         is_anime=_is_anime,
                         is_movie=_is_movie,
+                        cus_name=self._derive_subtask_custom_name(
+                            path,
+                            sub_path,
+                            cus_name,
+                        ),
                         _is_sub_task=True,
                     )
                 return True
@@ -122,7 +190,7 @@ class Rename:
                     _is_anime,
                     _is_movie,
                     _tuuid,
-                    cus_name,
+                    self._derive_subtask_custom_name(path, sub_path, cus_name),
                     cus_season_id,
                 )
             return True
@@ -194,13 +262,17 @@ class Rename:
             rtpath_name = ' '.join(rtpath_name.split('.'))
             rtpath_name, year = divide_by_year(rtpath_name)
 
+        season_aware_title = rtpath_name.strip('!').strip()
         rtpath_name = remove_season(rtpath_name)
         rtpath_name = remove_episode(rtpath_name)
         rtpath_name = rtpath_name.strip('!')
         cleaned_rtpath_name = rtpath_name
 
+        ai_input_name = path.name
         if cus_name:
             rtpath_name = cus_name
+            season_aware_title = cus_name
+            ai_input_name = cus_name
 
         logger.info(f'[处理任务] 清洗后标题: {rtpath_name}')
 
@@ -248,6 +320,8 @@ class Rename:
             ai_client,
             prefer_manual_title=bool(cus_name),
             cleaned_title=cleaned_rtpath_name,
+            raw_title=season_aware_title,
+            ai_input_name=ai_input_name,
         )
         if isinstance(task_type, str):
             return self.error_reply(
@@ -497,7 +571,6 @@ class Rename:
                 name,
                 first_year,
             )
-            work_path.mkdir(parents=True, exist_ok=True)
 
             for source_video in video_files:
                 video_format = extract_video_format(source_video.name)
@@ -745,13 +818,15 @@ class Rename:
         ai_client: Optional[AIClient] = None,
         prefer_manual_title: bool = False,
         cleaned_title: Optional[str] = None,
+        raw_title: Optional[str] = None,
+        ai_input_name: Optional[str] = None,
     ) -> Union[Tuple[str, Dict, bool, bool, Optional[str]], str]:
         """AI-first 类型判定：TV/Movie 均采用候选 + AI 选择。"""
         ai_client = ai_client or AIClient()
         if not ai_client.is_available():
             return "ai_unavailable"
 
-        ai_extract = ai_client.extract_title_metadata(path.name)
+        ai_extract = ai_client.extract_title_metadata(ai_input_name or path.name)
         if not ai_extract:
             return "ai_timeout"
 
@@ -764,6 +839,7 @@ class Rename:
         )
 
         queries: List[str] = []
+        search_context_name = ai_input_name or raw_title or rtpath_name or path.name
 
         def append_query(value: Optional[str]) -> None:
             if not value:
@@ -779,14 +855,17 @@ class Rename:
             queries.append(normalized)
 
         if prefer_manual_title:
+            append_query(raw_title)
             append_query(rtpath_name)
             append_query(ai_title)
             append_query(ai_fallback_title)
             append_query(cleaned_title)
         else:
             append_query(ai_title)
+            append_query(raw_title)
             append_query(ai_fallback_title)
             append_query(rtpath_name)
+            append_query(cleaned_title)
 
         tv_name = ''
         tv_info: Optional[Dict] = None
@@ -820,7 +899,7 @@ class Rename:
         if search_tv_chain:
             for query in queries:
                 _name, _info, _conf, _reason = self._search_tv_with_ai_selection(
-                    path.name,
+                    search_context_name,
                     query,
                     year,
                     ai_client,
@@ -834,7 +913,7 @@ class Rename:
         if search_movie_chain:
             for query in queries:
                 _name, _info, _conf, _reason = self._search_movie_with_ai_selection(
-                    path.name,
+                    search_context_name,
                     query,
                     year,
                     ai_client,
@@ -845,12 +924,36 @@ class Rename:
                 if _reason and _reason != "tmdb_not_found":
                     movie_reason = _reason
 
+        should_try_collection = self._should_try_movie_collection(
+            path,
+            ai_type,
+            has_movie_hint,
+            has_tv_hint,
+        )
+        if (
+            should_try_collection
+            and not movie_info
+            and not forced_by_flag
+            and not tv_info
+        ):
+            seed_name, seed_info, seed_confidence = self._get_collection_seed_movie_info(
+                queries,
+                year,
+            )
+            if seed_info:
+                movie_name = seed_name
+                movie_info = seed_info
+                movie_confidence = seed_confidence or movie_confidence
+                logger.info(
+                    f"[处理任务] 目录级电影候选低置信，允许进入电影合集分析: {path.name}"
+                )
+
         # 主链路未命中时，执行一次保护性补搜
         if not tv_info and not movie_info:
             if not search_tv_chain:
                 for query in queries:
                     _name, _info, _conf, _reason = self._search_tv_with_ai_selection(
-                        path.name,
+                        search_context_name,
                         query,
                         year,
                         ai_client,
@@ -864,7 +967,7 @@ class Rename:
             if not search_movie_chain:
                 for query in queries:
                     _name, _info, _conf, _reason = self._search_movie_with_ai_selection(
-                        path.name,
+                        search_context_name,
                         query,
                         year,
                         ai_client,
@@ -941,22 +1044,103 @@ class Rename:
         if not candidates:
             return '', None, None, 'tmdb_not_found'
 
-        if len(candidates) == 1:
-            selected = candidates[0]
+        ranked_candidates = self.search.rank_tv_candidates(
+            source_title=folder_name,
+            query=query,
+            candidates=candidates,
+            year=year if year != 0 else None,
+        )
+        preferred_season = self.search.extract_preferred_season_number(
+            folder_name,
+            query,
+        )
+        tv_info_cache: Dict[int, Dict] = {}
+        candidate_season_numbers: Dict[int, set[int]] = {}
+        if preferred_season and len(ranked_candidates) > 1:
+            refined_candidates: List[Dict] = []
+            for candidate in ranked_candidates:
+                refined_candidate = dict(candidate)
+                score = float(refined_candidate.get('_match_score', 0) or 0)
+                tv_id = refined_candidate.get('id')
+                if isinstance(tv_id, int):
+                    tv_info = self.search.get_tv_info_by_id(tv_id)
+                    if tv_info:
+                        tv_info_cache[tv_id] = tv_info
+                        season_numbers = {
+                            season.get('season_number')
+                            for season in tv_info.get('seasons', [])
+                            if isinstance(season, dict)
+                            and isinstance(season.get('season_number'), int)
+                        }
+                        candidate_season_numbers[tv_id] = season_numbers
+                        if preferred_season in season_numbers:
+                            score += 36
+                        else:
+                            score -= 24
+                refined_candidate['_match_score'] = round(score, 3)
+                refined_candidates.append(refined_candidate)
+
+            ranked_candidates = sorted(
+                refined_candidates,
+                key=lambda item: (
+                    item.get('_match_score', 0),
+                    item.get('popularity', 0),
+                ),
+                reverse=True,
+            )
+        deterministic_selected = None
+        deterministic_confidence = None
+        if preferred_season and len(ranked_candidates) > 1:
+            first = ranked_candidates[0]
+            second = ranked_candidates[1]
+            first_id = first.get('id')
+            second_id = second.get('id')
+            first_seasons = (
+                candidate_season_numbers.get(first_id, set())
+                if isinstance(first_id, int)
+                else set()
+            )
+            second_seasons = (
+                candidate_season_numbers.get(second_id, set())
+                if isinstance(second_id, int)
+                else set()
+            )
+            first_score = float(first.get('_match_score', 0) or 0)
+            second_score = float(second.get('_match_score', 0) or 0)
+            if (
+                preferred_season in first_seasons
+                and preferred_season not in second_seasons
+                and first_score - second_score >= 20
+            ):
+                deterministic_selected = first
+                deterministic_confidence = 'High'
+
+        if not deterministic_selected:
+            deterministic_selected, deterministic_confidence = (
+                self.search._select_ranked_tv_candidate(ranked_candidates)
+            )
+
+        if deterministic_selected:
+            selected = deterministic_selected
+            selection_confidence = deterministic_confidence
+        elif len(ranked_candidates) == 1:
+            selected = ranked_candidates[0]
             selection_confidence = 'High'
         else:
             selected, selection_confidence = self._ai_select_tv(
                 ai_client,
                 folder_name,
                 query,
-                candidates,
+                ranked_candidates,
             )
             if not selected:
                 return '', None, selection_confidence, 'ai_low_confidence'
             if not self._is_confidence_acceptable(selection_confidence):
                 return '', None, selection_confidence, 'ai_low_confidence'
 
-        tv_info = self.search.get_tv_info_by_id(selected['id'])
+        tv_info = tv_info_cache.get(selected['id']) or self.search.get_tv_info_by_id(
+            selected['id']
+        )
         if not tv_info:
             return '', None, selection_confidence, 'tmdb_not_found'
 
@@ -974,13 +1158,24 @@ class Rename:
         ai_client: AIClient,
     ) -> Tuple[str, Optional[Dict], Optional[str], str]:
         candidates = self.search.search_movies_by_title(query, year, limit=5)
-        if not candidates and year != 0:
+
+        deterministic_selected, deterministic_confidence = (
+            self._select_ranked_movie_candidate(candidates or [])
+        )
+        if deterministic_selected:
+            selected = deterministic_selected
+            selection_confidence = deterministic_confidence
+        elif not candidates and year != 0:
             candidates = self.search.search_movies_by_title(query, None, limit=5)
+        elif not candidates:
+            return '', None, None, 'tmdb_not_found'
 
         if not candidates:
             return '', None, None, 'tmdb_not_found'
 
-        if len(candidates) == 1:
+        if deterministic_selected:
+            pass
+        elif len(candidates) == 1:
             selected = candidates[0]
             selection_confidence = 'High'
         else:
@@ -1177,16 +1372,36 @@ class Rename:
                 unresolved.append(f"文件不存在:{mapping.file_path}")
                 continue
 
+            query_variants = (
+                ai_client.generate_movie_search_queries(
+                    mapping.movie_title,
+                    collection_result.collection_name,
+                )
+                or build_movie_search_queries(
+                    mapping.movie_title,
+                    collection_result.collection_name,
+                )
+            )
             candidates = self.search.search_movies_by_title(
                 mapping.movie_title,
                 mapping.year,
                 limit=5,
+                collection_name=collection_result.collection_name,
+                query_variants=query_variants,
             )
             if not candidates:
-                unresolved.append(f"TMDB无结果:{mapping.movie_title}")
+                unresolved.append(
+                    f"TMDB无结果:{mapping.movie_title} -> {query_variants[:3]}"
+                )
                 continue
 
-            if len(candidates) == 1:
+            deterministic_selected, deterministic_confidence = (
+                self._select_ranked_movie_candidate(candidates)
+            )
+            if deterministic_selected:
+                selected = deterministic_selected
+                selected_confidence = deterministic_confidence
+            elif len(candidates) == 1:
                 selected = candidates[0]
                 selected_confidence = mapping.confidence
             else:
@@ -1197,7 +1412,9 @@ class Rename:
                     candidates,
                 )
                 if not selected:
-                    unresolved.append(f"AI未选中候选:{mapping.movie_title}")
+                    unresolved.append(
+                        f"AI未选中候选:{mapping.movie_title} -> {query_variants[:2]}"
+                    )
                     continue
                 if not self._is_confidence_acceptable(selected_confidence):
                     unresolved.append(
@@ -1220,7 +1437,6 @@ class Rename:
 
             movie_folder = FilenameBuilder.build_movie_folder(movie_name, movie_year)
             target_folder = work_path / movie_folder
-            target_folder.mkdir(parents=True, exist_ok=True)
 
             video_format = extract_video_format(file_path.name)
             part = extract_part(file_path.name)
@@ -1415,6 +1631,126 @@ class Rename:
         ]
         lower_name = name.lower()
         return any(keyword.lower() in lower_name for keyword in movie_keywords)
+
+    def _select_ranked_movie_candidate(
+        self,
+        candidates: List[Dict],
+    ) -> Tuple[Optional[Dict], Optional[str]]:
+        if not candidates:
+            return None, None
+
+        if len(candidates) == 1:
+            return candidates[0], 'High'
+
+        first = candidates[0]
+        second = candidates[1]
+        first_score = float(first.get('_match_score', 0) or 0)
+        second_score = float(second.get('_match_score', 0) or 0)
+        score_gap = first_score - second_score
+
+        if first_score >= 120 or (first_score >= 108 and score_gap >= 15):
+            return first, 'High'
+
+        if first_score >= 98 and score_gap >= 12:
+            return first, 'Medium'
+
+        return None, None
+
+    def _should_try_movie_collection(
+        self,
+        path: Path,
+        ai_type: Optional[str],
+        has_movie_hint: bool,
+        has_tv_hint: bool,
+    ) -> bool:
+        if not path.is_dir():
+            return False
+
+        movie_like_patterns = [
+            r'#\d{1,3}\b',
+            r'\bmovie[\s._-]*\d{1,3}\b',
+            r'\bcase[\s._-]*\d{1,3}\b',
+            r'第[零〇一二三四五六七八九十百\d]{1,4}章',
+            r'\bchapter[\s._-]*\d{1,3}\b',
+        ]
+
+        video_count = 0
+        movie_like_count = 0
+        tv_like_count = 0
+        for item in path.rglob('*'):
+            if not item.is_file() or item.suffix.lower() not in VIDEO_SUFFIX:
+                continue
+
+            video_count += 1
+            filename = item.name
+            if self._has_tv_hint(filename):
+                tv_like_count += 1
+            if any(
+                re.search(pattern, filename, re.IGNORECASE)
+                for pattern in movie_like_patterns
+            ):
+                movie_like_count += 1
+
+        if video_count <= 1:
+            return False
+
+        if ai_type == 'tv' and not has_movie_hint:
+            return False
+
+        if has_tv_hint and not has_movie_hint and tv_like_count >= movie_like_count:
+            return False
+
+        if movie_like_count >= 2 and movie_like_count >= tv_like_count:
+            return True
+
+        if (has_movie_hint or ai_type == 'movie') and tv_like_count == 0:
+            return True
+
+        return False
+
+    def _get_collection_seed_movie_info(
+        self,
+        queries: List[str],
+        year: int,
+    ) -> Tuple[str, Optional[Dict], Optional[str]]:
+        best_candidates: Optional[List[Dict]] = None
+        best_score = -1.0
+
+        for query in queries:
+            candidates = self.search.search_movies_by_title(
+                query,
+                year if year != 0 else None,
+                limit=5,
+                query_variants=[query],
+            )
+            if not candidates:
+                continue
+
+            score = float(candidates[0].get('_match_score', 0) or 0)
+            if score > best_score:
+                best_score = score
+                best_candidates = candidates
+
+        if not best_candidates:
+            return '', None, None
+
+        selected, selection_confidence = self._select_ranked_movie_candidate(
+            best_candidates
+        )
+        if not selected:
+            selected = best_candidates[0]
+            selection_confidence = 'Low'
+
+        movie_id = selected.get('id')
+        if not isinstance(movie_id, int):
+            return '', None, None
+
+        movie_info = self.search.get_movie_info_by_id(movie_id)
+        if not movie_info:
+            return '', None, None
+
+        movie_name = movie_info.get('title', selected.get('title', ''))
+        return movie_name, movie_info, selection_confidence
 
     def _is_confidence_acceptable(self, confidence: Optional[str]) -> bool:
         if not confidence:

@@ -59,7 +59,7 @@ class Trans:
                         logger.info(f'[处理迁移] 目标文件已存在, 跳过: {target_path}')
                         continue
                 if not target_path.parent.exists():
-                    target_path.parent.mkdir(parents=True)
+                    target_path.parent.mkdir(parents=True, exist_ok=True)
                 if self.mode == '剪切':
                     shutil.move(source_path, target_path)
                 elif self.mode == '复制':

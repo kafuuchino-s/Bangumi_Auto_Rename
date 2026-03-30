@@ -1,6 +1,7 @@
 import re
+from difflib import SequenceMatcher
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Set, Tuple
 
 from ..logger import logger
 from .utils import VIDEO_SUFFIX
@@ -16,6 +17,38 @@ from ..subtitle.extractor import SUBTITLE_EXTENSIONS
 
 class AIProcessor:
     """AI辅助处理器，用于智能分析和重命名"""
+
+    AUDIO_SPECIAL_TOKENS = (
+        "sound novel",
+        "audio novel",
+        "有声小说",
+        "有聲小說",
+        "audio drama",
+        "drama cd",
+        "广播剧",
+        "廣播劇",
+        "radio drama",
+        "voice drama",
+        "オーディオドラマ",
+        "サウンドノベル",
+    )
+    SPECIAL_EVENT_TOKENS = (
+        "recitation",
+        "朗读",
+        "朗讀",
+        "reading event",
+        "talk",
+        "event",
+        "cast",
+        "seiyuu",
+        "radio",
+        "day ver",
+        "dayver",
+        "ending talk",
+        "greeting",
+        "stage",
+        "live",
+    )
 
     RESOURCE_TOKEN_MAP = [
         ("HEVC", "HEVC"),
@@ -92,6 +125,248 @@ class AIProcessor:
 
         return ai_result
 
+    def _normalize_match_text(self, value: str) -> str:
+        normalized = re.sub(r'[\W_]+', '', value or '', flags=re.UNICODE)
+        return normalized.casefold()
+
+    def _normalize_mapping_path(self, value: str) -> str:
+        normalized = str(value or '').replace('\\', '/').strip().lstrip('/')
+        normalized = re.sub(r'/+', '/', normalized)
+        return normalized
+
+    def _generate_path_suffixes(self, normalized_path: str) -> List[str]:
+        parts = [part for part in normalized_path.split('/') if part]
+        suffixes: List[str] = []
+        for index in range(len(parts)):
+            suffix = '/'.join(parts[index:])
+            if suffix and suffix not in suffixes:
+                suffixes.append(suffix)
+        return suffixes
+
+    def _build_relative_file_index(
+        self,
+        base_path: Path,
+        local_files: List[Path],
+    ) -> Dict[str, Set[Path]]:
+        index: Dict[str, Set[Path]] = {}
+
+        for file_path in local_files:
+            if not file_path.exists():
+                continue
+
+            try:
+                rel_path = file_path.relative_to(base_path).as_posix()
+            except ValueError:
+                rel_path = file_path.name
+
+            normalized_rel = self._normalize_mapping_path(rel_path)
+            for key in self._generate_path_suffixes(normalized_rel):
+                index.setdefault(key, set()).add(file_path.resolve())
+
+            basename = file_path.name
+            index.setdefault(basename, set()).add(file_path.resolve())
+
+        return index
+
+    def _resolve_mapping_source_path(
+        self,
+        mapping_path: str,
+        base_path: Path,
+        relative_file_index: Dict[str, Set[Path]],
+    ) -> Tuple[Optional[Path], Optional[str], str]:
+        normalized_path = self._normalize_mapping_path(mapping_path)
+        if not normalized_path:
+            return None, '路径为空', ''
+
+        exact_path = (base_path / normalized_path).resolve()
+        if exact_path.exists():
+            return exact_path, None, normalized_path
+
+        candidates: List[Path] = []
+        seen: Set[Path] = set()
+        for key in self._generate_path_suffixes(normalized_path):
+            for candidate in relative_file_index.get(key, set()):
+                if candidate in seen:
+                    continue
+                candidates.append(candidate)
+                seen.add(candidate)
+
+        basename = Path(normalized_path).name
+        if basename:
+            for candidate in relative_file_index.get(basename, set()):
+                if candidate in seen:
+                    continue
+                candidates.append(candidate)
+                seen.add(candidate)
+
+        if not candidates:
+            return None, f'文件不存在:{normalized_path}', normalized_path
+
+        if len(candidates) > 1:
+            display = ', '.join(candidate.name for candidate in candidates[:3])
+            return None, f'路径不唯一:{normalized_path} -> {display}', normalized_path
+
+        return candidates[0], None, normalized_path
+
+    def _score_mapping_path(self, file_path: str) -> Tuple[int, float, int]:
+        normalized_path = file_path.replace('\\', '/').lower()
+        promo_penalty = 1 if is_promotional_content(Path(file_path).name) else 0
+        path_bonus = 0.0
+        if 'special' in normalized_path or 'sp' in normalized_path:
+            path_bonus += 0.5
+        if 'part' in normalized_path:
+            path_bonus -= 0.5
+        return (promo_penalty, -path_bonus, len(file_path))
+
+    def _pick_best_mapping_candidate(self, mappings: List[object]) -> object:
+        def sort_key(mapping: object) -> Tuple[int, int, float, int]:
+            confidence_rank = {'High': 0, 'Medium': 1, 'Low': 2}
+            confidence = getattr(mapping, 'confidence', 'Low')
+            promo_penalty, negative_bonus, path_length = self._score_mapping_path(
+                getattr(mapping, 'file_path', '')
+            )
+            return (
+                confidence_rank.get(confidence, 3),
+                promo_penalty,
+                negative_bonus,
+                path_length,
+            )
+
+        return sorted(mappings, key=sort_key)[0]
+
+    def _has_any_token(self, value: str, tokens: tuple[str, ...]) -> bool:
+        normalized = value.casefold()
+        return any(token in normalized for token in tokens)
+
+    def _build_tmdb_episode_lookup(self, anime_info: Dict) -> Dict[Tuple[int, int], Dict[str, Any]]:
+        lookup: Dict[Tuple[int, int], Dict[str, Any]] = {}
+        for season in anime_info.get("seasons", []):
+            season_num = season.get("season_number", 0)
+            for ep in season.get("episodes", []) or []:
+                ep_num = ep.get("episode_number")
+                if isinstance(ep_num, int) and ep_num > 0:
+                    lookup[(season_num, ep_num)] = ep
+        return lookup
+
+    def _is_semantically_conflicting_special(
+        self,
+        mapping: object,
+        episode_info: Optional[Dict[str, Any]],
+    ) -> bool:
+        if getattr(mapping, 'tmdb_season', 0) != 0:
+            return False
+
+        file_path = getattr(mapping, 'file_path', '') or ''
+        file_name = Path(file_path).name
+        episode_name = (episode_info or {}).get('name', '') or ''
+        episode_overview = (episode_info or {}).get('overview', '') or ''
+        episode_text = f"{episode_name} {episode_overview}"
+
+        file_is_event = self._has_any_token(file_name, self.SPECIAL_EVENT_TOKENS)
+        file_is_audio = self._has_any_token(file_name, self.AUDIO_SPECIAL_TOKENS)
+        episode_is_audio = self._has_any_token(episode_text, self.AUDIO_SPECIAL_TOKENS)
+
+        if file_is_event and episode_is_audio and not file_is_audio:
+            return True
+
+        return False
+
+    def _filter_semantic_special_mappings(
+        self,
+        mappings: List[object],
+        anime_info: Dict,
+    ) -> Tuple[List[object], List[str], List[str]]:
+        episode_lookup = self._build_tmdb_episode_lookup(anime_info)
+        kept: List[object] = []
+        removed_paths: List[str] = []
+        notes: List[str] = []
+
+        for mapping in mappings:
+            key = (getattr(mapping, 'tmdb_season', 0), getattr(mapping, 'tmdb_episode', 0))
+            episode_info = episode_lookup.get(key)
+            if self._is_semantically_conflicting_special(mapping, episode_info):
+                file_path = getattr(mapping, 'file_path', '')
+                removed_paths.append(file_path)
+                notes.append(
+                    f"Season0语义过滤:S{key[0]:02d}E{key[1]:02d}:{Path(file_path).name}"
+                )
+                continue
+            kept.append(mapping)
+
+        return kept, removed_paths, notes
+
+    def _sanitize_illegal_episode_mappings(
+        self,
+        mappings: List[object],
+        tmdb_episode_keys: set[Tuple[int, int]],
+    ) -> Tuple[List[object], List[str], List[str]]:
+        kept: List[object] = []
+        removed_paths: List[str] = []
+        notes: List[str] = []
+
+        for mapping in mappings:
+            key = (getattr(mapping, 'tmdb_season', 0), getattr(mapping, 'tmdb_episode', 0))
+            if key in tmdb_episode_keys:
+                kept.append(mapping)
+                continue
+
+            file_path = getattr(mapping, 'file_path', '')
+            removed_paths.append(file_path)
+            notes.append(
+                f"越界映射清洗:S{key[0]:02d}E{key[1]:02d}:{Path(file_path).name}"
+            )
+
+        return kept, removed_paths, notes
+
+    def _sanitize_tv_mappings(
+        self,
+        ai_result: AIAnalysisResult,
+    ) -> Tuple[List[object], List[str]]:
+        sanitized: List[object] = []
+        sanitizer_notes: List[str] = []
+        by_file: Dict[str, object] = {}
+
+        for mapping in ai_result.file_mapping:
+            normalized_path = mapping.file_path.replace('\\', '/').lstrip('/')
+            existing = by_file.get(normalized_path)
+            if existing is None:
+                by_file[normalized_path] = mapping
+                continue
+
+            old_key = (existing.tmdb_season, existing.tmdb_episode)
+            new_key = (mapping.tmdb_season, mapping.tmdb_episode)
+            if old_key == new_key:
+                chosen = self._pick_best_mapping_candidate([existing, mapping])
+                by_file[normalized_path] = chosen
+                sanitizer_notes.append(f"重复文件去重:{normalized_path}")
+            else:
+                chosen = self._pick_best_mapping_candidate([existing, mapping])
+                by_file[normalized_path] = chosen
+                sanitizer_notes.append(f"同文件多目标保留:{normalized_path}")
+
+        by_episode: Dict[Tuple[int, int], List[object]] = {}
+        for mapping in by_file.values():
+            key = (mapping.tmdb_season, mapping.tmdb_episode)
+            by_episode.setdefault(key, []).append(mapping)
+
+        for key, conflict_mappings in by_episode.items():
+            if len(conflict_mappings) == 1:
+                sanitized.append(conflict_mappings[0])
+                continue
+
+            best = self._pick_best_mapping_candidate(conflict_mappings)
+            sanitized.append(best)
+            removed_paths = sorted(
+                getattr(m, 'file_path', '')
+                for m in conflict_mappings
+                if m is not best
+            )
+            sanitizer_notes.append(
+                f"重复映射清洗:S{key[0]:02d}E{key[1]:02d}:{', '.join(removed_paths[:3])}"
+            )
+
+        return sanitized, sanitizer_notes
+
     def validate_tv_result(
         self,
         ai_result: AIAnalysisResult,
@@ -125,26 +400,59 @@ class AIProcessor:
         )
         strict_conflicts: List[str] = []
         mapped_files: set[str] = set()
+        all_video_files = video_files or self._collect_video_files(base_path)
+        relative_file_index = self._build_relative_file_index(base_path, all_video_files)
+
+        # 先清洗重复映射，避免因 AI 模型返回歧义条目而整体失败
+        sanitized_mappings, sanitizer_notes = self._sanitize_tv_mappings(ai_result)
+        semantic_removed_paths: List[str] = []
+        semantic_notes: List[str] = []
+        sanitized_mappings, semantic_removed_paths, semantic_notes = (
+            self._filter_semantic_special_mappings(sanitized_mappings, anime_info)
+        )
+        sanitizer_notes.extend(semantic_notes)
+        illegal_removed_paths: List[str] = []
+        illegal_notes: List[str] = []
+        sanitized_mappings, illegal_removed_paths, illegal_notes = (
+            self._sanitize_illegal_episode_mappings(
+                sanitized_mappings,
+                tmdb_episode_keys,
+            )
+        )
+        ai_reported_conflicts.extend(illegal_notes)
+        sanitizer_notes.extend(illegal_notes)
+        removed_paths = semantic_removed_paths + illegal_removed_paths
+        if removed_paths:
+            ai_result.unmatched_files = sorted(
+                set((ai_result.unmatched_files or []) + removed_paths)
+            )
+        if sanitizer_notes:
+            logger.info(
+                f"[AI处理] 映射清洗: {'; '.join(sanitizer_notes[:5])}"
+            )
+        ai_result.file_mapping = sanitized_mappings  # type: ignore[assignment]
 
         for mapping in ai_result.file_mapping:
-            normalized_path = mapping.file_path.replace('\\', '/').lstrip('/')
-            source_path = (base_path / normalized_path).resolve()
+            source_path, path_error, normalized_path = self._resolve_mapping_source_path(
+                getattr(mapping, 'file_path', ''),
+                base_path,
+                relative_file_index,
+            )
 
-            if not source_path.exists():
-                strict_conflicts.append(f"文件不存在:{normalized_path}")
+            if path_error:
+                strict_conflicts.append(path_error)
+                continue
+
+            assert source_path is not None
 
             key = (mapping.tmdb_season, mapping.tmdb_episode)
             if key in seen_keys:
                 strict_conflicts.append(f"重复映射:S{key[0]:02d}E{key[1]:02d}")
             seen_keys.add(key)
 
-            if key not in tmdb_episode_keys:
-                strict_conflicts.append(f"越界映射:S{key[0]:02d}E{key[1]:02d}")
-
             mapped_files.add(normalized_path)
 
         # 可观测字段回写
-        all_video_files = video_files or self._collect_video_files(base_path)
         existing_rel_paths = {
             str(p.relative_to(base_path)).replace('\\', '/')
             for p in all_video_files
@@ -212,6 +520,10 @@ class AIProcessor:
         new_mapping: Dict[Path, Path] = {}
         resolved_local_files = all_local_files or self._collect_all_local_files(base_path)
         associated_file_index = self._build_associated_file_index(resolved_local_files)
+        relative_file_index = self._build_relative_file_index(
+            base_path,
+            [file_path for file_path in resolved_local_files if file_path.suffix.lower() in VIDEO_SUFFIX],
+        )
 
         # 构建 AI 映射的快速查找索引: (season, episode) -> mapping
         ai_mapping_index: Dict[tuple[int, int], object] = {}
@@ -275,13 +587,16 @@ class AIProcessor:
                     relative_path_str = mapping.file_path
                     confidence = mapping.confidence
 
-                    # 从相对路径还原绝对路径
-                    source_path = (base_path / relative_path_str).resolve()
+                    source_path, path_error, _ = self._resolve_mapping_source_path(
+                        relative_path_str,
+                        base_path,
+                        relative_file_index,
+                    )
 
-                    if not source_path.exists():
+                    if path_error or source_path is None:
                         logger.warning(
                             f"[AI处理] S{season_num:02d}E{ep_num:02d} "
-                            f"- 文件路径不存在: {source_path}"
+                            f"- 文件路径无效: {path_error or relative_path_str}"
                         )
                         missing_count += 1
                         continue
@@ -290,7 +605,6 @@ class AIProcessor:
                     target_dir = (
                         work_path / FilenameBuilder.build_season_folder(season_num)
                     )
-                    target_dir.mkdir(parents=True, exist_ok=True)
 
                     # 提取分集信息
                     part = extract_part(source_path.name)
