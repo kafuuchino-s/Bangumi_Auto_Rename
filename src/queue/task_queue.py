@@ -15,6 +15,7 @@ from ..notification.emby_notify import get_emby_notifier
 from ..notification.telegram_notify import get_telegram_notifier
 from ..rename.cleaner import extract_video_format
 from ..rename.process import Rename
+from ..subtitle.auto_fetch import SubtitleAutoFetcher
 from .task_status import QueuedTask, TaskStatus
 
 
@@ -286,6 +287,11 @@ class TaskQueueManager:
                 task.status = TaskStatus.COMPLETED
                 logger.info(f"[队列] 任务完成: {task.task_id}")
 
+                persisted_task_id = (
+                    getattr(task, "original_uuid", None) or task.task_id
+                )
+                await run.io_bound(self._execute_subtitle_auto_fetch, persisted_task_id)
+
         except Exception as e:
             task.status = TaskStatus.FAILED
             task.error = str(e)
@@ -313,6 +319,15 @@ class TaskQueueManager:
             task.cus_season_id,
             _is_sub_task=task.is_sub_task,  # 传递子任务标记
         )
+
+    def _execute_subtitle_auto_fetch(self, task_uuid: str) -> None:
+        if not bool(cm.get_config("subtitle_auto_fetch_enabled")):
+            return
+
+        try:
+            SubtitleAutoFetcher().process_task(task_uuid)
+        except Exception as e:
+            logger.error(f"[队列] 字幕自动抓取异常: {task_uuid}, 错误: {e}")
 
     async def _cleanup_task(self, task_id: str, delay: float = 3.0) -> None:
         """延迟清理已完成的任务"""
@@ -442,6 +457,10 @@ class TaskQueueManager:
         if resource_term:
             detail_lines.append(f"🌟 质量： {resource_term}")
         detail_lines.append(f"💾 大小： {total_size}")
+
+        subtitle_line = self._build_subtitle_summary(task_details)
+        if subtitle_line:
+            detail_lines.append(f"📝 字幕： {subtitle_line}")
 
         message = "\n".join(lines + detail_lines)
         if err_msg:
@@ -670,6 +689,40 @@ class TaskQueueManager:
 
         gb = total_bytes / (1024 ** 3)
         return f"{gb:.2f} GB"
+
+    def _build_subtitle_summary(
+        self,
+        task_details: List[Dict[str, Any]],
+    ) -> str:
+        if not task_details:
+            return ""
+
+        attempted_items = [
+            item for item in task_details if item.get("subtitle_fetch_attempted")
+        ]
+        statuses = [
+            str(item.get("subtitle_fetch_status") or "").strip()
+            for item in attempted_items
+        ]
+        if not statuses:
+            return "未尝试"
+
+        first_attempted = attempted_items[0]
+        if all(status == "success" for status in statuses):
+            language = str(first_attempted.get("subtitle_fetch_language") or "").strip()
+            return f"自动补字幕成功{f'（{language}）' if language else ''}"
+
+        if all(status == "skipped" for status in statuses):
+            reason = str(
+                first_attempted.get("subtitle_fetch_error") or "已存在字幕"
+            ).strip()
+            return f"已跳过（{reason}）"
+
+        if any(status == "success" for status in statuses):
+            return "部分任务自动补字幕成功"
+
+        reason = str(first_attempted.get("subtitle_fetch_error") or "未知原因").strip()
+        return f"自动补字幕失败（{reason}）"
 
     def _build_error_message(self) -> str:
         if not self._batch_failed_tasks:

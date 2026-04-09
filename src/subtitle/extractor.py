@@ -1,11 +1,12 @@
 """
 字幕压缩包解压模块
 
-支持 ZIP 和 RAR 格式，处理中日文文件名编码问题。
+支持 ZIP、RAR 和 7z 格式，处理中日文文件名编码问题。
 保留压缩包内的文件夹结构信息。
 """
 
 import shutil
+import subprocess
 import tempfile
 import zipfile
 from dataclasses import dataclass
@@ -21,6 +22,20 @@ try:
     RAR_AVAILABLE = True
 except ImportError:
     RAR_AVAILABLE = False
+
+# 尝试导入 py7zr
+try:
+    import py7zr
+
+    SEVEN_Z_AVAILABLE = True
+except ImportError:
+    SEVEN_Z_AVAILABLE = False
+
+# Bandizip CLI 可作为 Windows 下的 RAR 回退解压器
+BANDIZIP_CANDIDATES = [
+    Path("C:/Program Files/Bandizip/bz.exe"),
+    Path("C:/Program Files (x86)/Bandizip/bz.exe"),
+]
 
 # 支持的字幕格式
 SUBTITLE_EXTENSIONS = {".ass", ".ssa", ".srt", ".sub", ".idx", ".vtt"}
@@ -45,6 +60,36 @@ class SubtitleExtractor:
         self.temp_dir = temp_dir or Path(tempfile.gettempdir()) / "bangumi_subtitle"
         self.temp_dir.mkdir(parents=True, exist_ok=True)
 
+    @staticmethod
+    def _collect_extracted_subtitles(
+        extract_dir: Path,
+    ) -> List[ExtractedSubtitle]:
+        subtitle_files: List[ExtractedSubtitle] = []
+        for target_path in extract_dir.rglob("*"):
+            if not target_path.is_file():
+                continue
+            if target_path.suffix.lower() not in SUBTITLE_EXTENSIONS:
+                continue
+
+            archive_member = str(target_path.relative_to(extract_dir)).replace(
+                "\\", "/"
+            )
+            subtitle_files.append(
+                ExtractedSubtitle(
+                    temp_path=target_path,
+                    archive_path=archive_member,
+                    filename=target_path.name,
+                )
+            )
+        return subtitle_files
+
+    @staticmethod
+    def _find_bandizip_executable() -> Optional[Path]:
+        for candidate in BANDIZIP_CANDIDATES:
+            if candidate.exists():
+                return candidate
+        return None
+
     def extract(self, archive_path: Path) -> Optional[List[ExtractedSubtitle]]:
         """
         解压压缩包或处理单个字幕文件，返回字幕文件列表（保留路径结构信息）
@@ -65,6 +110,8 @@ class SubtitleExtractor:
             return self._extract_zip(archive_path)
         elif suffix == ".rar":
             return self._extract_rar(archive_path)
+        elif suffix == ".7z":
+            return self._extract_7z(archive_path)
         elif suffix in SUBTITLE_EXTENSIONS:
             # 直接字幕文件，不需要解压
             return self._handle_direct_subtitle(archive_path)
@@ -165,8 +212,99 @@ class SubtitleExtractor:
 
     def _extract_rar(self, archive_path: Path) -> Optional[List[ExtractedSubtitle]]:
         """解压 RAR 文件"""
-        if not RAR_AVAILABLE:
-            logger.error("[字幕解压] rarfile 库未安装，无法处理 RAR 文件")
+        extract_dir = self.temp_dir / archive_path.stem
+        if extract_dir.exists():
+            shutil.rmtree(extract_dir)
+        extract_dir.mkdir(parents=True, exist_ok=True)
+
+        if RAR_AVAILABLE:
+            try:
+                subtitle_files: List[ExtractedSubtitle] = []
+
+                with rarfile.RarFile(archive_path, "r") as rf:
+                    for info in rf.infolist():
+                        if info.is_dir():
+                            continue
+
+                        filename = info.filename
+                        file_path = Path(filename)
+
+                        # 只提取字幕文件
+                        if file_path.suffix.lower() not in SUBTITLE_EXTENSIONS:
+                            continue
+
+                        # 保留文件夹结构解压
+                        safe_path = (
+                            Path(*file_path.parts) if file_path.parts else file_path
+                        )
+                        target_path = extract_dir / safe_path
+
+                        # 创建父目录
+                        target_path.parent.mkdir(parents=True, exist_ok=True)
+
+                        with rf.open(info) as source:
+                            with open(target_path, "wb") as target:
+                                target.write(source.read())
+
+                        subtitle_files.append(
+                            ExtractedSubtitle(
+                                temp_path=target_path,
+                                archive_path=filename,
+                                filename=file_path.name,
+                            )
+                        )
+
+                logger.info(
+                    f"[字幕解压] RAR 解压成功，找到 {len(subtitle_files)} 个字幕文件"
+                )
+                return subtitle_files
+            except Exception as e:
+                logger.warning(f"[字幕解压] rarfile 解压失败，尝试回退 Bandizip: {e}")
+
+        bandizip = self._find_bandizip_executable()
+        if bandizip is None:
+            logger.error(
+                "[字幕解压] rarfile 不可用，且未找到 Bandizip CLI，无法处理 RAR 文件"
+            )
+            return None
+
+        try:
+            result = subprocess.run(
+                [
+                    str(bandizip),
+                    "x",
+                    "-y",
+                    "-aoa",
+                    f"-o:{extract_dir}",
+                    str(archive_path),
+                ],
+                capture_output=True,
+                text=True,
+                encoding="utf-8",
+                errors="ignore",
+                check=False,
+            )
+            if result.returncode != 0:
+                logger.error(
+                    "[字幕解压] Bandizip 解压 RAR 失败: %s",
+                    (result.stderr or result.stdout or "未知错误").strip(),
+                )
+                return None
+
+            subtitle_files = self._collect_extracted_subtitles(extract_dir)
+            logger.info(
+                "[字幕解压] Bandizip 解压 RAR 成功，找到 %s 个字幕文件",
+                len(subtitle_files),
+            )
+            return subtitle_files
+        except Exception as e:
+            logger.error(f"[字幕解压] Bandizip 解压 RAR 失败: {e}")
+            return None
+
+    def _extract_7z(self, archive_path: Path) -> Optional[List[ExtractedSubtitle]]:
+        """解压 7z 文件"""
+        if not SEVEN_Z_AVAILABLE:
+            logger.error("[字幕解压] py7zr 库未安装，无法处理 7z 文件")
             return None
 
         try:
@@ -175,44 +313,16 @@ class SubtitleExtractor:
                 shutil.rmtree(extract_dir)
             extract_dir.mkdir(parents=True, exist_ok=True)
 
-            subtitle_files: List[ExtractedSubtitle] = []
+            with py7zr.SevenZipFile(archive_path, "r") as zf:
+                zf.extractall(path=extract_dir)
 
-            with rarfile.RarFile(archive_path, "r") as rf:
-                for info in rf.infolist():
-                    if info.is_dir():
-                        continue
+            subtitle_files = self._collect_extracted_subtitles(extract_dir)
 
-                    filename = info.filename
-                    file_path = Path(filename)
-
-                    # 只提取字幕文件
-                    if file_path.suffix.lower() not in SUBTITLE_EXTENSIONS:
-                        continue
-
-                    # 保留文件夹结构解压
-                    safe_path = Path(*file_path.parts) if file_path.parts else file_path
-                    target_path = extract_dir / safe_path
-
-                    # 创建父目录
-                    target_path.parent.mkdir(parents=True, exist_ok=True)
-
-                    with rf.open(info) as source:
-                        with open(target_path, "wb") as target:
-                            target.write(source.read())
-
-                    subtitle_files.append(
-                        ExtractedSubtitle(
-                            temp_path=target_path,
-                            archive_path=filename,
-                            filename=file_path.name,
-                        )
-                    )
-
-            logger.info(f"[字幕解压] RAR 解压成功，找到 {len(subtitle_files)} 个字幕文件")
+            logger.info(f"[字幕解压] 7z 解压成功，找到 {len(subtitle_files)} 个字幕文件")
             return subtitle_files
 
         except Exception as e:
-            logger.error(f"[字幕解压] RAR 解压失败: {e}")
+            logger.error(f"[字幕解压] 7z 解压失败: {e}")
             return None
 
     def get_archive_structure(

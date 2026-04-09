@@ -198,7 +198,12 @@ class SubtitleProcessor:
         logger.info(f"[字幕处理] 解压成功，找到 {len(subtitle_files)} 个字幕文件")
 
         # Step 2: 读取已处理任务记录
-        processed_tasks = self._load_processed_tasks()
+        if target_task_uuid:
+            processed_tasks = self._load_processed_tasks_for_target_uuid(
+                target_task_uuid
+            )
+        else:
+            processed_tasks = self._load_processed_tasks(max_tasks=10)
         if not processed_tasks:
             self.extractor.cleanup(archive_path)
             return self._error_result(_uuid, "无已处理的任务记录", archive_path)
@@ -216,8 +221,19 @@ class SubtitleProcessor:
                 return self._error_result(
                     _uuid, f"指定的任务不存在: {target_task_uuid}", archive_path
                 )
-            # 简化任务列表，只包含目标任务
-            processed_tasks = [target_task]
+
+            if target_task.get("is_movie", False):
+                processed_tasks = [target_task]
+            else:
+                target_root = str(target_task.get("target_root") or "").strip()
+                if target_root:
+                    related_tasks = self._load_processed_tasks(
+                        max_tasks=None,
+                        target_root=target_root,
+                    )
+                    processed_tasks = related_tasks or [target_task]
+                else:
+                    processed_tasks = [target_task]
 
         # Step 4: 获取压缩包结构并调用 AI 分析
         archive_structure = self.extractor.get_archive_structure(subtitle_files)
@@ -472,6 +488,117 @@ class SubtitleProcessor:
 
         return result
 
+    def _load_processed_tasks_for_target_uuid(
+        self,
+        target_task_uuid: str,
+    ) -> List[Dict]:
+        """按目标任务 UUID 精确加载任务，并补充同剧相关任务。"""
+        target_task_uuid = str(target_task_uuid or "").strip()
+        if not target_task_uuid:
+            return []
+
+        target_task = self._load_single_processed_task(target_task_uuid)
+        if not target_task:
+            return []
+        if target_task.get("is_movie", False):
+            return [target_task]
+
+        target_root = str(target_task.get("target_root") or "").strip()
+        if not target_root:
+            return [target_task]
+
+        related_tasks = self._load_processed_tasks(max_tasks=None, target_root=target_root)
+        if not related_tasks:
+            return [target_task]
+
+        if not any(task.get("uuid") == target_task_uuid for task in related_tasks):
+            related_tasks.insert(0, target_task)
+        return related_tasks
+
+    def _load_single_processed_task(self, task_uuid: str) -> Optional[Dict[str, Any]]:
+        task_uuid = str(task_uuid or "").strip()
+        if not task_uuid:
+            return None
+
+        task_file = TASK_PATH / f"{task_uuid}.json"
+        if not task_file.exists():
+            return None
+
+        return self._build_processed_task_from_file(task_file)
+
+    def _build_processed_task_from_file(
+        self,
+        task_file: Path,
+        target_root: Optional[str] = None,
+    ) -> Optional[Dict[str, Any]]:
+        try:
+            with open(task_file, "r", encoding="UTF-8") as f:
+                task_data = json.load(f)
+
+            if task_data.get("type") == "subtitle":
+                return None
+            if task_data.get("error"):
+                return None
+
+            is_movie = task_data.get("is_movie", False)
+            task_uuid = task_data.get("uuid", task_file.stem)
+            normalized_target_root = self._normalize_target_root(
+                task_data.get("target_root")
+            )
+            if target_root and normalized_target_root != self._normalize_target_root(
+                target_root
+            ):
+                return None
+
+            record_file = RECORD_PATH / f"{task_uuid}.json"
+            if not record_file.exists():
+                return None
+
+            with open(record_file, "r", encoding="UTF-8") as f:
+                record_data = json.load(f)
+
+            if not record_data:
+                return None
+
+            videos = []
+            video_targets = {}
+            target_dir = None
+            for source, target in record_data.items():
+                target_path = Path(target)
+                videos.append(target_path.name)
+                video_targets[target_path.name] = str(target_path)
+                if target_dir is None:
+                    target_dir = str(target_path.parent)
+
+            if not videos or not target_dir:
+                return None
+
+            year = None
+            target_dir_path = Path(target_dir)
+            if is_movie:
+                year_match = re.search(r"\((\d{4})\)", target_dir_path.name)
+            else:
+                parent_name = target_dir_path.parent.name
+                year_match = re.search(r"\((\d{4})\)", parent_name)
+
+            if year_match:
+                year = int(year_match.group(1))
+
+            return {
+                "uuid": task_uuid,
+                "title": task_data.get("name", ""),
+                "year": year,
+                "season": task_data.get("season_id", 1) if not is_movie else None,
+                "target_dir": target_dir,
+                "target_root": normalized_target_root,
+                "videos": sorted(videos),
+                "video_targets": video_targets,
+                "is_movie": is_movie,
+            }
+        except Exception as e:
+            logger.warning(f"[字幕处理] 读取任务文件失败: {task_file}, {e}")
+            return None
+
     def _apply_subtitle_sync(
         self,
         archive_path: Path,
@@ -570,12 +697,17 @@ class SubtitleProcessor:
             return False
         return None
 
-    def _load_processed_tasks(self, max_tasks: int = 10) -> List[Dict]:
+    def _load_processed_tasks(
+        self,
+        max_tasks: Optional[int] = 10,
+        target_root: Optional[str] = None,
+    ) -> List[Dict]:
         """
         从 data/task 和 data/record 读取已处理的任务记录
 
         Args:
-            max_tasks: 最多加载的任务数量，按时间倒序取最近的任务
+            max_tasks: 最多加载的任务数量，按时间倒序取最近的任务；None 表示不限制
+            target_root: 可选，仅加载属于同一目标根目录的任务
 
         Returns:
             任务列表，每个包含 uuid, title, season, target_dir, videos
@@ -593,84 +725,30 @@ class SubtitleProcessor:
         )
 
         for task_file in task_files:
-            try:
-                with open(task_file, "r", encoding="UTF-8") as f:
-                    task_data = json.load(f)
-
-                # 跳过字幕任务和错误任务
-                if task_data.get("type") == "subtitle":
-                    continue
-                if task_data.get("error"):
-                    continue
-
-                is_movie = task_data.get("is_movie", False)
-
-                task_uuid = task_data.get("uuid", task_file.stem)
-
-                # 读取对应的 record 文件获取视频映射
-                record_file = RECORD_PATH / f"{task_uuid}.json"
-                if not record_file.exists():
-                    continue
-
-                with open(record_file, "r", encoding="UTF-8") as f:
-                    record_data = json.load(f)
-
-                if not record_data:
-                    continue
-
-                # 提取视频文件名和目标目录
-                videos = []
-                video_targets = {}  # 视频文件名 -> 完整目标路径
-                target_dir = None
-                for source, target in record_data.items():
-                    target_path = Path(target)
-                    videos.append(target_path.name)
-                    video_targets[target_path.name] = str(target_path)
-                    if target_dir is None:
-                        target_dir = str(target_path.parent)
-
-                if not videos or not target_dir:
-                    continue
-
-                # 从目标目录路径提取年份
-                year = None
-                target_dir_path = Path(target_dir)
-                # 电影的目录结构: Movie Name (2023)/Movie Name (2023).mkv
-                # 剧集的目录结构: Show Name (2023)/Season 01/Show Name - S01E01.mkv
-                if is_movie:
-                    # 电影直接从目标目录名提取年份
-                    year_match = re.search(r"\((\d{4})\)", target_dir_path.name)
-                else:
-                    # 剧集从父目录（show目录）提取年份
-                    parent_name = target_dir_path.parent.name
-                    year_match = re.search(r"\((\d{4})\)", parent_name)
-
-                if year_match:
-                    year = int(year_match.group(1))
-
-                tasks.append(
-                    {
-                        "uuid": task_uuid,
-                        "title": task_data.get("name", ""),
-                        "year": year,
-                        "season": task_data.get("season_id", 1) if not is_movie else None,
-                        "target_dir": target_dir,
-                        "videos": sorted(videos),
-                        "video_targets": video_targets,  # 每个视频的完整目标路径
-                        "is_movie": is_movie,
-                    }
-                )
-
-                # 达到最大数量限制
-                if len(tasks) >= max_tasks:
-                    logger.info(f"[字幕处理] 已加载 {max_tasks} 个任务，跳过更早的任务")
-                    break
-
-            except Exception as e:
-                logger.warning(f"[字幕处理] 读取任务文件失败: {task_file}, {e}")
+            task = self._build_processed_task_from_file(
+                task_file,
+                target_root=target_root,
+            )
+            if not task:
                 continue
 
+            tasks.append(task)
+
+            # 达到最大数量限制
+            if max_tasks is not None and len(tasks) >= max_tasks:
+                logger.info(f"[字幕处理] 已加载 {max_tasks} 个任务，跳过更早的任务")
+                break
+
         return tasks
+
+    @staticmethod
+    def _normalize_target_root(target_root: Optional[str]) -> str:
+        if not target_root:
+            return ""
+        try:
+            return str(Path(target_root).resolve())
+        except OSError:
+            return str(Path(target_root))
 
     def _error_result(
         self,

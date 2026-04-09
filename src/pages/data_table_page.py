@@ -2,7 +2,7 @@ import asyncio
 from pathlib import Path
 from typing import Any, Dict, List
 
-from nicegui import ui
+from nicegui import run, ui
 from nicegui.events import GenericEventArguments
 
 from ..element.red import notify, RedButton
@@ -10,6 +10,7 @@ from ..logger import logger
 from ..notification.emby_notify import get_emby_notifier
 from ..queue.task_queue import get_queue_manager
 from ..queue.task_status import TaskStatus
+from ..subtitle.auto_fetch import SubtitleAutoFetcher
 from ..utils.path import RECORD_PATH, TASK_PATH
 from ..utils.utils import get_task
 from .edit_page import edit_page
@@ -357,6 +358,7 @@ def create_table():
         """
         <q-td :props="props">
             <q-btn @click="$parent.$emit('retry', props)" label="重试" color='green-6' class="q-mr-sm rounded" style="border-radius: 5rem"/>
+            <q-btn @click="$parent.$emit('rerun_subtitle_fetch', props)" label="重跑字幕" color='purple-6' class="q-mr-sm rounded" style="border-radius: 5rem"/>
             <q-btn @click="$parent.$emit('edit', props)" label="编辑" color='blue-6' class="q-mr-sm rounded" style="border-radius: 5rem"/>
             <q-btn @click="$parent.$emit('del', props)" label="删除" color='red-6' class="q-mr-sm rounded" style="border-radius: 5rem"/>
         </q-td>
@@ -404,6 +406,12 @@ def create_table():
         lambda ev, c=ui.context.client: asyncio.create_task(handle_retry(ev, c))
     )
     table.on(
+        'rerun_subtitle_fetch',
+        lambda ev, c=ui.context.client: asyncio.create_task(
+            handle_subtitle_auto_fetch_retry(ev, c)
+        )
+    )
+    table.on(
         'edit',
         lambda ev, c=ui.context.client: asyncio.create_task(handle_edit(ev, c))
     )
@@ -416,6 +424,66 @@ async def handle_edit(ev: GenericEventArguments, client):
     uuid = arg['row']['uuid']
     with client.content:
         await edit_page(uuid)
+    create_table.refresh()
+
+
+async def handle_subtitle_auto_fetch_retry(
+    ev: GenericEventArguments,
+    client,
+):
+    """手动重跑主任务的字幕自动抓取。"""
+    arg = ev.args
+    row_data = arg['row']
+    path = row_data['path']
+    uuid = row_data['uuid']
+
+    queue_mgr = get_queue_manager()
+
+    with client.content:
+        if queue_mgr.is_path_in_queue(path):
+            notify('任务仍在队列中，暂时不能重跑字幕抓取！')
+            return
+
+        task_data = get_task(uuid)
+        if task_data is None:
+            notify('任务数据不存在！')
+            return
+
+        if task_data.get('type') == 'subtitle':
+            notify('字幕导入任务不支持重跑字幕自动抓取！')
+            return
+
+        record_path = RECORD_PATH / f'{uuid}.json'
+        if not record_path.exists():
+            notify('主任务缺少入库记录，无法重跑字幕抓取！')
+            return
+
+        notify('正在重跑字幕自动抓取...')
+        result = await run.io_bound(SubtitleAutoFetcher().process_task, uuid)
+        status = result.get('status')
+        reason = result.get('reason') or '未知原因'
+
+        if status == 'success':
+            notify('字幕自动抓取完成！', type='positive')
+
+            try:
+                emby = get_emby_notifier()
+                if emby.is_available():
+                    success, message = emby.refresh_library()
+                    if success:
+                        notify(f"已通知 Emby 刷新媒体库: {message}", type="positive")
+                    else:
+                        notify(f"Emby 刷新失败: {message}", type="warning")
+                else:
+                    logger.info("[字幕自动抓取] Emby 通知未启用或未配置，跳过刷新")
+            except Exception as e:
+                logger.error(f"[字幕自动抓取] Emby 通知异常: {e}")
+                notify(f"Emby 通知异常: {e}", type="warning")
+        elif status == 'skipped':
+            notify(f'字幕自动抓取已跳过: {reason}', type='info')
+        else:
+            notify(f'字幕自动抓取失败: {reason}')
+
     create_table.refresh()
 
 

@@ -98,6 +98,27 @@ class ConfigPage(ui.dialog):
 
             ui.separator().style("margin: 20px 0;")
 
+            # 字幕自动抓取配置
+            ui.label("字幕自动抓取").style(
+                "font-size: 16px; font-weight: bold; margin-top: 10px;"
+            )
+            subtitle_auto_fetch_configs = [
+                "subtitle_auto_fetch_enabled",
+                "subtitle_auto_fetch_provider",
+                "subtitle_auto_fetch_candidate_limit",
+                "subtitle_auto_fetch_timeout_seconds",
+                "subtitle_auto_fetch_browser_enabled",
+                "subtitle_auto_fetch_acgrip_base_url",
+                "subtitle_auto_fetch_preferred_language",
+                "subtitle_auto_fetch_use_ai_rerank",
+                "subtitle_auto_fetch_search_mode",
+                "subtitle_auto_fetch_save_reason",
+            ]
+            for cn in subtitle_auto_fetch_configs:
+                self._create_config_row(cn)
+
+            ui.separator().style("margin: 20px 0;")
+
             # Emby通知配置
             ui.label("Emby通知配置").style(
                 "font-size: 16px; font-weight: bold; margin-top: 10px;"
@@ -250,6 +271,94 @@ class ConfigPage(ui.dialog):
                         )
                         tg.style("font-size: 10px")
                         tg.classes("flex no-wrap w-full")
+                    elif cn == "subtitle_auto_fetch_enabled":
+                        tg = RedToogle(
+                            ["启用", "禁用"],
+                            value="启用" if cm.get_config(cn) else "禁用",
+                            on_change=lambda e, c=cn: self._change(
+                                c, e.value == "启用"
+                            ),
+                        )
+                        tg.style("font-size: 10px")
+                        tg.classes("flex no-wrap w-full")
+                    elif cn == "subtitle_auto_fetch_provider":
+                        ui.input(
+                            value=cm.get_config(cn) or "acgrip",
+                            on_change=lambda e, c=cn: self._change(c, e.value),
+                        ).props("filled").props("dense").style(
+                            "flex-grow: 2"
+                        ).bind_value(
+                            self.config, cn
+                        )
+                    elif cn == "subtitle_auto_fetch_browser_enabled":
+                        tg = RedToogle(
+                            ["启用", "禁用"],
+                            value="启用" if cm.get_config(cn) else "禁用",
+                            on_change=lambda e, c=cn: self._change(
+                                c, e.value == "启用"
+                            ),
+                        )
+                        tg.style("font-size: 10px")
+                        tg.classes("flex no-wrap w-full")
+                    elif cn == "subtitle_auto_fetch_use_ai_rerank":
+                        tg = RedToogle(
+                            ["启用", "禁用"],
+                            value="启用" if cm.get_config(cn) else "禁用",
+                            on_change=lambda e, c=cn: self._change(
+                                c, e.value == "启用"
+                            ),
+                        )
+                        tg.style("font-size: 10px")
+                        tg.classes("flex no-wrap w-full")
+                    elif cn == "subtitle_auto_fetch_save_reason":
+                        tg = RedToogle(
+                            ["启用", "禁用"],
+                            value="启用" if cm.get_config(cn) else "禁用",
+                            on_change=lambda e, c=cn: self._change(
+                                c, e.value == "启用"
+                            ),
+                        )
+                        tg.style("font-size: 10px")
+                        tg.classes("flex no-wrap w-full")
+                    elif cn == "subtitle_auto_fetch_preferred_language":
+                        tg = RedToogle(
+                            ["zh-CN", "zh-TW"],
+                            value=cm.get_config(cn) or "zh-CN",
+                            on_change=lambda e, c=cn: self._change(c, e.value),
+                        )
+                        tg.style("font-size: 10px")
+                        tg.classes("flex no-wrap w-full")
+                    elif cn == "subtitle_auto_fetch_search_mode":
+                        tg = RedToogle(
+                            ["auto"],
+                            value=cm.get_config(cn) or "auto",
+                            on_change=lambda e, c=cn: self._change(c, e.value),
+                        )
+                        tg.style("font-size: 10px")
+                        tg.classes("flex no-wrap w-full")
+                    elif cn == "subtitle_auto_fetch_candidate_limit":
+                        ui.number(
+                            value=int(cm.get_config(cn) or 10),
+                            min=1,
+                            max=50,
+                            step=1,
+                            on_change=lambda e, c=cn: self._change(
+                                c, int(e.value) if e.value else 10
+                            ),
+                        ).props('filled dense').style('flex-grow: 2').bind_value(
+                            self.config, cn
+                        )
+                    elif cn == "subtitle_auto_fetch_timeout_seconds":
+                        ui.number(
+                            value=int(cm.get_config(cn) or 30),
+                            min=5,
+                            step=1,
+                            on_change=lambda e, c=cn: self._change(
+                                c, int(e.value) if e.value else 30
+                            ),
+                        ).props('filled dense').style('flex-grow: 2').bind_value(
+                            self.config, cn
+                        )
                     elif cn == "subtitle_sync_mode":
                         tg = RedToogle(
                             ["best_effort", "strict"],
@@ -376,7 +485,12 @@ class ConfigPage(ui.dialog):
 
     def _handle_ok(self):
         # 验证URL配置项
-        url_configs = ["ai_base_url", "gemini_base_url", "telegram_base_url"]
+        url_configs = [
+            "ai_base_url",
+            "gemini_base_url",
+            "telegram_base_url",
+            "subtitle_auto_fetch_acgrip_base_url",
+        ]
         for url_config in url_configs:
             if hasattr(self.config, url_config):
                 url_value = getattr(self.config, url_config)

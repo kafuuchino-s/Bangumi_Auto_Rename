@@ -232,6 +232,7 @@ fastapi==0.115.14 ; python_version >= "3.9" and python_version < "4.0" \
 ffsubsync==0.4.30 ; python_version >= "3.9" and python_version < "4.0" \
     --hash=sha256:36e38f60d2a311e13deb61f86166dd4931df3146e4b1c7637c05b03d54aa07a3 \
     --hash=sha256:cc351ef0dbd71e95a1294879f0d8679e0373fd37e3b4fcd17fce43a64bf2ad1e
+scrapling[fetchers]==0.4.3 ; python_version >= "3.9" and python_version < "4.0"
 frozenlist==1.7.0 ; python_version >= "3.9" and python_version < "4.0" \
     --hash=sha256:04fb24d104f425da3540ed83cbfc31388a586a7696142004c577fa61c6298c3f \
     --hash=sha256:05579bf020096fe05a764f1f84cd104a12f78eaab68842d036772dc6d4870b4b \

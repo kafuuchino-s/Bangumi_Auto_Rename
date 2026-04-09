@@ -15,7 +15,9 @@ dependencies = [
     "google>=3.0.0",
     "google-genai>=0.8.0",
     "rarfile>=4.0",
+    "py7zr>=0.22.0",
     "ffsubsync>=0.4.30",
+    "scrapling[fetchers]>=0.4.3",
 ]
 requires-python = ">=3.9,<4.0"
 readme = "README.md"

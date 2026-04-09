@@ -56,6 +56,17 @@ CONFIG_DEFAULT = {
     "subtitle_sync_extra_args": "",
     "subtitle_sync_timeout_seconds": 120,
     "subtitle_sync_overwrite_policy": "follow_global",  # follow_global | overwrite | skip
+    # 字幕自动抓取配置
+    "subtitle_auto_fetch_enabled": False,
+    "subtitle_auto_fetch_provider": "acgrip",
+    "subtitle_auto_fetch_candidate_limit": 10,
+    "subtitle_auto_fetch_timeout_seconds": 30,
+    "subtitle_auto_fetch_browser_enabled": False,
+    "subtitle_auto_fetch_acgrip_base_url": "https://bbs.acgrip.com",
+    "subtitle_auto_fetch_preferred_language": "zh-CN",
+    "subtitle_auto_fetch_use_ai_rerank": True,
+    "subtitle_auto_fetch_search_mode": "auto",
+    "subtitle_auto_fetch_save_reason": True,
     "skip_tags": "iyuu,辅种,reseed,skip,no_process",  # 跳过处理的标签
     # Emby通知配置
     "emby_enabled": False,  # 是否启用Emby通知
@@ -112,6 +123,16 @@ CN_MAP = {
     "subtitle_sync_extra_args": "➕ ffsubsync 额外参数",
     "subtitle_sync_timeout_seconds": "⏱️ 对齐超时秒数",
     "subtitle_sync_overwrite_policy": "📝 字幕覆盖策略",
+    "subtitle_auto_fetch_enabled": "🔎 启用字幕自动抓取",
+    "subtitle_auto_fetch_provider": "🌐 字幕抓取源",
+    "subtitle_auto_fetch_candidate_limit": "📚 抓取候选上限",
+    "subtitle_auto_fetch_timeout_seconds": "⏱️ 抓取超时秒数",
+    "subtitle_auto_fetch_browser_enabled": "🧭 启用动态浏览器抓取",
+    "subtitle_auto_fetch_acgrip_base_url": "🌐 ACGRIP 地址",
+    "subtitle_auto_fetch_preferred_language": "🈶 优先字幕语言",
+    "subtitle_auto_fetch_use_ai_rerank": "🤖 启用AI重排",
+    "subtitle_auto_fetch_search_mode": "🔍 字幕搜索模式",
+    "subtitle_auto_fetch_save_reason": "📝 保存重排原因",
     "skip_tags": "🚫 跳过处理的标签（逗号分隔）",
     # Emby通知配置
     "emby_enabled": "📺 启用Emby通知",
