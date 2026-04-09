@@ -54,6 +54,7 @@ class OpenAIClient(BaseAIClient):
         self,
         anime_info: Dict,
         local_files: List[Dict],
+        bangumi_context: Optional[Dict] = None,
     ) -> Optional[AIAnalysisResult]:
         """
         使用OpenAI API分析本地文件与TMDB剧集的映射关系
@@ -61,6 +62,7 @@ class OpenAIClient(BaseAIClient):
         Args:
             anime_info: TMDB动漫信息
             local_files: 本地文件信息列表，包含文件名、路径、时长等
+            bangumi_context: Bangumi 辅助上下文，失败时为 None
 
         Returns:
             验证后的AIAnalysisResult对象
@@ -78,7 +80,11 @@ class OpenAIClient(BaseAIClient):
             from .client import AIClient
 
             # 使用通用prompt构建基础内容
-            prompt = AIClient.build_common_prompt(anime_info, local_files)
+            prompt = AIClient.build_common_prompt(
+                anime_info,
+                local_files,
+                bangumi_context=bangumi_context,
+            )
 
             # 使用通用系统提示词
             system_prompt = AIClient.get_system_prompt()
@@ -634,13 +640,25 @@ class OpenAIClient(BaseAIClient):
         if not isinstance(item, dict):
             return None
 
+        source_index = self._coerce_int(
+            item.get("source_index")
+            or item.get("source_id")
+            or item.get("index")
+            or item.get("file_index")
+        )
+        if source_index is not None and source_index < 1:
+            source_index = None
+
         file_path = (
             item.get("file_path")
             or item.get("file")
             or item.get("path")
             or item.get("filename")
         )
-        if not file_path:
+        if file_path is not None:
+            file_path = str(file_path).strip() or None
+
+        if source_index is None and not file_path:
             return None
 
         tmdb_season = self._coerce_int(item.get("tmdb_season"))
@@ -680,7 +698,8 @@ class OpenAIClient(BaseAIClient):
         confidence = self._normalize_confidence(item.get("confidence") or default_confidence)
 
         return {
-            "file_path": str(file_path),
+            "source_index": source_index,
+            "file_path": file_path,
             "tmdb_season": tmdb_season,
             "tmdb_episode": tmdb_episode,
             "episode_type": episode_type,

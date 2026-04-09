@@ -32,12 +32,7 @@ from src.config.config_manager import cm
 from src.rename.utils import VIDEO_SUFFIX
 from src.ai.models import AIAnalysisResult
 from src.ai.video_analyzer import VideoAnalyzer
-from src.rename.cleaner import (
-    remove_tag,
-    remove_season,
-    divide_by_year,
-    remove_episode,
-)
+from src.rename.process import Rename
 
 
 class DataInput:
@@ -148,24 +143,23 @@ class DataInput:
 
     def _get_anime_info(self, path: Path) -> Tuple[str, Optional[Dict]]:
         """获取动漫信息"""
-        # 处理文件名
-        rtpath_name = remove_tag(path.name)
-        if not rtpath_name:
-            rtpath_name = remove_tag(path.name, True)
-
-        rtpath_name, year = divide_by_year(rtpath_name)
-        rtpath_name = remove_season(rtpath_name)
-        rtpath_name = remove_episode(rtpath_name)
-        rtpath_name = rtpath_name.strip("!")
+        rtpath_name, year, _, _, _ = Rename._build_title_inputs(path)
 
         logger.info(f"[测试] 处理后的名称: {rtpath_name}")
 
-        # 搜索动漫信息
-        name, tv_info = self.search.get_tv_info_with_seasons(rtpath_name, year)
-        if not name and year != 0:
-            name, tv_info = self.search.get_tv_info_with_seasons(rtpath_name, 0)
+        candidates = self.search.search_tv_by_query(rtpath_name, year, limit=1)
+        if not candidates and year != 0:
+            candidates = self.search.search_tv_by_query(rtpath_name, None, limit=1)
 
-        return name, tv_info
+        if not candidates:
+            return "", None
+
+        target = candidates[0]
+        tv_info = self.search.get_tv_info_by_id(target["id"])
+        if not tv_info:
+            return "", None
+
+        return target.get("name", ""), self.search.fill_season_info(tv_info)
 
 
 class DataProcessor:

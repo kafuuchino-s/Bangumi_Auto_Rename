@@ -22,6 +22,7 @@ from src.ai.models import (
     MovieCollectionResult,
     TitleExtractionResult,
 )
+from src.ai.openai_client import OpenAIClient
 from src.rename.ai_processor import AIProcessor
 from src.rename.process import Rename
 
@@ -520,6 +521,61 @@ def test_extract_title_metadata_without_fallback_keeps_old_behavior():
         )
 
 
+
+def test_extract_title_metadata_reuses_normalized_process_cache():
+    """同系列 split case 的标题提取应命中进程缓存，避免重复 AI 调用。"""
+    ai_client = AIClient()
+    AIClient._title_metadata_cache.clear()
+    payload = '{"title":"Moretsu Uchuu Kaizoku","fallback_title":null,"type":"tv"}'
+
+    with patch.object(AIClient, "is_available", return_value=True), patch.object(
+        AIClient,
+        "_call_openai_simple",
+        return_value=payload,
+    ) as call_openai:
+        first = ai_client.extract_title_metadata(
+            "[ANK-Raws] Moretsu Uchuu Kaizoku - Vol.1 (BDrip 1920x1080 x264 FLAC Hi10P)"
+        )
+        second = ai_client.extract_title_metadata(
+            "[ANK-Raws] Moretsu Uchuu Kaizoku - Vol.2 (BDrip 1920x1080 x264 FLAC Hi10P)"
+        )
+
+    assert first is not None
+    assert second is not None
+    assert first.title == "Moretsu Uchuu Kaizoku"
+    assert second.title == "Moretsu Uchuu Kaizoku"
+    assert call_openai.call_count == 1
+
+
+
+def test_extract_title_metadata_cache_distinguishes_different_series():
+    """不同作品名不应错误复用同一个标题提取缓存。"""
+    ai_client = AIClient()
+    AIClient._title_metadata_cache.clear()
+    payloads = [
+        '{"title":"Moretsu Uchuu Kaizoku","fallback_title":null,"type":"tv"}',
+        '{"title":"Bodacious Space Pirates","fallback_title":null,"type":"tv"}',
+    ]
+
+    with patch.object(AIClient, "is_available", return_value=True), patch.object(
+        AIClient,
+        "_call_openai_simple",
+        side_effect=payloads,
+    ) as call_openai:
+        first = ai_client.extract_title_metadata(
+            "[ANK-Raws] Moretsu Uchuu Kaizoku - Vol.1 (BDrip 1920x1080 x264 FLAC Hi10P)"
+        )
+        second = ai_client.extract_title_metadata(
+            "[ANK-Raws] Bodacious Space Pirates - Vol.1 (BDrip 1920x1080 x264 FLAC Hi10P)"
+        )
+
+    assert first is not None
+    assert second is not None
+    assert first.title == "Moretsu Uchuu Kaizoku"
+    assert second.title == "Bodacious Space Pirates"
+    assert call_openai.call_count == 2
+
+
 def test_check_task_type_uses_fallback_title_when_primary_misses():
     """主标题无结果时，应继续尝试 fallback_title。"""
     rename = Rename()
@@ -649,6 +705,128 @@ def test_check_task_type_deduplicates_fallback_and_clean_title_queries():
     assert searched_queries == ["生徒会の一存 Lv.2", "生徒会の一存"]
 
 
+
+def test_check_task_type_auto_mode_prefers_movie_chain_for_movie_hint():
+    """自动模式下，明显 movie hint 的目录应优先走 Movie 空间。"""
+    rename = Rename()
+    ai_client = AIClient()
+    title_metadata = TitleExtractionResult(
+        title="Strike Witches The Movie",
+        fallback_title="Strike Witches",
+        type="movie",
+    )
+    movie_info = {
+        "id": 24,
+        "title": "强袭魔女 剧场版",
+        "genres": [{"name": "Animation"}],
+    }
+
+    with patch.object(AIClient, "is_available", return_value=True), patch.object(
+        AIClient,
+        "extract_title_metadata",
+        return_value=title_metadata,
+    ), patch.object(
+        rename,
+        "_search_tv_with_ai_selection",
+        return_value=("强袭魔女", {"id": 1, "name": "强袭魔女"}, "High", ""),
+    ) as search_tv, patch.object(
+        rename,
+        "_search_movie_with_ai_selection",
+        return_value=("强袭魔女 剧场版", movie_info, "High", ""),
+    ) as search_movie:
+        result = rename.check_task_type(
+            rtpath_name="Strike Witches The Movie",
+            year=0,
+            path=Path("[philosophy-raws][Strike Witches The Movie]"),
+            ai_client=ai_client,
+        )
+
+    assert isinstance(result, tuple)
+    assert result[0] == "强袭魔女 剧场版"
+    assert result[3] is True
+    search_tv.assert_not_called()
+    assert len(search_movie.call_args_list) == 1
+    assert search_movie.call_args_list[0].args[1] == "Strike Witches The Movie"
+
+
+
+def test_check_task_type_explicit_tv_override_keeps_tv_space():
+    """显式强制 TV 时，应保留 override，不自动切到 Movie。"""
+    rename = Rename()
+    ai_client = AIClient()
+    title_metadata = TitleExtractionResult(
+        title="Strike Witches The Movie",
+        fallback_title="Strike Witches",
+        type="movie",
+    )
+    tv_info = {
+        "id": 77,
+        "name": "强袭魔女",
+        "genres": [{"name": "Animation"}],
+    }
+
+    with patch.object(AIClient, "is_available", return_value=True), patch.object(
+        AIClient,
+        "extract_title_metadata",
+        return_value=title_metadata,
+    ), patch.object(
+        rename,
+        "_search_tv_with_ai_selection",
+        return_value=("强袭魔女", tv_info, "High", ""),
+    ) as search_tv, patch.object(
+        rename,
+        "_search_movie_with_ai_selection",
+        return_value=("强袭魔女 剧场版", {"id": 24, "title": "强袭魔女 剧场版"}, "High", ""),
+    ) as search_movie:
+        result = rename.check_task_type(
+            rtpath_name="Strike Witches The Movie",
+            year=0,
+            path=Path("[philosophy-raws][Strike Witches The Movie]"),
+            is_movie=False,
+            ai_client=ai_client,
+        )
+
+    assert isinstance(result, tuple)
+    assert result[0] == "强袭魔女"
+    assert result[3] is False
+    assert len(search_tv.call_args_list) == 1
+    assert search_tv.call_args_list[0].args[1] == "Strike Witches The Movie"
+    search_movie.assert_not_called()
+
+
+
+def test_build_title_inputs_adds_parent_context_for_subtask_without_manual_name():
+    """子任务无继承标题时，AI 输入应保留父目录上下文。"""
+    path = Path("Yozakura Quartet") / "[Quetzal] Yoza-Quar!"
+
+    rtpath_name, year, cleaned_title, raw_title, ai_input_name = (
+        Rename._build_title_inputs(path, is_sub_task=True)
+    )
+
+    assert rtpath_name == "Yoza-Quar"
+    assert year == 0
+    assert cleaned_title == "Yoza-Quar"
+    assert raw_title == "Yoza-Quar"
+    assert ai_input_name == "Yozakura Quartet / [Quetzal] Yoza-Quar!"
+
+
+
+def test_build_title_inputs_avoids_redundant_parent_context_when_child_already_has_series_name():
+    """子任务标题已包含父级系列名时，不应重复拼接父目录上下文。"""
+    path = Path("[VCB-Studio] OVERLORD") / "[VCB-Studio] OVERLORD Ple Ple Pleiades [Ma10p_1080p]"
+
+    rtpath_name, year, cleaned_title, raw_title, ai_input_name = (
+        Rename._build_title_inputs(path, is_sub_task=True)
+    )
+
+    assert rtpath_name == "OVERLORD Ple Ple Pleiades"
+    assert year == 0
+    assert cleaned_title == "OVERLORD Ple Ple Pleiades"
+    assert raw_title == "OVERLORD Ple Ple Pleiades"
+    assert ai_input_name == "[VCB-Studio] OVERLORD Ple Ple Pleiades [Ma10p_1080p]"
+
+
+
 def test_structural_subdir_inherits_parent_custom_name():
     """结构目录应继承父级标题，而不是把 Film / Série 当成作品名。"""
     rename = Rename()
@@ -704,6 +882,71 @@ def test_search_tv_with_ai_selection_prefers_deterministic_ranked_match():
 
 
 
+def test_search_tv_with_ai_selection_returns_hydrated_season_details():
+    """AI-first TV 选择后，应返回已补齐每集详情的 tmdb 信息。"""
+    rename = Rename()
+    ai_client = AIClient()
+    ranked_top = {"id": 53787, "name": "水星领航员", "_match_score": 120.0}
+    raw_info = {
+        "id": 53787,
+        "name": "水星领航员",
+        "genres": [],
+        "seasons": [{"season_number": 0, "episode_count": 22}],
+    }
+    hydrated_info = {
+        "id": 53787,
+        "name": "水星领航员",
+        "genres": [],
+        "seasons": [
+            {
+                "season_number": 0,
+                "episode_count": 22,
+                "episodes": [
+                    {
+                        "episode_number": 11,
+                        "name": "Aria the Avvenire-1",
+                        "season_number": 0,
+                    }
+                ],
+            }
+        ],
+    }
+
+    with patch.object(
+        rename.search,
+        "search_tv_by_query",
+        return_value=[{"id": 53787, "name": "水星领航员"}],
+    ), patch.object(
+        rename.search,
+        "rank_tv_candidates",
+        return_value=[ranked_top],
+    ), patch.object(
+        rename.search,
+        "_select_ranked_tv_candidate",
+        return_value=(ranked_top, "High"),
+    ), patch.object(
+        rename.search,
+        "get_tv_info_by_id",
+        return_value=raw_info,
+    ), patch.object(
+        rename.search,
+        "fill_season_info",
+        return_value=hydrated_info,
+    ) as fill_season_info:
+        name, info, confidence, reason = rename._search_tv_with_ai_selection(
+            "[VCB-Studio] ARIA The AVVENIRE Capitolo Version [Ma10p_1080p]",
+            "ARIA The AVVENIRE",
+            0,
+            ai_client,
+        )
+
+    fill_season_info.assert_called_once_with(raw_info)
+    assert name == "水星领航员"
+    assert info["seasons"][0]["episodes"][0]["name"] == "Aria the Avvenire-1"
+    assert confidence == "High"
+    assert reason == ""
+
+
 def test_check_task_type_prefers_raw_season_aware_title_before_fallback():
     """带季度信息的原始标题应先于 fallback/base title 搜索。"""
     rename = Rename()
@@ -751,7 +994,7 @@ def test_check_task_type_prefers_raw_season_aware_title_before_fallback():
 
 
 def test_rank_tv_candidates_penalizes_base_series_when_query_has_sequel_token():
-    """查询带续作 token 而候选没有时，应显著降权基础条目。"""
+    """查询带续作 token 时，续作候选不应被基础作反超。"""
     rename = Rename()
     ranked = rename.search.rank_tv_candidates(
         source_title="Mob Psycho 100 II",
@@ -763,8 +1006,61 @@ def test_rank_tv_candidates_penalizes_base_series_when_query_has_sequel_token():
         year=None,
     )
 
-    assert ranked[0]["id"] == 2
-    assert ranked[0]["_match_score"] - ranked[1]["_match_score"] >= 10
+    assert [candidate["id"] for candidate in ranked[:2]] == [2, 1]
+
+
+
+def test_rank_tv_candidates_prefers_numeric_identity_token_match():
+    """查询含作品识别数字时，应优先保留带相同数字标识的条目。"""
+    rename = Rename()
+    ranked = rename.search.rank_tv_candidates(
+        source_title="Space Battleship Yamato 2199",
+        query="Space Battleship Yamato 2199",
+        candidates=[
+            {
+                "id": 13339,
+                "name": "Space Battleship Yamato",
+                "original_name": "宇宙戦艦ヤマト",
+                "popularity": 10.0,
+            },
+            {
+                "id": 45844,
+                "name": "Star Blazers: Space Battleship Yamato 2199",
+                "original_name": "宇宙戦艦ヤマト2199",
+                "popularity": 21.0,
+            },
+        ],
+        year=None,
+    )
+
+    assert [candidate["id"] for candidate in ranked[:2]] == [45844, 13339]
+
+
+
+def test_rank_tv_candidates_penalizes_spinoff_when_query_is_base_series():
+    """查询像正作时，外传候选不应反超正作。"""
+    rename = Rename()
+    ranked = rename.search.rank_tv_candidates(
+        source_title="Puella Magi Madoka Magica",
+        query="Puella Magi Madoka Magica",
+        candidates=[
+            {
+                "id": 1,
+                "name": "Puella Magi Madoka Magica",
+                "original_name": "魔法少女まどか☆マギカ",
+                "popularity": 20.0,
+            },
+            {
+                "id": 2,
+                "name": "Magia Record: Puella Magi Madoka Magica Side Story",
+                "original_name": "マギアレコード 魔法少女まどか☆マギカ外伝",
+                "popularity": 80.0,
+            },
+        ],
+        year=None,
+    )
+
+    assert [candidate["id"] for candidate in ranked[:2]] == [1, 2]
 
 
 
@@ -854,6 +1150,63 @@ def test_check_task_type_passes_inherited_title_to_tv_search_context():
 
     assert isinstance(result, tuple)
     assert search_tv.call_args_list[0].args[0] == "Space Battleship Yamato 2199"
+
+
+
+def test_search_tv_with_ai_selection_passes_local_video_count_to_ai_selection():
+    """TV AI 选候选时应携带本地视频数量作为辅助证据。"""
+    rename = Rename()
+    ai_client = AIClient()
+    ranked_candidates = [
+        {"id": 34696, "name": "Yozakura Quartet", "_match_score": 95.0},
+        {"id": 80500, "name": "Yozakura Quartet: Hana no Uta", "_match_score": 94.0},
+    ]
+    selected_candidate = ranked_candidates[1]
+    selected_info = {
+        "id": 80500,
+        "name": "夜樱四重奏：花之歌",
+        "genres": [],
+        "seasons": [{"season_number": 0, "episode_count": 6}],
+    }
+
+    with patch.object(
+        rename.search,
+        "search_tv_by_query",
+        return_value=[{"id": 34696}, {"id": 80500}],
+    ), patch.object(
+        rename.search,
+        "rank_tv_candidates",
+        return_value=ranked_candidates,
+    ), patch.object(
+        rename.search,
+        "_select_ranked_tv_candidate",
+        return_value=(None, None),
+    ), patch.object(
+        rename,
+        "_ai_select_tv",
+        return_value=(selected_candidate, "High"),
+    ) as ai_select_tv, patch.object(
+        rename.search,
+        "get_tv_info_by_id",
+        return_value=selected_info,
+    ), patch.object(
+        rename.search,
+        "fill_season_info",
+        return_value=selected_info,
+    ):
+        name, info, confidence, reason = rename._search_tv_with_ai_selection(
+            "Yozakura Quartet / [Quetzal] Yoza-Quar!",
+            "Yozakura Quartet",
+            0,
+            ai_client,
+            local_video_count=6,
+        )
+
+    assert name == "夜樱四重奏：花之歌"
+    assert info == selected_info
+    assert confidence == "High"
+    assert reason == ""
+    assert ai_select_tv.call_args.kwargs["local_video_count"] == 6
 
 
 
@@ -1054,6 +1407,245 @@ def test_ai_processor_resolves_nested_prefix_mapping_path():
         assert resolved == source_file.resolve()
     finally:
         shutil.rmtree(temp_dir, ignore_errors=True)
+
+
+
+def test_ai_processor_resolves_nested_prefix_mapping_path():
+    """AI 返回带重复前缀目录的路径时，应仍能解析到唯一源文件。"""
+    processor = AIProcessor()
+    temp_dir = Path(tempfile.mkdtemp())
+    try:
+        base_path = temp_dir / "[KTXP] Mushishi Zoku Shou"
+        season_dir = base_path / "Disc1"
+        season_dir.mkdir(parents=True)
+        source_file = season_dir / "[KTXP] Mushishi Zoku Shou [01].mkv"
+        source_file.touch()
+
+        local_videos = [source_file]
+        relative_index = processor._build_relative_file_index(base_path, local_videos)
+        resolved, error, normalized = processor._resolve_mapping_source_path(
+            "[KTXP] Mushishi Zoku Shou/Disc1/[KTXP] Mushishi Zoku Shou [01].mkv",
+            base_path,
+            relative_index,
+        )
+
+        assert error is None
+        assert normalized == "[KTXP] Mushishi Zoku Shou/Disc1/[KTXP] Mushishi Zoku Shou [01].mkv"
+        assert resolved == source_file.resolve()
+    finally:
+        shutil.rmtree(temp_dir, ignore_errors=True)
+
+
+
+def test_ai_processor_rejects_nested_hint_when_only_basename_exists():
+    """带伪造目录前缀的路径不应退化成 basename 命中。"""
+    processor = AIProcessor()
+    temp_dir = Path(tempfile.mkdtemp())
+    try:
+        base_path = temp_dir / "Madoka"
+        season_dir = base_path / "Disc1"
+        season_dir.mkdir(parents=True)
+        source_file = season_dir / "Episode 01.mkv"
+        source_file.touch()
+
+        relative_index = processor._build_relative_file_index(base_path, [source_file])
+        resolved, error, normalized = processor._resolve_mapping_source_path(
+            "MagiRepo/Episode 01.mkv",
+            base_path,
+            relative_index,
+        )
+
+        assert resolved is None
+        assert normalized == "MagiRepo/Episode 01.mkv"
+        assert error == "文件不存在:MagiRepo/Episode 01.mkv"
+    finally:
+        shutil.rmtree(temp_dir, ignore_errors=True)
+
+
+
+def test_validate_tv_result_hydrates_file_path_from_source_index(tmp_path):
+    """AI 仅返回 source_index 时，应回填成准确相对路径。"""
+    processor = AIProcessor()
+
+    (tmp_path / "Disc1").mkdir()
+    source_file = tmp_path / "Disc1" / "Episode 01.mkv"
+    source_file.write_text("video", encoding="utf-8")
+
+    anime_info = {
+        "name": "Test Anime",
+        "seasons": [
+            {
+                "season_number": 1,
+                "episode_count": 1,
+                "episodes": [
+                    {"episode_number": 1, "name": "Episode 1", "overview": ""}
+                ],
+            }
+        ],
+    }
+    ai_result = AIAnalysisResult(
+        confidence="High",
+        reason="test",
+        season_mapping=[],
+        file_mapping=[
+            EpisodeMapping(
+                source_index=1,
+                tmdb_season=1,
+                tmdb_episode=1,
+                episode_type="regular",
+                confidence="High",
+            )
+        ],
+        unmatched_files=[],
+        conflict_details=[],
+        extra_notes=None,
+    )
+
+    ok, reason, detail = processor.validate_tv_result(
+        ai_result,
+        anime_info,
+        tmp_path,
+        [source_file],
+    )
+
+    assert ok is True
+    assert reason is None
+    assert detail == ""
+    assert ai_result.file_mapping[0].source_index == 1
+    assert ai_result.file_mapping[0].file_path == "Disc1/Episode 01.mkv"
+
+
+
+def test_validate_tv_result_ignores_nonexistent_dirty_file_path_when_source_index_matches(tmp_path):
+    """source_index 正确、但 file_path 只是不存在的脏文本时，应按编号回填。"""
+    processor = AIProcessor()
+
+    source_file = tmp_path / "Episode 04.mkv"
+    source_file.write_text("video", encoding="utf-8")
+
+    anime_info = {
+        "name": "Test Anime",
+        "seasons": [
+            {
+                "season_number": 0,
+                "episode_count": 4,
+                "episodes": [
+                    {"episode_number": 4, "name": "Episode 4", "overview": ""}
+                ],
+            }
+        ],
+    }
+    ai_result = AIAnalysisResult(
+        confidence="High",
+        reason="test",
+        season_mapping=[],
+        file_mapping=[
+            EpisodeMapping(
+                source_index=1,
+                file_path="Episode 04 x264 x264 x264.mkv",
+                tmdb_season=0,
+                tmdb_episode=4,
+                episode_type="special",
+                confidence="High",
+            )
+        ],
+        unmatched_files=[],
+        conflict_details=[],
+        extra_notes=None,
+    )
+
+    ok, reason, detail = processor.validate_tv_result(
+        ai_result,
+        anime_info,
+        tmp_path,
+        [source_file],
+    )
+
+    assert ok is True
+    assert reason is None
+    assert detail == ""
+    assert ai_result.file_mapping[0].file_path == "Episode 04.mkv"
+    assert ai_result.conflict_details == []
+
+
+
+def test_validate_tv_result_rejects_source_index_path_mismatch(tmp_path):
+    """source_index 与 file_path 指向不同文件时，应保持 strict 拒绝。"""
+    processor = AIProcessor()
+
+    (tmp_path / "Disc1").mkdir()
+    (tmp_path / "Disc2").mkdir()
+    source_file_1 = tmp_path / "Disc1" / "Episode 01.mkv"
+    source_file_2 = tmp_path / "Disc2" / "Episode 02.mkv"
+    source_file_1.write_text("video", encoding="utf-8")
+    source_file_2.write_text("video", encoding="utf-8")
+
+    anime_info = {
+        "name": "Test Anime",
+        "seasons": [
+            {
+                "season_number": 1,
+                "episode_count": 1,
+                "episodes": [
+                    {"episode_number": 1, "name": "Episode 1", "overview": ""}
+                ],
+            }
+        ],
+    }
+    ai_result = AIAnalysisResult(
+        confidence="High",
+        reason="test",
+        season_mapping=[],
+        file_mapping=[
+            EpisodeMapping(
+                source_index=1,
+                file_path="Disc2/Episode 02.mkv",
+                tmdb_season=1,
+                tmdb_episode=1,
+                episode_type="regular",
+                confidence="High",
+            )
+        ],
+        unmatched_files=[],
+        conflict_details=[],
+        extra_notes=None,
+    )
+
+    ok, reason, detail = processor.validate_tv_result(
+        ai_result,
+        anime_info,
+        tmp_path,
+        [source_file_1, source_file_2],
+    )
+
+    assert ok is False
+    assert reason == "ai_invalid_mapping"
+    assert detail == "编号路径不一致:1:Disc2/Episode 02.mkv != Disc1/Episode 01.mkv"
+
+
+
+def test_openai_normalize_mapping_item_accepts_source_index_only():
+    client = OpenAIClient()
+
+    normalized = client._normalize_mapping_item(
+        {
+            "source_index": 2,
+            "tmdb_season": 1,
+            "tmdb_episode": 3,
+            "episode_type": "regular",
+            "confidence": "High",
+        },
+        "Medium",
+    )
+
+    assert normalized == {
+        "source_index": 2,
+        "file_path": None,
+        "tmdb_season": 1,
+        "tmdb_episode": 3,
+        "episode_type": "regular",
+        "confidence": "High",
+    }
 
 
 

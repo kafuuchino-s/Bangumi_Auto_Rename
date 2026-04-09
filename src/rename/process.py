@@ -116,6 +116,82 @@ class Rename:
         parent_name = parent_name.strip('!').strip()
         return parent_name or None
 
+    @staticmethod
+    def _count_local_videos(path: Path) -> int:
+        if path.is_file():
+            return 1 if path.suffix.lower() in VIDEO_SUFFIX else 0
+
+        count = 0
+        for sub_path in path.rglob('*'):
+            if sub_path.is_file() and sub_path.suffix.lower() in VIDEO_SUFFIX:
+                count += 1
+        return count
+
+    @staticmethod
+    def _build_title_inputs(
+        path: Path,
+        cus_name: Optional[str] = None,
+        is_sub_task: bool = False,
+    ) -> Tuple[str, int, str, str, str]:
+        year = 0
+        rtpath_name = remove_tag(path.name)
+        if not rtpath_name:
+            rtpath_name = remove_tag(path.name, True)
+
+        path_attrs = re.split(r'[\s-]+', rtpath_name)
+        if len(path_attrs) > 3:
+            rtpath_name = ' '.join(path_attrs)
+
+        rtpath_name = ' '.join(rtpath_name.split('.'))
+        rtpath_name, year = divide_by_year(rtpath_name)
+
+        season_aware_title = rtpath_name.strip('!').strip()
+        rtpath_name = remove_season(rtpath_name)
+        rtpath_name = remove_episode(rtpath_name)
+        rtpath_name = rtpath_name.strip('!')
+        cleaned_rtpath_name = rtpath_name
+
+        ai_input_name = path.name
+        if cus_name:
+            rtpath_name = cus_name
+            season_aware_title = cus_name
+            ai_input_name = cus_name
+        elif is_sub_task:
+            parent_name = path.parent.name.strip()
+            if parent_name:
+                parent_title = remove_tag(parent_name)
+                if not parent_title:
+                    parent_title = remove_tag(parent_name, True)
+                if parent_title:
+                    parent_title = ' '.join(parent_title.split('.'))
+                    parent_title, _ = divide_by_year(parent_title)
+                    parent_title = remove_season(parent_title)
+                    parent_title = remove_episode(parent_title)
+                    parent_title = parent_title.strip('!').strip()
+
+                child_ref = re.sub(
+                    r'[\W_]+',
+                    '',
+                    season_aware_title or rtpath_name or path.name,
+                    flags=re.UNICODE,
+                ).casefold()
+                parent_ref = re.sub(
+                    r'[\W_]+',
+                    '',
+                    parent_title or '',
+                    flags=re.UNICODE,
+                ).casefold()
+                if parent_ref and parent_ref not in child_ref:
+                    ai_input_name = f"{parent_name} / {path.name}"
+
+        return (
+            rtpath_name,
+            year,
+            cleaned_rtpath_name,
+            season_aware_title,
+            ai_input_name,
+        )
+
     def process(
         self,
         path: Path,
@@ -153,6 +229,7 @@ class Rename:
                     _tuuid,
                     cus_name,
                     cus_season_id,
+                    _is_sub_task=_is_sub_task,
                 )
 
             # 非视频直系目录：父任务拆成并行子任务
@@ -192,6 +269,7 @@ class Rename:
                     _tuuid,
                     self._derive_subtask_custom_name(path, sub_path, cus_name),
                     cus_season_id,
+                    _is_sub_task=True,
                 )
             return True
 
@@ -202,6 +280,7 @@ class Rename:
             _tuuid,
             cus_name,
             cus_season_id,
+            _is_sub_task=_is_sub_task,
         )
 
     def _process(
@@ -212,6 +291,7 @@ class Rename:
         _tuuid: Optional[str] = None,
         cus_name: Optional[str] = None,
         cus_season_id: Optional[int] = None,
+        _is_sub_task: bool = False,
     ):
         _uuid = _tuuid or str(uuid.uuid4())
 
@@ -249,30 +329,17 @@ class Rename:
         logger.info(f'[处理任务] 开始处理 {path.name}')
 
         # Step.1 清洗标题
-        year = 0
-        rtpath_name = remove_tag(path.name)
-        if not rtpath_name:
-            rtpath_name = remove_tag(path.name, True)
-
-        path_attrs = re.split(r'[\s-]+', rtpath_name)
-        if len(path_attrs) > 3:
-            rtpath_name = ' '.join(path_attrs)
-
-        if rtpath_name.count('.') >= 3:
-            rtpath_name = ' '.join(rtpath_name.split('.'))
-            rtpath_name, year = divide_by_year(rtpath_name)
-
-        season_aware_title = rtpath_name.strip('!').strip()
-        rtpath_name = remove_season(rtpath_name)
-        rtpath_name = remove_episode(rtpath_name)
-        rtpath_name = rtpath_name.strip('!')
-        cleaned_rtpath_name = rtpath_name
-
-        ai_input_name = path.name
-        if cus_name:
-            rtpath_name = cus_name
-            season_aware_title = cus_name
-            ai_input_name = cus_name
+        (
+            rtpath_name,
+            year,
+            cleaned_rtpath_name,
+            season_aware_title,
+            ai_input_name,
+        ) = self._build_title_inputs(
+            path,
+            cus_name,
+            is_sub_task=_is_sub_task,
+        )
 
         logger.info(f'[处理任务] 清洗后标题: {rtpath_name}')
 
@@ -558,6 +625,7 @@ class Rename:
                                 "resource_term": movie_data.get(
                                     "resource_term"
                                 ),
+                                "target_root": str(Path(movie_data["target_file"]).parent),
                             }
                         )
 
@@ -621,7 +689,7 @@ class Rename:
                 first_year,
             )
 
-            tv_info = self.search.fill_season_info(info)
+            tv_info = info
             video_files = self.ai_processor._collect_video_files(path)
             primary_source_name = video_files[0].name if video_files else path.name
             release_group = self._extract_release_group(primary_source_name)
@@ -641,12 +709,17 @@ class Rename:
                     ai_confidence=task_ai_confidence,
                 )
 
+            file_analysis = self.ai_processor.video_analyzer.analyze_video_files(
+                path,
+                video_files,
+            )
             all_local_files = self.ai_processor._collect_all_local_files(path)
 
             ai_result = self.ai_processor.analyze_anime_files(
                 path,
                 tv_info,
                 video_files=video_files,
+                file_analysis=file_analysis,
             )
             if not ai_result:
                 return self.error_reply(
@@ -790,6 +863,7 @@ class Rename:
                 ),
                 "release_group": release_group,
                 "resource_term": resource_term,
+                "target_root": str(work_path),
             }
         )
 
@@ -897,12 +971,14 @@ class Rename:
             search_tv_chain = False
 
         if search_tv_chain:
+            local_video_count = self._count_local_videos(path)
             for query in queries:
                 _name, _info, _conf, _reason = self._search_tv_with_ai_selection(
                     search_context_name,
                     query,
                     year,
                     ai_client,
+                    local_video_count=local_video_count,
                 )
                 if _info:
                     tv_name, tv_info, tv_confidence = _name, _info, _conf
@@ -1036,6 +1112,7 @@ class Rename:
         query: str,
         year: int,
         ai_client: AIClient,
+        local_video_count: Optional[int] = None,
     ) -> Tuple[str, Optional[Dict], Optional[str], str]:
         candidates = self.search.search_tv_by_query(query, year, limit=5)
         if not candidates and year != 0:
@@ -1056,27 +1133,53 @@ class Rename:
         )
         tv_info_cache: Dict[int, Dict] = {}
         candidate_season_numbers: Dict[int, set[int]] = {}
+        candidate_episode_counts: Dict[int, set[int]] = {}
+
+        def collect_candidate_details(candidate: Dict) -> Optional[Dict]:
+            tv_id = candidate.get('id')
+            if not isinstance(tv_id, int):
+                return None
+            cached = tv_info_cache.get(tv_id)
+            if cached:
+                return cached
+
+            tv_info = self.search.get_tv_info_by_id(tv_id)
+            if not tv_info:
+                return None
+
+            tv_info_cache[tv_id] = tv_info
+            seasons = [
+                season
+                for season in tv_info.get('seasons', [])
+                if isinstance(season, dict)
+            ]
+            candidate_season_numbers[tv_id] = {
+                season.get('season_number')
+                for season in seasons
+                if isinstance(season.get('season_number'), int)
+            }
+            candidate_episode_counts[tv_id] = {
+                season.get('episode_count')
+                for season in seasons
+                if isinstance(season.get('episode_count'), int)
+                and season.get('episode_count') > 0
+            }
+            return tv_info
+
         if preferred_season and len(ranked_candidates) > 1:
             refined_candidates: List[Dict] = []
             for candidate in ranked_candidates:
                 refined_candidate = dict(candidate)
                 score = float(refined_candidate.get('_match_score', 0) or 0)
+                tv_info = collect_candidate_details(refined_candidate)
                 tv_id = refined_candidate.get('id')
-                if isinstance(tv_id, int):
-                    tv_info = self.search.get_tv_info_by_id(tv_id)
-                    if tv_info:
-                        tv_info_cache[tv_id] = tv_info
-                        season_numbers = {
-                            season.get('season_number')
-                            for season in tv_info.get('seasons', [])
-                            if isinstance(season, dict)
-                            and isinstance(season.get('season_number'), int)
-                        }
-                        candidate_season_numbers[tv_id] = season_numbers
-                        if preferred_season in season_numbers:
-                            score += 36
-                        else:
-                            score -= 24
+                if tv_info and isinstance(tv_id, int):
+                    refined_candidate['seasons'] = tv_info.get('seasons', [])
+                    season_numbers = candidate_season_numbers.get(tv_id, set())
+                    if preferred_season in season_numbers:
+                        score += 36
+                    else:
+                        score -= 24
                 refined_candidate['_match_score'] = round(score, 3)
                 refined_candidates.append(refined_candidate)
 
@@ -1088,8 +1191,29 @@ class Rename:
                 ),
                 reverse=True,
             )
+        elif local_video_count and len(ranked_candidates) > 1:
+            enriched_candidates: List[Dict] = []
+            for candidate in ranked_candidates:
+                enriched_candidate = dict(candidate)
+                tv_info = collect_candidate_details(enriched_candidate)
+                if tv_info:
+                    enriched_candidate['seasons'] = tv_info.get('seasons', [])
+                enriched_candidates.append(enriched_candidate)
+            ranked_candidates = enriched_candidates
         deterministic_selected = None
         deterministic_confidence = None
+        should_force_ai_selection = False
+        if local_video_count and len(ranked_candidates) > 1:
+            exact_count_candidate_ids = {
+                tv_id
+                for tv_id, counts in candidate_episode_counts.items()
+                if local_video_count in counts
+            }
+            if exact_count_candidate_ids:
+                first_id = ranked_candidates[0].get('id')
+                if first_id not in exact_count_candidate_ids:
+                    should_force_ai_selection = True
+
         if preferred_season and len(ranked_candidates) > 1:
             first = ranked_candidates[0]
             second = ranked_candidates[1]
@@ -1115,7 +1239,7 @@ class Rename:
                 deterministic_selected = first
                 deterministic_confidence = 'High'
 
-        if not deterministic_selected:
+        if not deterministic_selected and not should_force_ai_selection:
             deterministic_selected, deterministic_confidence = (
                 self.search._select_ranked_tv_candidate(ranked_candidates)
             )
@@ -1132,6 +1256,7 @@ class Rename:
                 folder_name,
                 query,
                 ranked_candidates,
+                local_video_count=local_video_count,
             )
             if not selected:
                 return '', None, selection_confidence, 'ai_low_confidence'
@@ -1143,6 +1268,8 @@ class Rename:
         )
         if not tv_info:
             return '', None, selection_confidence, 'tmdb_not_found'
+
+        tv_info = self.search.fill_season_info(tv_info)
 
         name = tv_info.get('name', selected.get('name', ''))
         logger.info(
@@ -1281,6 +1408,7 @@ class Rename:
         folder_name: str,
         query: str,
         candidates: List[Dict],
+        local_video_count: Optional[int] = None,
     ) -> Tuple[Optional[Dict], Optional[str]]:
         """让 AI 从电视剧候选列表中选择最匹配项（返回候选和置信度）。"""
         if not ai_client.is_available():
@@ -1288,21 +1416,43 @@ class Rename:
 
         candidates_info = []
         for index, tv in enumerate(candidates, start=1):
+            season_parts = []
+            for season in tv.get('seasons', []):
+                if not isinstance(season, dict):
+                    continue
+                season_number = season.get('season_number')
+                episode_count = season.get('episode_count')
+                if isinstance(season_number, int):
+                    season_label = f"S{season_number}"
+                    if isinstance(episode_count, int):
+                        season_label += f"({episode_count})"
+                    season_parts.append(season_label)
+            season_text = f" seasons: {', '.join(season_parts)}" if season_parts else ''
             candidates_info.append(
                 (
                     f"{index}. {tv.get('name', '')}"
                     f" ({tv.get('original_name', '')})"
                     f" [{tv.get('first_air_date', '')}]"
+                    f"{season_text}"
                 )
             )
+
+        local_video_count_text = ''
+        if isinstance(local_video_count, int) and local_video_count > 0:
+            local_video_count_text = f"本地视频数量: {local_video_count}\n"
 
         prompt = f"""请从以下 TMDB 电视剧/动漫候选中选择最匹配的一项。
 
 原始目录名: {folder_name}
 搜索关键词: {query}
-
+{local_video_count_text}
 候选列表:
 {chr(10).join(candidates_info)}
+
+选择要求：
+- 优先选择与目录语义最贴近的条目，不要只看基础标题是否完全一致。
+- 如果目录明显像系列简称、短篇合集、特典或外传，优先考虑候选的副标题与季度结构。
+- 如果提供了本地视频数量，可把它作为辅助证据，优先考虑季度/特别篇集数更贴近的候选。
 
 请严格返回 JSON：
 {{
@@ -1313,7 +1463,7 @@ class Rename:
 """
 
         system_prompt = (
-            "你是动漫与电视剧匹配助手。根据目录名选择最匹配的 TMDB 候选。"
+            "你是动漫与电视剧匹配助手。根据目录名、候选标题与季度结构选择最匹配的 TMDB 候选。"
             "必须只返回 JSON。"
         )
 
@@ -1919,6 +2069,7 @@ class Rename:
             'tmdb_genres': [],
             'release_group': None,
             'resource_term': None,
+            'target_root': None,
         }
         if extra_task_data:
             task_data.update(extra_task_data)

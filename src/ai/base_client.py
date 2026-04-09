@@ -27,6 +27,7 @@ class BaseAIClient(ABC):
         self,
         anime_info: Dict,
         local_files: List[Dict],
+        bangumi_context: Optional[Dict] = None,
     ) -> Optional[AIAnalysisResult]:
         """
         分析本地文件与TMDB剧集的映射关系
@@ -34,6 +35,7 @@ class BaseAIClient(ABC):
         Args:
             anime_info: TMDB动漫信息
             local_files: 本地文件信息列表，包含文件名、路径、时长等
+            bangumi_context: Bangumi 辅助上下文，失败时为 None
 
         Returns:
             验证后的AIAnalysisResult对象
@@ -50,6 +52,7 @@ class BaseAIClient(ABC):
         anime_info: Dict,
         local_files: List[Dict],
         result: Optional[AIAnalysisResult] = None,
+        bangumi_context: Optional[Dict] = None,
     ):
         """
         保存分析数据和结果到文件
@@ -58,6 +61,7 @@ class BaseAIClient(ABC):
             anime_info (Dict): TMDB动漫信息
             local_files (List[Dict]): 本地文件信息
             result (Optional[AIAnalysisResult], optional): AI分析结果. Defaults to None.
+            bangumi_context (Optional[Dict], optional): Bangumi 辅助上下文. Defaults to None.
         """
         if not self.auto_save or not self.save_path:
             return
@@ -81,6 +85,7 @@ class BaseAIClient(ABC):
                 "metadata": metadata,
                 "anime_info": anime_info,
                 "local_files": local_files,
+                "bangumi_context": bangumi_context,
             }
 
             if result:

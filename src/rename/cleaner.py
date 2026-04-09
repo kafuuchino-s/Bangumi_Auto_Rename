@@ -153,6 +153,97 @@ def build_movie_search_queries(
     return queries
 
 
+TV_QUERY_NOISE_PATTERNS = (
+    r'\bBD[\s._-]*BOX\b',
+    r'\bBlu[\s-]*ray[\s-]*BOX\b',
+    r'\bBlu[\s-]*ray\b',
+    r'\bBDRip\b',
+    r'\bDVDRip\b',
+    r'\bWEB[-\s]?DL\b',
+    r'\bWEBRip\b',
+    r'\bTV\s*\+\s*SP\b',
+    r'\bOVA\s*\+\s*SP\b',
+    r'\bOAD\s*\+\s*SP\b',
+    r'\bTV\s*\+\s*Specials?\b',
+    r'\bOVA\s*\+\s*Specials?\b',
+    r'\bVol\.?\s*\d+(?:\s*[-~]\s*(?:Vol\.?)?\s*\d+)?\b',
+    r'\b\d{1,3}\s*[-~]\s*\d{1,3}\b',
+    r'\bx26[45](?:[-\s]?(?:10|8)bit)?\b',
+    r'\bHEVC\b',
+    r'\bAVC\b',
+    r'\b(?:10|8)bit\b',
+    r'\b(?:2160|1080|720|480)p\b',
+    r'\b(?:FLAC|AAC)\b',
+    r'\bComplete\s+(?:Series|Collection|Box|Edition)\b',
+    r'\bBox\s+Set\b',
+    r'\bDisc\s*\d+\b',
+    r'\bCD\s*\d+\b',
+    r'\bFin\b',
+)
+
+TV_TITLE_SPLIT_PATTERNS = (
+    r'^(.+?)\s*[：:]\s*(.+)$',
+    r'^(.+?)\s*[~～〜]\s*(.+?)\s*[~～〜]$',
+    r'^(.+?)\s*[~～〜]\s*(.+)$',
+)
+
+
+def _normalize_tv_query_text(value: str) -> str:
+    value = value.strip()
+    if not value:
+        return ""
+
+    value = re.sub(r'[：:·•|｜]+', ' ', value)
+    value = re.sub(r'\s+', ' ', value)
+    return value.strip(' -_:.')
+
+
+
+def build_tv_search_queries(title: str) -> List[str]:
+    """根据 TV 目录标题构建更稳健的 TMDB 查询候选。"""
+    queries: List[str] = []
+
+    def append_query(value: Optional[str]) -> None:
+        if not value:
+            return
+
+        normalized = _normalize_tv_query_text(value)
+        if not normalized or normalized in queries:
+            return
+
+        queries.append(normalized)
+
+    def append_title_variants(value: str) -> None:
+        for variant in re.split(r'\s*/\s*', value):
+            append_query(variant)
+
+        for pattern in TV_TITLE_SPLIT_PATTERNS:
+            match = re.match(pattern, value)
+            if not match:
+                continue
+
+            prefix = match.group(1)
+            suffix = match.group(2)
+            append_query(prefix)
+            append_query(suffix)
+            append_query(f"{prefix} {suffix}")
+
+    raw_title = title.strip()
+    append_query(raw_title)
+    append_title_variants(raw_title)
+
+    cleaned_title = raw_title
+    for pattern in TV_QUERY_NOISE_PATTERNS:
+        cleaned_title = re.sub(pattern, ' ', cleaned_title, flags=re.IGNORECASE)
+
+    cleaned_title = re.sub(r'\s*[-_]+\s*$', '', cleaned_title)
+    cleaned_title = re.sub(r'\s+', ' ', cleaned_title).strip()
+    append_query(cleaned_title)
+    append_title_variants(cleaned_title)
+
+    return queries
+
+
 def is_promotional_content(filename: str) -> bool:
     """
     检测文件是否为宣传内容（NCOP、NCED、PV、CM 等）

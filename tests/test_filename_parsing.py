@@ -7,6 +7,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from src.rename.cleaner import (  # noqa: E402
+    build_tv_search_queries,
     divide_by_year,
     extract_part,
     extract_video_format,
@@ -73,6 +74,45 @@ def test_remove_tag():
     assert "Shangri" in cleaned
     assert "WebRip" not in cleaned
     assert "简繁" not in cleaned
+
+
+def test_build_tv_search_queries_strip_packaging_noise():
+    queries = build_tv_search_queries(
+        "Denki-gai no Honya-san BD-BOX - TV + SP"
+    )
+
+    assert queries
+    assert "Denki-gai no Honya-san" in queries
+    assert any(
+        "BD-BOX" not in query and "TV + SP" not in query
+        for query in queries
+    )
+
+
+
+def test_build_tv_search_queries_split_multilingual_title():
+    queries = build_tv_search_queries("Shangri / 香格里拉")
+
+    assert queries
+    assert "Shangri" in queries
+    assert "香格里拉" in queries
+
+
+
+def test_build_tv_search_queries_split_tilde_subtitle_and_disc_noise():
+    queries = build_tv_search_queries(
+        "超次元ゲイム ネプテューヌ ～ねぷのなつやすみ～ Disc1 Complete Series"
+    )
+
+    assert queries
+    assert "超次元ゲイム ネプテューヌ" in queries
+    assert any(
+        "ねぷのなつやすみ" in query
+        and "Disc1" not in query
+        and "Complete Series" not in query
+        for query in queries
+    )
+
 
 
 def test_is_chinese_percentage_sufficient():

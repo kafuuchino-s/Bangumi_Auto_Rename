@@ -1,20 +1,98 @@
 import re
+from collections import OrderedDict
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from copy import deepcopy
 from difflib import SequenceMatcher
+from threading import Lock
 from time import sleep
-from typing import Any, Dict, List, Optional, Set
+from typing import Any, Dict, List, Optional, Set, Tuple
 
 import tmdbsimple as tmdb
 
 from ..logger import logger
 from ..config.config_manager import cm
-from .cleaner import build_movie_search_queries, is_chinese_percentage_sufficient
+from .cleaner import (
+    build_movie_search_queries,
+    build_tv_search_queries,
+    is_chinese_percentage_sufficient,
+)
 
 
 class Search:
+    _CACHE_MAX_SIZE = 128
+    _cache_lock = Lock()
+    _tv_search_cache: "OrderedDict[Tuple[Any, ...], Optional[List[Dict[str, Any]]]]" = (
+        OrderedDict()
+    )
+    _movie_search_cache: "OrderedDict[Tuple[Any, ...], Optional[List[Dict[str, Any]]]]" = (
+        OrderedDict()
+    )
+    _tv_info_cache: "OrderedDict[Tuple[int, str], Optional[Dict[str, Any]]]" = (
+        OrderedDict()
+    )
+    _movie_info_cache: "OrderedDict[Tuple[int, str], Optional[Dict[str, Any]]]" = (
+        OrderedDict()
+    )
+    _season_info_cache: "OrderedDict[Tuple[int, int, str], Optional[Dict[str, Any]]]" = (
+        OrderedDict()
+    )
+    _hydrated_tv_cache: "OrderedDict[Tuple[int, str], Dict[str, Any]]" = OrderedDict()
+
     def __init__(self) -> None:
         self.TMDB_KEY = cm.get_config('api_key')
         tmdb.API_KEY = self.TMDB_KEY
+
+    @classmethod
+    def _cache_get(cls, cache: OrderedDict, key: Tuple[Any, ...]) -> Any:
+        with cls._cache_lock:
+            if key not in cache:
+                return None, False
+            value = cache.pop(key)
+            cache[key] = value
+        return deepcopy(value), True
+
+    @classmethod
+    def _cache_set(cls, cache: OrderedDict, key: Tuple[Any, ...], value: Any) -> None:
+        with cls._cache_lock:
+            if key in cache:
+                cache.pop(key)
+            cache[key] = deepcopy(value)
+            while len(cache) > cls._CACHE_MAX_SIZE:
+                cache.popitem(last=False)
+
+    @staticmethod
+    def _normalize_cache_text(value: Optional[str]) -> str:
+        return re.sub(r'\s+', ' ', str(value or '').strip()).casefold()
+
+    @classmethod
+    def _normalize_queries_key(
+        cls,
+        queries: Optional[List[str]],
+    ) -> Tuple[str, ...]:
+        return tuple(cls._normalize_cache_text(query) for query in (queries or []))
+
+    @staticmethod
+    def _has_detailed_episodes(season: Dict[str, Any]) -> bool:
+        if season.get('_episodes_loaded') is True:
+            return True
+        episodes = season.get('episodes')
+        return isinstance(episodes, list) and len(episodes) > 0
+
+    @classmethod
+    def _is_tv_info_hydrated(cls, tv_info: Optional[Dict[str, Any]]) -> bool:
+        if not isinstance(tv_info, dict):
+            return False
+        seasons = tv_info.get('seasons')
+        if not isinstance(seasons, list) or not seasons:
+            return False
+        valid_seasons = [
+            season
+            for season in seasons
+            if isinstance(season, dict) and season.get('season_number') is not None
+        ]
+        if not valid_seasons:
+            return False
+        return all(cls._has_detailed_episodes(season) for season in valid_seasons)
 
     def _get_search_languages(self, query: str) -> List[str]:
         """根据查询内容推断最接近的搜索语言顺序"""
@@ -73,37 +151,8 @@ class Search:
             f'[电视剧搜索] 语言顺序: {languages}, query={query}, year={year}'
         )
 
-        for index, language in enumerate(languages):
-            search = tmdb.Search()
-            search.tv(
-                query=query,
-                language=language,
-                first_air_date_year=year if year and year != 0 else None,
-            )
-            results = search.__dict__['results']
-            if results:
-                if index > 0:
-                    logger.info(
-                        f'[电视剧搜索] 语言回退命中: {language}, query={query}'
-                    )
-                return results
-        return None
-
-    def _search_tv_multi_language(
-        self,
-        query: str,
-        year: Optional[int] = None,
-    ) -> Optional[List[Dict[str, Any]]]:
-        """按语言优先级搜索电视剧候选"""
-        languages = self._get_search_languages(query)
-        logger.debug(
-            f'[电视剧搜索] 语言顺序: {languages}, query={query}, year={year}'
-        )
-
         ranked_candidates: Dict[int, Dict[str, Any]] = {}
-        seen_languages: Set[str] = set()
         for index, language in enumerate(languages):
-            seen_languages.add(language)
             search = tmdb.Search()
             search.tv(
                 query=query,
@@ -126,7 +175,7 @@ class Search:
                 current = ranked_candidates.get(tv_id)
                 candidate_copy = dict(candidate)
                 candidate_copy['_matched_language'] = language
-                if not current or seen_languages:
+                if not current:
                     ranked_candidates[tv_id] = candidate_copy
 
         if not ranked_candidates:
@@ -190,6 +239,68 @@ class Search:
 
         return tokens
 
+    def _extract_franchise_root_tokens(self, text: str) -> Set[str]:
+        normalized = self._normalize_tv_score_text(text)
+        if not normalized:
+            return set()
+
+        sequel_patterns = [
+            r'\bseason\s*[2-9]\b',
+            r'\b[2-9](?:st|nd|rd|th)\s+season\b',
+            r'\b(?:ii|iii|iv|v)\b',
+            r'第\s*[二三四五六七八九2-9]\s*季',
+            r'\b2nd\b',
+            r'\bsecond\b',
+            r'\bthird\b',
+            r'\bfourth\b',
+            r'\bfifth\b',
+            r'\bzoku\s+shou\b',
+            r'\bokawari\b',
+            r'\bokaeri\b',
+            r'\bside\s+story\b',
+            r'\bgaiden\b',
+            r'\bspinoff\b',
+            r'\bspecials?\b',
+            r'\bova\b',
+            r'\boad\b',
+            r'\bmovie\b',
+            r'\bthe\s+movie\b',
+            r'\bfilm\b',
+            r'\brecord\b',
+        ]
+        for pattern in sequel_patterns:
+            normalized = re.sub(pattern, ' ', normalized, flags=re.IGNORECASE)
+
+        tokens = {
+            token
+            for token in normalized.split()
+            if token and len(token) >= 3
+        }
+        return tokens
+
+    def _extract_numeric_identity_tokens(self, text: str) -> Set[str]:
+        normalized = self._normalize_tv_score_text(text)
+        return {
+            match.group(0)
+            for match in re.finditer(r'(?<!\d)\d{3,4}(?!\d)', normalized)
+        }
+
+    def _collect_spinoff_tokens(self, text: str) -> Set[str]:
+        normalized = self._normalize_tv_score_text(text)
+        token_patterns = {
+            'record': r'\brecord\b',
+            'gaiden': r'\bgaiden\b',
+            'side_story': r'\bside\s+story\b',
+            'spinoff': r'\bspinoff\b',
+            'movie': r'\bmovie\b|\bthe\s+movie\b|\bfilm\b',
+            'special': r'\bspecials?\b|\bova\b|\boad\b',
+        }
+        return {
+            token
+            for token, pattern in token_patterns.items()
+            if re.search(pattern, normalized, re.IGNORECASE)
+        }
+
     def extract_preferred_season_number(self, *texts: Optional[str]) -> Optional[int]:
         season_numbers: List[int] = []
         for text in texts:
@@ -210,6 +321,7 @@ class Search:
         query: str,
         candidate: Dict[str, Any],
         year: Optional[int],
+        query_index: int = 0,
     ) -> float:
         candidate_titles = [
             candidate.get('name', ''),
@@ -224,6 +336,15 @@ class Search:
         exact_boost = 0.0
         query_tokens = self._extract_season_tokens(source_title) | self._extract_season_tokens(query)
         candidate_tokens = set()
+        source_root_tokens = self._extract_franchise_root_tokens(source_title)
+        query_root_tokens = self._extract_franchise_root_tokens(query)
+        expected_root_tokens = source_root_tokens | query_root_tokens
+        expected_numeric_tokens = self._extract_numeric_identity_tokens(
+            str(candidate.get('_matched_query') or query)
+        )
+        query_spinoff_tokens = self._collect_spinoff_tokens(source_title) | self._collect_spinoff_tokens(query)
+        candidate_spinoff_tokens: Set[str] = set()
+        candidate_numeric_tokens: Set[str] = set()
 
         for query_text in normalized_queries:
             if not query_text:
@@ -240,6 +361,10 @@ class Search:
                 ).ratio()
                 best_similarity = max(best_similarity, similarity)
                 candidate_tokens |= self._extract_season_tokens(candidate_title)
+                candidate_spinoff_tokens |= self._collect_spinoff_tokens(candidate_title)
+                candidate_numeric_tokens |= self._extract_numeric_identity_tokens(
+                    candidate_title
+                )
 
                 if query_text == normalized_candidate:
                     exact_boost = max(exact_boost, 24.0)
@@ -250,6 +375,7 @@ class Search:
                     exact_boost = max(exact_boost, 10.0)
 
         score = best_similarity * 100 + exact_boost
+        score += max(0, 8 - query_index * 2)
 
         if query_tokens and candidate_tokens:
             overlap = query_tokens & candidate_tokens
@@ -260,6 +386,32 @@ class Search:
         elif query_tokens and not candidate_tokens:
             score -= 18
 
+        if expected_root_tokens:
+            matched_root_tokens = set()
+            for candidate_title in candidate_titles:
+                matched_root_tokens |= (
+                    expected_root_tokens
+                    & self._extract_franchise_root_tokens(candidate_title)
+                )
+
+            if matched_root_tokens:
+                score += min(len(matched_root_tokens) * 6, 18)
+            elif len(expected_root_tokens) >= 2:
+                score -= 18
+
+        if expected_numeric_tokens:
+            matched_numeric_tokens = (
+                expected_numeric_tokens & candidate_numeric_tokens
+            )
+            if matched_numeric_tokens:
+                score += min(len(matched_numeric_tokens) * 18, 24)
+            else:
+                score -= min(len(expected_numeric_tokens) * 20, 28)
+
+        extra_spinoff_tokens = candidate_spinoff_tokens - query_spinoff_tokens
+        if extra_spinoff_tokens:
+            score -= 14 * len(extra_spinoff_tokens)
+
         if year:
             candidate_year = self._extract_tv_candidate_year(candidate)
             if candidate_year == year:
@@ -268,10 +420,6 @@ class Search:
                 score += 6
             elif candidate_year and abs(candidate_year - year) <= 2:
                 score += 3
-
-        season_count = candidate.get('number_of_seasons')
-        if isinstance(season_count, int) and season_count > 1 and query_tokens:
-            score += min(season_count, 4)
 
         return score
 
@@ -324,6 +472,56 @@ class Search:
 
         return None, None
 
+    def _search_tvs_with_queries(
+        self,
+        source_title: str,
+        queries: List[str],
+        year: Optional[int],
+        limit: int,
+    ) -> Optional[List[Dict[str, Any]]]:
+        ranked_candidates: Dict[int, Dict[str, Any]] = {}
+        per_query_limit = max(limit * 2, 8)
+
+        for query_index, query in enumerate(queries):
+            results = self._search_tv_multi_language(
+                query=query,
+                year=year,
+            )
+            if not results:
+                continue
+
+            for candidate in results[:per_query_limit]:
+                tv_id = candidate.get('id')
+                if not isinstance(tv_id, int):
+                    continue
+
+                score = self._score_tv_candidate(
+                    source_title=source_title,
+                    query=query,
+                    candidate=candidate,
+                    year=year,
+                    query_index=query_index,
+                )
+                ranked_candidate = dict(candidate)
+                ranked_candidate['_match_score'] = round(score, 3)
+                ranked_candidate['_matched_query'] = query
+
+                current = ranked_candidates.get(tv_id)
+                if not current or score > current.get('_match_score', 0):
+                    ranked_candidates[tv_id] = ranked_candidate
+
+        if not ranked_candidates:
+            return None
+
+        return sorted(
+            ranked_candidates.values(),
+            key=lambda item: (
+                item.get('_match_score', 0),
+                item.get('popularity', 0),
+            ),
+            reverse=True,
+        )[:limit]
+
     def get_season_info(
         self, tv_id: int, season_number: int
     ) -> Optional[Dict[str, Any]]:
@@ -337,6 +535,11 @@ class Search:
         Returns:
             筛选后的季度信息字典，失败返回None
         """
+        cache_key = (tv_id, season_number, 'zh-CN')
+        cached_value, cache_hit = self._cache_get(self._season_info_cache, cache_key)
+        if cache_hit:
+            return cached_value
+
         for i in range(3):
             try:
                 season = tmdb.TV_Seasons(tv_id, season_number)
@@ -344,20 +547,19 @@ class Search:
 
                 if not season_info:
                     logger.warning(f"[季度信息] 未获取到Season {season_number}的信息")
+                    self._cache_set(self._season_info_cache, cache_key, None)
                     return None
 
-                # 筛选季度信息，只保留需要的字段
                 filtered_season = {
                     "air_date": season_info.get("air_date"),
                     "episode_count": season_info.get("episode_count", 0),
                     "id": season_info.get("id"),
                     "name": season_info.get("name", ""),
-                    "overview": season_info.get("overview", ""),
                     "season_number": season_info.get("season_number", season_number),
                     "episodes": [],
+                    "_episodes_loaded": True,
                 }
 
-                # 处理剧集信息
                 episodes: List[Dict] = season_info.get("episodes", [])
                 for episode in episodes:
                     filtered_episode = {
@@ -365,15 +567,16 @@ class Search:
                         "episode_number": episode.get("episode_number"),
                         "episode_type": episode.get("episode_type", "regular"),
                         "name": episode.get("name", ""),
-                        "overview": episode.get("overview", ""),
                         "runtime": episode.get("runtime"),
                         "season_number": episode.get("season_number", season_number),
+                        "overview": episode.get("overview", ""),
                     }
                     filtered_season["episodes"].append(filtered_episode)
 
                 logger.info(
                     f'[季度信息] 获取Season {season_number}信息成功，包含{len(filtered_season["episodes"])}集'
                 )
+                self._cache_set(self._season_info_cache, cache_key, filtered_season)
                 return filtered_season
 
             except Exception as e:
@@ -423,32 +626,50 @@ class Search:
             return tv_info
 
         tv_id = tv_info["id"]
-        seasons = tv_info.get("seasons", [])
+        hydrated_cache_key = (tv_id, 'hydrated')
+        cached_hydrated, hydrated_hit = self._cache_get(
+            self._hydrated_tv_cache,
+            hydrated_cache_key,
+        )
+        if hydrated_hit:
+            return cached_hydrated
 
+        seasons = tv_info.get("seasons", [])
         if not seasons:
-            logger.warning("[季度信息] 电视剧没有季度信息，尝试获取...")
-            # 如果没有季度信息，尝试获取
-            name, detailed_tv_info = self.get_tv_info_with_seasons(
-                tv_info["name"], tv_info.get("first_air_date", 0)
-            )
-            if detailed_tv_info:
-                return detailed_tv_info
+            logger.warning("[季度信息] 电视剧没有季度信息，尝试重新获取详情...")
+            detailed_tv_info = self.get_tv_info_by_id(tv_id)
+            if detailed_tv_info and detailed_tv_info.get("seasons"):
+                tv_info = detailed_tv_info
+                seasons = tv_info.get("seasons", [])
             else:
                 logger.error("[季度信息] 获取季度信息失败")
                 return tv_info
 
-        # 获取每个季度的详细信息（并行拉取）
+        if self._is_tv_info_hydrated(tv_info):
+            self._cache_set(self._hydrated_tv_cache, hydrated_cache_key, tv_info)
+            return tv_info
+
         season_entries = [
             season
             for season in seasons
-            if season.get("season_number") is not None
+            if isinstance(season, dict) and season.get("season_number") is not None
         ]
 
+        missing_seasons: List[Dict[str, Any]] = []
+        for season in season_entries:
+            if self._has_detailed_episodes(season):
+                continue
+            missing_seasons.append(season)
+
         for season in seasons:
-            if season.get("season_number") is None:
+            if isinstance(season, dict) and season.get("season_number") is None:
                 logger.warning(f"[季度信息] 跳过无效季度: {season}")
 
-        max_workers = min(8, max(1, len(season_entries)))
+        if not missing_seasons:
+            self._cache_set(self._hydrated_tv_cache, hydrated_cache_key, tv_info)
+            return tv_info
+
+        max_workers = min(8, max(1, len(missing_seasons)))
 
         def _fetch_season_detail(entry: Dict[str, Any]):
             season_number = entry.get("season_number")
@@ -458,7 +679,7 @@ class Search:
         with ThreadPoolExecutor(max_workers=max_workers) as executor:
             future_to_season = {
                 executor.submit(_fetch_season_detail, season): season
-                for season in season_entries
+                for season in missing_seasons
             }
 
             for future in as_completed(future_to_season):
@@ -475,10 +696,14 @@ class Search:
 
                 if detailed_season:
                     season.update(detailed_season)
+                    season['_episodes_loaded'] = True
                 else:
                     logger.warning(
                         f"[季度信息] Season {season_number}获取详细信息失败，使用原始数据"
                     )
+
+        if self._is_tv_info_hydrated(tv_info):
+            self._cache_set(self._hydrated_tv_cache, hydrated_cache_key, tv_info)
 
         logger.info(
             f'[季度信息] 电视剧《{tv_info["name"]}》的季度信息填充完成，共{len(seasons)}个季度'
@@ -514,23 +739,36 @@ class Search:
         query: str,
         year: int,
     ):
+        queries = build_tv_search_queries(query)
+        if not queries:
+            return '', None
+
         for i in range(3):
             try:
-                for _ in range(3):
-                    target_list = self._search_tv_multi_language(
-                        query=query,
-                        year=year,
+                results = self._search_tvs_with_queries(
+                    source_title=query,
+                    queries=queries,
+                    year=year if year != 0 else None,
+                    limit=1,
+                )
+                if not results and year != 0:
+                    results = self._search_tvs_with_queries(
+                        source_title=query,
+                        queries=queries,
+                        year=None,
+                        limit=1,
                     )
-                    if target_list:
-                        target = target_list[0]
-                        name = target['name']
-                        tv = tmdb.TV(target['id'])
-                        tv.info()
-                        logger.debug(str(tv.__dict__))
-                        return name, tv.__dict__
-                    else:
-                        if is_chinese_percentage_sufficient(query):
-                            query = re.sub(r'[a-zA-Z]', '', query)
+                    if results:
+                        logger.info(f'[电视剧搜索] 去年份回退命中: {queries[:4]}')
+
+                if results:
+                    target = results[0]
+                    name = target['name']
+                    tv = tmdb.TV(target['id'])
+                    tv.info()
+                    logger.debug(str(tv.__dict__))
+                    logger.info(f'[电视剧搜索] 候选查询命中: {queries[:4]}, year={year}')
+                    return name, tv.__dict__
                 return '', None
             except:  # noqa:E722, B001
                 sleep(5)
@@ -578,11 +816,18 @@ class Search:
         Returns:
             电影信息字典或 None
         """
+        cache_key = (movie_id, 'zh-CN')
+        cached_value, cache_hit = self._cache_get(self._movie_info_cache, cache_key)
+        if cache_hit:
+            return cached_value
+
         for i in range(3):
             try:
                 movie_obj = tmdb.Movies(movie_id)
                 movie_obj.info(language='zh-CN')
-                return movie_obj.__dict__
+                movie_info = dict(movie_obj.__dict__)
+                self._cache_set(self._movie_info_cache, cache_key, movie_info)
+                return movie_info
             except:  # noqa:E722, B001
                 sleep(5)
                 logger.warning(f'[电影信息] 网络错误, 重试第{i + 1}次中...')
@@ -736,6 +981,17 @@ class Search:
         if not queries:
             return None
 
+        cache_key = (
+            self._normalize_cache_text(title),
+            year,
+            limit,
+            self._normalize_cache_text(collection_name),
+            self._normalize_queries_key(queries),
+        )
+        cached_value, cache_hit = self._cache_get(self._movie_search_cache, cache_key)
+        if cache_hit:
+            return cached_value
+
         for i in range(3):
             try:
                 results = self._search_movies_with_queries(
@@ -748,6 +1004,7 @@ class Search:
                     logger.info(
                         f"[电影搜索] 候选查询命中: {queries[:4]}, year={year}"
                     )
+                    self._cache_set(self._movie_search_cache, cache_key, results)
                     return results
 
                 if year:
@@ -761,8 +1018,10 @@ class Search:
                         logger.info(
                             f"[电影搜索] 去年份回退命中: {queries[:4]}"
                         )
+                        self._cache_set(self._movie_search_cache, cache_key, results)
                         return results
 
+                self._cache_set(self._movie_search_cache, cache_key, None)
                 return None
             except:  # noqa:E722, B001
                 sleep(5)
@@ -799,6 +1058,7 @@ class Search:
         query: str,
         year: Optional[int] = None,
         limit: int = 5,
+        query_variants: Optional[List[str]] = None,
     ) -> Optional[List[Dict[str, Any]]]:
         """
         根据关键词搜索电视剧，返回多个候选结果
@@ -807,18 +1067,55 @@ class Search:
             query: 搜索关键词
             year: 年份（可选）
             limit: 返回结果数量限制
+            query_variants: 显式指定查询候选
 
         Returns:
             电视剧信息列表或None
         """
+        queries = query_variants or build_tv_search_queries(query)
+        if not queries:
+            return None
+
+        cache_key = (
+            self._normalize_cache_text(query),
+            year,
+            limit,
+            self._normalize_queries_key(queries),
+        )
+        cached_value, cache_hit = self._cache_get(self._tv_search_cache, cache_key)
+        if cache_hit:
+            return cached_value
+
         for i in range(3):
             try:
-                results = self._search_tv_multi_language(
-                    query=query,
+                results = self._search_tvs_with_queries(
+                    source_title=query,
+                    queries=queries,
                     year=year,
+                    limit=limit,
                 )
                 if results:
-                    return results[:limit]
+                    logger.info(
+                        f"[电视剧搜索] 候选查询命中: {queries[:4]}, year={year}"
+                    )
+                    self._cache_set(self._tv_search_cache, cache_key, results)
+                    return results
+
+                if year:
+                    results = self._search_tvs_with_queries(
+                        source_title=query,
+                        queries=queries,
+                        year=None,
+                        limit=limit,
+                    )
+                    if results:
+                        logger.info(
+                            f"[电视剧搜索] 去年份回退命中: {queries[:4]}"
+                        )
+                        self._cache_set(self._tv_search_cache, cache_key, results)
+                        return results
+
+                self._cache_set(self._tv_search_cache, cache_key, None)
                 return None
             except:  # noqa:E722, B001
                 sleep(5)
@@ -835,11 +1132,18 @@ class Search:
         Returns:
             电视剧信息字典或 None
         """
+        cache_key = (tv_id, 'zh-CN')
+        cached_value, cache_hit = self._cache_get(self._tv_info_cache, cache_key)
+        if cache_hit:
+            return cached_value
+
         for i in range(3):
             try:
                 tv = tmdb.TV(tv_id)
                 tv.info(language='zh-CN')
-                return tv.__dict__
+                tv_info = dict(tv.__dict__)
+                self._cache_set(self._tv_info_cache, cache_key, tv_info)
+                return tv_info
             except:  # noqa:E722, B001
                 sleep(5)
                 logger.warning(f'[电视剧信息] 网络错误, 重试第{i + 1}次中...')

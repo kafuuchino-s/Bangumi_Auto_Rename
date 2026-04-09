@@ -1,9 +1,11 @@
 import json
 import re
+from collections import OrderedDict
 from copy import deepcopy
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional, Type
+from threading import Lock
+from typing import Dict, List, Optional, Type, Tuple
 
 from pydantic import BaseModel, ValidationError
 from google.genai.types import GenerateContentConfig
@@ -13,11 +15,16 @@ from .models import (
     AIAnalysisResult,
     MovieCollectionResult,
     MovieSearchQueriesResult,
+    SubtitleCandidateDecision,
     SubtitleMappingResult,
+    SubtitleSearchQueriesResult,
+    SubtitleThreadPackageDecision,
     TitleExtractionResult,
 )
 from ..utils.path import AI_ANALYSIS_PATH
 from ..config.config_manager import cm
+from ..rename.cleaner import remove_episode, remove_season
+from ..rename.utils import PROMO_TAGS, SPECIAL_FOLDER_NAMES
 from .gemini_client import GeminiClient
 from .openai_client import OpenAIClient
 from .base_client import BaseAIClient
@@ -25,6 +32,89 @@ from .base_client import BaseAIClient
 
 class AIClient:
     """AI客户端工厂类，根据配置选择合适的AI提供商"""
+
+    _TITLE_EXTRACTION_CACHE_MAX_SIZE = 128
+    _title_cache_lock = Lock()
+    _title_metadata_cache: "OrderedDict[str, TitleExtractionResult]" = OrderedDict()
+
+    @classmethod
+    def _title_cache_get(
+        cls,
+        cache_key: str,
+    ) -> Optional[TitleExtractionResult]:
+        if not cache_key:
+            return None
+        with cls._title_cache_lock:
+            if cache_key not in cls._title_metadata_cache:
+                return None
+            value = cls._title_metadata_cache.pop(cache_key)
+            cls._title_metadata_cache[cache_key] = value
+        return deepcopy(value)
+
+    @classmethod
+    def _title_cache_set(
+        cls,
+        cache_key: str,
+        value: TitleExtractionResult,
+    ) -> None:
+        if not cache_key:
+            return
+        with cls._title_cache_lock:
+            if cache_key in cls._title_metadata_cache:
+                cls._title_metadata_cache.pop(cache_key)
+            cls._title_metadata_cache[cache_key] = deepcopy(value)
+            while len(cls._title_metadata_cache) > cls._TITLE_EXTRACTION_CACHE_MAX_SIZE:
+                cls._title_metadata_cache.popitem(last=False)
+
+    @staticmethod
+    def _strip_title_extraction_noise(value: str) -> str:
+        cleaned = str(value or "").strip()
+        if not cleaned:
+            return ""
+
+        cleaned = re.sub(r"\[.*?\]|【.*?】|《.*?》|<.*?>|\(.*?\)|（.*?）", " ", cleaned)
+        cleaned = re.sub(
+            r"\b(?:vol|volume|disc|cd|bd)\.?\s*\d+(?:\s*[-~]\s*(?:(?:vol|volume|disc|cd|bd)\.?\s*)?\d+)?\b",
+            " ",
+            cleaned,
+            flags=re.IGNORECASE,
+        )
+        cleaned = re.sub(
+            r"\b(?:bdrip|dvdrip|webrip|web[-\s]?dl|blu[\s-]*ray(?:\s*box)?|bd[\s._-]*box|box\s+set|complete\s+(?:series|collection|box|edition)|x26[45]|hevc|avc|flac|aac|2160p|1080p|720p|480p|10bit|8bit|hi10p)\b",
+            " ",
+            cleaned,
+            flags=re.IGNORECASE,
+        )
+        cleaned = re.sub(
+            r"\b(?:ep|episode|e)\s*\d{1,3}\b",
+            " ",
+            cleaned,
+            flags=re.IGNORECASE,
+        )
+        cleaned = re.sub(r"第\s*\d{1,3}\s*[话話集]", " ", cleaned)
+        cleaned = re.sub(r"[\[\]【】()（）<>《》._]+", " ", cleaned)
+        cleaned = re.sub(r"\s*[-_]+\s*$", "", cleaned)
+        cleaned = re.sub(r"\s+", " ", cleaned)
+        return cleaned.strip(" -_:.!/")
+
+    @classmethod
+    def _normalize_title_extraction_key(cls, filename: str) -> str:
+        raw_value = str(filename or "").strip()
+        if not raw_value:
+            return ""
+
+        parts = [part.strip() for part in re.split(r"[\\/]+", raw_value) if part.strip()]
+        cleaned_parts: List[str] = []
+        for index, part in enumerate(parts):
+            part_value = Path(part).stem if index == len(parts) - 1 else part
+            cleaned_part = cls._strip_title_extraction_noise(part_value)
+            if cleaned_part:
+                cleaned_parts.append(cleaned_part)
+
+        normalized = " / ".join(cleaned_parts)
+        if not normalized:
+            normalized = cls._strip_title_extraction_noise(Path(raw_value).stem) or raw_value
+        return normalized.casefold()
 
     @staticmethod
     def _build_openai_strict_schema(schema_model: Type[BaseModel]) -> Dict:
@@ -84,6 +174,14 @@ class AIClient:
         if not self.is_available():
             logger.warning(f"[AI提取标题] AI功能未启用或{self.provider}客户端不可用")
             return None
+
+        cache_key = self._normalize_title_extraction_key(filename)
+        cached_result = self._title_cache_get(cache_key)
+        if cached_result:
+            logger.info(
+                f"[AI提取标题] 命中进程缓存: {filename} -> {cached_result.title}"
+            )
+            return cached_result
 
         logger.info(f"[AI提取标题] 使用 {self.provider.upper()} 提取标题: {filename}")
 
@@ -154,6 +252,7 @@ class AIClient:
                 return None
 
             parsed = TitleExtractionResult.model_validate_json(result)
+            self._title_cache_set(cache_key, parsed)
             logger.info(
                 "[AI提取标题] 提取结果: "
                 f"title={parsed.title}, fallback_title={parsed.fallback_title}, "
@@ -246,6 +345,121 @@ class AIClient:
             return queries if queries else None
         except Exception as e:
             logger.warning(f"[AI查询生成] 生成失败: {e}")
+            return None
+
+    def generate_subtitle_search_queries(
+        self,
+        task_data: Dict,
+    ) -> Optional[List[str]]:
+        """使用AI为字幕自动抓取生成补充搜索词。"""
+        if not self.is_available():
+            return None
+
+        title = str(task_data.get("tmdb_name") or task_data.get("name") or "").strip()
+        if not title:
+            return None
+
+        media_type = "电影" if task_data.get("is_movie") else "剧集"
+        season_id = task_data.get("season_id")
+        year_value = task_data.get("tmdb_year") or task_data.get("year")
+        source_path_basename = str(
+            task_data.get("subtitle_auto_fetch_source_path_basename") or ""
+        ).strip()
+        source_title_hint = str(
+            task_data.get("subtitle_auto_fetch_source_title_hint") or ""
+        ).strip()
+        source_video_names = task_data.get("subtitle_auto_fetch_source_video_names") or []
+        target_video_names = (
+            task_data.get("subtitle_auto_fetch_missing_target_video_names") or []
+        )
+        scan_scope_root = str(
+            task_data.get("subtitle_auto_fetch_scan_scope_root") or ""
+        ).strip()
+        is_season_zero_tv = bool(
+            task_data.get("subtitle_auto_fetch_is_season_zero_tv")
+        )
+        existing_keywords = task_data.get("subtitle_auto_fetch_existing_keywords") or []
+
+        context_lines = [
+            f"标题: {title}",
+            f"类型: {media_type}",
+        ]
+        if isinstance(season_id, int) and season_id > 0 and not task_data.get("is_movie"):
+            context_lines.append(f"季度: S{season_id:02d}")
+        if year_value:
+            context_lines.append(f"年份: {year_value}")
+        if is_season_zero_tv:
+            context_lines.append("目标是 TV Season 0 / 特别篇 / 剧场版相关条目")
+        if source_path_basename:
+            context_lines.append(f"源目录名: {source_path_basename}")
+        if source_title_hint:
+            context_lines.append(f"源标题线索: {source_title_hint}")
+        if source_video_names:
+            context_lines.append(
+                f"源视频文件: {' | '.join(map(str, source_video_names[:3]))}"
+            )
+        if target_video_names:
+            context_lines.append(
+                f"缺字幕目标文件: {' | '.join(map(str, target_video_names[:3]))}"
+            )
+        if scan_scope_root:
+            context_lines.append(f"扫描根目录: {scan_scope_root}")
+        if existing_keywords:
+            context_lines.append(
+                f"已尝试搜索词: {' | '.join(map(str, existing_keywords[:8]))}"
+            )
+
+        prompt = f"""请为以下字幕自动抓取任务生成最多5条补充搜索词，按命中可能性从高到低排序。
+
+任务上下文：
+{chr(10).join(context_lines)}
+
+要求：
+1. 只生成搜索词候选，不要输出解释文字
+2. 最多5条，去掉重复
+3. 可以输出中文、日文、英文或罗马字别名
+4. 可以把同一篇章的常见译名/标题写法互相转换，例如剧场版、篇章名、正式副标题
+5. 对普通 TV 条目（非电影、非 Season 0 / 特别篇 / 剧场版相关条目），如果标题明显是“系列名 + 副标题/篇章名”，可以补 1 条更宽一点的基础系列名作为最后兜底搜索词
+6. 对 Season 0 / 特别篇 / 剧场版相关条目，不能退化成过宽的系列大词
+7. 不要包含字幕组名、分辨率、编码、来源、BDRip、WebRip 等噪音
+8. 不要凭空发明上下文完全没有依据的新篇章名或新作品名
+9. 若已尝试搜索词里已经有某个写法，不要重复输出
+
+示例：
+- 若标题是“夜樱四重奏：花之歌”，普通 TV 条目，可以输出“夜樱四重奏”作为较宽搜索词之一
+- 若标题线索明确指向“鬼灭之刃 无限列车篇 / Mugen Ressha Hen”，则不能只输出“鬼灭之刃”这种过宽系列词
+
+请严格按照JSON格式返回：
+{{"queries": ["查询1", "查询2", ...]}}"""
+
+        system_prompt = (
+            "你是一个动漫字幕站搜索助手，擅长把同一作品整理成更容易命中字幕站的多语言标题写法。"
+            "你只能输出少量高质量搜索词，不要扩展成宽泛系列词，不要输出解释。"
+        )
+
+        try:
+            if self.provider.lower() == "gemini":
+                result = self._call_gemini_simple(
+                    system_prompt,
+                    prompt,
+                    schema=SubtitleSearchQueriesResult,
+                )
+            else:
+                result = self._call_openai_simple(
+                    system_prompt,
+                    prompt,
+                    validation_key="queries",
+                    schema=SubtitleSearchQueriesResult,
+                )
+
+            if not result:
+                return None
+
+            parsed = SubtitleSearchQueriesResult.model_validate_json(result)
+            queries = [q for q in parsed.queries if q and q.strip()]
+            return queries if queries else None
+        except Exception as e:
+            logger.warning(f"[AI字幕搜索词] 生成失败: {e}")
             return None
 
     def _call_openai_simple(
@@ -453,6 +667,7 @@ class AIClient:
         self,
         anime_info: Dict,
         local_files: List[Dict],
+        bangumi_context: Optional[Dict] = None,
     ) -> Optional[AIAnalysisResult]:
         """
         分析本地文件与TMDB剧集的映射关系
@@ -460,6 +675,7 @@ class AIClient:
         Args:
             anime_info: TMDB动漫信息
             local_files: 本地文件信息列表，包含文件名、路径、时长等
+            bangumi_context: Bangumi 辅助上下文，失败时为 None
 
         Returns:
             验证后的AIAnalysisResult对象
@@ -469,7 +685,11 @@ class AIClient:
             return None
 
         logger.info(f"[AI识别] 使用 {self.provider.upper()} 进行分析")
-        result = self._client.analyze_episode_mapping(anime_info, local_files)
+        result = self._client.analyze_episode_mapping(
+            anime_info,
+            local_files,
+            bangumi_context=bangumi_context,
+        )
 
         # 统一在此处保存分析数据
         self._save_analysis_snapshot(
@@ -479,21 +699,281 @@ class AIClient:
             local_files=local_files,
             result=result,
             force=not bool(result),
+            bangumi_context=bangumi_context,
         )
 
         # 保持兼容：沿用 provider 客户端原保存逻辑（受 ai_auto_save 控制）
-        self._client._save_analysis_data(anime_info, local_files, result)
+        self._client._save_analysis_data(
+            anime_info,
+            local_files,
+            result,
+            bangumi_context=bangumi_context,
+        )
 
         return result
 
     @staticmethod
-    def build_common_prompt(anime_info: Dict, local_files: List[Dict]) -> str:
+    def _looks_like_special_path(path_value: str) -> bool:
+        normalized = str(path_value or '').replace('\\', '/').casefold()
+        if any(folder in normalized for folder in SPECIAL_FOLDER_NAMES):
+            return True
+        upper_value = Path(str(path_value or '')).name.upper()
+        if any(tag.upper() in upper_value for tag in PROMO_TAGS):
+            return True
+        if re.search(r'\b(?:ova|oad|special|sp)\b', normalized, re.IGNORECASE):
+            return True
+        if re.search(r'(?<!\d)(?:0|\d+\.5)(?!\d)', upper_value):
+            return True
+        return False
+
+    @staticmethod
+    def _extract_episode_hints(local_files: List[Dict]) -> Tuple[set[int], bool]:
+        episode_numbers: set[int] = set()
+        should_include_season_zero = False
+
+        for file_info in local_files:
+            path_value = str(file_info.get('path') or file_info.get('filename') or '')
+            if not path_value:
+                continue
+            if AIClient._looks_like_special_path(path_value):
+                should_include_season_zero = True
+
+            candidates = [
+                Path(path_value).stem,
+                remove_season(Path(path_value).stem),
+                remove_episode(remove_season(Path(path_value).stem)),
+            ]
+            for candidate in candidates:
+                for match in re.finditer(r'(?<!\d)(\d{1,3})(?:\.5)?(?!\d)', candidate):
+                    episode_num = int(match.group(1))
+                    if 0 < episode_num <= 999:
+                        episode_numbers.add(episode_num)
+                if re.search(r'(?<!\d)\d+\.5(?!\d)', candidate):
+                    should_include_season_zero = True
+        return episode_numbers, should_include_season_zero
+
+    @staticmethod
+    def _select_prompt_seasons(anime_info: Dict, local_files: List[Dict]) -> List[Dict]:
+        seasons = [
+            season
+            for season in anime_info.get('seasons', [])
+            if isinstance(season, dict)
+        ]
+        if not seasons:
+            return []
+
+        preferred_seasons: set[int] = set()
+        episode_numbers, should_include_season_zero = AIClient._extract_episode_hints(
+            local_files
+        )
+        has_non_special_file = False
+
+        name_candidates = [
+            str(anime_info.get('name') or ''),
+            str(anime_info.get('original_name') or ''),
+            str(anime_info.get('original_title') or ''),
+        ]
+        for file_info in local_files:
+            path_value = str(file_info.get('path') or file_info.get('filename') or '')
+            if not path_value:
+                continue
+            if not AIClient._looks_like_special_path(path_value):
+                has_non_special_file = True
+            path_name = Path(path_value).stem
+            for text in [path_value, path_name, remove_episode(path_name)] + name_candidates:
+                for match in re.finditer(
+                    r'\b(?:season|s)\s*0*([0-9]{1,2})\b',
+                    text,
+                    re.IGNORECASE,
+                ):
+                    preferred_seasons.add(int(match.group(1)))
+                for match in re.finditer(r'第\s*([0-9]{1,2})\s*季', text):
+                    preferred_seasons.add(int(match.group(1)))
+
+        explicit_preferred_seasons = set(preferred_seasons)
+        selected_numbers: set[int] = set(explicit_preferred_seasons)
+        if should_include_season_zero:
+            selected_numbers.add(0)
+
+        if episode_numbers and not explicit_preferred_seasons:
+            season_match_counts: Dict[int, int] = {}
+            for season in seasons:
+                season_number = season.get('season_number')
+                if not isinstance(season_number, int):
+                    continue
+                episode_numbers_in_season = {
+                    ep.get('episode_number')
+                    for ep in season.get('episodes', []) or []
+                    if isinstance(ep, dict)
+                    and isinstance(ep.get('episode_number'), int)
+                    and ep.get('episode_number') > 0
+                }
+                direct_match_count = len(episode_numbers_in_season & episode_numbers)
+                if direct_match_count > 0:
+                    season_match_counts[season_number] = direct_match_count
+
+            non_special_match_counts = {
+                season_number: match_count
+                for season_number, match_count in season_match_counts.items()
+                if season_number != 0
+            }
+            if non_special_match_counts:
+                best_match_count = max(non_special_match_counts.values())
+                selected_numbers.add(
+                    min(
+                        season_number
+                        for season_number, match_count in non_special_match_counts.items()
+                        if match_count == best_match_count
+                    )
+                )
+            elif has_non_special_file:
+                return seasons
+
+        if not selected_numbers or len(selected_numbers) >= len(seasons):
+            return seasons
+
+        filtered_seasons = [
+            season
+            for season in seasons
+            if season.get('season_number') in selected_numbers
+        ]
+        return filtered_seasons or seasons
+
+    @staticmethod
+    def _build_tmdb_prompt_section(anime_info: Dict, local_files: List[Dict]) -> str:
+        seasons = anime_info.get('seasons', []) or []
+        prompt_seasons = AIClient._select_prompt_seasons(anime_info, local_files)
+
+        lines = [
+            'TMDB 季度摘要：',
+        ]
+        for season in seasons:
+            season_num = season.get('season_number', 0)
+            season_name = season.get('name', f'Season {season_num}')
+            episode_count = season.get('episode_count', 0)
+            lines.append(
+                f"- Season {season_num}: {season_name} (共 {episode_count} 集)"
+            )
+
+        lines.append('')
+        lines.append('TMDB 候选季度详细集目：')
+        for season in prompt_seasons:
+            season_num = season.get('season_number', 0)
+            season_name = season.get('name', f'Season {season_num}')
+            episodes = season.get('episodes', []) or []
+            episode_count = len(episodes) if episodes else season.get('episode_count', 0)
+            lines.append(
+                f"【Season {season_num}】{season_name} (共 {episode_count} 集)"
+            )
+            if episodes:
+                for ep in episodes:
+                    ep_num = ep.get('episode_number', 0)
+                    ep_name = ep.get('name', '')
+                    runtime = ep.get('runtime')
+                    line = f"  S{season_num:02d}E{ep_num:02d}: {ep_name}"
+                    if runtime:
+                        line += f" (runtime={runtime}m)"
+                    lines.append(line)
+            elif episode_count > 0:
+                lines.append(f"  E01 - E{episode_count:02d}")
+            lines.append('')
+
+        if len(prompt_seasons) < len(seasons):
+            lines.append(
+                '提示: 以上只展开高相关季度；最终仍只能映射到全部 TMDB 真实存在的 SxxExx。'
+            )
+        return "\n".join(lines).strip() + "\n"
+
+    @staticmethod
+    def _build_bangumi_prompt_section(bangumi_context: Optional[Dict]) -> str:
+        if not bangumi_context:
+            return "Bangumi 辅助上下文：不可用（本次按 TMDB-only 处理）\n"
+
+        subjects = bangumi_context.get("subjects", []) or []
+        if not subjects:
+            return "Bangumi 辅助上下文：不可用（本次按 TMDB-only 处理）\n"
+
+        lines = [
+            "Bangumi 辅助上下文（仅作辅助证据，不能直接决定最终季号）：",
+            f"主条目 ID: {bangumi_context.get('selected_subject_id', '未知')}",
+        ]
+        reason = str(bangumi_context.get("selected_subject_reason") or "").strip()
+        if reason:
+            lines.append(f"主条目选择原因: {reason}")
+        keywords = bangumi_context.get("search_keywords", []) or []
+        if keywords:
+            lines.append(f"搜索词: {', '.join(str(item) for item in keywords[:6])}")
+
+        for subject_item in subjects[:4]:
+            subject = subject_item.get("subject", {}) or {}
+            relation = subject_item.get("relation_to_main", "") or "main"
+            lines.append(
+                "- "
+                f"subject_id={subject.get('id', '未知')} "
+                f"relation={relation} "
+                f"title={subject.get('name_cn') or subject.get('name') or '未知'}"
+            )
+            alt_name = subject.get("name") or ""
+            if alt_name and alt_name != (subject.get("name_cn") or ""):
+                lines.append(f"  原标题: {alt_name}")
+            if subject.get("date"):
+                lines.append(f"  放送日期: {subject.get('date')}")
+            if subject.get("platform"):
+                lines.append(f"  平台: {subject.get('platform')}")
+
+            episodes = subject_item.get("episodes", []) or []
+            if not episodes:
+                lines.append("  episodes: 无")
+                continue
+
+            lines.append("  episodes:")
+            for episode in episodes[:60]:
+                episode_type = episode.get("type")
+                duration_seconds = episode.get("duration_seconds")
+                duration_text = episode.get("duration") or ""
+                episode_line = (
+                    "    - "
+                    f"sort={episode.get('sort', 0)} "
+                    f"ep={episode.get('ep')} "
+                    f"type={episode_type} "
+                    f"airdate={episode.get('airdate') or ''} "
+                    f"title={episode.get('name_cn') or episode.get('name') or ''}"
+                )
+                if duration_seconds:
+                    episode_line += f" duration_seconds={duration_seconds}"
+                elif duration_text:
+                    episode_line += f" duration={duration_text}"
+                lines.append(episode_line)
+                desc = str(episode.get("desc") or "").strip()
+                if desc:
+                    lines.append(f"      desc={desc[:120]}")
+
+        lines.append(
+            "Bangumi 使用规则：relation 只是辅助语义，不等于 TMDB season；"
+            "最终输出只能使用上面 TMDB 中真实存在的 SxxExx；"
+            "拿不准时宁可放到 unmatched_files。"
+        )
+        lines.append(
+            "若文件名只出现 `OVA3 / SP3 / [13]` 这类顺序编号，"
+            "可以把 Bangumi 的 `sort / ep / type / 标题 / 日期 / 时长 / desc` 当作辅助证据，"
+            "先判断它是不是 special，再回到 TMDB 真实存在的 Season 0 条目；"
+            "但 `OVA3` 不等于 `S00E03`，最终仍要按 TMDB 合法条目落点。"
+        )
+        return "\n".join(lines) + "\n"
+
+    @staticmethod
+    def build_common_prompt(
+        anime_info: Dict,
+        local_files: List[Dict],
+        bangumi_context: Optional[Dict] = None,
+    ) -> str:
         """
         构建通用的分析提示词，不包含JSON格式要求
 
         Args:
             anime_info: TMDB动漫信息
             local_files: 本地文件信息列表，包含文件名、路径、时长等
+            bangumi_context: Bangumi 辅助上下文，失败时为 None
 
         Returns:
             通用的分析提示词
@@ -505,51 +985,55 @@ class AIClient:
 总季数: {anime_info.get('number_of_seasons', 0)}
 总集数: {anime_info.get('number_of_episodes', 0)}
 """
-
-        # 构建详细的季度和集数信息
-        seasons_info = "TMDB 季度和集数详情：\n"
-        seasons = anime_info.get("seasons", [])
-        for season in seasons:
-            season_num = season.get("season_number", 0)
-            season_name = season.get("name", f"Season {season_num}")
-            episodes = season.get("episodes", [])
-            episode_count = len(episodes) if episodes else season.get("episode_count", 0)
-
-            seasons_info += f"\n【Season {season_num}】{season_name} (共 {episode_count} 集)\n"
-
-            # 如果有详细的剧集信息，列出每集
-            if episodes:
-                for ep in episodes:
-                    ep_num = ep.get("episode_number", 0)
-                    ep_name = ep.get("name", "")
-                    air_date = ep.get("air_date", "")
-                    seasons_info += f"  S{season_num:02d}E{ep_num:02d}: {ep_name}"
-                    if air_date:
-                        seasons_info += f" ({air_date})"
-                    seasons_info += "\n"
-            elif episode_count > 0:
-                # 没有详细信息，只显示集数范围
-                seasons_info += f"  E01 - E{episode_count:02d}\n"
+        tmdb_details = AIClient._build_tmdb_prompt_section(anime_info, local_files)
 
         # 构建本地文件信息
-        files_info = "本地文件信息 (路径均为相对路径):\n"
+        files_info = "本地文件信息（每行一个稳定 source_index + 可直接复制的 source_path，路径均为相对路径）:\n"
+        top_level_dirs: list[str] = []
         for i, file_info in enumerate(local_files, 1):
+            path_value = str(file_info.get("path") or "")
             duration_str = ""
             if file_info.get("duration"):
                 duration_str = f" (时长: {file_info['duration']:.1f}分钟)"
-            files_info += f"  {file_info['path']}{duration_str}\n"
+            files_info += f"  - [{i:03d}] source_index={i} source_path=`{path_value}`{duration_str}\n"
+
+            parts = [part for part in path_value.split("/") if part]
+            if len(parts) >= 2:
+                top_dir = parts[0]
+                if top_dir not in top_level_dirs:
+                    top_level_dirs.append(top_dir)
+
+        if top_level_dirs:
+            files_info += (
+                "顶层子目录: "
+                + ", ".join(top_level_dirs[:12])
+                + "\n"
+            )
+            files_info += (
+                "提示: 如果不同文件落在不同子目录（如 Disc/SP/OVA/NCOP/NCED/Extras），"
+                "这些子目录语义通常很重要，不能忽略。\n"
+            )
+
+        # 构建 Bangumi 辅助上下文
+        bangumi_info = AIClient._build_bangumi_prompt_section(bangumi_context)
 
         prompt = f"""请分析以下动漫的本地文件与TMDB数据的对应关系：
 
 {tmdb_info}
 
-{seasons_info}
+{tmdb_details}
+
+{bangumi_info}
 
 {files_info}
 
 请根据以下规则进行映射：
 
-1. **匹配优先级**（按顺序尝试）：
+1. **输出字段要求**：
+   - 每个 `file_mapping` 项必须包含：`source_index`, `tmdb_season`, `tmdb_episode`, `episode_type`, `confidence`
+   - `file_path` 为可选；若填写，必须与 `source_index` 指向同一输入文件
+
+2. **匹配优先级**（按顺序尝试）：
    - 文件名中的集数与 TMDB 集数号直接匹配
    - 文件名中的标题与 TMDB 集标题相似度匹配
    - 文件名中的日期与 TMDB 播出日期匹配
@@ -570,7 +1054,20 @@ class AIClient:
 4. **只输出匹配到的文件**，未匹配到 TMDB 的文件不要输出
 
 5. **路径约束（必须满足）**：
-   - `file_mapping.file_path` 必须逐字复用输入里的相对路径
+   - `file_mapping` 中优先填写 `source_index`
+   - `source_index` 必须直接使用上面 `[编号]` 里的数字（例如 `[001]` 就填 `1`）
+   - 若已提供正确 `source_index`，`file_path` 可留空或填写与该编号完全一致的原始相对路径
+   - 如果同时填写 `source_index` 和 `file_path`，两者必须指向同一条输入文件
+   - `file_mapping.file_path` 若填写，必须逐字复用输入里的相对路径
+   - 只能从上面 `[编号] source_index=... source_path=` 列表里原样选择，禁止自行拼接、改写或脑补任何新路径
+   - 如果你要输出某个文件，先定位对应的 `[编号]` 行；最佳做法是直接返回该行的 `source_index`
+   - 若你额外填写 `file_path`，必须逐字复制该行反引号中的 `source_path`
+   - 必须复制完整相对路径，不能截断为 basename，也不能省略中间子目录
+   - 路径中的目录名、文件名、以及 `[]` 内的版本标签都属于路径的一部分；`Ma10p / Hi10p / x265 / x264 / flac / aac` 等字样也必须逐字照抄，不能替换成“更统一”的版本
+   - `[]` 内外的 token 顺序、空格和简称都必须保持原样；不要把短标签/简称扩写回主标题，也不要把多个片段重新拼成新的文件名
+   - 例如：若输入是 `.../SPs/[Group] MagiRepo [01][Ma10p_1080p][x265_flac].mkv`，就不能改写成 `.../[Group] Magia Record [MagiRepo 01][Ma10p_1080p][x265_flac].mkv`
+   - 例如：若输入是 `.../[SP01][Hi10p_1080p][x264_flac].mkv`，就不能改写成 `.../[SP01][Ma10p_1080p][x265_flac].mkv`
+   - 即使同一作品的大多数文件都落在某个子目录中，也不能据此给其他文件自动补同样的子目录；文件是在根目录、`SPs/` 还是其他子目录，只能以输入列表为准
    - 不要补 base folder 名，不要改写目录层级
    - 不要只输出 basename
    - 不要混用新的路径分隔符格式
@@ -585,6 +1082,24 @@ class AIClient:
    - 只能使用上面 TMDB 列表中真实存在的 `SxxExx`
    - 不要因为文件名带 `SP / OVA / Part` 就自行发明新的 Season 0 / special 编号
    - 对拿不准或 TMDB 中不存在的文件，宁可放入 `unmatched_files`
+
+8. **Bangumi 使用约束**：
+   - Bangumi 只作为辅助证据，不是最终编号体系
+   - Bangumi 的 relation（如前传 / 续集 / 番外篇 / 总集篇）不能直接等价为某个 TMDB season
+   - 当本地文件只有编号或标题模糊时，可以参考 Bangumi 的 `sort / ep / type / 标题 / 日期`
+   - 如果 Bangumi 与 TMDB 存在结构差异，最终仍必须回到 TMDB 已存在的 `SxxExx`
+   - 无法自信桥接时，宁可将文件放入 `unmatched_files`
+
+9. **复杂目录处理约束**：
+   - 多子目录场景下，必须同时结合“文件名 + 所在子目录语义 + 时长”判断
+   - `SP / OVA / OAD / Special / NCOP / NCED / Extras / Bonus / Menu` 等目录或标签通常不是正片
+   - 如果输入列表里同时存在“根目录文件 + 子目录文件”或“同编号不同版本文件”，必须按输入中那条完整路径逐字复制；不要把别的文件所在目录或版本标签套到当前文件上
+   - 如果只能确定部分文件，优先输出有把握的合法映射，其余文件放入 `unmatched_files`
+   - 对 `SP01 / SP02 / OVA01` 这类 special 编号，若只能看到近似路径但无法确认哪一条才是输入中的真实文件，宁可放入 `unmatched_files`
+   - 如果某个 `source_index` 已能确定合法落点，但你不确定自己是否能把 `file_path` 逐字抄对，就只返回 `source_index`，不要硬写一个可能出错的 `file_path`
+   - 当目录里同时包含 TMDB 已存在的正片/特典与 TMDB 不存在的附加短片时，先覆盖可合法落点的那部分，其余放入 `unmatched_files`
+   - 不要因为目录复杂就返回空的 `file_mapping`
+   - 不要因为仍有一部分 extras / SP 无法落到 TMDB，就返回空的 `file_mapping`
 
 """
         return prompt
@@ -779,6 +1294,7 @@ class AIClient:
         local_files: List[Dict],
         result: Optional[BaseModel],
         force: bool = False,
+        bangumi_context: Optional[Dict] = None,
     ) -> None:
         """保存 AI 分析快照；失败场景可强制落盘。"""
         if not (force or cm.get_config("ai_auto_save")):
@@ -806,6 +1322,7 @@ class AIClient:
                 },
                 "source": source_payload,
                 "local_files": local_files,
+                "bangumi_context": bangumi_context,
                 "analysis_result": result.model_dump() if result else None,
             }
 
@@ -1053,3 +1570,297 @@ class AIClient:
 
         # 所有尝试都失败，返回最后一次的结果（如果有）
         return last_result
+
+    def choose_subtitle_candidate(
+        self,
+        task_data: Dict,
+        ranked_candidates: List[Dict],
+    ) -> Optional[SubtitleCandidateDecision]:
+        """让 AI 在搜索结果中直接选择最佳字幕候选。"""
+        if not self.is_available() or not ranked_candidates:
+            return None
+
+        title = str(task_data.get("tmdb_name") or task_data.get("name") or "未知标题")
+        media_type = "电影" if task_data.get("is_movie") else "剧集"
+        season_id = task_data.get("season_id")
+        year_value = task_data.get("tmdb_year") or task_data.get("year")
+        preferred_language = str(
+            task_data.get("subtitle_auto_fetch_preferred_language") or "zh-CN"
+        )
+
+        source_path_basename = str(
+            task_data.get("subtitle_auto_fetch_source_path_basename") or ""
+        ).strip()
+        source_title_hint = str(
+            task_data.get("subtitle_auto_fetch_source_title_hint") or ""
+        ).strip()
+        source_video_names = task_data.get("subtitle_auto_fetch_source_video_names") or []
+        target_video_names = (
+            task_data.get("subtitle_auto_fetch_missing_target_video_names") or []
+        )
+        scan_scope_root = str(
+            task_data.get("subtitle_auto_fetch_scan_scope_root") or ""
+        ).strip()
+        is_season_zero_tv = bool(
+            task_data.get("subtitle_auto_fetch_is_season_zero_tv")
+        )
+
+        context_lines = [
+            f"标题: {title}",
+            f"类型: {media_type}",
+            f"偏好语言: {preferred_language}",
+        ]
+        if isinstance(season_id, int) and season_id > 0 and not task_data.get("is_movie"):
+            context_lines.append(f"季度: S{season_id:02d}")
+        if year_value:
+            context_lines.append(f"年份: {year_value}")
+        if is_season_zero_tv:
+            context_lines.append("目标是 TV Season 0 / 特别篇 / 剧场版相关条目")
+        if source_path_basename:
+            context_lines.append(f"源目录名: {source_path_basename}")
+        if source_title_hint:
+            context_lines.append(f"源标题线索: {source_title_hint}")
+        if source_video_names:
+            context_lines.append(
+                f"源视频文件: {' | '.join(map(str, source_video_names[:3]))}"
+            )
+        if target_video_names:
+            context_lines.append(
+                f"缺字幕目标文件: {' | '.join(map(str, target_video_names[:3]))}"
+            )
+        if scan_scope_root:
+            context_lines.append(f"扫描根目录: {scan_scope_root}")
+
+        candidates_text = []
+        for item in ranked_candidates:
+            candidates_text.append(
+                "\n".join(
+                    [
+                        f"候选索引: {item.get('index')}",
+                        f"标题: {item.get('title')}",
+                        f"摘要: {item.get('snippet') or ''}",
+                        f"附件数: {item.get('attachment_count')}",
+                        f"外链数: {item.get('external_count')}",
+                        f"详情页: {item.get('detail_url')}",
+                    ]
+                )
+            )
+
+        prompt = f"""请从以下字幕搜索结果中直接选择最适合自动导入的一个候选。
+
+任务上下文：
+{chr(10).join(context_lines)}
+
+候选列表：
+
+{chr(10).join(candidates_text)}
+
+选择规则：
+1. 允许从宽松搜索词返回的相关结果中直接判断，不要因为没有季号就直接否定候选
+2. 优先选择最像同一作品、且最适合自动导入的字幕结果
+3. 优先简体中文，其次包含简体中文的双语
+4. 当存在多个简体中文候选时，优先选择更像“正片全集/整季”的资源，而不是零散单集、特典或补丁
+5. 当存在多个简体中文候选时，优先选择标题/摘要里更像当前片源版本的候选；若无法确认片源版本，再优先信息更完整、覆盖更完整、资源更稳定的候选
+6. 当存在多个简体中文候选时，优先修正版、v2/v3、明确标注修订/校对完成的版本；若无明显差异，再选择更适合自动导入的常规字幕包
+7. 如果候选明显是错误作品、错误媒体类型、特典/NCOP/NCED/PV/CM 或不可用资源，再降低优先级
+8. 同一 IP 但不同篇章、不同季度、不同剧场版/主线弧线，不应视为可自动导入；若任务线索指向某个特定篇章（如源目录、源文件名、目标文件名），而候选明确指向其他篇章，则必须返回 should_use=false
+9. 对 TV Season 0 / 特别篇 / 剧场版相关条目，要优先匹配这些线索，不能因为同属一个系列就默认可用
+10. selected_index 必须来自给定候选索引
+11. 只有在所有候选都明显不适合自动导入时，should_use 才返回 false
+
+请严格返回 JSON：
+{{
+  "selected_index": 0,
+  "should_use": true,
+  "confidence": "High",
+  "language_assessment": "简体中文",
+  "reason": "选择理由",
+  "warnings": ["可选警告"]
+}}"""
+
+        system_prompt = (
+            "你是一个字幕搜索结果裁决助手。"
+            "用户会先用宽松标题词搜出相关结果，再由你直接判断最适合自动导入的候选。"
+            "优先正确作品和简体中文字幕。"
+            "只输出 JSON。"
+        )
+
+        try:
+            if self.provider.lower() == "gemini":
+                result = self._call_gemini_simple(
+                    system_prompt,
+                    prompt,
+                    validation_key="selected_index",
+                    schema=SubtitleCandidateDecision,
+                )
+            else:
+                result = self._call_openai_simple(
+                    system_prompt,
+                    prompt,
+                    validation_key="selected_index",
+                    schema=SubtitleCandidateDecision,
+                )
+
+            if not result:
+                return None
+
+            json_match = re.search(r'\{.*\}', result, re.DOTALL)
+            if not json_match:
+                return None
+            data = json.loads(json_match.group())
+            return SubtitleCandidateDecision(**data)
+        except Exception as e:
+            logger.warning(f"[AI字幕候选] 选择失败: {e}")
+            return None
+
+    def choose_subtitle_thread_package(
+        self,
+        task_data: Dict,
+        candidate: Dict,
+        package_summaries: List[Dict],
+    ) -> Optional[SubtitleThreadPackageDecision]:
+        """让 AI 在单个帖子内选择最适合自动导入的字幕包。"""
+        if not self.is_available() or not package_summaries:
+            return None
+
+        title = str(task_data.get("tmdb_name") or task_data.get("name") or "未知标题")
+        media_type = "电影" if task_data.get("is_movie") else "剧集"
+        season_id = task_data.get("season_id")
+        year_value = task_data.get("tmdb_year") or task_data.get("year")
+        preferred_language = str(
+            task_data.get("subtitle_auto_fetch_preferred_language") or "zh-CN"
+        )
+        missing_video_count = int(task_data.get("missing_video_count") or 0)
+        source_path_basename = str(
+            task_data.get("subtitle_auto_fetch_source_path_basename") or ""
+        ).strip()
+        source_title_hint = str(
+            task_data.get("subtitle_auto_fetch_source_title_hint") or ""
+        ).strip()
+        source_video_names = task_data.get("subtitle_auto_fetch_source_video_names") or []
+        target_video_names = (
+            task_data.get("subtitle_auto_fetch_missing_target_video_names") or []
+        )
+        scan_scope_root = str(
+            task_data.get("subtitle_auto_fetch_scan_scope_root") or ""
+        ).strip()
+        is_season_zero_tv = bool(
+            task_data.get("subtitle_auto_fetch_is_season_zero_tv")
+        )
+
+        context_lines = [
+            f"标题: {title}",
+            f"类型: {media_type}",
+            f"偏好语言: {preferred_language}",
+            f"缺字幕视频数: {missing_video_count}",
+            f"帖子标题: {candidate.get('title')}",
+            f"帖子详情页: {candidate.get('detail_url')}",
+        ]
+        if isinstance(season_id, int) and season_id > 0 and not task_data.get("is_movie"):
+            context_lines.append(f"季度: S{season_id:02d}")
+        if year_value:
+            context_lines.append(f"年份: {year_value}")
+        if is_season_zero_tv:
+            context_lines.append("目标是 TV Season 0 / 特别篇 / 剧场版相关条目")
+        if source_path_basename:
+            context_lines.append(f"源目录名: {source_path_basename}")
+        if source_title_hint:
+            context_lines.append(f"源标题线索: {source_title_hint}")
+        if source_video_names:
+            context_lines.append(
+                f"源视频文件: {' | '.join(map(str, source_video_names[:3]))}"
+            )
+        if target_video_names:
+            context_lines.append(
+                f"缺字幕目标文件: {' | '.join(map(str, target_video_names[:3]))}"
+            )
+        if scan_scope_root:
+            context_lines.append(f"扫描根目录: {scan_scope_root}")
+        if candidate.get("pagination_truncated"):
+            context_lines.append("注意: 当前只扫描了帖子前几页，后续分页未完全展开")
+
+        packages_text = []
+        for item in package_summaries:
+            flags = ", ".join(item.get("package_flags") or [])
+            packages_text.append(
+                "\n".join(
+                    [
+                        f"包索引: {item.get('index')}",
+                        f"页码: {item.get('page_number')}",
+                        f"楼层: {item.get('floor_label') or ''}",
+                        f"作者: {item.get('post_author') or ''}",
+                        f"时间: {item.get('post_time') or ''}",
+                        f"标记: {flags}",
+                        f"直连下载: {item.get('has_direct_download')}",
+                        f"链接摘要: {item.get('link_summary') or ''}",
+                        f"楼层正文摘要: {item.get('post_text') or ''}",
+                    ]
+                )
+            )
+
+        prompt = f"""请从以下同一个帖子内的多个字幕包中，选择最适合自动导入的一个包。
+
+任务上下文：
+{chr(10).join(context_lines)}
+
+字幕包列表：
+
+{chr(10).join(packages_text)}
+
+选择规则：
+1. 这些包都来自同一个帖子，不要只按文件名机械判断，要综合楼层正文、附件名、修订说明、补丁说明、片源说明来判断
+2. 优先正确作品、正确媒体类型、正确季度或全集范围的字幕包
+3. 优先简体中文，其次包含简体中文的双语包
+4. 多个简中包并存时，优先正片全集/整季，而不是单集修补、特典、字体包或补丁包
+5. 若能看出当前片源版本（如 ReinForce、ANK-Raws、BDRip、TVRip），优先更匹配当前片源的字幕包
+6. 修正版、v2/v3、明确标注修订完成的包可优先，但仅补丁包、仅单集修复包应降权
+7. 字体包、网盘说明、非直连资源、特典/NCOP/NCED/PV/CM 应降权
+8. 若楼层正文或附件说明已明确这是其他篇章/季度/剧场版，即便质量更高也不能用于当前任务；这类情况必须返回 should_use=false
+9. 对 TV Season 0 / 特别篇 / 剧场版相关条目，要优先匹配源目录、源文件名、目标文件名中的篇章线索
+10. selected_index 必须来自给定包索引
+11. 只有当所有包都明显不适合自动导入时，should_use 才返回 false
+
+请严格返回 JSON：
+{{
+  "selected_index": 0,
+  "should_use": true,
+  "confidence": "High",
+  "language_assessment": "简体中文",
+  "reason": "选择理由",
+  "warnings": ["可选警告"]
+}}"""
+
+        system_prompt = (
+            "你是一个字幕帖子内选包助手。"
+            "用户已经先选中了正确的帖子，现在需要你从帖内多个楼层附件里判断最适合自动导入的字幕包。"
+            "你必须理解楼层正文是在说明什么，再结合附件名选择。"
+            "只输出 JSON。"
+        )
+
+        try:
+            if self.provider.lower() == "gemini":
+                result = self._call_gemini_simple(
+                    system_prompt,
+                    prompt,
+                    validation_key="selected_index",
+                    schema=SubtitleThreadPackageDecision,
+                )
+            else:
+                result = self._call_openai_simple(
+                    system_prompt,
+                    prompt,
+                    validation_key="selected_index",
+                    schema=SubtitleThreadPackageDecision,
+                )
+
+            if not result:
+                return None
+
+            json_match = re.search(r'\{.*\}', result, re.DOTALL)
+            if not json_match:
+                return None
+            data = json.loads(json_match.group())
+            return SubtitleThreadPackageDecision(**data)
+        except Exception as e:
+            logger.warning(f"[AI字幕包] 选择失败: {e}")
+            return None

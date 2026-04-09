@@ -134,7 +134,7 @@ class UnifiedAITester:
             # 将AI结果转换为字典，key为file_path
             actual_mapping = {}
             for item in ai_result.file_mapping:
-                file_path = item.file_path
+                file_path = item.file_path or f"#{item.source_index}"
                 actual_mapping[file_path] = {
                     "tmdb_season": item.tmdb_season,
                     "tmdb_episode": item.tmdb_episode,

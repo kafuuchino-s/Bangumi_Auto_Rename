@@ -61,6 +61,7 @@ class GeminiClient(BaseAIClient):
         self,
         anime_info: Dict,
         local_files: List[Dict],
+        bangumi_context: Optional[Dict] = None,
     ) -> Optional[AIAnalysisResult]:
         """
         使用Gemini API分析本地文件与TMDB剧集的映射关系
@@ -68,6 +69,7 @@ class GeminiClient(BaseAIClient):
         Args:
             anime_info: TMDB动漫信息
             local_files: 本地文件信息列表，包含文件名、路径、时长等
+            bangumi_context: Bangumi 辅助上下文，失败时为 None
 
         Returns:
             验证后的AIAnalysisResult对象
@@ -84,7 +86,11 @@ class GeminiClient(BaseAIClient):
             # 导入AIClient以使用通用prompt方法
             from .client import AIClient
 
-            base_prompt = AIClient.build_common_prompt(anime_info, local_files)
+            base_prompt = AIClient.build_common_prompt(
+                anime_info,
+                local_files,
+                bangumi_context=bangumi_context,
+            )
             system_prompt = AIClient.get_system_prompt()
             output_format = self._resolve_output_format()
 

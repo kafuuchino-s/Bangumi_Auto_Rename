@@ -9,6 +9,7 @@ from .utils import VIDEO_SUFFIX
 from ..ai.client import AIClient
 from ..ai.models import AIAnalysisResult
 from ..ai.video_analyzer import VideoAnalyzer
+from ..bangumi.context_builder import BangumiContextBuilder
 from .cleaner import extract_part, extract_video_format, is_promotional_content
 from .filename_builder import FilenameBuilder, EpisodeMetadata
 from ..subtitle.processor import SubtitleProcessor
@@ -76,6 +77,7 @@ class AIProcessor:
         self.ai_client = AIClient()
         self.video_analyzer = VideoAnalyzer()
         self.subtitle_processor = SubtitleProcessor()
+        self.bangumi_context_builder = BangumiContextBuilder()
 
     def analyze_anime_files(
         self,
@@ -111,9 +113,23 @@ class AIProcessor:
             path, current_video_files
         )
 
+        bangumi_context = self.bangumi_context_builder.build_tv_context(
+            anime_info,
+            current_file_analysis,
+        )
+        if bangumi_context:
+            logger.info(
+                "[AI处理] 已构建 Bangumi 辅助上下文: "
+                f"subject_count={len(bangumi_context.get('subjects', []))}"
+            )
+        else:
+            logger.info("[AI处理] Bangumi 上下文不可用，回退 TMDB-only")
+
         # 使用AI分析映射关系
         ai_result = self.ai_client.analyze_episode_mapping(
-            anime_info, current_file_analysis
+            anime_info,
+            current_file_analysis,
+            bangumi_context=bangumi_context,
         )
 
         if ai_result:
@@ -130,9 +146,13 @@ class AIProcessor:
         return normalized.casefold()
 
     def _normalize_mapping_path(self, value: str) -> str:
-        normalized = str(value or '').replace('\\', '/').strip().lstrip('/')
+        normalized = str(value or '').strip().strip('"\'')
+        normalized = normalized.replace('\\', '/')
+        normalized = re.sub(r'^(?:\./)+', '', normalized)
+        normalized = normalized.lstrip('/')
         normalized = re.sub(r'/+', '/', normalized)
-        return normalized
+        parts = [part for part in normalized.split('/') if part and part != '.']
+        return '/'.join(parts)
 
     def _generate_path_suffixes(self, normalized_path: str) -> List[str]:
         parts = [part for part in normalized_path.split('/') if part]
@@ -178,37 +198,54 @@ class AIProcessor:
         if not normalized_path:
             return None, '路径为空', ''
 
-        exact_path = (base_path / normalized_path).resolve()
-        if exact_path.exists():
-            return exact_path, None, normalized_path
+        path_parts = [part for part in normalized_path.split('/') if part]
+        if any(part == '..' for part in path_parts):
+            return None, f'非法路径:{normalized_path}', normalized_path
 
-        candidates: List[Path] = []
+        exact_path = (base_path / normalized_path).resolve()
+        if exact_path.exists() and exact_path.is_file():
+            return exact_path, None, normalized_path
+        if exact_path.exists() and not exact_path.is_file():
+            return None, f'路径不是文件:{normalized_path}', normalized_path
+
+        has_directory = len(path_parts) >= 2
+        suffix_candidates: List[Path] = []
         seen: Set[Path] = set()
-        for key in self._generate_path_suffixes(normalized_path):
-            for candidate in relative_file_index.get(key, set()):
-                if candidate in seen:
+        if has_directory:
+            for key in self._generate_path_suffixes(normalized_path):
+                if '/' not in key:
                     continue
-                candidates.append(candidate)
-                seen.add(candidate)
+                for candidate in relative_file_index.get(key, set()):
+                    if candidate in seen:
+                        continue
+                    suffix_candidates.append(candidate)
+                    seen.add(candidate)
+
+            if len(suffix_candidates) == 1:
+                return suffix_candidates[0], None, normalized_path
+            if len(suffix_candidates) > 1:
+                display = ', '.join(candidate.name for candidate in suffix_candidates[:3])
+                return None, f'路径不唯一:{normalized_path} -> {display}', normalized_path
 
         basename = Path(normalized_path).name
-        if basename:
-            for candidate in relative_file_index.get(basename, set()):
-                if candidate in seen:
-                    continue
-                candidates.append(candidate)
-                seen.add(candidate)
-
-        if not candidates:
-            return None, f'文件不存在:{normalized_path}', normalized_path
-
-        if len(candidates) > 1:
-            display = ', '.join(candidate.name for candidate in candidates[:3])
+        basename_candidates = [
+            candidate for candidate in relative_file_index.get(basename, set())
+        ]
+        if basename_candidates:
+            if has_directory:
+                if len(basename_candidates) > 1:
+                    display = ', '.join(candidate.name for candidate in basename_candidates[:3])
+                    return None, f'路径不唯一:{normalized_path} -> {display}', normalized_path
+                return None, f'文件不存在:{normalized_path}', normalized_path
+            if len(basename_candidates) == 1:
+                return basename_candidates[0], None, normalized_path
+            display = ', '.join(candidate.name for candidate in basename_candidates[:3])
             return None, f'路径不唯一:{normalized_path} -> {display}', normalized_path
 
-        return candidates[0], None, normalized_path
+        return None, f'文件不存在:{normalized_path}', normalized_path
 
-    def _score_mapping_path(self, file_path: str) -> Tuple[int, float, int]:
+    def _score_mapping_path(self, file_path: str | None) -> Tuple[int, float, int]:
+        file_path = file_path or ''
         normalized_path = file_path.replace('\\', '/').lower()
         promo_penalty = 1 if is_promotional_content(Path(file_path).name) else 0
         path_bonus = 0.0
@@ -217,6 +254,82 @@ class AIProcessor:
         if 'part' in normalized_path:
             path_bonus -= 0.5
         return (promo_penalty, -path_bonus, len(file_path))
+
+    def _build_source_index_map(
+        self,
+        base_path: Path,
+        video_files: List[Path],
+    ) -> Dict[int, Tuple[Path, str]]:
+        index_map: Dict[int, Tuple[Path, str]] = {}
+        for idx, file_path in enumerate(video_files, 1):
+            if not file_path.exists() or not file_path.is_file():
+                continue
+            try:
+                rel_path = file_path.relative_to(base_path).as_posix()
+            except ValueError:
+                rel_path = file_path.name
+            index_map[idx] = (file_path.resolve(), rel_path)
+        return index_map
+
+    def _hydrate_mapping_file_paths(
+        self,
+        ai_result: AIAnalysisResult,
+        base_path: Path,
+        video_files: List[Path],
+    ) -> Tuple[List[str], List[str]]:
+        source_index_map = self._build_source_index_map(base_path, video_files)
+        relative_file_index = self._build_relative_file_index(base_path, video_files)
+        strict_conflicts: List[str] = []
+        hydration_notes: List[str] = []
+
+        for mapping in ai_result.file_mapping:
+            source_index = getattr(mapping, 'source_index', None)
+            raw_file_path = getattr(mapping, 'file_path', None)
+            normalized_file_path = None
+            if isinstance(raw_file_path, str) and raw_file_path.strip():
+                normalized_file_path = self._normalize_mapping_path(raw_file_path)
+
+            if source_index is None:
+                if normalized_file_path:
+                    mapping.file_path = normalized_file_path
+                continue
+
+            indexed = source_index_map.get(source_index)
+            if indexed is None:
+                strict_conflicts.append(f'编号不存在:{source_index}')
+                continue
+
+            indexed_abs_path, indexed_rel_path = indexed
+            hydration_note = None
+            if normalized_file_path and normalized_file_path != indexed_rel_path:
+                resolved_path, path_error, _ = self._resolve_mapping_source_path(
+                    normalized_file_path,
+                    base_path,
+                    relative_file_index,
+                )
+                if path_error:
+                    if path_error != f'文件不存在:{normalized_file_path}':
+                        strict_conflicts.append(
+                            f'编号路径不一致:{source_index}:{normalized_file_path} != {indexed_rel_path}'
+                        )
+                        continue
+                    hydration_note = (
+                        f'编号忽略脏路径:{source_index}:{normalized_file_path} -> {indexed_rel_path}'
+                    )
+                elif resolved_path != indexed_abs_path:
+                    strict_conflicts.append(
+                        f'编号路径不一致:{source_index}:{normalized_file_path} != {indexed_rel_path}'
+                    )
+                    continue
+
+            if normalized_file_path != indexed_rel_path:
+                hydration_notes.append(
+                    hydration_note
+                    or f'编号回填路径:{source_index}:{indexed_rel_path}'
+                )
+            mapping.file_path = indexed_rel_path
+
+        return strict_conflicts, hydration_notes
 
     def _pick_best_mapping_candidate(self, mappings: List[object]) -> object:
         def sort_key(mapping: object) -> Tuple[int, int, float, int]:
@@ -327,7 +440,14 @@ class AIProcessor:
         by_file: Dict[str, object] = {}
 
         for mapping in ai_result.file_mapping:
-            normalized_path = mapping.file_path.replace('\\', '/').lstrip('/')
+            raw_file_path = getattr(mapping, 'file_path', None)
+            if not isinstance(raw_file_path, str) or not raw_file_path.strip():
+                sanitizer_notes.append(
+                    f"空路径映射丢弃:#{getattr(mapping, 'source_index', 'unknown')}"
+                )
+                continue
+
+            normalized_path = raw_file_path.replace('\\', '/').lstrip('/')
             existing = by_file.get(normalized_path)
             if existing is None:
                 by_file[normalized_path] = mapping
@@ -401,6 +521,12 @@ class AIProcessor:
         strict_conflicts: List[str] = []
         mapped_files: set[str] = set()
         all_video_files = video_files or self._collect_video_files(base_path)
+        source_hydration_conflicts, source_hydration_notes = self._hydrate_mapping_file_paths(
+            ai_result,
+            base_path,
+            all_video_files,
+        )
+        strict_conflicts.extend(source_hydration_conflicts)
         relative_file_index = self._build_relative_file_index(base_path, all_video_files)
 
         # 先清洗重复映射，避免因 AI 模型返回歧义条目而整体失败
@@ -426,9 +552,9 @@ class AIProcessor:
             ai_result.unmatched_files = sorted(
                 set((ai_result.unmatched_files or []) + removed_paths)
             )
-        if sanitizer_notes:
+        if sanitizer_notes or source_hydration_notes:
             logger.info(
-                f"[AI处理] 映射清洗: {'; '.join(sanitizer_notes[:5])}"
+                f"[AI处理] 映射清洗: {'; '.join((source_hydration_notes + sanitizer_notes)[:5])}"
             )
         ai_result.file_mapping = sanitized_mappings  # type: ignore[assignment]
 

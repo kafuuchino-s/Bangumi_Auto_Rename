@@ -129,6 +129,24 @@ class MovieSearchQueriesResult(BaseModel):
         return _make_gemini_compatible_schema(schema)
 
 
+class SubtitleSearchQueriesResult(BaseModel):
+    """AI生成的字幕搜索查询候选"""
+
+    queries: List[str] = Field(
+        ...,
+        description="字幕搜索查询候选列表，按优先级从高到低排序，最多5条",
+    )
+
+    model_config = ConfigDict(populate_by_name=True, extra='forbid')
+
+    @classmethod
+    def gemini_json_schema(
+        cls, by_alias: bool = True, ref_template: str = '#/$defs/{model}'
+    ):
+        schema = super().model_json_schema(by_alias=by_alias, ref_template=ref_template)
+        return _make_gemini_compatible_schema(schema)
+
+
 class SeasonMapping(BaseModel):
     """季度映射对象"""
 
@@ -160,7 +178,15 @@ class SeasonMapping(BaseModel):
 class EpisodeMapping(BaseModel):
     """单个剧集映射"""
 
-    file_path: str = Field(..., description="本地文件的相对路径")
+    source_index: Optional[int] = Field(
+        default=None,
+        ge=1,
+        description="输入文件列表中的稳定编号（对应 prompt 里的 [001]/[002] ...）",
+    )
+    file_path: Optional[str] = Field(
+        default=None,
+        description="本地文件的相对路径；优先通过 source_index 回填",
+    )
     tmdb_season: int = Field(..., ge=0, description="TMDB季号")
     tmdb_episode: int = Field(..., ge=1, description="TMDB集号")
     episode_type: Literal["regular", "special", "movie"] = Field(
@@ -169,6 +195,20 @@ class EpisodeMapping(BaseModel):
     confidence: Literal["High", "Medium", "Low"] = Field(
         default="Medium", description="置信度等级"
     )
+
+    @field_validator("file_path", mode="before")
+    @classmethod
+    def normalize_file_path(cls, v):
+        if v is None or v == "null":
+            return None
+        text = str(v).strip()
+        return text or None
+
+    @model_validator(mode="after")
+    def validate_mapping_reference(self):
+        if self.source_index is None and not self.file_path:
+            raise ValueError("source_index 和 file_path 不能同时为空")
+        return self
 
     model_config = ConfigDict(populate_by_name=True, extra='forbid')
 
@@ -358,6 +398,59 @@ class SubtitleMappingResult(BaseModel):
         cls, by_alias: bool = True, ref_template: str = "#/$defs/{model}"
     ):
         """生成Gemini API兼容的JSON Schema"""
+        schema = super().model_json_schema(
+            by_alias=by_alias, ref_template=ref_template
+        )
+        return _make_gemini_compatible_schema(schema)
+
+
+class SubtitleCandidateDecision(BaseModel):
+    """字幕候选选择结果"""
+
+    selected_index: int = Field(..., ge=0, description="最终选中的候选索引")
+    should_use: bool = Field(..., description="是否建议使用该候选")
+    confidence: Literal["High", "Medium", "Low"] = Field(
+        default="Medium", description="候选选择置信度"
+    )
+    language_assessment: Optional[str] = Field(
+        default=None, description="对候选语言的判断，如简体中文/繁体中文/双语"
+    )
+    reason: str = Field(..., description="选择理由")
+    warnings: List[str] = Field(default_factory=list, description="风险或警告说明")
+
+    model_config = ConfigDict(populate_by_name=True, extra='forbid')
+
+    @classmethod
+    def gemini_json_schema(
+        cls, by_alias: bool = True, ref_template: str = "#/$defs/{model}"
+    ):
+        schema = super().model_json_schema(
+            by_alias=by_alias, ref_template=ref_template
+        )
+        return _make_gemini_compatible_schema(schema)
+
+
+class SubtitleThreadPackageDecision(BaseModel):
+    """帖子内字幕包选择结果"""
+
+    selected_index: int = Field(..., ge=0, description="最终选中的字幕包索引")
+    should_use: bool = Field(..., description="是否建议使用该字幕包")
+    confidence: Literal["High", "Medium", "Low"] = Field(
+        default="Medium", description="字幕包选择置信度"
+    )
+    language_assessment: Optional[str] = Field(
+        default=None,
+        description="对字幕包语言的判断，如简体中文/繁体中文/双语",
+    )
+    reason: str = Field(..., description="选择理由")
+    warnings: List[str] = Field(default_factory=list, description="风险或警告说明")
+
+    model_config = ConfigDict(populate_by_name=True, extra='forbid')
+
+    @classmethod
+    def gemini_json_schema(
+        cls, by_alias: bool = True, ref_template: str = "#/$defs/{model}"
+    ):
         schema = super().model_json_schema(
             by_alias=by_alias, ref_template=ref_template
         )
