@@ -1,7 +1,8 @@
-import re
 import json
+from collections.abc import Mapping, Sequence
 from copy import deepcopy
-from typing import Any, Dict, List, Optional, Union
+import re
+from typing import Any, Callable, Dict, List, Optional, cast
 
 from openai import OpenAI
 from pydantic import ValidationError
@@ -9,6 +10,7 @@ from pydantic import ValidationError
 from ..logger import logger
 from .base_client import BaseAIClient
 from .models import AIAnalysisResult
+from .prompt_support import build_common_prompt, get_system_prompt
 from ..config.config_manager import cm
 
 
@@ -50,11 +52,26 @@ class OpenAIClient(BaseAIClient):
         """检查OpenAI客户端是否可用"""
         return bool(self.enabled and self.client and self.api_key)
 
+    def resolve_api_interface(self, interface_value: object) -> str:
+        return self._resolve_api_interface(
+            interface_value if isinstance(interface_value, str) else None
+        )
+
+    def call_via_chat_completions(
+        self, request_params: dict[str, object]
+    ) -> dict[str, object]:
+        return cast(dict[str, object], self._call_via_chat_completions(request_params))
+
+    def call_via_responses_api(
+        self, request_params: dict[str, object]
+    ) -> dict[str, object]:
+        return cast(dict[str, object], self._call_via_responses_api(request_params))
+
     def analyze_episode_mapping(
         self,
-        anime_info: Dict,
-        local_files: List[Dict],
-        bangumi_context: Optional[Dict] = None,
+        anime_info: Mapping[str, object],
+        local_files: Sequence[Mapping[str, object]],
+        bangumi_context: Mapping[str, object] | None = None,
     ) -> Optional[AIAnalysisResult]:
         """
         使用OpenAI API分析本地文件与TMDB剧集的映射关系
@@ -76,18 +93,13 @@ class OpenAIClient(BaseAIClient):
             return None
 
         try:
-            # 导入AIClient以使用通用prompt方法
-            from .client import AIClient
-
-            # 使用通用prompt构建基础内容
-            prompt = AIClient.build_common_prompt(
+            prompt = build_common_prompt(
                 anime_info,
                 local_files,
                 bangumi_context=bangumi_context,
             )
 
-            # 使用通用系统提示词
-            system_prompt = AIClient.get_system_prompt()
+            system_prompt = get_system_prompt()
 
             normalized_format = self._resolve_output_format()
             configured_interface = self._resolve_api_interface(
@@ -176,7 +188,7 @@ class OpenAIClient(BaseAIClient):
 
     def _call_with_format_fallback(
         self,
-        base_request_params: Dict,
+        base_request_params: Mapping[str, object],
         preferred_format: str,
         preferred_interface: str,
     ) -> Optional[AIAnalysisResult]:
@@ -321,8 +333,8 @@ class OpenAIClient(BaseAIClient):
     def _dispatch_openai_message(
         self,
         interface: str,
-        request_params: Dict,
-    ) -> Dict[str, Any]:
+        request_params: dict[str, object],
+    ) -> dict[str, object]:
         if not self.client:
             raise RuntimeError("OpenAI 客户端未初始化")
 
@@ -331,18 +343,31 @@ class OpenAIClient(BaseAIClient):
 
         return self._call_via_chat_completions(request_params)
 
-    def _call_via_chat_completions(self, request_params: Dict) -> Dict[str, Any]:
+    def _call_via_chat_completions(
+        self, request_params: dict[str, object]
+    ) -> dict[str, object]:
         if not self.client:
             raise RuntimeError("OpenAI 客户端未初始化")
 
-        response = self.client.chat.completions.create(**request_params)
-        if not response.choices or not response.choices[0].message:
+        chat_api = cast(OpenAI, self.client).chat
+        create_chat_completion = cast(
+            Callable[..., object],
+            chat_api.completions.create,
+        )
+        response = create_chat_completion(**request_params)
+        response_choices = getattr(response, "choices", None)
+        if not isinstance(response_choices, list) or not response_choices:
             return {"content": "", "tool_calls": []}
 
-        message = response.choices[0].message
+        first_choice = response_choices[0]
+        message = getattr(first_choice, "message", None)
+        if message is None:
+            return {"content": "", "tool_calls": []}
+
         tool_calls_payload: List[Dict[str, str]] = []
-        if message.tool_calls:
-            for tool_call in message.tool_calls:
+        tool_calls = getattr(message, "tool_calls", None)
+        if isinstance(tool_calls, list):
+            for tool_call in tool_calls:
                 if not getattr(tool_call, "function", None):
                     continue
                 tool_calls_payload.append(
@@ -353,21 +378,29 @@ class OpenAIClient(BaseAIClient):
                 )
 
         return {
-            "content": message.content,
+            "content": getattr(message, "content", ""),
             "tool_calls": tool_calls_payload,
         }
 
-    def _call_via_responses_api(self, request_params: Dict) -> Dict[str, Any]:
+    def _call_via_responses_api(
+        self, request_params: dict[str, object]
+    ) -> dict[str, object]:
         if not self.client:
             raise RuntimeError("OpenAI 客户端未初始化")
 
         responses_params = self._convert_chat_request_to_responses(request_params)
-        response = self.client.responses.create(**responses_params)
+        create_response = cast(
+            Callable[..., object],
+            cast(OpenAI, self.client).responses.create,
+        )
+        response = create_response(**responses_params)
 
         tool_calls_payload: List[Dict[str, str]] = []
         content_parts: List[str] = []
 
-        for item in response.output or []:
+        response_output = getattr(response, "output", None)
+        output_items = response_output if isinstance(response_output, list) else []
+        for item in output_items:
             item_type = getattr(item, "type", "")
 
             if item_type == "function_call":
@@ -396,10 +429,13 @@ class OpenAIClient(BaseAIClient):
         content = "\n".join(part for part in content_parts if part)
         return {"content": content, "tool_calls": tool_calls_payload}
 
-    def _convert_chat_request_to_responses(self, request_params: Dict) -> Dict:
-        messages = request_params.get("messages", [])
+    def _convert_chat_request_to_responses(
+        self, request_params: Mapping[str, object]
+    ) -> dict[str, object]:
+        raw_messages = request_params.get("messages", [])
+        messages = cast(list[Mapping[str, object]], raw_messages) if isinstance(raw_messages, list) else []
         instructions = ""
-        user_parts: List[str] = []
+        user_parts: list[str] = []
 
         for msg in messages:
             role = msg.get("role")
@@ -414,75 +450,87 @@ class OpenAIClient(BaseAIClient):
             elif role == "user":
                 user_parts.append(content)
 
-        responses_params: Dict[str, Union[str, float, int, Dict, List]] = {
-            "model": request_params.get("model"),
+        responses_params: dict[str, object] = {
             "input": "\n\n".join(user_parts),
-            "temperature": request_params.get("temperature"),
         }
+        model = request_params.get("model")
+        if isinstance(model, str) and model:
+            responses_params["model"] = model
+        temperature = request_params.get("temperature")
+        if isinstance(temperature, (int, float)):
+            responses_params["temperature"] = float(temperature)
 
         max_tokens = request_params.get("max_tokens")
         if max_tokens is None:
             max_tokens = request_params.get("max_completion_tokens")
-        if max_tokens is not None:
+        if isinstance(max_tokens, int):
             responses_params["max_output_tokens"] = max_tokens
 
         if instructions:
             responses_params["instructions"] = instructions
 
         tools = request_params.get("tools")
-        if tools:
+        if isinstance(tools, list) and tools:
             responses_params["tools"] = [
-                self._convert_chat_tool_to_responses(tool) for tool in tools
+                self._convert_chat_tool_to_responses(tool)
+                for tool in tools
+                if isinstance(tool, Mapping)
             ]
 
         tool_choice = request_params.get("tool_choice")
         if tool_choice:
             if isinstance(tool_choice, str):
                 responses_params["tool_choice"] = tool_choice
-            elif isinstance(tool_choice, dict):
+            elif isinstance(tool_choice, Mapping):
                 choice_type = tool_choice.get("type")
                 if choice_type == "function":
                     function_data = tool_choice.get("function", {})
-                    if isinstance(function_data, dict) and function_data.get("name"):
+                    if isinstance(function_data, Mapping) and function_data.get("name"):
                         responses_params["tool_choice"] = {
                             "type": "function",
-                            "name": function_data["name"],
+                            "name": str(function_data["name"]),
                         }
 
         response_format = request_params.get("response_format")
-        if isinstance(response_format, dict):
+        if isinstance(response_format, Mapping):
             fmt_type = response_format.get("type")
             if fmt_type == "json_object":
                 responses_params["text"] = {"format": {"type": "json_object"}}
             elif fmt_type == "json_schema":
                 json_schema = response_format.get("json_schema", {})
+                json_schema_mapping = (
+                    json_schema if isinstance(json_schema, Mapping) else {}
+                )
                 responses_params["text"] = {
                     "format": {
                         "type": "json_schema",
-                        "name": json_schema.get("name", "ai_analysis_result"),
-                        "schema": json_schema.get("schema", {}),
-                        "strict": bool(json_schema.get("strict", True)),
+                        "name": str(json_schema_mapping.get("name", "ai_analysis_result")),
+                        "schema": dict(cast(Mapping[str, object], json_schema_mapping.get("schema", {}))) if isinstance(json_schema_mapping.get("schema", {}), Mapping) else {},
+                        "strict": bool(json_schema_mapping.get("strict", True)),
                     }
                 }
 
         return responses_params
 
-    def _convert_chat_tool_to_responses(self, tool: Dict) -> Dict:
+    def _convert_chat_tool_to_responses(
+        self, tool: Mapping[str, object]
+    ) -> dict[str, object]:
         tool_type = tool.get("type")
         if tool_type != "function":
-            return tool
+            return dict(tool)
 
         function_data = tool.get("function", {})
+        function_mapping = function_data if isinstance(function_data, Mapping) else {}
         return {
             "type": "function",
-            "name": function_data.get("name"),
-            "description": function_data.get("description"),
-            "parameters": function_data.get("parameters", {}),
+            "name": function_mapping.get("name"),
+            "description": function_mapping.get("description"),
+            "parameters": function_mapping.get("parameters", {}),
             "strict": True,
         }
 
     def _extract_and_validate_json(
-        self, response_message: Dict[str, Any]
+        self, response_message: Mapping[str, object]
     ) -> Optional[AIAnalysisResult]:
         """
         从OpenAI响应中提取JSON内容并使用Pydantic验证
@@ -494,8 +542,9 @@ class OpenAIClient(BaseAIClient):
         Returns:
             验证后的AIAnalysisResult对象，失败返回None
         """
-        json_data = None
-        tool_calls = response_message.get("tool_calls") or []
+        json_data: Mapping[str, object] | None = None
+        raw_tool_calls = response_message.get("tool_calls")
+        tool_calls = cast(list[Mapping[str, object]], raw_tool_calls) if isinstance(raw_tool_calls, list) else []
 
         # 检查是否是Tool-calling响应
         if tool_calls:
@@ -504,7 +553,9 @@ class OpenAIClient(BaseAIClient):
             if tool_name == "analyze_file_structure":
                 logger.debug(f"[OpenAI识别] 识别到Tool-calling: {tool_name}")
                 try:
-                    json_data = json.loads(tool_call.get("arguments") or "")
+                    parsed_payload = json.loads(str(tool_call.get("arguments") or ""))
+                    if isinstance(parsed_payload, Mapping):
+                        json_data = dict(parsed_payload)
                 except json.JSONDecodeError as e:
                     logger.error(f"[OpenAI识别] 解析Tool-calling JSON失败: {e}")
                     logger.error(
@@ -516,7 +567,7 @@ class OpenAIClient(BaseAIClient):
             # 否则，从内容中提取
             content = response_message.get("content")
             logger.debug(f"[OpenAI识别] 普通内容响应: {content}")
-            if content:
+            if isinstance(content, str) and content:
                 json_data = self._extract_json_from_response(content)
 
         if not json_data:
@@ -527,7 +578,7 @@ class OpenAIClient(BaseAIClient):
 
         try:
             # 使用Pydantic验证和解析
-            result = AIAnalysisResult(**normalized_data)
+            result = AIAnalysisResult.model_validate(normalized_data)
             logger.info(f"[OpenAI识别] JSON结构验证成功，置信度: {result.confidence}")
             return result
         except ValidationError as e:
@@ -545,11 +596,10 @@ class OpenAIClient(BaseAIClient):
             logger.error(f"[OpenAI识别] 解析AI结果时发生未知错误: {str(e)}")
             return None
 
-    def _normalize_ai_result_payload(self, data: Dict) -> Dict:
+    def _normalize_ai_result_payload(
+        self, data: Mapping[str, object]
+    ) -> dict[str, object]:
         """归一化常见字段别名，提升不同模型输出的兼容性。"""
-        if not isinstance(data, dict):
-            return {}
-
         raw_conflict_details = data.get("conflict_details")
         conflict_details: List[str] = []
         if isinstance(raw_conflict_details, list):
@@ -576,11 +626,11 @@ class OpenAIClient(BaseAIClient):
         if not reason:
             reason = "AI返回结果缺少reason，已自动补全"
 
-        season_mapping: List[Dict] = []
+        season_mapping: list[dict[str, object]] = []
         raw_season_mapping = data.get("season_mapping")
         if isinstance(raw_season_mapping, list):
             for item in raw_season_mapping:
-                if not isinstance(item, dict):
+                if not isinstance(item, Mapping):
                     continue
                 local_group_name = (
                     item.get("local_group_name")
@@ -607,7 +657,7 @@ class OpenAIClient(BaseAIClient):
                     }
                 )
 
-        file_mapping: List[Dict] = []
+        file_mapping: list[dict[str, object]] = []
         raw_file_mapping = data.get("file_mapping")
         if isinstance(raw_file_mapping, list):
             for item in raw_file_mapping:
@@ -635,9 +685,9 @@ class OpenAIClient(BaseAIClient):
         }
 
     def _normalize_mapping_item(
-        self, item: Dict, default_confidence: str
-    ) -> Optional[Dict]:
-        if not isinstance(item, dict):
+        self, item: object, default_confidence: str
+    ) -> dict[str, object] | None:
+        if not isinstance(item, Mapping):
             return None
 
         source_index = self._coerce_int(
@@ -773,7 +823,9 @@ class OpenAIClient(BaseAIClient):
             return json.dumps(value, ensure_ascii=False)
         return str(value)
 
-    def _extract_json_from_response(self, content: str) -> Optional[Dict]:
+    def _extract_json_from_response(
+        self, content: str
+    ) -> dict[str, object] | None:
         """
         从OpenAI响应中提取JSON内容，兼容思维链输出
 
@@ -785,7 +837,9 @@ class OpenAIClient(BaseAIClient):
         """
         try:
             # 首先尝试直接解析整个内容
-            return json.loads(content)
+            parsed_content = json.loads(content)
+            if isinstance(parsed_content, Mapping):
+                return dict(parsed_content)
         except json.JSONDecodeError:
             pass
 
@@ -803,7 +857,9 @@ class OpenAIClient(BaseAIClient):
                 try:
                     # 清理可能的思维链内容
                     cleaned_match = self._clean_json_content(match)
-                    return json.loads(cleaned_match)
+                    parsed_match = json.loads(cleaned_match)
+                    if isinstance(parsed_match, Mapping):
+                        return dict(parsed_match)
                 except json.JSONDecodeError:
                     continue
 
@@ -835,7 +891,7 @@ class OpenAIClient(BaseAIClient):
 
         return cleaned.strip()
 
-    def _get_json_schema(self) -> Dict:
+    def _get_json_schema(self) -> dict[str, object]:
         """生成符合OpenAI Tool格式的JSON Schema"""
         # 使用原生Pydantic Schema，保留additionalProperties以兼容OpenAI structured output
         schema = AIAnalysisResult.model_json_schema()
@@ -897,11 +953,11 @@ JSON Schema:
 """
         return json_instructions
 
-    def _build_strict_json_schema(self) -> Dict:
+    def _build_strict_json_schema(self) -> dict[str, object]:
         """构建符合 OpenAI strict=true 要求的 JSON Schema。"""
-        schema = deepcopy(AIAnalysisResult.model_json_schema())
+        schema = cast(dict[str, object], deepcopy(AIAnalysisResult.model_json_schema()))
 
-        def ensure_required_fields(obj):
+        def ensure_required_fields(obj: object) -> None:
             if isinstance(obj, dict):
                 properties = obj.get("properties")
                 if isinstance(properties, dict):
@@ -919,8 +975,8 @@ JSON Schema:
 
     def _configure_output_format(
         self,
-        request_params: Dict,
-        output_format: Optional[str] = None,
+        request_params: dict[str, object],
+        output_format: str | None = None,
     ) -> None:
         """
         根据配置的输出格式类型配置请求参数

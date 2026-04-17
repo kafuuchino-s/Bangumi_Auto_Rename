@@ -1,6 +1,7 @@
 import json
 import re
-from typing import Dict, List, Optional
+from collections.abc import Mapping, Sequence
+from typing import Dict, List, Optional, cast
 
 from google import genai
 from pydantic import ValidationError
@@ -9,6 +10,7 @@ from google.genai.types import HttpOptions, GenerateContentConfig
 from ..logger import logger
 from .base_client import BaseAIClient
 from .models import AIAnalysisResult
+from .prompt_support import build_common_prompt, get_system_prompt
 from ..config.config_manager import cm
 
 
@@ -57,11 +59,31 @@ class GeminiClient(BaseAIClient):
         """检查Gemini客户端是否可用"""
         return bool(self.enabled and self.client and self.api_key)
 
+    def generate_content(
+        self,
+        *,
+        model: str,
+        contents: str,
+        config: GenerateContentConfig,
+    ) -> object:
+        if not self.client:
+            raise RuntimeError("Gemini 客户端未初始化")
+
+        models_api = getattr(self.client, "models", None)
+        generate_content = getattr(models_api, "generate_content", None)
+        if not callable(generate_content):
+            raise RuntimeError("Gemini client.models.generate_content 不可用")
+
+        return cast(
+            object,
+            generate_content(model=model, contents=contents, config=config),
+        )
+
     def analyze_episode_mapping(
         self,
-        anime_info: Dict,
-        local_files: List[Dict],
-        bangumi_context: Optional[Dict] = None,
+        anime_info: Mapping[str, object],
+        local_files: Sequence[Mapping[str, object]],
+        bangumi_context: Mapping[str, object] | None = None,
     ) -> Optional[AIAnalysisResult]:
         """
         使用Gemini API分析本地文件与TMDB剧集的映射关系
@@ -83,15 +105,12 @@ class GeminiClient(BaseAIClient):
             return None
 
         try:
-            # 导入AIClient以使用通用prompt方法
-            from .client import AIClient
-
-            base_prompt = AIClient.build_common_prompt(
+            base_prompt = build_common_prompt(
                 anime_info,
                 local_files,
                 bangumi_context=bangumi_context,
             )
-            system_prompt = AIClient.get_system_prompt()
+            system_prompt = get_system_prompt()
             output_format = self._resolve_output_format()
 
             if output_format == "structured_output":
@@ -167,7 +186,7 @@ class GeminiClient(BaseAIClient):
                 logger.debug(
                     f"[Gemini识别] 尝试输出格式: {output_format}, model={self.model}"
                 )
-                response = self.client.models.generate_content(
+                response = self.generate_content(
                     model=self.model,
                     contents=request_contents,
                     config=request_config,
@@ -199,21 +218,27 @@ class GeminiClient(BaseAIClient):
         self, system_prompt: str, output_format: str
     ) -> GenerateContentConfig:
         """根据输出格式构建Gemini请求配置"""
-        config_kwargs = {
-            "system_instruction": system_prompt,
-            "temperature": self.temperature,
-        }
-
         if output_format == "structured_output":
-            config_kwargs["response_mime_type"] = "application/json"
-            config_kwargs["response_schema"] = AIAnalysisResult.gemini_json_schema()
+            return GenerateContentConfig(
+                system_instruction=system_prompt,
+                temperature=self.temperature,
+                response_mime_type="application/json",
+                response_schema=AIAnalysisResult.gemini_json_schema(),
+            )
         elif output_format == "json_object":
-            config_kwargs["response_mime_type"] = "application/json"
+            return GenerateContentConfig(
+                system_instruction=system_prompt,
+                temperature=self.temperature,
+                response_mime_type="application/json",
+            )
 
-        return GenerateContentConfig(**config_kwargs)
+        return GenerateContentConfig(
+            system_instruction=system_prompt,
+            temperature=self.temperature,
+        )
 
     def _parse_response_result(
-        self, response, output_format: str
+        self, response: object, output_format: str
     ) -> Optional[AIAnalysisResult]:
         """按输出格式解析Gemini响应并做Pydantic校验"""
         response_text = getattr(response, "text", "") if response else ""
@@ -223,10 +248,11 @@ class GeminiClient(BaseAIClient):
             logger.error("[Gemini识别] Gemini 响应为空")
             return None
 
-        if output_format == "structured_output" and hasattr(response, "parsed") and response.parsed:
+        parsed_payload = getattr(response, "parsed", None)
+        if output_format == "structured_output" and parsed_payload is not None:
             try:
-                logger.debug(f"[Gemini识别] 解析后的JSON: {response.parsed}")
-                result = AIAnalysisResult.model_validate(response.parsed)
+                logger.debug(f"[Gemini识别] 解析后的JSON: {parsed_payload}")
+                result = AIAnalysisResult.model_validate(parsed_payload)
                 logger.info(
                     f"[Gemini识别] 使用解析后的结果，置信度: {result.confidence}"
                 )
@@ -252,10 +278,12 @@ class GeminiClient(BaseAIClient):
             logger.error(f"[Gemini识别] 原始JSON: {str(json_data)[:200]}...")
             return None
 
-    def _extract_json_payload(self, content: str) -> Optional[Dict]:
+    def _extract_json_payload(self, content: str) -> dict[str, object] | None:
         """从模型输出中提取JSON对象"""
         try:
-            return json.loads(content)
+            parsed_content = json.loads(content)
+            if isinstance(parsed_content, Mapping):
+                return dict(parsed_content)
         except json.JSONDecodeError:
             pass
 
@@ -269,7 +297,9 @@ class GeminiClient(BaseAIClient):
             matches = re.findall(pattern, content, re.DOTALL)
             for match in matches:
                 try:
-                    return json.loads(match)
+                    parsed_match = json.loads(match)
+                    if isinstance(parsed_match, Mapping):
+                        return dict(parsed_match)
                 except json.JSONDecodeError:
                     continue
 

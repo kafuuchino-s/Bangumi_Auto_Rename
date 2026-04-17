@@ -16,10 +16,11 @@
 
 import json
 import time
+from collections.abc import Mapping, Sequence
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from copy import deepcopy
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import TypedDict, cast
 
 from ..logger import logger
 from ..ai.client import AIClient
@@ -27,45 +28,138 @@ from ..config.config_manager import cm
 from ..ai.models import AIAnalysisResult
 
 
+ConfigValue = object
+ConfigDict = dict[str, ConfigValue]
+
+
+class ExpectedMappingEntry(TypedDict, total=False):
+    file_path: str
+    tmdb_season: int
+    tmdb_episode: int
+    episode_type: str
+    confidence: str
+
+
+class ComparableMappingEntry(TypedDict):
+    tmdb_season: int
+    tmdb_episode: int
+    episode_type: str
+    confidence: str
+
+
+class ExpectedResult(TypedDict, total=False):
+    file_mapping: list[ExpectedMappingEntry]
+
+
+class ValidationDetails(TypedDict, total=False):
+    error: str
+    expected_count: int
+    actual_count: int
+    matched_count: int
+    accuracy: float
+    matched_files: list[str]
+    missing_files: list[str]
+    extra_files: list[str]
+
+
+class ValidationResult(TypedDict):
+    success: bool
+    confidence: str
+    file_mapping_count: int
+    validation_details: ValidationDetails
+
+
+class TestRunResult(TypedDict, total=False):
+    success: bool
+    error: str | None
+    duration: float
+    ai_result: AIAnalysisResult | None
+    validation: ValidationResult | None
+    config_used: ConfigDict
+    configured_interface: str | None
+    actual_interface: str | None
+    interface_fallback: bool
+    interface_fallback_reason: str | None
+    provider: str
+    result_status: str
+    output_format: str
+    run_index: int
+
+
+class PersistedFormatStat(TypedDict, total=False):
+    total_runs: int
+    success_runs: int
+    perfect_runs: int
+    last_result_status: str | None
+    last_error: str | None
+    last_duration: float
+
+
+class AggregateRunSummary(TypedDict):
+    success_runs: int
+    perfect_runs: int
+    validation_failed_runs: int
+    ai_failed_runs: int
+
+
+class AggregateStressResult(TypedDict):
+    success: bool
+    provider: str
+    output_format: str
+    rounds: int
+    parallel_workers: int
+    run_results: list[TestRunResult]
+    summary: AggregateRunSummary
+
+
+class ProviderFormatResult(TypedDict):
+    success: bool
+    format_results: list[TestRunResult]
+    successful_formats: list[str]
+    recommended_format: str
+
+
 class UnifiedAITester:
     """统一的AI测试器，使用当前界面配置进行测试"""
 
-    def __init__(self, current_config: Dict[str, Any]):
+    def __init__(self, current_config: Mapping[str, object]):
         """
         Args:
             current_config: 当前界面配置字典
         """
-        self.current_config = current_config
-        self.original_config = {}
-        self.test_case_path = (
+        self.current_config: ConfigDict = dict(current_config)
+        self.original_config: ConfigDict = {}
+        self.test_case_path: Path = (
             Path(__file__).parent.parent.parent / "tests" / "example_test_case.json"
         )
-        self.expected_path = (
+        self.expected_path: Path = (
             Path(__file__).parent.parent.parent / "tests" / "example_expected.json"
         )
 
-    def _apply_current_config(self):
+    def _apply_current_config(self) -> None:
         """应用当前界面配置"""
         logger.info("[AI识别测试] 应用当前界面配置")
         for key, value in self.current_config.items():
             self.original_config[key] = cm.get_config(key)
-            cm.set_config(key, value)
+            if isinstance(value, (str, bool)):
+                _ = cm.set_config(key, value)
             if "api_key" in key:
                 value = len(str(value)) * '*'
             logger.debug(f"[AI识别测试] 设置配置 {key}: {value}")
 
 
-    def _restore_config(self):
+    def _restore_config(self) -> None:
         """恢复原始配置"""
         logger.info("[AI识别测试] 恢复原始配置")
         for key, value in self.original_config.items():
-            cm.set_config(key, value)
+            if isinstance(value, (str, bool)):
+                _ = cm.set_config(key, value)
             if "api_key" in key:
                 value = len(str(value)) * '*'
             logger.debug(f"[AI识别测试] 恢复配置 {key}: {value}")
         self.original_config.clear()
 
-    def _load_test_case(self) -> Optional[Dict[str, Any]]:
+    def _load_test_case(self) -> dict[str, object] | None:
         """加载测试用例"""
         try:
             if not self.test_case_path.exists():
@@ -73,16 +167,24 @@ class UnifiedAITester:
                 return None
 
             with open(self.test_case_path, 'r', encoding='utf-8') as f:
-                test_case = json.load(f)
+                raw_test_case = cast(object, json.load(f))
+                if not isinstance(raw_test_case, dict):
+                    logger.error("[AI识别测试] 测试用例根对象不是JSON对象")
+                    return None
+                test_case = cast(dict[str, object], raw_test_case)
+                metadata = test_case.get("metadata")
+                metadata_mapping = cast(
+                    Mapping[str, object], metadata
+                ) if isinstance(metadata, Mapping) else {}
                 logger.info(
-                    f"[AI识别测试] 成功加载测试用例: {test_case.get('metadata', {}).get('path_name', 'Unknown')}"
+                    f"[AI识别测试] 成功加载测试用例: {metadata_mapping.get('path_name', 'Unknown')}"
                 )
                 return test_case
         except Exception as e:
             logger.error(f"[AI识别测试] 加载测试用例失败: {str(e)}")
             return None
 
-    def _load_expected_result(self) -> Optional[Dict[str, Any]]:
+    def _load_expected_result(self) -> ExpectedResult | None:
         """加载期望结果"""
         try:
             if not self.expected_path.exists():
@@ -90,7 +192,11 @@ class UnifiedAITester:
                 return None
 
             with open(self.expected_path, 'r', encoding='utf-8') as f:
-                expected = json.load(f)
+                raw_expected = cast(object, json.load(f))
+                if not isinstance(raw_expected, dict):
+                    logger.error("[AI识别测试] 期望结果根对象不是JSON对象")
+                    return None
+                expected = cast(ExpectedResult, cast(object, raw_expected))
                 logger.info("[AI识别测试] 成功加载期望结果")
                 return expected
         except Exception as e:
@@ -98,10 +204,10 @@ class UnifiedAITester:
             return None
 
     def _validate_ai_result(
-        self, ai_result: AIAnalysisResult, expected: Optional[Dict] = None
-    ) -> Dict[str, Any]:
+        self, ai_result: AIAnalysisResult | None, expected: ExpectedResult | None = None
+    ) -> ValidationResult:
         """验证AI分析结果"""
-        validation_result = {
+        validation_result: ValidationResult = {
             "success": False,
             "confidence": ai_result.confidence if ai_result else "None",
             "file_mapping_count": 0,
@@ -121,18 +227,20 @@ class UnifiedAITester:
             expected_mapping_list = expected["file_mapping"]  # 这是一个字典列表
 
             # 将期望结果转换为字典，key为file_path
-            expected_mapping = {}
+            expected_mapping: dict[str, ComparableMappingEntry] = {}
             for item in expected_mapping_list:
-                file_path = item["file_path"]
+                file_path = item.get("file_path")
+                if not file_path:
+                    continue
                 expected_mapping[file_path] = {
-                    "tmdb_season": item["tmdb_season"],
-                    "tmdb_episode": item["tmdb_episode"],
+                    "tmdb_season": int(item.get("tmdb_season", 0)),
+                    "tmdb_episode": int(item.get("tmdb_episode", 0)),
                     "episode_type": item.get("episode_type", "regular"),
                     "confidence": item.get("confidence", "Medium"),
                 }
 
             # 将AI结果转换为字典，key为file_path
-            actual_mapping = {}
+            actual_mapping: dict[str, ComparableMappingEntry] = {}
             for item in ai_result.file_mapping:
                 file_path = item.file_path or f"#{item.source_index}"
                 actual_mapping[file_path] = {
@@ -145,9 +253,9 @@ class UnifiedAITester:
             # 计算匹配情况
             matched_count = 0
             total_expected = len(expected_mapping)
-            matched_files = []
-            missing_files = []
-            extra_files = []
+            matched_files: list[str] = []
+            missing_files: list[str] = []
+            extra_files: list[str] = []
 
             for file_path, expected_info in expected_mapping.items():
                 if file_path in actual_mapping:
@@ -180,13 +288,13 @@ class UnifiedAITester:
 
         return validation_result
 
-    def _run_single_ai_test(self) -> Dict[str, Any]:
+    def _run_single_ai_test(self) -> TestRunResult:
         """运行单次AI识别测试（核心复用逻辑）"""
         start_time = time.time()
-        result = {
+        result: TestRunResult = {
             "success": False,
             "error": None,
-            "duration": 0,
+            "duration": 0.0,
             "ai_result": None,
             "validation": None,
             "config_used": self.current_config.copy(),
@@ -212,8 +320,21 @@ class UnifiedAITester:
 
                 # 执行AI分析
                 logger.info(f"[AI识别测试] 开始AI分析 - 提供商: {ai_client.provider}")
+                anime_info = test_case.get("anime_info")
+                local_files = test_case.get("local_files")
+                anime_info_mapping = cast(
+                    Mapping[str, object], anime_info
+                ) if isinstance(anime_info, Mapping) else {}
+                local_files_sequence = cast(
+                    Sequence[object], local_files
+                ) if isinstance(local_files, Sequence) else []
                 ai_result = ai_client.analyze_episode_mapping(
-                    test_case["anime_info"], test_case["local_files"]
+                    cast(dict[str, object], dict(anime_info_mapping)),
+                    [
+                        dict(item)
+                        for item in local_files_sequence
+                        if isinstance(item, Mapping)
+                    ],
                 )
 
                 # 加载期望结果并验证
@@ -250,31 +371,23 @@ class UnifiedAITester:
                     }
                 )
 
-                if ai_client.provider.lower() == "openai" and hasattr(
-                    ai_client._client, "last_configured_api_interface"
+                provider_runtime = ai_client.get_provider_runtime_info()
+                configured_interface = provider_runtime.get("configured_interface")
+                actual_interface = provider_runtime.get("actual_interface")
+                interface_fallback = provider_runtime.get("interface_fallback")
+                interface_fallback_reason = provider_runtime.get(
+                    "interface_fallback_reason"
+                )
+                if isinstance(configured_interface, str) or configured_interface is None:
+                    result["configured_interface"] = configured_interface
+                if isinstance(actual_interface, str) or actual_interface is None:
+                    result["actual_interface"] = actual_interface
+                result["interface_fallback"] = bool(interface_fallback)
+                if (
+                    isinstance(interface_fallback_reason, str)
+                    or interface_fallback_reason is None
                 ):
-                    result["configured_interface"] = getattr(
-                        ai_client._client,
-                        "last_configured_api_interface",
-                        None,
-                    )
-                    result["actual_interface"] = getattr(
-                        ai_client._client,
-                        "last_actual_api_interface",
-                        None,
-                    )
-                    result["interface_fallback"] = bool(
-                        getattr(
-                            ai_client._client,
-                            "last_api_interface_fallback",
-                            False,
-                        )
-                    )
-                    result["interface_fallback_reason"] = getattr(
-                        ai_client._client,
-                        "last_api_interface_fallback_reason",
-                        None,
-                    )
+                    result["interface_fallback_reason"] = interface_fallback_reason
 
                 logger.info(f"[AI识别测试] AI分析完成 - 成功: {result['success']}")
 
@@ -287,12 +400,12 @@ class UnifiedAITester:
 
         return result
 
-    def test_ai_recognition(self) -> Dict[str, Any]:
+    def test_ai_recognition(self) -> TestRunResult:
         """测试AI识别功能"""
         logger.info("[AI识别测试] 开始AI识别功能测试")
         return self._run_single_ai_test()
 
-    def test_openai_api_formats(self) -> Dict[str, Any]:
+    def test_openai_api_formats(self) -> ProviderFormatResult:
         """测试OpenAI API的多种输出格式支持"""
         logger.info("[AI识别测试] 开始OpenAI API多格式测试")
 
@@ -307,7 +420,7 @@ class UnifiedAITester:
 
         return result
 
-    def test_gemini_api_formats(self) -> Dict[str, Any]:
+    def test_gemini_api_formats(self) -> ProviderFormatResult:
         """测试Gemini API的多种输出格式支持"""
         logger.info("[AI识别测试] 开始Gemini API多格式测试")
 
@@ -325,8 +438,8 @@ class UnifiedAITester:
     def stress_test_openai_structured_output(
         self,
         rounds: int = 5,
-        max_workers: Optional[int] = None,
-    ) -> Dict[str, Any]:
+        max_workers: int | None = None,
+    ) -> AggregateStressResult:
         """OpenAI structured_output 并行专项压测。"""
         return self._stress_test_single_format(
             provider="openai",
@@ -339,8 +452,8 @@ class UnifiedAITester:
     def stress_test_gemini_structured_output(
         self,
         rounds: int = 5,
-        max_workers: Optional[int] = None,
-    ) -> Dict[str, Any]:
+        max_workers: int | None = None,
+    ) -> AggregateStressResult:
         """Gemini structured_output 并行专项压测。"""
         return self._stress_test_single_format(
             provider="gemini",
@@ -356,8 +469,8 @@ class UnifiedAITester:
         format_key: str,
         output_format: str,
         rounds: int,
-        max_workers: Optional[int] = None,
-    ) -> Dict[str, Any]:
+        max_workers: int | None = None,
+    ) -> AggregateStressResult:
         """对指定 provider 的单一格式执行全并行压测。"""
         total_runs = max(1, int(rounds))
         workers = max_workers if max_workers and max_workers > 0 else total_runs
@@ -369,7 +482,7 @@ class UnifiedAITester:
             f"rounds={total_runs}, workers={workers}"
         )
 
-        def _run_once(run_index: int) -> Dict[str, Any]:
+        def _run_once(run_index: int) -> TestRunResult:
             temp_config = self.current_config.copy()
             temp_config["ai_provider"] = provider
             temp_config[format_key] = output_format
@@ -380,7 +493,7 @@ class UnifiedAITester:
             result["run_index"] = run_index
             return result
 
-        indexed_results: Dict[int, Dict[str, Any]] = {}
+        indexed_results: dict[int, TestRunResult] = {}
 
         with ThreadPoolExecutor(max_workers=workers) as executor:
             future_to_idx = {
@@ -401,7 +514,7 @@ class UnifiedAITester:
                     indexed_results[run_index] = {
                         "success": False,
                         "error": str(e),
-                        "duration": 0,
+                        "duration": 0.0,
                         "ai_result": None,
                         "validation": None,
                         "config_used": {
@@ -434,7 +547,7 @@ class UnifiedAITester:
             1 for item in run_results if item.get("result_status") == "ai_failed"
         )
 
-        result = {
+        result: AggregateStressResult = {
             "success": success_runs > 0,
             "provider": provider,
             "output_format": output_format,
@@ -460,11 +573,11 @@ class UnifiedAITester:
         self,
         provider: str,
         format_key: str,
-        formats_to_test: List[str],
-    ) -> Dict[str, Any]:
+        formats_to_test: list[str],
+    ) -> ProviderFormatResult:
         """按提供商执行多格式测试并汇总结果（并行执行所有格式）"""
 
-        def _run_single_format(output_format: str) -> Dict[str, Any]:
+        def _run_single_format(output_format: str) -> TestRunResult:
             logger.info(f"[AI识别测试] 测试输出格式: {output_format}")
 
             temp_config = self.current_config.copy()
@@ -476,7 +589,7 @@ class UnifiedAITester:
             result["output_format"] = output_format
             return result
 
-        indexed_results: Dict[int, Dict[str, Any]] = {}
+        indexed_results: dict[int, TestRunResult] = {}
         max_workers = max(1, len(formats_to_test))
 
         with ThreadPoolExecutor(max_workers=max_workers) as executor:
@@ -497,7 +610,7 @@ class UnifiedAITester:
                     indexed_results[idx] = {
                         "success": False,
                         "error": str(e),
-                        "duration": 0,
+                        "duration": 0.0,
                         "ai_result": None,
                         "validation": None,
                         "config_used": {
@@ -516,10 +629,12 @@ class UnifiedAITester:
             if idx in indexed_results
         ]
         successful_formats = [
-            item["output_format"] for item in format_results if item.get("success")
+            item.get("output_format", "")
+            for item in format_results
+            if item.get("success") and isinstance(item.get("output_format"), str)
         ]
 
-        overall_result = {
+        overall_result: ProviderFormatResult = {
             "success": len(successful_formats) > 0,
             "format_results": format_results,
             "successful_formats": successful_formats,
@@ -536,11 +651,16 @@ class UnifiedAITester:
     def _persist_provider_format_memory(
         self,
         provider: str,
-        test_result: Dict[str, Any],
+        test_result: Mapping[str, object],
     ) -> None:
         """保存指定提供商格式测试统计，并固定自动路由顺序。"""
         try:
-            format_results = test_result.get("format_results", []) or []
+            raw_format_results = test_result.get("format_results", [])
+            format_results = (
+                cast(list[Mapping[str, object]], raw_format_results)
+                if isinstance(raw_format_results, list)
+                else []
+            )
             if not format_results:
                 return
 
@@ -563,20 +683,23 @@ class UnifiedAITester:
             if not isinstance(existing_stats, dict):
                 existing_stats = {}
 
-            updated_stats = deepcopy(existing_stats)
+            updated_stats = cast(dict[str, PersistedFormatStat], deepcopy(existing_stats))
 
             for item in format_results:
-                fmt = item.get("output_format")
+                fmt_value = item.get("output_format")
+                fmt = fmt_value if isinstance(fmt_value, str) else ""
                 if not fmt or fmt not in allowed_formats:
                     continue
 
-                stat = updated_stats.get(fmt, {})
-                if not isinstance(stat, dict):
-                    stat = {}
+                stat = updated_stats.get(fmt, PersistedFormatStat())
 
-                total_runs = int(stat.get("total_runs", 0) or 0) + 1
-                success_runs = int(stat.get("success_runs", 0) or 0)
-                perfect_runs = int(stat.get("perfect_runs", 0) or 0)
+                total_runs_value = stat.get("total_runs", 0)
+                success_runs_value = stat.get("success_runs", 0)
+                perfect_runs_value = stat.get("perfect_runs", 0)
+                total_runs = total_runs_value if isinstance(total_runs_value, int) else 0
+                success_runs = success_runs_value if isinstance(success_runs_value, int) else 0
+                perfect_runs = perfect_runs_value if isinstance(perfect_runs_value, int) else 0
+                total_runs += 1
 
                 if item.get("success"):
                     success_runs += 1
@@ -584,21 +707,32 @@ class UnifiedAITester:
                 if item.get("result_status") == "perfect":
                     perfect_runs += 1
 
-                stat.update(
-                    {
-                        "total_runs": total_runs,
-                        "success_runs": success_runs,
-                        "perfect_runs": perfect_runs,
-                        "last_result_status": item.get("result_status"),
-                        "last_error": item.get("error"),
-                        "last_duration": item.get("duration", 0),
-                    }
+                result_status_value = item.get("result_status")
+                last_result_status = (
+                    result_status_value if isinstance(result_status_value, str) else None
                 )
+                error_value = item.get("error")
+                last_error = error_value if isinstance(error_value, str) else None
+                duration_value = item.get("duration", 0)
+                last_duration = (
+                    float(duration_value)
+                    if isinstance(duration_value, (int, float))
+                    else 0.0
+                )
+
+                stat["total_runs"] = total_runs
+                stat["success_runs"] = success_runs
+                stat["perfect_runs"] = perfect_runs
+                stat["last_result_status"] = last_result_status
+                stat["last_error"] = last_error
+                stat["last_duration"] = last_duration
                 updated_stats[fmt] = stat
 
-            cm.set_config(enabled_key, True)
-            cm.set_config(stats_key, updated_stats)
-            cm.set_config(order_key, allowed_formats)
+            _ = cm.set_config(enabled_key, True)
+        
+            runtime_overrides = cast(dict[str, object], cm._get_runtime_overrides())
+            runtime_overrides[stats_key] = updated_stats
+            runtime_overrides[order_key] = allowed_formats
 
             logger.info(
                 f"[AI识别测试] 已更新{provider.upper()}自动路由顺序: "
@@ -610,30 +744,40 @@ class UnifiedAITester:
 
     def _get_recommended_format(
         self,
-        format_results: List[Dict[str, Any]],
-        priority_order: Optional[List[str]] = None,
+        format_results: Sequence[Mapping[str, object]],
+        priority_order: Sequence[str] | None = None,
     ) -> str:
         """根据测试结果推荐最佳格式"""
         if priority_order is None:
             priority_order = ["structured_output", "json_object", "function_calling"]
 
         # 当前使用简单测试用例，不允许出错，只要有错误就标记为失败
-        perfect_formats = []  # 完全正确的格式
+        perfect_formats: list[str] = []  # 完全正确的格式
 
         for result in format_results:
             if not result.get("success", False):
                 continue
 
-            output_format = result.get("output_format", "")
-            validation = result.get("validation", {})
+            output_format_value = result.get("output_format", "")
+            output_format = output_format_value if isinstance(output_format_value, str) else ""
+            validation_value = result.get("validation", {})
+            validation = validation_value if isinstance(validation_value, Mapping) else {}
 
             # 检查是否完全正确（100%准确率）
             is_perfect = False
             if validation and "validation_details" in validation:
-                validation_details = validation["validation_details"]
-                accuracy = validation_details.get("accuracy", 0)
-                missing_files = validation_details.get("missing_files", [])
-                extra_files = validation_details.get("extra_files", [])
+                validation_details_value = validation["validation_details"]
+                validation_details = (
+                    validation_details_value
+                    if isinstance(validation_details_value, Mapping)
+                    else {}
+                )
+                accuracy_value = validation_details.get("accuracy", 0)
+                accuracy = accuracy_value if isinstance(accuracy_value, (int, float)) else 0
+                missing_files_value = validation_details.get("missing_files", [])
+                extra_files_value = validation_details.get("extra_files", [])
+                missing_files = missing_files_value if isinstance(missing_files_value, list) else []
+                extra_files = extra_files_value if isinstance(extra_files_value, list) else []
 
                 # 必须100%准确率，且没有遗漏文件和多余文件
                 if (
