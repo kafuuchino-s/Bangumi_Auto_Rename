@@ -5,7 +5,7 @@ from copy import deepcopy
 from difflib import SequenceMatcher
 from threading import Lock
 from time import sleep
-from typing import Any, Dict, List, Optional, Set, Tuple
+from typing import Any, Dict, List, Optional, Set, Tuple, TypeAlias, cast
 
 import tmdbsimple as tmdb
 
@@ -16,6 +16,10 @@ from .cleaner import (
     build_tv_search_queries,
     is_chinese_percentage_sufficient,
 )
+
+TMDBDict: TypeAlias = dict[str, Any]
+TMDBList: TypeAlias = list[TMDBDict]
+SeasonPayload: TypeAlias = dict[str, Any]
 
 
 class Search:
@@ -43,7 +47,7 @@ class Search:
         tmdb.API_KEY = self.TMDB_KEY
 
     @classmethod
-    def _cache_get(cls, cache: OrderedDict, key: Tuple[Any, ...]) -> Any:
+    def _cache_get(cls, cache: OrderedDict[tuple[Any, ...], Any], key: tuple[Any, ...]) -> Any:
         with cls._cache_lock:
             if key not in cache:
                 return None, False
@@ -52,7 +56,12 @@ class Search:
         return deepcopy(value), True
 
     @classmethod
-    def _cache_set(cls, cache: OrderedDict, key: Tuple[Any, ...], value: Any) -> None:
+    def _cache_set(
+        cls,
+        cache: OrderedDict[tuple[Any, ...], Any],
+        key: tuple[Any, ...],
+        value: Any,
+    ) -> None:
         with cls._cache_lock:
             if key in cache:
                 cache.pop(key)
@@ -550,18 +559,22 @@ class Search:
                     self._cache_set(self._season_info_cache, cache_key, None)
                     return None
 
-                filtered_season = {
+                filtered_season: SeasonPayload = {
                     "air_date": season_info.get("air_date"),
                     "episode_count": season_info.get("episode_count", 0),
                     "id": season_info.get("id"),
                     "name": season_info.get("name", ""),
                     "season_number": season_info.get("season_number", season_number),
-                    "episodes": [],
+                    "episodes": cast(list[TMDBDict], []),
                     "_episodes_loaded": True,
                 }
 
-                episodes: List[Dict] = season_info.get("episodes", [])
+                episodes = season_info.get("episodes", [])
+                if not isinstance(episodes, list):
+                    episodes = []
                 for episode in episodes:
+                    if not isinstance(episode, dict):
+                        continue
                     filtered_episode = {
                         "air_date": episode.get("air_date"),
                         "episode_number": episode.get("episode_number"),
@@ -673,6 +686,8 @@ class Search:
 
         def _fetch_season_detail(entry: Dict[str, Any]):
             season_number = entry.get("season_number")
+            if not isinstance(season_number, int):
+                raise ValueError(f"invalid season_number: {season_number!r}")
             logger.info(f"[季度信息] 正在获取Season {season_number}的详细信息...")
             return season_number, self.get_season_info(tv_id, season_number)
 

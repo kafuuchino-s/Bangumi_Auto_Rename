@@ -1,5 +1,4 @@
 from pathlib import Path
-from typing import cast
 
 from fastapi import Request
 from nicegui import app, ui
@@ -7,7 +6,6 @@ from nicegui import app, ui
 from .config.config_manager import cm
 from .logger import logger
 from .main_page import main_page
-from .models import TaskModel
 from .pages.data_table_page import create_table
 from .queue.task_queue import get_queue_manager
 from .utils.utils import no_scroll_bar
@@ -16,9 +14,26 @@ ANI_TAG = ['动漫', 'anime', '动画']
 MOVIE_TAG = ['电影', 'movie', '剧场', '剧场版']
 
 
-def get_skip_tags() -> list:
+def _form_value_to_text(value: object) -> str:
+    if isinstance(value, str):
+        return value
+    if value is None:
+        return ''
+    return str(value)
+
+
+def _form_value_to_bool(value: object) -> bool:
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, str):
+        return value.strip().lower() in {'1', 'true', 'yes', 'on'}
+    return False
+
+
+def get_skip_tags() -> list[str]:
     """从配置获取跳过标签列表"""
-    skip_tags_str = cm.get_config("skip_tags") or ""
+    skip_tags_raw = cm.get_config("skip_tags")
+    skip_tags_str = skip_tags_raw if isinstance(skip_tags_raw, str) else ''
     return [tag.strip().lower() for tag in skip_tags_str.split(",") if tag.strip()]
 
 
@@ -28,8 +43,10 @@ def convert_host_path_to_docker(path: str) -> str:
 
     例如: H:\\Anime\\xxx -> /media/Anime/xxx
     """
-    host_prefix = cm.get_config('host_path_prefix')
-    docker_mnt = cm.get_config('docker_mnt')
+    host_prefix_raw = cm.get_config('host_path_prefix')
+    docker_mnt_raw = cm.get_config('docker_mnt')
+    host_prefix = host_prefix_raw if isinstance(host_prefix_raw, str) else ''
+    docker_mnt = docker_mnt_raw if isinstance(docker_mnt_raw, str) else '/media'
 
     if not host_prefix:
         return path
@@ -128,11 +145,9 @@ def main():
 
 @app.post('/sendTask')
 async def _send_task(request: Request):
-    data: TaskModel = cast(TaskModel, dict(await request.form()))
-    logger.info(f'[收到任务] {data}')
-    raw_path = data.get('path') or ''
-    if not isinstance(raw_path, str):
-        raw_path = str(raw_path)
+    form_data = dict(await request.form())
+    logger.info(f'[收到任务] {form_data}')
+    raw_path = _form_value_to_text(form_data.get('path'))
 
     # qBittorrent 有时会以 UTF-8 bytes 发送，但 ASGI 表单解析可能按 latin-1 解码成 str。
     # 对“已是正常 Unicode 的路径”不要强行 latin-1 编码，否则遇到中文/日文会直接崩溃。
@@ -143,9 +158,9 @@ async def _send_task(request: Request):
         recovered = None
     if recovered and recovered != raw_path:
         path = recovered
-    is_anime = data.get('is_anime', '')
-    no_process = data.get('no_process', '')
-    tag = data.get('tag', '')
+    is_anime: bool | None = _form_value_to_bool(form_data.get('is_anime'))
+    no_process = _form_value_to_bool(form_data.get('no_process'))
+    tag = _form_value_to_text(form_data.get('tag'))
 
     tag_list = [str(i).strip().lower() for i in tag.split(',')]
 
