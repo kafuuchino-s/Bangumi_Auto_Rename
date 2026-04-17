@@ -1,10 +1,13 @@
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Optional, TypeAlias
 
 from hachoir.parser import createParser
 from hachoir.metadata import extractMetadata
 
 from ..logger import logger
+
+VideoInfoValue: TypeAlias = str | int | float | None
+VideoInfoDict: TypeAlias = dict[str, VideoInfoValue]
 
 
 class VideoAnalyzer:
@@ -21,6 +24,7 @@ class VideoAnalyzer:
         Returns:
             视频时长（分钟），失败返回None
         """
+        parser = None
         try:
             parser = createParser(str(file_path))
             if not parser:
@@ -51,7 +55,9 @@ class VideoAnalyzer:
                 parser.close()
 
     @staticmethod
-    def analyze_video_files(base_path: Path, file_paths: List[Path]) -> List[Dict]:
+    def analyze_video_files(
+        base_path: Path, file_paths: list[Path]
+    ) -> list[VideoInfoDict]:
         """
         分析多个视频文件
 
@@ -62,13 +68,13 @@ class VideoAnalyzer:
         Returns:
             包含文件信息的字典列表
         """
-        results = []
+        results: list[VideoInfoDict] = []
 
         for file_path in file_paths:
             if not file_path.exists():
                 continue
 
-            file_info = {
+            file_info: VideoInfoDict = {
                 "filename": file_path.name,
                 "path": file_path.relative_to(base_path).as_posix(),
                 "size": file_path.stat().st_size,
@@ -81,7 +87,7 @@ class VideoAnalyzer:
         return results
 
     @staticmethod
-    def get_video_info(file_path: Path) -> Optional[Dict]:
+    def get_video_info(file_path: Path) -> Optional[VideoInfoDict]:
         """
         获取单个视频文件的详细信息
 
@@ -103,7 +109,7 @@ class VideoAnalyzer:
                 logger.error(f"[视频分析] 无法提取元数据: {file_path.name}")
                 return None
 
-            info = {
+            info: VideoInfoDict = {
                 "filename": file_path.name,
                 "path": str(file_path),
                 "size": file_path.stat().st_size,
