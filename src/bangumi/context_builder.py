@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import re
 from difflib import SequenceMatcher
-from typing import Dict, List, Optional, Set
+from typing import TypedDict, cast
 
 from ..logger import logger
 from .client import BangumiClient
@@ -15,14 +15,45 @@ from .models import (
 )
 
 
+class AnimeInfoDict(TypedDict, total=False):
+    name: str
+    original_name: str
+    original_title: str
+    name_cn: str
+    first_air_date: str
+
+
+class LocalFileDict(TypedDict, total=False):
+    filename: str
+    path: str
+
+
+class MainCandidate(TypedDict):
+    subject: BangumiSubject
+    score: float
+
+
+class RelatedCandidate(TypedDict):
+    subject: BangumiSubject
+    relation: str
+    score: float
+
+
+class BangumiPromptContext(TypedDict, total=False):
+    search_keywords: list[str]
+    selected_subject_id: int
+    selected_subject_reason: str
+    subjects: list[object]
+
+
 class BangumiContextBuilder:
-    MAX_KEYWORDS = 6
-    MAX_MAIN_CANDIDATES = 4
-    MAX_RELATED_SUBJECTS = 3
-    MAX_TOTAL_SUBJECTS = 4
-    MAX_EPISODES_PER_SUBJECT = 60
-    ANIME_TYPE = 2
-    RELATION_PRIORITY = {
+    MAX_KEYWORDS: int = 6
+    MAX_MAIN_CANDIDATES: int = 4
+    MAX_RELATED_SUBJECTS: int = 3
+    MAX_TOTAL_SUBJECTS: int = 4
+    MAX_EPISODES_PER_SUBJECT: int = 60
+    ANIME_TYPE: int = 2
+    RELATION_PRIORITY: dict[str, int] = {
         "续集": 5,
         "前传": 4,
         "番外篇": 4,
@@ -31,14 +62,14 @@ class BangumiContextBuilder:
         "不同演绎": 1,
     }
 
-    def __init__(self, client: Optional[BangumiClient] = None) -> None:
-        self.client = client or BangumiClient()
+    def __init__(self, client: BangumiClient | None = None) -> None:
+        self.client: BangumiClient = client or BangumiClient()
 
     def build_tv_context(
         self,
-        anime_info: Dict,
-        local_files: List[Dict],
-    ) -> Optional[Dict]:
+        anime_info: AnimeInfoDict,
+        local_files: list[LocalFileDict],
+    ) -> BangumiPromptContext | None:
         try:
             keywords = self._build_search_keywords(anime_info, local_files)
             if not keywords:
@@ -50,7 +81,7 @@ class BangumiContextBuilder:
 
             selected = main_candidates[0]
             selected_subject = selected["subject"]
-            subject_contexts: List[BangumiSubjectContext] = [
+            subject_contexts: list[BangumiSubjectContext] = [
                 self._build_subject_context(selected_subject, "main", selected["score"])
             ]
 
@@ -78,15 +109,15 @@ class BangumiContextBuilder:
                 ),
                 subjects=subject_contexts,
             )
-            return context.to_prompt_dict()
+            return cast(BangumiPromptContext, cast(object, context.to_prompt_dict()))
         except Exception as exc:
             logger.warning(f"[Bangumi] 构建上下文失败，回退 TMDB-only: {exc}")
             return None
 
     def _build_search_keywords(
-        self, anime_info: Dict, local_files: List[Dict]
-    ) -> List[str]:
-        keywords: List[str] = []
+        self, anime_info: AnimeInfoDict, local_files: list[LocalFileDict]
+    ) -> list[str]:
+        keywords: list[str] = []
 
         for key in ("name", "original_name", "original_title"):
             value = str(anime_info.get(key) or "").strip()
@@ -105,11 +136,11 @@ class BangumiContextBuilder:
         return keywords[: self.MAX_KEYWORDS]
 
     def _collect_main_candidates(
-        self, anime_info: Dict, keywords: List[str]
-    ) -> List[Dict[str, object]]:
+        self, anime_info: AnimeInfoDict, keywords: list[str]
+    ) -> list[MainCandidate]:
         year = self._extract_year(anime_info.get("first_air_date"))
-        seen: Set[int] = set()
-        scored: List[Dict[str, object]] = []
+        seen: set[int] = set()
+        scored: list[MainCandidate] = []
 
         for keyword in keywords:
             subjects = self.client.search_subjects(keyword, year)
@@ -129,11 +160,11 @@ class BangumiContextBuilder:
     def _collect_related_subjects(
         self,
         subject_id: int,
-        anime_info: Dict,
-    ) -> List[Dict[str, object]]:
+        anime_info: AnimeInfoDict,
+    ) -> list[RelatedCandidate]:
         relations = self.client.get_related_subjects(subject_id)
-        seen: Set[int] = {subject_id}
-        scored: List[Dict[str, object]] = []
+        seen: set[int] = {subject_id}
+        scored: list[RelatedCandidate] = []
 
         for relation in relations:
             if relation.id in seen or relation.type != self.ANIME_TYPE:
@@ -171,14 +202,14 @@ class BangumiContextBuilder:
             episodes=compact_episodes,
         )
 
-    def _compact_episodes(self, episodes: List[BangumiEpisode]) -> List[BangumiEpisode]:
+    def _compact_episodes(self, episodes: list[BangumiEpisode]) -> list[BangumiEpisode]:
         filtered = [ep for ep in episodes if ep.sort >= 0]
         filtered.sort(key=lambda ep: (ep.sort, ep.id))
         return filtered[: self.MAX_EPISODES_PER_SUBJECT]
 
     def _score_subject(
         self,
-        anime_info: Dict,
+        anime_info: AnimeInfoDict,
         keyword: str,
         subject: BangumiSubject,
     ) -> float:
@@ -231,7 +262,7 @@ class BangumiContextBuilder:
         self,
         subject: BangumiSubject,
         relation: BangumiSubjectRelation,
-        anime_info: Dict,
+        anime_info: AnimeInfoDict,
     ) -> float:
         base = self._score_subject(anime_info, subject.name_cn or subject.name, subject)
         relation_bonus = self.RELATION_PRIORITY.get(relation.relation or "", 0)
@@ -241,7 +272,7 @@ class BangumiContextBuilder:
         self,
         subject: BangumiSubject,
         relation: BangumiSubjectRelation,
-        anime_info: Dict,
+        anime_info: AnimeInfoDict,
     ) -> bool:
         if subject.type != self.ANIME_TYPE:
             return False
@@ -273,7 +304,7 @@ class BangumiContextBuilder:
         )
         return cleaned.strip(" -_:")
 
-    def _append_keyword(self, keywords: List[str], value: str) -> None:
+    def _append_keyword(self, keywords: list[str], value: str) -> None:
         value = str(value or "").strip()
         if len(value) < 2:
             return
@@ -283,7 +314,7 @@ class BangumiContextBuilder:
     def _normalize_text(self, value: str) -> str:
         return re.sub(r"[\W_]+", "", str(value or "")).casefold()
 
-    def _extract_year(self, value: object) -> Optional[int]:
+    def _extract_year(self, value: object) -> int | None:
         text = str(value or "")
         match = re.match(r"^(\d{4})", text)
         if not match:

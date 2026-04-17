@@ -1,25 +1,32 @@
 import re
-from difflib import SequenceMatcher
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set, Tuple
+from typing import cast
 
 from ..logger import logger
 from .utils import VIDEO_SUFFIX
 
 from ..ai.client import AIClient
-from ..ai.models import AIAnalysisResult
+from ..ai.models import AIAnalysisResult, EpisodeMapping
 from ..ai.video_analyzer import VideoAnalyzer
-from ..bangumi.context_builder import BangumiContextBuilder
+from ..bangumi.context_builder import (
+    AnimeInfoDict,
+    BangumiContextBuilder,
+    BangumiPromptContext,
+    LocalFileDict,
+)
 from .cleaner import extract_part, extract_video_format, is_promotional_content
 from .filename_builder import FilenameBuilder, EpisodeMetadata
 from ..subtitle.processor import SubtitleProcessor
 from ..subtitle.extractor import SUBTITLE_EXTENSIONS
 
+AnimeEpisodeDict = dict[str, object]
+FileAnalysisDict = LocalFileDict
+
 
 class AIProcessor:
     """AI辅助处理器，用于智能分析和重命名"""
 
-    AUDIO_SPECIAL_TOKENS = (
+    AUDIO_SPECIAL_TOKENS: tuple[str, ...] = (
         "sound novel",
         "audio novel",
         "有声小说",
@@ -33,7 +40,7 @@ class AIProcessor:
         "オーディオドラマ",
         "サウンドノベル",
     )
-    SPECIAL_EVENT_TOKENS = (
+    SPECIAL_EVENT_TOKENS: tuple[str, ...] = (
         "recitation",
         "朗读",
         "朗讀",
@@ -51,7 +58,7 @@ class AIProcessor:
         "live",
     )
 
-    RESOURCE_TOKEN_MAP = [
+    RESOURCE_TOKEN_MAP: list[tuple[str, str]] = [
         ("HEVC", "HEVC"),
         ("X265", "x265"),
         ("X264", "x264"),
@@ -73,7 +80,11 @@ class AIProcessor:
         ("BLURAY", "BluRay"),
     ]
 
-    def __init__(self):
+    def __init__(self) -> None:
+        self.ai_client: AIClient
+        self.video_analyzer: VideoAnalyzer
+        self.subtitle_processor: SubtitleProcessor
+        self.bangumi_context_builder: BangumiContextBuilder
         self.ai_client = AIClient()
         self.video_analyzer = VideoAnalyzer()
         self.subtitle_processor = SubtitleProcessor()
@@ -82,10 +93,10 @@ class AIProcessor:
     def analyze_anime_files(
         self,
         path: Path,
-        anime_info: Dict,
-        video_files: Optional[List[Path]] = None,
-        file_analysis: Optional[List[Dict[str, Any]]] = None,
-    ) -> Optional[AIAnalysisResult]:
+        anime_info: AnimeInfoDict,
+        video_files: list[Path] | None = None,
+        file_analysis: list[FileAnalysisDict] | None = None,
+    ) -> AIAnalysisResult | None:
         """
         使用AI分析动漫文件的映射关系
 
@@ -109,18 +120,28 @@ class AIProcessor:
             return None
 
         # 分析视频文件（允许复用调用方已分析结果）
-        current_file_analysis = file_analysis or self.video_analyzer.analyze_video_files(
+        raw_file_analysis = file_analysis or self.video_analyzer.analyze_video_files(
             path, current_video_files
         )
+        current_file_analysis: list[FileAnalysisDict] = []
+        for item in raw_file_analysis:
+            filename_value = item.get("filename")
+            path_value = item.get("path")
+            normalized_item: FileAnalysisDict = {}
+            if isinstance(filename_value, str):
+                normalized_item["filename"] = filename_value
+            if isinstance(path_value, str):
+                normalized_item["path"] = path_value
+            current_file_analysis.append(normalized_item)
 
-        bangumi_context = self.bangumi_context_builder.build_tv_context(
+        bangumi_context: BangumiPromptContext | None = self.bangumi_context_builder.build_tv_context(
             anime_info,
             current_file_analysis,
         )
         if bangumi_context:
+            subjects = bangumi_context.get('subjects', [])
             logger.info(
-                "[AI处理] 已构建 Bangumi 辅助上下文: "
-                f"subject_count={len(bangumi_context.get('subjects', []))}"
+                f"[AI处理] 已构建 Bangumi 辅助上下文: subject_count={len(subjects)}"
             )
         else:
             logger.info("[AI处理] Bangumi 上下文不可用，回退 TMDB-only")
@@ -154,9 +175,9 @@ class AIProcessor:
         parts = [part for part in normalized.split('/') if part and part != '.']
         return '/'.join(parts)
 
-    def _generate_path_suffixes(self, normalized_path: str) -> List[str]:
+    def _generate_path_suffixes(self, normalized_path: str) -> list[str]:
         parts = [part for part in normalized_path.split('/') if part]
-        suffixes: List[str] = []
+        suffixes: list[str] = []
         for index in range(len(parts)):
             suffix = '/'.join(parts[index:])
             if suffix and suffix not in suffixes:
@@ -166,9 +187,9 @@ class AIProcessor:
     def _build_relative_file_index(
         self,
         base_path: Path,
-        local_files: List[Path],
-    ) -> Dict[str, Set[Path]]:
-        index: Dict[str, Set[Path]] = {}
+        local_files: list[Path],
+    ) -> dict[str, set[Path]]:
+        index: dict[str, set[Path]] = {}
 
         for file_path in local_files:
             if not file_path.exists():
@@ -192,8 +213,8 @@ class AIProcessor:
         self,
         mapping_path: str,
         base_path: Path,
-        relative_file_index: Dict[str, Set[Path]],
-    ) -> Tuple[Optional[Path], Optional[str], str]:
+        relative_file_index: dict[str, set[Path]],
+    ) -> tuple[Path | None, str | None, str]:
         normalized_path = self._normalize_mapping_path(mapping_path)
         if not normalized_path:
             return None, '路径为空', ''
@@ -209,8 +230,8 @@ class AIProcessor:
             return None, f'路径不是文件:{normalized_path}', normalized_path
 
         has_directory = len(path_parts) >= 2
-        suffix_candidates: List[Path] = []
-        seen: Set[Path] = set()
+        suffix_candidates: list[Path] = []
+        seen: set[Path] = set()
         if has_directory:
             for key in self._generate_path_suffixes(normalized_path):
                 if '/' not in key:
@@ -244,7 +265,7 @@ class AIProcessor:
 
         return None, f'文件不存在:{normalized_path}', normalized_path
 
-    def _score_mapping_path(self, file_path: str | None) -> Tuple[int, float, int]:
+    def _score_mapping_path(self, file_path: str | None) -> tuple[int, float, int]:
         file_path = file_path or ''
         normalized_path = file_path.replace('\\', '/').lower()
         promo_penalty = 1 if is_promotional_content(Path(file_path).name) else 0
@@ -258,9 +279,9 @@ class AIProcessor:
     def _build_source_index_map(
         self,
         base_path: Path,
-        video_files: List[Path],
-    ) -> Dict[int, Tuple[Path, str]]:
-        index_map: Dict[int, Tuple[Path, str]] = {}
+        video_files: list[Path],
+    ) -> dict[int, tuple[Path, str]]:
+        index_map: dict[int, tuple[Path, str]] = {}
         for idx, file_path in enumerate(video_files, 1):
             if not file_path.exists() or not file_path.is_file():
                 continue
@@ -275,12 +296,12 @@ class AIProcessor:
         self,
         ai_result: AIAnalysisResult,
         base_path: Path,
-        video_files: List[Path],
-    ) -> Tuple[List[str], List[str]]:
+        video_files: list[Path],
+    ) -> tuple[list[str], list[str]]:
         source_index_map = self._build_source_index_map(base_path, video_files)
         relative_file_index = self._build_relative_file_index(base_path, video_files)
-        strict_conflicts: List[str] = []
-        hydration_notes: List[str] = []
+        strict_conflicts: list[str] = []
+        hydration_notes: list[str] = []
 
         for mapping in ai_result.file_mapping:
             source_index = getattr(mapping, 'source_index', None)
@@ -292,6 +313,10 @@ class AIProcessor:
             if source_index is None:
                 if normalized_file_path:
                     mapping.file_path = normalized_file_path
+                continue
+
+            if not isinstance(source_index, int):
+                strict_conflicts.append(f'编号非法:{source_index}')
                 continue
 
             indexed = source_index_map.get(source_index)
@@ -331,12 +356,12 @@ class AIProcessor:
 
         return strict_conflicts, hydration_notes
 
-    def _pick_best_mapping_candidate(self, mappings: List[object]) -> object:
-        def sort_key(mapping: object) -> Tuple[int, int, float, int]:
+    def _pick_best_mapping_candidate(self, mappings: list[EpisodeMapping]) -> EpisodeMapping:
+        def sort_key(mapping: EpisodeMapping) -> tuple[int, int, float, int]:
             confidence_rank = {'High': 0, 'Medium': 1, 'Low': 2}
-            confidence = getattr(mapping, 'confidence', 'Low')
+            confidence = mapping.confidence
             promo_penalty, negative_bonus, path_length = self._score_mapping_path(
-                getattr(mapping, 'file_path', '')
+                mapping.file_path
             )
             return (
                 confidence_rank.get(confidence, 3),
@@ -351,28 +376,31 @@ class AIProcessor:
         normalized = value.casefold()
         return any(token in normalized for token in tokens)
 
-    def _build_tmdb_episode_lookup(self, anime_info: Dict) -> Dict[Tuple[int, int], Dict[str, Any]]:
-        lookup: Dict[Tuple[int, int], Dict[str, Any]] = {}
+    def _build_tmdb_episode_lookup(
+        self, anime_info: AnimeInfoDict
+    ) -> dict[tuple[int, int], AnimeEpisodeDict]:
+        lookup: dict[tuple[int, int], AnimeEpisodeDict] = {}
         for season in anime_info.get("seasons", []):
             season_num = season.get("season_number", 0)
             for ep in season.get("episodes", []) or []:
+                episode = cast(AnimeEpisodeDict, ep)
                 ep_num = ep.get("episode_number")
-                if isinstance(ep_num, int) and ep_num > 0:
-                    lookup[(season_num, ep_num)] = ep
+                if isinstance(season_num, int) and isinstance(ep_num, int) and ep_num > 0:
+                    lookup[(season_num, ep_num)] = episode
         return lookup
 
     def _is_semantically_conflicting_special(
         self,
-        mapping: object,
-        episode_info: Optional[Dict[str, Any]],
+        mapping: EpisodeMapping,
+        episode_info: AnimeEpisodeDict | None,
     ) -> bool:
         if getattr(mapping, 'tmdb_season', 0) != 0:
             return False
 
-        file_path = getattr(mapping, 'file_path', '') or ''
+        file_path = mapping.file_path or ''
         file_name = Path(file_path).name
-        episode_name = (episode_info or {}).get('name', '') or ''
-        episode_overview = (episode_info or {}).get('overview', '') or ''
+        episode_name = episode_info.get('name', '') if episode_info else ''
+        episode_overview = episode_info.get('overview', '') if episode_info else ''
         episode_text = f"{episode_name} {episode_overview}"
 
         file_is_event = self._has_any_token(file_name, self.SPECIAL_EVENT_TOKENS)
@@ -386,19 +414,19 @@ class AIProcessor:
 
     def _filter_semantic_special_mappings(
         self,
-        mappings: List[object],
-        anime_info: Dict,
-    ) -> Tuple[List[object], List[str], List[str]]:
+        mappings: list[EpisodeMapping],
+        anime_info: AnimeInfoDict,
+    ) -> tuple[list[EpisodeMapping], list[str], list[str]]:
         episode_lookup = self._build_tmdb_episode_lookup(anime_info)
-        kept: List[object] = []
-        removed_paths: List[str] = []
-        notes: List[str] = []
+        kept: list[EpisodeMapping] = []
+        removed_paths: list[str] = []
+        notes: list[str] = []
 
         for mapping in mappings:
-            key = (getattr(mapping, 'tmdb_season', 0), getattr(mapping, 'tmdb_episode', 0))
+            key = (mapping.tmdb_season, mapping.tmdb_episode)
             episode_info = episode_lookup.get(key)
             if self._is_semantically_conflicting_special(mapping, episode_info):
-                file_path = getattr(mapping, 'file_path', '')
+                file_path = mapping.file_path or ''
                 removed_paths.append(file_path)
                 notes.append(
                     f"Season0语义过滤:S{key[0]:02d}E{key[1]:02d}:{Path(file_path).name}"
@@ -410,20 +438,20 @@ class AIProcessor:
 
     def _sanitize_illegal_episode_mappings(
         self,
-        mappings: List[object],
-        tmdb_episode_keys: set[Tuple[int, int]],
-    ) -> Tuple[List[object], List[str], List[str]]:
-        kept: List[object] = []
-        removed_paths: List[str] = []
-        notes: List[str] = []
+        mappings: list[EpisodeMapping],
+        tmdb_episode_keys: set[tuple[int, int]],
+    ) -> tuple[list[EpisodeMapping], list[str], list[str]]:
+        kept: list[EpisodeMapping] = []
+        removed_paths: list[str] = []
+        notes: list[str] = []
 
         for mapping in mappings:
-            key = (getattr(mapping, 'tmdb_season', 0), getattr(mapping, 'tmdb_episode', 0))
+            key = (mapping.tmdb_season, mapping.tmdb_episode)
             if key in tmdb_episode_keys:
                 kept.append(mapping)
                 continue
 
-            file_path = getattr(mapping, 'file_path', '')
+            file_path = mapping.file_path or ''
             removed_paths.append(file_path)
             notes.append(
                 f"越界映射清洗:S{key[0]:02d}E{key[1]:02d}:{Path(file_path).name}"
@@ -434,16 +462,16 @@ class AIProcessor:
     def _sanitize_tv_mappings(
         self,
         ai_result: AIAnalysisResult,
-    ) -> Tuple[List[object], List[str]]:
-        sanitized: List[object] = []
-        sanitizer_notes: List[str] = []
-        by_file: Dict[str, object] = {}
+    ) -> tuple[list[EpisodeMapping], list[str]]:
+        sanitized: list[EpisodeMapping] = []
+        sanitizer_notes: list[str] = []
+        by_file: dict[str, EpisodeMapping] = {}
 
         for mapping in ai_result.file_mapping:
-            raw_file_path = getattr(mapping, 'file_path', None)
+            raw_file_path = mapping.file_path
             if not isinstance(raw_file_path, str) or not raw_file_path.strip():
                 sanitizer_notes.append(
-                    f"空路径映射丢弃:#{getattr(mapping, 'source_index', 'unknown')}"
+                    f"空路径映射丢弃:#{mapping.source_index if mapping.source_index is not None else 'unknown'}"
                 )
                 continue
 
@@ -464,7 +492,7 @@ class AIProcessor:
                 by_file[normalized_path] = chosen
                 sanitizer_notes.append(f"同文件多目标保留:{normalized_path}")
 
-        by_episode: Dict[Tuple[int, int], List[object]] = {}
+        by_episode: dict[tuple[int, int], list[EpisodeMapping]] = {}
         for mapping in by_file.values():
             key = (mapping.tmdb_season, mapping.tmdb_episode)
             by_episode.setdefault(key, []).append(mapping)
@@ -477,7 +505,7 @@ class AIProcessor:
             best = self._pick_best_mapping_candidate(conflict_mappings)
             sanitized.append(best)
             removed_paths = sorted(
-                getattr(m, 'file_path', '')
+                m.file_path or ''
                 for m in conflict_mappings
                 if m is not best
             )
@@ -490,35 +518,38 @@ class AIProcessor:
     def validate_tv_result(
         self,
         ai_result: AIAnalysisResult,
-        anime_info: Dict,
+        anime_info: AnimeInfoDict,
         base_path: Path,
-        video_files: Optional[List[Path]] = None,
-    ) -> Tuple[bool, Optional[str], str]:
+        video_files: list[Path] | None = None,
+    ) -> tuple[bool, str | None, str]:
         """验证 TV AI 结果可执行性。"""
         if not ai_result or not ai_result.file_mapping:
             return False, "ai_empty_mapping", "AI 未返回 file_mapping"
 
         # 统计 TMDB 可用剧集
-        tmdb_episode_keys: set[Tuple[int, int]] = set()
+        tmdb_episode_keys: set[tuple[int, int]] = set()
         for season in anime_info.get("seasons", []):
             season_num = season.get("season_number", 0)
             episodes = season.get("episodes", [])
             if episodes:
                 for ep in episodes:
                     ep_num = ep.get("episode_number")
-                    if isinstance(ep_num, int) and ep_num > 0:
+                    if isinstance(season_num, int) and ep_num > 0:
                         tmdb_episode_keys.add((season_num, ep_num))
             else:
                 episode_count = season.get("episode_count", 0)
-                if isinstance(episode_count, int) and episode_count > 0:
+                if (
+                    isinstance(season_num, int)
+                    and episode_count > 0
+                ):
                     for ep_num in range(1, episode_count + 1):
                         tmdb_episode_keys.add((season_num, ep_num))
 
-        seen_keys: set[Tuple[int, int]] = set()
-        ai_reported_conflicts: List[str] = list(
+        seen_keys: set[tuple[int, int]] = set()
+        ai_reported_conflicts: list[str] = list(
             getattr(ai_result, "conflict_details", []) or []
         )
-        strict_conflicts: List[str] = []
+        strict_conflicts: list[str] = []
         mapped_files: set[str] = set()
         all_video_files = video_files or self._collect_video_files(base_path)
         source_hydration_conflicts, source_hydration_notes = self._hydrate_mapping_file_paths(
@@ -531,14 +562,14 @@ class AIProcessor:
 
         # 先清洗重复映射，避免因 AI 模型返回歧义条目而整体失败
         sanitized_mappings, sanitizer_notes = self._sanitize_tv_mappings(ai_result)
-        semantic_removed_paths: List[str] = []
-        semantic_notes: List[str] = []
+        semantic_removed_paths: list[str] = []
+        semantic_notes: list[str] = []
         sanitized_mappings, semantic_removed_paths, semantic_notes = (
             self._filter_semantic_special_mappings(sanitized_mappings, anime_info)
         )
         sanitizer_notes.extend(semantic_notes)
-        illegal_removed_paths: List[str] = []
-        illegal_notes: List[str] = []
+        illegal_removed_paths: list[str] = []
+        illegal_notes: list[str] = []
         sanitized_mappings, illegal_removed_paths, illegal_notes = (
             self._sanitize_illegal_episode_mappings(
                 sanitized_mappings,
@@ -556,11 +587,11 @@ class AIProcessor:
             logger.info(
                 f"[AI处理] 映射清洗: {'; '.join((source_hydration_notes + sanitizer_notes)[:5])}"
             )
-        ai_result.file_mapping = sanitized_mappings  # type: ignore[assignment]
+        ai_result.file_mapping = sanitized_mappings
 
         for mapping in ai_result.file_mapping:
             source_path, path_error, normalized_path = self._resolve_mapping_source_path(
-                getattr(mapping, 'file_path', ''),
+                mapping.file_path or '',
                 base_path,
                 relative_file_index,
             )
@@ -615,11 +646,11 @@ class AIProcessor:
     def apply_ai_mapping(
         self,
         ai_result: AIAnalysisResult | None,
-        anime_info: Dict,
+        anime_info: AnimeInfoDict,
         base_path: Path,
         work_path: Path,
-        all_local_files: Optional[List[Path]] = None,
-    ) -> Dict[Path, Path]:
+        all_local_files: list[Path] | None = None,
+    ) -> dict[Path, Path]:
         """
         以 TMDB 为主应用AI分析结果生成文件映射。
 
@@ -643,7 +674,7 @@ class AIProcessor:
             logger.warning("[AI处理] 无有效TMDB信息，返回空映射")
             return {}
 
-        new_mapping: Dict[Path, Path] = {}
+        new_mapping: dict[Path, Path] = {}
         resolved_local_files = all_local_files or self._collect_all_local_files(base_path)
         associated_file_index = self._build_associated_file_index(resolved_local_files)
         relative_file_index = self._build_relative_file_index(
@@ -652,7 +683,7 @@ class AIProcessor:
         )
 
         # 构建 AI 映射的快速查找索引: (season, episode) -> mapping
-        ai_mapping_index: Dict[tuple[int, int], object] = {}
+        ai_mapping_index: dict[tuple[int, int], EpisodeMapping] = {}
         for mapping in ai_result.file_mapping:
             key = (mapping.tmdb_season, mapping.tmdb_episode)
             ai_mapping_index[key] = mapping
@@ -686,7 +717,10 @@ class AIProcessor:
                 season_num = season.get("season_number", 0)
                 # 优先使用 episodes 数组长度，因为 episode_count 可能为 0
                 episodes = season.get("episodes", [])
-                episode_count = len(episodes) if episodes else season.get("episode_count", 0)
+                raw_episode_count = season.get("episode_count", 0)
+                episode_count = len(episodes) if episodes else (
+                    raw_episode_count if isinstance(raw_episode_count, int) else 0
+                )
 
                 # 跳过 AI 未识别的季度
                 if season_num not in relevant_seasons:
@@ -710,7 +744,7 @@ class AIProcessor:
                         continue
 
                     mapping = ai_mapping_index[key]
-                    relative_path_str = mapping.file_path
+                    relative_path_str = mapping.file_path or ''
                     confidence = mapping.confidence
 
                     source_path, path_error, _ = self._resolve_mapping_source_path(
@@ -785,8 +819,8 @@ class AIProcessor:
         source_path: Path,
         new_video_filename: str,
         target_dir: Path,
-        associated_file_index: Dict[str, List[Path]],
-        new_mapping: Dict[Path, Path],
+        associated_file_index: dict[str, list[Path]],
+        new_mapping: dict[Path, Path],
     ) -> None:
         """
         查找并添加关联文件（如字幕）的映射
@@ -860,7 +894,7 @@ class AIProcessor:
         if not filename:
             return ""
 
-        parts: List[str] = []
+        parts: list[str] = []
         video_format = extract_video_format(filename)
         if video_format:
             parts.append(video_format)
@@ -872,7 +906,7 @@ class AIProcessor:
 
         return " ".join(parts)
 
-    def _collect_all_local_files(self, base_path: Path) -> List[Path]:
+    def _collect_all_local_files(self, base_path: Path) -> list[Path]:
         """收集基础路径下所有本地文件（包含视频与关联文件）。"""
         if base_path.is_dir():
             return [item for item in base_path.rglob("*") if item.is_file()]
@@ -885,10 +919,10 @@ class AIProcessor:
 
     def _build_associated_file_index(
         self,
-        all_local_files: List[Path],
-    ) -> Dict[str, List[Path]]:
+        all_local_files: list[Path],
+    ) -> dict[str, list[Path]]:
         """按 video_stem 建立关联文件索引，避免 O(n²) 扫描。"""
-        index: Dict[str, List[Path]] = {}
+        index: dict[str, list[Path]] = {}
 
         for file_path in all_local_files:
             if not file_path.is_file():
@@ -910,9 +944,9 @@ class AIProcessor:
 
         return index
 
-    def _collect_video_files(self, path: Path) -> List[Path]:
+    def _collect_video_files(self, path: Path) -> list[Path]:
         """收集指定路径下的所有视频文件（过滤宣传内容）"""
-        video_files = []
+        video_files: list[Path] = []
         skipped_promo = 0
 
         if path.is_file():

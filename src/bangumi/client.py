@@ -4,12 +4,37 @@ import time
 from collections import OrderedDict
 from copy import deepcopy
 from threading import Lock
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Hashable, TypeVar
 
 import requests
 
 from ..logger import logger
 from .models import BangumiEpisode, BangumiSubject, BangumiSubjectRelation
+
+_CacheKey = TypeVar('_CacheKey', bound=Hashable)
+_CacheValue = TypeVar('_CacheValue')
+
+
+def _to_float(value: object) -> float | None:
+    if isinstance(value, bool) or value is None:
+        return None
+    if isinstance(value, (int, float, str)):
+        try:
+            return float(value)
+        except (TypeError, ValueError):
+            return None
+    return None
+
+
+def _to_int(value: object) -> int | None:
+    if isinstance(value, bool) or value is None:
+        return None
+    if isinstance(value, (int, str)):
+        try:
+            return int(value)
+        except (TypeError, ValueError):
+            return None
+    return None
 
 
 class BangumiClient:
@@ -22,12 +47,12 @@ class BangumiClient:
     RETRYABLE_STATUS_CODES = {429, 500, 502, 503, 504}
     _CACHE_MAX_SIZE = 128
     _cache_lock = Lock()
-    _search_cache: "OrderedDict[Tuple[str, Optional[int]], List[BangumiSubject]]" = (
+    _search_cache: "OrderedDict[tuple[str, int | None], list[BangumiSubject]]" = (
         OrderedDict()
     )
-    _subject_cache: "OrderedDict[int, Optional[BangumiSubject]]" = OrderedDict()
-    _related_cache: "OrderedDict[int, List[BangumiSubjectRelation]]" = OrderedDict()
-    _episodes_cache: "OrderedDict[int, List[BangumiEpisode]]" = OrderedDict()
+    _subject_cache: "OrderedDict[int, BangumiSubject | None]" = OrderedDict()
+    _related_cache: "OrderedDict[int, list[BangumiSubjectRelation]]" = OrderedDict()
+    _episodes_cache: "OrderedDict[int, list[BangumiEpisode]]" = OrderedDict()
 
     def __init__(self) -> None:
         self.session = requests.Session()
@@ -39,7 +64,9 @@ class BangumiClient:
         )
 
     @classmethod
-    def _cache_get(cls, cache: OrderedDict, key: Any) -> Tuple[Any, bool]:
+    def _cache_get(
+        cls, cache: OrderedDict[_CacheKey, _CacheValue], key: _CacheKey
+    ) -> tuple[_CacheValue | None, bool]:
         with cls._cache_lock:
             if key not in cache:
                 return None, False
@@ -48,7 +75,12 @@ class BangumiClient:
         return deepcopy(value), True
 
     @classmethod
-    def _cache_set(cls, cache: OrderedDict, key: Any, value: Any) -> None:
+    def _cache_set(
+        cls,
+        cache: OrderedDict[_CacheKey, _CacheValue],
+        key: _CacheKey,
+        value: _CacheValue,
+    ) -> None:
         with cls._cache_lock:
             if key in cache:
                 cache.pop(key)
@@ -59,8 +91,8 @@ class BangumiClient:
     def search_subjects(
         self,
         keyword: str,
-        year: Optional[int] = None,
-    ) -> List[BangumiSubject]:
+        year: int | None = None,
+    ) -> list[BangumiSubject]:
         keyword = str(keyword or "").strip()
         if not keyword:
             return []
@@ -68,9 +100,9 @@ class BangumiClient:
         cache_key = (keyword.casefold(), year)
         cached_value, cache_hit = self._cache_get(self._search_cache, cache_key)
         if cache_hit:
-            return cached_value
+            return cached_value or []
 
-        payload: Dict[str, Any] = {
+        payload: dict[str, Any] = {
             "keyword": keyword,
             "sort": "rank",
             "filter": {"type": [self.ANIME_SUBJECT_TYPE]},
@@ -89,7 +121,7 @@ class BangumiClient:
         if not isinstance(data, dict):
             return []
         items = data.get("data", []) if isinstance(data, dict) else []
-        subjects: List[BangumiSubject] = []
+        subjects: list[BangumiSubject] = []
         for item in items[: self.MAX_SEARCH_RESULTS]:
             normalized = self._normalize_subject(item)
             if normalized:
@@ -97,7 +129,7 @@ class BangumiClient:
         self._cache_set(self._search_cache, cache_key, subjects)
         return subjects
 
-    def get_subject(self, subject_id: int) -> Optional[BangumiSubject]:
+    def get_subject(self, subject_id: int) -> BangumiSubject | None:
         cached_value, cache_hit = self._cache_get(self._subject_cache, subject_id)
         if cache_hit:
             return cached_value
@@ -109,16 +141,16 @@ class BangumiClient:
         self._cache_set(self._subject_cache, subject_id, subject)
         return subject
 
-    def get_related_subjects(self, subject_id: int) -> List[BangumiSubjectRelation]:
+    def get_related_subjects(self, subject_id: int) -> list[BangumiSubjectRelation]:
         cached_value, cache_hit = self._cache_get(self._related_cache, subject_id)
         if cache_hit:
-            return cached_value
+            return cached_value or []
 
         data = self._request_json("get", f"/v0/subjects/{subject_id}/subjects")
         if not isinstance(data, list):
             return []
 
-        relations: List[BangumiSubjectRelation] = []
+        relations: list[BangumiSubjectRelation] = []
         for item in data:
             normalized = self._normalize_relation(item)
             if normalized:
@@ -126,12 +158,12 @@ class BangumiClient:
         self._cache_set(self._related_cache, subject_id, relations)
         return relations
 
-    def get_episodes(self, subject_id: int) -> List[BangumiEpisode]:
+    def get_episodes(self, subject_id: int) -> list[BangumiEpisode]:
         cached_value, cache_hit = self._cache_get(self._episodes_cache, subject_id)
         if cache_hit:
-            return cached_value
+            return cached_value or []
 
-        all_items: List[BangumiEpisode] = []
+        all_items: list[BangumiEpisode] = []
         offset = 0
         limit = 100
 
@@ -168,8 +200,8 @@ class BangumiClient:
         method: str,
         path: str,
         *,
-        params: Optional[Dict[str, Any]] = None,
-        json: Optional[Dict[str, Any]] = None,
+        params: dict[str, Any] | None = None,
+        json: dict[str, Any] | None = None,
     ) -> Any:
         url = f"{self.BASE_URL}{path}"
         attempts = self.MAX_RETRIES + 1
@@ -213,13 +245,15 @@ class BangumiClient:
                 logger.warning(f"[Bangumi] 请求失败: {path} - {exc}")
                 return None
 
-    def _normalize_subject(self, payload: Dict[str, Any]) -> Optional[BangumiSubject]:
+    def _normalize_subject(self, payload: dict[str, Any]) -> BangumiSubject | None:
         if not isinstance(payload, dict):
             return None
 
         try:
-            rating = payload.get("rating") or {}
-            tags = payload.get("tags") or []
+            rating_value = payload.get("rating")
+            rating = rating_value if isinstance(rating_value, dict) else {}
+            tags_value = payload.get("tags")
+            tags = tags_value if isinstance(tags_value, list) else []
             return BangumiSubject(
                 id=int(payload.get("id") or 0),
                 type=int(payload.get("type") or self.ANIME_SUBJECT_TYPE),
@@ -230,17 +264,9 @@ class BangumiClient:
                 platform=str(payload.get("platform") or ""),
                 total_episodes=int(payload.get("total_episodes") or 0),
                 eps=int(payload.get("eps") or 0),
-                rating_score=(
-                    float(rating.get("score"))
-                    if rating.get("score") is not None
-                    else None
-                ),
+                rating_score=_to_float(rating.get("score")),
                 rating_total=int(rating.get("total") or 0),
-                rank=(
-                    int(payload.get("rank"))
-                    if payload.get("rank") is not None
-                    else None
-                ),
+                rank=_to_int(payload.get("rank")),
                 tags=[str(item.get("name") or "") for item in tags if item.get("name")],
                 meta_tags=[str(item) for item in (payload.get("meta_tags") or []) if item],
             )
@@ -248,8 +274,8 @@ class BangumiClient:
             return None
 
     def _normalize_relation(
-        self, payload: Dict[str, Any]
-    ) -> Optional[BangumiSubjectRelation]:
+        self, payload: dict[str, Any]
+    ) -> BangumiSubjectRelation | None:
         if not isinstance(payload, dict):
             return None
 
@@ -264,7 +290,7 @@ class BangumiClient:
         except Exception:
             return None
 
-    def _normalize_episode(self, payload: Dict[str, Any]) -> Optional[BangumiEpisode]:
+    def _normalize_episode(self, payload: dict[str, Any]) -> BangumiEpisode | None:
         if not isinstance(payload, dict):
             return None
 
