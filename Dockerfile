@@ -1,6 +1,8 @@
 FROM swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/library/python:3.10-slim-bullseye
 
-ENV TZ=Asia/Shanghai
+ENV TZ=Asia/Shanghai \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
 WORKDIR /Bangumi_Auto_Rename
 
 # 先复制依赖文件，利用缓存
@@ -20,12 +22,14 @@ RUN printf '%s\n' \
         libpango-1.0-0 libcairo2 \
     && rm -rf /var/lib/apt/lists/* \
     && pip install --no-cache-dir --upgrade pip \
-    && pip install --no-cache-dir -r requirements_docker.txt
+    && pip install --no-cache-dir -r requirements_docker.txt \
+    && mkdir -p /Bangumi_Auto_Rename/tests /Bangumi_Auto_Rename/data
 
-# 只复制源码
+# 只复制运行时需要的源码与配置页 AI 测试样例
 COPY src/ ./src/
-# 复制AI测试样例（配置页 OpenAI 多格式测试依赖）
 COPY tests/example_test_case.json tests/example_expected.json ./tests/
 
+# 当前镜像按默认配置使用 scrapling 非浏览器抓取。
+# 若后续启用 subtitle_auto_fetch_browser_enabled=true，需要额外构建带浏览器运行时的镜像。
 EXPOSE 5999
 CMD ["python3", "-m", "src.start"]

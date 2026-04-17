@@ -13,8 +13,7 @@
 若与旧文档或历史实现描述冲突，**以当前代码与 `CLAUDE.md` 为准**。
 
 相关文档：
-- `docs/BANGUMI_TV_MAPPING_PHASE2_PLAN.md`
-- `docs/BANGUMI_TV_MAPPING_PROGRESS.md`
+- `docs/AI_FIRST_STRICT_CLEANUP_TODO.md`
 - `docs/BANGUMI_API_REFERENCE.md`
 
 ---
