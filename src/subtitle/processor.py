@@ -9,7 +9,7 @@ import json
 import re
 import uuid
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set, Tuple
+from typing import Any, Dict, List, Optional, Set, Tuple, TypedDict
 
 from ..ai.client import AIClient
 from ..config.config_manager import cm
@@ -60,6 +60,31 @@ LANGUAGE_MAP: Dict[str, Tuple[str, bool]] = {
     "kor": ("ko", False),
     "korean": ("ko", False),
 }
+
+
+class ProcessedTask(TypedDict):
+    uuid: str
+    title: str
+    year: int | None
+    season: int | None
+    target_dir: str
+    target_root: str
+    videos: list[str]
+    video_targets: dict[str, str]
+    is_movie: bool
+
+
+class SyncSummary(TypedDict):
+    enabled: bool
+    mode: str
+    attempted: int
+    success: int
+    fallback: int
+    skipped: int
+    disabled: int
+    failed: int
+    strict_failed: bool
+    strict_error: str
 
 
 class SubtitleProcessor:
@@ -176,7 +201,7 @@ class SubtitleProcessor:
         self,
         archive_path: Path,
         target_task_uuid: Optional[str] = None,
-    ) -> Dict:
+    ) -> Dict[str, Any]:
         """
         处理字幕压缩包（支持多季度/多任务）
 
@@ -286,7 +311,7 @@ class SubtitleProcessor:
 
         # Step 6: 构建文件映射（按任务分组）
         # 创建任务UUID到任务信息的映射
-        task_by_uuid: Dict[str, Dict[str, Any]] = {
+        task_by_uuid: Dict[str, ProcessedTask] = {
             t["uuid"]: t for t in processed_tasks
         }
 
@@ -491,7 +516,7 @@ class SubtitleProcessor:
     def _load_processed_tasks_for_target_uuid(
         self,
         target_task_uuid: str,
-    ) -> List[Dict]:
+    ) -> List[ProcessedTask]:
         """按目标任务 UUID 精确加载任务，并补充同剧相关任务。"""
         target_task_uuid = str(target_task_uuid or "").strip()
         if not target_task_uuid:
@@ -515,7 +540,7 @@ class SubtitleProcessor:
             related_tasks.insert(0, target_task)
         return related_tasks
 
-    def _load_single_processed_task(self, task_uuid: str) -> Optional[Dict[str, Any]]:
+    def _load_single_processed_task(self, task_uuid: str) -> Optional[ProcessedTask]:
         task_uuid = str(task_uuid or "").strip()
         if not task_uuid:
             return None
@@ -530,7 +555,7 @@ class SubtitleProcessor:
         self,
         task_file: Path,
         target_root: Optional[str] = None,
-    ) -> Optional[Dict[str, Any]]:
+    ) -> Optional[ProcessedTask]:
         try:
             with open(task_file, "r", encoding="UTF-8") as f:
                 task_data = json.load(f)
@@ -557,13 +582,15 @@ class SubtitleProcessor:
             with open(record_file, "r", encoding="UTF-8") as f:
                 record_data = json.load(f)
 
-            if not record_data:
+            if not isinstance(record_data, dict) or not record_data:
                 return None
 
-            videos = []
-            video_targets = {}
+            videos: list[str] = []
+            video_targets: dict[str, str] = {}
             target_dir = None
             for source, target in record_data.items():
+                if not isinstance(target, str):
+                    continue
                 target_path = Path(target)
                 videos.append(target_path.name)
                 video_targets[target_path.name] = str(target_path)
@@ -584,11 +611,14 @@ class SubtitleProcessor:
             if year_match:
                 year = int(year_match.group(1))
 
+            season_value = task_data.get("season_id", 1)
+            season = season_value if isinstance(season_value, int) else 1
+
             return {
                 "uuid": task_uuid,
                 "title": task_data.get("name", ""),
                 "year": year,
-                "season": task_data.get("season_id", 1) if not is_movie else None,
+                "season": season if not is_movie else None,
                 "target_dir": target_dir,
                 "target_root": normalized_target_root,
                 "videos": sorted(videos),
@@ -604,13 +634,13 @@ class SubtitleProcessor:
         archive_path: Path,
         sync_items: List[Dict[str, Any]],
         original_mapping: Dict[Path, Path],
-    ) -> Tuple[Dict[str, Any], Dict[Path, Path]]:
+    ) -> Tuple[SyncSummary, Dict[Path, Path]]:
         """执行字幕对齐步骤，返回统计信息和最终映射"""
         sync_mode = cm.get_config("subtitle_sync_mode") or "best_effort"
         if sync_mode not in {"best_effort", "strict"}:
             sync_mode = "best_effort"
 
-        summary = {
+        summary: SyncSummary = {
             "enabled": True,
             "mode": sync_mode,
             "attempted": 0,
@@ -701,7 +731,7 @@ class SubtitleProcessor:
         self,
         max_tasks: Optional[int] = 10,
         target_root: Optional[str] = None,
-    ) -> List[Dict]:
+    ) -> List[ProcessedTask]:
         """
         从 data/task 和 data/record 读取已处理的任务记录
 
@@ -712,7 +742,7 @@ class SubtitleProcessor:
         Returns:
             任务列表，每个包含 uuid, title, season, target_dir, videos
         """
-        tasks = []
+        tasks: list[ProcessedTask] = []
 
         if not TASK_PATH.exists():
             return tasks
@@ -756,7 +786,7 @@ class SubtitleProcessor:
         error: str,
         archive_path: Path,
         extra: Optional[Dict[str, Any]] = None,
-    ) -> Dict:
+    ) -> Dict[str, Any]:
         """生成错误结果"""
         logger.error(f"[字幕处理] {error}")
 

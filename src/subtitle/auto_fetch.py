@@ -410,7 +410,7 @@ class SubtitleAutoFetcher:
     def _resolve_scan_scope(
         self,
         task_data: Dict[str, Any],
-        record_data: Dict[str, str],
+        record_data: dict[str, object],
     ) -> Dict[str, Any]:
         is_movie = bool(task_data.get("is_movie"))
         target_root = str(task_data.get("target_root") or "").strip()
@@ -443,7 +443,7 @@ class SubtitleAutoFetcher:
     def _collect_videos_missing_subtitles(
         self,
         scan_scope: Dict[str, Any],
-        record_data: Dict[str, str],
+        record_data: dict[str, object],
     ) -> List[Path]:
         scope_type = str(scan_scope.get("type") or "task")
         root_value = str(scan_scope.get("root") or "").strip()
@@ -457,10 +457,12 @@ class SubtitleAutoFetcher:
 
     def _collect_task_target_videos_missing_subtitles(
         self,
-        record_data: Dict[str, str],
+        record_data: dict[str, object],
     ) -> List[Path]:
         missing: List[Path] = []
         for target in record_data.values():
+            if not isinstance(target, str):
+                continue
             video_path = Path(target)
             if not self._is_candidate_video(video_path):
                 continue
@@ -491,7 +493,7 @@ class SubtitleAutoFetcher:
     def _collect_movie_videos_missing_subtitles(
         self,
         movie_root: Path,
-        record_data: Dict[str, str],
+        record_data: dict[str, object],
     ) -> List[Path]:
         if not movie_root.exists() or not movie_root.is_dir():
             return self._collect_task_target_videos_missing_subtitles(record_data)
@@ -499,6 +501,7 @@ class SubtitleAutoFetcher:
         target_paths = {
             Path(target).resolve()
             for target in record_data.values()
+            if isinstance(target, str)
             if self._is_candidate_video(Path(target))
         }
         missing: List[Path] = []
@@ -514,9 +517,11 @@ class SubtitleAutoFetcher:
 
     def _infer_series_root_from_record(
         self,
-        record_data: Dict[str, str],
+        record_data: dict[str, object],
     ) -> Optional[Path]:
         for target in record_data.values():
+            if not isinstance(target, str):
+                continue
             target_path = Path(target)
             if not self._is_candidate_video(target_path):
                 continue
@@ -527,9 +532,11 @@ class SubtitleAutoFetcher:
 
     def _infer_movie_root_from_record(
         self,
-        record_data: Dict[str, str],
+        record_data: dict[str, object],
     ) -> Optional[Path]:
         for target in record_data.values():
+            if not isinstance(target, str):
+                continue
             target_path = Path(target)
             if self._is_candidate_video(target_path):
                 return target_path.parent

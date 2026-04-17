@@ -9,27 +9,52 @@ import shutil
 import subprocess
 import tempfile
 import zipfile
+import importlib
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import BinaryIO, Dict, List, Optional, Protocol, cast
 
 from ..logger import logger
 
-# 尝试导入 rarfile
-try:
-    import rarfile
 
-    RAR_AVAILABLE = True
-except ImportError:
-    RAR_AVAILABLE = False
+class _RarInfoProtocol(Protocol):
+    filename: str
 
-# 尝试导入 py7zr
-try:
-    import py7zr
+    def is_dir(self) -> bool: ...
 
-    SEVEN_Z_AVAILABLE = True
-except ImportError:
-    SEVEN_Z_AVAILABLE = False
+
+class _RarArchiveProtocol(Protocol):
+    def __enter__(self) -> "_RarArchiveProtocol": ...
+    def __exit__(self, exc_type: object, exc: object, tb: object) -> object: ...
+    def infolist(self) -> list[_RarInfoProtocol]: ...
+    def open(self, info: _RarInfoProtocol) -> BinaryIO: ...
+
+
+class _RarModuleProtocol(Protocol):
+    def RarFile(self, archive_path: Path, mode: str) -> _RarArchiveProtocol: ...
+
+
+class _SevenZipArchiveProtocol(Protocol):
+    def __enter__(self) -> "_SevenZipArchiveProtocol": ...
+    def __exit__(self, exc_type: object, exc: object, tb: object) -> object: ...
+    def extractall(self, path: Path) -> None: ...
+
+
+class _Py7zrModuleProtocol(Protocol):
+    def SevenZipFile(self, archive_path: Path, mode: str) -> _SevenZipArchiveProtocol: ...
+
+def _load_optional_module(module_name: str) -> object | None:
+    try:
+        return importlib.import_module(module_name)
+    except ImportError:
+        return None
+
+
+_rarfile_module = _load_optional_module("rarfile")
+RAR_AVAILABLE = _rarfile_module is not None
+
+_py7zr_module = _load_optional_module("py7zr")
+SEVEN_Z_AVAILABLE = _py7zr_module is not None
 
 # Bandizip CLI 可作为 Windows 下的 RAR 回退解压器
 BANDIZIP_CANDIDATES = [
@@ -217,11 +242,12 @@ class SubtitleExtractor:
             shutil.rmtree(extract_dir)
         extract_dir.mkdir(parents=True, exist_ok=True)
 
-        if RAR_AVAILABLE:
+        if RAR_AVAILABLE and _rarfile_module is not None:
             try:
                 subtitle_files: List[ExtractedSubtitle] = []
 
-                with rarfile.RarFile(archive_path, "r") as rf:
+                rarfile_module = cast(_RarModuleProtocol, _rarfile_module)
+                with rarfile_module.RarFile(archive_path, "r") as rf:
                     for info in rf.infolist():
                         if info.is_dir():
                             continue
@@ -303,7 +329,7 @@ class SubtitleExtractor:
 
     def _extract_7z(self, archive_path: Path) -> Optional[List[ExtractedSubtitle]]:
         """解压 7z 文件"""
-        if not SEVEN_Z_AVAILABLE:
+        if not SEVEN_Z_AVAILABLE or _py7zr_module is None:
             logger.error("[字幕解压] py7zr 库未安装，无法处理 7z 文件")
             return None
 
@@ -313,7 +339,8 @@ class SubtitleExtractor:
                 shutil.rmtree(extract_dir)
             extract_dir.mkdir(parents=True, exist_ok=True)
 
-            with py7zr.SevenZipFile(archive_path, "r") as zf:
+            py7zr_module = cast(_Py7zrModuleProtocol, _py7zr_module)
+            with py7zr_module.SevenZipFile(archive_path, "r") as zf:
                 zf.extractall(path=extract_dir)
 
             subtitle_files = self._collect_extracted_subtitles(extract_dir)
