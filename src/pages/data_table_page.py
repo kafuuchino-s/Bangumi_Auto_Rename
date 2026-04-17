@@ -1,6 +1,6 @@
 import asyncio
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Mapping
 
 from nicegui import run, ui
 from nicegui.events import GenericEventArguments
@@ -14,6 +14,20 @@ from ..subtitle.auto_fetch import SubtitleAutoFetcher
 from ..utils.path import RECORD_PATH, TASK_PATH
 from ..utils.utils import get_task
 from .edit_page import edit_page
+
+
+def _task_mapping(task_data: object) -> Mapping[str, object]:
+    return task_data if isinstance(task_data, dict) else {}
+
+
+def _task_str(task_data: Mapping[str, object], key: str, default: str = '') -> str:
+    value = task_data.get(key, default)
+    return value if isinstance(value, str) else default
+
+
+def _task_nested_mapping(task_data: Mapping[str, object], key: str) -> Mapping[str, object]:
+    value = task_data.get(key)
+    return value if isinstance(value, dict) else {}
 
 
 @ui.refreshable
@@ -42,16 +56,16 @@ def create_subtitle_table() -> None:
         TASK_PATH.iterdir(), key=lambda x: x.stat().st_mtime, reverse=True
     )
     for index, i in enumerate(sorted_files):
-        task_data = get_task(i.stem)
+        task_data = _task_mapping(get_task(i.stem))
 
         # 只处理字幕任务
         if task_data.get('type') != 'subtitle':
             continue
 
         status = '成功' if task_data.get('status') == 'success' else '失败'
-        archive_name = Path(task_data.get('archive_path', '')).name
+        archive_name = Path(_task_str(task_data, 'archive_path')).name
 
-        sync_summary = task_data.get('sync_summary') or {}
+        sync_summary = _task_nested_mapping(task_data, 'sync_summary')
         if sync_summary.get('enabled'):
             attempted = sync_summary.get('attempted', 0)
             success = sync_summary.get('success', 0)
@@ -268,18 +282,19 @@ def create_table():
     else:
         sorted_files = []
     for i in sorted_files:
-        task_data = get_task(i.stem)
+        task_data = _task_mapping(get_task(i.stem))
 
         # 跳过字幕任务（单独处理）
         if task_data.get('type') == 'subtitle':
             continue
 
-        path = task_data.get('path', '')
+        path = _task_str(task_data, 'path')
         if not path:
             continue
 
-        if task_data.get('error'):
-            status = task_data['error']
+        error_value = task_data.get('error')
+        if isinstance(error_value, str) and error_value:
+            status = error_value
         else:
             status = '成功'
 
