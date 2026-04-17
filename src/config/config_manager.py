@@ -3,7 +3,7 @@ import platform
 import threading
 from contextlib import contextmanager
 from urllib.parse import urlparse
-from typing import Any, Dict, Union
+from typing import Any, Dict
 
 from ..utils.path import CONFIG_PATH
 
@@ -84,6 +84,12 @@ CONFIG_DEFAULT = {
 # 需要自动添加 docker_mnt 前缀的路径配置项
 PATH_CONFIG_KEYS = {"bangumi_path", "movie_path", "anime_path", "anime_movie_path"}
 
+AI_CONFIDENCE_THRESHOLD_LABELS = {
+    "Low": 1.0,
+    "Medium": 2.0,
+    "High": 3.0,
+}
+
 CN_MAP = {
     "api_key": "🔑 TMDB API密钥",
     "bangumi_path": "🎬 电视剧路径",
@@ -152,6 +158,7 @@ class ConfigManager:
     def __init__(self) -> None:
         self._io_lock = threading.RLock()
         self._runtime_local = threading.local()
+        self.config: dict[str, Any] = {}
 
         if not CONFIG_PATH.exists():
             with open(CONFIG_PATH, 'w', encoding='UTF-8') as file:
@@ -197,7 +204,7 @@ class ConfigManager:
         with self._io_lock:
             # 打开config.json
             with open(CONFIG_PATH, 'r', encoding='UTF-8') as f:
-                self.config: Dict[str, Any] = json.load(f)
+                self.config = json.load(f)
             # 对没有的值，添加默认值
             for key in CONFIG_DEFAULT:
                 if key not in self.config:
@@ -237,6 +244,28 @@ class ConfigManager:
         else:
             return ''
 
+    def get_ai_confidence_threshold_score(self, value: object | None = None) -> float:
+        """将 ai_confidence_threshold 配置归一化为运行时可比较的分值。"""
+        raw_value = self.get_config("ai_confidence_threshold") if value is None else value
+
+        if isinstance(raw_value, (int, float)):
+            return float(raw_value)
+
+        if isinstance(raw_value, str):
+            normalized_value = raw_value.strip()
+            if not normalized_value:
+                return AI_CONFIDENCE_THRESHOLD_LABELS["Medium"]
+
+            if normalized_value in AI_CONFIDENCE_THRESHOLD_LABELS:
+                return AI_CONFIDENCE_THRESHOLD_LABELS[normalized_value]
+
+            try:
+                return float(normalized_value)
+            except ValueError:
+                return AI_CONFIDENCE_THRESHOLD_LABELS["Medium"]
+
+        return AI_CONFIDENCE_THRESHOLD_LABELS["Medium"]
+
     def _convert_path_for_current_platform(self, path: str) -> str:
         """
         根据当前运行环境转换路径
@@ -248,8 +277,11 @@ class ConfigManager:
         if platform.system() != 'Linux':
             return path
 
-        host_prefix = self.config.get('host_path_prefix', '')
-        docker_mnt = self.config.get('docker_mnt', '/media').rstrip('/')
+        host_prefix_value = self.config.get('host_path_prefix', '')
+        host_prefix = host_prefix_value if isinstance(host_prefix_value, str) else ''
+        docker_mnt_value = self.config.get('docker_mnt', '/media')
+        docker_mnt = docker_mnt_value if isinstance(docker_mnt_value, str) else '/media'
+        docker_mnt = docker_mnt.rstrip('/')
 
         # 如果已经是 Linux 路径，直接返回
         if path.startswith('/'):
@@ -275,7 +307,7 @@ class ConfigManager:
         # 相对路径，添加 docker_mnt 前缀
         return f"{docker_mnt}/{path}"
 
-    def set_config(self, key: str, value: Union[str, bool]) -> bool:
+    def set_config(self, key: str, value: Any) -> bool:
         with self._io_lock:
             if key in CONFIG_DEFAULT:
                 # 对URL类型的配置项进行特殊处理

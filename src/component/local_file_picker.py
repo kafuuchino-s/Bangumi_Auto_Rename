@@ -28,6 +28,12 @@ class local_file_picker(ui.dialog):
         """
         super().__init__()
 
+        self.path: Path
+        self.upper_limit: Path | None
+        self.show_hidden_files: bool
+        self.drives_toggle: RedToogle | None = None
+        self.grid: ui.aggrid
+
         self.path = Path(directory).expanduser()
         if upper_limit is None:
             self.upper_limit = None
@@ -70,16 +76,17 @@ class local_file_picker(ui.dialog):
                 with ui.row().classes('w-full justify-end'):
                     RedButton('取消', on_click=self.close).props('outline')
                     RedButton('确定', on_click=self._handle_ok)
-        self.update_grid()
+        ui.timer(0, self.update_grid, once=True)
 
-    def add_drives_toggle(self):
+    def add_drives_toggle(self) -> None:
+        drives_toggle: RedToogle | None = None
         if platform.system() == 'Windows':
             import win32api
 
             drives = win32api.GetLogicalDriveStrings().split('\000')[:-1]
 
             # drives = [str(i) for i in Path(drives[0]).iterdir()]
-            self.drives_toggle = RedToogle(
+            drives_toggle = RedToogle(
                 drives, value=drives[0], on_change=self.update_drive
             )
         elif platform.system() == 'Darwin':  # macOS
@@ -91,7 +98,7 @@ class local_file_picker(ui.dialog):
                 for drive in os.listdir('/Volumes')
                 if os.path.isdir(os.path.join('/Volumes', drive))
             ]
-            self.drives_toggle = RedToogle(
+            drives_toggle = RedToogle(
                 drives, value=drives[0], on_change=self.update_drive
             )
 
@@ -105,20 +112,25 @@ class local_file_picker(ui.dialog):
                 if os.path.isdir(os.path.join(docker_path, drive))
             ]
             # drives = [f'{i}' for i in drives]
-            self.drives_toggle = RedToogle(drives, value=drives[0])
-            self.drives_toggle.on_value_change(
+            drives_toggle = RedToogle(drives, value=drives[0])
+            drives_toggle.on_value_change(
                 lambda e: self.update_drive(docker_path),
             )
+        if drives_toggle is None:
+            return
+        self.drives_toggle = drives_toggle
         self.drives_toggle.classes(add="column", remove="row inline")
         # self.drives_toggle.classes('w-1/2')
 
-    def update_drive(self, main: Optional[str] = None):
+    def update_drive(self, main: Optional[str] = None) -> None:
+        if self.drives_toggle is None:
+            return
         if main is None:
-            path_str = self.drives_toggle.value
+            path_str = str(self.drives_toggle.value)
         else:
             path_str = f'{main}/{self.drives_toggle.value}'
-        self.path = Path(path_str).expanduser()  # type: ignore
-        self.update_grid()
+        self.path = Path(path_str).expanduser()
+        ui.timer(0, self.update_grid, once=True)
 
     def update_grid(self) -> None:
         paths = list(self.path.glob('*'))

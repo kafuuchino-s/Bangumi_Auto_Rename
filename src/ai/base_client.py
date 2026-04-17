@@ -2,7 +2,8 @@ import json
 from abc import ABC, abstractmethod
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional
+from collections.abc import Mapping, Sequence
+from typing import cast
 
 from ..config.config_manager import cm
 from ..logger import logger
@@ -13,22 +14,39 @@ from .models import AIAnalysisResult
 class BaseAIClient(ABC):
     """AI客户端的抽象基类"""
 
+    client: object | None
+    model: str
+    temperature: float
+    last_configured_api_interface: str | None
+    last_actual_api_interface: str | None
+    last_api_interface_fallback: bool
+    last_api_interface_fallback_reason: str | None
+
     def __init__(self, provider_name: str):
-        self.provider_name = provider_name
-        self.enabled = True
-        self.confidence_threshold = cm.get_config("ai_confidence_threshold")
-        self.auto_save = bool(cm.get_config("ai_auto_save"))
-        self.save_path = AI_ANALYSIS_PATH
+        self.provider_name: str = provider_name
+        self.enabled: bool = True
+        self.confidence_threshold: float = cm.get_ai_confidence_threshold_score()
+        auto_save_config: object = cast(object, cm.get_config("ai_auto_save"))
+        self.auto_save: bool = bool(auto_save_config)
+        self.save_path: Path = AI_ANALYSIS_PATH
         if self.auto_save and self.save_path:
             Path(self.save_path).mkdir(parents=True, exist_ok=True)
+
+        self.client = None
+        self.model = ""
+        self.temperature = 0.0
+        self.last_configured_api_interface = None
+        self.last_actual_api_interface = None
+        self.last_api_interface_fallback = False
+        self.last_api_interface_fallback_reason = None
 
     @abstractmethod
     def analyze_episode_mapping(
         self,
-        anime_info: Dict,
-        local_files: List[Dict],
-        bangumi_context: Optional[Dict] = None,
-    ) -> Optional[AIAnalysisResult]:
+        anime_info: Mapping[str, object],
+        local_files: Sequence[Mapping[str, object]],
+        bangumi_context: Mapping[str, object] | None = None,
+    ) -> AIAnalysisResult | None:
         """
         分析本地文件与TMDB剧集的映射关系
 
@@ -49,11 +67,11 @@ class BaseAIClient(ABC):
 
     def _save_analysis_data(
         self,
-        anime_info: Dict,
-        local_files: List[Dict],
-        result: Optional[AIAnalysisResult] = None,
-        bangumi_context: Optional[Dict] = None,
-    ):
+        anime_info: Mapping[str, object],
+        local_files: Sequence[Mapping[str, object]],
+        result: AIAnalysisResult | None = None,
+        bangumi_context: Mapping[str, object] | None = None,
+    ) -> None:
         """
         保存分析数据和结果到文件
 
@@ -68,7 +86,9 @@ class BaseAIClient(ABC):
 
         try:
             anime_name = (
-                anime_info.get("name", "unknown").replace("/", "_").replace("\\", "_")
+                str(anime_info.get("name", "unknown"))
+                .replace("/", "_")
+                .replace("\\", "_")
             )
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             filename = f"{anime_name}_{self.provider_name}_{timestamp}.json"
@@ -76,7 +96,7 @@ class BaseAIClient(ABC):
 
             metadata = {
                 "created_at": datetime.now().isoformat(),
-                "anime_name": anime_info.get("name", "unknown"),
+                "anime_name": str(anime_info.get("name", "unknown")),
                 "provider": self.provider_name,
                 "file_count": len(local_files),
             }
