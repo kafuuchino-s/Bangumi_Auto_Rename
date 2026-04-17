@@ -1,16 +1,21 @@
 import json
 import re
 from collections import OrderedDict
+from collections.abc import Mapping, Sequence
 from copy import deepcopy
 from datetime import datetime
 from pathlib import Path
 from threading import Lock
-from typing import Dict, List, Optional, Type, Tuple
+from typing import Any, Dict, List, Optional, Tuple, Type, cast
 
 from pydantic import BaseModel, ValidationError
 from google.genai.types import GenerateContentConfig
 
 from ..logger import logger
+from .prompt_support import (
+    build_common_prompt as shared_build_common_prompt,
+    get_system_prompt as shared_get_system_prompt,
+)
 from .models import (
     AIAnalysisResult,
     MovieCollectionResult,
@@ -25,8 +30,6 @@ from ..utils.path import AI_ANALYSIS_PATH
 from ..config.config_manager import cm
 from ..rename.cleaner import remove_episode, remove_season
 from ..rename.utils import PROMO_TAGS, SPECIAL_FOLDER_NAMES
-from .gemini_client import GeminiClient
-from .openai_client import OpenAIClient
 from .base_client import BaseAIClient
 
 
@@ -65,6 +68,32 @@ class AIClient:
             cls._title_metadata_cache[cache_key] = deepcopy(value)
             while len(cls._title_metadata_cache) > cls._TITLE_EXTRACTION_CACHE_MAX_SIZE:
                 cls._title_metadata_cache.popitem(last=False)
+
+    @staticmethod
+    def _coerce_mapping_sequence(value: object) -> list[dict[str, object]]:
+        if not isinstance(value, Sequence) or isinstance(value, (str, bytes, bytearray)):
+            return []
+
+        items: list[dict[str, object]] = []
+        for item in value:
+            if isinstance(item, Mapping):
+                items.append(dict(item))
+        return items
+
+    @staticmethod
+    def _coerce_string_sequence(value: object) -> list[str]:
+        if not isinstance(value, Sequence) or isinstance(value, (str, bytes, bytearray)):
+            return []
+
+        items: list[str] = []
+        for item in value:
+            if isinstance(item, str):
+                text = item.strip()
+            else:
+                text = str(item).strip()
+            if text:
+                items.append(text)
+        return items
 
     @staticmethod
     def _strip_title_extraction_noise(value: str) -> str:
@@ -117,13 +146,13 @@ class AIClient:
         return normalized.casefold()
 
     @staticmethod
-    def _build_openai_strict_schema(schema_model: Type[BaseModel]) -> Dict:
+    def _build_openai_strict_schema(schema_model: type[BaseModel]) -> dict[str, object]:
         """构建符合 OpenAI strict structured output 要求的 JSON Schema。"""
         schema = deepcopy(schema_model.model_json_schema())
 
-        def ensure_required_fields(obj):
+        def ensure_required_fields(obj: object) -> None:
             if isinstance(obj, dict):
-                properties = obj.get("properties")
+                properties = cast(dict[str, object] | None, obj.get("properties"))
                 if isinstance(properties, dict):
                     obj["required"] = list(properties.keys())
                     obj["additionalProperties"] = False
@@ -144,9 +173,46 @@ class AIClient:
 
         # 根据提供商创建相应的客户端
         if self.provider.lower() == "gemini":
+            from .gemini_client import GeminiClient
+
             self._client: BaseAIClient = GeminiClient()
         else:  # 默认使用OpenAI
+            from .openai_client import OpenAIClient
+
             self._client: BaseAIClient = OpenAIClient()
+
+    def _get_openai_adapter(self) -> object | None:
+        if self.provider.lower() == "openai":
+            return self._client
+        return None
+
+    def _get_gemini_adapter(self) -> object | None:
+        if self.provider.lower() == "gemini":
+            return self._client
+        return None
+
+    def get_provider_runtime_info(self) -> dict[str, object]:
+        openai_adapter = self._get_openai_adapter()
+        if openai_adapter is None:
+            return {}
+
+        configured_interface = getattr(
+            openai_adapter, "last_configured_api_interface", None
+        )
+        actual_interface = getattr(openai_adapter, "last_actual_api_interface", None)
+        interface_fallback = getattr(
+            openai_adapter, "last_api_interface_fallback", None
+        )
+        interface_fallback_reason = getattr(
+            openai_adapter, "last_api_interface_fallback_reason", None
+        )
+
+        return {
+            "configured_interface": configured_interface,
+            "actual_interface": actual_interface,
+            "interface_fallback": interface_fallback,
+            "interface_fallback_reason": interface_fallback_reason,
+        }
 
     def is_available(self) -> bool:
         """检查AI客户端是否可用"""
@@ -349,7 +415,7 @@ class AIClient:
 
     def generate_subtitle_search_queries(
         self,
-        task_data: Dict,
+        task_data: Mapping[str, object],
     ) -> Optional[List[str]]:
         """使用AI为字幕自动抓取生成补充搜索词。"""
         if not self.is_available():
@@ -368,9 +434,14 @@ class AIClient:
         source_title_hint = str(
             task_data.get("subtitle_auto_fetch_source_title_hint") or ""
         ).strip()
-        source_video_names = task_data.get("subtitle_auto_fetch_source_video_names") or []
-        target_video_names = (
-            task_data.get("subtitle_auto_fetch_missing_target_video_names") or []
+        source_video_names = AIClient._coerce_string_sequence(
+            cast(object, task_data.get("subtitle_auto_fetch_source_video_names"))
+        )
+        target_video_names = AIClient._coerce_string_sequence(
+            cast(
+                object,
+                task_data.get("subtitle_auto_fetch_missing_target_video_names"),
+            )
         )
         scan_scope_root = str(
             task_data.get("subtitle_auto_fetch_scan_scope_root") or ""
@@ -378,9 +449,11 @@ class AIClient:
         is_season_zero_tv = bool(
             task_data.get("subtitle_auto_fetch_is_season_zero_tv")
         )
-        existing_keywords = task_data.get("subtitle_auto_fetch_existing_keywords") or []
+        existing_keywords = AIClient._coerce_string_sequence(
+            cast(object, task_data.get("subtitle_auto_fetch_existing_keywords"))
+        )
 
-        context_lines = [
+        context_lines: list[str] = [
             f"标题: {title}",
             f"类型: {media_type}",
         ]
@@ -396,17 +469,17 @@ class AIClient:
             context_lines.append(f"源标题线索: {source_title_hint}")
         if source_video_names:
             context_lines.append(
-                f"源视频文件: {' | '.join(map(str, source_video_names[:3]))}"
+                f"源视频文件: {' | '.join(source_video_names[:3])}"
             )
         if target_video_names:
             context_lines.append(
-                f"缺字幕目标文件: {' | '.join(map(str, target_video_names[:3]))}"
+                f"缺字幕目标文件: {' | '.join(target_video_names[:3])}"
             )
         if scan_scope_root:
             context_lines.append(f"扫描根目录: {scan_scope_root}")
         if existing_keywords:
             context_lines.append(
-                f"已尝试搜索词: {' | '.join(map(str, existing_keywords[:8]))}"
+                f"已尝试搜索词: {' | '.join(AIClient._coerce_string_sequence(existing_keywords)[:8])}"
             )
 
         prompt = f"""请为以下字幕自动抓取任务生成最多5条补充搜索词，按命中可能性从高到低排序。
@@ -468,7 +541,7 @@ class AIClient:
         prompt: str,
         max_retries: int = 2,
         validation_key: str = "title",
-        schema: Optional[Type[BaseModel]] = None,
+        schema: Optional[type[BaseModel]] = None,
     ) -> Optional[str]:
         """简单调用OpenAI API获取文本响应，支持重试和结构化输出
 
@@ -483,17 +556,24 @@ class AIClient:
 
         for attempt in range(max_retries + 1):
             try:
-                client = self._client
-                if not hasattr(client, 'client') or not client.client:
+                client = self._get_openai_adapter()
+                if client is None or not getattr(client, "client", None):
                     return None
 
-                request_params = {
-                    "model": client.model,
+                client_model = getattr(client, "model", None)
+                client_temperature = getattr(client, "temperature", None)
+                if not isinstance(client_model, str) or not client_model:
+                    return None
+                if not isinstance(client_temperature, (int, float)):
+                    return None
+
+                request_params: dict[str, object] = {
+                    "model": client_model,
                     "messages": [
                         {"role": "system", "content": system_prompt},
                         {"role": "user", "content": prompt},
                     ],
-                    "temperature": client.temperature,
+                    "temperature": float(client_temperature),
                     "max_tokens": 16384,  # 限制输出长度，避免无限生成
                 }
 
@@ -511,54 +591,64 @@ class AIClient:
                     request_params["response_format"] = {"type": "json_object"}
 
                 interface = "responses_api"
-                if hasattr(client, "_resolve_api_interface"):
-                    interface = client._resolve_api_interface(
-                        cm.get_config("openai_api_interface")
-                    )
+                resolve_api_interface = getattr(client, "resolve_api_interface", None)
+                if not callable(resolve_api_interface):
+                    return None
+                interface = str(resolve_api_interface(cm.get_config("openai_api_interface")))
 
-                content = None
+                content: str | None = None
                 actual_interface = interface
 
                 if (
                     interface == "responses_api"
-                    and hasattr(client, "_call_via_responses_api")
-                    and hasattr(client, "_convert_chat_request_to_responses")
                 ):
                     try:
-                        message = client._call_via_responses_api(request_params)
-                        content = message.get("content") if isinstance(message, dict) else None
+                        call_via_responses_api = getattr(client, "call_via_responses_api", None)
+                        if not callable(call_via_responses_api):
+                            return None
+                        message = call_via_responses_api(request_params)
+                        message_content = message.get("content") if isinstance(message, dict) else None
+                        content = message_content if isinstance(message_content, str) else None
                         actual_interface = "responses_api"
                     except Exception as e:
                         logger.warning(
                             "[AI] 简单调用 responses_api 失败，回退 chat_completions: "
                             f"{e}"
                         )
-                        message = client._call_via_chat_completions(request_params)
-                        content = message.get("content") if isinstance(message, dict) else None
+                        call_via_chat_completions = getattr(client, "call_via_chat_completions", None)
+                        if not callable(call_via_chat_completions):
+                            return None
+                        message = call_via_chat_completions(request_params)
+                        message_content = message.get("content") if isinstance(message, dict) else None
+                        content = message_content if isinstance(message_content, str) else None
                         actual_interface = "chat_completions"
                 else:
-                    message = client._call_via_chat_completions(request_params)
-                    content = message.get("content") if isinstance(message, dict) else None
+                    call_via_chat_completions = getattr(client, "call_via_chat_completions", None)
+                    if not callable(call_via_chat_completions):
+                        return None
+                    message = call_via_chat_completions(request_params)
+                    message_content = message.get("content") if isinstance(message, dict) else None
+                    content = message_content if isinstance(message_content, str) else None
                     actual_interface = "chat_completions"
 
                 if hasattr(client, "last_configured_api_interface"):
-                    client.last_configured_api_interface = interface
+                    setattr(client, "last_configured_api_interface", interface)
                 if hasattr(client, "last_actual_api_interface"):
-                    client.last_actual_api_interface = actual_interface
+                    setattr(client, "last_actual_api_interface", actual_interface)
                 if hasattr(client, "last_api_interface_fallback"):
-                    client.last_api_interface_fallback = (
+                    setattr(client, "last_api_interface_fallback", (
                         interface == "responses_api"
                         and actual_interface == "chat_completions"
-                    )
+                    ))
                 if hasattr(client, "last_api_interface_fallback_reason"):
-                    client.last_api_interface_fallback_reason = (
+                    setattr(client, "last_api_interface_fallback_reason", (
                         "simple_call responses_api 调用失败，自动回退 chat_completions"
                         if (
                             interface == "responses_api"
                             and actual_interface == "chat_completions"
                         )
                         else ""
-                    )
+                    ))
 
                 logger.info(
                     "[AI] 简单调用OpenAI接口: "
@@ -567,7 +657,7 @@ class AIClient:
 
                 if content:
                     # 检查返回内容是否是完整的JSON（有开闭括号）
-                    if content and f'"{validation_key}"' in content and '}' in content:
+                    if f'"{validation_key}"' in content and '}' in content:
                         return content
                     elif attempt < max_retries:
                         logger.warning(
@@ -593,7 +683,7 @@ class AIClient:
         prompt: str,
         max_retries: int = 2,
         validation_key: str = "title",
-        schema: Optional[Type[BaseModel]] = None,
+        schema: Optional[type[BaseModel]] = None,
     ) -> Optional[str]:
         """简单调用Gemini API获取文本响应，支持重试和结构化输出
 
@@ -609,39 +699,58 @@ class AIClient:
 
         for attempt in range(max_retries + 1):
             try:
-                client = self._client
-                if not hasattr(client, 'client') or not client.client:
+                client = self._get_gemini_adapter()
+                if client is None or not getattr(client, "client", None):
+                    return None
+
+                client_model = getattr(client, "model", None)
+                client_temperature = getattr(client, "temperature", None)
+                if not isinstance(client_model, str) or not client_model:
+                    return None
+                if not isinstance(client_temperature, (int, float)):
                     return None
 
                 full_prompt = f"{system_prompt}\n\n{prompt}"
 
                 if use_structured:
                     # 使用结构化输出
+                    if schema is None:
+                        return None
+                    schema_model = getattr(schema, "gemini_json_schema", None)
+                    if not callable(schema_model):
+                        return None
                     config = GenerateContentConfig(
                         response_mime_type="application/json",
-                        response_schema=schema.gemini_json_schema(),
-                        temperature=client.temperature,
+                        response_schema=schema_model(),
+                        temperature=float(client_temperature),
                         max_output_tokens=16384,  # 限制输出长度
                     )
-                    response = client.client.models.generate_content(
-                        model=client.model,
+                    generate_content = getattr(client, "generate_content", None)
+                    if not callable(generate_content):
+                        return None
+                    response = generate_content(
+                        model=client_model,
                         contents=full_prompt,
                         config=config,
                     )
                 else:
                     # 普通文本输出
                     config = GenerateContentConfig(
-                        temperature=client.temperature,
+                        temperature=float(client_temperature),
                         max_output_tokens=16384,  # 限制输出长度
                     )
-                    response = client.client.models.generate_content(
-                        model=client.model,
+                    generate_content = getattr(client, "generate_content", None)
+                    if not callable(generate_content):
+                        return None
+                    response = generate_content(
+                        model=client_model,
                         contents=full_prompt,
                         config=config,
                     )
 
-                if response and response.text:
-                    content = response.text
+                response_text = getattr(response, "text", None)
+                if isinstance(response_text, str) and response_text:
+                    content = response_text
                     # 检查返回内容是否是完整的JSON（有开闭括号）
                     if content and f'"{validation_key}"' in content and '}' in content:
                         return content
@@ -665,9 +774,9 @@ class AIClient:
 
     def analyze_episode_mapping(
         self,
-        anime_info: Dict,
-        local_files: List[Dict],
-        bangumi_context: Optional[Dict] = None,
+        anime_info: Mapping[str, object],
+        local_files: Sequence[Mapping[str, object]],
+        bangumi_context: Mapping[str, object] | None = None,
     ) -> Optional[AIAnalysisResult]:
         """
         分析本地文件与TMDB剧集的映射关系
@@ -694,7 +803,7 @@ class AIClient:
         # 统一在此处保存分析数据
         self._save_analysis_snapshot(
             analysis_kind="tv_episode_mapping",
-            source_name=anime_info.get("name", "unknown"),
+            source_name=str(anime_info.get("name", "unknown")),
             source_payload=anime_info,
             local_files=local_files,
             result=result,
@@ -727,7 +836,9 @@ class AIClient:
         return False
 
     @staticmethod
-    def _extract_episode_hints(local_files: List[Dict]) -> Tuple[set[int], bool]:
+    def _extract_episode_hints(
+        local_files: Sequence[Mapping[str, object]],
+    ) -> Tuple[set[int], bool]:
         episode_numbers: set[int] = set()
         should_include_season_zero = False
 
@@ -753,12 +864,11 @@ class AIClient:
         return episode_numbers, should_include_season_zero
 
     @staticmethod
-    def _select_prompt_seasons(anime_info: Dict, local_files: List[Dict]) -> List[Dict]:
-        seasons = [
-            season
-            for season in anime_info.get('seasons', [])
-            if isinstance(season, dict)
-        ]
+    def _select_prompt_seasons(
+        anime_info: Mapping[str, object],
+        local_files: Sequence[Mapping[str, object]],
+    ) -> list[dict[str, object]]:
+        seasons = AIClient._coerce_mapping_sequence(anime_info.get('seasons', []))
         if not seasons:
             return []
 
@@ -796,18 +906,19 @@ class AIClient:
             selected_numbers.add(0)
 
         if episode_numbers and not explicit_preferred_seasons:
-            season_match_counts: Dict[int, int] = {}
+            season_match_counts: dict[int, int] = {}
             for season in seasons:
                 season_number = season.get('season_number')
                 if not isinstance(season_number, int):
                     continue
-                episode_numbers_in_season = {
-                    ep.get('episode_number')
-                    for ep in season.get('episodes', []) or []
-                    if isinstance(ep, dict)
-                    and isinstance(ep.get('episode_number'), int)
-                    and ep.get('episode_number') > 0
-                }
+                season_episodes = AIClient._coerce_mapping_sequence(
+                    season.get('episodes', [])
+                )
+                episode_numbers_in_season: set[int] = set()
+                for ep in season_episodes:
+                    episode_number = ep.get('episode_number')
+                    if isinstance(episode_number, int) and episode_number > 0:
+                        episode_numbers_in_season.add(episode_number)
                 direct_match_count = len(episode_numbers_in_season & episode_numbers)
                 if direct_match_count > 0:
                     season_match_counts[season_number] = direct_match_count
@@ -840,8 +951,11 @@ class AIClient:
         return filtered_seasons or seasons
 
     @staticmethod
-    def _build_tmdb_prompt_section(anime_info: Dict, local_files: List[Dict]) -> str:
-        seasons = anime_info.get('seasons', []) or []
+    def _build_tmdb_prompt_section(
+        anime_info: Mapping[str, object],
+        local_files: Sequence[Mapping[str, object]],
+    ) -> str:
+        seasons = AIClient._coerce_mapping_sequence(anime_info.get('seasons', []))
         prompt_seasons = AIClient._select_prompt_seasons(anime_info, local_files)
 
         lines = [
@@ -860,14 +974,20 @@ class AIClient:
         for season in prompt_seasons:
             season_num = season.get('season_number', 0)
             season_name = season.get('name', f'Season {season_num}')
-            episodes = season.get('episodes', []) or []
-            episode_count = len(episodes) if episodes else season.get('episode_count', 0)
+            episodes = AIClient._coerce_mapping_sequence(season.get('episodes', []))
+            episode_count_value = season.get('episode_count', 0)
+            episode_count = (
+                len(episodes)
+                if episodes
+                else episode_count_value if isinstance(episode_count_value, int) else 0
+            )
             lines.append(
                 f"【Season {season_num}】{season_name} (共 {episode_count} 集)"
             )
             if episodes:
                 for ep in episodes:
-                    ep_num = ep.get('episode_number', 0)
+                    ep_num_value = ep.get('episode_number', 0)
+                    ep_num = ep_num_value if isinstance(ep_num_value, int) else 0
                     ep_name = ep.get('name', '')
                     runtime = ep.get('runtime')
                     line = f"  S{season_num:02d}E{ep_num:02d}: {ep_name}"
@@ -885,11 +1005,13 @@ class AIClient:
         return "\n".join(lines).strip() + "\n"
 
     @staticmethod
-    def _build_bangumi_prompt_section(bangumi_context: Optional[Dict]) -> str:
+    def _build_bangumi_prompt_section(
+        bangumi_context: Mapping[str, object] | None,
+    ) -> str:
         if not bangumi_context:
             return "Bangumi 辅助上下文：不可用（本次按 TMDB-only 处理）\n"
 
-        subjects = bangumi_context.get("subjects", []) or []
+        subjects = AIClient._coerce_mapping_sequence(bangumi_context.get("subjects", []))
         if not subjects:
             return "Bangumi 辅助上下文：不可用（本次按 TMDB-only 处理）\n"
 
@@ -900,28 +1022,28 @@ class AIClient:
         reason = str(bangumi_context.get("selected_subject_reason") or "").strip()
         if reason:
             lines.append(f"主条目选择原因: {reason}")
-        keywords = bangumi_context.get("search_keywords", []) or []
+        keywords = AIClient._coerce_string_sequence(bangumi_context.get("search_keywords", []))
         if keywords:
             lines.append(f"搜索词: {', '.join(str(item) for item in keywords[:6])}")
 
         for subject_item in subjects[:4]:
-            subject = subject_item.get("subject", {}) or {}
+            subject = subject_item.get("subject", {})
+            subject_mapping = cast(dict[str, object], subject) if isinstance(subject, Mapping) else {}
             relation = subject_item.get("relation_to_main", "") or "main"
             lines.append(
-                "- "
-                f"subject_id={subject.get('id', '未知')} "
+                f"- subject_id={subject_mapping.get('id', '未知')} "
                 f"relation={relation} "
-                f"title={subject.get('name_cn') or subject.get('name') or '未知'}"
+                f"title={subject_mapping.get('name_cn') or subject_mapping.get('name') or '未知'}"
             )
-            alt_name = subject.get("name") or ""
-            if alt_name and alt_name != (subject.get("name_cn") or ""):
+            alt_name = subject_mapping.get("name") or ""
+            if alt_name and alt_name != (subject_mapping.get("name_cn") or ""):
                 lines.append(f"  原标题: {alt_name}")
-            if subject.get("date"):
-                lines.append(f"  放送日期: {subject.get('date')}")
-            if subject.get("platform"):
-                lines.append(f"  平台: {subject.get('platform')}")
+            if subject_mapping.get("date"):
+                lines.append(f"  放送日期: {subject_mapping.get('date')}")
+            if subject_mapping.get("platform"):
+                lines.append(f"  平台: {subject_mapping.get('platform')}")
 
-            episodes = subject_item.get("episodes", []) or []
+            episodes = AIClient._coerce_mapping_sequence(subject_item.get("episodes", []))
             if not episodes:
                 lines.append("  episodes: 无")
                 continue
@@ -963,164 +1085,20 @@ class AIClient:
 
     @staticmethod
     def build_common_prompt(
-        anime_info: Dict,
-        local_files: List[Dict],
-        bangumi_context: Optional[Dict] = None,
+        anime_info: Mapping[str, object],
+        local_files: Sequence[Mapping[str, object]],
+        bangumi_context: Mapping[str, object] | None = None,
     ) -> str:
-        """
-        构建通用的分析提示词，不包含JSON格式要求
-
-        Args:
-            anime_info: TMDB动漫信息
-            local_files: 本地文件信息列表，包含文件名、路径、时长等
-            bangumi_context: Bangumi 辅助上下文，失败时为 None
-
-        Returns:
-            通用的分析提示词
-        """
-        # 构建TMDB信息
-        tmdb_info = f"""
-动漫名称: {anime_info.get('name', '未知')}
-首播日期: {anime_info.get('first_air_date', '未知')}
-总季数: {anime_info.get('number_of_seasons', 0)}
-总集数: {anime_info.get('number_of_episodes', 0)}
-"""
-        tmdb_details = AIClient._build_tmdb_prompt_section(anime_info, local_files)
-
-        # 构建本地文件信息
-        files_info = "本地文件信息（每行一个稳定 source_index + 可直接复制的 source_path，路径均为相对路径）:\n"
-        top_level_dirs: list[str] = []
-        for i, file_info in enumerate(local_files, 1):
-            path_value = str(file_info.get("path") or "")
-            duration_str = ""
-            if file_info.get("duration"):
-                duration_str = f" (时长: {file_info['duration']:.1f}分钟)"
-            files_info += f"  - [{i:03d}] source_index={i} source_path=`{path_value}`{duration_str}\n"
-
-            parts = [part for part in path_value.split("/") if part]
-            if len(parts) >= 2:
-                top_dir = parts[0]
-                if top_dir not in top_level_dirs:
-                    top_level_dirs.append(top_dir)
-
-        if top_level_dirs:
-            files_info += (
-                "顶层子目录: "
-                + ", ".join(top_level_dirs[:12])
-                + "\n"
-            )
-            files_info += (
-                "提示: 如果不同文件落在不同子目录（如 Disc/SP/OVA/NCOP/NCED/Extras），"
-                "这些子目录语义通常很重要，不能忽略。\n"
-            )
-
-        # 构建 Bangumi 辅助上下文
-        bangumi_info = AIClient._build_bangumi_prompt_section(bangumi_context)
-
-        prompt = f"""请分析以下动漫的本地文件与TMDB数据的对应关系：
-
-{tmdb_info}
-
-{tmdb_details}
-
-{bangumi_info}
-
-{files_info}
-
-请根据以下规则进行映射：
-
-1. **输出字段要求**：
-   - 每个 `file_mapping` 项必须包含：`source_index`, `tmdb_season`, `tmdb_episode`, `episode_type`, `confidence`
-   - `file_path` 为可选；若填写，必须与 `source_index` 指向同一输入文件
-
-2. **匹配优先级**（按顺序尝试）：
-   - 文件名中的集数与 TMDB 集数号直接匹配
-   - 文件名中的标题与 TMDB 集标题相似度匹配
-   - 文件名中的日期与 TMDB 播出日期匹配
-
-2. **Season 0 特典规则**：
-   - OVA、OAD、SP、Special 等标签 → Season 0
-   - 小数集数（如 5.5、12.5）→ Season 0（总集篇）
-   - 第00集、E00、[00] → Season 0（序章/先行篇）
-   - **重要**: 文件名中的 SP01、OVA01 不一定对应 S0E1，需要根据标题匹配
-   - 如果 TMDB 条目是“有声小说 / audio drama / sound novel”类 special，而本地文件名更像 `Talk / Event / Cast / Seiyuu / Radio / Day Ver / Ending Talk / Recitation`，则不要强行映射，宁可放入 `unmatched_files`
-   - `Part1/Part2` 只有在能明确证明它们是同一条 TMDB special 的拆分文件时才能映射；否则放入 `unmatched_files`
-
-3. **多季度处理**：
-   - 本地目录可能将多季合并，需要根据集数范围判断
-   - 本地目录可能使用总集号（如 E14 可能是 S2E01）
-   - 不同季度可能仅用名称区分（如 \"Okawari\"、\"Okaeri\" 等后缀）
-
-4. **只输出匹配到的文件**，未匹配到 TMDB 的文件不要输出
-
-5. **路径约束（必须满足）**：
-   - `file_mapping` 中优先填写 `source_index`
-   - `source_index` 必须直接使用上面 `[编号]` 里的数字（例如 `[001]` 就填 `1`）
-   - 若已提供正确 `source_index`，`file_path` 可留空或填写与该编号完全一致的原始相对路径
-   - 如果同时填写 `source_index` 和 `file_path`，两者必须指向同一条输入文件
-   - `file_mapping.file_path` 若填写，必须逐字复用输入里的相对路径
-   - 只能从上面 `[编号] source_index=... source_path=` 列表里原样选择，禁止自行拼接、改写或脑补任何新路径
-   - 如果你要输出某个文件，先定位对应的 `[编号]` 行；最佳做法是直接返回该行的 `source_index`
-   - 若你额外填写 `file_path`，必须逐字复制该行反引号中的 `source_path`
-   - 必须复制完整相对路径，不能截断为 basename，也不能省略中间子目录
-   - 路径中的目录名、文件名、以及 `[]` 内的版本标签都属于路径的一部分；`Ma10p / Hi10p / x265 / x264 / flac / aac` 等字样也必须逐字照抄，不能替换成“更统一”的版本
-   - `[]` 内外的 token 顺序、空格和简称都必须保持原样；不要把短标签/简称扩写回主标题，也不要把多个片段重新拼成新的文件名
-   - 例如：若输入是 `.../SPs/[Group] MagiRepo [01][Ma10p_1080p][x265_flac].mkv`，就不能改写成 `.../[Group] Magia Record [MagiRepo 01][Ma10p_1080p][x265_flac].mkv`
-   - 例如：若输入是 `.../[SP01][Hi10p_1080p][x264_flac].mkv`，就不能改写成 `.../[SP01][Ma10p_1080p][x265_flac].mkv`
-   - 即使同一作品的大多数文件都落在某个子目录中，也不能据此给其他文件自动补同样的子目录；文件是在根目录、`SPs/` 还是其他子目录，只能以输入列表为准
-   - 不要补 base folder 名，不要改写目录层级
-   - 不要只输出 basename
-   - 不要混用新的路径分隔符格式
-
-6. **可观测性要求（必须满足）**：
-   - 返回 `unmatched_files`，列出所有未匹配文件路径（相对路径）
-   - `conflict_details` 仅填写“硬冲突”（例如：重复映射、集数越界、文件不存在）
-   - 证据不足/不确定但可执行的说明（例如仅凭小数集数推断）请写入 `extra_notes`，不要写入 `conflict_details`
-   - 如果 confidence 为 High/Medium，`file_mapping` 必须尽量覆盖可匹配文件
-
-7. **TMDB 合法性约束**：
-   - 只能使用上面 TMDB 列表中真实存在的 `SxxExx`
-   - 不要因为文件名带 `SP / OVA / Part` 就自行发明新的 Season 0 / special 编号
-   - 对拿不准或 TMDB 中不存在的文件，宁可放入 `unmatched_files`
-
-8. **Bangumi 使用约束**：
-   - Bangumi 只作为辅助证据，不是最终编号体系
-   - Bangumi 的 relation（如前传 / 续集 / 番外篇 / 总集篇）不能直接等价为某个 TMDB season
-   - 当本地文件只有编号或标题模糊时，可以参考 Bangumi 的 `sort / ep / type / 标题 / 日期`
-   - 如果 Bangumi 与 TMDB 存在结构差异，最终仍必须回到 TMDB 已存在的 `SxxExx`
-   - 无法自信桥接时，宁可将文件放入 `unmatched_files`
-
-9. **复杂目录处理约束**：
-   - 多子目录场景下，必须同时结合“文件名 + 所在子目录语义 + 时长”判断
-   - `SP / OVA / OAD / Special / NCOP / NCED / Extras / Bonus / Menu` 等目录或标签通常不是正片
-   - 如果输入列表里同时存在“根目录文件 + 子目录文件”或“同编号不同版本文件”，必须按输入中那条完整路径逐字复制；不要把别的文件所在目录或版本标签套到当前文件上
-   - 如果只能确定部分文件，优先输出有把握的合法映射，其余文件放入 `unmatched_files`
-   - 对 `SP01 / SP02 / OVA01` 这类 special 编号，若只能看到近似路径但无法确认哪一条才是输入中的真实文件，宁可放入 `unmatched_files`
-   - 如果某个 `source_index` 已能确定合法落点，但你不确定自己是否能把 `file_path` 逐字抄对，就只返回 `source_index`，不要硬写一个可能出错的 `file_path`
-   - 当目录里同时包含 TMDB 已存在的正片/特典与 TMDB 不存在的附加短片时，先覆盖可合法落点的那部分，其余放入 `unmatched_files`
-   - 不要因为目录复杂就返回空的 `file_mapping`
-   - 不要因为仍有一部分 extras / SP 无法落到 TMDB，就返回空的 `file_mapping`
-
-"""
-        return prompt
+        return shared_build_common_prompt(anime_info, local_files, bangumi_context)
 
     @staticmethod
     def get_system_prompt() -> str:
-        """
-        获取通用的系统提示词
-
-        Returns:
-            系统提示词
-        """
-        return (
-            "你是一个专业的动漫文件重命名助手。你需要分析本地动漫文件与TMDB数据库中剧集信息的对应关系，特别关注动漫BD发布与官方分季的差异。"
-            + "请你只输出匹配到的季度和剧集信息，不要输出其他未匹配到tmdb信息的内容。"
-        )
+        return shared_get_system_prompt()
 
     def analyze_movie_collection(
         self,
         folder_name: str,
-        local_files: List[Dict],
+        local_files: Sequence[Mapping[str, object]],
     ) -> Optional[MovieCollectionResult]:
         """
         分析电影合集目录，识别每个文件对应的电影
@@ -1142,9 +1120,10 @@ class AIClient:
         files_info = "本地文件信息 (路径均为相对路径):\n"
         for file_info in local_files:
             duration_str = ""
-            if file_info.get("duration"):
-                duration_str = f" (时长: {file_info['duration']:.1f}分钟)"
-            files_info += f"  {file_info['path']}{duration_str}\n"
+            duration_value = file_info.get("duration")
+            if isinstance(duration_value, (int, float)):
+                duration_str = f" (时长: {duration_value:.1f}分钟)"
+            files_info += f"  {str(file_info.get('path') or '')}{duration_str}\n"
 
         prompt = f"""请分析以下电影合集目录:
 
@@ -1219,13 +1198,16 @@ class AIClient:
             if result:
                 result = result.strip()
                 logger.debug(f"[AI电影合集] 原始响应: {result[:500]}...")
+                data: object | None = None
                 # 尝试解析JSON
                 try:
                     json_match = re.search(r'\{.*\}', result, re.DOTALL)
                     if json_match:
                         json_str = json_match.group()
                         data = json.loads(json_str)
-                        collection_result = MovieCollectionResult(**data)
+                        if not isinstance(data, Mapping):
+                            raise ValueError("AI电影合集返回的JSON根对象不是映射")
+                        collection_result = MovieCollectionResult.model_validate(data)
 
                         # 兜底补全可观测字段
                         if not collection_result.unmatched_files:
@@ -1234,7 +1216,7 @@ class AIClient:
                                 for i in collection_result.file_mapping
                             }
                             local = {
-                                f.get('path', '').replace('\\\\', '/').lstrip('/')
+                                str(f.get('path') or '').replace('\\', '/').lstrip('/')
                                 for f in local_files
                                 if f.get('path')
                             }
@@ -1263,7 +1245,7 @@ class AIClient:
                     logger.debug(f"[AI电影合集] 响应内容: {result}")
                 except Exception as e:
                     logger.error(f"[AI电影合集] 模型验证失败: {e}")
-                    logger.debug(f"[AI电影合集] 解析的数据: {data if 'data' in dir() else 'N/A'}")
+                    logger.debug(f"[AI电影合集] 解析的数据: {data!r}")
 
             self._save_analysis_snapshot(
                 analysis_kind="movie_collection",
@@ -1290,11 +1272,11 @@ class AIClient:
         self,
         analysis_kind: str,
         source_name: str,
-        source_payload: Dict,
-        local_files: List[Dict],
+        source_payload: Mapping[str, object],
+        local_files: Sequence[Mapping[str, object]],
         result: Optional[BaseModel],
         force: bool = False,
-        bangumi_context: Optional[Dict] = None,
+        bangumi_context: Mapping[str, object] | None = None,
     ) -> None:
         """保存 AI 分析快照；失败场景可强制落盘。"""
         if not (force or cm.get_config("ai_auto_save")):
@@ -1336,8 +1318,8 @@ class AIClient:
     def analyze_subtitle_mapping(
         self,
         archive_name: str,
-        archive_structure: Dict[str, List[str]],
-        processed_tasks: List[Dict],
+        archive_structure: Mapping[str, Sequence[str]],
+        processed_tasks: Sequence[Mapping[str, object]],
     ) -> Optional[SubtitleMappingResult]:
         """
         分析字幕文件与已处理任务的映射关系（支持多季度/多任务）
@@ -1382,8 +1364,8 @@ class AIClient:
         # 构建任务信息
         tasks_info = "已处理的动漫/电影任务列表：\n"
         for task in processed_tasks:
-            is_movie = task.get('is_movie', False)
-            tasks_info += f"\n任务 UUID: {task['uuid']}\n"
+            is_movie = bool(task.get('is_movie', False))
+            tasks_info += f"\n任务 UUID: {str(task.get('uuid') or '')}\n"
             tasks_info += f"  {'电影' if is_movie else '动漫'}名称: {task.get('title', '未知')}\n"
             if task.get('year'):
                 tasks_info += f"  年份: {task['year']}\n"
@@ -1393,7 +1375,7 @@ class AIClient:
                 tasks_info += f"  类型: 电影\n"
             tasks_info += f"  目标目录: {task.get('target_dir', '')}\n"
             tasks_info += "  视频文件:\n"
-            for video in task.get('videos', []):  # 显示所有视频
+            for video in AIClient._coerce_string_sequence(task.get('videos', [])):  # 显示所有视频
                 tasks_info += f"    - {video}\n"
 
         # 构建带结构的字幕信息
@@ -1401,7 +1383,7 @@ class AIClient:
         total_files = 0
         for folder, files in archive_structure.items():
             subtitles_info += f"\n📁 {folder}/\n"
-            for f in files:  # 显示所有字幕
+            for f in AIClient._coerce_string_sequence(files):  # 显示所有字幕
                 subtitles_info += f"    - {f}\n"
                 total_files += 1
 
@@ -1573,8 +1555,8 @@ class AIClient:
 
     def choose_subtitle_candidate(
         self,
-        task_data: Dict,
-        ranked_candidates: List[Dict],
+        task_data: Mapping[str, object],
+        ranked_candidates: Sequence[Mapping[str, object]],
     ) -> Optional[SubtitleCandidateDecision]:
         """让 AI 在搜索结果中直接选择最佳字幕候选。"""
         if not self.is_available() or not ranked_candidates:
@@ -1594,9 +1576,11 @@ class AIClient:
         source_title_hint = str(
             task_data.get("subtitle_auto_fetch_source_title_hint") or ""
         ).strip()
-        source_video_names = task_data.get("subtitle_auto_fetch_source_video_names") or []
-        target_video_names = (
-            task_data.get("subtitle_auto_fetch_missing_target_video_names") or []
+        source_video_names = AIClient._coerce_string_sequence(
+            task_data.get("subtitle_auto_fetch_source_video_names")
+        )
+        target_video_names = AIClient._coerce_string_sequence(
+            task_data.get("subtitle_auto_fetch_missing_target_video_names")
         )
         scan_scope_root = str(
             task_data.get("subtitle_auto_fetch_scan_scope_root") or ""
@@ -1605,7 +1589,7 @@ class AIClient:
             task_data.get("subtitle_auto_fetch_is_season_zero_tv")
         )
 
-        context_lines = [
+        context_lines: list[str] = [
             f"标题: {title}",
             f"类型: {media_type}",
             f"偏好语言: {preferred_language}",
@@ -1622,17 +1606,17 @@ class AIClient:
             context_lines.append(f"源标题线索: {source_title_hint}")
         if source_video_names:
             context_lines.append(
-                f"源视频文件: {' | '.join(map(str, source_video_names[:3]))}"
+                f"源视频文件: {' | '.join(source_video_names[:3])}"
             )
         if target_video_names:
             context_lines.append(
-                f"缺字幕目标文件: {' | '.join(map(str, target_video_names[:3]))}"
+                f"缺字幕目标文件: {' | '.join(target_video_names[:3])}"
             )
         if scan_scope_root:
             context_lines.append(f"扫描根目录: {scan_scope_root}")
 
-        candidates_text = []
-        for item in ranked_candidates:
+        candidates_text: list[str] = []
+        for item in AIClient._coerce_mapping_sequence(ranked_candidates):
             candidates_text.append(
                 "\n".join(
                     [
@@ -1715,9 +1699,9 @@ class AIClient:
 
     def choose_subtitle_thread_package(
         self,
-        task_data: Dict,
-        candidate: Dict,
-        package_summaries: List[Dict],
+        task_data: Mapping[str, object],
+        candidate: Mapping[str, object],
+        package_summaries: Sequence[Mapping[str, object]],
     ) -> Optional[SubtitleThreadPackageDecision]:
         """让 AI 在单个帖子内选择最适合自动导入的字幕包。"""
         if not self.is_available() or not package_summaries:
@@ -1730,16 +1714,21 @@ class AIClient:
         preferred_language = str(
             task_data.get("subtitle_auto_fetch_preferred_language") or "zh-CN"
         )
-        missing_video_count = int(task_data.get("missing_video_count") or 0)
+        missing_video_count_raw = task_data.get("missing_video_count")
+        missing_video_count = (
+            missing_video_count_raw if isinstance(missing_video_count_raw, int) else 0
+        )
         source_path_basename = str(
             task_data.get("subtitle_auto_fetch_source_path_basename") or ""
         ).strip()
         source_title_hint = str(
             task_data.get("subtitle_auto_fetch_source_title_hint") or ""
         ).strip()
-        source_video_names = task_data.get("subtitle_auto_fetch_source_video_names") or []
-        target_video_names = (
-            task_data.get("subtitle_auto_fetch_missing_target_video_names") or []
+        source_video_names = AIClient._coerce_string_sequence(
+            task_data.get("subtitle_auto_fetch_source_video_names")
+        )
+        target_video_names = AIClient._coerce_string_sequence(
+            task_data.get("subtitle_auto_fetch_missing_target_video_names")
         )
         scan_scope_root = str(
             task_data.get("subtitle_auto_fetch_scan_scope_root") or ""
@@ -1768,20 +1757,20 @@ class AIClient:
             context_lines.append(f"源标题线索: {source_title_hint}")
         if source_video_names:
             context_lines.append(
-                f"源视频文件: {' | '.join(map(str, source_video_names[:3]))}"
+                f"源视频文件: {' | '.join(source_video_names[:3])}"
             )
         if target_video_names:
             context_lines.append(
-                f"缺字幕目标文件: {' | '.join(map(str, target_video_names[:3]))}"
+                f"缺字幕目标文件: {' | '.join(target_video_names[:3])}"
             )
         if scan_scope_root:
             context_lines.append(f"扫描根目录: {scan_scope_root}")
         if candidate.get("pagination_truncated"):
             context_lines.append("注意: 当前只扫描了帖子前几页，后续分页未完全展开")
 
-        packages_text = []
-        for item in package_summaries:
-            flags = ", ".join(item.get("package_flags") or [])
+        packages_text: list[str] = []
+        for item in AIClient._coerce_mapping_sequence(package_summaries):
+            flags = ", ".join(AIClient._coerce_string_sequence(item.get("package_flags") or []))
             packages_text.append(
                 "\n".join(
                     [
