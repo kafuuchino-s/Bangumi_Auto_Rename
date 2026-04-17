@@ -2,8 +2,9 @@ import json
 import re
 import unicodedata
 import uuid
+from collections.abc import Callable
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple, Union
+from typing import cast
 
 from .trans import Trans
 from ..logger import logger
@@ -14,7 +15,9 @@ from ..config.config_manager import cm
 from ..ai.client import AIClient
 from ..ai.models import MovieCollectionResult
 from ..ai.video_analyzer import VideoAnalyzer
+from ..bangumi.context_builder import AnimeInfoDict
 from .utils import VIDEO_SUFFIX
+from .ai_processor import FileAnalysisDict
 from .cleaner import (
     build_movie_search_queries,
     divide_by_year,
@@ -38,9 +41,32 @@ FAILURE_MESSAGES = {
     "trans_failed": "[迁移] 文件迁移失败",
 }
 
+TmdbInfo = dict[str, object]
+MovieProcessResult = dict[str, object]
+SelectionResult = tuple[str, TmdbInfo, bool, bool, str | None]
+EnqueueTask = Callable[..., str]
+
+
+def _as_tmdb_info(value: object) -> TmdbInfo | None:
+    return cast(TmdbInfo, value) if isinstance(value, dict) else None
+
+
+def _as_str(value: object) -> str | None:
+    return value if isinstance(value, str) else None
+
+
+def _as_int(value: object) -> int | None:
+    return value if isinstance(value, int) else None
+
+
+def _float_score(value: object) -> float:
+    if isinstance(value, (int, float)):
+        return float(value)
+    return 0.0
+
 
 class Rename:
-    STRUCTURAL_DIR_TOKENS = {
+    STRUCTURAL_DIR_TOKENS: set[str] = {
         'film',
         'films',
         'movie',
@@ -64,19 +90,19 @@ class Rename:
     }
 
     def __init__(self):
-        self.BANGUMI_PATH = Path(cm.get_config('bangumi_path'))
-        self.MOVIE_PATH = Path(cm.get_config('movie_path'))
-        self.ANIME_PATH = Path(cm.get_config('anime_path'))
-        self.ANIME_MOVIE_PATH = Path(cm.get_config('anime_movie_path'))
+        self.BANGUMI_PATH: Path = Path(str(cm.get_config('bangumi_path')))
+        self.MOVIE_PATH: Path = Path(str(cm.get_config('movie_path')))
+        self.ANIME_PATH: Path = Path(str(cm.get_config('anime_path')))
+        self.ANIME_MOVIE_PATH: Path = Path(str(cm.get_config('anime_movie_path')))
 
         self.ANIME_MOVIE_PATH.mkdir(parents=True, exist_ok=True)
         self.MOVIE_PATH.mkdir(parents=True, exist_ok=True)
         self.ANIME_PATH.mkdir(parents=True, exist_ok=True)
         self.BANGUMI_PATH.mkdir(parents=True, exist_ok=True)
 
-        self.search = Search()
-        self.ai_processor = AIProcessor()
-        self.R: Dict[Path, Path] = {}
+        self.search: Search = Search()
+        self.ai_processor: AIProcessor = AIProcessor()
+        self.mapping: dict[Path, Path] = {}
 
     def _normalize_structural_dir_name(self, name: str) -> str:
         normalized = unicodedata.normalize('NFKD', name or '')
@@ -103,8 +129,8 @@ class Rename:
         self,
         parent_path: Path,
         sub_path: Path,
-        existing_name: Optional[str],
-    ) -> Optional[str]:
+        existing_name: str | None,
+    ) -> str | None:
         if existing_name:
             return existing_name
         if not self._is_structural_subdir(sub_path):
@@ -130,9 +156,9 @@ class Rename:
     @staticmethod
     def _build_title_inputs(
         path: Path,
-        cus_name: Optional[str] = None,
+        cus_name: str | None = None,
         is_sub_task: bool = False,
-    ) -> Tuple[str, int, str, str, str]:
+    ) -> tuple[str, int, str, str, str]:
         year = 0
         rtpath_name = remove_tag(path.name)
         if not rtpath_name:
@@ -195,13 +221,14 @@ class Rename:
     def process(
         self,
         path: Path,
-        _is_anime: Optional[bool] = None,
-        _is_movie: Optional[bool] = None,
-        _tuuid: Optional[str] = None,
-        cus_name: Optional[str] = None,
-        cus_season_id: Optional[int] = None,
+        _is_anime: bool | None = None,
+        _is_movie: bool | None = None,
+        _tuuid: str | None = None,
+        cus_name: str | None = None,
+        cus_season_id: int | None = None,
         _is_sub_task: bool = False,
-    ):
+        _enqueue_task: EnqueueTask | None = None,
+    ) -> str | bool:
         """
         处理文件/文件夹
 
@@ -234,9 +261,6 @@ class Rename:
 
             # 非视频直系目录：父任务拆成并行子任务
             if not _is_sub_task:
-                from ..queue.task_queue import get_queue_manager
-
-                queue_mgr = get_queue_manager()
                 sub_paths = [
                     sub_path
                     for sub_path in path.iterdir()
@@ -246,8 +270,21 @@ class Rename:
                 logger.info(
                     f"[处理任务] 发现 {len(sub_paths)} 个子路径，分别加入队列并行处理"
                 )
+                if _enqueue_task is None:
+                    return self.error_reply(
+                        _tuuid or str(uuid.uuid4()),
+                        "[队列] 缺少子任务入队回调",
+                        path,
+                        _is_anime,
+                        _is_movie,
+                        failure_reason="queue_enqueue_missing",
+                        ai_attempted=False,
+                        ai_used=False,
+                        ai_confidence=None,
+                    )
+
                 for sub_path in sub_paths:
-                    queue_mgr.enqueue(
+                    _ = _enqueue_task(
                         path=str(sub_path),
                         is_anime=_is_anime,
                         is_movie=_is_movie,
@@ -286,13 +323,13 @@ class Rename:
     def _process(
         self,
         path: Path,
-        _is_anime: Optional[bool] = None,
-        _is_movie: Optional[bool] = None,
-        _tuuid: Optional[str] = None,
-        cus_name: Optional[str] = None,
-        cus_season_id: Optional[int] = None,
+        _is_anime: bool | None = None,
+        _is_movie: bool | None = None,
+        _tuuid: str | None = None,
+        cus_name: str | None = None,
+        cus_season_id: int | None = None,
         _is_sub_task: bool = False,
-    ):
+    ) -> str | bool:
         _uuid = _tuuid or str(uuid.uuid4())
 
         if not self.search.TMDB_KEY:
@@ -406,7 +443,7 @@ class Rename:
         name, info, is_anime, is_movie, type_ai_confidence = task_type
 
         # Step.3 构建映射（TV/Movie 均 AI-strict）
-        self.R = {}
+        self.mapping = {}
         season_id = 0 if is_movie else 1
         task_ai_confidence = type_ai_confidence
         ai_used = True
@@ -562,25 +599,31 @@ class Rename:
 
                     for index, movie_data in enumerate(processed_movies):
                         movie_uuid = _uuid if index == 0 else str(uuid.uuid4())
-                        movie_map = {
-                            movie_data['file_path']: movie_data['target_file']
+                        movie_file_path = cast(Path, movie_data['file_path'])
+                        movie_target_file = cast(Path, movie_data['target_file'])
+                        movie_name_value = _as_str(movie_data.get('movie_name'))
+                        movie_confidence_value = _as_str(
+                            movie_data.get('ai_confidence')
+                        )
+                        movie_map: dict[Path, Path] = {
+                            movie_file_path: movie_target_file
                         }
                         trans_result = Trans(movie_map, movie_uuid).trans_file()
                         if isinstance(trans_result, str):
                             return self.error_reply(
                                 movie_uuid,
                                 self._failure_message("trans_failed", trans_result),
-                                movie_data['file_path'],
+                                movie_file_path,
                                 is_anime,
                                 True,
-                                movie_data['movie_name'],
+                                movie_name_value,
                                 0,
                                 failure_reason="trans_failed",
                                 ai_attempted=True,
                                 ai_used=True,
-                                ai_confidence=movie_data.get(
-                                    'ai_confidence',
-                                    collection_result.confidence,
+                                ai_confidence=(
+                                    movie_confidence_value
+                                    or collection_result.confidence
                                 ),
                                 extra_task_data={
                                     "is_collection": True,
@@ -605,19 +648,19 @@ class Rename:
                                 "use_ai": True,
                                 "ai_attempted": True,
                                 "ai_used": True,
-                                "ai_confidence": movie_data.get(
-                                    'ai_confidence',
-                                    collection_result.confidence,
-                                ),
+                                 "ai_confidence": (
+                                     movie_confidence_value
+                                     or collection_result.confidence
+                                 ),
                                 "failure_reason": None,
                                 "pipeline_mode": "ai_strict",
-                                "tmdb_id": movie_data.get("tmdb_id"),
-                                "poster_path": movie_data.get("poster_path"),
-                                "tmdb_name": movie_data.get("tmdb_name"),
-                                "tmdb_year": movie_data.get("tmdb_year"),
-                                "tmdb_media_type": movie_data.get(
-                                    "tmdb_media_type"
-                                ),
+                                 "tmdb_id": movie_data.get("tmdb_id"),
+                                 "poster_path": movie_data.get("poster_path"),
+                                 "tmdb_name": movie_data.get("tmdb_name"),
+                                 "tmdb_year": movie_data.get("tmdb_year"),
+                                 "tmdb_media_type": movie_data.get(
+                                     "tmdb_media_type"
+                                 ),
                                 "tmdb_genres": movie_data.get("tmdb_genres"),
                                 "release_group": movie_data.get(
                                     "release_group"
@@ -625,14 +668,14 @@ class Rename:
                                 "resource_term": movie_data.get(
                                     "resource_term"
                                 ),
-                                "target_root": str(Path(movie_data["target_file"]).parent),
-                            }
-                        )
+                                 "target_root": str(movie_target_file.parent),
+                             }
+                         )
 
                     return True
 
             # 单电影：候选搜索 + AI 选择已在 check_task_type 中完成
-            first_data = info.get('release_date', '')
+            first_data = _as_str(info.get('release_date')) or ''
             first_year = first_data.split('-')[0] if first_data else None
             work_path = FilenameBuilder.build_movie_work_path(
                 work_root,
@@ -655,13 +698,13 @@ class Rename:
                     file_ext=source_video.suffix,
                 )
                 new_filename = FilenameBuilder.build_movie_filename(meta)
-                self.R[source_video] = work_path / new_filename
+                self.mapping[source_video] = work_path / new_filename
 
             primary_source_name = video_files[0].name if video_files else path.name
             release_group = self._extract_release_group(primary_source_name)
             resource_term = self._extract_resource_term(primary_source_name)
 
-            if not self.R:
+            if not self.mapping:
                 return self.error_reply(
                     _uuid,
                     self._failure_message("ai_empty_mapping"),
@@ -681,7 +724,7 @@ class Rename:
         else:
             # TV：AI 映射为唯一主路径
             work_root = self.ANIME_PATH if is_anime else self.BANGUMI_PATH
-            first_data = info.get('first_air_date', '')
+            first_data = _as_str(info.get('first_air_date')) or ''
             first_year = first_data.split('-')[0] if first_data else None
             work_path = FilenameBuilder.build_tv_work_path(
                 work_root,
@@ -715,11 +758,14 @@ class Rename:
             )
             all_local_files = self.ai_processor._collect_all_local_files(path)
 
+            tv_info_typed = cast(AnimeInfoDict, cast(object, tv_info))
+            file_analysis_typed = cast(list[FileAnalysisDict], file_analysis)
+
             ai_result = self.ai_processor.analyze_anime_files(
                 path,
-                tv_info,
+                tv_info_typed,
                 video_files=video_files,
-                file_analysis=file_analysis,
+                file_analysis=file_analysis_typed,
             )
             if not ai_result:
                 return self.error_reply(
@@ -757,7 +803,7 @@ class Rename:
 
             valid, reason, detail = self.ai_processor.validate_tv_result(
                 ai_result,
-                tv_info,
+                tv_info_typed,
                 path,
                 video_files=video_files,
             )
@@ -776,14 +822,14 @@ class Rename:
                     ai_confidence=ai_result.confidence,
                 )
 
-            self.R = self.ai_processor.apply_ai_mapping(
+            self.mapping = self.ai_processor.apply_ai_mapping(
                 ai_result=ai_result,
-                anime_info=tv_info,
+                anime_info=tv_info_typed,
                 base_path=path,
                 work_path=work_path,
                 all_local_files=all_local_files,
             )
-            if not self.R:
+            if not self.mapping:
                 return self.error_reply(
                     _uuid,
                     self._failure_message("ai_empty_mapping"),
@@ -798,7 +844,7 @@ class Rename:
                     ai_confidence=ai_result.confidence,
                 )
 
-            season_id = self._detect_season_id_from_mapping(self.R)
+            season_id = self._detect_season_id_from_mapping(self.mapping)
             if cus_season_id is not None:
                 # 仅影响任务展示，不覆盖 AI 映射本身
                 season_id = int(cus_season_id)
@@ -806,16 +852,16 @@ class Rename:
         # Step.4 迁移与任务落盘
         from ..subtitle.extractor import SUBTITLE_EXTENSIONS
 
-        video_mapping: Dict[Path, Path] = {}
-        subtitle_mapping: Dict[Path, Path] = {}
-        for source_path, target_path in self.R.items():
+        video_mapping: dict[Path, Path] = {}
+        subtitle_mapping: dict[Path, Path] = {}
+        for source_path, target_path in self.mapping.items():
             if source_path.suffix.lower() in SUBTITLE_EXTENSIONS:
                 subtitle_mapping[source_path] = target_path
             else:
                 video_mapping[source_path] = target_path
 
         trans_result = Trans(video_mapping, _uuid).trans_file()
-        self.R = {}
+        self.mapping = {}
         if isinstance(trans_result, str):
             return self.error_reply(
                 _uuid,
@@ -853,14 +899,12 @@ class Rename:
                 "ai_confidence": task_ai_confidence,
                 "failure_reason": None,
                 "pipeline_mode": "ai_strict",
-                "tmdb_id": info.get("id") if isinstance(info, dict) else None,
+                "tmdb_id": info.get("id"),
                 "poster_path": task_poster_path,
                 "tmdb_name": name,
                 "tmdb_year": first_year,
                 "tmdb_media_type": "movie" if is_movie else "tv",
-                "tmdb_genres": (
-                    info.get("genres", []) if isinstance(info, dict) else []
-                ),
+                "tmdb_genres": info.get("genres", []),
                 "release_group": release_group,
                 "resource_term": resource_term,
                 "target_root": str(work_path),
@@ -887,14 +931,14 @@ class Rename:
         rtpath_name: str,
         year: int,
         path: Path,
-        is_anime: Optional[bool] = None,
-        is_movie: Optional[bool] = None,
-        ai_client: Optional[AIClient] = None,
+        is_anime: bool | None = None,
+        is_movie: bool | None = None,
+        ai_client: AIClient | None = None,
         prefer_manual_title: bool = False,
-        cleaned_title: Optional[str] = None,
-        raw_title: Optional[str] = None,
-        ai_input_name: Optional[str] = None,
-    ) -> Union[Tuple[str, Dict, bool, bool, Optional[str]], str]:
+        cleaned_title: str | None = None,
+        raw_title: str | None = None,
+        ai_input_name: str | None = None,
+    ) -> SelectionResult | str:
         """AI-first 类型判定：TV/Movie 均采用候选 + AI 选择。"""
         ai_client = ai_client or AIClient()
         if not ai_client.is_available():
@@ -912,10 +956,10 @@ class Rename:
             f"title={ai_title}, fallback_title={ai_fallback_title}, type={ai_type}"
         )
 
-        queries: List[str] = []
+        queries: list[str] = []
         search_context_name = ai_input_name or raw_title or rtpath_name or path.name
 
-        def append_query(value: Optional[str]) -> None:
+        def append_query(value: str | None) -> None:
             if not value:
                 return
 
@@ -942,13 +986,13 @@ class Rename:
             append_query(cleaned_title)
 
         tv_name = ''
-        tv_info: Optional[Dict] = None
-        tv_confidence: Optional[str] = None
+        tv_info: TmdbInfo | None = None
+        tv_confidence: str | None = None
         tv_reason = "tmdb_not_found"
 
         movie_name = ''
-        movie_info: Optional[Dict] = None
-        movie_confidence: Optional[str] = None
+        movie_info: TmdbInfo | None = None
+        movie_confidence: str | None = None
         movie_reason = "tmdb_not_found"
 
         has_tv_hint = self._has_tv_hint(path.name)
@@ -1112,8 +1156,8 @@ class Rename:
         query: str,
         year: int,
         ai_client: AIClient,
-        local_video_count: Optional[int] = None,
-    ) -> Tuple[str, Optional[Dict], Optional[str], str]:
+        local_video_count: int | None = None,
+    ) -> tuple[str, TmdbInfo | None, str | None, str]:
         candidates = self.search.search_tv_by_query(query, year, limit=5)
         if not candidates and year != 0:
             candidates = self.search.search_tv_by_query(query, None, limit=5)
@@ -1131,11 +1175,11 @@ class Rename:
             folder_name,
             query,
         )
-        tv_info_cache: Dict[int, Dict] = {}
-        candidate_season_numbers: Dict[int, set[int]] = {}
-        candidate_episode_counts: Dict[int, set[int]] = {}
+        tv_info_cache: dict[int, TmdbInfo] = {}
+        candidate_season_numbers: dict[int, set[int]] = {}
+        candidate_episode_counts: dict[int, set[int]] = {}
 
-        def collect_candidate_details(candidate: Dict) -> Optional[Dict]:
+        def collect_candidate_details(candidate: TmdbInfo) -> TmdbInfo | None:
             tv_id = candidate.get('id')
             if not isinstance(tv_id, int):
                 return None
@@ -1147,27 +1191,27 @@ class Rename:
             if not tv_info:
                 return None
 
-            tv_info_cache[tv_id] = tv_info
+            tv_info_cache[tv_id] = cast(TmdbInfo, tv_info)
             seasons = [
                 season
                 for season in tv_info.get('seasons', [])
                 if isinstance(season, dict)
             ]
             candidate_season_numbers[tv_id] = {
-                season.get('season_number')
+                season_number
                 for season in seasons
-                if isinstance(season.get('season_number'), int)
+                if isinstance((season_number := season.get('season_number')), int)
             }
             candidate_episode_counts[tv_id] = {
-                season.get('episode_count')
+                episode_count
                 for season in seasons
-                if isinstance(season.get('episode_count'), int)
-                and season.get('episode_count') > 0
+                if isinstance((episode_count := season.get('episode_count')), int)
+                and episode_count > 0
             }
-            return tv_info
+            return cast(TmdbInfo, tv_info)
 
         if preferred_season and len(ranked_candidates) > 1:
-            refined_candidates: List[Dict] = []
+            refined_candidates: list[TmdbInfo] = []
             for candidate in ranked_candidates:
                 refined_candidate = dict(candidate)
                 score = float(refined_candidate.get('_match_score', 0) or 0)
@@ -1192,7 +1236,7 @@ class Rename:
                 reverse=True,
             )
         elif local_video_count and len(ranked_candidates) > 1:
-            enriched_candidates: List[Dict] = []
+            enriched_candidates: list[TmdbInfo] = []
             for candidate in ranked_candidates:
                 enriched_candidate = dict(candidate)
                 tv_info = collect_candidate_details(enriched_candidate)
@@ -1210,15 +1254,15 @@ class Rename:
                 if local_video_count in counts
             }
             if exact_count_candidate_ids:
-                first_id = ranked_candidates[0].get('id')
+                first_id = _as_int(ranked_candidates[0].get('id'))
                 if first_id not in exact_count_candidate_ids:
                     should_force_ai_selection = True
 
         if preferred_season and len(ranked_candidates) > 1:
             first = ranked_candidates[0]
             second = ranked_candidates[1]
-            first_id = first.get('id')
-            second_id = second.get('id')
+            first_id = _as_int(first.get('id'))
+            second_id = _as_int(second.get('id'))
             first_seasons = (
                 candidate_season_numbers.get(first_id, set())
                 if isinstance(first_id, int)
@@ -1229,8 +1273,8 @@ class Rename:
                 if isinstance(second_id, int)
                 else set()
             )
-            first_score = float(first.get('_match_score', 0) or 0)
-            second_score = float(second.get('_match_score', 0) or 0)
+            first_score = _float_score(first.get('_match_score', 0))
+            second_score = _float_score(second.get('_match_score', 0))
             if (
                 preferred_season in first_seasons
                 and preferred_season not in second_seasons
@@ -1263,15 +1307,19 @@ class Rename:
             if not self._is_confidence_acceptable(selection_confidence):
                 return '', None, selection_confidence, 'ai_low_confidence'
 
-        tv_info = tv_info_cache.get(selected['id']) or self.search.get_tv_info_by_id(
-            selected['id']
+        selected_id = _as_int(selected.get('id'))
+        if selected_id is None:
+            return '', None, selection_confidence, 'tmdb_not_found'
+
+        tv_info = tv_info_cache.get(selected_id) or self.search.get_tv_info_by_id(
+            selected_id
         )
         if not tv_info:
             return '', None, selection_confidence, 'tmdb_not_found'
 
-        tv_info = self.search.fill_season_info(tv_info)
+        tv_info = cast(TmdbInfo, self.search.fill_season_info(tv_info))
 
-        name = tv_info.get('name', selected.get('name', ''))
+        name = _as_str(tv_info.get('name')) or _as_str(selected.get('name')) or ''
         logger.info(
             f"[电视剧搜索] 选择: {name} (confidence={selection_confidence})"
         )
@@ -1283,8 +1331,11 @@ class Rename:
         query: str,
         year: int,
         ai_client: AIClient,
-    ) -> Tuple[str, Optional[Dict], Optional[str], str]:
+    ) -> tuple[str, TmdbInfo | None, str | None, str]:
         candidates = self.search.search_movies_by_title(query, year, limit=5)
+
+        selected: TmdbInfo | None = None
+        selection_confidence: str | None = None
 
         deterministic_selected, deterministic_confidence = (
             self._select_ranked_movie_candidate(candidates or [])
@@ -1317,11 +1368,18 @@ class Rename:
             if not self._is_confidence_acceptable(selection_confidence):
                 return '', None, selection_confidence, 'ai_low_confidence'
 
-        movie_info = self.search.get_movie_info_by_id(selected['id'])
+        if selected is None:
+            return '', None, selection_confidence, 'tmdb_not_found'
+
+        selected_id = _as_int(selected.get('id'))
+        if selected_id is None:
+            return '', None, selection_confidence, 'tmdb_not_found'
+
+        movie_info = self.search.get_movie_info_by_id(selected_id)
         if not movie_info:
             return '', None, selection_confidence, 'tmdb_not_found'
 
-        movie_name = movie_info.get('title', selected.get('title', ''))
+        movie_name = _as_str(movie_info.get('title')) or _as_str(selected.get('title')) or ''
         logger.info(
             f"[电影搜索] 选择: {movie_name} (confidence={selection_confidence})"
         )
@@ -1332,13 +1390,13 @@ class Rename:
         ai_client: AIClient,
         filename: str,
         extracted_title: str,
-        candidates: List[Dict],
-    ) -> Tuple[Optional[Dict], Optional[str]]:
+        candidates: list[TmdbInfo],
+    ) -> tuple[TmdbInfo | None, str | None]:
         """让 AI 从电影候选列表中选择最匹配项（返回候选和置信度）。"""
         if not ai_client.is_available():
             return None, None
 
-        candidates_info = []
+        candidates_info: list[str] = []
         for index, movie in enumerate(candidates, start=1):
             candidates_info.append(
                 (
@@ -1389,8 +1447,13 @@ class Rename:
             if not parsed:
                 return None, None
 
-            idx = parsed['index'] - 1
-            confidence = parsed['confidence']
+            index_value = parsed.get('index')
+            confidence_value = parsed.get('confidence')
+            if not isinstance(index_value, int):
+                return None, None
+
+            idx = index_value - 1
+            confidence = confidence_value if isinstance(confidence_value, str) else None
             if 0 <= idx < len(candidates):
                 logger.info(
                     f"[AI选择] 电影 {filename} -> 候选#{idx + 1}, "
@@ -1407,17 +1470,20 @@ class Rename:
         ai_client: AIClient,
         folder_name: str,
         query: str,
-        candidates: List[Dict],
-        local_video_count: Optional[int] = None,
-    ) -> Tuple[Optional[Dict], Optional[str]]:
+        candidates: list[TmdbInfo],
+        local_video_count: int | None = None,
+    ) -> tuple[TmdbInfo | None, str | None]:
         """让 AI 从电视剧候选列表中选择最匹配项（返回候选和置信度）。"""
         if not ai_client.is_available():
             return None, None
 
-        candidates_info = []
+        candidates_info: list[str] = []
         for index, tv in enumerate(candidates, start=1):
-            season_parts = []
-            for season in tv.get('seasons', []):
+            season_parts: list[str] = []
+            seasons = tv.get('seasons')
+            if not isinstance(seasons, list):
+                seasons = []
+            for season in seasons:
                 if not isinstance(season, dict):
                     continue
                 season_number = season.get('season_number')
@@ -1487,8 +1553,13 @@ class Rename:
             if not parsed:
                 return None, None
 
-            idx = parsed['index'] - 1
-            confidence = parsed['confidence']
+            index_value = parsed.get('index')
+            confidence_value = parsed.get('confidence')
+            if not isinstance(index_value, int):
+                return None, None
+
+            idx = index_value - 1
+            confidence = confidence_value if isinstance(confidence_value, str) else None
             if 0 <= idx < len(candidates):
                 logger.info(
                     f"[AI选择] 电视剧 {folder_name} -> 候选#{idx + 1}, "
@@ -1506,14 +1577,14 @@ class Rename:
         collection_result: MovieCollectionResult,
         work_path: Path,
         ai_client: AIClient,
-    ) -> Tuple[List[Dict], List[str]]:
+    ) -> tuple[list[MovieProcessResult], list[str]]:
         """处理电影合集，返回处理成功的电影和未解决项。"""
         if not isinstance(collection_result, MovieCollectionResult):
             logger.error("[电影合集] 无效的合集分析结果")
             return [], ["invalid_collection_result"]
 
-        processed_movies: List[Dict] = []
-        unresolved: List[str] = []
+        processed_movies: list[MovieProcessResult] = []
+        unresolved: list[str] = []
 
         for mapping in collection_result.file_mapping:
             normalized_rel = mapping.file_path.replace('\\', '/').lstrip('/')
@@ -1575,13 +1646,18 @@ class Rename:
                     )
                     continue
 
-            movie_info = self.search.get_movie_info_by_id(selected['id'])
+            selected_id = _as_int(selected.get('id'))
+            if selected_id is None:
+                unresolved.append(f"无法获取详情:{mapping.movie_title}")
+                continue
+
+            movie_info = self.search.get_movie_info_by_id(selected_id)
             if not movie_info:
                 unresolved.append(f"无法获取详情:{mapping.movie_title}")
                 continue
 
-            movie_name = movie_info.get('title', selected.get('title', ''))
-            release_date = movie_info.get('release_date', '')
+            movie_name = _as_str(movie_info.get('title')) or _as_str(selected.get('title')) or ''
+            release_date = _as_str(movie_info.get('release_date')) or ''
             movie_year = release_date.split('-')[0] if release_date else None
             movie_genres = movie_info.get('genres', [])
 
@@ -1611,7 +1687,7 @@ class Rename:
                     'file_path': file_path,
                     'target_file': target_file,
                     'ai_confidence': selected_confidence or mapping.confidence,
-                    'tmdb_id': movie_info.get('id', selected.get('id')),
+                     'tmdb_id': movie_info.get('id', selected_id),
                     'poster_path': movie_info.get('poster_path'),
                     'tmdb_name': movie_name,
                     'tmdb_year': movie_year,
@@ -1636,9 +1712,9 @@ class Rename:
     def _extract_single_movie_files_from_collection_result(
         self,
         collection_result: MovieCollectionResult,
-        video_files: List[Path],
+        video_files: list[Path],
         base_path: Path,
-    ) -> List[Path]:
+    ) -> list[Path]:
         """从合集分析结果中提取可回退为单电影处理的正片文件。"""
         if collection_result.is_collection:
             return []
@@ -1664,9 +1740,9 @@ class Rename:
     def _validate_movie_collection_result(
         self,
         collection_result: MovieCollectionResult,
-        video_files: List[Path],
+        video_files: list[Path],
         base_path: Path,
-    ) -> Tuple[bool, Optional[str], str]:
+    ) -> tuple[bool, str | None, str]:
         """验证电影合集 AI 结果可执行性。"""
         if not collection_result.is_collection:
             return False, "ai_empty_mapping", "AI未识别为电影合集"
@@ -1679,9 +1755,9 @@ class Rename:
             for p in video_files
         }
 
-        mapped_rel_paths = set()
-        conflicts: List[str] = []
-        low_conf_items: List[str] = []
+        mapped_rel_paths: set[str] = set()
+        conflicts: list[str] = []
+        low_conf_items: list[str] = []
 
         for mapping in collection_result.file_mapping:
             rel_path = mapping.file_path.replace('\\', '/').lstrip('/')
@@ -1725,8 +1801,8 @@ class Rename:
 
         return True, None, ''
 
-    def _detect_season_id_from_mapping(self, mapping: Dict[Path, Path]) -> int:
-        detected_seasons = set()
+    def _detect_season_id_from_mapping(self, mapping: dict[Path, Path]) -> int:
+        detected_seasons: set[int] = set()
         for target_path in mapping.values():
             for part in target_path.parts:
                 if not part.startswith('Season '):
@@ -1744,9 +1820,13 @@ class Rename:
         non_zero = sorted(s for s in detected_seasons if s > 0)
         return non_zero[0] if non_zero else 0
 
-    def _detect_anime_genre(self, info: Dict) -> bool:
+    def _detect_anime_genre(self, info: TmdbInfo) -> bool:
         genres = info.get('genres', [])
+        if not isinstance(genres, list):
+            return False
         for genre in genres:
+            if not isinstance(genre, dict):
+                continue
             genre_name = str(genre.get('name', '')).lower()
             if genre_name in ('animation', 'anime', '动画', 'アニメ'):
                 return True
@@ -1784,8 +1864,8 @@ class Rename:
 
     def _select_ranked_movie_candidate(
         self,
-        candidates: List[Dict],
-    ) -> Tuple[Optional[Dict], Optional[str]]:
+        candidates: list[TmdbInfo],
+    ) -> tuple[TmdbInfo | None, str | None]:
         if not candidates:
             return None, None
 
@@ -1794,8 +1874,8 @@ class Rename:
 
         first = candidates[0]
         second = candidates[1]
-        first_score = float(first.get('_match_score', 0) or 0)
-        second_score = float(second.get('_match_score', 0) or 0)
+        first_score = _float_score(first.get('_match_score', 0))
+        second_score = _float_score(second.get('_match_score', 0))
         score_gap = first_score - second_score
 
         if first_score >= 120 or (first_score >= 108 and score_gap >= 15):
@@ -1809,7 +1889,7 @@ class Rename:
     def _should_try_movie_collection(
         self,
         path: Path,
-        ai_type: Optional[str],
+        ai_type: str | None,
         has_movie_hint: bool,
         has_tv_hint: bool,
     ) -> bool:
@@ -1860,10 +1940,10 @@ class Rename:
 
     def _get_collection_seed_movie_info(
         self,
-        queries: List[str],
+        queries: list[str],
         year: int,
-    ) -> Tuple[str, Optional[Dict], Optional[str]]:
-        best_candidates: Optional[List[Dict]] = None
+    ) -> tuple[str, TmdbInfo | None, str | None]:
+        best_candidates: list[TmdbInfo] | None = None
         best_score = -1.0
 
         for query in queries:
@@ -1876,7 +1956,7 @@ class Rename:
             if not candidates:
                 continue
 
-            score = float(candidates[0].get('_match_score', 0) or 0)
+            score = _float_score(candidates[0].get('_match_score', 0))
             if score > best_score:
                 best_score = score
                 best_candidates = candidates
@@ -1899,10 +1979,10 @@ class Rename:
         if not movie_info:
             return '', None, None
 
-        movie_name = movie_info.get('title', selected.get('title', ''))
+        movie_name = _as_str(movie_info.get('title')) or _as_str(selected.get('title')) or ''
         return movie_name, movie_info, selection_confidence
 
-    def _is_confidence_acceptable(self, confidence: Optional[str]) -> bool:
+    def _is_confidence_acceptable(self, confidence: str | None) -> bool:
         if not confidence:
             return False
 
@@ -1926,7 +2006,7 @@ class Rename:
         if not filename:
             return ""
 
-        parts: List[str] = []
+        parts: list[str] = []
         video_format = extract_video_format(filename)
         if video_format:
             parts.append(video_format)
@@ -1958,14 +2038,14 @@ class Rename:
 
     def _resolve_task_poster_path(
         self,
-        info: Optional[Dict],
+        info: TmdbInfo | None,
         is_movie: bool,
-        season_id: Optional[int],
-    ) -> Optional[str]:
+        season_id: int | None,
+    ) -> str | None:
         if not isinstance(info, dict):
             return None
 
-        series_poster = info.get("poster_path")
+        series_poster = _as_str(info.get("poster_path"))
         if is_movie:
             return series_poster
 
@@ -1991,13 +2071,13 @@ class Rename:
 
     def _parse_selection_result(
         self,
-        result: Optional[str],
-    ) -> Optional[Dict[str, Union[int, str]]]:
+        result: str | None,
+    ) -> dict[str, int | str] | None:
         if not result:
             return None
 
         try:
-            parsed = json.loads(result)
+            parsed: object = json.loads(result)
         except json.JSONDecodeError:
             match = re.search(r'\{.*\}', result, re.DOTALL)
             if not match:
@@ -2010,10 +2090,10 @@ class Rename:
         if not isinstance(parsed, dict):
             return None
 
-        try:
-            index = int(parsed.get('index'))
-        except Exception:
+        index_value = parsed.get('index')
+        if not isinstance(index_value, int):
             return None
+        index = index_value
 
         confidence = str(parsed.get('confidence', 'Medium'))
         if confidence not in ['High', 'Medium', 'Low']:
@@ -2021,13 +2101,13 @@ class Rename:
 
         return {'index': index, 'confidence': confidence}
 
-    def _failure_message(self, reason: str, detail: Optional[str] = None) -> str:
+    def _failure_message(self, reason: str, detail: str | None = None) -> str:
         base = FAILURE_MESSAGES.get(reason, FAILURE_MESSAGES['ai_timeout'])
         if detail:
             return f"{base}: {detail}"
         return base
 
-    def _write_task_data(self, task_data: Dict) -> None:
+    def _write_task_data(self, task_data: dict[str, object]) -> None:
         task_path = TASK_PATH / f"{task_data['uuid']}.json"
         with open(task_path, 'w', encoding='UTF-8') as file:
             json.dump(task_data, file, indent=4, ensure_ascii=False)
@@ -2037,17 +2117,17 @@ class Rename:
         _uuid: str,
         error: str,
         path: Path,
-        is_anime: Optional[bool] = None,
-        is_movie: Optional[bool] = None,
-        name: Optional[str] = None,
-        season_id: Optional[int] = None,
-        failure_reason: Optional[str] = None,
+        is_anime: bool | None = None,
+        is_movie: bool | None = None,
+        name: str | None = None,
+        season_id: int | None = None,
+        failure_reason: str | None = None,
         ai_attempted: bool = False,
         ai_used: bool = False,
-        ai_confidence: Optional[str] = None,
-        extra_task_data: Optional[Dict] = None,
-    ):
-        task_data = {
+        ai_confidence: str | None = None,
+        extra_task_data: dict[str, object] | None = None,
+    ) -> str:
+        task_data: dict[str, object] = {
             'path': str(path),
             'is_anime': is_anime,
             'is_movie': is_movie,

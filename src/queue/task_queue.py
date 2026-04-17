@@ -5,7 +5,7 @@ import re
 import uuid
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional
+from typing import Callable
 
 from nicegui import run
 
@@ -14,15 +14,18 @@ from ..logger import logger
 from ..notification.emby_notify import get_emby_notifier
 from ..notification.telegram_notify import get_telegram_notifier
 from ..rename.cleaner import extract_video_format
-from ..rename.process import Rename
 from ..subtitle.auto_fetch import SubtitleAutoFetcher
 from .task_status import QueuedTask, TaskStatus
+
+RefreshCallback = Callable[[], None]
+TaskData = dict[str, object]
+FailedTaskInfo = dict[str, str]
 
 
 class TaskQueueManager:
     """任务队列管理器（单例）"""
 
-    _instance: Optional['TaskQueueManager'] = None
+    _instance: "TaskQueueManager | None" = None
 
     def __new__(cls):
         if cls._instance is None:
@@ -35,29 +38,24 @@ class TaskQueueManager:
             return
 
         self._queue: asyncio.Queue[QueuedTask] = asyncio.Queue()
-        self._tasks: Dict[str, QueuedTask] = {}  # task_id -> QueuedTask
-        self._running_tasks: Dict[str, QueuedTask] = {}  # 正在运行的任务
-        self._workers_running = False
-        self._worker_count = 0
-        self._refresh_callbacks: List[Callable] = []
-        self._batch_total = 0
-        self._batch_success = 0
-        self._batch_failed = 0
-        self._batch_success_task_ids: List[str] = []
-        self._batch_failed_tasks: List[Dict[str, str]] = []
-        self._initialized = True
+        self._tasks: dict[str, QueuedTask] = {}  # task_id -> QueuedTask
+        self._running_tasks: dict[str, QueuedTask] = {}  # 正在运行的任务
+        self._workers_running: bool = False
+        self._worker_count: int = 0
+        self._refresh_callbacks: list[RefreshCallback] = []
+        self._batch_total: int = 0
+        self._batch_success: int = 0
+        self._batch_failed: int = 0
+        self._batch_success_task_ids: list[str] = []
+        self._batch_failed_tasks: list[FailedTaskInfo] = []
+        self._initialized: bool = True
 
         logger.info("[队列] 任务队列管理器已初始化")
 
-    def add_refresh_callback(self, callback: Callable) -> None:
+    def add_refresh_callback(self, callback: RefreshCallback) -> None:
         """注册UI刷新回调"""
         if callback not in self._refresh_callbacks:
             self._refresh_callbacks.append(callback)
-
-    def remove_refresh_callback(self, callback: Callable) -> None:
-        """移除UI刷新回调"""
-        if callback in self._refresh_callbacks:
-            self._refresh_callbacks.remove(callback)
 
     def _notify_refresh(self) -> None:
         """通知所有回调刷新UI"""
@@ -70,12 +68,12 @@ class TaskQueueManager:
     def enqueue(
         self,
         path: str,
-        is_anime: Optional[bool] = None,
-        is_movie: Optional[bool] = None,
-        original_uuid: Optional[str] = None,
-        cus_name: Optional[str] = None,
-        cus_season_id: Optional[int] = None,
-        use_ai: Optional[bool] = None,
+        is_anime: bool | None = None,
+        is_movie: bool | None = None,
+        original_uuid: str | None = None,
+        cus_name: str | None = None,
+        cus_season_id: int | None = None,
+        use_ai: bool | None = None,
         _is_sub_task: bool = False,
     ) -> str:
         """
@@ -116,18 +114,18 @@ class TaskQueueManager:
 
         # 确保worker正在运行
         if not self._workers_running:
-            asyncio.create_task(self._start_workers())
+            _ = asyncio.create_task(self._start_workers())
 
         # 通知UI刷新
         self._notify_refresh()
 
         return task_id
 
-    def get_task_status(self, task_id: str) -> Optional[QueuedTask]:
+    def get_task_status(self, task_id: str) -> QueuedTask | None:
         """根据任务ID获取任务状态"""
         return self._tasks.get(task_id)
 
-    def get_path_status(self, path: str) -> Optional[TaskStatus]:
+    def get_path_status(self, path: str) -> TaskStatus | None:
         """
         根据路径获取队列状态
 
@@ -172,17 +170,7 @@ class TaskQueueManager:
 
         return -1
 
-    def get_queue_size(self) -> int:
-        """获取队列中等待的任务数量"""
-        return sum(
-            1 for t in self._tasks.values() if t.status == TaskStatus.PENDING
-        )
-
-    def get_running_count(self) -> int:
-        """获取正在运行的任务数量"""
-        return len(self._running_tasks)
-
-    def list_active_tasks(self) -> List[QueuedTask]:
+    def list_active_tasks(self) -> list[QueuedTask]:
         """获取当前队列中待处理/执行中的任务快照。"""
         active_tasks = [
             task
@@ -225,7 +213,7 @@ class TaskQueueManager:
         self._worker_count = max_workers
 
         # 等待所有worker完成
-        await asyncio.gather(*workers)
+        _ = await asyncio.gather(*workers)
 
         # 所有 worker 完成后，触发 Emby 通知
         self._trigger_emby_notification()
@@ -265,8 +253,8 @@ class TaskQueueManager:
         self._running_tasks[task.task_id] = task
 
         logger.info(
-            f"[队列] Worker-{worker_id} 开始处理任务: "
-            f"{task.task_id}, 路径: {task.path}"
+            f"[队列] Worker-{worker_id} 开始处理任务: {task.task_id}, "
+            f"路径: {task.path}"
         )
 
         # 通知UI刷新（任务开始执行）
@@ -300,16 +288,18 @@ class TaskQueueManager:
         finally:
             self._record_batch_result(task)
             task.finished_at = datetime.now()
-            self._running_tasks.pop(task.task_id, None)
+            _ = self._running_tasks.pop(task.task_id, None)
 
             # 通知UI刷新（任务完成）
             self._notify_refresh()
 
             # 清理已完成的任务（保留一段时间用于状态显示）
-            asyncio.create_task(self._cleanup_task(task.task_id))
+            _ = asyncio.create_task(self._cleanup_task(task.task_id))
 
-    def _execute_rename(self, task: QueuedTask):
+    def _execute_rename(self, task: QueuedTask) -> str | bool:
         """执行重命名处理（在线程池中运行）"""
+        from ..rename.process import Rename
+
         return Rename().process(
             Path(task.path),
             task.is_anime,
@@ -318,10 +308,11 @@ class TaskQueueManager:
             task.cus_name,
             task.cus_season_id,
             _is_sub_task=task.is_sub_task,  # 传递子任务标记
+            _enqueue_task=self.enqueue,
         )
 
     def _execute_subtitle_auto_fetch(self, task_uuid: str) -> None:
-        if not bool(cm.get_config("subtitle_auto_fetch_enabled")):
+        if not bool(cm.get_config("subtitle_auto_fetch_enabled") or False):
             return
 
         try:
@@ -332,17 +323,7 @@ class TaskQueueManager:
     async def _cleanup_task(self, task_id: str, delay: float = 3.0) -> None:
         """延迟清理已完成的任务"""
         await asyncio.sleep(delay)
-        self._tasks.pop(task_id, None)
-
-    def clear_completed(self) -> None:
-        """清理所有已完成和失败的任务"""
-        to_remove = [
-            task_id
-            for task_id, task in self._tasks.items()
-            if task.status in (TaskStatus.COMPLETED, TaskStatus.FAILED)
-        ]
-        for task_id in to_remove:
-            del self._tasks[task_id]
+        _ = self._tasks.pop(task_id, None)
 
     def _record_batch_result(self, task: QueuedTask) -> None:
         """记录批次汇总统计"""
@@ -392,8 +373,8 @@ class TaskQueueManager:
             has_success = self._batch_success > 0
             has_failure = self._batch_failed > 0
 
-            notify_on_success = bool(cm.get_config("telegram_notify_on_success"))
-            notify_on_failure = bool(cm.get_config("telegram_notify_on_failure"))
+            notify_on_success = bool(cm.get_config("telegram_notify_on_success") or False)
+            notify_on_failure = bool(cm.get_config("telegram_notify_on_failure") or False)
 
             should_notify = (
                 (has_success and notify_on_success)
@@ -423,8 +404,8 @@ class TaskQueueManager:
 
     def _build_telegram_message(
         self,
-        task_details: List[Dict[str, Any]],
-        record_targets: List[Path],
+        task_details: list[TaskData],
+        record_targets: list[Path],
     ) -> str:
         """构建 Telegram caption 文本（入库模板风格）。"""
         file_count = len(record_targets) if record_targets else self._batch_success
@@ -445,7 +426,7 @@ class TaskQueueManager:
 
         lines = [f"📂 已入库{file_count}个文件", title_year]
 
-        detail_lines: List[str] = []
+        detail_lines: list[str] = []
         if season_episode:
             detail_lines.append(f"📺 集数： {season_episode}")
         if category:
@@ -467,20 +448,20 @@ class TaskQueueManager:
             message += f"，以下文件处理失败：{err_msg}"
         return message
 
-    def _collect_task_details(self) -> List[Dict[str, Any]]:
+    def _collect_task_details(self) -> list[TaskData]:
         """收集批次任务详情，用于通知模板渲染。"""
-        details: List[Dict[str, Any]] = []
+        details: list[TaskData] = []
         for task_id in self._batch_success_task_ids:
             task_data = self._read_task_data(task_id)
             if task_data:
                 details.append(task_data)
         return details
 
-    def _collect_record_targets(self) -> List[Path]:
+    def _collect_record_targets(self) -> list[Path]:
         """收集成功任务的目标文件路径。"""
         from ..utils.path import RECORD_PATH
 
-        targets: List[Path] = []
+        targets: list[Path] = []
         for task_id in self._batch_success_task_ids:
             record_path = RECORD_PATH / f"{task_id}.json"
             if not record_path.exists():
@@ -499,7 +480,7 @@ class TaskQueueManager:
 
         return targets
 
-    def _read_task_data(self, task_id: str) -> Optional[Dict[str, Any]]:
+    def _read_task_data(self, task_id: str) -> TaskData | None:
         """从 data/task 读取任务详情。"""
         from ..utils.path import TASK_PATH
 
@@ -517,7 +498,7 @@ class TaskQueueManager:
 
     def _build_title_year(
         self,
-        task_details: List[Dict[str, Any]],
+        task_details: list[TaskData],
     ) -> str:
         if not task_details:
             return "未知标题"
@@ -540,10 +521,10 @@ class TaskQueueManager:
 
     def _build_season_episode(
         self,
-        task_details: List[Dict[str, Any]],
-        record_targets: List[Path],
+        task_details: list[TaskData],
+        record_targets: list[Path],
     ) -> str:
-        season_ids = []
+        season_ids: list[int] = []
         for item in task_details:
             season_id = item.get("season_id")
             if isinstance(season_id, int):
@@ -554,7 +535,7 @@ class TaskQueueManager:
 
         season = min(season_ids)
 
-        episodes: List[int] = []
+        episodes: list[int] = []
         for target in record_targets:
             episode = self._extract_episode_from_name(target.name)
             if episode is not None:
@@ -576,7 +557,7 @@ class TaskQueueManager:
 
     def _build_category(
         self,
-        task_details: List[Dict[str, Any]],
+        task_details: list[TaskData],
     ) -> str:
         if not task_details:
             return ""
@@ -599,7 +580,7 @@ class TaskQueueManager:
 
     def _build_release_group(
         self,
-        task_details: List[Dict[str, Any]],
+        task_details: list[TaskData],
     ) -> str:
         if not task_details:
             return ""
@@ -619,17 +600,17 @@ class TaskQueueManager:
 
     def _build_genre_tag(
         self,
-        task_details: List[Dict[str, Any]],
+        task_details: list[TaskData],
     ) -> str:
         if not task_details:
             return ""
 
         first = task_details[0]
-        tmdb_genres = first.get("tmdb_genres") or []
+        tmdb_genres = first.get("tmdb_genres")
         if not isinstance(tmdb_genres, list):
             return ""
 
-        names = []
+        names: list[str] = []
         for genre in tmdb_genres:
             if not isinstance(genre, dict):
                 continue
@@ -644,8 +625,8 @@ class TaskQueueManager:
 
     def _build_resource_term(
         self,
-        task_details: List[Dict[str, Any]],
-        record_targets: List[Path],
+        task_details: list[TaskData],
+        record_targets: list[Path],
     ) -> str:
         if task_details:
             saved = str(task_details[0].get("resource_term") or "").strip()
@@ -653,7 +634,7 @@ class TaskQueueManager:
                 return saved
 
         if record_targets:
-            quality_hit = {}
+            quality_hit: dict[str, int] = {}
             for target in record_targets:
                 quality = extract_video_format(target.name)
                 if quality:
@@ -675,7 +656,7 @@ class TaskQueueManager:
         quality = extract_video_format(Path(source_path).name) or ""
         return quality
 
-    def _build_total_size(self, record_targets: List[Path]) -> str:
+    def _build_total_size(self, record_targets: list[Path]) -> str:
         total_bytes = 0
         for target in record_targets:
             try:
@@ -692,7 +673,7 @@ class TaskQueueManager:
 
     def _build_subtitle_summary(
         self,
-        task_details: List[Dict[str, Any]],
+        task_details: list[TaskData],
     ) -> str:
         if not task_details:
             return ""
@@ -728,7 +709,7 @@ class TaskQueueManager:
         if not self._batch_failed_tasks:
             return ""
 
-        items = []
+        items: list[str] = []
         for failed in self._batch_failed_tasks[:5]:
             name = Path(failed["path"]).name
             error_summary = failed["error"].replace("\n", " ")
@@ -737,7 +718,7 @@ class TaskQueueManager:
             items.append(f"{name}({error_summary})")
         return "；".join(items)
 
-    def _extract_episode_from_name(self, filename: str) -> Optional[int]:
+    def _extract_episode_from_name(self, filename: str) -> int | None:
         """从目标文件名中提取 EXX 集数。"""
         patterns = [
             r"\bS\d{1,2}E(\d{1,3})\b",
@@ -760,7 +741,7 @@ class TaskQueueManager:
 
     def _build_tmdb_poster_url(
         self,
-        task_details: List[Dict[str, Any]],
+        task_details: list[TaskData],
     ) -> str:
         if not task_details:
             return ""
