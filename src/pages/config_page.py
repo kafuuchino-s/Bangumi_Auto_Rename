@@ -1,4 +1,4 @@
-from typing import Sequence
+from collections.abc import Mapping, Sequence
 from types import SimpleNamespace
 
 from nicegui import ui
@@ -11,11 +11,27 @@ from ..component.local_file_picker import local_file_picker
 
 class ConfigPage(ui.dialog):
 
+    config: SimpleNamespace
+    _current_queue_max_workers: int
+    _current_subtitle_auto_fetch_candidate_limit: int
+    _current_subtitle_auto_fetch_timeout_seconds: int
+    _current_subtitle_sync_timeout_seconds: int
+
     def __init__(self) -> None:
         super().__init__()
         # 使用 get_config 获取配置值，确保路径转换生效
         config_dict = {key: cm.get_config(key) for key in cm.config}
         self.config = SimpleNamespace(**config_dict)
+        self._current_queue_max_workers = self._get_int_config("queue_max_workers", 1)
+        self._current_subtitle_auto_fetch_candidate_limit = self._get_int_config(
+            "subtitle_auto_fetch_candidate_limit", 10
+        )
+        self._current_subtitle_auto_fetch_timeout_seconds = self._get_int_config(
+            "subtitle_auto_fetch_timeout_seconds", 30
+        )
+        self._current_subtitle_sync_timeout_seconds = self._get_int_config(
+            "subtitle_sync_timeout_seconds", 120
+        )
 
         _s = "width: 60%; flex-wrap: nowrap; max-height: 80vh; overflow-y: auto;"
         with self, ui.card().style(_s).classes("flex"):
@@ -202,7 +218,7 @@ class ConfigPage(ui.dialog):
                         tg.classes("flex no-wrap w-full")
                     elif cn == "queue_max_workers":
                         ui.number(
-                            value=int(cm.get_config(cn) or 1),
+                            value=self._current_queue_max_workers,
                             min=1,
                             step=1,
                             on_change=lambda e, c=cn: self._change(
@@ -282,12 +298,15 @@ class ConfigPage(ui.dialog):
                         tg.style("font-size: 10px")
                         tg.classes("flex no-wrap w-full")
                     elif cn == "subtitle_auto_fetch_provider":
-                        ui.input(
-                            value=cm.get_config(cn) or "acgrip",
+                        ui.select(
+                            options=["acgrip"],
+                            value=(
+                                cm.get_config(cn)
+                                if cm.get_config(cn) in {"acgrip"}
+                                else "acgrip"
+                            ),
                             on_change=lambda e, c=cn: self._change(c, e.value),
-                        ).props("filled").props("dense").style(
-                            "flex-grow: 2"
-                        ).bind_value(
+                        ).props("filled dense").style("flex-grow: 2").bind_value(
                             self.config, cn
                         )
                     elif cn == "subtitle_auto_fetch_browser_enabled":
@@ -338,7 +357,7 @@ class ConfigPage(ui.dialog):
                         tg.classes("flex no-wrap w-full")
                     elif cn == "subtitle_auto_fetch_candidate_limit":
                         ui.number(
-                            value=int(cm.get_config(cn) or 10),
+                            value=self._current_subtitle_auto_fetch_candidate_limit,
                             min=1,
                             max=50,
                             step=1,
@@ -350,7 +369,7 @@ class ConfigPage(ui.dialog):
                         )
                     elif cn == "subtitle_auto_fetch_timeout_seconds":
                         ui.number(
-                            value=int(cm.get_config(cn) or 30),
+                            value=self._current_subtitle_auto_fetch_timeout_seconds,
                             min=5,
                             step=1,
                             on_change=lambda e, c=cn: self._change(
@@ -377,7 +396,7 @@ class ConfigPage(ui.dialog):
                         tg.classes("flex no-wrap w-full")
                     elif cn == "subtitle_sync_timeout_seconds":
                         ui.number(
-                            value=int(cm.get_config(cn) or 120),
+                            value=self._current_subtitle_sync_timeout_seconds,
                             min=10,
                             step=1,
                             on_change=lambda e, c=cn: self._change(
@@ -480,8 +499,12 @@ class ConfigPage(ui.dialog):
         logger.info(f'[配置] {key} 选择了 {result}')
         self._change(key, result)
 
-    def _change(self, key: str, value: str) -> None:
+    def _change(self, key: str, value: object) -> None:
         setattr(self.config, key, value)
+
+    def _get_int_config(self, key: str, default: int) -> int:
+        value = cm.get_config(key)
+        return value if isinstance(value, int) else default
 
     def _handle_ok(self):
         # 验证URL配置项
@@ -576,7 +599,7 @@ class ConfigPage(ui.dialog):
             logger.error(f"[配置] 更新Telegram通知服务配置失败: {e}")
         self.close()
 
-    def _get_current_ui_config(self) -> dict:
+    def _get_current_ui_config(self) -> dict[str, object]:
         """获取当前界面的配置（未保存的）"""
         current_config = {}
         ai_config_keys = [
@@ -608,6 +631,22 @@ class ConfigPage(ui.dialog):
             else:
                 current_config[key] = cm.get_config(key)
         return current_config
+
+    @staticmethod
+    def _as_mapping(value: object) -> Mapping[str, object]:
+        return value if isinstance(value, Mapping) else {}
+
+    @staticmethod
+    def _as_str_list(value: object) -> list[str]:
+        if not isinstance(value, Sequence) or isinstance(value, (str, bytes)):
+            return []
+        return [str(item) for item in value]
+
+    @staticmethod
+    def _as_mapping_list(value: object) -> list[Mapping[str, object]]:
+        if not isinstance(value, Sequence) or isinstance(value, (str, bytes)):
+            return []
+        return [item for item in value if isinstance(item, Mapping)]
 
     async def _test_ai_recognition(self):
         """测试AI识别功能（使用当前界面配置）"""
@@ -706,7 +745,7 @@ class ConfigPage(ui.dialog):
             logger.error(f"[配置] Gemini API测试失败: {str(e)}")
             ui.notify(f"❌ Gemini API测试失败: {str(e)}", type="negative")
 
-    def _show_ai_test_results(self, result: dict):
+    def _show_ai_test_results(self, result: Mapping[str, object]) -> None:
         """显示AI识别测试结果"""
         with ui.dialog() as dialog, ui.card().classes("w-[600px]"):
             ui.label("🧪 AI识别功能测试结果").classes("text-h6 mb-4")
@@ -743,11 +782,14 @@ class ConfigPage(ui.dialog):
 
                 # 配置信息
                 config_used = result.get("config_used", {})
+                if not isinstance(config_used, Mapping):
+                    config_used = {}
                 provider = config_used.get("ai_provider", "unknown")
-                ui.label(f"🤖 AI提供商: {provider.upper()}")
+                provider_text = provider if isinstance(provider, str) else "unknown"
+                ui.label(f"🤖 AI提供商: {provider_text.upper()}")
                 ui.label(f"⏱️ 耗时: {result.get('duration', 0):.2f}秒")
 
-                if provider.lower() == "openai":
+                if provider_text.lower() == "openai":
                     output_format = config_used.get("openai_output_format", "unknown")
                     ui.label(f"📋 输出格式: {output_format}")
                     configured_interface = result.get("configured_interface")
@@ -761,7 +803,7 @@ class ConfigPage(ui.dialog):
                         ui.label(
                             f"↩️ 接口回退: 已触发 ({fallback_reason or '未提供原因'})"
                         ).classes("text-orange")
-                elif provider.lower() == "gemini":
+                elif provider_text.lower() == "gemini":
                     output_format = config_used.get("gemini_output_format", "unknown")
                     ui.label(f"📋 输出格式: {output_format}")
 
@@ -780,7 +822,7 @@ class ConfigPage(ui.dialog):
                 elif result_status in ["validation_failed", "perfect"] and result.get(
                     "validation"
                 ):
-                    validation = result["validation"]
+                    validation = self._as_mapping(result["validation"])
                     ui.separator()
                     ui.label("📊 分析结果").classes("font-bold")
 
@@ -792,9 +834,10 @@ class ConfigPage(ui.dialog):
 
                     # 验证详情
                     if "validation_details" in validation:
-                        details = validation["validation_details"]
+                        details = self._as_mapping(validation["validation_details"])
                         if "accuracy" in details:
-                            accuracy = details["accuracy"] * 100
+                            accuracy_value = details.get("accuracy", 0)
+                            accuracy = float(accuracy_value) * 100 if isinstance(accuracy_value, (int, float, str)) else 0.0
                             accuracy_color = (
                                 "text-green" if accuracy == 100 else "text-orange"
                             )
@@ -802,14 +845,24 @@ class ConfigPage(ui.dialog):
                                 accuracy_color
                             )
 
-                            matched_count = details.get("matched_count", 0)
-                            expected_count = details.get("expected_count", 0)
+                            matched_count_value = details.get("matched_count", 0)
+                            matched_count = (
+                                int(matched_count_value)
+                                if isinstance(matched_count_value, (int, float, str))
+                                else 0
+                            )
+                            expected_count_value = details.get("expected_count", 0)
+                            expected_count = (
+                                int(expected_count_value)
+                                if isinstance(expected_count_value, (int, float, str))
+                                else 0
+                            )
                             ui.label(f"📈 匹配情况: {matched_count}/{expected_count}")
 
                             # 显示详细的文件匹配情况
-                            missing_files = details.get("missing_files", [])
-                            extra_files = details.get("extra_files", [])
-                            matched_files = details.get("matched_files", [])
+                            missing_files = self._as_str_list(details.get("missing_files", []))
+                            extra_files = self._as_str_list(details.get("extra_files", []))
+                            matched_files = self._as_str_list(details.get("matched_files", []))
 
                             if matched_files:
                                 ui.label(
@@ -847,8 +900,9 @@ class ConfigPage(ui.dialog):
     def _render_provider_routing_stats(self, provider_name: str) -> None:
         """渲染提供商自动路由顺序与累计测试成功率"""
         provider_key = provider_name.lower()
-        auto_order = cm.get_config(f"{provider_key}_auto_format_order") or []
-        format_stats = cm.get_config(f"{provider_key}_format_stats") or {}
+        auto_order = self._as_str_list(cm.get_config(f"{provider_key}_auto_format_order") or [])
+        format_stats_value = cm.get_config(f"{provider_key}_format_stats") or {}
+        format_stats = format_stats_value if isinstance(format_stats_value, Mapping) else {}
 
         if auto_order:
             ui.label(f"🧭 自动路由顺序: {' -> '.join(auto_order)}").classes(
@@ -858,23 +912,23 @@ class ConfigPage(ui.dialog):
         if isinstance(format_stats, dict) and format_stats:
             ui.label("📊 累计测试成功率:").classes("text-blue")
 
-            display_order = [
-                fmt
-                for fmt in auto_order
-                if isinstance(fmt, str) and fmt in format_stats
-            ]
+            display_order = [fmt for fmt in auto_order if fmt in format_stats]
             for fmt in format_stats:
                 if fmt not in display_order:
                     display_order.append(fmt)
 
             for fmt in display_order:
-                stat = format_stats.get(fmt, {})
-                if not isinstance(stat, dict):
+                stat_value = format_stats.get(fmt, {})
+                stat = stat_value if isinstance(stat_value, Mapping) else {}
+                if not stat:
                     continue
 
-                total_runs = int(stat.get("total_runs", 0) or 0)
-                success_runs = int(stat.get("success_runs", 0) or 0)
-                perfect_runs = int(stat.get("perfect_runs", 0) or 0)
+                total_runs_value = stat.get("total_runs", 0)
+                success_runs_value = stat.get("success_runs", 0)
+                perfect_runs_value = stat.get("perfect_runs", 0)
+                total_runs = int(total_runs_value) if isinstance(total_runs_value, (int, float, str)) else 0
+                success_runs = int(success_runs_value) if isinstance(success_runs_value, (int, float, str)) else 0
+                perfect_runs = int(perfect_runs_value) if isinstance(perfect_runs_value, (int, float, str)) else 0
 
                 if total_runs <= 0:
                     continue
@@ -886,15 +940,17 @@ class ConfigPage(ui.dialog):
                     f"  • {fmt}: 成功 {success_runs}/{total_runs} ({success_rate:.1f}%), 完全正确 {perfect_runs}/{total_runs} ({perfect_rate:.1f}%)"
                 ).classes("text-sm text-blue-grey")
 
-    def _show_openai_formats_test_results(self, results: dict):
+    def _show_openai_formats_test_results(self, results: Mapping[str, object]) -> None:
         """显示OpenAI多格式测试结果"""
         self._show_provider_formats_test_results("OpenAI", results)
 
-    def _show_gemini_formats_test_results(self, results: dict):
+    def _show_gemini_formats_test_results(self, results: Mapping[str, object]) -> None:
         """显示Gemini多格式测试结果"""
         self._show_provider_formats_test_results("Gemini", results)
 
-    def _show_provider_formats_test_results(self, provider_name: str, results: dict):
+    def _show_provider_formats_test_results(
+        self, provider_name: str, results: Mapping[str, object]
+    ) -> None:
         """显示指定提供商的多格式测试结果"""
         with ui.dialog() as dialog, ui.card().classes("w-[700px]"):
             ui.label(f"⚙️ {provider_name} API多格式测试结果").classes("text-h6 mb-4")
@@ -927,10 +983,10 @@ class ConfigPage(ui.dialog):
                 ui.separator()
 
                 # 各格式详细结果
-                format_results = results.get("format_results", [])
+                format_results = self._as_mapping_list(results.get("format_results", []))
                 for format_result in format_results:
-                    output_format = format_result.get("output_format", "unknown")
-                    result_status = format_result.get("result_status", "unknown")
+                    output_format = str(format_result.get("output_format", "unknown"))
+                    result_status = str(format_result.get("result_status", "unknown"))
 
                     # 根据结果状态确定图标和标题
                     if result_status == "perfect":
@@ -957,7 +1013,13 @@ class ConfigPage(ui.dialog):
                             ui.label(f"状态: {status_text}").classes(
                                 status_color + " font-bold"
                             )
-                            ui.label(f"耗时: {format_result.get('duration', 0):.2f}秒")
+                            duration_value = format_result.get("duration", 0)
+                            duration = (
+                                float(duration_value)
+                                if isinstance(duration_value, (int, float, str))
+                                else 0.0
+                            )
+                            ui.label(f"耗时: {duration:.2f}秒")
 
                             configured_interface = format_result.get(
                                 "configured_interface"
@@ -992,7 +1054,7 @@ class ConfigPage(ui.dialog):
                                 "validation_failed",
                                 "perfect",
                             ] and format_result.get("validation"):
-                                validation = format_result["validation"]
+                                validation = self._as_mapping(format_result["validation"])
                                 confidence = validation.get("confidence", "None")
                                 ui.label(f"置信度: {confidence}")
 
@@ -1000,9 +1062,14 @@ class ConfigPage(ui.dialog):
                                 ui.label(f"映射文件数: {file_count}")
 
                                 if "validation_details" in validation:
-                                    details = validation["validation_details"]
+                                    details = self._as_mapping(validation["validation_details"])
                                     if "accuracy" in details:
-                                        accuracy = details["accuracy"] * 100
+                                        accuracy_value = details.get("accuracy", 0)
+                                        accuracy = (
+                                            float(accuracy_value) * 100
+                                            if isinstance(accuracy_value, (int, float, str))
+                                            else 0.0
+                                        )
                                         accuracy_color = (
                                             "text-green"
                                             if accuracy == 100
@@ -1021,9 +1088,9 @@ class ConfigPage(ui.dialog):
                                         )
 
                                         # 显示详细的文件匹配情况
-                                        missing_files = details.get("missing_files", [])
-                                        extra_files = details.get("extra_files", [])
-                                        matched_files = details.get("matched_files", [])
+                                        missing_files = self._as_str_list(details.get("missing_files", []))
+                                        extra_files = self._as_str_list(details.get("extra_files", []))
+                                        matched_files = self._as_str_list(details.get("matched_files", []))
 
                                         if matched_files:
                                             ui.label(

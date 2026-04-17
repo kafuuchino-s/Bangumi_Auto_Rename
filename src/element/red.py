@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Union, Literal, Optional
+from typing import Any, Dict, List, Literal, Optional, Sequence, Union, cast
 
 from nicegui import ui
 from nicegui.context import context
@@ -89,14 +89,14 @@ class RedButton(ui.button):
 class RedToogle(ui.toggle):
     def __init__(
         self,
-        options: Union[List, Dict],
+        options: Union[Sequence[str], dict[str, str]],
         *,
         value: Any = None,
         on_change: Optional[Handler[ValueChangeEventArguments]] = None,
         clearable: bool = False,
     ):
         super().__init__(
-            options,
+            cast(Union[List[object], Dict[object, object]], options),
             value=value,
             on_change=on_change,
             clearable=clearable,

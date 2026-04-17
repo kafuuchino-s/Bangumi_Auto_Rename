@@ -5,7 +5,7 @@
 """
 
 from pathlib import Path
-from typing import Optional, Sequence
+from typing import Mapping, Optional, Sequence, cast
 
 from nicegui import ui, run
 from nicegui.events import UploadEventArguments
@@ -26,10 +26,11 @@ SUPPORTED_EXTENSIONS = {".zip", ".rar", ".ass", ".ssa", ".srt", ".sub", ".vtt"}
 class ChooseTaskDialog(ui.dialog):
     """选择目标任务对话框"""
 
-    def __init__(self, available_tasks: list) -> None:
+    def __init__(self, available_tasks: list[dict[str, object]]) -> None:
         super().__init__()
-        self.available_tasks = available_tasks
-        self.selected_uuid = None
+        self.available_tasks: list[dict[str, object]] = available_tasks
+        self.selected_uuid: str | None = None
+        self.task_select: ui.select | None = None
 
         _s = "width: 50%; max-width: 600px;"
         with self, ui.card().style(_s):
@@ -39,10 +40,12 @@ class ChooseTaskDialog(ui.dialog):
             ui.label("AI 无法自动匹配，请手动选择目标动漫：").style("color: orange")
 
             if available_tasks:
-                options = {
-                    t["uuid"]: f"{t['title']} (Season {t.get('season', 1)})"
-                    for t in available_tasks
-                }
+                options: dict[str, str] = {}
+                for t in available_tasks:
+                    uuid = str(t["uuid"])
+                    title = str(t["title"])
+                    season = t.get("season", 1)
+                    options[uuid] = f"{title} (Season {season})"
                 self.task_select = ui.select(
                     options=options,
                     value=list(options.keys())[0] if options else None,
@@ -59,8 +62,8 @@ class ChooseTaskDialog(ui.dialog):
                     RedButton("确认", on_click=self._handle_ok)
 
     def _handle_ok(self) -> None:
-        if hasattr(self, "task_select") and self.task_select.value:
-            self.selected_uuid = self.task_select.value
+        if self.task_select is not None and self.task_select.value:
+            self.selected_uuid = str(self.task_select.value)
         self.close()
         self.submit(self.selected_uuid)
 
@@ -74,7 +77,7 @@ class SubtitleUploadDialog(ui.dialog):
         return total <= 1
 
     @staticmethod
-    def _build_batch_need_confirm_result(process_result: dict) -> dict:
+    def _build_batch_need_confirm_result(process_result: dict[str, object]) -> dict[str, object]:
         """批量导入场景下，将需手动确认的结果转为非阻塞提示。"""
         result = dict(process_result)
         result["status"] = "need_confirm"
@@ -84,13 +87,34 @@ class SubtitleUploadDialog(ui.dialog):
         )
         return result
 
+    @staticmethod
+    def _as_mapping(value: object) -> Mapping[str, object]:
+        return value if isinstance(value, Mapping) else {}
+
+    @staticmethod
+    def _as_str_list(value: object) -> list[str]:
+        if not isinstance(value, Sequence) or isinstance(value, (str, bytes)):
+            return []
+        return [str(item) for item in value]
+
+    @staticmethod
+    def _as_mapping_list(value: object) -> list[Mapping[str, object]]:
+        if not isinstance(value, Sequence) or isinstance(value, (str, bytes)):
+            return []
+        return [item for item in value if isinstance(item, Mapping)]
+
+    @staticmethod
+    def _as_task_list(value: object) -> list[dict[str, object]]:
+        return [dict(item) for item in SubtitleUploadDialog._as_mapping_list(value)]
+
     def __init__(self) -> None:
         super().__init__()
         self.upload_dir = SUBTITLE_UPLOAD_PATH
         self.upload_dir.mkdir(parents=True, exist_ok=True)
+        self.upload: ui.upload | None = None
         self.current_files: list[Path] = []  # 支持多个文件
         self.processor = SubtitleProcessor()
-        self.batch_results: list[dict] = []  # 批量处理结果
+        self.batch_results: list[dict[str, object]] = []  # 批量处理结果
 
         _s = "width: 60%; max-width: 700px; max-height: 85vh;"
         with self, ui.card().style(_s):
@@ -182,7 +206,7 @@ class SubtitleUploadDialog(ui.dialog):
                 else:
                     ui.label("正在解压并分析字幕文件...").style("color: #666;")
 
-    def _show_batch_result_view(self, results: list[dict]) -> None:
+    def _show_batch_result_view(self, results: list[dict[str, object]]) -> None:
         """显示批量处理结果界面"""
         self.content_container.clear()
 
@@ -219,9 +243,8 @@ class SubtitleUploadDialog(ui.dialog):
                     with ui.card().style(
                         f"background: {bg_color}; margin: 5px 0; padding: 10px;"
                     ).classes("w-full"):
-                        ui.label(
-                            f"{icon} {Path(result['archive_path']).name}"
-                        ).style("font-weight: bold;")
+                        archive_path = result.get("archive_path")
+                        ui.label(f"{icon} {Path(str(archive_path)).name}").style("font-weight: bold;")
 
                         if is_success:
                             ui.label(
@@ -229,7 +252,8 @@ class SubtitleUploadDialog(ui.dialog):
                                 f"字幕: {result.get('matched_count', 0)}/"
                                 f"{result.get('total_subtitles', 0)}"
                             ).style("font-size: 13px; color: #666;")
-                            sync_summary = result.get("sync_summary") or {}
+                            sync_summary_value = result.get("sync_summary") or {}
+                            sync_summary = self._as_mapping(sync_summary_value)
                             if sync_summary.get("enabled"):
                                 ui.label(
                                     f"对齐: 尝试{sync_summary.get('attempted', 0)} / "
@@ -245,7 +269,8 @@ class SubtitleUploadDialog(ui.dialog):
                                 if is_need_confirm
                                 else "font-size: 13px; color: red;"
                             )
-                            sync_summary = result.get("sync_summary") or {}
+                            sync_summary_value = result.get("sync_summary") or {}
+                            sync_summary = self._as_mapping(sync_summary_value)
                             if sync_summary.get("enabled"):
                                 ui.label(
                                     f"对齐: 尝试{sync_summary.get('attempted', 0)} / "
@@ -261,24 +286,27 @@ class SubtitleUploadDialog(ui.dialog):
             ui.separator()
 
             # 统计信息
-            total_matched = sum(r.get("matched_count", 0) for r in results)
-            total_subtitles = sum(r.get("total_subtitles", 0) for r in results)
-            total_sync_attempted = sum(
-                (r.get("sync_summary") or {}).get("attempted", 0)
-                for r in results
-            )
-            total_sync_success = sum(
-                (r.get("sync_summary") or {}).get("success", 0)
-                for r in results
-            )
-            total_sync_fallback = sum(
-                (r.get("sync_summary") or {}).get("fallback", 0)
-                for r in results
-            )
-            total_sync_skipped = sum(
-                (r.get("sync_summary") or {}).get("skipped", 0)
-                for r in results
-            )
+            total_matched = 0
+            total_subtitles = 0
+            total_sync_attempted = 0
+            total_sync_success = 0
+            total_sync_fallback = 0
+            total_sync_skipped = 0
+            for result_item in results:
+                result_map = self._as_mapping(result_item)
+                matched_value = result_map.get("matched_count", 0)
+                subtitles_value = result_map.get("total_subtitles", 0)
+                total_matched += int(matched_value) if isinstance(matched_value, (int, float, str)) else 0
+                total_subtitles += int(subtitles_value) if isinstance(subtitles_value, (int, float, str)) else 0
+                sync_summary_map = self._as_mapping(result_map.get("sync_summary", {}))
+                attempted_value = sync_summary_map.get("attempted", 0)
+                success_value = sync_summary_map.get("success", 0)
+                fallback_value = sync_summary_map.get("fallback", 0)
+                skipped_value = sync_summary_map.get("skipped", 0)
+                total_sync_attempted += int(attempted_value) if isinstance(attempted_value, (int, float, str)) else 0
+                total_sync_success += int(success_value) if isinstance(success_value, (int, float, str)) else 0
+                total_sync_fallback += int(fallback_value) if isinstance(fallback_value, (int, float, str)) else 0
+                total_sync_skipped += int(skipped_value) if isinstance(skipped_value, (int, float, str)) else 0
             ui.label(
                 f"总计: {success_count}/{total_count} 个压缩包成功, "
                 f"{total_matched}/{total_subtitles} 个字幕匹配"
@@ -295,7 +323,7 @@ class SubtitleUploadDialog(ui.dialog):
                 RedButton("继续导入", on_click=self._reset_to_upload).props("outline")
                 RedButton("关闭", on_click=self._close_and_cleanup)
 
-    def _show_result_view(self, result: dict) -> None:
+    def _show_result_view(self, result: dict[str, object]) -> None:
         """显示结果界面"""
         self.content_container.clear()
 
@@ -310,7 +338,7 @@ class SubtitleUploadDialog(ui.dialog):
 
         with self.content_container:
             with ui.column().classes("w-full"):
-                ui.label(f"压缩包: {Path(result['archive_path']).name}")
+                ui.label(f"压缩包: {Path(str(result.get('archive_path'))).name}")
 
                 if result["status"] == "success":
                     ui.label(f"匹配动漫: {result.get('matched_task', '')}")
@@ -320,7 +348,8 @@ class SubtitleUploadDialog(ui.dialog):
                     )
                     ui.label(f"置信度: {result.get('confidence', '')}")
 
-                    sync_summary = result.get("sync_summary") or {}
+                    sync_summary_value = result.get("sync_summary") or {}
+                    sync_summary = self._as_mapping(sync_summary_value)
                     if sync_summary.get("enabled"):
                         ui.label(
                             f"对齐统计: 尝试{sync_summary.get('attempted', 0)} / "
@@ -337,16 +366,16 @@ class SubtitleUploadDialog(ui.dialog):
                         with ui.scroll_area().style("max-height: 250px").classes(
                             "w-full"
                         ):
-                            for m in result["mappings"]:
+                            for m in self._as_mapping_list(result.get("mappings", [])):
                                 with ui.row().classes("w-full items-center gap-2"):
-                                    ui.label(f"{m['subtitle']}").style(
+                                    ui.label(f"{m.get('subtitle', '')}").style(
                                         "font-size: 12px; color: #666;"
                                     )
                                     ui.label("→").style("color: gray")
-                                    ui.label(f"{m['target']}").style(
+                                    ui.label(f"{m.get('target', '')}").style(
                                         "font-size: 12px; color: #333;"
                                     )
-                                    sync_status = m.get("sync_status", "disabled")
+                                    sync_status = str(m.get("sync_status", "disabled"))
                                     sync_label_map = {
                                         "synced": "对齐成功",
                                         "fallback": "回退原字幕",
@@ -444,7 +473,7 @@ class SubtitleUploadDialog(ui.dialog):
             self._show_processing_view(current=i, total=total)
 
             # 处理字幕
-            process_result = await run.io_bound(
+            process_result: dict[str, object] = await run.io_bound(
                 self.processor.process,
                 file_path,
             )
@@ -452,7 +481,9 @@ class SubtitleUploadDialog(ui.dialog):
             if process_result["status"] == "need_confirm":
                 if self._should_prompt_manual_choice(total):
                     # 单文件导入时保留手动选择能力
-                    available_tasks = process_result.get("available_tasks", [])
+                    available_tasks = self._as_task_list(
+                        process_result.get("available_tasks", [])
+                    )
                     dialog = ChooseTaskDialog(available_tasks)
                     selected_uuid = await dialog
 
@@ -477,14 +508,20 @@ class SubtitleUploadDialog(ui.dialog):
                         process_result
                     )
 
-            self.batch_results.append(process_result)
+            self.batch_results.append(cast(dict[str, object], process_result))
 
         # 显示批量结果
         self._show_batch_result_view(self.batch_results)
 
         # 统计并通知
-        success_count = sum(1 for r in self.batch_results if r["status"] == "success")
-        total_matched = sum(r.get("matched_count", 0) for r in self.batch_results)
+        success_count = 0
+        total_matched = 0
+        for result_item in self.batch_results:
+            result_map = self._as_mapping(result_item)
+            if result_map.get("status") == "success":
+                success_count += 1
+            matched_value = result_map.get("matched_count", 0)
+            total_matched += int(matched_value) if isinstance(matched_value, (int, float, str)) else 0
 
         if success_count > 0:
             notify(
