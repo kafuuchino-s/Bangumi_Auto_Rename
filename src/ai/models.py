@@ -1,4 +1,4 @@
-from typing import ClassVar, Literal, Self, TypeAlias, cast, override
+from typing import ClassVar, Literal, Self, cast
 
 from pydantic import (
     BaseModel,
@@ -8,60 +8,6 @@ from pydantic import (
     model_validator,
     ValidationInfo,
 )
-
-
-JsonSchemaValue: TypeAlias = str | int | float | bool | None | dict[str, object] | list[object]
-JsonSchema: TypeAlias = dict[str, JsonSchemaValue]
-
-
-def _make_gemini_compatible_schema(schema: JsonSchema) -> JsonSchema:
-    """
-    将Pydantic生成的JSON Schema转换为Gemini API兼容格式
-    - 移除additionalProperties
-    - 内联展开$defs/$ref引用
-    """
-    def remove_additional_properties(obj: object) -> None:
-        """递归移除所有additionalProperties"""
-        if isinstance(obj, dict):
-            schema_dict = cast(dict[str, object], obj)
-            _ = schema_dict.pop('additionalProperties', None)
-            for value in list(schema_dict.values()):
-                remove_additional_properties(value)
-        elif isinstance(obj, list):
-            schema_list = cast(list[object], obj)
-            for item in schema_list:
-                remove_additional_properties(item)
-
-    def inline_refs(schema: JsonSchema) -> JsonSchema:
-        """将$defs/$ref引用内联展开为完整定义"""
-        defs = cast(dict[str, JsonSchemaValue], schema.pop('$defs', {}))
-
-        def resolve(obj: object) -> object:
-            if isinstance(obj, dict):
-                obj_dict = cast(dict[str, object], obj)
-                if '$ref' in obj_dict:
-                    ref_value = obj_dict['$ref']
-                    if isinstance(ref_value, str):
-                        ref_name = ref_value.split('/')[-1]
-                        return resolve(cast(object, defs[ref_name]))
-                    return obj_dict
-                resolved_dict: dict[str, object] = {}
-                for key, value in obj_dict.items():
-                    resolved_dict[str(key)] = resolve(value)
-                return resolved_dict
-            elif isinstance(obj, list):
-                obj_list = cast(list[object], obj)
-                return [resolve(item) for item in obj_list]
-            return obj
-
-        resolved = resolve(schema)
-        if not isinstance(resolved, dict):
-            raise TypeError('Gemini schema root must be a dict')
-        return cast(JsonSchema, resolved)
-
-    remove_additional_properties(schema)
-    return inline_refs(schema)
-
 
 class TitleExtractionResult(BaseModel):
     """标题提取结果"""
@@ -120,15 +66,6 @@ class TitleExtractionResult(BaseModel):
 
     model_config: ClassVar[ConfigDict] = ConfigDict(populate_by_name=True, extra='forbid')
 
-    @classmethod
-    def gemini_json_schema(
-        cls, by_alias: bool = True, ref_template: str = '#/$defs/{model}'
-    ) -> JsonSchema:
-        """生成Gemini API兼容的JSON Schema"""
-        schema = super().model_json_schema(by_alias=by_alias, ref_template=ref_template)
-        return _make_gemini_compatible_schema(schema)
-
-
 class MovieSearchQueriesResult(BaseModel):
     """AI生成的电影TMDB搜索查询候选"""
 
@@ -139,14 +76,6 @@ class MovieSearchQueriesResult(BaseModel):
 
     model_config: ClassVar[ConfigDict] = ConfigDict(populate_by_name=True, extra='forbid')
 
-    @classmethod
-    def gemini_json_schema(
-        cls, by_alias: bool = True, ref_template: str = '#/$defs/{model}'
-    ) -> JsonSchema:
-        schema = super().model_json_schema(by_alias=by_alias, ref_template=ref_template)
-        return _make_gemini_compatible_schema(schema)
-
-
 class SubtitleSearchQueriesResult(BaseModel):
     """AI生成的字幕搜索查询候选"""
 
@@ -156,14 +85,6 @@ class SubtitleSearchQueriesResult(BaseModel):
     )
 
     model_config: ClassVar[ConfigDict] = ConfigDict(populate_by_name=True, extra='forbid')
-
-    @classmethod
-    def gemini_json_schema(
-        cls, by_alias: bool = True, ref_template: str = '#/$defs/{model}'
-    ) -> JsonSchema:
-        schema = super().model_json_schema(by_alias=by_alias, ref_template=ref_template)
-        return _make_gemini_compatible_schema(schema)
-
 
 class SeasonMapping(BaseModel):
     """季度映射对象"""
@@ -293,7 +214,7 @@ class MovieCollectionResult(BaseModel):
     confidence: Literal["High", "Medium", "Low"] = Field(
         ..., description="总体置信度等级"
     )
-    reason: str = Field(..., description="分析理由说明")
+    reason: str = Field(..., description="简短分析理由说明，保持一句话")
     file_mapping: list[MovieFileMapping] = Field(
         default_factory=list, description="电影文件映射列表"
     )
@@ -316,15 +237,6 @@ class MovieCollectionResult(BaseModel):
                 raise ValueError("电影合集高/中置信度结果必须包含 file_mapping")
         return self
 
-    @classmethod
-    def gemini_json_schema(
-        cls, by_alias: bool = True, ref_template: str = '#/$defs/{model}'
-    ) -> JsonSchema:
-        """生成Gemini API兼容的JSON Schema"""
-        schema = super().model_json_schema(by_alias=by_alias, ref_template=ref_template)
-        return _make_gemini_compatible_schema(schema)
-
-
 class AIAnalysisResult(BaseModel):
     """AI分析结果"""
 
@@ -341,11 +253,11 @@ class AIAnalysisResult(BaseModel):
     )
     unmatched_files: list[str] = Field(
         default_factory=list,
-        description="未匹配到 TMDB 的本地文件路径列表",
+        description="未匹配到 TMDB 的代表性本地文件路径列表（无需穷举全部）",
     )
     conflict_details: list[str] = Field(
         default_factory=list,
-        description="映射冲突信息（重复映射、越界集数等）",
+        description="映射冲突信息（只保留最关键的少量冲突，如重复映射、越界集数等）",
     )
     extra_notes: str | None = Field(default=None, description="额外特殊情况说明")
 
@@ -362,22 +274,6 @@ class AIAnalysisResult(BaseModel):
         return v
 
     model_config: ClassVar[ConfigDict] = ConfigDict(populate_by_name=True, extra='forbid')
-
-    @classmethod
-    def gemini_json_schema(
-        cls, by_alias: bool = True, ref_template: str = '#/$defs/{model}'
-    ) -> JsonSchema:
-        """生成Gemini API兼容的JSON Schema"""
-        schema = super().model_json_schema(by_alias=by_alias, ref_template=ref_template)
-        return _make_gemini_compatible_schema(schema)
-
-    # 为了向后兼容，保留schema方法
-    @classmethod
-    @override
-    def schema(cls, by_alias: bool = True, ref_template: str = '#/definitions/{model}') -> JsonSchema:
-        """向后兼容的schema方法"""
-        return cls.gemini_json_schema(by_alias=by_alias, ref_template=ref_template)
-
 
 # ============ 字幕映射模型 ============
 
@@ -417,17 +313,6 @@ class SubtitleMappingResult(BaseModel):
 
     model_config: ClassVar[ConfigDict] = ConfigDict(populate_by_name=True, extra='forbid')
 
-    @classmethod
-    def gemini_json_schema(
-        cls, by_alias: bool = True, ref_template: str = "#/$defs/{model}"
-    ) -> JsonSchema:
-        """生成Gemini API兼容的JSON Schema"""
-        schema = super().model_json_schema(
-            by_alias=by_alias, ref_template=ref_template
-        )
-        return _make_gemini_compatible_schema(schema)
-
-
 class SubtitleCandidateDecision(BaseModel):
     """字幕候选选择结果"""
 
@@ -443,16 +328,6 @@ class SubtitleCandidateDecision(BaseModel):
     warnings: list[str] = Field(default_factory=list, description="风险或警告说明")
 
     model_config: ClassVar[ConfigDict] = ConfigDict(populate_by_name=True, extra='forbid')
-
-    @classmethod
-    def gemini_json_schema(
-        cls, by_alias: bool = True, ref_template: str = "#/$defs/{model}"
-    ) -> JsonSchema:
-        schema = super().model_json_schema(
-            by_alias=by_alias, ref_template=ref_template
-        )
-        return _make_gemini_compatible_schema(schema)
-
 
 class SubtitleThreadPackageDecision(BaseModel):
     """帖子内字幕包选择结果"""
@@ -470,12 +345,3 @@ class SubtitleThreadPackageDecision(BaseModel):
     warnings: list[str] = Field(default_factory=list, description="风险或警告说明")
 
     model_config: ClassVar[ConfigDict] = ConfigDict(populate_by_name=True, extra='forbid')
-
-    @classmethod
-    def gemini_json_schema(
-        cls, by_alias: bool = True, ref_template: str = "#/$defs/{model}"
-    ) -> JsonSchema:
-        schema = super().model_json_schema(
-            by_alias=by_alias, ref_template=ref_template
-        )
-        return _make_gemini_compatible_schema(schema)

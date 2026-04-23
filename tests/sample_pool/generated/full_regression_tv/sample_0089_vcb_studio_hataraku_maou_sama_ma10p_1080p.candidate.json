@@ -1,0 +1,50 @@
+{
+  "status": "ok",
+  "type": "movie",
+  "title_candidate": "The Devil Is a Part-Timer!",
+  "timing": {
+    "analysis_seconds": 11.171
+  },
+  "collection_analysis": {
+    "is_collection": false,
+    "collection_name": "The Devil Is a Part-Timer!",
+    "confidence": "High",
+    "reason": "这是TV动画剧集合集，不是电影合集",
+    "file_mapping": [],
+    "unmatched_files": [
+      "[VCB-Studio] Hataraku Maou-sama! [01][Ma10p_1080p][x265_flac_aac].mkv",
+      "[VCB-Studio] Hataraku Maou-sama! [02][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Hataraku Maou-sama! [03][Ma10p_1080p][x265_flac_aac].mkv",
+      "[VCB-Studio] Hataraku Maou-sama! [04][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Hataraku Maou-sama! [05][Ma10p_1080p][x265_flac_aac].mkv",
+      "[VCB-Studio] Hataraku Maou-sama! [06][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Hataraku Maou-sama! [07][Ma10p_1080p][x265_flac_aac].mkv",
+      "[VCB-Studio] Hataraku Maou-sama! [08][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Hataraku Maou-sama! [09][Ma10p_1080p][x265_flac_aac].mkv",
+      "[VCB-Studio] Hataraku Maou-sama! [10][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Hataraku Maou-sama! [11][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Hataraku Maou-sama! [12][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Hataraku Maou-sama! [13][Ma10p_1080p][x265_flac_aac].mkv",
+      "SPs/[VCB-Studio] Hataraku Maou-sama! [CM01][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Hataraku Maou-sama! [CM02][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Hataraku Maou-sama! [CM03][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Hataraku Maou-sama! [NCED(EP02 ON AIR Ver.)][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Hataraku Maou-sama! [NCED01][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Hataraku Maou-sama! [NCED02][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Hataraku Maou-sama! [NCED03][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Hataraku Maou-sama! [NCOP(EP03&EP04 ON AIR Ver.)][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Hataraku Maou-sama! [NCOP01][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Hataraku Maou-sama! [NCOP02][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Hataraku Maou-sama! [NCOP03][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Hataraku Maou-sama! [NCOP04][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Hataraku Maou-sama! [PV01][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Hataraku Maou-sama! [PV02][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Hataraku Maou-sama! [PV03][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Hataraku Maou-sama! [SP(EP01 Avant Title Non-Credit Ver.)][Ma10p_1080p][x265_flac].mkv"
+    ],
+    "conflict_details": [
+      "文件均为TV动画剧集及特典，非电影正片"
+    ],
+    "extra_notes": null
+  }
+}

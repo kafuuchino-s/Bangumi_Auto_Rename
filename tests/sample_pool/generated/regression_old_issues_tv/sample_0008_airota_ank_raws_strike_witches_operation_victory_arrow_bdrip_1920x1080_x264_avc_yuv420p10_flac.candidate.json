@@ -1,0 +1,45 @@
+{
+  "status": "ok",
+  "type": "movie",
+  "title_candidate": "Strike Witches: Operation Victory Arrow",
+  "timing": {
+    "analysis_seconds": 16.461
+  },
+  "collection_analysis": {
+    "is_collection": false,
+    "collection_name": "Strike Witches: Operation Victory Arrow",
+    "confidence": "High",
+    "reason": "目录为三集OVA及特典，非电影合集",
+    "file_mapping": [],
+    "unmatched_files": [
+      "[Airota&ANK-Raws] Strike Witches Operation Victory Arrow (Creditless ED1) (BDrip 1920x1080 x264 AVC-YUV420P10 FLAC).mkv",
+      "[Airota&ANK-Raws] Strike Witches Operation Victory Arrow (Creditless ED2) (BDrip 1920x1080 x264 AVC-YUV420P10 FLAC).mkv",
+      "[Airota&ANK-Raws] Strike Witches Operation Victory Arrow (Creditless ED3) (BDrip 1920x1080 x264 AVC-YUV420P10 FLAC).mkv",
+      "[Airota&ANK-Raws] Strike Witches Operation Victory Arrow (Creditless OP) (BDrip 1920x1080 x264 AVC-YUV420P10 FLAC).mkv",
+      "[Airota&ANK-Raws] Strike Witches Operation Victory Arrow 01 (BDrip 1920x1080 x264 AVC-YUV420P10 FLAC).mkv",
+      "[Airota&ANK-Raws] Strike Witches Operation Victory Arrow 02 (BDrip 1920x1080 x264 AVC-YUV420P10 FLAC).mkv",
+      "[Airota&ANK-Raws] Strike Witches Operation Victory Arrow 03 (BDrip 1920x1080 x264 AVC-YUV420P10 FLAC).mkv",
+      "[Airota&ANK-Raws] Strike Witches Operation Victory Arrow CM01 (BDrip 1920x1080 x264 AVC-YUV420P10 FLAC).mkv",
+      "[Airota&ANK-Raws] Strike Witches Operation Victory Arrow CM02 (BDrip 1920x1080 x264 AVC-YUV420P10 FLAC).mkv",
+      "[Airota&ANK-Raws] Strike Witches Operation Victory Arrow CM03 (BDrip 1920x1080 x264 AVC-YUV420P10 FLAC).mkv",
+      "[Airota&ANK-Raws] Strike Witches Operation Victory Arrow CM04 (BDrip 1920x1080 x264 AVC-YUV420P10 FLAC).mkv",
+      "[Airota&ANK-Raws] Strike Witches Operation Victory Arrow CM05 (BDrip 1920x1080 x264 AVC-YUV420P10 FLAC).mkv",
+      "[Airota&ANK-Raws] Strike Witches Operation Victory Arrow Info01 (BDrip 1920x1080 x264 AVC-YUV420P10 FLAC).mkv",
+      "[Airota&ANK-Raws] Strike Witches Operation Victory Arrow Info02 (BDrip 1920x1080 x264 AVC-YUV420P10 FLAC).mkv",
+      "[Airota&ANK-Raws] Strike Witches Operation Victory Arrow Info03 (BDrip 1920x1080 x264 AVC-YUV420P10 FLAC).mkv",
+      "[Airota&ANK-Raws] Strike Witches Operation Victory Arrow Info04 (BDrip 1920x1080 x264 AVC-YUV420P10 FLAC).mkv",
+      "[Airota&ANK-Raws] Strike Witches Operation Victory Arrow PV01 (BDrip 1920x1080 x264 AVC-YUV420P10 FLAC).mkv",
+      "[Airota&ANK-Raws] Strike Witches Operation Victory Arrow PV02 (BDrip 1920x1080 x264 AVC-YUV420P10 FLAC).mkv",
+      "Menu 01(OVA1).mkv",
+      "Menu 01(OVA2).mkv",
+      "Menu 01(OVA3).mkv",
+      "Menu 02(OVA1).mkv",
+      "Menu 02(OVA2).mkv",
+      "Menu 02(OVA3).mkv"
+    ],
+    "conflict_details": [
+      "主文件为OVA分集与特典，不是电影合集"
+    ],
+    "extra_notes": null
+  }
+}

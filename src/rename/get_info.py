@@ -133,6 +133,7 @@ class Search:
             f'[电影搜索] 语言顺序: {languages}, query={query}, year={year}'
         )
 
+        ranked_candidates: Dict[int, Dict[str, Any]] = {}
         for index, language in enumerate(languages):
             search = tmdb.Search()
             search.movie(
@@ -141,13 +142,50 @@ class Search:
                 year=year if year else None,
             )
             results = search.__dict__['results']
-            if results:
-                if index > 0:
-                    logger.info(
-                        f'[电影搜索] 语言回退命中: {language}, query={query}'
-                    )
-                return results
-        return None
+            if not results:
+                continue
+
+            if index > 0:
+                logger.info(
+                    f'[电影搜索] 语言回退命中: {language}, query={query}'
+                )
+
+            for candidate in results:
+                movie_id = candidate.get('id')
+                if not isinstance(movie_id, int):
+                    continue
+
+                current = ranked_candidates.get(movie_id)
+                candidate_copy = dict(candidate)
+                if current:
+                    matched_languages = list(current.get('_matched_languages', []))
+                    if language not in matched_languages:
+                        matched_languages.append(language)
+                    current['_matched_languages'] = matched_languages
+                    for key, value in candidate_copy.items():
+                        if current.get(key) in (None, '', []) and value not in (None, '', []):
+                            current[key] = value
+                    continue
+
+                candidate_copy['_matched_language'] = language
+                candidate_copy['_matched_languages'] = [language]
+                ranked_candidates[movie_id] = candidate_copy
+
+        if not ranked_candidates:
+            return None
+
+        return list(ranked_candidates.values())
+
+    @staticmethod
+    def _has_movie_title_signal(text: str) -> bool:
+        normalized = re.sub(r'[\s._\-]+', ' ', text or '').casefold()
+        return bool(
+            re.search(
+                r'(剧场版|劇場版|gekijouban|\bthe movie\b|\bmovie\b|\bfilm\b|\btheatrical\b)',
+                normalized,
+                flags=re.IGNORECASE,
+            )
+        )
 
     def _search_tv_multi_language(
         self,
@@ -884,6 +922,15 @@ class Search:
 
         best_similarity = 0.0
         exact_boost = 0.0
+        source_has_movie_signal = any(
+            self._has_movie_title_signal(text)
+            for text in (source_title, query)
+        )
+        candidate_has_movie_signal = any(
+            self._has_movie_title_signal(candidate_title)
+            for candidate_title in candidate_titles
+            if isinstance(candidate_title, str)
+        )
         for query_text in normalized_queries:
             if not query_text:
                 continue
@@ -908,6 +955,8 @@ class Search:
                     exact_boost = max(exact_boost, 12.0)
 
         score = best_similarity * 100 + exact_boost
+        if source_has_movie_signal and candidate_has_movie_signal:
+            score += 30
         score += max(0, 8 - query_index * 2)
 
         if year:

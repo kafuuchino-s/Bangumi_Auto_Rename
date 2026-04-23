@@ -1,0 +1,41 @@
+{
+  "status": "ok",
+  "type": "movie",
+  "title_candidate": "Yondemasu yo, Azazel-san",
+  "timing": {
+    "analysis_seconds": 22.438
+  },
+  "collection_analysis": {
+    "is_collection": false,
+    "collection_name": "Yondemasu yo, Azazel-san",
+    "confidence": "High",
+    "reason": "为单季动画分集与特典文件",
+    "file_mapping": [],
+    "unmatched_files": [
+      "[Salender-Raws] Yondemasuyo, Azazel-san 01 (BD 1920x1080 x264 FLAC).mkv",
+      "[Salender-Raws] Yondemasuyo, Azazel-san 02 (BD 1920x1080 x264 FLAC).mkv",
+      "[Salender-Raws] Yondemasuyo, Azazel-san 03 (BD 1920x1080 x264 FLAC).mkv",
+      "[Salender-Raws] Yondemasuyo, Azazel-san 04 (BD 1920x1080 x264 FLAC).mkv",
+      "[Salender-Raws] Yondemasuyo, Azazel-san 05 (BD 1920x1080 x264 FLAC).mkv",
+      "[Salender-Raws] Yondemasuyo, Azazel-san 06 (BD 1920x1080 x264 FLAC).mkv",
+      "[Salender-Raws] Yondemasuyo, Azazel-san 07 (BD 1920x1080 x264 FLAC).mkv",
+      "[Salender-Raws] Yondemasuyo, Azazel-san 08 (BD 1920x1080 x264 FLAC).mkv",
+      "[Salender-Raws] Yondemasuyo, Azazel-san 09 (BD 1920x1080 x264 FLAC).mkv",
+      "[Salender-Raws] Yondemasuyo, Azazel-san 10 (BD 1920x1080 x264 FLAC).mkv",
+      "[Salender-Raws] Yondemasuyo, Azazel-san 11 (BD 1920x1080 x264 FLAC).mkv",
+      "[Salender-Raws] Yondemasuyo, Azazel-san 12 (BD 1920x1080 x264 FLAC).mkv",
+      "[Salender-Raws] Yondemasuyo, Azazel-san 13 (BD 1920x1080 x264 FLAC).mkv",
+      "Bonus/[Salender-Raws] Yondemasuyo, Azazel-san CM 1 (BD 1920x1080 x264 FLAC).mkv",
+      "Bonus/[Salender-Raws] Yondemasuyo, Azazel-san CM 2 (BD 1920x1080 x264 FLAC).mkv",
+      "Bonus/[Salender-Raws] Yondemasuyo, Azazel-san CM 3 (BD 1920x1080 x264 FLAC).mkv",
+      "Bonus/[Salender-Raws] Yondemasuyo, Azazel-san PV 1 (BD 1920x1080 x264 FLAC).mkv",
+      "Bonus/[Salender-Raws] Yondemasuyo, Azazel-san PV 2 (BD 1920x1080 x264 FLAC).mkv",
+      "Bonus/NC/[Salender-Raws] Yondemasuyo, Azazel-san NCED (BD 1920x1080 x264 FLAC).mkv",
+      "Bonus/NC/[Salender-Raws] Yondemasuyo, Azazel-san NCOP (BD 1920x1080 x264 FLAC).mkv"
+    ],
+    "conflict_details": [
+      "文件为动画分集及特典，不是电影合集"
+    ],
+    "extra_notes": null
+  }
+}

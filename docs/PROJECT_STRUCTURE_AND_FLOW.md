@@ -45,11 +45,11 @@ Bangumi Auto Rename 已不只是“自动重命名器”，而是一个以 **AI-
 ### 2.1 关键目录
 
 - `src/rename/`
-  - 主重命名链路、TMDB 搜索、文件传输、命名规则
+  - 主重命名链路；包含 AI 分类与映射、TMDB 查询、命名规则、文件迁移
 - `src/ai/`
-  - 统一 AI 客户端、OpenAI / Gemini 适配、结构化输出模型、视频分析
+  - 统一 AI 客户端、OpenAI 运行时适配、结构化输出模型、视频分析
 - `src/bangumi/`
-  - Bangumi API 读取、subject / episode 上下文构造
+  - Bangumi API 读取、subject / episode 上下文构造；只为 TV 映射提供辅助证据
 - `src/subtitle/`
   - 字幕解压、导入、对齐、自动抓取、provider 适配
 - `src/queue/`
@@ -63,7 +63,7 @@ Bangumi Auto Rename 已不只是“自动重命名器”，而是一个以 **AI-
 - `data/`
   - 运行时数据、日志、任务记录、AI 快照等
 - `tests/`
-  - 单测、回归测试、AI 接口与 Bangumi 映射测试
+  - 平铺的功能/回归测试、AI 接口与 Bangumi 映射测试样例
 
 ### 2.2 关键入口文件
 
@@ -73,7 +73,10 @@ Bangumi Auto Rename 已不只是“自动重命名器”，而是一个以 **AI-
 - `src/config/config_manager.py`：配置默认值与配置中心
 - `src/queue/task_queue.py`：队列调度与批次收尾
 - `src/rename/process.py`：主重命名引擎
-- `src/rename/ai_processor.py`：TV AI 映射、后置校验、最终路径生成
+- `src/rename/ai_processor.py`：TV AI 映射、Bangumi 上下文接入、后置 strict 校验、映射应用
+- `src/rename/get_info.py`：TMDB 搜索与 TV season info 补齐
+- `src/rename/trans.py`：最终文件迁移与 `record` 写入
+- `src/ai/video_analyzer.py`：本地视频结构化分析
 - `src/subtitle/processor.py`：字幕导入主入口
 - `src/subtitle/auto_fetch.py`：字幕自动抓取入口
 
@@ -276,23 +279,23 @@ worker 内部会在线程池中调用真正的重命名逻辑：
 
 TV 是当前最核心的 AI-first 链路。
 
-总体流程：
+总体流程（概念层）如下；实际实现分散在 `process.py`、`get_info.py`、`ai_processor.py`、`trans.py` 等模块中，而不是单文件线性串完：
 
 ```text
 TV TMDB 条目确定
-→ fill_season_info() 补齐 TMDB 季集空间
+→ Search.fill_season_info() 补齐 TMDB 季集空间
 → 收集本地视频文件
 → VideoAnalyzer 分析本地文件
 → BangumiContextBuilder 构造 Bangumi 辅助上下文
-→ AI 输出 file_mapping / unmatched_files
+→ AIProcessor 调 AI 输出 file_mapping / unmatched_files
 → validate_tv_result() 做 strict 校验
-→ apply_ai_mapping() 生成最终源 → 目标映射
-→ Trans 执行迁移
+→ apply_ai_mapping() 生成源 → 目标映射
+→ Trans.trans_file() 执行迁移并写 record
 ```
 
 ### 9.1 先补齐 TMDB 合法空间
 
-TV 分支首先会调用：
+TV 分支首先会通过 `Search` 调用：
 - `fill_season_info()`
 
 作用是：
@@ -324,7 +327,7 @@ Bangumi 只接入 **TV AI 映射阶段**，不参与电影链路，也不直接�
 
 入口：`src/bangumi/context_builder.py`
 
-它会围绕当前已经确定的 TMDB TV 条目，构建紧凑的 `bangumi_context`：
+它会围绕当前已经确定的 TMDB TV 条目，构建紧凑的 `bangumi_context`；当前主入口是 `build_tv_context(...)`：
 
 1. 根据 TMDB 标题 / 原标题 / 本地文件名生成少量搜索词
 2. 搜索 Bangumi subject

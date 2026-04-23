@@ -1,0 +1,49 @@
+{
+  "status": "ok",
+  "type": "movie",
+  "title_candidate": "Kitakubu Katsudou Kiroku",
+  "timing": {
+    "analysis_seconds": 16.492
+  },
+  "collection_analysis": {
+    "is_collection": false,
+    "collection_name": "Kitakubu Katsudou Kiroku",
+    "confidence": "High",
+    "reason": "内容为TV动画及特典，非电影合集",
+    "file_mapping": [],
+    "unmatched_files": [
+      "[Mabors Sub]Kitakubu Katsudou Kiroku Vol.1(BDrip 1920x1080 x264 FLAC Hi10P)/[Mabors Sub]Kitakubu Katsudou Kiroku - 01(BDrip 1920x1080 x264 FLAC Hi10P).mkv",
+      "[Mabors Sub]Kitakubu Katsudou Kiroku Vol.1(BDrip 1920x1080 x264 FLAC Hi10P)/[Mabors Sub]Kitakubu Katsudou Kiroku - 02(BDrip 1920x1080 x264 FLAC Hi10P).mkv",
+      "[Mabors Sub]Kitakubu Katsudou Kiroku Vol.1(BDrip 1920x1080 x264 FLAC Hi10P)/[Mabors Sub]Kitakubu Katsudou Kiroku - 03(BDrip 1920x1080 x264 FLAC Hi10P).mkv",
+      "[Mabors Sub]Kitakubu Katsudou Kiroku Vol.1(BDrip 1920x1080 x264 FLAC Hi10P)/[Mabors Sub]Kitakubu Katsudou Kiroku - NCOP(BDrip 1920x1080 x264 FLAC Hi10P).mkv",
+      "[Mabors Sub]Kitakubu Katsudou Kiroku Vol.1(BDrip 1920x1080 x264 FLAC Hi10P)/[Mabors Sub]Kitakubu Katsudou Kiroku - PV(BDrip 1920x1080 x264 FLAC Hi10P).mkv",
+      "[Mabors Sub]Kitakubu Katsudou Kiroku Vol.1(BDrip 1920x1080 x264 FLAC Hi10P)/Menu01.mkv",
+      "[Mabors Sub]Kitakubu Katsudou Kiroku Vol.1(BDrip 1920x1080 x264 FLAC Hi10P)/Menu02.mkv",
+      "[Mabors Sub]Kitakubu Katsudou Kiroku Vol.2(BDrip 1920x1080 x264 FLAC Hi10P)/[Mabors Sub]Kitakubu Chibi Gekijyo - 01(BDrip 1920x1080 x264 FLAC Hi10P).mkv",
+      "[Mabors Sub]Kitakubu Katsudou Kiroku Vol.2(BDrip 1920x1080 x264 FLAC Hi10P)/[Mabors Sub]Kitakubu Katsudou Kiroku - 04(BDrip 1920x1080 x264 FLAC Hi10P).mkv",
+      "[Mabors Sub]Kitakubu Katsudou Kiroku Vol.2(BDrip 1920x1080 x264 FLAC Hi10P)/[Mabors Sub]Kitakubu Katsudou Kiroku - 05(BDrip 1920x1080 x264 FLAC Hi10P).mkv",
+      "[Mabors Sub]Kitakubu Katsudou Kiroku Vol.2(BDrip 1920x1080 x264 FLAC Hi10P)/[Mabors Sub]Kitakubu Katsudou Kiroku - 06(BDrip 1920x1080 x264 FLAC Hi10P).mkv",
+      "[Mabors Sub]Kitakubu Katsudou Kiroku Vol.2(BDrip 1920x1080 x264 FLAC Hi10P)/Menu01.mkv",
+      "[Mabors Sub]Kitakubu Katsudou Kiroku Vol.2(BDrip 1920x1080 x264 FLAC Hi10P)/Menu02.mkv",
+      "[Mabors Sub]Kitakubu Katsudou Kiroku Vol.3(BDrip 1920x1080 x264 FLAC Hi10P)/[Mabors Sub]Kitakubu Chibi Gekijyo - 02(BDrip 1920x1080 x264 FLAC Hi10P).mkv",
+      "[Mabors Sub]Kitakubu Katsudou Kiroku Vol.3(BDrip 1920x1080 x264 FLAC Hi10P)/[Mabors Sub]Kitakubu Katsudou Kiroku - 07(BDrip 1920x1080 x264 FLAC Hi10P).mkv",
+      "[Mabors Sub]Kitakubu Katsudou Kiroku Vol.3(BDrip 1920x1080 x264 FLAC Hi10P)/[Mabors Sub]Kitakubu Katsudou Kiroku - 08(BDrip 1920x1080 x264 FLAC Hi10P).mkv",
+      "[Mabors Sub]Kitakubu Katsudou Kiroku Vol.3(BDrip 1920x1080 x264 FLAC Hi10P)/[Mabors Sub]Kitakubu Katsudou Kiroku - 09(BDrip 1920x1080 x264 FLAC Hi10P).mkv",
+      "[Mabors Sub]Kitakubu Katsudou Kiroku Vol.3(BDrip 1920x1080 x264 FLAC Hi10P)/[Mabors Sub]Kitakubu Katsudou Kiroku - NCED01(BDrip 1920x1080 x264 FLAC Hi10P).mkv",
+      "[Mabors Sub]Kitakubu Katsudou Kiroku Vol.3(BDrip 1920x1080 x264 FLAC Hi10P)/Menu01.mkv",
+      "[Mabors Sub]Kitakubu Katsudou Kiroku Vol.3(BDrip 1920x1080 x264 FLAC Hi10P)/Menu02.mkv",
+      "[Mabors Sub]Kitakubu Katsudou Kiroku Vol.4(BDrip 1920x1080 x264 FLAC Hi10P)/[Mabors Sub]Kitakubu Chibi Gekijyo - 03(BDrip 1920x1080 x264 FLAC Hi10P).mkv",
+      "[Mabors Sub]Kitakubu Katsudou Kiroku Vol.4(BDrip 1920x1080 x264 FLAC Hi10P)/[Mabors Sub]Kitakubu Katsudou Kiroku - 10(BDrip 1920x1080 x264 FLAC Hi10P).mkv",
+      "[Mabors Sub]Kitakubu Katsudou Kiroku Vol.4(BDrip 1920x1080 x264 FLAC Hi10P)/[Mabors Sub]Kitakubu Katsudou Kiroku - 11(BDrip 1920x1080 x264 FLAC Hi10P).mkv",
+      "[Mabors Sub]Kitakubu Katsudou Kiroku Vol.4(BDrip 1920x1080 x264 FLAC Hi10P)/[Mabors Sub]Kitakubu Katsudou Kiroku - 12(BDrip 1920x1080 x264 FLAC Hi10P).mkv",
+      "[Mabors Sub]Kitakubu Katsudou Kiroku Vol.4(BDrip 1920x1080 x264 FLAC Hi10P)/[Mabors Sub]Kitakubu Katsudou Kiroku - NCED02(BDrip 1920x1080 x264 FLAC Hi10P).mkv",
+      "[Mabors Sub]Kitakubu Katsudou Kiroku Vol.4(BDrip 1920x1080 x264 FLAC Hi10P)/[Mabors Sub]Kitakubu Katsudou Kiroku - NCED03(BDrip 1920x1080 x264 FLAC Hi10P).mkv",
+      "[Mabors Sub]Kitakubu Katsudou Kiroku Vol.4(BDrip 1920x1080 x264 FLAC Hi10P)/Menu01.mkv",
+      "[Mabors Sub]Kitakubu Katsudou Kiroku Vol.4(BDrip 1920x1080 x264 FLAC Hi10P)/Menu02.mkv"
+    ],
+    "conflict_details": [
+      "文件为TV动画正片、特典与菜单，不是电影合集"
+    ],
+    "extra_notes": null
+  }
+}

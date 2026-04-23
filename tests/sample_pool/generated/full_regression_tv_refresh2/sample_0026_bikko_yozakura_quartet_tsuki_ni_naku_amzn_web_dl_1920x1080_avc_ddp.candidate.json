@@ -1,0 +1,68 @@
+{
+  "status": "ok",
+  "type": "tv",
+  "title_candidate": "Yozakura Quartet: Tsuki ni Naku",
+  "tmdb_name": "夜樱四重奏：月之泣",
+  "tmdb_id": 118218,
+  "timing": {
+    "analysis_seconds": 5.085
+  },
+  "file_mapping": [
+    {
+      "source_index": 1,
+      "file_path": "Yozakura.Quartet.Tsuki.ni.Naku.2013.E01.1080p.AMZN.WEB-DL.DDP2.0.AVC-Bikko.mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 1,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 2,
+      "file_path": "Yozakura.Quartet.Tsuki.ni.Naku.2013.E02.1080p.AMZN.WEB-DL.DDP2.0.AVC-Bikko.mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 2,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 3,
+      "file_path": "Yozakura.Quartet.Tsuki.ni.Naku.2013.E03.1080p.AMZN.WEB-DL.DDP2.0.AVC-Bikko.mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 3,
+      "episode_type": "regular",
+      "confidence": "High"
+    }
+  ],
+  "conflict_details": [],
+  "analysis_result": {
+    "confidence": "High",
+    "reason": "文件名集数与TMDB正片一一对应。",
+    "season_mapping": [
+      {
+        "local_group_name": "夜樱四重奏：月之泣",
+        "maps_to_tmdb_seasons": [
+          1
+        ]
+      }
+    ],
+    "file_mapping_count": 3,
+    "unmatched_count": 0,
+    "conflict_count": 0
+  },
+  "hydration_notes": {
+    "hydrated_count": 3,
+    "examples": [
+      "hydrated:1:Yozakura.Quartet.Tsuki.ni.Naku.2013.E01.1080p.AMZN.WEB-DL.DDP2.0.AVC-Bikko.mkv",
+      "hydrated:2:Yozakura.Quartet.Tsuki.ni.Naku.2013.E02.1080p.AMZN.WEB-DL.DDP2.0.AVC-Bikko.mkv",
+      "hydrated:3:Yozakura.Quartet.Tsuki.ni.Naku.2013.E03.1080p.AMZN.WEB-DL.DDP2.0.AVC-Bikko.mkv"
+    ]
+  },
+  "task_plan": {
+    "is_movie": false,
+    "ai_type": "tv",
+    "tv_available": true,
+    "movie_available": false,
+    "selected_confidence": "High"
+  },
+  "final_type": "tv"
+}

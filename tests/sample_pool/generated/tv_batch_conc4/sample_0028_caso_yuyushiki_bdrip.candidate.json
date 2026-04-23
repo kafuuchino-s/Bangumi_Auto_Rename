@@ -1,0 +1,328 @@
+{
+  "status": "ok",
+  "type": "tv",
+  "title_candidate": "Yuyushiki",
+  "tmdb_name": "Yuyushiki",
+  "tmdb_id": 52890,
+  "file_mapping": [
+    {
+      "source_index": 1,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 1,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 2,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 2,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 3,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 3,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 4,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 4,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 5,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 5,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 6,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 6,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 7,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 7,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 8,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 8,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 9,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 9,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 10,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 10,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 11,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 11,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 12,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 12,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 26,
+      "file_path": null,
+      "tmdb_season": 0,
+      "tmdb_episode": 1,
+      "episode_type": "special",
+      "confidence": "Medium"
+    },
+    {
+      "source_index": 27,
+      "file_path": null,
+      "tmdb_season": 0,
+      "tmdb_episode": 2,
+      "episode_type": "special",
+      "confidence": "Medium"
+    },
+    {
+      "source_index": 28,
+      "file_path": null,
+      "tmdb_season": 0,
+      "tmdb_episode": 3,
+      "episode_type": "special",
+      "confidence": "Medium"
+    },
+    {
+      "source_index": 29,
+      "file_path": null,
+      "tmdb_season": 0,
+      "tmdb_episode": 4,
+      "episode_type": "special",
+      "confidence": "Medium"
+    },
+    {
+      "source_index": 30,
+      "file_path": null,
+      "tmdb_season": 0,
+      "tmdb_episode": 5,
+      "episode_type": "special",
+      "confidence": "Medium"
+    },
+    {
+      "source_index": 31,
+      "file_path": null,
+      "tmdb_season": 0,
+      "tmdb_episode": 6,
+      "episode_type": "special",
+      "confidence": "Medium"
+    }
+  ],
+  "analysis_result": {
+    "confidence": "Medium",
+    "reason": "本地文件 01-12 与 TMDB 第 1 季 S01E01-S01E12 按文件编号直接一一对应，置信度高；SP01-SP06 与 TMDB Season 0 的前 6 个特典集按编号顺序对应，置信度中等；其余 NCOP/NCED/Menu 文件未能在 TMDB 已存在的 SxxExx 中安全落点，因此不纳入映射。",
+    "season_mapping": [
+      {
+        "local_group_name": "YuYuShiki",
+        "maps_to_tmdb_seasons": [
+          1
+        ]
+      }
+    ],
+    "file_mapping": [
+      {
+        "source_index": 1,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 1,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 2,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 2,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 3,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 3,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 4,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 4,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 5,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 5,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 6,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 6,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 7,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 7,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 8,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 8,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 9,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 9,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 10,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 10,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 11,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 11,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 12,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 12,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 26,
+        "file_path": null,
+        "tmdb_season": 0,
+        "tmdb_episode": 1,
+        "episode_type": "special",
+        "confidence": "Medium"
+      },
+      {
+        "source_index": 27,
+        "file_path": null,
+        "tmdb_season": 0,
+        "tmdb_episode": 2,
+        "episode_type": "special",
+        "confidence": "Medium"
+      },
+      {
+        "source_index": 28,
+        "file_path": null,
+        "tmdb_season": 0,
+        "tmdb_episode": 3,
+        "episode_type": "special",
+        "confidence": "Medium"
+      },
+      {
+        "source_index": 29,
+        "file_path": null,
+        "tmdb_season": 0,
+        "tmdb_episode": 4,
+        "episode_type": "special",
+        "confidence": "Medium"
+      },
+      {
+        "source_index": 30,
+        "file_path": null,
+        "tmdb_season": 0,
+        "tmdb_episode": 5,
+        "episode_type": "special",
+        "confidence": "Medium"
+      },
+      {
+        "source_index": 31,
+        "file_path": null,
+        "tmdb_season": 0,
+        "tmdb_episode": 6,
+        "episode_type": "special",
+        "confidence": "Medium"
+      }
+    ],
+    "unmatched_files": [
+      "[CASO][YuYuShiki][Menu][BDRIP][1080p_MKV][x264_FLAC][BEEDA29B].mkv",
+      "[CASO][YuYuShiki][NCED01][BDRIP][1080p_MKV][x264_FLAC][A9882489].mkv",
+      "[CASO][YuYuShiki][NCED02][BDRIP][1080p_MKV][x264_FLAC][CC9ED347].mkv",
+      "[CASO][YuYuShiki][NCED03][BDRIP][1080p_MKV][x264_FLAC][F1A592FC].mkv",
+      "[CASO][YuYuShiki][NCED04][BDRIP][1080p_MKV][x264_FLAC][C90D8035].mkv",
+      "[CASO][YuYuShiki][NCED05][BDRIP][1080p_MKV][x264_FLAC][81C792C2].mkv",
+      "[CASO][YuYuShiki][NCED06][BDRIP][1080p_MKV][x264_FLAC][27A92DFF].mkv",
+      "[CASO][YuYuShiki][NCED07][BDRIP][1080p_MKV][x264_FLAC][76EE7871].mkv",
+      "[CASO][YuYuShiki][NCED08][BDRIP][1080p_MKV][x264_FLAC][BBE5E7FC].mkv",
+      "[CASO][YuYuShiki][NCED09][BDRIP][1080p_MKV][x264_FLAC][F4EDB912].mkv",
+      "[CASO][YuYuShiki][NCED10][BDRIP][1080p_MKV][x264_FLAC][6919C629].mkv",
+      "[CASO][YuYuShiki][NCED11][BDRIP][1080p_MKV][x264_FLAC][D215FCF1].mkv",
+      "[CASO][YuYuShiki][NCOP01][BDRIP][1080p_MKV][x264_FLAC][0AD838F3].mkv"
+    ],
+    "conflict_details": [],
+    "extra_notes": "Season 0 的 6 个 SP 文件按编号顺序对应 S00E01-S00E06；S00E07（为难与被为难）本地未见可安全对应的文件。NCOP/NCED/Menu 视为未匹配附加内容。"
+  }
+}

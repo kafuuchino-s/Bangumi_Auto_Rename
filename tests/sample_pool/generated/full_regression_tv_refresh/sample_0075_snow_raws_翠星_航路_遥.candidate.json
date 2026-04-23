@@ -1,0 +1,14 @@
+{
+  "status": "tmdb_not_found",
+  "type": "tv",
+  "title_candidate": "翠星のガルガンティア ~めぐる航路、遥か~",
+  "file_mapping": [],
+  "task_plan": {
+    "is_movie": false,
+    "ai_type": "tv",
+    "tv_available": true,
+    "movie_available": false,
+    "selected_confidence": "High"
+  },
+  "final_type": "tv"
+}

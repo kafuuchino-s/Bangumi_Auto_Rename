@@ -1,0 +1,322 @@
+{
+  "status": "ok",
+  "type": "tv",
+  "title_candidate": "KILL la KILL",
+  "tmdb_name": "斩服少女",
+  "tmdb_id": 60728,
+  "timing": {
+    "analysis_seconds": 62.714
+  },
+  "file_mapping": [
+    {
+      "source_index": 1,
+      "file_path": "[Liuyun&VCB-S&ANK-Raws] KILL la KILL [01][Hi10p_1080p][x264_flac_aac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 1,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 2,
+      "file_path": "[Liuyun&VCB-S&ANK-Raws] KILL la KILL [02][Hi10p_1080p][x264_flac_aac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 2,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 3,
+      "file_path": "[Liuyun&VCB-S&ANK-Raws] KILL la KILL [03][Hi10p_1080p][x264_flac_aac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 3,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 4,
+      "file_path": "[Liuyun&VCB-S&ANK-Raws] KILL la KILL [04][Hi10p_1080p][x264_flac_aac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 4,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 5,
+      "file_path": "[Liuyun&VCB-S&ANK-Raws] KILL la KILL [05][Hi10p_1080p][x264_flac_aac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 5,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 6,
+      "file_path": "[Liuyun&VCB-S&ANK-Raws] KILL la KILL [06][Hi10p_1080p][x264_flac_aac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 6,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 7,
+      "file_path": "[Liuyun&VCB-S&ANK-Raws] KILL la KILL [07][Hi10p_1080p][x264_flac_aac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 7,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 8,
+      "file_path": "[Liuyun&VCB-S&ANK-Raws] KILL la KILL [08][Hi10p_1080p][x264_flac_aac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 8,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 9,
+      "file_path": "[Liuyun&VCB-S&ANK-Raws] KILL la KILL [09][Hi10p_1080p][x264_flac_aac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 9,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 10,
+      "file_path": "[Liuyun&VCB-S&ANK-Raws] KILL la KILL [10][Hi10p_1080p][x264_flac_aac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 10,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 11,
+      "file_path": "[Liuyun&VCB-S&ANK-Raws] KILL la KILL [11][Hi10p_1080p][x264_flac_aac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 11,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 12,
+      "file_path": "[Liuyun&VCB-S&ANK-Raws] KILL la KILL [12][Hi10p_1080p][x264_flac_aac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 12,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 13,
+      "file_path": "[Liuyun&VCB-S&ANK-Raws] KILL la KILL [13][Hi10p_1080p][x264_flac_aac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 13,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 14,
+      "file_path": "[Liuyun&VCB-S&ANK-Raws] KILL la KILL [14][Hi10p_1080p][x264_flac_aac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 14,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 15,
+      "file_path": "[Liuyun&VCB-S&ANK-Raws] KILL la KILL [15][Hi10p_1080p][x264_flac_aac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 15,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 16,
+      "file_path": "[Liuyun&VCB-S&ANK-Raws] KILL la KILL [16][Hi10p_1080p][x264_flac_aac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 16,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 17,
+      "file_path": "[Liuyun&VCB-S&ANK-Raws] KILL la KILL [17][Hi10p_1080p][x264_flac_aac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 17,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 18,
+      "file_path": "[Liuyun&VCB-S&ANK-Raws] KILL la KILL [18][Hi10p_1080p][x264_flac_aac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 18,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 19,
+      "file_path": "[Liuyun&VCB-S&ANK-Raws] KILL la KILL [19][Hi10p_1080p][x264_flac_aac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 19,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 20,
+      "file_path": "[Liuyun&VCB-S&ANK-Raws] KILL la KILL [20][Hi10p_1080p][x264_flac_aac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 20,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 21,
+      "file_path": "[Liuyun&VCB-S&ANK-Raws] KILL la KILL [21][Hi10p_1080p][x264_flac_2aac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 21,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 22,
+      "file_path": "[Liuyun&VCB-S&ANK-Raws] KILL la KILL [22][Hi10p_1080p][x264_flac_2aac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 22,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 23,
+      "file_path": "[Liuyun&VCB-S&ANK-Raws] KILL la KILL [23][Hi10p_1080p][x264_flac_2aac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 23,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 24,
+      "file_path": "[Liuyun&VCB-S&ANK-Raws] KILL la KILL [24][Hi10p_1080p][x264_flac_aac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 24,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 25,
+      "file_path": "[Liuyun&VCB-S&ANK-Raws] KILL la KILL [25][Hi10p_1080p][x264_flac_aac].mkv",
+      "tmdb_season": 0,
+      "tmdb_episode": 1,
+      "episode_type": "special",
+      "confidence": "Low"
+    },
+    {
+      "source_index": 26,
+      "file_path": "SPs/[Liuyun&VCB-S&ANK-Raws] KILL la KILL [KILL la KILL Voices][Hi10p_480p][x264_aac].mkv",
+      "tmdb_season": 0,
+      "tmdb_episode": 5,
+      "episode_type": "special",
+      "confidence": "Low"
+    },
+    {
+      "source_index": 27,
+      "file_path": "SPs/[Liuyun&VCB-S&ANK-Raws] KILL la KILL [Making of KILL la KILL 500 Days Part1][Hi10p_480p][x264_aac].mkv",
+      "tmdb_season": 0,
+      "tmdb_episode": 3,
+      "episode_type": "special",
+      "confidence": "High"
+    },
+    {
+      "source_index": 28,
+      "file_path": "SPs/[Liuyun&VCB-S&ANK-Raws] KILL la KILL [Making of KILL la KILL 500 Days Part2][Hi10p_480p][x264_aac].mkv",
+      "tmdb_season": 0,
+      "tmdb_episode": 4,
+      "episode_type": "special",
+      "confidence": "High"
+    },
+    {
+      "source_index": 29,
+      "file_path": "SPs/[Liuyun&VCB-S&ANK-Raws] KILL la KILL [Memories of Mikisugi Aikuro][Hi10p_1080p][x264_flac].mkv",
+      "tmdb_season": 0,
+      "tmdb_episode": 2,
+      "episode_type": "special",
+      "confidence": "High"
+    }
+  ],
+  "conflict_details": [],
+  "analysis_result": {
+    "confidence": "Medium",
+    "reason": "正片与特典可按集数和标题对应。",
+    "season_mapping": [
+      {
+        "local_group_name": "SPs",
+        "maps_to_tmdb_seasons": [
+          0
+        ]
+      }
+    ],
+    "file_mapping_count": 29,
+    "unmatched_count": 0,
+    "conflict_count": 0
+  },
+  "hydration_notes": {
+    "hydrated_count": 29,
+    "examples": [
+      "hydrated:1:[Liuyun&VCB-S&ANK-Raws] KILL la KILL [01][Hi10p_1080p][x264_flac_aac].mkv",
+      "hydrated:2:[Liuyun&VCB-S&ANK-Raws] KILL la KILL [02][Hi10p_1080p][x264_flac_aac].mkv",
+      "hydrated:3:[Liuyun&VCB-S&ANK-Raws] KILL la KILL [03][Hi10p_1080p][x264_flac_aac].mkv",
+      "hydrated:4:[Liuyun&VCB-S&ANK-Raws] KILL la KILL [04][Hi10p_1080p][x264_flac_aac].mkv",
+      "hydrated:5:[Liuyun&VCB-S&ANK-Raws] KILL la KILL [05][Hi10p_1080p][x264_flac_aac].mkv"
+    ]
+  },
+  "task_plan": {
+    "is_movie": false,
+    "ai_type": "tv",
+    "tv_available": true,
+    "movie_available": false,
+    "selected_confidence": "High"
+  },
+  "tv_candidate_result": {
+    "status": "ok",
+    "type": "tv",
+    "title_candidate": "KILL la KILL",
+    "timing": {
+      "analysis_seconds": 62.714
+    },
+    "file_mapping_count": 29,
+    "has_regular": true,
+    "has_special": true,
+    "has_movie_like": false,
+    "analysis_result": {
+      "confidence": "Medium",
+      "reason": "正片与特典可按集数和标题对应。",
+      "season_mapping": [
+        {
+          "local_group_name": "SPs",
+          "maps_to_tmdb_seasons": [
+            0
+          ]
+        }
+      ],
+      "file_mapping_count": 29,
+      "unmatched_count": 0,
+      "conflict_count": 0
+    }
+  },
+  "movie_candidate_result": {
+    "status": "ok",
+    "type": "movie",
+    "title_candidate": "KILL la KILL",
+    "timing": {
+      "analysis_seconds": 27.5
+    },
+    "collection_analysis": {
+      "is_collection": false,
+      "confidence": "High",
+      "reason": "为TV动画及特典，非电影合集",
+      "file_mapping_count": 0,
+      "unmatched_count": 77,
+      "conflict_count": 1,
+      "movie_like_paths": []
+    }
+  },
+  "final_type": "tv"
+}

@@ -1,0 +1,19 @@
+{
+  "status": "tmdb_not_found",
+  "type": "movie",
+  "title_candidate": "Strike Witches 501 Butai Hasshin Shimasu! Movie  mkv",
+  "tmdb_name": "",
+  "tmdb_id": null,
+  "timing": {
+    "analysis_seconds": 15.004
+  },
+  "primary_files": [
+    {
+      "file_path": "[92 Impatient Eilas & Miyafuji] Strike Witches 501 Butai Hasshin Shimasu! Movie [1080p][05FE5870].mkv"
+    }
+  ],
+  "movie_like_paths_from_paths": [
+    "[92 Impatient Eilas & Miyafuji] Strike Witches 501 Butai Hasshin Shimasu! Movie [1080p][05FE5870].mkv"
+  ],
+  "final_type": "movie"
+}

@@ -1,0 +1,44 @@
+{
+  "status": "ok",
+  "type": "movie",
+  "title_candidate": "Subete ga F ni Naru: The Perfect Insider",
+  "timing": {
+    "analysis_seconds": 11.641
+  },
+  "collection_analysis": {
+    "is_collection": false,
+    "collection_name": "Subete ga F ni Naru: The Perfect Insider",
+    "confidence": "High",
+    "reason": "这是单季动画剧集及特典，不是电影合集",
+    "file_mapping": [],
+    "unmatched_files": [
+      "[VCB-Studio] Subete ga F ni Naru THE PERFECT INSIDER [01][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Subete ga F ni Naru THE PERFECT INSIDER [02][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Subete ga F ni Naru THE PERFECT INSIDER [03][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Subete ga F ni Naru THE PERFECT INSIDER [04][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Subete ga F ni Naru THE PERFECT INSIDER [05][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Subete ga F ni Naru THE PERFECT INSIDER [06][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Subete ga F ni Naru THE PERFECT INSIDER [07][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Subete ga F ni Naru THE PERFECT INSIDER [08][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Subete ga F ni Naru THE PERFECT INSIDER [09][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Subete ga F ni Naru THE PERFECT INSIDER [10][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Subete ga F ni Naru THE PERFECT INSIDER [11][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Subete ga F ni Naru THE PERFECT INSIDER [CM01][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Subete ga F ni Naru THE PERFECT INSIDER [CM02][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Subete ga F ni Naru THE PERFECT INSIDER [CM03][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Subete ga F ni Naru THE PERFECT INSIDER [Menu01][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Subete ga F ni Naru THE PERFECT INSIDER [Menu02][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Subete ga F ni Naru THE PERFECT INSIDER [Menu03][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Subete ga F ni Naru THE PERFECT INSIDER [NCED][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Subete ga F ni Naru THE PERFECT INSIDER [NCOP][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Subete ga F ni Naru THE PERFECT INSIDER [PV01][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Subete ga F ni Naru THE PERFECT INSIDER [PV02][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Subete ga F ni Naru THE PERFECT INSIDER [PV03][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Subete ga F ni Naru THE PERFECT INSIDER [PV04][Ma10p_1080p][x265_flac].mkv"
+    ],
+    "conflict_details": [
+      "文件为11集动画正片及特典，并非电影合集"
+    ],
+    "extra_notes": null
+  }
+}

@@ -1,0 +1,367 @@
+{
+  "status": "ok",
+  "type": "tv",
+  "title_candidate": "ハイスクールD×D",
+  "tmdb_name": "ハイスクールD×D",
+  "tmdb_id": 45950,
+  "file_mapping": [
+    {
+      "source_index": 1,
+      "file_path": null,
+      "tmdb_season": 0,
+      "tmdb_episode": 8,
+      "episode_type": "special",
+      "confidence": "High"
+    },
+    {
+      "source_index": 2,
+      "file_path": null,
+      "tmdb_season": 0,
+      "tmdb_episode": 9,
+      "episode_type": "special",
+      "confidence": "High"
+    },
+    {
+      "source_index": 3,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 1,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 4,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 2,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 5,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 3,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 6,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 4,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 7,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 5,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 8,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 6,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 9,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 7,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 10,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 8,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 11,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 9,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 12,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 10,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 13,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 11,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 14,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 12,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 28,
+      "file_path": null,
+      "tmdb_season": 0,
+      "tmdb_episode": 2,
+      "episode_type": "special",
+      "confidence": "Medium"
+    },
+    {
+      "source_index": 29,
+      "file_path": null,
+      "tmdb_season": 0,
+      "tmdb_episode": 3,
+      "episode_type": "special",
+      "confidence": "Medium"
+    },
+    {
+      "source_index": 30,
+      "file_path": null,
+      "tmdb_season": 0,
+      "tmdb_episode": 4,
+      "episode_type": "special",
+      "confidence": "Medium"
+    },
+    {
+      "source_index": 31,
+      "file_path": null,
+      "tmdb_season": 0,
+      "tmdb_episode": 5,
+      "episode_type": "special",
+      "confidence": "Medium"
+    },
+    {
+      "source_index": 32,
+      "file_path": null,
+      "tmdb_season": 0,
+      "tmdb_episode": 6,
+      "episode_type": "special",
+      "confidence": "Medium"
+    },
+    {
+      "source_index": 33,
+      "file_path": null,
+      "tmdb_season": 0,
+      "tmdb_episode": 7,
+      "episode_type": "special",
+      "confidence": "Medium"
+    }
+  ],
+  "analysis_result": {
+    "confidence": "Medium",
+    "reason": "可明确识别的正片文件（第01话-第12话）与 TMDB Season 1 的 S01E01-S01E12 完全一致；OAD01-02 对应 Season 0 中两集 24 分钟 OVA；SP01-06 对应 Season 0 中编号连续的 6 个短篇特典。其余映像特典文件属于 CM/ED/MENU/OP/PV 类素材，TMDB 提供的特殊集目中未见可直接确认的对应项。",
+    "season_mapping": [
+      {
+        "local_group_name": "ハイスクールDxD",
+        "maps_to_tmdb_seasons": [
+          0,
+          1
+        ]
+      },
+      {
+        "local_group_name": "映像特典",
+        "maps_to_tmdb_seasons": [
+          0
+        ]
+      }
+    ],
+    "file_mapping": [
+      {
+        "source_index": 1,
+        "file_path": null,
+        "tmdb_season": 0,
+        "tmdb_episode": 8,
+        "episode_type": "special",
+        "confidence": "High"
+      },
+      {
+        "source_index": 2,
+        "file_path": null,
+        "tmdb_season": 0,
+        "tmdb_episode": 9,
+        "episode_type": "special",
+        "confidence": "High"
+      },
+      {
+        "source_index": 3,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 1,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 4,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 2,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 5,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 3,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 6,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 4,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 7,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 5,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 8,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 6,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 9,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 7,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 10,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 8,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 11,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 9,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 12,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 10,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 13,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 11,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 14,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 12,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 28,
+        "file_path": null,
+        "tmdb_season": 0,
+        "tmdb_episode": 2,
+        "episode_type": "special",
+        "confidence": "Medium"
+      },
+      {
+        "source_index": 29,
+        "file_path": null,
+        "tmdb_season": 0,
+        "tmdb_episode": 3,
+        "episode_type": "special",
+        "confidence": "Medium"
+      },
+      {
+        "source_index": 30,
+        "file_path": null,
+        "tmdb_season": 0,
+        "tmdb_episode": 4,
+        "episode_type": "special",
+        "confidence": "Medium"
+      },
+      {
+        "source_index": 31,
+        "file_path": null,
+        "tmdb_season": 0,
+        "tmdb_episode": 5,
+        "episode_type": "special",
+        "confidence": "Medium"
+      },
+      {
+        "source_index": 32,
+        "file_path": null,
+        "tmdb_season": 0,
+        "tmdb_episode": 6,
+        "episode_type": "special",
+        "confidence": "Medium"
+      },
+      {
+        "source_index": 33,
+        "file_path": null,
+        "tmdb_season": 0,
+        "tmdb_episode": 7,
+        "episode_type": "special",
+        "confidence": "Medium"
+      }
+    ],
+    "unmatched_files": [
+      "映像特典/[Snow-Raws] ハイスクールDxD CM01 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "映像特典/[Snow-Raws] ハイスクールDxD ED01 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "映像特典/[Snow-Raws] ハイスクールDxD MENU01 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "映像特典/[Snow-Raws] ハイスクールDxD MENU02 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "映像特典/[Snow-Raws] ハイスクールDxD MENU03 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "映像特典/[Snow-Raws] ハイスクールDxD MENU04 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "映像特典/[Snow-Raws] ハイスクールDxD MENU05 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "映像特典/[Snow-Raws] ハイスクールDxD MENU06 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "映像特典/[Snow-Raws] ハイスクールDxD OP01 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "映像特典/[Snow-Raws] ハイスクールDxD PV01 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "映像特典/[Snow-Raws] ハイスクールDxD PV02 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "映像特典/[Snow-Raws] ハイスクールDxD PV03 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "映像特典/[Snow-Raws] ハイスクールDxD PV04 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv"
+    ],
+    "conflict_details": [],
+    "extra_notes": "本地正片 01-12 与 TMDB Season 1 的 01-12 直接对应；OAD01-02 按 BD 常见顺序映射到 Season 0 的两集 24 分钟特别篇；SP01-06 按编号顺序映射到 Season 0 的 6 个短篇特典。CM/ED/MENU/OP/PV 这类纯片头片尾/菜单/预告素材在所给 TMDB 列表中没有明确一一对应项，因此未强行匹配。"
+  }
+}

@@ -1,0 +1,228 @@
+{
+  "status": "ok",
+  "type": "tv",
+  "title_candidate": "World Witches Hasshin Shimasu!",
+  "tmdb_name": "Strike Witches: 501st JOINT FIGHTER WING Take Off!",
+  "tmdb_id": 87693,
+  "file_mapping": [
+    {
+      "source_index": 1,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 1,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 2,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 2,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 3,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 3,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 4,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 4,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 5,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 5,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 6,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 6,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 7,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 7,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 8,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 8,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 9,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 9,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 10,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 10,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 11,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 11,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 12,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 12,
+      "episode_type": "regular",
+      "confidence": "High"
+    }
+  ],
+  "analysis_result": {
+    "confidence": "High",
+    "reason": "本地正片文件共 12 集，编号 01-12 与 TMDB Season 1 的 12 集顺序完全一致；文件名为该作的发行组命名方式，未体现与 Season 2 的标题特征。EXTRA 目录下文件均为 NCOP/NCED/预告/讲座/宣传短片等特典内容，且给定 TMDB 列表未提供可对应的特殊集编号，因此不纳入映射。",
+    "season_mapping": [
+      {
+        "local_group_name": "World Witches Hasshin Shimasu!",
+        "maps_to_tmdb_seasons": [
+          1
+        ]
+      }
+    ],
+    "file_mapping": [
+      {
+        "source_index": 1,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 1,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 2,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 2,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 3,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 3,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 4,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 4,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 5,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 5,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 6,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 6,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 7,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 7,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 8,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 8,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 9,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 9,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 10,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 10,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 11,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 11,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 12,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 12,
+        "episode_type": "regular",
+        "confidence": "High"
+      }
+    ],
+    "unmatched_files": [
+      "EXTRA/[Moozzi2] World Witches Hasshin Shimasu! [SP01] NCOP (BD 1920x1080 x265-10Bit Flac).mkv",
+      "EXTRA/[Moozzi2] World Witches Hasshin Shimasu! [SP02] NCED Collection 501 Hen Ver. Odd Episode (BD 1920x1080 x265-10Bit Flac).mkv",
+      "EXTRA/[Moozzi2] World Witches Hasshin Shimasu! [SP02] NCED Collection 502 Hen Ver. Even Episode (BD 1920x1080 x265-10Bit Flac).mkv",
+      "EXTRA/[Moozzi2] World Witches Hasshin Shimasu! [SP03] Yokoku Collection 501 Hen Ver. Odd Episode (BD 1920x1080 x265-10Bit Flac).mkv",
+      "EXTRA/[Moozzi2] World Witches Hasshin Shimasu! [SP03] Yokoku Collection 502 Hen Ver. Even Episode (BD 1920x1080 x265-10Bit Flac).mkv",
+      "EXTRA/[Moozzi2] World Witches Hasshin Shimasu! [SP04] World Witches Lecture - 01 (BD 1920x1080 x265-10Bit Flac).mkv",
+      "EXTRA/[Moozzi2] World Witches Hasshin Shimasu! [SP04] World Witches Lecture - 02 (BD 1920x1080 x265-10Bit Flac).mkv",
+      "EXTRA/[Moozzi2] World Witches Hasshin Shimasu! [SP05] ANE07 1st. Onee-chan General Election - 01 (BD 1920x1080 x265-10Bit Flac).mkv",
+      "EXTRA/[Moozzi2] World Witches Hasshin Shimasu! [SP05] ANE07 1st. Onee-chan General Election - 02 (BD 1920x1080 x265-10Bit Flac).mkv"
+    ],
+    "conflict_details": [],
+    "extra_notes": "EXTRA 目录中的 NCOP/NCED/特典/讲座/宣传短片在给定 TMDB 列表中没有对应的 Season 0/Special 条目，因此未映射。"
+  }
+}

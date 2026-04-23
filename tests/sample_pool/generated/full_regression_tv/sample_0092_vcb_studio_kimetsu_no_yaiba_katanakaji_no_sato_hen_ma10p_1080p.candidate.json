@@ -1,0 +1,60 @@
+{
+  "status": "ok",
+  "type": "movie",
+  "title_candidate": "Kimetsu no Yaiba Katanakaji no Sato Hen",
+  "timing": {
+    "analysis_seconds": 19.66
+  },
+  "collection_analysis": {
+    "is_collection": false,
+    "collection_name": "Kimetsu no Yaiba Katanakaji no Sato Hen",
+    "confidence": "High",
+    "reason": "主文件为TV集数与特典，非电影合集",
+    "file_mapping": [],
+    "unmatched_files": [
+      "[VCB-Studio] Kimetsu no Yaiba [45][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Kimetsu no Yaiba [46][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Kimetsu no Yaiba [47][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Kimetsu no Yaiba [48][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Kimetsu no Yaiba [49][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Kimetsu no Yaiba [50][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Kimetsu no Yaiba [51][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Kimetsu no Yaiba [52][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Kimetsu no Yaiba [53][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Kimetsu no Yaiba [54][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Kimetsu no Yaiba [55][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Kimetsu no Yaiba Katanakaji no Sato Hen [EP11 Notice Avant][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Kimetsu no Yaiba Katanakaji no Sato Hen [Game Anime][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Kimetsu no Yaiba Katanakaji no Sato Hen [IV01][Ma10p_1080p][x265_aac].mkv",
+      "SPs/[VCB-Studio] Kimetsu no Yaiba Katanakaji no Sato Hen [IV02][Ma10p_1080p][x265_aac].mkv",
+      "SPs/[VCB-Studio] Kimetsu no Yaiba Katanakaji no Sato Hen [IV03][Ma10p_1080p][x265_aac].mkv",
+      "SPs/[VCB-Studio] Kimetsu no Yaiba Katanakaji no Sato Hen [IV04][Ma10p_1080p][x265_aac].mkv",
+      "SPs/[VCB-Studio] Kimetsu no Yaiba Katanakaji no Sato Hen [IV05][Ma10p_1080p][x265_aac].mkv",
+      "SPs/[VCB-Studio] Kimetsu no Yaiba Katanakaji no Sato Hen [IV06][Ma10p_1080p][x265_aac].mkv",
+      "SPs/[VCB-Studio] Kimetsu no Yaiba Katanakaji no Sato Hen [IV07][Ma10p_1080p][x265_aac].mkv",
+      "SPs/[VCB-Studio] Kimetsu no Yaiba Katanakaji no Sato Hen [IV08][Ma10p_1080p][x265_aac].mkv",
+      "SPs/[VCB-Studio] Kimetsu no Yaiba Katanakaji no Sato Hen [Kimetsu Enroku 01][Ma10p_1080p][x265_aac].mkv",
+      "SPs/[VCB-Studio] Kimetsu no Yaiba Katanakaji no Sato Hen [Kimetsu Enroku 02][Ma10p_1080p][x265_aac].mkv",
+      "SPs/[VCB-Studio] Kimetsu no Yaiba Katanakaji no Sato Hen [Kimetsu Enroku 03][Ma10p_1080p][x265_aac].mkv",
+      "SPs/[VCB-Studio] Kimetsu no Yaiba Katanakaji no Sato Hen [Kimetsu Enroku 04][Ma10p_1080p][x265_aac].mkv",
+      "SPs/[VCB-Studio] Kimetsu no Yaiba Katanakaji no Sato Hen [Kimetsu Enroku 05][Ma10p_1080p][x265_aac].mkv",
+      "SPs/[VCB-Studio] Kimetsu no Yaiba Katanakaji no Sato Hen [Kimetsu Enroku 06][Ma10p_1080p][x265_aac].mkv",
+      "SPs/[VCB-Studio] Kimetsu no Yaiba Katanakaji no Sato Hen [Menu01][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Kimetsu no Yaiba Katanakaji no Sato Hen [Menu02][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Kimetsu no Yaiba Katanakaji no Sato Hen [Menu03][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Kimetsu no Yaiba Katanakaji no Sato Hen [Menu04][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Kimetsu no Yaiba Katanakaji no Sato Hen [Menu05][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Kimetsu no Yaiba Katanakaji no Sato Hen [Menu06][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Kimetsu no Yaiba Katanakaji no Sato Hen [MenuITA01][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Kimetsu no Yaiba Katanakaji no Sato Hen [MenuITA02][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Kimetsu no Yaiba Katanakaji no Sato Hen [MenuITA03][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Kimetsu no Yaiba Katanakaji no Sato Hen [NCED][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Kimetsu no Yaiba Katanakaji no Sato Hen [NCOP][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Kimetsu no Yaiba Katanakaji no Sato Hen [PV & CM Collection][Ma10p_1080p][x265_flac].mkv"
+    ],
+    "conflict_details": [
+      "主文件为TV集数与特典，非电影合集"
+    ],
+    "extra_notes": null
+  }
+}

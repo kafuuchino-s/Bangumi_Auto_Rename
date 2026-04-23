@@ -1,0 +1,298 @@
+{
+  "status": "ok",
+  "type": "tv",
+  "title_candidate": "Buddy Complex",
+  "tmdb_name": "Buddy Complex",
+  "tmdb_id": 60663,
+  "file_mapping": [
+    {
+      "source_index": 1,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 1,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 2,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 2,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 3,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 3,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 4,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 4,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 5,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 5,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 6,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 6,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 7,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 7,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 8,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 8,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 9,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 9,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 10,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 10,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 11,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 11,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 12,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 12,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 13,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 13,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 14,
+      "file_path": null,
+      "tmdb_season": 0,
+      "tmdb_episode": 2,
+      "episode_type": "special",
+      "confidence": "Medium"
+    },
+    {
+      "source_index": 15,
+      "file_path": null,
+      "tmdb_season": 0,
+      "tmdb_episode": 3,
+      "episode_type": "special",
+      "confidence": "Medium"
+    }
+  ],
+  "analysis_result": {
+    "confidence": "High",
+    "reason": "文件 [01]-[13] 的编号与 TMDB Season 1 的 13 集正片直接一致；[14]-[15] 文件名包含 Final Act 01/02，可与 TMDB Season 0 的特典前篇/后篇对应。其余 SPs 目录文件均为片头片尾、宣传、菜单、CM 等附加素材，TMDB 中无对应 SxxExx，故不匹配。",
+    "season_mapping": [
+      {
+        "local_group_name": "BUDDY COMPLEX",
+        "maps_to_tmdb_seasons": [
+          1,
+          0
+        ]
+      }
+    ],
+    "file_mapping": [
+      {
+        "source_index": 1,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 1,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 2,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 2,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 3,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 3,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 4,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 4,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 5,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 5,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 6,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 6,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 7,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 7,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 8,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 8,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 9,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 9,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 10,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 10,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 11,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 11,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 12,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 12,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 13,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 13,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 14,
+        "file_path": null,
+        "tmdb_season": 0,
+        "tmdb_episode": 2,
+        "episode_type": "special",
+        "confidence": "Medium"
+      },
+      {
+        "source_index": 15,
+        "file_path": null,
+        "tmdb_season": 0,
+        "tmdb_episode": 3,
+        "episode_type": "special",
+        "confidence": "Medium"
+      }
+    ],
+    "unmatched_files": [
+      "SPs/[VCB-Studio] BUDDY COMPLEX [CM01][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] BUDDY COMPLEX [CM02][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] BUDDY COMPLEX [CM03][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] BUDDY COMPLEX [CM04][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] BUDDY COMPLEX [CM05][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] BUDDY COMPLEX [CM06][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] BUDDY COMPLEX [CM07][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] BUDDY COMPLEX [CM08][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] BUDDY COMPLEX [CM09][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] BUDDY COMPLEX [CM10][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] BUDDY COMPLEX [Menu01][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] BUDDY COMPLEX [Menu02][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] BUDDY COMPLEX [Menu03][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] BUDDY COMPLEX [Menu04][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] BUDDY COMPLEX [Menu05][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] BUDDY COMPLEX [Menu06][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] BUDDY COMPLEX [Menu07][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] BUDDY COMPLEX [NCED01_EP01][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] BUDDY COMPLEX [NCED02_EP13][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] BUDDY COMPLEX [NCED03_EP15][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] BUDDY COMPLEX [NCOP][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] BUDDY COMPLEX [PV01][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] BUDDY COMPLEX [PV02][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] BUDDY COMPLEX [PV03][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] BUDDY COMPLEX [SP01][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] BUDDY COMPLEX [SP02][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] BUDDY COMPLEX [SP03][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] BUDDY COMPLEX [SP04][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] BUDDY COMPLEX [SP05][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] BUDDY COMPLEX [Trailer][Ma10p_1080p][x265_flac].mkv"
+    ],
+    "conflict_details": [],
+    "extra_notes": "本地正片 [01]-[13] 对应 TMDB Season 1；[14]-[15] 依据文件名 Final Act 01/02 与 TMDB Season 0 的前后篇特典标题匹配。SPs 目录下内容为 CM/Menu/NCOP/NCED/PV/SP/Trailer 等附加素材，TMDB 列表中没有可直接对应的条目，故不强行映射。"
+  }
+}

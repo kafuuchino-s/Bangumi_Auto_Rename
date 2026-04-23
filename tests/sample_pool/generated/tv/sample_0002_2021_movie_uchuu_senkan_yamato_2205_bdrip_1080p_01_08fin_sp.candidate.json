@@ -1,0 +1,33 @@
+{
+  "status": "ai_failed",
+  "type": "movie",
+  "title_candidate": "[2021 Movie][Uchuu Senkan Yamato 2205][BDRIP][1080P][01-08Fin+SP]",
+  "timing": {
+    "analysis_seconds": 0.0
+  },
+  "collection_analysis": null,
+  "tv_candidate_result": {
+    "status": "tmdb_not_found",
+    "type": "tv",
+    "title_candidate": "[2021 Movie][Uchuu Senkan Yamato 2205][BDRIP][1080P][01-08Fin+SP]",
+    "timing": null,
+    "file_mapping_count": 0,
+    "has_regular": false,
+    "has_special": false,
+    "has_movie_like": false
+  },
+  "movie_candidate_result": {
+    "status": "ai_failed",
+    "type": "movie",
+    "title_candidate": "[2021 Movie][Uchuu Senkan Yamato 2205][BDRIP][1080P][01-08Fin+SP]",
+    "timing": {
+      "analysis_seconds": 0.0
+    }
+  },
+  "movie_like_paths_from_paths": [
+    "[Uchuu Senkan Yamato 2205 Aratanaru Tabidachi][Vol.01][SP02][Story Summary (Before Main Movie Showing)][BDRIP][1080P][H264_FLAC].mkv",
+    "[Uchuu Senkan Yamato 2205 Aratanaru Tabidachi][Vol.02][SP02][Chapter 01 Memorial Theater Greeting After Movie Showing][BDRIP][1080P][H264_FLAC].mkv",
+    "[Uchuu Senkan Yamato 2205 Aratanaru Tabidachi][Vol.02][SP03][Story Summary (Before Main Movie Showing)][BDRIP][1080P][H264_FLAC].mkv"
+  ],
+  "final_type": "movie"
+}

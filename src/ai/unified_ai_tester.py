@@ -4,8 +4,7 @@
 
 支持功能：
 1. AI识别功能测试 - 使用项目测试用例进行完整的AI识别测试
-2. OpenAI API多格式测试 - 测试function_calling、structured_output、json_object三种输出格式
-3. Gemini API多格式测试 - 测试structured_output、json_object、text三种输出格式
+2. OpenAI API多格式测试 - 测试 structured_output、function_calling、text 三种输出格式
 
 特点：
 - 使用当前界面配置，不保存配置
@@ -412,26 +411,11 @@ class UnifiedAITester:
         result = self._test_provider_api_formats(
             provider="openai",
             format_key="openai_output_format",
-            formats_to_test=["structured_output", "json_object", "function_calling"],
+            formats_to_test=["structured_output", "function_calling", "text"],
         )
 
         # 记忆OpenAI可用格式与排序（用于运行时自动路由）
         self._persist_provider_format_memory("openai", result)
-
-        return result
-
-    def test_gemini_api_formats(self) -> ProviderFormatResult:
-        """测试Gemini API的多种输出格式支持"""
-        logger.info("[AI识别测试] 开始Gemini API多格式测试")
-
-        result = self._test_provider_api_formats(
-            provider="gemini",
-            format_key="gemini_output_format",
-            formats_to_test=["structured_output", "json_object", "text"],
-        )
-
-        # 记忆Gemini可用格式与排序（用于运行时自动路由）
-        self._persist_provider_format_memory("gemini", result)
 
         return result
 
@@ -444,20 +428,6 @@ class UnifiedAITester:
         return self._stress_test_single_format(
             provider="openai",
             format_key="openai_output_format",
-            output_format="structured_output",
-            rounds=rounds,
-            max_workers=max_workers,
-        )
-
-    def stress_test_gemini_structured_output(
-        self,
-        rounds: int = 5,
-        max_workers: int | None = None,
-    ) -> AggregateStressResult:
-        """Gemini structured_output 并行专项压测。"""
-        return self._stress_test_single_format(
-            provider="gemini",
-            format_key="gemini_output_format",
             output_format="structured_output",
             rounds=rounds,
             max_workers=max_workers,
@@ -484,8 +454,8 @@ class UnifiedAITester:
 
         def _run_once(run_index: int) -> TestRunResult:
             temp_config = self.current_config.copy()
-            temp_config["ai_provider"] = provider
             temp_config[format_key] = output_format
+            temp_config[f"{provider}_auto_routing_enabled"] = False
 
             temp_tester = UnifiedAITester(temp_config)
             result = temp_tester._run_single_ai_test()
@@ -519,7 +489,6 @@ class UnifiedAITester:
                         "validation": None,
                         "config_used": {
                             **self.current_config.copy(),
-                            "ai_provider": provider,
                             format_key: output_format,
                         },
                         "provider": provider,
@@ -581,8 +550,8 @@ class UnifiedAITester:
             logger.info(f"[AI识别测试] 测试输出格式: {output_format}")
 
             temp_config = self.current_config.copy()
-            temp_config["ai_provider"] = provider
             temp_config[format_key] = output_format
+            temp_config[f"{provider}_auto_routing_enabled"] = False
 
             temp_tester = UnifiedAITester(temp_config)
             result = temp_tester._run_single_ai_test()
@@ -615,7 +584,6 @@ class UnifiedAITester:
                         "validation": None,
                         "config_used": {
                             **self.current_config.copy(),
-                            "ai_provider": provider,
                             format_key: output_format,
                         },
                         "provider": provider,
@@ -672,10 +640,8 @@ class UnifiedAITester:
                 "openai": [
                     "structured_output",
                     "function_calling",
-                    "json_object",
                     "text",
                 ],
-                "gemini": ["structured_output", "json_object", "text"],
             }
             allowed_formats = fixed_orders.get(provider, ["text"])
 
@@ -749,7 +715,7 @@ class UnifiedAITester:
     ) -> str:
         """根据测试结果推荐最佳格式"""
         if priority_order is None:
-            priority_order = ["structured_output", "json_object", "function_calling"]
+            priority_order = ["structured_output", "function_calling", "text"]
 
         # 当前使用简单测试用例，不允许出错，只要有错误就标记为失败
         perfect_formats: list[str] = []  # 完全正确的格式
@@ -800,6 +766,32 @@ class UnifiedAITester:
             best_format = perfect_formats[0]
             logger.info(f"[AI识别测试] 推荐格式: {best_format} (完全正确)")
             return best_format
+
+        successful_formats: list[str] = []
+        for result in format_results:
+            if not result.get("success", False):
+                continue
+
+            output_format_value = result.get("output_format", "")
+            output_format = (
+                output_format_value if isinstance(output_format_value, str) else ""
+            )
+            if output_format:
+                successful_formats.append(output_format)
+
+        if successful_formats:
+            for preferred_format in priority_order:
+                if preferred_format in successful_formats:
+                    logger.info(
+                        f"[AI识别测试] 推荐格式: {preferred_format} (可用但非完全正确)"
+                    )
+                    return preferred_format
+
+            fallback_success_format = successful_formats[0]
+            logger.info(
+                f"[AI识别测试] 推荐格式: {fallback_success_format} (可用但非完全正确)"
+            )
+            return fallback_success_format
 
         # 如果没有完全正确的格式，回退到text
         logger.warning("[AI识别测试] 没有完全正确的格式，回退到text")

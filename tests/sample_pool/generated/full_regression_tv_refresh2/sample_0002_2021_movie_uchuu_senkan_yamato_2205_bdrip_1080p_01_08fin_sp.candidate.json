@@ -1,0 +1,151 @@
+{
+  "status": "ok",
+  "type": "movie",
+  "title_candidate": "Uchuu Senkan Yamato 2205",
+  "timing": {
+    "analysis_seconds": 49.608
+  },
+  "collection_analysis": {
+    "is_collection": false,
+    "collection_name": "宇宙戦艦ヤマト2205 新たなる旅立ち",
+    "confidence": "Medium",
+    "reason": "单一作品分段存放，含大量特典",
+    "file_mapping": [
+      {
+        "file_path": "[Uchuu Senkan Yamato 2205 Aratanaru Tabidachi][01][JPN][BDRIP][1080P][H264_FLAC].mkv",
+        "movie_title": "宇宙戦艦ヤマト2205 新たなる旅立ち",
+        "movie_number": null,
+        "year": 2021,
+        "confidence": "High"
+      },
+      {
+        "file_path": "[Uchuu Senkan Yamato 2205 Aratanaru Tabidachi][02][JPN][BDRIP][1080P][H264_FLAC].mkv",
+        "movie_title": "宇宙戦艦ヤマト2205 新たなる旅立ち",
+        "movie_number": null,
+        "year": 2021,
+        "confidence": "High"
+      },
+      {
+        "file_path": "[Uchuu Senkan Yamato 2205 Aratanaru Tabidachi][03][JPN][BDRIP][1080P][H264_FLACx2].mkv",
+        "movie_title": "宇宙戦艦ヤマト2205 新たなる旅立ち",
+        "movie_number": null,
+        "year": 2021,
+        "confidence": "High"
+      },
+      {
+        "file_path": "[Uchuu Senkan Yamato 2205 Aratanaru Tabidachi][04][JPN][BDRIP][1080P][H264_FLACx2].mkv",
+        "movie_title": "宇宙戦艦ヤマト2205 新たなる旅立ち",
+        "movie_number": null,
+        "year": 2021,
+        "confidence": "High"
+      },
+      {
+        "file_path": "[Uchuu Senkan Yamato 2205 Aratanaru Tabidachi][05][JPN][BDRIP][1080P][H264_FLAC].mkv",
+        "movie_title": "宇宙戦艦ヤマト2205 新たなる旅立ち",
+        "movie_number": null,
+        "year": 2021,
+        "confidence": "High"
+      },
+      {
+        "file_path": "[Uchuu Senkan Yamato 2205 Aratanaru Tabidachi][06][JPN][BDRIP][1080P][H264_FLAC].mkv",
+        "movie_title": "宇宙戦艦ヤマト2205 新たなる旅立ち",
+        "movie_number": null,
+        "year": 2021,
+        "confidence": "High"
+      },
+      {
+        "file_path": "[Uchuu Senkan Yamato 2205 Aratanaru Tabidachi][07][JPN][BDRIP][1080P][H264_FLACx2].mkv",
+        "movie_title": "宇宙戦艦ヤマト2205 新たなる旅立ち",
+        "movie_number": null,
+        "year": 2021,
+        "confidence": "High"
+      },
+      {
+        "file_path": "[Uchuu Senkan Yamato 2205 Aratanaru Tabidachi][08][JPN][BDRIP][1080P][H264_FLACx2].mkv",
+        "movie_title": "宇宙戦艦ヤマト2205 新たなる旅立ち",
+        "movie_number": null,
+        "year": 2021,
+        "confidence": "High"
+      }
+    ],
+    "unmatched_files": [
+      "[Uchuu Senkan Yamato 2205 Aratanaru Tabidachi][Logo][BDRIP][1080P][H264_FLAC].mkv",
+      "[Uchuu Senkan Yamato 2205 Aratanaru Tabidachi][Vol.01][Menu][BDRIP][1080P][H264_FLAC].mkv",
+      "[Uchuu Senkan Yamato 2205 Aratanaru Tabidachi][Vol.01][SP01][2205 Take Off Yamato Talk][BDRIP][1080P][H264_FLAC].mkv",
+      "[Uchuu Senkan Yamato 2205 Aratanaru Tabidachi][Vol.01][SP02][Story Summary (Before Main Movie Showing)][BDRIP][1080P][H264_FLAC].mkv",
+      "[Uchuu Senkan Yamato 2205 Aratanaru Tabidachi][Vol.01][SP03][NCOP][BDRIP][1080P][H264_FLAC].mkv",
+      "[Uchuu Senkan Yamato 2205 Aratanaru Tabidachi][Vol.01][SP04][Super Trailer][BDRIP][1080P][H264_FLAC].mkv",
+      "[Uchuu Senkan Yamato 2205 Aratanaru Tabidachi][Vol.01][SP05][Chapter 01 Take Off Trailer Collection][BDRIP][1080P][H264_FLAC].mkv",
+      "[Uchuu Senkan Yamato 2205 Aratanaru Tabidachi][Vol.01][SP06][Chapter 01 Take Off Theater Preview Collection][BDRIP][1080P][H264_FLAC].mkv",
+      "[Uchuu Senkan Yamato 2205 Aratanaru Tabidachi][Vol.01][SP07][Chapter 01 Take Off CM Collection][BDRIP][1080P][H264_FLAC].mkv",
+      "[Uchuu Senkan Yamato 2205 Aratanaru Tabidachi][Vol.01][SP08][Chapter 02 Stasha Trailer][BDRIP][1080P][H264_FLAC].mkv",
+      "[Uchuu Senkan Yamato 2205 Aratanaru Tabidachi][Vol.02][Menu][BDRIP][1080P][H264_FLAC].mkv",
+      "[Uchuu Senkan Yamato 2205 Aratanaru Tabidachi][Vol.02][SP01][Chapter 01 Completion Announcement Theater Greeting][BDRIP][1080P][H264_FLAC].mkv",
+      "[Uchuu Senkan Yamato 2205 Aratanaru Tabidachi][Vol.02][SP02][Chapter 01 Memorial Theater Greeting After Movie Showing][BDRIP][1080P][H264_FLAC].mkv",
+      "[Uchuu Senkan Yamato 2205 Aratanaru Tabidachi][Vol.02][SP03][Story Summary (Before Main Movie Showing)][BDRIP][1080P][H264_FLAC].mkv",
+      "[Uchuu Senkan Yamato 2205 Aratanaru Tabidachi][Vol.02][SP04][EP08 NCED][BDRIP][1080P][H264_FLAC].mkv",
+      "[Uchuu Senkan Yamato 2205 Aratanaru Tabidachi][Vol.02][SP05][Chapter 02 Stasha Trailer][BDRIP][1080P][H264_FLAC].mkv",
+      "[Uchuu Senkan Yamato 2205 Aratanaru Tabidachi][Vol.02][SP06][Chapter 02 Stasha Theater Preview][BDRIP][1080P][H264_FLAC].mkv",
+      "[Uchuu Senkan Yamato 2205 Aratanaru Tabidachi][Vol.02][SP07][Chapter 02 Stasha CM Collection][BDRIP][1080P][H264_FLAC].mkv"
+    ],
+    "conflict_details": [],
+    "extra_notes": null
+  },
+  "task_plan": {
+    "is_movie": true,
+    "ai_type": "movie",
+    "tv_available": true,
+    "movie_available": true,
+    "selected_confidence": "High"
+  },
+  "tv_candidate_result": {
+    "status": "ok",
+    "type": "tv",
+    "title_candidate": "Uchuu Senkan Yamato 2205",
+    "timing": {
+      "analysis_seconds": 30.955
+    },
+    "file_mapping_count": 8,
+    "has_regular": true,
+    "has_special": false,
+    "has_movie_like": false,
+    "analysis_result": {
+      "confidence": "High",
+      "reason": "主正片8集与TMDB第1季编号完全对应。",
+      "season_mapping": [
+        {
+          "local_group_name": "Uchuu Senkan Yamato 2205 Aratanaru Tabidachi",
+          "maps_to_tmdb_seasons": [
+            1
+          ]
+        }
+      ],
+      "file_mapping_count": 8,
+      "unmatched_count": 0,
+      "conflict_count": 0
+    }
+  },
+  "movie_candidate_result": {
+    "status": "ok",
+    "type": "movie",
+    "title_candidate": "Uchuu Senkan Yamato 2205",
+    "timing": {
+      "analysis_seconds": 49.608
+    },
+    "collection_analysis": {
+      "is_collection": false,
+      "confidence": "Medium",
+      "reason": "单一作品分段存放，含大量特典",
+      "file_mapping_count": 8,
+      "unmatched_count": 18,
+      "conflict_count": 0,
+      "movie_like_paths": []
+    }
+  },
+  "movie_like_paths_from_paths": [
+    "[Uchuu Senkan Yamato 2205 Aratanaru Tabidachi][Vol.01][SP02][Story Summary (Before Main Movie Showing)][BDRIP][1080P][H264_FLAC].mkv",
+    "[Uchuu Senkan Yamato 2205 Aratanaru Tabidachi][Vol.02][SP02][Chapter 01 Memorial Theater Greeting After Movie Showing][BDRIP][1080P][H264_FLAC].mkv",
+    "[Uchuu Senkan Yamato 2205 Aratanaru Tabidachi][Vol.02][SP03][Story Summary (Before Main Movie Showing)][BDRIP][1080P][H264_FLAC].mkv"
+  ],
+  "final_type": "mixed"
+}

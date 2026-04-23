@@ -1,0 +1,689 @@
+{
+  "root_name": "[U2-Rip] Inari, Konkon, Koi Iroha [Hi10p_1080p]",
+  "files": [
+    {
+      "path": "[U2-Rip]Inari, Konkon, Koi Iroha[01][Hi10p_1080p][x264_2flac].default.chi.zh-cn.ass",
+      "size": 30723
+    },
+    {
+      "path": "[U2-Rip]Inari, Konkon, Koi Iroha[01][Hi10p_1080p][x264_2flac].mkv",
+      "size": 950928078
+    },
+    {
+      "path": "[U2-Rip]Inari, Konkon, Koi Iroha[02][Hi10p_1080p][x264_flac].default.chi.zh-cn.ass",
+      "size": 34116
+    },
+    {
+      "path": "[U2-Rip]Inari, Konkon, Koi Iroha[02][Hi10p_1080p][x264_flac].mkv",
+      "size": 768952822
+    },
+    {
+      "path": "[U2-Rip]Inari, Konkon, Koi Iroha[03][Hi10p_1080p][x264_2flac].default.chi.zh-cn.ass",
+      "size": 34356
+    },
+    {
+      "path": "[U2-Rip]Inari, Konkon, Koi Iroha[03][Hi10p_1080p][x264_2flac].mkv",
+      "size": 953475041
+    },
+    {
+      "path": "[U2-Rip]Inari, Konkon, Koi Iroha[04][Hi10p_1080p][x264_flac].default.chi.zh-cn.ass",
+      "size": 29906
+    },
+    {
+      "path": "[U2-Rip]Inari, Konkon, Koi Iroha[04][Hi10p_1080p][x264_flac].mkv",
+      "size": 820368611
+    },
+    {
+      "path": "[U2-Rip]Inari, Konkon, Koi Iroha[05][Hi10p_1080p][x264_flac].default.chi.zh-cn.ass",
+      "size": 28941
+    },
+    {
+      "path": "[U2-Rip]Inari, Konkon, Koi Iroha[05][Hi10p_1080p][x264_flac].mkv",
+      "size": 902326061
+    },
+    {
+      "path": "[U2-Rip]Inari, Konkon, Koi Iroha[06][Hi10p_1080p][x264_2flac].default.chi.zh-cn.ass",
+      "size": 29827
+    },
+    {
+      "path": "[U2-Rip]Inari, Konkon, Koi Iroha[06][Hi10p_1080p][x264_2flac].mkv",
+      "size": 1007478114
+    },
+    {
+      "path": "[U2-Rip]Inari, Konkon, Koi Iroha[07][Hi10p_1080p][x264_flac].default.chi.zh-cn.ass",
+      "size": 34787
+    },
+    {
+      "path": "[U2-Rip]Inari, Konkon, Koi Iroha[07][Hi10p_1080p][x264_flac].mkv",
+      "size": 879606448
+    },
+    {
+      "path": "[U2-Rip]Inari, Konkon, Koi Iroha[08][Hi10p_1080p][x264_2flac].default.chi.zh-cn.ass",
+      "size": 34051
+    },
+    {
+      "path": "[U2-Rip]Inari, Konkon, Koi Iroha[08][Hi10p_1080p][x264_2flac].mkv",
+      "size": 999138952
+    },
+    {
+      "path": "[U2-Rip]Inari, Konkon, Koi Iroha[09][Hi10p_1080p][x264_flac].default.chi.zh-cn.ass",
+      "size": 30294
+    },
+    {
+      "path": "[U2-Rip]Inari, Konkon, Koi Iroha[09][Hi10p_1080p][x264_flac].mkv",
+      "size": 758724436
+    },
+    {
+      "path": "[U2-Rip]Inari, Konkon, Koi Iroha[10][Hi10p_1080p][x264_2flac].default.chi.zh-cn.ass",
+      "size": 28402
+    },
+    {
+      "path": "[U2-Rip]Inari, Konkon, Koi Iroha[10][Hi10p_1080p][x264_2flac].mkv",
+      "size": 955724249
+    },
+    {
+      "path": "[U2-Rip]Inari, Konkon, Koi Iroha[OVA][Hi10p_1080p][x264_flac].default.chi.zh-cn.ass",
+      "size": 30842
+    },
+    {
+      "path": "[U2-Rip]Inari, Konkon, Koi Iroha[OVA][Hi10p_1080p][x264_flac].mkv",
+      "size": 773398710
+    },
+    {
+      "path": "CDs/[140129] 「今日に恋色」／May'n (flac+webp)/Scans/01.webp",
+      "size": 5180610
+    },
+    {
+      "path": "CDs/[140129] 「今日に恋色」／May'n (flac+webp)/Scans/02.webp",
+      "size": 5722490
+    },
+    {
+      "path": "CDs/[140129] 「今日に恋色」／May'n (flac+webp)/Scans/03.webp",
+      "size": 5213008
+    },
+    {
+      "path": "CDs/[140129] 「今日に恋色」／May'n (flac+webp)/Scans/04.webp",
+      "size": 5295344
+    },
+    {
+      "path": "CDs/[140129] 「今日に恋色」／May'n (flac+webp)/Scans/05.webp",
+      "size": 6906912
+    },
+    {
+      "path": "CDs/[140129] 「今日に恋色」／May'n (flac+webp)/Scans/06.webp",
+      "size": 5818694
+    },
+    {
+      "path": "CDs/[140129] 「今日に恋色」／May'n (flac+webp)/Scans/07.webp",
+      "size": 4232422
+    },
+    {
+      "path": "CDs/[140129] 「今日に恋色」／May'n (flac+webp)/Scans/08.webp",
+      "size": 2156528
+    },
+    {
+      "path": "CDs/[140129] 「今日に恋色」／May'n (flac+webp)/Scans/09.webp",
+      "size": 2963098
+    },
+    {
+      "path": "CDs/[140129] 「今日に恋色」／May'n (flac+webp)/Scans/10.webp",
+      "size": 4385794
+    },
+    {
+      "path": "CDs/[140129] 「今日に恋色」／May'n (flac+webp)/VTZL-74.cue",
+      "size": 925
+    },
+    {
+      "path": "CDs/[140129] 「今日に恋色」／May'n (flac+webp)/VTZL-74.flac",
+      "size": 189118983
+    },
+    {
+      "path": "CDs/[140129] 「今日に恋色」／May'n (flac+webp)/VTZL-74.jpg",
+      "size": 308878
+    },
+    {
+      "path": "CDs/[140129] 「今日に恋色」／May'n (flac+webp)/VTZL-74.log",
+      "size": 2118
+    },
+    {
+      "path": "CDs/[140205] 「SAVED.／Be mine!」／坂本真綾 (flac+webp+jpg)/Scans/VTZL-71/01.jpg",
+      "size": 7904631
+    },
+    {
+      "path": "CDs/[140205] 「SAVED.／Be mine!」／坂本真綾 (flac+webp+jpg)/Scans/VTZL-71/02.jpg",
+      "size": 7614767
+    },
+    {
+      "path": "CDs/[140205] 「SAVED.／Be mine!」／坂本真綾 (flac+webp+jpg)/Scans/VTZL-71/03.jpg",
+      "size": 949951
+    },
+    {
+      "path": "CDs/[140205] 「SAVED.／Be mine!」／坂本真綾 (flac+webp+jpg)/Scans/VTZL-71/04.jpg",
+      "size": 10347060
+    },
+    {
+      "path": "CDs/[140205] 「SAVED.／Be mine!」／坂本真綾 (flac+webp+jpg)/Scans/VTZL-71/05.jpg",
+      "size": 12901089
+    },
+    {
+      "path": "CDs/[140205] 「SAVED.／Be mine!」／坂本真綾 (flac+webp+jpg)/Scans/VTZL-71/06.jpg",
+      "size": 2671329
+    },
+    {
+      "path": "CDs/[140205] 「SAVED.／Be mine!」／坂本真綾 (flac+webp+jpg)/Scans/VTZL-71/07.jpg",
+      "size": 13679010
+    },
+    {
+      "path": "CDs/[140205] 「SAVED.／Be mine!」／坂本真綾 (flac+webp+jpg)/Scans/VTZL-71/08.jpg",
+      "size": 20042377
+    },
+    {
+      "path": "CDs/[140205] 「SAVED.／Be mine!」／坂本真綾 (flac+webp+jpg)/Scans/VTZL-71/09.jpg",
+      "size": 12635591
+    },
+    {
+      "path": "CDs/[140205] 「SAVED.／Be mine!」／坂本真綾 (flac+webp+jpg)/Scans/VTZL-71/10.jpg",
+      "size": 565656
+    },
+    {
+      "path": "CDs/[140205] 「SAVED.／Be mine!」／坂本真綾 (flac+webp+jpg)/Scans/VTZL-71/11.jpg",
+      "size": 2303445
+    },
+    {
+      "path": "CDs/[140205] 「SAVED.／Be mine!」／坂本真綾 (flac+webp+jpg)/Scans/VTZL-71/12.jpg",
+      "size": 4649236
+    },
+    {
+      "path": "CDs/[140205] 「SAVED.／Be mine!」／坂本真綾 (flac+webp+jpg)/Scans/VTZL-71/13.jpg",
+      "size": 14628611
+    },
+    {
+      "path": "CDs/[140205] 「SAVED.／Be mine!」／坂本真綾 (flac+webp+jpg)/Scans/VTZL-71/14.jpg",
+      "size": 9351341
+    },
+    {
+      "path": "CDs/[140205] 「SAVED.／Be mine!」／坂本真綾 (flac+webp+jpg)/Scans/VTZL-72/01.webp",
+      "size": 3428152
+    },
+    {
+      "path": "CDs/[140205] 「SAVED.／Be mine!」／坂本真綾 (flac+webp+jpg)/Scans/VTZL-72/02.webp",
+      "size": 5400984
+    },
+    {
+      "path": "CDs/[140205] 「SAVED.／Be mine!」／坂本真綾 (flac+webp+jpg)/Scans/VTZL-72/03.webp",
+      "size": 6327762
+    },
+    {
+      "path": "CDs/[140205] 「SAVED.／Be mine!」／坂本真綾 (flac+webp+jpg)/Scans/VTZL-72/04.webp",
+      "size": 186210
+    },
+    {
+      "path": "CDs/[140205] 「SAVED.／Be mine!」／坂本真綾 (flac+webp+jpg)/Scans/VTZL-72/05.webp",
+      "size": 387068
+    },
+    {
+      "path": "CDs/[140205] 「SAVED.／Be mine!」／坂本真綾 (flac+webp+jpg)/Scans/VTZL-72/06.webp",
+      "size": 3804898
+    },
+    {
+      "path": "CDs/[140205] 「SAVED.／Be mine!」／坂本真綾 (flac+webp+jpg)/Scans/VTZL-72/07.webp",
+      "size": 78294
+    },
+    {
+      "path": "CDs/[140205] 「SAVED.／Be mine!」／坂本真綾 (flac+webp+jpg)/Scans/VTZL-72/08.webp",
+      "size": 1063818
+    },
+    {
+      "path": "CDs/[140205] 「SAVED.／Be mine!」／坂本真綾 (flac+webp+jpg)/Scans/VTZL-72/09.webp",
+      "size": 599836
+    },
+    {
+      "path": "CDs/[140205] 「SAVED.／Be mine!」／坂本真綾 (flac+webp+jpg)/Scans/VTZL-72/10.webp",
+      "size": 3744830
+    },
+    {
+      "path": "CDs/[140205] 「SAVED.／Be mine!」／坂本真綾 (flac+webp+jpg)/Scans/VTZL-72/11.webp",
+      "size": 3123832
+    },
+    {
+      "path": "CDs/[140205] 「SAVED.／Be mine!」／坂本真綾 (flac+webp+jpg)/Scans/VTZL-72/12.webp",
+      "size": 2805538
+    },
+    {
+      "path": "CDs/[140205] 「SAVED.／Be mine!」／坂本真綾 (flac+webp+jpg)/Scans/VTZL-72/13.webp",
+      "size": 151912
+    },
+    {
+      "path": "CDs/[140205] 「SAVED.／Be mine!」／坂本真綾 (flac+webp+jpg)/Scans/VTZL-72/14.webp",
+      "size": 286444
+    },
+    {
+      "path": "CDs/[140205] 「SAVED.／Be mine!」／坂本真綾 (flac+webp+jpg)/Scans/VTZL-72/15.webp",
+      "size": 425886
+    },
+    {
+      "path": "CDs/[140205] 「SAVED.／Be mine!」／坂本真綾 (flac+webp+jpg)/VTCL-35171.cue",
+      "size": 884
+    },
+    {
+      "path": "CDs/[140205] 「SAVED.／Be mine!」／坂本真綾 (flac+webp+jpg)/VTCL-35171.flac",
+      "size": 193144414
+    },
+    {
+      "path": "CDs/[140205] 「SAVED.／Be mine!」／坂本真綾 (flac+webp+jpg)/VTCL-35171.jpg",
+      "size": 236268
+    },
+    {
+      "path": "CDs/[140205] 「SAVED.／Be mine!」／坂本真綾 (flac+webp+jpg)/VTCL-35171.log",
+      "size": 1703
+    },
+    {
+      "path": "CDs/[140205] 「SAVED.／Be mine!」／坂本真綾 (flac+webp+jpg)/VTCY-47.cue",
+      "size": 934
+    },
+    {
+      "path": "CDs/[140205] 「SAVED.／Be mine!」／坂本真綾 (flac+webp+jpg)/VTCY-47.flac",
+      "size": 225667795
+    },
+    {
+      "path": "CDs/[140205] 「SAVED.／Be mine!」／坂本真綾 (flac+webp+jpg)/VTCY-47.jpg",
+      "size": 236268
+    },
+    {
+      "path": "CDs/[140205] 「SAVED.／Be mine!」／坂本真綾 (flac+webp+jpg)/VTCY-47.log",
+      "size": 1727
+    },
+    {
+      "path": "CDs/[140326] ORIGINAL SOUNDTRACK (flac+webp)/Scans/01.webp",
+      "size": 7669686
+    },
+    {
+      "path": "CDs/[140326] ORIGINAL SOUNDTRACK (flac+webp)/Scans/02.webp",
+      "size": 6661792
+    },
+    {
+      "path": "CDs/[140326] ORIGINAL SOUNDTRACK (flac+webp)/Scans/03.webp",
+      "size": 6589994
+    },
+    {
+      "path": "CDs/[140326] ORIGINAL SOUNDTRACK (flac+webp)/Scans/04.webp",
+      "size": 7819954
+    },
+    {
+      "path": "CDs/[140326] ORIGINAL SOUNDTRACK (flac+webp)/Scans/05.webp",
+      "size": 6493272
+    },
+    {
+      "path": "CDs/[140326] ORIGINAL SOUNDTRACK (flac+webp)/Scans/06.webp",
+      "size": 6818058
+    },
+    {
+      "path": "CDs/[140326] ORIGINAL SOUNDTRACK (flac+webp)/Scans/07.webp",
+      "size": 1855210
+    },
+    {
+      "path": "CDs/[140326] ORIGINAL SOUNDTRACK (flac+webp)/Scans/08.webp",
+      "size": 2895038
+    },
+    {
+      "path": "CDs/[140326] ORIGINAL SOUNDTRACK (flac+webp)/Scans/09.webp",
+      "size": 4938198
+    },
+    {
+      "path": "CDs/[140326] ORIGINAL SOUNDTRACK (flac+webp)/Scans/10.webp",
+      "size": 4853776
+    },
+    {
+      "path": "CDs/[140326] ORIGINAL SOUNDTRACK (flac+webp)/VTCL-60365.cue",
+      "size": 3550
+    },
+    {
+      "path": "CDs/[140326] ORIGINAL SOUNDTRACK (flac+webp)/VTCL-60365.flac",
+      "size": 428030509
+    },
+    {
+      "path": "CDs/[140326] ORIGINAL SOUNDTRACK (flac+webp)/VTCL-60365.jpg",
+      "size": 205655
+    },
+    {
+      "path": "CDs/[140326] ORIGINAL SOUNDTRACK (flac+webp)/VTCL-60365.log",
+      "size": 4757
+    },
+    {
+      "path": "CDs/[140328] SPCD 01 Drama (flac)/KAXA-7051-CD.flac",
+      "size": 105992440
+    },
+    {
+      "path": "CDs/[140328] SPCD 01 Drama (flac)/KAXA-7051-CD.jpg",
+      "size": 207646
+    },
+    {
+      "path": "readme about WebP.txt",
+      "size": 1186
+    },
+    {
+      "path": "Scans/OVA/BD.jpg",
+      "size": 5812061
+    },
+    {
+      "path": "Scans/OVA/Box-Back.jpg",
+      "size": 18606892
+    },
+    {
+      "path": "Scans/OVA/Box-Front.jpg",
+      "size": 16815644
+    },
+    {
+      "path": "Scans/OVA/Cover.jpg",
+      "size": 21410228
+    },
+    {
+      "path": "Scans/Vol.1/BD.jpg",
+      "size": 5326435
+    },
+    {
+      "path": "Scans/Vol.1/Box.jpg",
+      "size": 14165065
+    },
+    {
+      "path": "Scans/Vol.1/Card-1.jpg",
+      "size": 8712278
+    },
+    {
+      "path": "Scans/Vol.1/Card-2.jpg",
+      "size": 7957203
+    },
+    {
+      "path": "Scans/Vol.1/Card-3.jpg",
+      "size": 9209754
+    },
+    {
+      "path": "Scans/Vol.1/Card-4.jpg",
+      "size": 8870122
+    },
+    {
+      "path": "Scans/Vol.1/CD.jpg",
+      "size": 1444349
+    },
+    {
+      "path": "Scans/Vol.1/Cover.jpg",
+      "size": 25697823
+    },
+    {
+      "path": "Scans/Vol.1/Info.jpg",
+      "size": 4056555
+    },
+    {
+      "path": "Scans/Vol.2/BD.jpg",
+      "size": 5961873
+    },
+    {
+      "path": "Scans/Vol.2/Box.jpg",
+      "size": 13006909
+    },
+    {
+      "path": "Scans/Vol.2/Card-1.jpg",
+      "size": 9084865
+    },
+    {
+      "path": "Scans/Vol.2/Card-2.jpg",
+      "size": 8598863
+    },
+    {
+      "path": "Scans/Vol.2/Card-3.jpg",
+      "size": 9811271
+    },
+    {
+      "path": "Scans/Vol.2/Card-4.jpg",
+      "size": 9404943
+    },
+    {
+      "path": "Scans/Vol.2/Card-5.jpg",
+      "size": 9377135
+    },
+    {
+      "path": "Scans/Vol.2/Cover.jpg",
+      "size": 25891185
+    },
+    {
+      "path": "Scans/Vol.2/Info.jpg",
+      "size": 3778001
+    },
+    {
+      "path": "Scans/Vol.3/BD.jpg",
+      "size": 5002151
+    },
+    {
+      "path": "Scans/Vol.3/Box.jpg",
+      "size": 14404322
+    },
+    {
+      "path": "Scans/Vol.3/Card-1.jpg",
+      "size": 9445138
+    },
+    {
+      "path": "Scans/Vol.3/Card-2.jpg",
+      "size": 8709605
+    },
+    {
+      "path": "Scans/Vol.3/Card-3.jpg",
+      "size": 9396063
+    },
+    {
+      "path": "Scans/Vol.3/Card-4.jpg",
+      "size": 9511033
+    },
+    {
+      "path": "Scans/Vol.3/Card-5.jpg",
+      "size": 9475288
+    },
+    {
+      "path": "Scans/Vol.3/Cover.jpg",
+      "size": 26056426
+    },
+    {
+      "path": "Scans/Vol.3/Info.jpg",
+      "size": 3965316
+    },
+    {
+      "path": "Scans/Vol.4/BD.jpg",
+      "size": 6023112
+    },
+    {
+      "path": "Scans/Vol.4/Box.jpg",
+      "size": 12781893
+    },
+    {
+      "path": "Scans/Vol.4/Card-1.jpg",
+      "size": 8959170
+    },
+    {
+      "path": "Scans/Vol.4/Card-2.jpg",
+      "size": 7819201
+    },
+    {
+      "path": "Scans/Vol.4/Card-3.jpg",
+      "size": 9682830
+    },
+    {
+      "path": "Scans/Vol.4/Cover.jpg",
+      "size": 25092887
+    },
+    {
+      "path": "Scans/Vol.4/Info.jpg",
+      "size": 3771494
+    },
+    {
+      "path": "Scans/Vol.5/BD.jpg",
+      "size": 5842561
+    },
+    {
+      "path": "Scans/Vol.5/Box.jpg",
+      "size": 13645041
+    },
+    {
+      "path": "Scans/Vol.5/Card-1.jpg",
+      "size": 9382764
+    },
+    {
+      "path": "Scans/Vol.5/Card-2.jpg",
+      "size": 8847218
+    },
+    {
+      "path": "Scans/Vol.5/Card-3.jpg",
+      "size": 9707381
+    },
+    {
+      "path": "Scans/Vol.5/Cover.jpg",
+      "size": 25909003
+    },
+    {
+      "path": "Scans/Vol.5/Info.jpg",
+      "size": 3807232
+    },
+    {
+      "path": "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[CMv2][Hi10p_1080p][x264_flac].mkv",
+      "size": 45824520
+    },
+    {
+      "path": "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Menu_OVA_1][Hi10p_1080p][x264_flac].mkv",
+      "size": 18246516
+    },
+    {
+      "path": "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Menu_OVA_2][Hi10p_1080p][x264_flac].mkv",
+      "size": 12049318
+    },
+    {
+      "path": "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Menu_OVA_3][Hi10p_1080p][x264_flac].mkv",
+      "size": 10251556
+    },
+    {
+      "path": "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Menu_Vol.1_1][Hi10p_1080p][x264_flac].mkv",
+      "size": 19770672
+    },
+    {
+      "path": "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Menu_Vol.1_2][Hi10p_1080p][x264_2flac].mkv",
+      "size": 19590722
+    },
+    {
+      "path": "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Menu_Vol.1_3][Hi10p_1080p][x264_flac].mkv",
+      "size": 12541055
+    },
+    {
+      "path": "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Menu_Vol.2_1][Hi10p_1080p][x264_flac].mkv",
+      "size": 17447289
+    },
+    {
+      "path": "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Menu_Vol.2_2][Hi10p_1080p][x264_flac].mkv",
+      "size": 11820969
+    },
+    {
+      "path": "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Menu_Vol.2_3][Hi10p_1080p][x264_flac].mkv",
+      "size": 11637016
+    },
+    {
+      "path": "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Menu_Vol.2_4][Hi10p_1080p][x264_flac].mkv",
+      "size": 10417944
+    },
+    {
+      "path": "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Menu_Vol.3_1][Hi10p_1080p][x264_flac].mkv",
+      "size": 17206871
+    },
+    {
+      "path": "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Menu_Vol.3_2][Hi10p_1080p][x264_flac].mkv",
+      "size": 11830244
+    },
+    {
+      "path": "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Menu_Vol.3_3][Hi10p_1080p][x264_flac].mkv",
+      "size": 11796500
+    },
+    {
+      "path": "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Menu_Vol.3_4][Hi10p_1080p][x264_flac].mkv",
+      "size": 10968173
+    },
+    {
+      "path": "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Menu_Vol.4_1][Hi10p_1080p][x264_flac].mkv",
+      "size": 17040433
+    },
+    {
+      "path": "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Menu_Vol.4_2][Hi10p_1080p][x264_flac].mkv",
+      "size": 11959552
+    },
+    {
+      "path": "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Menu_Vol.4_3][Hi10p_1080p][x264_flac].mkv",
+      "size": 11879373
+    },
+    {
+      "path": "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Menu_Vol.4_4][Hi10p_1080p][x264_flac].mkv",
+      "size": 10688264
+    },
+    {
+      "path": "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Menu_Vol.4_5][Hi10p_1080p][x264_flac].mkv",
+      "size": 10380821
+    },
+    {
+      "path": "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Menu_Vol.5_1][Hi10p_1080p][x264_flac].mkv",
+      "size": 17101735
+    },
+    {
+      "path": "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Menu_Vol.5_2][Hi10p_1080p][x264_2flac].mkv",
+      "size": 19176285
+    },
+    {
+      "path": "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Menu_Vol.5_3][Hi10p_1080p][x264_flac].mkv",
+      "size": 11861442
+    },
+    {
+      "path": "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Menu_Vol.5_4][Hi10p_1080p][x264_flac].mkv",
+      "size": 10673703
+    },
+    {
+      "path": "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[NCED][Hi10p_1080p][x264_flac].mkv",
+      "size": 83949612
+    },
+    {
+      "path": "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[NCOP][Hi10p_1080p][x264_flac].mkv",
+      "size": 101485490
+    },
+    {
+      "path": "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Preview_02][Hi10p_1080p][x264_flac].mkv",
+      "size": 26163060
+    },
+    {
+      "path": "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Preview_03][Hi10p_1080p][x264_flac].mkv",
+      "size": 47734649
+    },
+    {
+      "path": "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Preview_04][Hi10p_1080p][x264_flac].mkv",
+      "size": 31094493
+    },
+    {
+      "path": "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Preview_05][Hi10p_1080p][x264_flac].mkv",
+      "size": 39339524
+    },
+    {
+      "path": "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Preview_06][Hi10p_1080p][x264_flac].mkv",
+      "size": 35719781
+    },
+    {
+      "path": "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Preview_07][Hi10p_1080p][x264_flac].mkv",
+      "size": 59582844
+    },
+    {
+      "path": "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Preview_08][Hi10p_1080p][x264_flac].mkv",
+      "size": 47087759
+    },
+    {
+      "path": "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Preview_09][Hi10p_1080p][x264_flac].mkv",
+      "size": 38051570
+    },
+    {
+      "path": "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Preview_10][Hi10p_1080p][x264_flac].mkv",
+      "size": 28384895
+    },
+    {
+      "path": "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[PV][Hi10p_1080p][x264_flac].mkv",
+      "size": 69240541
+    }
+  ]
+}

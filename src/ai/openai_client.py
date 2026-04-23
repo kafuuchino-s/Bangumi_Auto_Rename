@@ -25,7 +25,7 @@ class OpenAIClient(BaseAIClient):
         self.temperature = float(cm.get_config("ai_temperature") or 0.1)
 
         # 支持多种输出格式
-        self.output_format = cm.get_config("openai_output_format") or "function_calling"
+        self.output_format = cm.get_config("openai_output_format") or "structured_output"
         self.api_interface = self._resolve_api_interface(
             cm.get_config("openai_api_interface")
         )
@@ -66,6 +66,63 @@ class OpenAIClient(BaseAIClient):
         self, request_params: dict[str, object]
     ) -> dict[str, object]:
         return cast(dict[str, object], self._call_via_responses_api(request_params))
+
+    def stream_via_chat_completions(
+        self,
+        request_params: dict[str, object],
+        stream_callback: Callable[[str], None] | None = None,
+    ) -> str:
+        if not self.client:
+            raise RuntimeError("OpenAI 客户端未初始化")
+
+        chat_api = cast(OpenAI, self.client).chat
+        create_chat_completion = cast(
+            Callable[..., object],
+            chat_api.completions.create,
+        )
+        response_stream = cast(Sequence[object], create_chat_completion(**request_params))
+        chunks: list[str] = []
+        for chunk in response_stream:
+            choices = getattr(chunk, "choices", None)
+            if not isinstance(choices, list) or not choices:
+                continue
+            delta = getattr(choices[0], "delta", None)
+            piece = getattr(delta, "content", None) if delta is not None else None
+            if isinstance(piece, str) and piece:
+                chunks.append(piece)
+                if stream_callback:
+                    stream_callback(piece)
+        return "".join(chunks)
+
+    def stream_via_responses_api(
+        self,
+        request_params: dict[str, object],
+        stream_callback: Callable[[str], None] | None = None,
+    ) -> str:
+        if not self.client:
+            raise RuntimeError("OpenAI 客户端未初始化")
+
+        responses_params = self._convert_chat_request_to_responses(request_params)
+        responses_params["stream"] = True
+        create_response = cast(
+            Callable[..., object],
+            cast(OpenAI, self.client).responses.create,
+        )
+        stream = cast(Sequence[object], create_response(**responses_params))
+        chunks: list[str] = []
+        for event in stream:
+            event_type = getattr(event, "type", "")
+            if event_type not in {
+                "response.output_text.delta",
+                "response.output_text",
+            }:
+                continue
+            delta = getattr(event, "delta", None) or getattr(event, "text", None)
+            if isinstance(delta, str) and delta:
+                chunks.append(delta)
+                if stream_callback:
+                    stream_callback(delta)
+        return "".join(chunks)
 
     def analyze_episode_mapping(
         self,
@@ -155,7 +212,7 @@ class OpenAIClient(BaseAIClient):
 
     def _get_priority_order(self) -> List[str]:
         """OpenAI 固定格式优先级（不依赖历史成功率）。"""
-        return ["structured_output", "function_calling", "json_object", "text"]
+        return ["structured_output", "function_calling", "text"]
 
     def _resolve_output_format(self) -> str:
         """解析OpenAI首选输出格式：自动路由开启时使用固定优先级。"""
@@ -893,8 +950,7 @@ class OpenAIClient(BaseAIClient):
 
     def _get_json_schema(self) -> dict[str, object]:
         """生成符合OpenAI Tool格式的JSON Schema"""
-        # 使用原生Pydantic Schema，保留additionalProperties以兼容OpenAI structured output
-        schema = AIAnalysisResult.model_json_schema()
+        schema = self._build_strict_json_schema()
         return {
             "type": "function",
             "function": {
@@ -963,6 +1019,21 @@ JSON Schema:
                 if isinstance(properties, dict):
                     obj["required"] = list(properties.keys())
                     obj["additionalProperties"] = False
+
+                any_of_items = obj.get("anyOf")
+                if isinstance(any_of_items, list):
+                    for item in any_of_items:
+                        ensure_required_fields(item)
+
+                all_of_items = obj.get("allOf")
+                if isinstance(all_of_items, list):
+                    for item in all_of_items:
+                        ensure_required_fields(item)
+
+                one_of_items = obj.get("oneOf")
+                if isinstance(one_of_items, list):
+                    for item in one_of_items:
+                        ensure_required_fields(item)
 
                 for value in obj.values():
                     ensure_required_fields(value)

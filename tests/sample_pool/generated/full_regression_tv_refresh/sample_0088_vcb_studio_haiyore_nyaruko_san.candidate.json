@@ -1,0 +1,334 @@
+{
+  "status": "ok",
+  "type": "tv",
+  "title_candidate": "Haiyore! Nyaruko-san",
+  "tmdb_name": "Nyaruko: Crawling with Love!",
+  "tmdb_id": 45254,
+  "timing": {
+    "analysis_seconds": 29.03
+  },
+  "file_mapping": [
+    {
+      "source_index": 1,
+      "file_path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san [01][Ma10p_1080p][x265_flac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 1,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 2,
+      "file_path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san [02][Ma10p_1080p][x265_flac_aac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 2,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 3,
+      "file_path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san [03][Ma10p_1080p][x265_flac_aac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 3,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 4,
+      "file_path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san [04][Ma10p_1080p][x265_flac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 4,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 5,
+      "file_path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san [05][Ma10p_1080p][x265_flac_aac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 5,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 6,
+      "file_path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san [06][Ma10p_1080p][x265_flac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 6,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 7,
+      "file_path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san [07][Ma10p_1080p][x265_flac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 7,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 8,
+      "file_path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san [08][Ma10p_1080p][x265_flac_aac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 8,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 9,
+      "file_path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san [09][Ma10p_1080p][x265_flac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 9,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 10,
+      "file_path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san [10][Ma10p_1080p][x265_flac_aac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 10,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 11,
+      "file_path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san [11][Ma10p_1080p][x265_flac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 11,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 12,
+      "file_path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san [12][Ma10p_1080p][x265_flac_aac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 12,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 13,
+      "file_path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san [OVA][Ma10p_1080p][x265_flac].mkv",
+      "tmdb_season": 0,
+      "tmdb_episode": 1,
+      "episode_type": "special",
+      "confidence": "High"
+    },
+    {
+      "source_index": 29,
+      "file_path": "[VCB-Studio] Haiyore! Nyaruko-san F [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san F [Ma10p_1080p][x265_flac].mkv",
+      "tmdb_season": 0,
+      "tmdb_episode": 3,
+      "episode_type": "special",
+      "confidence": "High"
+    },
+    {
+      "source_index": 48,
+      "file_path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san W [OVA][Ma10p_1080p][x265_flac].mkv",
+      "tmdb_season": 0,
+      "tmdb_episode": 2,
+      "episode_type": "special",
+      "confidence": "High"
+    },
+    {
+      "source_index": 36,
+      "file_path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san W [01][Ma10p_1080p][x265_flac_aac].mkv",
+      "tmdb_season": 2,
+      "tmdb_episode": 1,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 37,
+      "file_path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san W [02][Ma10p_1080p][x265_flac].mkv",
+      "tmdb_season": 2,
+      "tmdb_episode": 2,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 38,
+      "file_path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san W [03][Ma10p_1080p][x265_flac].mkv",
+      "tmdb_season": 2,
+      "tmdb_episode": 3,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 39,
+      "file_path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san W [04][Ma10p_1080p][x265_flac_aac].mkv",
+      "tmdb_season": 2,
+      "tmdb_episode": 4,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 40,
+      "file_path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san W [05][Ma10p_1080p][x265_flac_aac].mkv",
+      "tmdb_season": 2,
+      "tmdb_episode": 5,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 41,
+      "file_path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san W [06][Ma10p_1080p][x265_flac].mkv",
+      "tmdb_season": 2,
+      "tmdb_episode": 6,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 42,
+      "file_path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san W [07][Ma10p_1080p][x265_flac_aac].mkv",
+      "tmdb_season": 2,
+      "tmdb_episode": 7,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 43,
+      "file_path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san W [08][Ma10p_1080p][x265_flac].mkv",
+      "tmdb_season": 2,
+      "tmdb_episode": 8,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 44,
+      "file_path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san W [09][Ma10p_1080p][x265_flac].mkv",
+      "tmdb_season": 2,
+      "tmdb_episode": 9,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 45,
+      "file_path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san W [10][Ma10p_1080p][x265_flac_aac].mkv",
+      "tmdb_season": 2,
+      "tmdb_episode": 10,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 46,
+      "file_path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san W [11][Ma10p_1080p][x265_flac].mkv",
+      "tmdb_season": 2,
+      "tmdb_episode": 11,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 47,
+      "file_path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san W [12][Ma10p_1080p][x265_flac_aac].mkv",
+      "tmdb_season": 2,
+      "tmdb_episode": 12,
+      "episode_type": "regular",
+      "confidence": "High"
+    }
+  ],
+  "conflict_details": [],
+  "analysis_result": {
+    "confidence": "High",
+    "reason": "正片按集数直映，三部特典落入Season 0。",
+    "season_mapping": [
+      {
+        "local_group_name": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]",
+        "maps_to_tmdb_seasons": [
+          0,
+          1
+        ]
+      },
+      {
+        "local_group_name": "[VCB-Studio] Haiyore! Nyaruko-san F [Ma10p_1080p]",
+        "maps_to_tmdb_seasons": [
+          0
+        ]
+      },
+      {
+        "local_group_name": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]",
+        "maps_to_tmdb_seasons": [
+          0,
+          2
+        ]
+      }
+    ],
+    "file_mapping_count": 27,
+    "unmatched_count": 0,
+    "conflict_count": 0
+  },
+  "hydration_notes": {
+    "hydrated_count": 27,
+    "examples": [
+      "hydrated:1:[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san [01][Ma10p_1080p][x265_flac].mkv",
+      "hydrated:2:[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san [02][Ma10p_1080p][x265_flac_aac].mkv",
+      "hydrated:3:[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san [03][Ma10p_1080p][x265_flac_aac].mkv",
+      "hydrated:4:[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san [04][Ma10p_1080p][x265_flac].mkv",
+      "hydrated:5:[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san [05][Ma10p_1080p][x265_flac_aac].mkv"
+    ]
+  },
+  "task_plan": {
+    "is_movie": false,
+    "ai_type": "tv",
+    "tv_available": true,
+    "movie_available": false,
+    "selected_confidence": "High"
+  },
+  "tv_candidate_result": {
+    "status": "ok",
+    "type": "tv",
+    "title_candidate": "Haiyore! Nyaruko-san",
+    "timing": {
+      "analysis_seconds": 29.03
+    },
+    "file_mapping_count": 27,
+    "has_regular": true,
+    "has_special": true,
+    "has_movie_like": false,
+    "analysis_result": {
+      "confidence": "High",
+      "reason": "正片按集数直映，三部特典落入Season 0。",
+      "season_mapping": [
+        {
+          "local_group_name": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]",
+          "maps_to_tmdb_seasons": [
+            0,
+            1
+          ]
+        },
+        {
+          "local_group_name": "[VCB-Studio] Haiyore! Nyaruko-san F [Ma10p_1080p]",
+          "maps_to_tmdb_seasons": [
+            0
+          ]
+        },
+        {
+          "local_group_name": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]",
+          "maps_to_tmdb_seasons": [
+            0,
+            2
+          ]
+        }
+      ],
+      "file_mapping_count": 27,
+      "unmatched_count": 0,
+      "conflict_count": 0
+    }
+  },
+  "movie_candidate_result": {
+    "status": "ok",
+    "type": "movie",
+    "title_candidate": "Haiyore! Nyaruko-san",
+    "timing": {
+      "analysis_seconds": 42.482
+    },
+    "collection_analysis": {
+      "is_collection": false,
+      "confidence": "High",
+      "reason": "内容为TV动画及特典，非电影合集",
+      "file_mapping_count": 0,
+      "unmatched_count": 68,
+      "conflict_count": 1,
+      "movie_like_paths": []
+    }
+  },
+  "final_type": "tv"
+}

@@ -1,0 +1,681 @@
+{
+  "root_name": "[VCB-Studio] Mob Psycho 100 [Ma10p_1080p]",
+  "files": [
+    {
+      "path": "[VCB-Studio] Mob Psycho 100 [01][Ma10p_1080p][x265_flac_aac].ass",
+      "size": 37961
+    },
+    {
+      "path": "[VCB-Studio] Mob Psycho 100 [01][Ma10p_1080p][x265_flac_aac].mkv",
+      "size": 1370092431
+    },
+    {
+      "path": "[VCB-Studio] Mob Psycho 100 [02][Ma10p_1080p][x265_flac].ass",
+      "size": 46615
+    },
+    {
+      "path": "[VCB-Studio] Mob Psycho 100 [02][Ma10p_1080p][x265_flac].mkv",
+      "size": 1388487311
+    },
+    {
+      "path": "[VCB-Studio] Mob Psycho 100 [03][Ma10p_1080p][x265_flac_aac].ass",
+      "size": 48945
+    },
+    {
+      "path": "[VCB-Studio] Mob Psycho 100 [03][Ma10p_1080p][x265_flac_aac].mkv",
+      "size": 1389485643
+    },
+    {
+      "path": "[VCB-Studio] Mob Psycho 100 [04][Ma10p_1080p][x265_flac].ass",
+      "size": 49744
+    },
+    {
+      "path": "[VCB-Studio] Mob Psycho 100 [04][Ma10p_1080p][x265_flac].mkv",
+      "size": 1325309830
+    },
+    {
+      "path": "[VCB-Studio] Mob Psycho 100 [05][Ma10p_1080p][x265_flac_aac].ass",
+      "size": 43344
+    },
+    {
+      "path": "[VCB-Studio] Mob Psycho 100 [05][Ma10p_1080p][x265_flac_aac].mkv",
+      "size": 1173367057
+    },
+    {
+      "path": "[VCB-Studio] Mob Psycho 100 [06][Ma10p_1080p][x265_flac].ass",
+      "size": 42641
+    },
+    {
+      "path": "[VCB-Studio] Mob Psycho 100 [06][Ma10p_1080p][x265_flac].mkv",
+      "size": 1281733445
+    },
+    {
+      "path": "[VCB-Studio] Mob Psycho 100 [07][Ma10p_1080p][x265_flac_aac].ass",
+      "size": 44114
+    },
+    {
+      "path": "[VCB-Studio] Mob Psycho 100 [07][Ma10p_1080p][x265_flac_aac].mkv",
+      "size": 1288836378
+    },
+    {
+      "path": "[VCB-Studio] Mob Psycho 100 [08][Ma10p_1080p][x265_flac].ass",
+      "size": 45017
+    },
+    {
+      "path": "[VCB-Studio] Mob Psycho 100 [08][Ma10p_1080p][x265_flac].mkv",
+      "size": 1340992828
+    },
+    {
+      "path": "[VCB-Studio] Mob Psycho 100 [09][Ma10p_1080p][x265_flac].ass",
+      "size": 46085
+    },
+    {
+      "path": "[VCB-Studio] Mob Psycho 100 [09][Ma10p_1080p][x265_flac].mkv",
+      "size": 1263882631
+    },
+    {
+      "path": "[VCB-Studio] Mob Psycho 100 [10][Ma10p_1080p][x265_flac_aac].ass",
+      "size": 42273
+    },
+    {
+      "path": "[VCB-Studio] Mob Psycho 100 [10][Ma10p_1080p][x265_flac_aac].mkv",
+      "size": 1395014002
+    },
+    {
+      "path": "[VCB-Studio] Mob Psycho 100 [11][Ma10p_1080p][x265_flac].ass",
+      "size": 45487
+    },
+    {
+      "path": "[VCB-Studio] Mob Psycho 100 [11][Ma10p_1080p][x265_flac].mkv",
+      "size": 1371946328
+    },
+    {
+      "path": "[VCB-Studio] Mob Psycho 100 [12][Ma10p_1080p][x265_flac_2aac].ass",
+      "size": 39402
+    },
+    {
+      "path": "[VCB-Studio] Mob Psycho 100 [12][Ma10p_1080p][x265_flac_2aac].mkv",
+      "size": 1415454737
+    },
+    {
+      "path": "CDs/[160831] ｢99｣／MOB CHOIR (flac)/1000619653.cue",
+      "size": 793
+    },
+    {
+      "path": "CDs/[160831] ｢99｣／MOB CHOIR (flac)/1000619653.flac",
+      "size": 125418459
+    },
+    {
+      "path": "CDs/[160831] ｢99｣／MOB CHOIR (flac)/1000619653.log",
+      "size": 2536
+    },
+    {
+      "path": "CDs/[160831] ｢99｣／MOB CHOIR (flac)/Cover.jpg",
+      "size": 445196
+    },
+    {
+      "path": "CDs/[160831] ｢リフレインボーイ｣／ALL OFF [アニメ盤] (flac)/1000619692.cue",
+      "size": 827
+    },
+    {
+      "path": "CDs/[160831] ｢リフレインボーイ｣／ALL OFF [アニメ盤] (flac)/1000619692.flac",
+      "size": 134506160
+    },
+    {
+      "path": "CDs/[160831] ｢リフレインボーイ｣／ALL OFF [アニメ盤] (flac)/1000619692.log",
+      "size": 2602
+    },
+    {
+      "path": "CDs/[160831] ｢リフレインボーイ｣／ALL OFF [アニメ盤] (flac)/Cover.jpg",
+      "size": 422760
+    },
+    {
+      "path": "CDs/[160831] ｢リフレインボーイ｣／ALL OFF [アーティスト盤] (flac)/1000619691.cue",
+      "size": 575
+    },
+    {
+      "path": "CDs/[160831] ｢リフレインボーイ｣／ALL OFF [アーティスト盤] (flac)/1000619691.flac",
+      "size": 113533806
+    },
+    {
+      "path": "CDs/[160831] ｢リフレインボーイ｣／ALL OFF [アーティスト盤] (flac)/1000619691.log",
+      "size": 1982
+    },
+    {
+      "path": "CDs/[160831] ｢リフレインボーイ｣／ALL OFF [アーティスト盤] (flac)/Cover.jpg",
+      "size": 53716
+    },
+    {
+      "path": "CDs/[161123] Original Soundtrack (flac)/Cover.jpg",
+      "size": 211826
+    },
+    {
+      "path": "CDs/[161123] Original Soundtrack (flac)/Disc1.cue",
+      "size": 4964
+    },
+    {
+      "path": "CDs/[161123] Original Soundtrack (flac)/Disc1.flac",
+      "size": 284361000
+    },
+    {
+      "path": "CDs/[161123] Original Soundtrack (flac)/Disc1.log",
+      "size": 11996
+    },
+    {
+      "path": "CDs/[161123] Original Soundtrack (flac)/Disc2.cue",
+      "size": 2588
+    },
+    {
+      "path": "CDs/[161123] Original Soundtrack (flac)/Disc2.flac",
+      "size": 205873461
+    },
+    {
+      "path": "CDs/[161123] Original Soundtrack (flac)/Disc2.log",
+      "size": 3880
+    },
+    {
+      "path": "CDs/[170125] ドラマCD サイキックヒューマンショー (flac)/1000632773.cue",
+      "size": 1716
+    },
+    {
+      "path": "CDs/[170125] ドラマCD サイキックヒューマンショー (flac)/1000632773.flac",
+      "size": 339876916
+    },
+    {
+      "path": "CDs/[170125] ドラマCD サイキックヒューマンショー (flac)/Cover.jpg",
+      "size": 80183
+    },
+    {
+      "path": "readme about WebP.txt",
+      "size": 1186
+    },
+    {
+      "path": "Scans/Vol.1/01.webp",
+      "size": 6859518
+    },
+    {
+      "path": "Scans/Vol.1/02.webp",
+      "size": 330318
+    },
+    {
+      "path": "Scans/Vol.1/03.webp",
+      "size": 3520786
+    },
+    {
+      "path": "Scans/Vol.1/04.webp",
+      "size": 8436744
+    },
+    {
+      "path": "Scans/Vol.1/05.webp",
+      "size": 319800
+    },
+    {
+      "path": "Scans/Vol.1/06.webp",
+      "size": 9450970
+    },
+    {
+      "path": "Scans/Vol.1/07.webp",
+      "size": 4055990
+    },
+    {
+      "path": "Scans/Vol.1/08.webp",
+      "size": 2979020
+    },
+    {
+      "path": "Scans/Vol.1/09.webp",
+      "size": 2392302
+    },
+    {
+      "path": "Scans/Vol.1/10.webp",
+      "size": 2489086
+    },
+    {
+      "path": "Scans/Vol.1/11.webp",
+      "size": 1772300
+    },
+    {
+      "path": "Scans/Vol.1/12.webp",
+      "size": 8363904
+    },
+    {
+      "path": "Scans/Vol.1/13.webp",
+      "size": 9715126
+    },
+    {
+      "path": "Scans/Vol.1/14.webp",
+      "size": 8171118
+    },
+    {
+      "path": "Scans/Vol.1/15.webp",
+      "size": 7263118
+    },
+    {
+      "path": "Scans/Vol.1/16.webp",
+      "size": 6522178
+    },
+    {
+      "path": "Scans/Vol.1/17.webp",
+      "size": 5024366
+    },
+    {
+      "path": "Scans/Vol.2/01.webp",
+      "size": 6123162
+    },
+    {
+      "path": "Scans/Vol.2/02.webp",
+      "size": 279926
+    },
+    {
+      "path": "Scans/Vol.2/03.webp",
+      "size": 3713782
+    },
+    {
+      "path": "Scans/Vol.2/04.webp",
+      "size": 7457730
+    },
+    {
+      "path": "Scans/Vol.2/05.webp",
+      "size": 263302
+    },
+    {
+      "path": "Scans/Vol.2/06.webp",
+      "size": 7694382
+    },
+    {
+      "path": "Scans/Vol.2/07.webp",
+      "size": 4117666
+    },
+    {
+      "path": "Scans/Vol.2/08.webp",
+      "size": 3919670
+    },
+    {
+      "path": "Scans/Vol.2/09.webp",
+      "size": 3060856
+    },
+    {
+      "path": "Scans/Vol.2/10.webp",
+      "size": 2438014
+    },
+    {
+      "path": "Scans/Vol.2/11.webp",
+      "size": 1860218
+    },
+    {
+      "path": "Scans/Vol.2/12.webp",
+      "size": 8321874
+    },
+    {
+      "path": "Scans/Vol.2/13.webp",
+      "size": 8992776
+    },
+    {
+      "path": "Scans/Vol.2/14.webp",
+      "size": 7345456
+    },
+    {
+      "path": "Scans/Vol.2/15.webp",
+      "size": 8482422
+    },
+    {
+      "path": "Scans/Vol.2/16.webp",
+      "size": 8317668
+    },
+    {
+      "path": "Scans/Vol.2/17.webp",
+      "size": 7285508
+    },
+    {
+      "path": "Scans/Vol.2/18.webp",
+      "size": 5579436
+    },
+    {
+      "path": "Scans/Vol.3/01.webp",
+      "size": 3466286
+    },
+    {
+      "path": "Scans/Vol.3/02.webp",
+      "size": 155320
+    },
+    {
+      "path": "Scans/Vol.3/03.webp",
+      "size": 3584142
+    },
+    {
+      "path": "Scans/Vol.3/04.webp",
+      "size": 4365000
+    },
+    {
+      "path": "Scans/Vol.3/05.webp",
+      "size": 130386
+    },
+    {
+      "path": "Scans/Vol.3/06.webp",
+      "size": 2969354
+    },
+    {
+      "path": "Scans/Vol.3/07.webp",
+      "size": 3926054
+    },
+    {
+      "path": "Scans/Vol.3/08.webp",
+      "size": 2063496
+    },
+    {
+      "path": "Scans/Vol.3/09.webp",
+      "size": 1382826
+    },
+    {
+      "path": "Scans/Vol.3/10.webp",
+      "size": 2367850
+    },
+    {
+      "path": "Scans/Vol.3/11.webp",
+      "size": 1797142
+    },
+    {
+      "path": "Scans/Vol.3/12.webp",
+      "size": 7455142
+    },
+    {
+      "path": "Scans/Vol.3/13.webp",
+      "size": 9162654
+    },
+    {
+      "path": "Scans/Vol.3/14.webp",
+      "size": 10463638
+    },
+    {
+      "path": "Scans/Vol.3/15.webp",
+      "size": 8786934
+    },
+    {
+      "path": "Scans/Vol.3/16.webp",
+      "size": 8015806
+    },
+    {
+      "path": "Scans/Vol.3/17.webp",
+      "size": 6463912
+    },
+    {
+      "path": "Scans/Vol.3/18.webp",
+      "size": 6155528
+    },
+    {
+      "path": "Scans/Vol.4/01.webp",
+      "size": 5978596
+    },
+    {
+      "path": "Scans/Vol.4/02.webp",
+      "size": 181618
+    },
+    {
+      "path": "Scans/Vol.4/03.webp",
+      "size": 3331304
+    },
+    {
+      "path": "Scans/Vol.4/04.webp",
+      "size": 7287474
+    },
+    {
+      "path": "Scans/Vol.4/05.webp",
+      "size": 152682
+    },
+    {
+      "path": "Scans/Vol.4/06.webp",
+      "size": 3769028
+    },
+    {
+      "path": "Scans/Vol.4/07.webp",
+      "size": 3662036
+    },
+    {
+      "path": "Scans/Vol.4/08.webp",
+      "size": 2317020
+    },
+    {
+      "path": "Scans/Vol.4/09.webp",
+      "size": 1822212
+    },
+    {
+      "path": "Scans/Vol.4/10.webp",
+      "size": 2133876
+    },
+    {
+      "path": "Scans/Vol.4/11.webp",
+      "size": 1252258
+    },
+    {
+      "path": "Scans/Vol.4/12.webp",
+      "size": 7680286
+    },
+    {
+      "path": "Scans/Vol.4/13.webp",
+      "size": 9216712
+    },
+    {
+      "path": "Scans/Vol.4/14.webp",
+      "size": 9478330
+    },
+    {
+      "path": "Scans/Vol.4/15.webp",
+      "size": 9874482
+    },
+    {
+      "path": "Scans/Vol.4/16.webp",
+      "size": 7987656
+    },
+    {
+      "path": "Scans/Vol.4/17.webp",
+      "size": 6407116
+    },
+    {
+      "path": "Scans/Vol.4/18.webp",
+      "size": 5123828
+    },
+    {
+      "path": "Scans/Vol.5/01.webp",
+      "size": 7940208
+    },
+    {
+      "path": "Scans/Vol.5/02.webp",
+      "size": 254760
+    },
+    {
+      "path": "Scans/Vol.5/03.webp",
+      "size": 7994932
+    },
+    {
+      "path": "Scans/Vol.5/04.webp",
+      "size": 3993808
+    },
+    {
+      "path": "Scans/Vol.5/05.webp",
+      "size": 2775982
+    },
+    {
+      "path": "Scans/Vol.5/06.webp",
+      "size": 1686134
+    },
+    {
+      "path": "Scans/Vol.5/07.webp",
+      "size": 2541260
+    },
+    {
+      "path": "Scans/Vol.5/08.webp",
+      "size": 1942428
+    },
+    {
+      "path": "Scans/Vol.5/09.webp",
+      "size": 7132762
+    },
+    {
+      "path": "Scans/Vol.5/10.webp",
+      "size": 8378138
+    },
+    {
+      "path": "Scans/Vol.5/11.webp",
+      "size": 8381534
+    },
+    {
+      "path": "Scans/Vol.5/12.webp",
+      "size": 8686036
+    },
+    {
+      "path": "Scans/Vol.5/13.webp",
+      "size": 7933238
+    },
+    {
+      "path": "Scans/Vol.5/14.webp",
+      "size": 8064240
+    },
+    {
+      "path": "Scans/Vol.5/15.webp",
+      "size": 5918498
+    },
+    {
+      "path": "Scans/Vol.6/01.webp",
+      "size": 3747920
+    },
+    {
+      "path": "Scans/Vol.6/02.webp",
+      "size": 140896
+    },
+    {
+      "path": "Scans/Vol.6/03.webp",
+      "size": 1106142
+    },
+    {
+      "path": "Scans/Vol.6/04.webp",
+      "size": 4028596
+    },
+    {
+      "path": "Scans/Vol.6/05.webp",
+      "size": 1769532
+    },
+    {
+      "path": "Scans/Vol.6/06.webp",
+      "size": 1575914
+    },
+    {
+      "path": "Scans/Vol.6/07.webp",
+      "size": 2306404
+    },
+    {
+      "path": "Scans/Vol.6/08.webp",
+      "size": 1847520
+    },
+    {
+      "path": "Scans/Vol.6/09.webp",
+      "size": 7210900
+    },
+    {
+      "path": "Scans/Vol.6/10.webp",
+      "size": 8176990
+    },
+    {
+      "path": "Scans/Vol.6/11.webp",
+      "size": 9090416
+    },
+    {
+      "path": "Scans/Vol.6/12.webp",
+      "size": 8688508
+    },
+    {
+      "path": "Scans/Vol.6/13.webp",
+      "size": 7952886
+    },
+    {
+      "path": "Scans/Vol.6/14.webp",
+      "size": 7200930
+    },
+    {
+      "path": "Scans/Vol.6/15.webp",
+      "size": 5217720
+    },
+    {
+      "path": "SPs/[VCB-Studio] Mob Psycho 100 [CM01][Ma10p_1080p][x265_flac].mkv",
+      "size": 38652690
+    },
+    {
+      "path": "SPs/[VCB-Studio] Mob Psycho 100 [CM02][Ma10p_1080p][x265_flac].mkv",
+      "size": 31195756
+    },
+    {
+      "path": "SPs/[VCB-Studio] Mob Psycho 100 [CM03][Ma10p_1080p][x265_flac].mkv",
+      "size": 21417958
+    },
+    {
+      "path": "SPs/[VCB-Studio] Mob Psycho 100 [CM04][Ma10p_1080p][x265].mkv",
+      "size": 10949571
+    },
+    {
+      "path": "SPs/[VCB-Studio] Mob Psycho 100 [Menu01][Ma10p_1080p][x265_flac].mkv",
+      "size": 62197235
+    },
+    {
+      "path": "SPs/[VCB-Studio] Mob Psycho 100 [Menu02][Ma10p_1080p][x265_flac].mkv",
+      "size": 63797300
+    },
+    {
+      "path": "SPs/[VCB-Studio] Mob Psycho 100 [Menu03][Ma10p_1080p][x265_flac].mkv",
+      "size": 57889375
+    },
+    {
+      "path": "SPs/[VCB-Studio] Mob Psycho 100 [Menu04][Ma10p_1080p][x265_flac].mkv",
+      "size": 60717834
+    },
+    {
+      "path": "SPs/[VCB-Studio] Mob Psycho 100 [Menu05][Ma10p_1080p][x265_flac].mkv",
+      "size": 59334343
+    },
+    {
+      "path": "SPs/[VCB-Studio] Mob Psycho 100 [Menu06][Ma10p_1080p][x265_flac].mkv",
+      "size": 60868162
+    },
+    {
+      "path": "SPs/[VCB-Studio] Mob Psycho 100 [NCED][Ma10p_1080p][x265_flac].mkv",
+      "size": 108758891
+    },
+    {
+      "path": "SPs/[VCB-Studio] Mob Psycho 100 [NCED_EP12][Ma10p_1080p][x265_flac].mkv",
+      "size": 58606144
+    },
+    {
+      "path": "SPs/[VCB-Studio] Mob Psycho 100 [PV01][Ma10p_1080p][x265_flac].mkv",
+      "size": 152464381
+    },
+    {
+      "path": "SPs/[VCB-Studio] Mob Psycho 100 [PV02][Ma10p_1080p][x265_flac].mkv",
+      "size": 207130158
+    },
+    {
+      "path": "SPs/[VCB-Studio] Mob Psycho 100 [PV03][Ma10p_1080p][x265_flac].mkv",
+      "size": 195131863
+    },
+    {
+      "path": "SPs/[VCB-Studio] Mob Psycho 100 [SP01][Ma10p_1080p][x265_flac].mkv",
+      "size": 89427716
+    },
+    {
+      "path": "SPs/[VCB-Studio] Mob Psycho 100 [SP02][Ma10p_1080p][x265_flac].mkv",
+      "size": 69708810
+    },
+    {
+      "path": "SPs/[VCB-Studio] Mob Psycho 100 [SP03][Ma10p_1080p][x265_flac].mkv",
+      "size": 102619222
+    },
+    {
+      "path": "SPs/[VCB-Studio] Mob Psycho 100 [SP04][Ma10p_1080p][x265_flac].mkv",
+      "size": 73995824
+    },
+    {
+      "path": "SPs/[VCB-Studio] Mob Psycho 100 [SP05][Ma10p_1080p][x265_flac].mkv",
+      "size": 74625425
+    },
+    {
+      "path": "SPs/[VCB-Studio] Mob Psycho 100 [SP06][Ma10p_1080p][x265_flac].mkv",
+      "size": 77637354
+    }
+  ]
+}

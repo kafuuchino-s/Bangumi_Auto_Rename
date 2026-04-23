@@ -1,0 +1,238 @@
+{
+  "status": "ok",
+  "type": "tv",
+  "title_candidate": "Majimoji Rurumo",
+  "tmdb_name": "Magimoji Rurumo",
+  "tmdb_id": 79208,
+  "file_mapping": [
+    {
+      "source_index": 1,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 1,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 2,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 2,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 3,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 3,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 4,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 4,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 5,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 5,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 6,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 6,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 7,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 7,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 8,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 8,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 9,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 9,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 10,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 10,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 11,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 11,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 12,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 12,
+      "episode_type": "regular",
+      "confidence": "High"
+    }
+  ],
+  "analysis_result": {
+    "confidence": "High",
+    "reason": "TMDB Season 1 恰好提供 12 集，且本地主文件 01-12 的编号与其集号一一对应；其余文件属于菜单、无字幕片头片尾、CM/PV 等附加内容，TMDB列表中没有可安全对应的 SxxExx 条目。",
+    "season_mapping": [
+      {
+        "local_group_name": "Majimoji Rurumo",
+        "maps_to_tmdb_seasons": [
+          1
+        ]
+      }
+    ],
+    "file_mapping": [
+      {
+        "source_index": 1,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 1,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 2,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 2,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 3,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 3,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 4,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 4,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 5,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 5,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 6,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 6,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 7,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 7,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 8,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 8,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 9,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 9,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 10,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 10,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 11,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 11,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 12,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 12,
+        "episode_type": "regular",
+        "confidence": "High"
+      }
+    ],
+    "unmatched_files": [
+      "BD menu/[Beatrice-Raws] Majimoji Rurumo (BD menu Vol 1) 01 [BDRip 1920x1080 x264 FLAC].mkv",
+      "BD menu/[Beatrice-Raws] Majimoji Rurumo (BD menu Vol 1) 02 [BDRip 1920x1080 x264 FLAC].mkv",
+      "BD menu/[Beatrice-Raws] Majimoji Rurumo (BD menu Vol 2) 01 [BDRip 1920x1080 x264 FLAC].mkv",
+      "BD menu/[Beatrice-Raws] Majimoji Rurumo (BD menu Vol 2) 02 [BDRip 1920x1080 x264 FLAC].mkv",
+      "BD menu/[Beatrice-Raws] Majimoji Rurumo (BD menu Vol 3) 01 [BDRip 1920x1080 x264 FLAC].mkv",
+      "BD menu/[Beatrice-Raws] Majimoji Rurumo (BD menu Vol 3) 02 [BDRip 1920x1080 x264 FLAC].mkv",
+      "BD menu/[Beatrice-Raws] Majimoji Rurumo (BD menu Vol 4) 01 [BDRip 1920x1080 x264 FLAC].mkv",
+      "BD menu/[Beatrice-Raws] Majimoji Rurumo (BD menu Vol 4) 02 [BDRip 1920x1080 x264 FLAC].mkv",
+      "BD menu/[Beatrice-Raws] Majimoji Rurumo (BD menu Vol 5) 01 [BDRip 1920x1080 x264 FLAC].mkv",
+      "BD menu/[Beatrice-Raws] Majimoji Rurumo (BD menu Vol 5) 02 [BDRip 1920x1080 x264 FLAC].mkv",
+      "BD menu/[Beatrice-Raws] Majimoji Rurumo (BD menu Vol 6) 01 [BDRip 1920x1080 x264 FLAC].mkv",
+      "BD menu/[Beatrice-Raws] Majimoji Rurumo (BD menu Vol 6) 02 [BDRip 1920x1080 x264 FLAC].mkv",
+      "NC/[Beatrice-Raws] Majimoji Rurumo (Creditless ED) [BDRip 1920x1080 x264 FLAC].mkv",
+      "NC/[Beatrice-Raws] Majimoji Rurumo (Creditless OP) [BDRip 1920x1080 x264 FLAC].mkv",
+      "PV & CM/[Beatrice-Raws] Majimoji Rurumo (BD&DVD CM) [BDRip 1920x1080 x264 FLAC].mkv",
+      "PV & CM/[Beatrice-Raws] Majimoji Rurumo (CM 01) [BDRip 1920x1080 x264 FLAC].mkv",
+      "PV & CM/[Beatrice-Raws] Majimoji Rurumo (CM 02) [BDRip 1920x1080 x264 FLAC].mkv",
+      "PV & CM/[Beatrice-Raws] Majimoji Rurumo (PV 01) [BDRip 1920x1080 x264 FLAC].mkv",
+      "PV & CM/[Beatrice-Raws] Majimoji Rurumo (PV 02) [BDRip 1920x1080 x264 FLAC].mkv"
+    ],
+    "conflict_details": [],
+    "extra_notes": "本地正片文件01-12与TMDB Season 1 的 S01E01-S01E12 按编号直接对应；Season 0 的 OVA 特典与本地文件名/目录中均无可直接确认的对应项，BD menu、NC、PV & CM 也未匹配到TMDB已存在条目。"
+  }
+}

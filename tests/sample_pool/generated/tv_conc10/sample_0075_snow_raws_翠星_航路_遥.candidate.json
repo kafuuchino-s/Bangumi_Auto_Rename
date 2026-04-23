@@ -1,0 +1,72 @@
+{
+  "status": "ok",
+  "type": "tv",
+  "title_candidate": "翠星のガルガンティア ～めぐる航路、遥か～",
+  "tmdb_name": "翠星のガルガンティア",
+  "tmdb_id": 55011,
+  "file_mapping": [
+    {
+      "source_index": 1,
+      "file_path": null,
+      "tmdb_season": 0,
+      "tmdb_episode": 17,
+      "episode_type": "special",
+      "confidence": "High"
+    },
+    {
+      "source_index": 2,
+      "file_path": null,
+      "tmdb_season": 0,
+      "tmdb_episode": 18,
+      "episode_type": "special",
+      "confidence": "High"
+    }
+  ],
+  "analysis_result": {
+    "confidence": "High",
+    "reason": "根据文件名“~めぐる航路、遥か~ 前編/後編”可直接对应 TMDB Season 0 中的 OVA「遥远的巡回航路」前篇/后篇（S00E17、S00E18）。",
+    "season_mapping": [],
+    "file_mapping": [
+      {
+        "source_index": 1,
+        "file_path": null,
+        "tmdb_season": 0,
+        "tmdb_episode": 17,
+        "episode_type": "special",
+        "confidence": "High"
+      },
+      {
+        "source_index": 2,
+        "file_path": null,
+        "tmdb_season": 0,
+        "tmdb_episode": 18,
+        "episode_type": "special",
+        "confidence": "High"
+      }
+    ],
+    "unmatched_files": [
+      "映像特典/前編/[Snow-Raws] 翠星のガルガンティア ~めぐる航路、遥か~ 前編 CM01 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "映像特典/前編/[Snow-Raws] 翠星のガルガンティア ~めぐる航路、遥か~ 前編 CM02 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "映像特典/前編/[Snow-Raws] 翠星のガルガンティア ~めぐる航路、遥か~ 前編 CM03 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "映像特典/前編/[Snow-Raws] 翠星のガルガンティア ~めぐる航路、遥か~ 前編 MENU01 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "映像特典/前編/[Snow-Raws] 翠星のガルガンティア ~めぐる航路、遥か~ 前編 MENU02 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "映像特典/前編/[Snow-Raws] 翠星のガルガンティア ~めぐる航路、遥か~ 前編 MENU03 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "映像特典/前編/[Snow-Raws] 翠星のガルガンティア ~めぐる航路、遥か~ 前編 PV01 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "映像特典/前編/[Snow-Raws] 翠星のガルガンティア ~めぐる航路、遥か~ 前編 PV02 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "映像特典/前編/[Snow-Raws] 翠星のガルガンティア ~めぐる航路、遥か~ 前編 PV03 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "映像特典/前編/[Snow-Raws] 翠星のガルガンティア ~めぐる航路、遥か~ 前編 SP01 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "映像特典/前編/[Snow-Raws] 翠星のガルガンティア ~めぐる航路、遥か~ 前編 予告 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "映像特典/后编/[Snow-Raws] 翠星のガルガンティア ~めぐる航路、遥か~ 后编 CM01 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "映像特典/后编/[Snow-Raws] 翠星のガルガンティア ~めぐる航路、遥か~ 后编 CM02 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "映像特典/后编/[Snow-Raws] 翠星のガルガンティア ~めぐる航路、遥か~ 后编 CM03 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "映像特典/后编/[Snow-Raws] 翠星のガルガンティア ~めぐる航路、遥か~ 后编 MENU01 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "映像特典/后编/[Snow-Raws] 翠星のガルガンティア ~めぐる航路、遥か~ 后编 MENU02 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "映像特典/后编/[Snow-Raws] 翠星のガルガンティア ~めぐる航路、遥か~ 后编 MENU03 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "映像特典/后编/[Snow-Raws] 翠星のガルガンティア ~めぐる航路、遥か~ 后编 SP01 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "映像特典/后编/[Snow-Raws] 翠星のガルガンティア ~めぐる航路、遥か~ 后编 予告 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "映像特典/后编/[Snow-Raws] 翠星のガルガンティア ~めぐる航路、遥か~ 后编 剧场本予告 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv"
+    ],
+    "conflict_details": [],
+    "extra_notes": "本地文件中仅“前编/后编”两部可稳定对应 TMDB Season 0 的 S00E17/S00E18；其余均为映像特典、PV、CM、MENU、预告等内容，TMDB 列表中无对应条目。"
+  }
+}

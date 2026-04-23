@@ -1,0 +1,59 @@
+{
+  "status": "ok",
+  "type": "movie",
+  "title_candidate": "Prison School",
+  "timing": {
+    "analysis_seconds": 11.351
+  },
+  "collection_analysis": {
+    "is_collection": false,
+    "collection_name": "Prison School",
+    "confidence": "High",
+    "reason": "文件为动画剧集及特典，非电影合集",
+    "file_mapping": [],
+    "unmatched_files": [
+      "[VCB-Studio] Prison School [01][Hi10p_1080p][x264_2flac].mkv",
+      "[VCB-Studio] Prison School [02][Hi10p_1080p][x264_flac].mkv",
+      "[VCB-Studio] Prison School [03][Hi10p_1080p][x264_2flac].mkv",
+      "[VCB-Studio] Prison School [04][Hi10p_1080p][x264_flac].mkv",
+      "[VCB-Studio] Prison School [05][Hi10p_1080p][x264_flac].mkv",
+      "[VCB-Studio] Prison School [06][Hi10p_1080p][x264_2flac].mkv",
+      "[VCB-Studio] Prison School [07][Hi10p_1080p][x264_flac].mkv",
+      "[VCB-Studio] Prison School [08][Hi10p_1080p][x264_2flac].mkv",
+      "[VCB-Studio] Prison School [09][Hi10p_1080p][x264_flac].mkv",
+      "[VCB-Studio] Prison School [10][Hi10p_1080p][x264_2flac].mkv",
+      "[VCB-Studio] Prison School [11][Hi10p_1080p][x264_flac].mkv",
+      "[VCB-Studio] Prison School [12][Hi10p_1080p][x264_2flac].mkv",
+      "[VCB-Studio] Prison School [OAD][Hi10p_720p][x264_ac3].mkv",
+      "SPs/[VCB-Studio] Prison School [CM01][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[VCB-Studio] Prison School [CM02][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[VCB-Studio] Prison School [CM03][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[VCB-Studio] Prison School [CM04][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[VCB-Studio] Prison School [CM05][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[VCB-Studio] Prison School [CM06][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[VCB-Studio] Prison School [CM07][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[VCB-Studio] Prison School [CM08][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[VCB-Studio] Prison School [CM09][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[VCB-Studio] Prison School [CM10][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[VCB-Studio] Prison School [CM11][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[VCB-Studio] Prison School [CM12][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[VCB-Studio] Prison School [IV01][Hi10p_720p][x264_aac].mkv",
+      "SPs/[VCB-Studio] Prison School [IV02][Hi10p_1080p][x264_aac].mkv",
+      "SPs/[VCB-Studio] Prison School [Menu01][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[VCB-Studio] Prison School [Menu02][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[VCB-Studio] Prison School [Menu03][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[VCB-Studio] Prison School [Menu04][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[VCB-Studio] Prison School [Menu05][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[VCB-Studio] Prison School [Menu06][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[VCB-Studio] Prison School [NCED01][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[VCB-Studio] Prison School [NCED02][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[VCB-Studio] Prison School [NCOP01][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[VCB-Studio] Prison School [PV01][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[VCB-Studio] Prison School [PV02][Hi10p_1080p][x264_flac].mkv"
+    ],
+    "conflict_details": [
+      "主文件为12集剧集，含OAD/CM/PV等特典，非电影合集"
+    ],
+    "extra_notes": null
+  }
+}

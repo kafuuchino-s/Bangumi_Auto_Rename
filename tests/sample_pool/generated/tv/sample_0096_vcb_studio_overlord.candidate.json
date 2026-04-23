@@ -1,0 +1,36 @@
+{
+  "status": "ai_failed",
+  "type": "movie",
+  "title_candidate": "OVERLORD",
+  "timing": {
+    "analysis_seconds": 0.0
+  },
+  "collection_analysis": null,
+  "tv_candidate_result": {
+    "status": "tmdb_not_found",
+    "type": "tv",
+    "title_candidate": "OVERLORD",
+    "timing": null,
+    "file_mapping_count": 0,
+    "has_regular": false,
+    "has_special": false,
+    "has_movie_like": false
+  },
+  "movie_candidate_result": {
+    "status": "ai_failed",
+    "type": "movie",
+    "title_candidate": "OVERLORD",
+    "timing": {
+      "analysis_seconds": 0.0
+    }
+  },
+  "movie_like_paths_from_paths": [
+    "[VCB-Studio] Gekijouban Soushuuhen OVERLORD [Ma10p_1080p]/[VCB-Studio] Gekijouban Soushuuhen OVERLORD [01(Fushisha no Ou)][Ma10p_1080p][x265_flac].mkv",
+    "[VCB-Studio] Gekijouban Soushuuhen OVERLORD [Ma10p_1080p]/[VCB-Studio] Gekijouban Soushuuhen OVERLORD [02(Shikkoku no Senshi)][Ma10p_1080p][x265_flac].mkv",
+    "[VCB-Studio] Gekijouban Soushuuhen OVERLORD [Ma10p_1080p]/SPs/[VCB-Studio] Gekijouban Soushuuhen OVERLORD [SP01][Ma10p_1080p][x265_flac].mkv",
+    "[VCB-Studio] Gekijouban Soushuuhen OVERLORD [Ma10p_1080p]/SPs/[VCB-Studio] Gekijouban Soushuuhen OVERLORD [SP02][Ma10p_1080p][x265_flac].mkv",
+    "[VCB-Studio] Gekijouban Soushuuhen OVERLORD [Ma10p_1080p]/SPs/[VCB-Studio] Gekijouban Soushuuhen OVERLORD [SP03 Theater Manners 01][Ma10p_1080p][x265_flac].mkv",
+    "[VCB-Studio] Gekijouban Soushuuhen OVERLORD [Ma10p_1080p]/SPs/[VCB-Studio] Gekijouban Soushuuhen OVERLORD [SP04 Theater Manners 02][Ma10p_1080p][x265_flac].mkv"
+  ],
+  "final_type": "movie"
+}

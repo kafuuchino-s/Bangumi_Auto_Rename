@@ -1,0 +1,235 @@
+{
+  "status": "ok",
+  "type": "tv",
+  "title_candidate": "普通の女子校生が【ろこどる】やってみた。",
+  "tmdb_name": "普通の女子校生が【ろこどる】やってみた。",
+  "tmdb_id": 66856,
+  "file_mapping": [
+    {
+      "source_index": 5,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 1,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 6,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 2,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 7,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 3,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 8,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 4,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 9,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 5,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 10,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 6,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 11,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 7,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 12,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 8,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 13,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 9,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 14,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 10,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 15,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 11,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 16,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 12,
+      "episode_type": "regular",
+      "confidence": "High"
+    }
+  ],
+  "analysis_result": {
+    "confidence": "High",
+    "reason": "本地文件中 01-12 的编号与 TMDB Season 1 的 S01E01-S01E12 直接对应，且集数完全一致；其余文件均为 OP/ED、CM、Info、OVA、Menu 等附加内容，未能与 TMDB 已存在的 Season 0 特典标题形成可靠匹配。",
+    "season_mapping": [
+      {
+        "local_group_name": "Locodol",
+        "maps_to_tmdb_seasons": [
+          1
+        ]
+      }
+    ],
+    "file_mapping": [
+      {
+        "source_index": 5,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 1,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 6,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 2,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 7,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 3,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 8,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 4,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 9,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 5,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 10,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 6,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 11,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 7,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 12,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 8,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 13,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 9,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 14,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 10,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 15,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 11,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 16,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 12,
+        "episode_type": "regular",
+        "confidence": "High"
+      }
+    ],
+    "unmatched_files": [
+      "[ANK-Raws] 普通の女子校生が【ろこどる】やってみた。 (Creditless ED) (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[ANK-Raws] 普通の女子校生が【ろこどる】やってみた。 (Creditless ED2) (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[ANK-Raws] 普通の女子校生が【ろこどる】やってみた。 (Creditless ED3) (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[ANK-Raws] 普通の女子校生が【ろこどる】やってみた。 (Creditless OP) (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[ANK-Raws] 普通の女子校生が【ろこどる】やってみた。 CM+Info (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[ANK-Raws] 普通の女子校生が【ろこどる】やってみた。 CM01 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[ANK-Raws] 普通の女子校生が【ろこどる】やってみた。 Info01 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[ANK-Raws] 普通の女子校生が【ろこどる】やってみた。 Info02 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[ANK-Raws] 普通の女子校生が【ろこどる】やってみた。 OVA (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "Menu (Vol.1).mkv",
+      "Menu (Vol.2).mkv",
+      "Menu (Vol.3).mkv",
+      "Menu (Vol.4).mkv",
+      "Menu (Vol.5).mkv",
+      "Menu (Vol.6).mkv",
+      "Menu (Vol.7).mkv"
+    ],
+    "conflict_details": [],
+    "extra_notes": "TMDB Season 0 存在 3 集特典，但本地的 Creditless/CM/Info/OVA/Menu 文件未能与其标题建立可靠对应，因此仅映射正片 1-12 集，其余留作未匹配。"
+  }
+}

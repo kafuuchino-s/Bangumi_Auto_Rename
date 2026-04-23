@@ -1,0 +1,58 @@
+{
+  "status": "ok",
+  "type": "movie",
+  "title_candidate": "Choujigen Game Neptune",
+  "timing": {
+    "analysis_seconds": 13.438
+  },
+  "collection_analysis": {
+    "is_collection": false,
+    "collection_name": "Choujigen Game Neptune",
+    "confidence": "High",
+    "reason": "单季TV动画及特典，不是电影合集",
+    "file_mapping": [],
+    "unmatched_files": [
+      "[VCB-Studio] Choujigen Game Neptune [01][Hi10p_1080p][x264_flac].mkv",
+      "[VCB-Studio] Choujigen Game Neptune [02][Hi10p_1080p][x264_2flac].mkv",
+      "[VCB-Studio] Choujigen Game Neptune [03][Hi10p_1080p][x264_flac].mkv",
+      "[VCB-Studio] Choujigen Game Neptune [04][Hi10p_1080p][x264_2flac].mkv",
+      "[VCB-Studio] Choujigen Game Neptune [05][Hi10p_1080p][x264_flac].mkv",
+      "[VCB-Studio] Choujigen Game Neptune [06][Hi10p_1080p][x264_2flac].mkv",
+      "[VCB-Studio] Choujigen Game Neptune [07][Hi10p_1080p][x264_2flac].mkv",
+      "[VCB-Studio] Choujigen Game Neptune [08][Hi10p_1080p][x264_flac].mkv",
+      "[VCB-Studio] Choujigen Game Neptune [09][Hi10p_1080p][x264_flac].mkv",
+      "[VCB-Studio] Choujigen Game Neptune [10][Hi10p_1080p][x264_2flac].mkv",
+      "[VCB-Studio] Choujigen Game Neptune [11][Hi10p_1080p][x264_flac].mkv",
+      "[VCB-Studio] Choujigen Game Neptune [12][Hi10p_1080p][x264_2flac].mkv",
+      "[VCB-Studio] Choujigen Game Neptune [13][Hi10p_1080p][x264_2flac].mkv",
+      "SPs/[VCB-Studio] Choujigen Game Neptune [CM01][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[VCB-Studio] Choujigen Game Neptune [CM02][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[VCB-Studio] Choujigen Game Neptune [CM03][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[VCB-Studio] Choujigen Game Neptune [CM04][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[VCB-Studio] Choujigen Game Neptune [CM05][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[VCB-Studio] Choujigen Game Neptune [Menu01][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[VCB-Studio] Choujigen Game Neptune [Menu02][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[VCB-Studio] Choujigen Game Neptune [Menu03][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[VCB-Studio] Choujigen Game Neptune [Menu04][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[VCB-Studio] Choujigen Game Neptune [Menu05][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[VCB-Studio] Choujigen Game Neptune [Menu06][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[VCB-Studio] Choujigen Game Neptune [Menu07][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[VCB-Studio] Choujigen Game Neptune [NCED01][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[VCB-Studio] Choujigen Game Neptune [NCED02][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[VCB-Studio] Choujigen Game Neptune [NCED03][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[VCB-Studio] Choujigen Game Neptune [NCED04][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[VCB-Studio] Choujigen Game Neptune [NCED05][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[VCB-Studio] Choujigen Game Neptune [NCED06][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[VCB-Studio] Choujigen Game Neptune [NCOP01][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[VCB-Studio] Choujigen Game Neptune [NCOP02][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[VCB-Studio] Choujigen Game Neptune [NCOP03][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[VCB-Studio] Choujigen Game Neptune [PV01][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[VCB-Studio] Choujigen Game Neptune [PV02][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[VCB-Studio] Choujigen Game Neptune [SP][Hi10p_1080p][x264_flac].mkv"
+    ],
+    "conflict_details": [
+      "文件为13话TV正片及SP/CM/PV/NCED/NCOP等特典，不是电影合集"
+    ],
+    "extra_notes": null
+  }
+}

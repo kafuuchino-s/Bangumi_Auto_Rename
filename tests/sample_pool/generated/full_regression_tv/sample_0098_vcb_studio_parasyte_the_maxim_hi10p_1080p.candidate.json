@@ -1,0 +1,57 @@
+{
+  "status": "ok",
+  "type": "movie",
+  "title_candidate": "Parasyte: The Maxim",
+  "timing": {
+    "analysis_seconds": 11.25
+  },
+  "collection_analysis": {
+    "is_collection": false,
+    "collection_name": "Parasyte: The Maxim",
+    "confidence": "High",
+    "reason": "全部为TV动画分集及特典",
+    "file_mapping": [],
+    "unmatched_files": [
+      "[VCB-Studio] Parasyte：The Maxim [01][Hi10p_1080p][x264_2flac].mkv",
+      "[VCB-Studio] Parasyte：The Maxim [02][Hi10p_1080p][x264_flac].mkv",
+      "[VCB-Studio] Parasyte：The Maxim [03][Hi10p_1080p][x264_flac].mkv",
+      "[VCB-Studio] Parasyte：The Maxim [04][Hi10p_1080p][x264_flac].mkv",
+      "[VCB-Studio] Parasyte：The Maxim [05][Hi10p_1080p][x264_flac].mkv",
+      "[VCB-Studio] Parasyte：The Maxim [06][Hi10p_1080p][x264_2flac].mkv",
+      "[VCB-Studio] Parasyte：The Maxim [07][Hi10p_1080p][x264_flac].mkv",
+      "[VCB-Studio] Parasyte：The Maxim [08][Hi10p_1080p][x264_flac].mkv",
+      "[VCB-Studio] Parasyte：The Maxim [09][Hi10p_1080p][x264_flac].mkv",
+      "[VCB-Studio] Parasyte：The Maxim [10][Hi10p_1080p][x264_flac].mkv",
+      "[VCB-Studio] Parasyte：The Maxim [11][Hi10p_1080p][x264_flac].mkv",
+      "[VCB-Studio] Parasyte：The Maxim [12][Hi10p_1080p][x264_2flac].mkv",
+      "[VCB-Studio] Parasyte：The Maxim [13][Hi10p_1080p][x264_flac].mkv",
+      "[VCB-Studio] Parasyte：The Maxim [14][Hi10p_1080p][x264_flac].mkv",
+      "[VCB-Studio] Parasyte：The Maxim [15][Hi10p_1080p][x264_flac].mkv",
+      "[VCB-Studio] Parasyte：The Maxim [16][Hi10p_1080p][x264_flac].mkv",
+      "[VCB-Studio] Parasyte：The Maxim [17][Hi10p_1080p][x264_flac].mkv",
+      "[VCB-Studio] Parasyte：The Maxim [18][Hi10p_1080p][x264_flac].mkv",
+      "[VCB-Studio] Parasyte：The Maxim [19][Hi10p_1080p][x264_flac].mkv",
+      "[VCB-Studio] Parasyte：The Maxim [20][Hi10p_1080p][x264_flac].mkv",
+      "[VCB-Studio] Parasyte：The Maxim [21][Hi10p_1080p][x264_flac].mkv",
+      "[VCB-Studio] Parasyte：The Maxim [22][Hi10p_1080p][x264_flac].mkv",
+      "[VCB-Studio] Parasyte：The Maxim [23][Hi10p_1080p][x264_flac].mkv",
+      "[VCB-Studio] Parasyte：The Maxim [24][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[VCB-Studio] Parasyte：The Maxim [CM01][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[VCB-Studio] Parasyte：The Maxim [CM02][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[VCB-Studio] Parasyte：The Maxim [Menu01][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[VCB-Studio] Parasyte：The Maxim [Menu02][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[VCB-Studio] Parasyte：The Maxim [Menu03][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[VCB-Studio] Parasyte：The Maxim [Menu04][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[VCB-Studio] Parasyte：The Maxim [Menu05][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[VCB-Studio] Parasyte：The Maxim [Menu06][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[VCB-Studio] Parasyte：The Maxim [NCED01][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[VCB-Studio] Parasyte：The Maxim [NCED02][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[VCB-Studio] Parasyte：The Maxim [NCED03][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[VCB-Studio] Parasyte：The Maxim [NCOP][Hi10p_1080p][x264_flac].mkv"
+    ],
+    "conflict_details": [
+      "文件均为TV动画正片分集及特典，不是电影合集"
+    ],
+    "extra_notes": null
+  }
+}

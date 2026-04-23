@@ -1,0 +1,58 @@
+{
+  "status": "ok",
+  "type": "movie",
+  "title_candidate": "STAR DRIVER 輝きのタクト",
+  "timing": {
+    "analysis_seconds": 16.731
+  },
+  "collection_analysis": {
+    "is_collection": false,
+    "collection_name": "STAR DRIVER 輝きのタクト",
+    "confidence": "High",
+    "reason": "目录为TV动画全集与特典，不是电影合集",
+    "file_mapping": [],
+    "unmatched_files": [
+      "[Snow-Raws] STAR DRIVER 輝きのタクト 第01話(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[Snow-Raws] STAR DRIVER 輝きのタクト 第02話(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[Snow-Raws] STAR DRIVER 輝きのタクト 第03話(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[Snow-Raws] STAR DRIVER 輝きのタクト 第04話(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[Snow-Raws] STAR DRIVER 輝きのタクト 第05話(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[Snow-Raws] STAR DRIVER 輝きのタクト 第06話(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[Snow-Raws] STAR DRIVER 輝きのタクト 第07話(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[Snow-Raws] STAR DRIVER 輝きのタクト 第08話(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[Snow-Raws] STAR DRIVER 輝きのタクト 第09話(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[Snow-Raws] STAR DRIVER 輝きのタクト 第10話(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[Snow-Raws] STAR DRIVER 輝きのタクト 第11話(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[Snow-Raws] STAR DRIVER 輝きのタクト 第12話(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[Snow-Raws] STAR DRIVER 輝きのタクト 第13話(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[Snow-Raws] STAR DRIVER 輝きのタクト 第14話(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[Snow-Raws] STAR DRIVER 輝きのタクト 第15話(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[Snow-Raws] STAR DRIVER 輝きのタクト 第16話(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[Snow-Raws] STAR DRIVER 輝きのタクト 第17話(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[Snow-Raws] STAR DRIVER 輝きのタクト 第18話(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[Snow-Raws] STAR DRIVER 輝きのタクト 第19話(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[Snow-Raws] STAR DRIVER 輝きのタクト 第20話(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[Snow-Raws] STAR DRIVER 輝きのタクト 第21話(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[Snow-Raws] STAR DRIVER 輝きのタクト 第22話(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[Snow-Raws] STAR DRIVER 輝きのタクト 第23話(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[Snow-Raws] STAR DRIVER 輝きのタクト 第24話(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[Snow-Raws] STAR DRIVER 輝きのタクト 第25話(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "映像特典/[Snow-Raws] STAR DRIVER 輝きのタクト ED(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "映像特典/[Snow-Raws] STAR DRIVER 輝きのタクト MENU01(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "映像特典/[Snow-Raws] STAR DRIVER 輝きのタクト MENU02(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "映像特典/[Snow-Raws] STAR DRIVER 輝きのタクト MENU03(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "映像特典/[Snow-Raws] STAR DRIVER 輝きのタクト MENU04(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "映像特典/[Snow-Raws] STAR DRIVER 輝きのタクト MENU05(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "映像特典/[Snow-Raws] STAR DRIVER 輝きのタクト MENU06(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "映像特典/[Snow-Raws] STAR DRIVER 輝きのタクト MENU07(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "映像特典/[Snow-Raws] STAR DRIVER 輝きのタクト MENU08(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "映像特典/[Snow-Raws] STAR DRIVER 輝きのタクト MENU09(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "映像特典/[Snow-Raws] STAR DRIVER 輝きのタクト OP(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "映像特典/[Snow-Raws] STAR DRIVER 輝きのタクト PV(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv"
+    ],
+    "conflict_details": [
+      "包含25集TV动画正片及OP/ED/PV特典，非电影合集"
+    ],
+    "extra_notes": null
+  }
+}

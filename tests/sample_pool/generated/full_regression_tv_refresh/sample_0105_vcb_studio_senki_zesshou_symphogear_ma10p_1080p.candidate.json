@@ -1,0 +1,180 @@
+{
+  "status": "ok",
+  "type": "tv",
+  "title_candidate": "Senki Zesshou Symphogear",
+  "tmdb_name": "Superb Song of the Valkyries: Symphogear",
+  "tmdb_id": 63322,
+  "timing": {
+    "analysis_seconds": 18.772
+  },
+  "file_mapping": [
+    {
+      "source_index": 1,
+      "file_path": "[VCB-Studio] Senki Zesshou Symphogear [01][Ma10p_1080p][x265_flac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 1,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 2,
+      "file_path": "[VCB-Studio] Senki Zesshou Symphogear [02][Ma10p_1080p][x265_flac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 2,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 3,
+      "file_path": "[VCB-Studio] Senki Zesshou Symphogear [03][Ma10p_1080p][x265_flac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 3,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 4,
+      "file_path": "[VCB-Studio] Senki Zesshou Symphogear [04][Ma10p_1080p][x265_flac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 4,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 5,
+      "file_path": "[VCB-Studio] Senki Zesshou Symphogear [05][Ma10p_1080p][x265_flac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 5,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 6,
+      "file_path": "[VCB-Studio] Senki Zesshou Symphogear [06][Ma10p_1080p][x265_flac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 6,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 7,
+      "file_path": "[VCB-Studio] Senki Zesshou Symphogear [07][Ma10p_1080p][x265_flac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 7,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 8,
+      "file_path": "[VCB-Studio] Senki Zesshou Symphogear [08][Ma10p_1080p][x265_flac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 8,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 9,
+      "file_path": "[VCB-Studio] Senki Zesshou Symphogear [09][Ma10p_1080p][x265_flac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 9,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 10,
+      "file_path": "[VCB-Studio] Senki Zesshou Symphogear [10][Ma10p_1080p][x265_flac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 10,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 11,
+      "file_path": "[VCB-Studio] Senki Zesshou Symphogear [11][Ma10p_1080p][x265_flac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 11,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 12,
+      "file_path": "[VCB-Studio] Senki Zesshou Symphogear [12][Ma10p_1080p][x265_flac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 12,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 13,
+      "file_path": "[VCB-Studio] Senki Zesshou Symphogear [13][Ma10p_1080p][x265_flac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 13,
+      "episode_type": "regular",
+      "confidence": "High"
+    }
+  ],
+  "conflict_details": [],
+  "analysis_result": {
+    "confidence": "High",
+    "reason": "文件1-13按编号直接对应正片1-13集。",
+    "season_mapping": [],
+    "file_mapping_count": 13,
+    "unmatched_count": 0,
+    "conflict_count": 0
+  },
+  "hydration_notes": {
+    "hydrated_count": 13,
+    "examples": [
+      "hydrated:1:[VCB-Studio] Senki Zesshou Symphogear [01][Ma10p_1080p][x265_flac].mkv",
+      "hydrated:2:[VCB-Studio] Senki Zesshou Symphogear [02][Ma10p_1080p][x265_flac].mkv",
+      "hydrated:3:[VCB-Studio] Senki Zesshou Symphogear [03][Ma10p_1080p][x265_flac].mkv",
+      "hydrated:4:[VCB-Studio] Senki Zesshou Symphogear [04][Ma10p_1080p][x265_flac].mkv",
+      "hydrated:5:[VCB-Studio] Senki Zesshou Symphogear [05][Ma10p_1080p][x265_flac].mkv"
+    ]
+  },
+  "task_plan": {
+    "is_movie": false,
+    "ai_type": "tv",
+    "tv_available": true,
+    "movie_available": false,
+    "selected_confidence": "High"
+  },
+  "tv_candidate_result": {
+    "status": "ok",
+    "type": "tv",
+    "title_candidate": "Senki Zesshou Symphogear",
+    "timing": {
+      "analysis_seconds": 18.772
+    },
+    "file_mapping_count": 13,
+    "has_regular": true,
+    "has_special": false,
+    "has_movie_like": false,
+    "analysis_result": {
+      "confidence": "High",
+      "reason": "文件1-13按编号直接对应正片1-13集。",
+      "season_mapping": [],
+      "file_mapping_count": 13,
+      "unmatched_count": 0,
+      "conflict_count": 0
+    }
+  },
+  "movie_candidate_result": {
+    "status": "ok",
+    "type": "movie",
+    "title_candidate": "Senki Zesshou Symphogear",
+    "timing": {
+      "analysis_seconds": 17.787
+    },
+    "collection_analysis": {
+      "is_collection": false,
+      "confidence": "High",
+      "reason": "主文件是TV动画与特典，不是电影合集",
+      "file_mapping_count": 0,
+      "unmatched_count": 56,
+      "conflict_count": 1,
+      "movie_like_paths": []
+    }
+  },
+  "final_type": "tv"
+}

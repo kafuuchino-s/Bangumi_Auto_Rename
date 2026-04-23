@@ -1,0 +1,38 @@
+{
+  "status": "ai_failed",
+  "type": "movie",
+  "title_candidate": "Aria Series Blu ray BOX Animation + Natural + Origination + Avvenire + Arietta",
+  "timing": {
+    "analysis_seconds": 0.001
+  },
+  "collection_analysis": null,
+  "tv_candidate_result": {
+    "status": "tmdb_not_found",
+    "type": "tv",
+    "title_candidate": "Aria Series Blu ray BOX Animation + Natural + Origination + Avvenire + Arietta",
+    "timing": null,
+    "file_mapping_count": 0,
+    "has_regular": false,
+    "has_special": false,
+    "has_movie_like": false
+  },
+  "movie_candidate_result": {
+    "status": "ai_failed",
+    "type": "movie",
+    "title_candidate": "Aria Series Blu ray BOX Animation + Natural + Origination + Avvenire + Arietta",
+    "timing": {
+      "analysis_seconds": 0.001
+    }
+  },
+  "movie_like_paths_from_paths": [
+    "[Moozzi2] Aria The Animation BD-BOX - TV + Avvenire EP.01/[Moozzi2] Aria The Animation - 01 (BD 1440x1080 x.264 Flac).mkv",
+    "[Moozzi2] Aria The Animation BD-BOX - TV + Avvenire EP.01/[Moozzi2] Aria The Animation - 02 (BD 1440x1080 x.264 Flac).mkv",
+    "[Moozzi2] Aria The Animation BD-BOX - TV + Avvenire EP.01/[Moozzi2] Aria The Animation - 03 (BD 1440x1080 x.264 Flac).mkv",
+    "[Moozzi2] Aria The Animation BD-BOX - TV + Avvenire EP.01/[Moozzi2] Aria The Animation - 04 (BD 1440x1080 x.264 Flac).mkv",
+    "[Moozzi2] Aria The Animation BD-BOX - TV + Avvenire EP.01/[Moozzi2] Aria The Animation - 05 (BD 1440x1080 x.264 Flac).mkv",
+    "[Moozzi2] Aria The Animation BD-BOX - TV + Avvenire EP.01/[Moozzi2] Aria The Animation - 06 (BD 1440x1080 x.264 Flac).mkv",
+    "[Moozzi2] Aria The Animation BD-BOX - TV + Avvenire EP.01/[Moozzi2] Aria The Animation - 07 (BD 1440x1080 x.264 Flac).mkv",
+    "[Moozzi2] Aria The Animation BD-BOX - TV + Avvenire EP.01/[Moozzi2] Aria The Animation - 08 (BD 1440x1080 x.264 Flac).mkv"
+  ],
+  "final_type": "movie"
+}

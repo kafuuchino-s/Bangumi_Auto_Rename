@@ -340,11 +340,69 @@ def test_build_common_prompt_compacts_tmdb_details_for_non_selected_seasons():
     )
 
     assert "TMDB 季度摘要：" in prompt
-    assert "TMDB 候选季度详细集目：" in prompt
+    assert "TMDB 候选季度关键集目：" in prompt
     assert "- Season 2: Season 2 (共 13 集)" in prompt
     assert "【Season 1】Season 1 (共 1 集)" in prompt
     assert "【Season 2】Season 2 (共 1 集)" not in prompt
     assert "提示: 以上只展开高相关季度；最终仍只能映射到全部 TMDB 真实存在的 SxxExx。" in prompt
+
+
+def test_build_common_prompt_expands_global_numbered_season_context():
+    anime_info = {
+        "name": "鬼灭之刃",
+        "first_air_date": "2019-04-06",
+        "number_of_seasons": 4,
+        "number_of_episodes": 44,
+        "seasons": [
+            {
+                "season_number": 0,
+                "name": "Specials",
+                "episode_count": 16,
+                "episodes": [{"episode_number": 1, "name": "SP1"}],
+            },
+            {
+                "season_number": 1,
+                "name": "Season 1",
+                "episode_count": 26,
+                "episodes": [{"episode_number": 1, "name": "E1"}],
+            },
+            {
+                "season_number": 2,
+                "name": "Season 2",
+                "episode_count": 7,
+                "episodes": [{"episode_number": 1, "name": "E27"}],
+            },
+            {
+                "season_number": 3,
+                "name": "Season 3",
+                "episode_count": 11,
+                "episodes": [{"episode_number": 1, "name": "E34"}],
+            },
+        ],
+    }
+
+    prompt = AIClient.build_common_prompt(
+        anime_info,
+        [
+            {
+                "path": "SPs/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [EP11 Review Avant][Ma10p_1080p][x265_aac].mkv",
+                "duration": 24.0,
+            },
+            {
+                "path": "Yuukaku/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [34][Ma10p_1080p][x265_flac].mkv",
+                "duration": 24.0,
+            },
+            {
+                "path": "Yuukaku/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [35][Ma10p_1080p][x265_flac].mkv",
+                "duration": 24.0,
+            },
+        ],
+        bangumi_context=None,
+    )
+
+    assert "【Season 0】Specials" in prompt
+    assert "【Season 3】Season 3" in prompt
+    assert "【Season 1】Season 1" not in prompt
 
 
 def test_rename_tv_flow_reuses_precomputed_file_analysis(monkeypatch, tmp_path):

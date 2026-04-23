@@ -1,0 +1,52 @@
+{
+  "status": "ok",
+  "type": "movie",
+  "title_candidate": "White Album 2",
+  "timing": {
+    "analysis_seconds": 13.899
+  },
+  "collection_analysis": {
+    "is_collection": false,
+    "collection_name": "White Album 2",
+    "confidence": "High",
+    "reason": "这是动画剧集及特典，不是电影合集",
+    "file_mapping": [],
+    "unmatched_files": [
+      "[Pussub&VCB-Studio] White Album 2 [01][Hi10p_1080p][x264_2flac].mkv",
+      "[Pussub&VCB-Studio] White Album 2 [02][Hi10p_1080p][x264_flac].mkv",
+      "[Pussub&VCB-Studio] White Album 2 [03][Hi10p_1080p][x264_2flac].mkv",
+      "[Pussub&VCB-Studio] White Album 2 [04][Hi10p_1080p][x264_flac].mkv",
+      "[Pussub&VCB-Studio] White Album 2 [05][Hi10p_1080p][x264_flac].mkv",
+      "[Pussub&VCB-Studio] White Album 2 [06][Hi10p_1080p][x264_2flac].mkv",
+      "[Pussub&VCB-Studio] White Album 2 [07][Hi10p_1080p][x264_2flac].mkv",
+      "[Pussub&VCB-Studio] White Album 2 [08][Hi10p_1080p][x264_flac].mkv",
+      "[Pussub&VCB-Studio] White Album 2 [09][Hi10p_1080p][x264_flac].mkv",
+      "[Pussub&VCB-Studio] White Album 2 [10][Hi10p_1080p][x264_2flac].mkv",
+      "[Pussub&VCB-Studio] White Album 2 [11][Hi10p_1080p][x264_flac].mkv",
+      "[Pussub&VCB-Studio] White Album 2 [12][Hi10p_1080p][x264_flac].mkv",
+      "[Pussub&VCB-Studio] White Album 2 [13][Hi10p_1080p][x264_2flac].mkv",
+      "SPs/[Pussub&VCB-Studio] White Album 2 [Blu-ray CM01][Hi10p_1080p][x264_2flac].mkv",
+      "SPs/[Pussub&VCB-Studio] White Album 2 [Blu-ray CM02][Hi10p_1080p][x264_2flac].mkv",
+      "SPs/[Pussub&VCB-Studio] White Album 2 [Menu01][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[Pussub&VCB-Studio] White Album 2 [Menu02][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[Pussub&VCB-Studio] White Album 2 [Menu03][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[Pussub&VCB-Studio] White Album 2 [Menu04][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[Pussub&VCB-Studio] White Album 2 [Menu05][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[Pussub&VCB-Studio] White Album 2 [Menu06][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[Pussub&VCB-Studio] White Album 2 [NCED][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[Pussub&VCB-Studio] White Album 2 [NCOP01][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[Pussub&VCB-Studio] White Album 2 [NCOP02][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[Pussub&VCB-Studio] White Album 2 [PV01][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[Pussub&VCB-Studio] White Album 2 [PV02][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[Pussub&VCB-Studio] White Album 2 [Spin-off Story 01][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[Pussub&VCB-Studio] White Album 2 [Spin-off Story 02A][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[Pussub&VCB-Studio] White Album 2 [Spin-off Story 02B][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[Pussub&VCB-Studio] White Album 2 [TV-SPOT 15sec.][Hi10p_1080p][x264_4flac].mkv",
+      "SPs/[Pussub&VCB-Studio] White Album 2 [TV-SPOT 30sec.][Hi10p_1080p][x264_4flac].mkv"
+    ],
+    "conflict_details": [
+      "文件为TV动画正片与SP/CM/PV等特典，不属于电影合集"
+    ],
+    "extra_notes": null
+  }
+}

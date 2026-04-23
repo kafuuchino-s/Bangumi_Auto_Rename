@@ -1,0 +1,277 @@
+{
+  "status": "ok",
+  "type": "tv",
+  "title_candidate": "Puella Magi Madoka Magica",
+  "tmdb_name": "Puella Magi Madoka Magica",
+  "tmdb_id": 39218,
+  "file_mapping": [
+    {
+      "source_index": 1,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 1,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 2,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 2,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 3,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 3,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 4,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 4,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 5,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 5,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 6,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 6,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 7,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 7,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 8,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 8,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 9,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 9,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 10,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 10,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 11,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 11,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 12,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 12,
+      "episode_type": "regular",
+      "confidence": "High"
+    }
+  ],
+  "analysis_result": {
+    "confidence": "High",
+    "reason": "文件名中的集号 01-12 与 TMDB Season 1 的 S01E01-S01E12 直接一致，且目录语义表明这些为正片主文件，因此可高置信度逐集映射。",
+    "season_mapping": [
+      {
+        "local_group_name": "[VCB-Studio] Puella Magi Madoka Magica [Ma10p_1080p]",
+        "maps_to_tmdb_seasons": [
+          1
+        ]
+      }
+    ],
+    "file_mapping": [
+      {
+        "source_index": 1,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 1,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 2,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 2,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 3,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 3,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 4,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 4,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 5,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 5,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 6,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 6,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 7,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 7,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 8,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 8,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 9,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 9,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 10,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 10,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 11,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 11,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 12,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 12,
+        "episode_type": "regular",
+        "confidence": "High"
+      }
+    ],
+    "unmatched_files": [
+      "[VCB-Studio] Puella Magi Madoka Magica [Ma10p_1080p]/SPs/[VCB-Studio] Puella Magi Madoka Magica [CMs][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Puella Magi Madoka Magica [Ma10p_1080p]/SPs/[VCB-Studio] Puella Magi Madoka Magica [Menu01][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Puella Magi Madoka Magica [Ma10p_1080p]/SPs/[VCB-Studio] Puella Magi Madoka Magica [Menu02][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Puella Magi Madoka Magica [Ma10p_1080p]/SPs/[VCB-Studio] Puella Magi Madoka Magica [Menu03][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Puella Magi Madoka Magica [Ma10p_1080p]/SPs/[VCB-Studio] Puella Magi Madoka Magica [Menu04][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Puella Magi Madoka Magica [Ma10p_1080p]/SPs/[VCB-Studio] Puella Magi Madoka Magica [Menu05][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Puella Magi Madoka Magica [Ma10p_1080p]/SPs/[VCB-Studio] Puella Magi Madoka Magica [Menu06][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Puella Magi Madoka Magica [Ma10p_1080p]/SPs/[VCB-Studio] Puella Magi Madoka Magica [NCED_EP01-02][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Puella Magi Madoka Magica [Ma10p_1080p]/SPs/[VCB-Studio] Puella Magi Madoka Magica [NCED_EP09][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Puella Magi Madoka Magica [Ma10p_1080p]/SPs/[VCB-Studio] Puella Magi Madoka Magica [NCOP][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Puella Magi Madoka Magica [Ma10p_1080p]/SPs/[VCB-Studio] Puella Magi Madoka Magica [PVs][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Puella Magi Madoka Magica Concept Movie [Ma10p_1080p]/[VCB-Studio] Puella Magi Madoka Magica Concept Movie [Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Puella Magi Madoka Magica Movie 1 Beginnings [Ma10p_1080p]/[VCB-Studio] Puella Magi Madoka Magica Movie 1 Beginnings [Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Puella Magi Madoka Magica Movie 1 Beginnings [Ma10p_1080p]/SPs/[VCB-Studio] Puella Magi Madoka Magica Movie 1 Beginnings [CM01][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Puella Magi Madoka Magica Movie 1 Beginnings [Ma10p_1080p]/SPs/[VCB-Studio] Puella Magi Madoka Magica Movie 1 Beginnings [CM02][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Puella Magi Madoka Magica Movie 1 Beginnings [Ma10p_1080p]/SPs/[VCB-Studio] Puella Magi Madoka Magica Movie 1 Beginnings [CM03][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Puella Magi Madoka Magica Movie 1 Beginnings [Ma10p_1080p]/SPs/[VCB-Studio] Puella Magi Madoka Magica Movie 1 Beginnings [CM04][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Puella Magi Madoka Magica Movie 1 Beginnings [Ma10p_1080p]/SPs/[VCB-Studio] Puella Magi Madoka Magica Movie 1 Beginnings [CM05][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Puella Magi Madoka Magica Movie 1 Beginnings [Ma10p_1080p]/SPs/[VCB-Studio] Puella Magi Madoka Magica Movie 1 Beginnings [CM06][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Puella Magi Madoka Magica Movie 1 Beginnings [Ma10p_1080p]/SPs/[VCB-Studio] Puella Magi Madoka Magica Movie 1 Beginnings [CM07][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Puella Magi Madoka Magica Movie 1 Beginnings [Ma10p_1080p]/SPs/[VCB-Studio] Puella Magi Madoka Magica Movie 1 Beginnings [CM08][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Puella Magi Madoka Magica Movie 1 Beginnings [Ma10p_1080p]/SPs/[VCB-Studio] Puella Magi Madoka Magica Movie 1 Beginnings [Menu][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Puella Magi Madoka Magica Movie 1 Beginnings [Ma10p_1080p]/SPs/[VCB-Studio] Puella Magi Madoka Magica Movie 1 Beginnings [NCED][Ma10p_1080p][x265_2flac].mkv",
+      "[VCB-Studio] Puella Magi Madoka Magica Movie 1 Beginnings [Ma10p_1080p]/SPs/[VCB-Studio] Puella Magi Madoka Magica Movie 1 Beginnings [Trailer][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Puella Magi Madoka Magica Movie 2 Eternal [Ma10p_1080p]/[VCB-Studio] Puella Magi Madoka Magica Movie 2 Eternal [Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Puella Magi Madoka Magica Movie 2 Eternal [Ma10p_1080p]/SPs/[VCB-Studio] Puella Magi Madoka Magica Movie 2 Eternal [CM01][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Puella Magi Madoka Magica Movie 2 Eternal [Ma10p_1080p]/SPs/[VCB-Studio] Puella Magi Madoka Magica Movie 2 Eternal [CM02][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Puella Magi Madoka Magica Movie 2 Eternal [Ma10p_1080p]/SPs/[VCB-Studio] Puella Magi Madoka Magica Movie 2 Eternal [CM03][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Puella Magi Madoka Magica Movie 2 Eternal [Ma10p_1080p]/SPs/[VCB-Studio] Puella Magi Madoka Magica Movie 2 Eternal [CM04][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Puella Magi Madoka Magica Movie 2 Eternal [Ma10p_1080p]/SPs/[VCB-Studio] Puella Magi Madoka Magica Movie 2 Eternal [CM05][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Puella Magi Madoka Magica Movie 2 Eternal [Ma10p_1080p]/SPs/[VCB-Studio] Puella Magi Madoka Magica Movie 2 Eternal [CM06][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Puella Magi Madoka Magica Movie 2 Eternal [Ma10p_1080p]/SPs/[VCB-Studio] Puella Magi Madoka Magica Movie 2 Eternal [Menu][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Puella Magi Madoka Magica Movie 2 Eternal [Ma10p_1080p]/SPs/[VCB-Studio] Puella Magi Madoka Magica Movie 2 Eternal [NCOP][Ma10p_1080p][x265_2flac].mkv",
+      "[VCB-Studio] Puella Magi Madoka Magica Movie 2 Eternal [Ma10p_1080p]/SPs/[VCB-Studio] Puella Magi Madoka Magica Movie 2 Eternal [Trailer01][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Puella Magi Madoka Magica Movie 2 Eternal [Ma10p_1080p]/SPs/[VCB-Studio] Puella Magi Madoka Magica Movie 2 Eternal [Trailer02][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Puella Magi Madoka Magica Movie 3 Rebellion [Ma10p_1080p]/[VCB-Studio] Puella Magi Madoka Magica Movie 3 Rebellion [Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Puella Magi Madoka Magica Movie 3 Rebellion [Ma10p_1080p]/SPs/[VCB-Studio] Puella Magi Madoka Magica Movie 3 Rebellion [CM01][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Puella Magi Madoka Magica Movie 3 Rebellion [Ma10p_1080p]/SPs/[VCB-Studio] Puella Magi Madoka Magica Movie 3 Rebellion [CM02][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Puella Magi Madoka Magica Movie 3 Rebellion [Ma10p_1080p]/SPs/[VCB-Studio] Puella Magi Madoka Magica Movie 3 Rebellion [CM03][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Puella Magi Madoka Magica Movie 3 Rebellion [Ma10p_1080p]/SPs/[VCB-Studio] Puella Magi Madoka Magica Movie 3 Rebellion [CM04][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Puella Magi Madoka Magica Movie 3 Rebellion [Ma10p_1080p]/SPs/[VCB-Studio] Puella Magi Madoka Magica Movie 3 Rebellion [CM05][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Puella Magi Madoka Magica Movie 3 Rebellion [Ma10p_1080p]/SPs/[VCB-Studio] Puella Magi Madoka Magica Movie 3 Rebellion [CM06][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Puella Magi Madoka Magica Movie 3 Rebellion [Ma10p_1080p]/SPs/[VCB-Studio] Puella Magi Madoka Magica Movie 3 Rebellion [CM07][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Puella Magi Madoka Magica Movie 3 Rebellion [Ma10p_1080p]/SPs/[VCB-Studio] Puella Magi Madoka Magica Movie 3 Rebellion [CM08][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Puella Magi Madoka Magica Movie 3 Rebellion [Ma10p_1080p]/SPs/[VCB-Studio] Puella Magi Madoka Magica Movie 3 Rebellion [Madogatari Recap][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Puella Magi Madoka Magica Movie 3 Rebellion [Ma10p_1080p]/SPs/[VCB-Studio] Puella Magi Madoka Magica Movie 3 Rebellion [Manner01][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Puella Magi Madoka Magica Movie 3 Rebellion [Ma10p_1080p]/SPs/[VCB-Studio] Puella Magi Madoka Magica Movie 3 Rebellion [Manner02][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Puella Magi Madoka Magica Movie 3 Rebellion [Ma10p_1080p]/SPs/[VCB-Studio] Puella Magi Madoka Magica Movie 3 Rebellion [Manner03][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Puella Magi Madoka Magica Movie 3 Rebellion [Ma10p_1080p]/SPs/[VCB-Studio] Puella Magi Madoka Magica Movie 3 Rebellion [Manner04][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Puella Magi Madoka Magica Movie 3 Rebellion [Ma10p_1080p]/SPs/[VCB-Studio] Puella Magi Madoka Magica Movie 3 Rebellion [Menu01][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Puella Magi Madoka Magica Movie 3 Rebellion [Ma10p_1080p]/SPs/[VCB-Studio] Puella Magi Madoka Magica Movie 3 Rebellion [Menu02][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Puella Magi Madoka Magica Movie 3 Rebellion [Ma10p_1080p]/SPs/[VCB-Studio] Puella Magi Madoka Magica Movie 3 Rebellion [NCED][Ma10p_1080p][x265_2flac].mkv",
+      "[VCB-Studio] Puella Magi Madoka Magica Movie 3 Rebellion [Ma10p_1080p]/SPs/[VCB-Studio] Puella Magi Madoka Magica Movie 3 Rebellion [NCOP][Ma10p_1080p][x265_2flac].mkv",
+      "[VCB-Studio] Puella Magi Madoka Magica Movie 3 Rebellion [Ma10p_1080p]/SPs/[VCB-Studio] Puella Magi Madoka Magica Movie 3 Rebellion [Trailer01][Ma10p_1080p][x265_2flac].mkv",
+      "[VCB-Studio] Puella Magi Madoka Magica Movie 3 Rebellion [Ma10p_1080p]/SPs/[VCB-Studio] Puella Magi Madoka Magica Movie 3 Rebellion [Trailer02][Ma10p_1080p][x265_2flac].mkv",
+      "[VCB-Studio] Puella Magi Madoka Magica Movie 3 Rebellion [Ma10p_1080p]/SPs/[VCB-Studio] Puella Magi Madoka Magica Movie 3 Rebellion [Trailer03][Ma10p_1080p][x265_2flac].mkv",
+      "[VCB-Studio] Puella Magi Madoka Magica Movie 3 Rebellion [Ma10p_1080p]/SPs/[VCB-Studio] Puella Magi Madoka Magica Movie 3 Rebellion [Trailer04][Ma10p_1080p][x265_2flac].mkv",
+      "[VCB-Studio] Puella Magi Madoka Magica Movie 3 Rebellion [Ma10p_1080p]/SPs/[VCB-Studio] Puella Magi Madoka Magica Movie 3 Rebellion [TVSP][Ma10p_1080p][x265_dts].mkv"
+    ],
+    "conflict_details": [],
+    "extra_notes": "本地正片文件 01-12 与 TMDB Season 1 的 12 集逐集对应；SPs、NCOP/NCED、PV、CM、Menu 以及三部电影与概念电影文件在本次 TMDB-only 数据中没有可合法落点，因此未纳入映射。"
+  }
+}

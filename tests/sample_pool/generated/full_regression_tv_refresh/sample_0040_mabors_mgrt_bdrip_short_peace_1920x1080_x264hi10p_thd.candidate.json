@@ -1,0 +1,66 @@
+{
+  "status": "ok",
+  "type": "movie",
+  "title_candidate": "SHORT PEACE",
+  "timing": {
+    "analysis_seconds": 23.032
+  },
+  "collection_analysis": {
+    "is_collection": true,
+    "collection_name": "Short Peace",
+    "confidence": "High",
+    "reason": "同名总集与四个短篇组成合集",
+    "file_mapping": [
+      {
+        "file_path": "[Mabors&MGRT][BDrip]SHORT PEACE (1920x1080_x264Hi10P_thd).mkv",
+        "movie_title": "Short Peace",
+        "movie_number": null,
+        "year": 2013,
+        "confidence": "High"
+      },
+      {
+        "file_path": "[Mabors&MGRT][BDrip]SHORT PEACE - GAMBO (1920x1080_x264Hi10P_thd).mkv",
+        "movie_title": "GAMBO",
+        "movie_number": null,
+        "year": 2013,
+        "confidence": "High"
+      },
+      {
+        "file_path": "[Mabors&MGRT][BDrip]SHORT PEACE - 九十九 (1920x1080_x264Hi10P_thd).mkv",
+        "movie_title": "九十九",
+        "movie_number": null,
+        "year": 2013,
+        "confidence": "High"
+      },
+      {
+        "file_path": "[Mabors&MGRT][BDrip]SHORT PEACE - 武器よさらば (1920x1080_x264Hi10P_thd).mkv",
+        "movie_title": "武器よさらば",
+        "movie_number": null,
+        "year": 2013,
+        "confidence": "High"
+      },
+      {
+        "file_path": "[Mabors&MGRT][BDrip]SHORT PEACE - 火要鎮 (1920x1080_x264Hi10P_thd).mkv",
+        "movie_title": "火要鎮",
+        "movie_number": null,
+        "year": 2013,
+        "confidence": "High"
+      }
+    ],
+    "unmatched_files": [
+      "[Mabors&MGRT][BDrip]SHORT PEACE - OP (1920x1080_x264Hi10P_thd).mkv"
+    ],
+    "conflict_details": [
+      "SHORT PEACE - OP为片头内容，非正片"
+    ],
+    "extra_notes": null
+  },
+  "task_plan": {
+    "is_movie": true,
+    "ai_type": "movie",
+    "tv_available": false,
+    "movie_available": true,
+    "selected_confidence": "High"
+  },
+  "final_type": "movie"
+}

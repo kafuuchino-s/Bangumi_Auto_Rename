@@ -1,0 +1,177 @@
+{
+  "status": "ok",
+  "type": "tv",
+  "title_candidate": "Demon Slayer: Kimetsu no Yaiba",
+  "tmdb_name": "Demon Slayer: Kimetsu no Yaiba",
+  "tmdb_id": 85937,
+  "file_mapping": [
+    {
+      "source_index": 1,
+      "file_path": null,
+      "tmdb_season": 5,
+      "tmdb_episode": 1,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 2,
+      "file_path": null,
+      "tmdb_season": 5,
+      "tmdb_episode": 2,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 3,
+      "file_path": null,
+      "tmdb_season": 5,
+      "tmdb_episode": 3,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 4,
+      "file_path": null,
+      "tmdb_season": 5,
+      "tmdb_episode": 4,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 5,
+      "file_path": null,
+      "tmdb_season": 5,
+      "tmdb_episode": 5,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 6,
+      "file_path": null,
+      "tmdb_season": 5,
+      "tmdb_episode": 6,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 7,
+      "file_path": null,
+      "tmdb_season": 5,
+      "tmdb_episode": 7,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 8,
+      "file_path": null,
+      "tmdb_season": 5,
+      "tmdb_episode": 8,
+      "episode_type": "regular",
+      "confidence": "High"
+    }
+  ],
+  "analysis_result": {
+    "confidence": "High",
+    "reason": "本地主文件名均为“柱稽古編 #1-#8”，与《Demon Slayer: Kimetsu no Yaiba》官方第5季《柱训练篇》正片的连续集数完全对应；按 TMDB 现有正片编号映射为 S05E01-S05E08。",
+    "season_mapping": [
+      {
+        "local_group_name": "鬼滅の刃 柱稽古編",
+        "maps_to_tmdb_seasons": [
+          5
+        ]
+      }
+    ],
+    "file_mapping": [
+      {
+        "source_index": 1,
+        "file_path": null,
+        "tmdb_season": 5,
+        "tmdb_episode": 1,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 2,
+        "file_path": null,
+        "tmdb_season": 5,
+        "tmdb_episode": 2,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 3,
+        "file_path": null,
+        "tmdb_season": 5,
+        "tmdb_episode": 3,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 4,
+        "file_path": null,
+        "tmdb_season": 5,
+        "tmdb_episode": 4,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 5,
+        "file_path": null,
+        "tmdb_season": 5,
+        "tmdb_episode": 5,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 6,
+        "file_path": null,
+        "tmdb_season": 5,
+        "tmdb_episode": 6,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 7,
+        "file_path": null,
+        "tmdb_season": 5,
+        "tmdb_episode": 7,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 8,
+        "file_path": null,
+        "tmdb_season": 5,
+        "tmdb_episode": 8,
+        "episode_type": "regular",
+        "confidence": "High"
+      }
+    ],
+    "unmatched_files": [
+      "Extras/[AI-Raws] 鬼滅の刃 柱稽古編 ワールドツアー上映 舞台挨拶ダイジエスト シンガポール (BD HEVC 1920x1080 FLAC)[7FF8CE45].mkv",
+      "Extras/[AI-Raws] 鬼滅の刃 柱稽古編 ワールドツアー上映 舞台挨拶ダイジエスト ジャカルタ (BD HEVC 1920x1080 FLAC)[03120514].mkv",
+      "Extras/[AI-Raws] 鬼滅の刃 柱稽古編 ワールドツアー上映 舞台挨拶ダイジエスト ソウル (BD HEVC 1920x1080 FLAC)[78D86FC8].mkv",
+      "Extras/[AI-Raws] 鬼滅の刃 柱稽古編 ワールドツアー上映 舞台挨拶ダイジエスト ニューヨーク (BD HEVC 1920x1080 FLAC)[E92B1A94].mkv",
+      "Extras/[AI-Raws] 鬼滅の刃 柱稽古編 ワールドツアー上映 舞台挨拶ダイジエスト バンコク (BD HEVC 1920x1080 FLAC)[F72BE16A].mkv",
+      "Extras/[AI-Raws] 鬼滅の刃 柱稽古編 ワールドツアー上映 舞台挨拶ダイジエスト パリ (BD HEVC 1920x1080 FLAC)[EDAD21EC].mkv",
+      "Extras/[AI-Raws] 鬼滅の刃 柱稽古編 ワールドツアー上映 舞台挨拶ダイジエスト ムンバイ (BD HEVC 1920x1080 FLAC)[33A09994].mkv",
+      "Extras/[AI-Raws] 鬼滅の刃 柱稽古編 ワールドツアー上映 舞台挨拶ダイジエスト メキシコシティ (BD HEVC 1920x1080 FLAC)[57AFF2F2].mkv",
+      "Extras/[AI-Raws] 鬼滅の刃 柱稽古編 ワールドツアー上映 舞台挨拶ダイジエスト ロンドン (BD HEVC 1920x1080 FLAC)[819B4203].mkv",
+      "Extras/[AI-Raws] 鬼滅の刃 柱稽古編 ワールドツアー上映 舞台挨拶ダイジエスト 台北 (BD HEVC 1920x1080 FLAC)[DA968A4F].mkv",
+      "Extras/[AI-Raws] 鬼滅の刃 柱稽古編 ワールドツアー上映 舞台挨拶ダイジエスト 東京 (BD HEVC 1920x1080 FLAC)[ABEC7E53].mkv",
+      "Extras/[AI-Raws] 鬼滅の刃 柱稽古編 ワールドツアー上映 舞台挨拶ダイジエスト 香港 (BD HEVC 1920x1080 FLAC)[51946236].mkv",
+      "Extras/[AI-Raws] 鬼滅の刃 柱稽古編 鬼滅演録 #1 (BD HEVC 1920x1080 FLAC)[4878DD45].mkv",
+      "Extras/[AI-Raws] 鬼滅の刃 柱稽古編 鬼滅演録 #2 (BD HEVC 1920x1080 FLAC)[F8624F7B].mkv",
+      "Extras/[AI-Raws] 鬼滅の刃 柱稽古編 鬼滅演録 #3 (BD HEVC 1920x1080 FLAC)[865CA02D].mkv",
+      "Extras/[AI-Raws] 鬼滅の刃 柱稽古編 鬼滅演録 #4 (BD HEVC 1920x1080 FLAC)[6F897811].mkv",
+      "[AI-Raws] 鬼滅の刃 柱稽古編 #8振り返りアバン (BD HEVC 1920x1080 FLAC)[12FB768A].mkv",
+      "[AI-Raws] 鬼滅の刃 柱稽古編 PV・CM集 (BD HEVC 1920x1080 FLAC)[DD7C0A67].mkv",
+      "[AI-Raws] 鬼滅の刃 柱稽古編 ノンクレジットED (BD HEVC 1920x1080 FLAC)[4231C1B5].mkv",
+      "[AI-Raws] 鬼滅の刃 柱稽古編 ノンクレジットED (BD HEVC 3840x2160 FLAC)[8808A759].mkv",
+      "[AI-Raws] 鬼滅の刃 柱稽古編 ノンクレジットOP (BD HEVC 1920x1080 FLAC)[A15074EE].mkv",
+      "[AI-Raws] 鬼滅の刃 柱稽古編 ノンクレジットOP (BD HEVC 3840x2160 FLAC)[2FA9B08E].mkv"
+    ],
+    "conflict_details": [],
+    "extra_notes": "第1-8个文件与《柱稽古篇》正片编号顺序一致，映射为 Season 5 的 S05E01-S05E08；其余文件为 NCOP/NCED、PV/CM、舞台挨拶与回顾等附加内容，未对应到 TMDB 真实存在的正片集号。"
+  }
+}

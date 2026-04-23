@@ -1,0 +1,1325 @@
+{
+  "root_name": "[philosophy-raws][Strike Witches The Movie]",
+  "files": [
+    {
+      "path": "[philosophy-raws][Strike Witches The Movie][Movie][BDRIP][HEVC Main10P FLAC][1920X1080].default.chs.ass",
+      "size": 180566
+    },
+    {
+      "path": "[philosophy-raws][Strike Witches The Movie][Movie][BDRIP][HEVC Main10P FLAC][1920X1080].mkv",
+      "size": 10355898926
+    },
+    {
+      "path": "Bonus/[philosophy-raws][Strike Witches The Movie][CM][BDRIP][HEVC Main10P FLAC][1920X1080].mkv",
+      "size": 109355647
+    },
+    {
+      "path": "Bonus/[philosophy-raws][Strike Witches The Movie][MenuJP][BDRIP][HEVC Main10P FLAC][1920X1080].mkv",
+      "size": 27827641
+    },
+    {
+      "path": "Bonus/[philosophy-raws][Strike Witches The Movie][MenuUS][BDRemux][H264 AC3][1920X1080].mkv",
+      "size": 147878487
+    },
+    {
+      "path": "Bonus/[philosophy-raws][Strike Witches The Movie][PV1][BDRIP][HEVC Main10P FLAC][1920X1080].mkv",
+      "size": 172590503
+    },
+    {
+      "path": "Bonus/[philosophy-raws][Strike Witches The Movie][PV2][BDRIP][HEVC Main10P FLAC][1920X1080].mkv",
+      "size": 109304990
+    },
+    {
+      "path": "Bonus/[philosophy-raws][Strike Witches The Movie][PV3][BDRIP][HEVC Main10P AC3][1920X1080].mkv",
+      "size": 44352343
+    },
+    {
+      "path": "Bonus/[philosophy-raws][Strike Witches The Movie][SP1][BDRIP][HEVC Main10P FLAC][1920X1080].mkv",
+      "size": 539395659
+    },
+    {
+      "path": "Bonus/[philosophy-raws][Strike Witches The Movie][SP2][BDRIP][HEVC Main10P FLAC][1920X1080].mkv",
+      "size": 399798464
+    },
+    {
+      "path": "Bonus/[philosophy-raws][Strike Witches The Movie][SP3][BDRIP][HEVC Main10P FLAC][1920X1080].mkv",
+      "size": 411845254
+    },
+    {
+      "path": "Bonus/[philosophy-raws][Strike Witches The Movie][SP4][BDRIP][HEVC Main10P FLAC][1920X1080].mkv",
+      "size": 482562420
+    },
+    {
+      "path": "CDs/OST/BK/ストパンsnt02.png",
+      "size": 12672137
+    },
+    {
+      "path": "CDs/OST/BK/ストパンsnt03.png",
+      "size": 9159294
+    },
+    {
+      "path": "CDs/OST/BK/ストパンsnt04.png",
+      "size": 5621907
+    },
+    {
+      "path": "CDs/OST/BK/ストパンsnt05.png",
+      "size": 21895011
+    },
+    {
+      "path": "CDs/OST/BK/ストパンsnt06.png",
+      "size": 13202945
+    },
+    {
+      "path": "CDs/OST/BK/ストパンsnt07.png",
+      "size": 13941200
+    },
+    {
+      "path": "CDs/OST/BK/ストパンsnt08.png",
+      "size": 16428152
+    },
+    {
+      "path": "CDs/OST/BK/ストパンsnt09.png",
+      "size": 13334616
+    },
+    {
+      "path": "CDs/OST/BK/ストパンsnt10.png",
+      "size": 12515546
+    },
+    {
+      "path": "CDs/OST/BK/ストパンsnt11.png",
+      "size": 9213102
+    },
+    {
+      "path": "CDs/OST/BK/ストパンsnt12.png",
+      "size": 14019142
+    },
+    {
+      "path": "CDs/OST/ストライクウィッチーズ劇場版 Original Soundtrack.cue",
+      "size": 5376
+    },
+    {
+      "path": "CDs/OST/ストライクウィッチーズ劇場版 Original Soundtrack.LOG",
+      "size": 1267
+    },
+    {
+      "path": "CDs/OST/ストライクウィッチーズ劇場版 Original Soundtrack.tak",
+      "size": 396950423
+    },
+    {
+      "path": "CDs/主題歌 COLLECTION/BK/ストパンウタ01.png",
+      "size": 13320226
+    },
+    {
+      "path": "CDs/主題歌 COLLECTION/BK/ストパンウタ02.png",
+      "size": 7928478
+    },
+    {
+      "path": "CDs/主題歌 COLLECTION/BK/ストパンウタ03.png",
+      "size": 5347174
+    },
+    {
+      "path": "CDs/主題歌 COLLECTION/BK/ストパンウタ04.png",
+      "size": 21053184
+    },
+    {
+      "path": "CDs/主題歌 COLLECTION/BK/ストパンウタ05.png",
+      "size": 16954150
+    },
+    {
+      "path": "CDs/主題歌 COLLECTION/BK/ストパンウタ06.png",
+      "size": 15582152
+    },
+    {
+      "path": "CDs/主題歌 COLLECTION/BK/ストパンウタ07.png",
+      "size": 15566524
+    },
+    {
+      "path": "CDs/主題歌 COLLECTION/BK/ストパンウタ08.png",
+      "size": 15583993
+    },
+    {
+      "path": "CDs/主題歌 COLLECTION/BK/ストパンウタ09.png",
+      "size": 13064108
+    },
+    {
+      "path": "CDs/主題歌 COLLECTION/BK/ストパンウタ10.png",
+      "size": 12092916
+    },
+    {
+      "path": "CDs/主題歌 COLLECTION/BK/ストパンウタ11.png",
+      "size": 13765758
+    },
+    {
+      "path": "CDs/主題歌 COLLECTION/ストライクウィッチーズ劇場版 主題歌COLLECTION.cue",
+      "size": 3762
+    },
+    {
+      "path": "CDs/主題歌 COLLECTION/ストライクウィッチーズ劇場版 主題歌COLLECTION.LOG",
+      "size": 1235
+    },
+    {
+      "path": "CDs/主題歌 COLLECTION/ストライクウィッチーズ劇場版 主題歌COLLECTION.tak",
+      "size": 449462036
+    },
+    {
+      "path": "CDs/特典CD/宮藤芳佳(CV-福圓美里)、服部静夏(CV-内田彩)、坂本美緒(CV-世戸さおり)、ミーナ・ディートリンデ・ヴィルケ(CV-田中理恵) - 坂本美緒少佐 陣中日誌 一九四五年八月.cue",
+      "size": 2510
+    },
+    {
+      "path": "CDs/特典CD/宮藤芳佳(CV-福圓美里)、服部静夏(CV-内田彩)、坂本美緒(CV-世戸さおり)、ミーナ・ディートリンデ・ヴィルケ(CV-田中理恵) - 坂本美緒少佐 陣中日誌 一九四五年八月.log",
+      "size": 2711
+    },
+    {
+      "path": "CDs/特典CD/宮藤芳佳(CV-福圓美里)、服部静夏(CV-内田彩)、坂本美緒(CV-世戸さおり)、ミーナ・ディートリンデ・ヴィルケ(CV-田中理恵) - 坂本美緒少佐 陣中日誌 一九四五年八月.tak",
+      "size": 109938992
+    },
+    {
+      "path": "CDs/特典CD/第501統合戦闘航空団活動写真秘め声CD.cue",
+      "size": 13753
+    },
+    {
+      "path": "CDs/特典CD/第501統合戦闘航空団活動写真秘め声CD.log",
+      "size": 11216
+    },
+    {
+      "path": "CDs/特典CD/第501統合戦闘航空団活動写真秘め声CD.tak",
+      "size": 50808542
+    },
+    {
+      "path": "CDs/秘め歌コレクション 1/BK/IMG_0001.png",
+      "size": 6483221
+    },
+    {
+      "path": "CDs/秘め歌コレクション 1/BK/IMG_0002.png",
+      "size": 4253113
+    },
+    {
+      "path": "CDs/秘め歌コレクション 1/BK/IMG_0003.png",
+      "size": 4155691
+    },
+    {
+      "path": "CDs/秘め歌コレクション 1/BK/IMG_0004.png",
+      "size": 3287160
+    },
+    {
+      "path": "CDs/秘め歌コレクション 1/BK/IMG_0005.png",
+      "size": 4035397
+    },
+    {
+      "path": "CDs/秘め歌コレクション 1/BK/IMG_0006.png",
+      "size": 4409457
+    },
+    {
+      "path": "CDs/秘め歌コレクション 1/BK/IMG_0007.png",
+      "size": 4278081
+    },
+    {
+      "path": "CDs/秘め歌コレクション 1/BK/IMG_0008.png",
+      "size": 3144837
+    },
+    {
+      "path": "CDs/秘め歌コレクション 1/BK/IMG_0009.png",
+      "size": 1742235
+    },
+    {
+      "path": "CDs/秘め歌コレクション 1/BK/IMG_0010.png",
+      "size": 3202861
+    },
+    {
+      "path": "CDs/秘め歌コレクション 1/BK/IMG_0011.png",
+      "size": 3305384
+    },
+    {
+      "path": "CDs/秘め歌コレクション 1/BK/IMG_0012.png",
+      "size": 1249131
+    },
+    {
+      "path": "CDs/秘め歌コレクション 1/秘め歌コレクション 1.cue",
+      "size": 2316
+    },
+    {
+      "path": "CDs/秘め歌コレクション 1/秘め歌コレクション 1.log",
+      "size": 2328
+    },
+    {
+      "path": "CDs/秘め歌コレクション 1/秘め歌コレクション 1.tak",
+      "size": 239626712
+    },
+    {
+      "path": "CDs/秘め歌コレクション 2/BK/IMG_0001.png",
+      "size": 6312389
+    },
+    {
+      "path": "CDs/秘め歌コレクション 2/BK/IMG_0002.png",
+      "size": 4456808
+    },
+    {
+      "path": "CDs/秘め歌コレクション 2/BK/IMG_0003.png",
+      "size": 4127225
+    },
+    {
+      "path": "CDs/秘め歌コレクション 2/BK/IMG_0004.png",
+      "size": 3699789
+    },
+    {
+      "path": "CDs/秘め歌コレクション 2/BK/IMG_0005.png",
+      "size": 4401567
+    },
+    {
+      "path": "CDs/秘め歌コレクション 2/BK/IMG_0006.png",
+      "size": 4446583
+    },
+    {
+      "path": "CDs/秘め歌コレクション 2/BK/IMG_0007.png",
+      "size": 3605238
+    },
+    {
+      "path": "CDs/秘め歌コレクション 2/BK/IMG_0008.png",
+      "size": 2858329
+    },
+    {
+      "path": "CDs/秘め歌コレクション 2/BK/IMG_0009.png",
+      "size": 1590257
+    },
+    {
+      "path": "CDs/秘め歌コレクション 2/BK/IMG_0010.png",
+      "size": 2879505
+    },
+    {
+      "path": "CDs/秘め歌コレクション 2/BK/IMG_0011.png",
+      "size": 3215415
+    },
+    {
+      "path": "CDs/秘め歌コレクション 2/BK/IMG_0012.png",
+      "size": 1208071
+    },
+    {
+      "path": "CDs/秘め歌コレクション 2/秘め歌コレクション 2.cue",
+      "size": 2189
+    },
+    {
+      "path": "CDs/秘め歌コレクション 2/秘め歌コレクション 2.log",
+      "size": 2252
+    },
+    {
+      "path": "CDs/秘め歌コレクション 2/秘め歌コレクション 2.tak",
+      "size": 227470510
+    },
+    {
+      "path": "CDs/秘め歌コレクション 3/BK/scan0001.png",
+      "size": 4552050
+    },
+    {
+      "path": "CDs/秘め歌コレクション 3/BK/scan0002.png",
+      "size": 6010766
+    },
+    {
+      "path": "CDs/秘め歌コレクション 3/BK/scan0003.png",
+      "size": 6375617
+    },
+    {
+      "path": "CDs/秘め歌コレクション 3/BK/scan0004.png",
+      "size": 4475731
+    },
+    {
+      "path": "CDs/秘め歌コレクション 3/BK/scan0005.png",
+      "size": 4484700
+    },
+    {
+      "path": "CDs/秘め歌コレクション 3/BK/scan0006.png",
+      "size": 4689676
+    },
+    {
+      "path": "CDs/秘め歌コレクション 3/BK/scan0007.png",
+      "size": 4476698
+    },
+    {
+      "path": "CDs/秘め歌コレクション 3/BK/scan0008.png",
+      "size": 5628071
+    },
+    {
+      "path": "CDs/秘め歌コレクション 3/BK/scan0009.png",
+      "size": 5086599
+    },
+    {
+      "path": "CDs/秘め歌コレクション 3/BK/scan0010.png",
+      "size": 2197379
+    },
+    {
+      "path": "CDs/秘め歌コレクション 3/BK/scan0011.png",
+      "size": 4053815
+    },
+    {
+      "path": "CDs/秘め歌コレクション 3/ミーナ・ディートリンデ・ヴィルケ、エーリカ・ハルトマン＆ゲルトルート・バルクホルン  - ストライクウィッチーズ劇場版 秘め歌コレクション3.cue",
+      "size": 2651
+    },
+    {
+      "path": "CDs/秘め歌コレクション 3/ミーナ・ディートリンデ・ヴィルケ、エーリカ・ハルトマン＆ゲルトルート・バルクホルン  - ストライクウィッチーズ劇場版 秘め歌コレクション3.log",
+      "size": 3302
+    },
+    {
+      "path": "CDs/秘め歌コレクション 3/ミーナ・ディートリンデ・ヴィルケ、エーリカ・ハルトマン＆ゲルトルート・バルクホルン  - ストライクウィッチーズ劇場版 秘め歌コレクション3.tak",
+      "size": 208259953
+    },
+    {
+      "path": "CDs/秘め歌コレクション 4/BK/scan0001.png",
+      "size": 4350813
+    },
+    {
+      "path": "CDs/秘め歌コレクション 4/BK/scan0002.png",
+      "size": 6112673
+    },
+    {
+      "path": "CDs/秘め歌コレクション 4/BK/scan0003.png",
+      "size": 6493890
+    },
+    {
+      "path": "CDs/秘め歌コレクション 4/BK/scan0004.png",
+      "size": 5027311
+    },
+    {
+      "path": "CDs/秘め歌コレクション 4/BK/scan0005.png",
+      "size": 4470406
+    },
+    {
+      "path": "CDs/秘め歌コレクション 4/BK/scan0006.png",
+      "size": 5030059
+    },
+    {
+      "path": "CDs/秘め歌コレクション 4/BK/scan0007.png",
+      "size": 3874885
+    },
+    {
+      "path": "CDs/秘め歌コレクション 4/BK/scan0008.png",
+      "size": 5636539
+    },
+    {
+      "path": "CDs/秘め歌コレクション 4/BK/scan0009.png",
+      "size": 4711575
+    },
+    {
+      "path": "CDs/秘め歌コレクション 4/BK/scan0010.png",
+      "size": 2046781
+    },
+    {
+      "path": "CDs/秘め歌コレクション 4/BK/scan0011.png",
+      "size": 5315654
+    },
+    {
+      "path": "CDs/秘め歌コレクション 4/宮藤芳佳、坂本美緒＆服部静夏  - ストライクウィッチーズ劇場版 秘め歌コレクション4.cue",
+      "size": 1826
+    },
+    {
+      "path": "CDs/秘め歌コレクション 4/宮藤芳佳、坂本美緒＆服部静夏  - ストライクウィッチーズ劇場版 秘め歌コレクション4.log",
+      "size": 3140
+    },
+    {
+      "path": "CDs/秘め歌コレクション 4/宮藤芳佳、坂本美緒＆服部静夏  - ストライクウィッチーズ劇場版 秘め歌コレクション4.tak",
+      "size": 223100525
+    },
+    {
+      "path": "CDs/秘め歌コレクション 5/BK/scan0001.png",
+      "size": 4365826
+    },
+    {
+      "path": "CDs/秘め歌コレクション 5/BK/scan0002.png",
+      "size": 6425574
+    },
+    {
+      "path": "CDs/秘め歌コレクション 5/BK/scan0003.png",
+      "size": 6660752
+    },
+    {
+      "path": "CDs/秘め歌コレクション 5/BK/scan0004.png",
+      "size": 4418694
+    },
+    {
+      "path": "CDs/秘め歌コレクション 5/BK/scan0005.png",
+      "size": 4454215
+    },
+    {
+      "path": "CDs/秘め歌コレクション 5/BK/scan0006.png",
+      "size": 4974277
+    },
+    {
+      "path": "CDs/秘め歌コレクション 5/BK/scan0007.png",
+      "size": 4608839
+    },
+    {
+      "path": "CDs/秘め歌コレクション 5/BK/scan0008.png",
+      "size": 5478384
+    },
+    {
+      "path": "CDs/秘め歌コレクション 5/BK/scan0009.png",
+      "size": 5319264
+    },
+    {
+      "path": "CDs/秘め歌コレクション 5/BK/scan0010.png",
+      "size": 2269060
+    },
+    {
+      "path": "CDs/秘め歌コレクション 5/BK/scan0011.png",
+      "size": 4941279
+    },
+    {
+      "path": "CDs/秘め歌コレクション 5/リネット･ビショップ、ペリーヌ･クロステルマン＆アメリー・プランシャール  - ストライクウィッチーズ劇場版 秘め歌コレクション5.cue",
+      "size": 2624
+    },
+    {
+      "path": "CDs/秘め歌コレクション 5/リネット･ビショップ、ペリーヌ･クロステルマン＆アメリー・プランシャール  - ストライクウィッチーズ劇場版 秘め歌コレクション5.log",
+      "size": 3272
+    },
+    {
+      "path": "CDs/秘め歌コレクション 5/リネット･ビショップ、ペリーヌ･クロステルマン＆アメリー・プランシャール  - ストライクウィッチーズ劇場版 秘め歌コレクション5.tak",
+      "size": 204500050
+    },
+    {
+      "path": "Scans/JPN/Amazon_Case_Inside_A.png",
+      "size": 6320822
+    },
+    {
+      "path": "Scans/JPN/Amazon_Case_Inside_B.png",
+      "size": 6454769
+    },
+    {
+      "path": "Scans/JPN/Amazon_Case_Outside_A.png",
+      "size": 7495895
+    },
+    {
+      "path": "Scans/JPN/Amazon_Case_Outside_B.png",
+      "size": 7774152
+    },
+    {
+      "path": "Scans/JPN/Amazon限定版特典CD「劇場版後日談ドラマCD『坂本美緒少佐陣中日誌』」/Amazon_SPCD_001.png",
+      "size": 2936724
+    },
+    {
+      "path": "Scans/JPN/Amazon限定版特典CD「劇場版後日談ドラマCD『坂本美緒少佐陣中日誌』」/Amazon_SPCD_002.png",
+      "size": 2548870
+    },
+    {
+      "path": "Scans/JPN/Amazon限定版特典CD「劇場版後日談ドラマCD『坂本美緒少佐陣中日誌』」/Amazon_SPCD_003.png",
+      "size": 3137725
+    },
+    {
+      "path": "Scans/JPN/Amazon限定版特典CD「劇場版後日談ドラマCD『坂本美緒少佐陣中日誌』」/Amazon_SPCD_004.png",
+      "size": 3164794
+    },
+    {
+      "path": "Scans/JPN/Amazon限定版特典CD「劇場版後日談ドラマCD『坂本美緒少佐陣中日誌』」/Amazon_SPCD_005.png",
+      "size": 3947931
+    },
+    {
+      "path": "Scans/JPN/Box_Back.png",
+      "size": 5212610
+    },
+    {
+      "path": "Scans/JPN/Box_Bottom.png",
+      "size": 998061
+    },
+    {
+      "path": "Scans/JPN/Box_Front.png",
+      "size": 5127722
+    },
+    {
+      "path": "Scans/JPN/Box_Side.png",
+      "size": 1045250
+    },
+    {
+      "path": "Scans/JPN/Box_Top.png",
+      "size": 925304
+    },
+    {
+      "path": "Scans/JPN/Case_Inside.png",
+      "size": 7738711
+    },
+    {
+      "path": "Scans/JPN/Case_Outside.png",
+      "size": 10846254
+    },
+    {
+      "path": "Scans/JPN/Disc_BD.png",
+      "size": 2847418
+    },
+    {
+      "path": "Scans/JPN/Disc_CD.png",
+      "size": 2199212
+    },
+    {
+      "path": "Scans/JPN/チラシ/Flyer_001_A.png",
+      "size": 3628761
+    },
+    {
+      "path": "Scans/JPN/チラシ/Flyer_001_B.png",
+      "size": 3558680
+    },
+    {
+      "path": "Scans/JPN/チラシ/Flyer_002_A.png",
+      "size": 3683619
+    },
+    {
+      "path": "Scans/JPN/チラシ/Flyer_002_B.png",
+      "size": 3546435
+    },
+    {
+      "path": "Scans/JPN/チラシ/Flyer_003_A.png",
+      "size": 3856526
+    },
+    {
+      "path": "Scans/JPN/チラシ/Flyer_003_B.png",
+      "size": 3632583
+    },
+    {
+      "path": "Scans/JPN/劇場版パンフレット 縮刷版/Pamphlet_001.png",
+      "size": 5597258
+    },
+    {
+      "path": "Scans/JPN/劇場版パンフレット 縮刷版/Pamphlet_002.png",
+      "size": 5421142
+    },
+    {
+      "path": "Scans/JPN/劇場版パンフレット 縮刷版/Pamphlet_003.png",
+      "size": 10968575
+    },
+    {
+      "path": "Scans/JPN/劇場版パンフレット 縮刷版/Pamphlet_004.png",
+      "size": 5368324
+    },
+    {
+      "path": "Scans/JPN/劇場版パンフレット 縮刷版/Pamphlet_005.png",
+      "size": 11442929
+    },
+    {
+      "path": "Scans/JPN/劇場版パンフレット 縮刷版/Pamphlet_006.png",
+      "size": 11144336
+    },
+    {
+      "path": "Scans/JPN/劇場版パンフレット 縮刷版/Pamphlet_007.png",
+      "size": 11773453
+    },
+    {
+      "path": "Scans/JPN/劇場版パンフレット 縮刷版/Pamphlet_008.png",
+      "size": 12024081
+    },
+    {
+      "path": "Scans/JPN/劇場版パンフレット 縮刷版/Pamphlet_009.png",
+      "size": 12196981
+    },
+    {
+      "path": "Scans/JPN/劇場版パンフレット 縮刷版/Pamphlet_010.png",
+      "size": 11510620
+    },
+    {
+      "path": "Scans/JPN/劇場版パンフレット 縮刷版/Pamphlet_011.png",
+      "size": 11124428
+    },
+    {
+      "path": "Scans/JPN/劇場版パンフレット 縮刷版/Pamphlet_012.png",
+      "size": 11134285
+    },
+    {
+      "path": "Scans/JPN/劇場版パンフレット 縮刷版/Pamphlet_013.png",
+      "size": 10915839
+    },
+    {
+      "path": "Scans/JPN/劇場版パンフレット 縮刷版/Pamphlet_014.png",
+      "size": 11126641
+    },
+    {
+      "path": "Scans/JPN/劇場版パンフレット 縮刷版/Pamphlet_015.png",
+      "size": 10884015
+    },
+    {
+      "path": "Scans/JPN/劇場版パンフレット 縮刷版/Pamphlet_016.png",
+      "size": 11057914
+    },
+    {
+      "path": "Scans/JPN/劇場版パンフレット 縮刷版/Pamphlet_017.png",
+      "size": 11553853
+    },
+    {
+      "path": "Scans/JPN/劇場版パンフレット 縮刷版/Pamphlet_018.png",
+      "size": 13153832
+    },
+    {
+      "path": "Scans/JPN/劇場版パンフレット 縮刷版/Pamphlet_019.png",
+      "size": 9855047
+    },
+    {
+      "path": "Scans/JPN/劇場版パンフレット 縮刷版/Pamphlet_020.png",
+      "size": 10308639
+    },
+    {
+      "path": "Scans/JPN/劇場版パンフレット 縮刷版/Pamphlet_021.png",
+      "size": 13015636
+    },
+    {
+      "path": "Scans/JPN/劇場版パンフレット 縮刷版/Pamphlet_022.png",
+      "size": 10776122
+    },
+    {
+      "path": "Scans/JPN/劇場版パンフレット 縮刷版/Pamphlet_023.png",
+      "size": 11403214
+    },
+    {
+      "path": "Scans/JPN/劇場版パンフレット 縮刷版/Pamphlet_024.png",
+      "size": 12326314
+    },
+    {
+      "path": "Scans/JPN/劇場版パンフレット 縮刷版/Pamphlet_025.png",
+      "size": 10865303
+    },
+    {
+      "path": "Scans/JPN/劇場版パンフレット 縮刷版/Pamphlet_026.png",
+      "size": 12459370
+    },
+    {
+      "path": "Scans/JPN/劇場版パンフレット 縮刷版/Pamphlet_027.png",
+      "size": 12065802
+    },
+    {
+      "path": "Scans/JPN/劇場版パンフレット 縮刷版/Pamphlet_028.png",
+      "size": 11415704
+    },
+    {
+      "path": "Scans/JPN/劇場版パンフレット 縮刷版/Pamphlet_029.png",
+      "size": 5487088
+    },
+    {
+      "path": "Scans/JPN/劇場版パンフレット 縮刷版/Pamphlet_030.png",
+      "size": 11159228
+    },
+    {
+      "path": "Scans/JPN/応援画集 上卷/Illustration_A_001.png",
+      "size": 5066275
+    },
+    {
+      "path": "Scans/JPN/応援画集 上卷/Illustration_A_002.png",
+      "size": 9106382
+    },
+    {
+      "path": "Scans/JPN/応援画集 上卷/Illustration_A_003.png",
+      "size": 11145833
+    },
+    {
+      "path": "Scans/JPN/応援画集 上卷/Illustration_A_004.png",
+      "size": 11538074
+    },
+    {
+      "path": "Scans/JPN/応援画集 上卷/Illustration_A_005.png",
+      "size": 10954748
+    },
+    {
+      "path": "Scans/JPN/応援画集 上卷/Illustration_A_006.png",
+      "size": 10730672
+    },
+    {
+      "path": "Scans/JPN/応援画集 上卷/Illustration_A_007.png",
+      "size": 11822101
+    },
+    {
+      "path": "Scans/JPN/応援画集 上卷/Illustration_A_008.png",
+      "size": 11173056
+    },
+    {
+      "path": "Scans/JPN/応援画集 上卷/Illustration_A_009.png",
+      "size": 10845546
+    },
+    {
+      "path": "Scans/JPN/応援画集 上卷/Illustration_A_010.png",
+      "size": 9444673
+    },
+    {
+      "path": "Scans/JPN/応援画集 上卷/Illustration_A_011.png",
+      "size": 3420914
+    },
+    {
+      "path": "Scans/JPN/応援画集 下卷/Illustration_B_001.png",
+      "size": 5338170
+    },
+    {
+      "path": "Scans/JPN/応援画集 下卷/Illustration_B_002.png",
+      "size": 10489747
+    },
+    {
+      "path": "Scans/JPN/応援画集 下卷/Illustration_B_003.png",
+      "size": 11302246
+    },
+    {
+      "path": "Scans/JPN/応援画集 下卷/Illustration_B_004.png",
+      "size": 11961540
+    },
+    {
+      "path": "Scans/JPN/応援画集 下卷/Illustration_B_005.png",
+      "size": 10911977
+    },
+    {
+      "path": "Scans/JPN/応援画集 下卷/Illustration_B_006.png",
+      "size": 11126088
+    },
+    {
+      "path": "Scans/JPN/応援画集 下卷/Illustration_B_007.png",
+      "size": 11491409
+    },
+    {
+      "path": "Scans/JPN/応援画集 下卷/Illustration_B_008.png",
+      "size": 11549282
+    },
+    {
+      "path": "Scans/JPN/応援画集 下卷/Illustration_B_009.png",
+      "size": 12100482
+    },
+    {
+      "path": "Scans/JPN/応援画集 下卷/Illustration_B_010.png",
+      "size": 9891413
+    },
+    {
+      "path": "Scans/JPN/応援画集 下卷/Illustration_B_011.png",
+      "size": 5221476
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_001.png",
+      "size": 5224945
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_002.png",
+      "size": 3136866
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_003.png",
+      "size": 5433465
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_004.png",
+      "size": 4585754
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_005.png",
+      "size": 5274024
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_006.png",
+      "size": 4927930
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_007.png",
+      "size": 5208362
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_008.png",
+      "size": 4749400
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_009.png",
+      "size": 5255102
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_010.png",
+      "size": 5009419
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_011.png",
+      "size": 5173824
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_012.png",
+      "size": 4720894
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_013.png",
+      "size": 5222948
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_014.png",
+      "size": 4620667
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_015.png",
+      "size": 5406615
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_016.png",
+      "size": 4801763
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_017.png",
+      "size": 5317501
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_018.png",
+      "size": 4679535
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_019.png",
+      "size": 5349197
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_020.png",
+      "size": 4709670
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_021.png",
+      "size": 5303513
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_022.png",
+      "size": 4756366
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_023.png",
+      "size": 5409951
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_024.png",
+      "size": 4728209
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_025.png",
+      "size": 5276033
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_026.png",
+      "size": 4867304
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_027.png",
+      "size": 5327235
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_028.png",
+      "size": 4724445
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_029.png",
+      "size": 5216580
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_030.png",
+      "size": 4836021
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_031.png",
+      "size": 5337084
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_032.png",
+      "size": 4718928
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_033.png",
+      "size": 5200522
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_034.png",
+      "size": 4767587
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_035.png",
+      "size": 5167975
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_036.png",
+      "size": 4803249
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_037.png",
+      "size": 5163418
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_038.png",
+      "size": 4663909
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_039.png",
+      "size": 5049882
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_040.png",
+      "size": 4845043
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_041.png",
+      "size": 5227365
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_042.png",
+      "size": 4633380
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_043.png",
+      "size": 5106222
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_044.png",
+      "size": 4710352
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_045.png",
+      "size": 5162049
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_046.png",
+      "size": 5332468
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_047.png",
+      "size": 5212764
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_048.png",
+      "size": 5379540
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_049.png",
+      "size": 5286966
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_050.png",
+      "size": 4657240
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_051.png",
+      "size": 4730018
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_052.png",
+      "size": 5045415
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_053.png",
+      "size": 5105143
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_054.png",
+      "size": 4792197
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_055.png",
+      "size": 4885343
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_056.png",
+      "size": 4809259
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_057.png",
+      "size": 4661506
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_058.png",
+      "size": 5001590
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_059.png",
+      "size": 5018449
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_060.png",
+      "size": 5247873
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_061.png",
+      "size": 5178538
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_062.png",
+      "size": 4667152
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_063.png",
+      "size": 5053253
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_064.png",
+      "size": 4875168
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_065.png",
+      "size": 4822679
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_066.png",
+      "size": 4904316
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_067.png",
+      "size": 4499260
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_068.png",
+      "size": 4682006
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_069.png",
+      "size": 4620226
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_070.png",
+      "size": 4507486
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_071.png",
+      "size": 4476593
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_072.png",
+      "size": 4817798
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_073.png",
+      "size": 4539320
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_074.png",
+      "size": 4693080
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_075.png",
+      "size": 4474585
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_076.png",
+      "size": 4570093
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_077.png",
+      "size": 4585106
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_078.png",
+      "size": 4747121
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_079.png",
+      "size": 4750138
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_080.png",
+      "size": 4820497
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_081.png",
+      "size": 4610798
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_082.png",
+      "size": 4846001
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_083.png",
+      "size": 4667833
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_084.png",
+      "size": 4751095
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_085.png",
+      "size": 4779662
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_086.png",
+      "size": 4862719
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_087.png",
+      "size": 4358207
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_088.png",
+      "size": 4528161
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_089.png",
+      "size": 4730481
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_090.png",
+      "size": 5047019
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_091.png",
+      "size": 4785051
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_092.png",
+      "size": 4719512
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_093.png",
+      "size": 5062113
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_094.png",
+      "size": 4938896
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_095.png",
+      "size": 4683520
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_096.png",
+      "size": 4341020
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_097.png",
+      "size": 4939171
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_098.png",
+      "size": 4784854
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_099.png",
+      "size": 4760758
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_100.png",
+      "size": 4573612
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_101.png",
+      "size": 4800329
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_102.png",
+      "size": 5185206
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_103.png",
+      "size": 5151274
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_104.png",
+      "size": 4852992
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_105.png",
+      "size": 5003929
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_106.png",
+      "size": 4926398
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_107.png",
+      "size": 4799145
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_108.png",
+      "size": 5115999
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_109.png",
+      "size": 4968623
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_110.png",
+      "size": 4334384
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_111.png",
+      "size": 4803765
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_112.png",
+      "size": 4931112
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_113.png",
+      "size": 4908413
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_114.png",
+      "size": 4903580
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_115.png",
+      "size": 5076762
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_116.png",
+      "size": 4958374
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_117.png",
+      "size": 4951114
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_118.png",
+      "size": 4961820
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_119.png",
+      "size": 4903513
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_120.png",
+      "size": 4341122
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_121.png",
+      "size": 4995828
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_122.png",
+      "size": 5007583
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_123.png",
+      "size": 4949620
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_124.png",
+      "size": 4913789
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_125.png",
+      "size": 4926944
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_126.png",
+      "size": 5113809
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_127.png",
+      "size": 4836330
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_128.png",
+      "size": 5199555
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_129.png",
+      "size": 4697934
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_130.png",
+      "size": 4293228
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_131.png",
+      "size": 3197754
+    },
+    {
+      "path": "Scans/JPN/第501統合戦闘航空団 活動写真全記録/Record_132.png",
+      "size": 5573584
+    },
+    {
+      "path": "Scans/USA/IMG_20161009_0001.jpg",
+      "size": 1290769
+    },
+    {
+      "path": "Scans/USA/IMG_20161009_0002.jpg",
+      "size": 1092062
+    },
+    {
+      "path": "Scans/USA/IMG_20161009_0003.jpg",
+      "size": 270964
+    },
+    {
+      "path": "Scans/USA/IMG_20161009_0004.jpg",
+      "size": 179752
+    }
+  ]
+}

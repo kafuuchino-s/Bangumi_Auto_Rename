@@ -1,0 +1,228 @@
+{
+  "status": "ok",
+  "type": "tv",
+  "title_candidate": "男子高校生の日常",
+  "tmdb_name": "男子高校生の日常",
+  "tmdb_id": 45859,
+  "timing": {
+    "analysis_seconds": 45.994
+  },
+  "file_mapping": [
+    {
+      "source_index": 1,
+      "file_path": "[VCB-Studio] Danshi Kokosei no Nichijou [01][Ma10p_1080p][x265_flac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 1,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 2,
+      "file_path": "[VCB-Studio] Danshi Kokosei no Nichijou [02][Ma10p_1080p][x265_flac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 2,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 3,
+      "file_path": "[VCB-Studio] Danshi Kokosei no Nichijou [03][Ma10p_1080p][x265_flac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 3,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 4,
+      "file_path": "[VCB-Studio] Danshi Kokosei no Nichijou [04][Ma10p_1080p][x265_flac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 4,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 5,
+      "file_path": "[VCB-Studio] Danshi Kokosei no Nichijou [05][Ma10p_1080p][x265_flac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 5,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 6,
+      "file_path": "[VCB-Studio] Danshi Kokosei no Nichijou [06][Ma10p_1080p][x265_flac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 6,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 7,
+      "file_path": "[VCB-Studio] Danshi Kokosei no Nichijou [07][Ma10p_1080p][x265_flac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 7,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 8,
+      "file_path": "[VCB-Studio] Danshi Kokosei no Nichijou [08][Ma10p_1080p][x265_flac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 8,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 9,
+      "file_path": "[VCB-Studio] Danshi Kokosei no Nichijou [09][Ma10p_1080p][x265_flac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 9,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 10,
+      "file_path": "[VCB-Studio] Danshi Kokosei no Nichijou [10][Ma10p_1080p][x265_flac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 10,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 11,
+      "file_path": "[VCB-Studio] Danshi Kokosei no Nichijou [11][Ma10p_1080p][x265_flac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 11,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 12,
+      "file_path": "[VCB-Studio] Danshi Kokosei no Nichijou [12v2][Ma10p_1080p][x265_flac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 12,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 31,
+      "file_path": "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [SP01][Ma10p_1080p][x265_flac].mkv",
+      "tmdb_season": 0,
+      "tmdb_episode": 1,
+      "episode_type": "special",
+      "confidence": "Medium"
+    },
+    {
+      "source_index": 32,
+      "file_path": "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [SP02][Ma10p_1080p][x265_flac].mkv",
+      "tmdb_season": 0,
+      "tmdb_episode": 2,
+      "episode_type": "special",
+      "confidence": "Medium"
+    },
+    {
+      "source_index": 33,
+      "file_path": "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [SP03][Ma10p_1080p][x265_flac].mkv",
+      "tmdb_season": 0,
+      "tmdb_episode": 3,
+      "episode_type": "special",
+      "confidence": "Medium"
+    },
+    {
+      "source_index": 34,
+      "file_path": "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [SP04][Ma10p_1080p][x265_flac].mkv",
+      "tmdb_season": 0,
+      "tmdb_episode": 4,
+      "episode_type": "special",
+      "confidence": "Medium"
+    },
+    {
+      "source_index": 35,
+      "file_path": "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [SP05][Ma10p_1080p][x265_flac].mkv",
+      "tmdb_season": 0,
+      "tmdb_episode": 5,
+      "episode_type": "special",
+      "confidence": "Medium"
+    },
+    {
+      "source_index": 36,
+      "file_path": "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [SP06][Ma10p_1080p][x265_flac].mkv",
+      "tmdb_season": 0,
+      "tmdb_episode": 6,
+      "episode_type": "special",
+      "confidence": "Medium"
+    },
+    {
+      "source_index": 37,
+      "file_path": "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [SP_EP08][Ma10p_1080p][x265_flac].mkv",
+      "tmdb_season": 0,
+      "tmdb_episode": 7,
+      "episode_type": "special",
+      "confidence": "Medium"
+    }
+  ],
+  "conflict_details": [],
+  "analysis_result": {
+    "confidence": "Medium",
+    "reason": "正片按集号直配，SP 特典按顺序对应 Season 0。",
+    "season_mapping": [],
+    "file_mapping_count": 19,
+    "unmatched_count": 0,
+    "conflict_count": 0
+  },
+  "hydration_notes": {
+    "hydrated_count": 19,
+    "examples": [
+      "hydrated:1:[VCB-Studio] Danshi Kokosei no Nichijou [01][Ma10p_1080p][x265_flac].mkv",
+      "hydrated:2:[VCB-Studio] Danshi Kokosei no Nichijou [02][Ma10p_1080p][x265_flac].mkv",
+      "hydrated:3:[VCB-Studio] Danshi Kokosei no Nichijou [03][Ma10p_1080p][x265_flac].mkv",
+      "hydrated:4:[VCB-Studio] Danshi Kokosei no Nichijou [04][Ma10p_1080p][x265_flac].mkv",
+      "hydrated:5:[VCB-Studio] Danshi Kokosei no Nichijou [05][Ma10p_1080p][x265_flac].mkv"
+    ]
+  },
+  "task_plan": {
+    "is_movie": false,
+    "ai_type": "tv",
+    "tv_available": true,
+    "movie_available": false,
+    "selected_confidence": "High"
+  },
+  "tv_candidate_result": {
+    "status": "ok",
+    "type": "tv",
+    "title_candidate": "男子高校生の日常",
+    "timing": {
+      "analysis_seconds": 45.994
+    },
+    "file_mapping_count": 19,
+    "has_regular": true,
+    "has_special": true,
+    "has_movie_like": false,
+    "analysis_result": {
+      "confidence": "Medium",
+      "reason": "正片按集号直配，SP 特典按顺序对应 Season 0。",
+      "season_mapping": [],
+      "file_mapping_count": 19,
+      "unmatched_count": 0,
+      "conflict_count": 0
+    }
+  },
+  "movie_candidate_result": {
+    "status": "ok",
+    "type": "movie",
+    "title_candidate": "男子高校生の日常",
+    "timing": {
+      "analysis_seconds": 13.131
+    },
+    "collection_analysis": {
+      "is_collection": false,
+      "confidence": "High",
+      "reason": "均为剧集与特典，并非电影合集",
+      "file_mapping_count": 0,
+      "unmatched_count": 38,
+      "conflict_count": 1,
+      "movie_like_paths": []
+    }
+  },
+  "final_type": "tv"
+}

@@ -280,14 +280,14 @@ ARIA 遗留样本已于 2026-04-08 修复完成。
 
 ### 已完成（2026-04-08）
 
-- `tests/test_ai_recognition.py` 已改为复用 `Rename._build_title_inputs()` 与当前 TV 搜索入口
+- `tools/test_ai_recognition.py` 已改为复用 `Rename._build_title_inputs()` 与当前 TV 搜索入口
 - 脚本内手工复刻的 `remove_tag -> divide_by_year -> remove_season -> remove_episode -> get_tv_info_with_seasons()` cleaner-first TV 识别链路已移除
 - `tests/test_filename_parsing.py` 中对 `build_tv_search_queries()` 的断言已收窄为低风险规范化结果导向断言，不再绑定 query 列表首项与过细 patch 产物
 - `tests/test_ai_integration.py` 中对 `rank_tv_candidates()` 的 sequel/spinoff 排序测试已改为结果导向断言，不再绑定具体 `_match_score` 分差
 - `src/rename/cleaner.py` 已做第一轮瘦身：去掉了更脆弱的破折号 subtitle 拆分与“中文标题再剥英文” query 回退
 - `src/rename/get_info.py` 已做第一轮瘦身：移除重复的 `_search_tv_multi_language()` 旧实现，并去掉多季条目的弱加分补丁，仅保留季号 / 系列词 / 年份等薄排序骨架
 - `src/rename/process.py` 的共享标题输入已进一步收敛为统一的点号标准化 + 年份提取入口
-- 相关位置：`tests/test_ai_recognition.py`、`tests/test_filename_parsing.py`、`tests/test_ai_integration.py`、`src/rename/cleaner.py`、`src/rename/get_info.py`、`src/rename/process.py`
+- 相关位置：`tools/test_ai_recognition.py`、`tests/test_filename_parsing.py`、`tests/test_ai_integration.py`、`src/rename/cleaner.py`、`src/rename/get_info.py`、`src/rename/process.py`
 
 ### 当前状态
 
@@ -420,7 +420,7 @@ ARIA 遗留样本已于 2026-04-08 修复完成。
 
 | 模块 | 逻辑位置 | 当前作用 | 标签 | 替代方式 | 是否可在第一轮处理 |
 |------|----------|----------|------|----------|--------------------|
-| `tests/test_ai_recognition.py` | `tests/test_ai_recognition.py:149-168` | 手工复刻 cleaner-first 标题清洗与 `get_tv_info_with_seasons()` 搜索入口 | 可删/可改 | 复用 `Rename._build_title_inputs()` + `Search.search_tv_by_query()` / 当前主流程 TV 入口 | 已完成（2026-04-08） |
+| `tools/test_ai_recognition.py` | `tools/test_ai_recognition.py` | 手工复刻 cleaner-first 标题清洗与 `get_tv_info_with_seasons()` 搜索入口 | 可删/可改 | 复用 `Rename._build_title_inputs()` + `Search.search_tv_by_query()` / 当前主流程 TV 入口 | 已完成（2026-04-08） |
 | `src/rename/cleaner.py` | `src/rename/cleaner.py:156-248` | TV query 噪声剔除、标题拆分、个案 query 变体构造 | 慎删 | 保留少量低风险规范化，其余逐步交给 AI title / fallback title | 观察 |
 | `src/rename/get_info.py` | `src/rename/get_info.py:152-250` | sequel / spinoff / special token 提取与候选打分补丁 | 慎删 | 保留薄排序，最终歧义选择继续交给 AI | 观察 |
 | `src/rename/get_info.py` | `src/rename/get_info.py:266-385` | 候选 `_match_score` 计算与确定性排序 | 慎删 | 降低个案 token 补丁密度，保留轻量召回/排序骨架 | 否 |

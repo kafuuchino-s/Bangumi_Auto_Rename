@@ -1,0 +1,54 @@
+{
+  "status": "ok",
+  "type": "movie",
+  "title_candidate": "マンガ家さんとアシスタントさんと",
+  "timing": {
+    "analysis_seconds": 13.624
+  },
+  "collection_analysis": {
+    "is_collection": false,
+    "collection_name": "マンガ家さんとアシスタントさんと",
+    "confidence": "High",
+    "reason": "包含TV剧集与特典，非电影合集",
+    "file_mapping": [],
+    "unmatched_files": [
+      "[ANK-Raws] マンガ家さんとアシスタントさんと (Creditless ED) (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[ANK-Raws] マンガ家さんとアシスタントさんと (Creditless OP) (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[ANK-Raws] マンガ家さんとアシスタントさんと (Ep_12 Creditless ED) (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[ANK-Raws] マンガ家さんとアシスタントさんと 01 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[ANK-Raws] マンガ家さんとアシスタントさんと 02 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[ANK-Raws] マンガ家さんとアシスタントさんと 03 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[ANK-Raws] マンガ家さんとアシスタントさんと 04 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[ANK-Raws] マンガ家さんとアシスタントさんと 05 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[ANK-Raws] マンガ家さんとアシスタントさんと 06 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[ANK-Raws] マンガ家さんとアシスタントさんと 07 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[ANK-Raws] マンガ家さんとアシスタントさんと 08 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[ANK-Raws] マンガ家さんとアシスタントさんと 09 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[ANK-Raws] マンガ家さんとアシスタントさんと 10 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[ANK-Raws] マンガ家さんとアシスタントさんと 11 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[ANK-Raws] マンガ家さんとアシスタントさんと 12 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[ANK-Raws] マンガ家さんとアシスタントさんと CM01 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[ANK-Raws] マンガ家さんとアシスタントさんと CM02 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[ANK-Raws] マンガ家さんとアシスタントさんと Info01 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[ANK-Raws] マンガ家さんとアシスタントさんと Info02 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[ANK-Raws] マンガ家さんとアシスタントさんと PV01 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[ANK-Raws] マンガ家さんとアシスタントさんと PV02 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "Menu (Vol.1)/Menu (Vol.1).mkv",
+      "Menu (Vol.2)/Menu (Vol.2).mkv",
+      "Menu (Vol.3)/Menu (Vol.3).mkv",
+      "Menu (Vol.4)/Menu (Vol.4).mkv",
+      "Menu (Vol.5)/Menu (Vol.5).mkv",
+      "Menu (Vol.6)/Menu (Vol.6).mkv",
+      "「OVA01 足須さんの休日 & やってみなくちゃわからない」.mkv",
+      "「OVA02 夢みるマンガ家さん」.mkv",
+      "「OVA03 デートでお勉強」.mkv",
+      "「OVA04 かわいいを守ろう」.mkv",
+      "「OVA05 妹VS編集長」.mkv",
+      "「OVA06 お昼寝日和 & キレたアシスタント」.mkv"
+    ],
+    "conflict_details": [
+      "文件均为剧集、OVA与特典，非电影合集"
+    ],
+    "extra_notes": null
+  }
+}

@@ -1,0 +1,236 @@
+{
+  "status": "ok",
+  "type": "tv",
+  "title_candidate": "Yuyushiki",
+  "tmdb_name": "Yuyushiki",
+  "tmdb_id": 52890,
+  "timing": {
+    "analysis_seconds": 27.73
+  },
+  "file_mapping": [
+    {
+      "source_index": 1,
+      "file_path": "[CASO][YuYuShiki][01][BDRIP][1080p_MKV][x264_FLAC][E283107B].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 1,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 2,
+      "file_path": "[CASO][YuYuShiki][02][BDRIP][1080p_MKV][x264_FLAC][1E03536D].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 2,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 3,
+      "file_path": "[CASO][YuYuShiki][03][BDRIP][1080p_MKV][x264_FLAC][3FD88D15].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 3,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 4,
+      "file_path": "[CASO][YuYuShiki][04][BDRIP][1080p_MKV][x264_FLAC][A1ECAFC7].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 4,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 5,
+      "file_path": "[CASO][YuYuShiki][05][BDRIP][1080p_MKV][x264_FLAC][6C82ABD3].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 5,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 6,
+      "file_path": "[CASO][YuYuShiki][06][BDRIP][1080p_MKV][x264_FLAC][ECC5734B].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 6,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 7,
+      "file_path": "[CASO][YuYuShiki][07][BDRIP][1080p_MKV][x264_FLAC][F7950B9F].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 7,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 8,
+      "file_path": "[CASO][YuYuShiki][08][BDRIP][1080p_MKV][x264_FLAC][A717CB3A].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 8,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 9,
+      "file_path": "[CASO][YuYuShiki][09][BDRIP][1080p_MKV][x264_FLAC][527ED587].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 9,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 10,
+      "file_path": "[CASO][YuYuShiki][10][BDRIP][1080p_MKV][x264_FLAC][C898AD1F].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 10,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 11,
+      "file_path": "[CASO][YuYuShiki][11][BDRIP][1080p_MKV][x264_FLAC][C01AF0A8].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 11,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 12,
+      "file_path": "[CASO][YuYuShiki][12][BDRIP][1080p_MKV][x264_FLAC][EC3AB591].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 12,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 26,
+      "file_path": "[CASO][YuYuShiki][SP01][BDRIP][1080p_MKV][x264_FLAC][46D07315].mkv",
+      "tmdb_season": 0,
+      "tmdb_episode": 1,
+      "episode_type": "special",
+      "confidence": "Medium"
+    },
+    {
+      "source_index": 27,
+      "file_path": "[CASO][YuYuShiki][SP02][BDRIP][1080p_MKV][x264_FLAC][64465953].mkv",
+      "tmdb_season": 0,
+      "tmdb_episode": 2,
+      "episode_type": "special",
+      "confidence": "Medium"
+    },
+    {
+      "source_index": 28,
+      "file_path": "[CASO][YuYuShiki][SP03][BDRIP][1080p_MKV][x264_FLAC][E1925D03].mkv",
+      "tmdb_season": 0,
+      "tmdb_episode": 3,
+      "episode_type": "special",
+      "confidence": "Medium"
+    },
+    {
+      "source_index": 29,
+      "file_path": "[CASO][YuYuShiki][SP04][BDRIP][1080p_MKV][x264_FLAC][E5092B72].mkv",
+      "tmdb_season": 0,
+      "tmdb_episode": 4,
+      "episode_type": "special",
+      "confidence": "Medium"
+    },
+    {
+      "source_index": 30,
+      "file_path": "[CASO][YuYuShiki][SP05][BDRIP][1080p_MKV][x264_FLAC][CB7514AF].mkv",
+      "tmdb_season": 0,
+      "tmdb_episode": 5,
+      "episode_type": "special",
+      "confidence": "Medium"
+    },
+    {
+      "source_index": 31,
+      "file_path": "[CASO][YuYuShiki][SP06][BDRIP][1080p_MKV][x264_FLAC][8D12EC46].mkv",
+      "tmdb_season": 0,
+      "tmdb_episode": 6,
+      "episode_type": "special",
+      "confidence": "Medium"
+    }
+  ],
+  "conflict_details": [],
+  "analysis_result": {
+    "confidence": "Medium",
+    "reason": "正片按编号直配，SP文件对应Season 0前6集。",
+    "season_mapping": [
+      {
+        "local_group_name": "YuYuShiki",
+        "maps_to_tmdb_seasons": [
+          0,
+          1
+        ]
+      }
+    ],
+    "file_mapping_count": 18,
+    "unmatched_count": 0,
+    "conflict_count": 0
+  },
+  "hydration_notes": {
+    "hydrated_count": 18,
+    "examples": [
+      "hydrated:1:[CASO][YuYuShiki][01][BDRIP][1080p_MKV][x264_FLAC][E283107B].mkv",
+      "hydrated:2:[CASO][YuYuShiki][02][BDRIP][1080p_MKV][x264_FLAC][1E03536D].mkv",
+      "hydrated:3:[CASO][YuYuShiki][03][BDRIP][1080p_MKV][x264_FLAC][3FD88D15].mkv",
+      "hydrated:4:[CASO][YuYuShiki][04][BDRIP][1080p_MKV][x264_FLAC][A1ECAFC7].mkv",
+      "hydrated:5:[CASO][YuYuShiki][05][BDRIP][1080p_MKV][x264_FLAC][6C82ABD3].mkv"
+    ]
+  },
+  "task_plan": {
+    "is_movie": false,
+    "ai_type": "tv",
+    "tv_available": true,
+    "movie_available": false,
+    "selected_confidence": "High"
+  },
+  "tv_candidate_result": {
+    "status": "ok",
+    "type": "tv",
+    "title_candidate": "Yuyushiki",
+    "timing": {
+      "analysis_seconds": 27.73
+    },
+    "file_mapping_count": 18,
+    "has_regular": true,
+    "has_special": true,
+    "has_movie_like": false,
+    "analysis_result": {
+      "confidence": "Medium",
+      "reason": "正片按编号直配，SP文件对应Season 0前6集。",
+      "season_mapping": [
+        {
+          "local_group_name": "YuYuShiki",
+          "maps_to_tmdb_seasons": [
+            0,
+            1
+          ]
+        }
+      ],
+      "file_mapping_count": 18,
+      "unmatched_count": 0,
+      "conflict_count": 0
+    }
+  },
+  "movie_candidate_result": {
+    "status": "ok",
+    "type": "movie",
+    "title_candidate": "Yuyushiki",
+    "timing": {
+      "analysis_seconds": 11.016
+    },
+    "collection_analysis": {
+      "is_collection": false,
+      "confidence": "High",
+      "reason": "这是动画剧集与特典，不是电影合集",
+      "file_mapping_count": 0,
+      "unmatched_count": 31,
+      "conflict_count": 1,
+      "movie_like_paths": []
+    }
+  },
+  "final_type": "tv"
+}

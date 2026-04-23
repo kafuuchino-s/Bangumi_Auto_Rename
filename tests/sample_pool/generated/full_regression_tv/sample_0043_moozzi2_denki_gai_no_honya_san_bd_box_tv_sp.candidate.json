@@ -1,0 +1,53 @@
+{
+  "status": "ok",
+  "type": "movie",
+  "title_candidate": "Denki-gai no Honya-san",
+  "timing": {
+    "analysis_seconds": 12.691
+  },
+  "collection_analysis": {
+    "is_collection": false,
+    "collection_name": "Denki-gai no Honya-san",
+    "confidence": "Low",
+    "reason": "内容为电视动画剧集与特典，非电影合集",
+    "file_mapping": [],
+    "unmatched_files": [
+      "[Moozzi2] Denki-gai no Honya-san - 01 (BD 1920x1080 x.264 Flac).mkv",
+      "[Moozzi2] Denki-gai no Honya-san - 02 (BD 1920x1080 x.264 Flac).mkv",
+      "[Moozzi2] Denki-gai no Honya-san - 03 (BD 1920x1080 x.264 Flac).mkv",
+      "[Moozzi2] Denki-gai no Honya-san - 04 (BD 1920x1080 x.264 Flac).mkv",
+      "[Moozzi2] Denki-gai no Honya-san - 05 (BD 1920x1080 x.264 Flac).mkv",
+      "[Moozzi2] Denki-gai no Honya-san - 06 (BD 1920x1080 x.264 Flac).mkv",
+      "[Moozzi2] Denki-gai no Honya-san - 07 (BD 1920x1080 x.264 Flac).mkv",
+      "[Moozzi2] Denki-gai no Honya-san - 08 (BD 1920x1080 x.264 Flac).mkv",
+      "[Moozzi2] Denki-gai no Honya-san - 09 (BD 1920x1080 x.264 Flac).mkv",
+      "[Moozzi2] Denki-gai no Honya-san - 10 (BD 1920x1080 x.264 Flac).mkv",
+      "[Moozzi2] Denki-gai no Honya-san - 11 (BD 1920x1080 x.264 Flac).mkv",
+      "[Moozzi2] Denki-gai no Honya-san - 12 END (BD 1920x1080 x.264 Flac).mkv",
+      "EXTRA/[Moozzi2] Denki-gai no Honya-san [SP01] NCOP - 01 (BD 1920x1080 x.264 Flac).mkv",
+      "EXTRA/[Moozzi2] Denki-gai no Honya-san [SP01] NCOP - 02 [ Extra Ver. ] (BD 1920x1080 x.264 Flac).mkv",
+      "EXTRA/[Moozzi2] Denki-gai no Honya-san [SP02] NCED - 01 (BD 1920x1080 x.264 Flac).mkv",
+      "EXTRA/[Moozzi2] Denki-gai no Honya-san [SP02] NCED - 02 [ Extra Ver. ] (BD 1920x1080 x.264 Flac).mkv",
+      "EXTRA/[Moozzi2] Denki-gai no Honya-san [SP02] NCED - 03 [ EP.12 Long Ver. ] (BD 1920x1080 x.264 Flac).mkv",
+      "EXTRA/[Moozzi2] Denki-gai no Honya-san [SP03] PV - 01 (BD 1920x1080 x.264 Flac).mkv",
+      "EXTRA/[Moozzi2] Denki-gai no Honya-san [SP03] PV - 02 (BD 1920x1080 x.264 Flac).mkv",
+      "EXTRA/[Moozzi2] Denki-gai no Honya-san [SP04] CM-SPOT - 01 [ 15sec.] (BD 1920x1080 x.264 Flac).mkv",
+      "EXTRA/[Moozzi2] Denki-gai no Honya-san [SP04] CM-SPOT - 02 [ 30sec.] (BD 1920x1080 x.264 Flac).mkv",
+      "EXTRA/[Moozzi2] Denki-gai no Honya-san [SP05] Web Yokoku - 01 (BD 1920x1080 x.264 Flac).mkv",
+      "EXTRA/[Moozzi2] Denki-gai no Honya-san [SP05] Web Yokoku - 02 (BD 1920x1080 x.264 Flac).mkv",
+      "EXTRA/[Moozzi2] Denki-gai no Honya-san [SP05] Web Yokoku - 03 (BD 1920x1080 x.264 Flac).mkv",
+      "EXTRA/[Moozzi2] Denki-gai no Honya-san [SP05] Web Yokoku - 04 (BD 1920x1080 x.264 Flac).mkv",
+      "EXTRA/[Moozzi2] Denki-gai no Honya-san [SP05] Web Yokoku - 05 (BD 1920x1080 x.264 Flac).mkv",
+      "EXTRA/[Moozzi2] Denki-gai no Honya-san [SP05] Web Yokoku - 06 (BD 1920x1080 x.264 Flac).mkv",
+      "EXTRA/[Moozzi2] Denki-gai no Honya-san [SP05] Web Yokoku - 07 (BD 1920x1080 x.264 Flac).mkv",
+      "EXTRA/[Moozzi2] Denki-gai no Honya-san [SP05] Web Yokoku - 08 (BD 1920x1080 x.264 Flac).mkv",
+      "EXTRA/[Moozzi2] Denki-gai no Honya-san [SP05] Web Yokoku - 09 (BD 1920x1080 x.264 Flac).mkv",
+      "EXTRA/[Moozzi2] Denki-gai no Honya-san [SP05] Web Yokoku - 10 (BD 1920x1080 x.264 Flac).mkv",
+      "EXTRA/[Moozzi2] Denki-gai no Honya-san [SP05] Web Yokoku - 11 (BD 1920x1080 x.264 Flac).mkv"
+    ],
+    "conflict_details": [
+      "文件为TV动画12集及特典，不是电影合集"
+    ],
+    "extra_notes": null
+  }
+}

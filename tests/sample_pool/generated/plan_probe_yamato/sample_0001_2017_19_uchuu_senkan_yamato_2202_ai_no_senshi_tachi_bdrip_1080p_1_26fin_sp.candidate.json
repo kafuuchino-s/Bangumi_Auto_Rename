@@ -1,0 +1,13 @@
+{
+  "status": "tmdb_not_found",
+  "type": "tv",
+  "title_candidate": "Uchuu Senkan Yamato 2202 Ai no Senshi-tachi",
+  "file_mapping": [],
+  "task_plan": {
+    "is_movie": false,
+    "ai_type": "tv",
+    "tv_available": true,
+    "movie_available": false,
+    "selected_confidence": "High"
+  }
+}

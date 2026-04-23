@@ -1,0 +1,621 @@
+{
+  "root_name": "[VCB-Studio] Senki Zesshou Symphogear [Ma10p_1080p]",
+  "files": [
+    {
+      "path": "[VCB-Studio] Senki Zesshou Symphogear [01][Ma10p_1080p][x265_flac].mkv",
+      "size": 952939541
+    },
+    {
+      "path": "[VCB-Studio] Senki Zesshou Symphogear [01][Ma10p_1080p][x265_flac].R3-sc.ass",
+      "size": 35995
+    },
+    {
+      "path": "[VCB-Studio] Senki Zesshou Symphogear [02][Ma10p_1080p][x265_flac].mkv",
+      "size": 710321706
+    },
+    {
+      "path": "[VCB-Studio] Senki Zesshou Symphogear [02][Ma10p_1080p][x265_flac].R3-sc.ass",
+      "size": 38345
+    },
+    {
+      "path": "[VCB-Studio] Senki Zesshou Symphogear [03][Ma10p_1080p][x265_flac].mkv",
+      "size": 731064830
+    },
+    {
+      "path": "[VCB-Studio] Senki Zesshou Symphogear [03][Ma10p_1080p][x265_flac].R3-sc.ass",
+      "size": 38042
+    },
+    {
+      "path": "[VCB-Studio] Senki Zesshou Symphogear [04][Ma10p_1080p][x265_flac].mkv",
+      "size": 547695541
+    },
+    {
+      "path": "[VCB-Studio] Senki Zesshou Symphogear [04][Ma10p_1080p][x265_flac].R3-sc.ass",
+      "size": 35167
+    },
+    {
+      "path": "[VCB-Studio] Senki Zesshou Symphogear [05][Ma10p_1080p][x265_flac].mkv",
+      "size": 782950799
+    },
+    {
+      "path": "[VCB-Studio] Senki Zesshou Symphogear [05][Ma10p_1080p][x265_flac].R3-sc.ass",
+      "size": 37333
+    },
+    {
+      "path": "[VCB-Studio] Senki Zesshou Symphogear [06][Ma10p_1080p][x265_flac].mkv",
+      "size": 614617662
+    },
+    {
+      "path": "[VCB-Studio] Senki Zesshou Symphogear [06][Ma10p_1080p][x265_flac].R3-sc.ass",
+      "size": 39908
+    },
+    {
+      "path": "[VCB-Studio] Senki Zesshou Symphogear [07][Ma10p_1080p][x265_flac].mkv",
+      "size": 699224797
+    },
+    {
+      "path": "[VCB-Studio] Senki Zesshou Symphogear [07][Ma10p_1080p][x265_flac].R3-sc.ass",
+      "size": 42577
+    },
+    {
+      "path": "[VCB-Studio] Senki Zesshou Symphogear [08][Ma10p_1080p][x265_flac].mkv",
+      "size": 756407264
+    },
+    {
+      "path": "[VCB-Studio] Senki Zesshou Symphogear [08][Ma10p_1080p][x265_flac].R3-sc.ass",
+      "size": 40849
+    },
+    {
+      "path": "[VCB-Studio] Senki Zesshou Symphogear [09][Ma10p_1080p][x265_flac].mkv",
+      "size": 781939905
+    },
+    {
+      "path": "[VCB-Studio] Senki Zesshou Symphogear [09][Ma10p_1080p][x265_flac].R3-sc.ass",
+      "size": 37042
+    },
+    {
+      "path": "[VCB-Studio] Senki Zesshou Symphogear [10][Ma10p_1080p][x265_flac].mkv",
+      "size": 695095462
+    },
+    {
+      "path": "[VCB-Studio] Senki Zesshou Symphogear [10][Ma10p_1080p][x265_flac].R3-sc.ass",
+      "size": 42241
+    },
+    {
+      "path": "[VCB-Studio] Senki Zesshou Symphogear [11][Ma10p_1080p][x265_flac].mkv",
+      "size": 817611402
+    },
+    {
+      "path": "[VCB-Studio] Senki Zesshou Symphogear [11][Ma10p_1080p][x265_flac].R3-sc.ass",
+      "size": 36463
+    },
+    {
+      "path": "[VCB-Studio] Senki Zesshou Symphogear [12][Ma10p_1080p][x265_flac].mkv",
+      "size": 570720023
+    },
+    {
+      "path": "[VCB-Studio] Senki Zesshou Symphogear [12][Ma10p_1080p][x265_flac].R3-sc.ass",
+      "size": 38387
+    },
+    {
+      "path": "[VCB-Studio] Senki Zesshou Symphogear [13][Ma10p_1080p][x265_flac].mkv",
+      "size": 830910838
+    },
+    {
+      "path": "[VCB-Studio] Senki Zesshou Symphogear [13][Ma10p_1080p][x265_flac].R3-sc.ass",
+      "size": 52654
+    },
+    {
+      "path": "CDs/[EAC][120111]「Synchrogazer」／水樹奈々(flac+webp)/BK/01.webp",
+      "size": 434212
+    },
+    {
+      "path": "CDs/[EAC][120111]「Synchrogazer」／水樹奈々(flac+webp)/BK/02.webp",
+      "size": 186950
+    },
+    {
+      "path": "CDs/[EAC][120111]「Synchrogazer」／水樹奈々(flac+webp)/BK/03.webp",
+      "size": 118336
+    },
+    {
+      "path": "CDs/[EAC][120111]「Synchrogazer」／水樹奈々(flac+webp)/BK/04.webp",
+      "size": 437034
+    },
+    {
+      "path": "CDs/[EAC][120111]「Synchrogazer」／水樹奈々(flac+webp)/BK/05.webp",
+      "size": 262164
+    },
+    {
+      "path": "CDs/[EAC][120111]「Synchrogazer」／水樹奈々(flac+webp)/BK/06.webp",
+      "size": 90668
+    },
+    {
+      "path": "CDs/[EAC][120111]「Synchrogazer」／水樹奈々(flac+webp)/BK/07.webp",
+      "size": 311352
+    },
+    {
+      "path": "CDs/[EAC][120111]「Synchrogazer」／水樹奈々(flac+webp)/BK/08.webp",
+      "size": 402488
+    },
+    {
+      "path": "CDs/[EAC][120111]「Synchrogazer」／水樹奈々(flac+webp)/Cover.jpg",
+      "size": 130189
+    },
+    {
+      "path": "CDs/[EAC][120111]「Synchrogazer」／水樹奈々(flac+webp)/KICM-1377.cue",
+      "size": 477
+    },
+    {
+      "path": "CDs/[EAC][120111]「Synchrogazer」／水樹奈々(flac+webp)/KICM-1377.flac",
+      "size": 114675352
+    },
+    {
+      "path": "CDs/[EAC][120111]「Synchrogazer」／水樹奈々(flac+webp)/KICM-1377.log",
+      "size": 1807
+    },
+    {
+      "path": "CDs/[EAC][120125]キャラクターソング1 ツヴァイウィング(flac+webp)/BK/img000.webp",
+      "size": 420550
+    },
+    {
+      "path": "CDs/[EAC][120125]キャラクターソング1 ツヴァイウィング(flac+webp)/BK/img001.webp",
+      "size": 268204
+    },
+    {
+      "path": "CDs/[EAC][120125]キャラクターソング1 ツヴァイウィング(flac+webp)/BK/img002.webp",
+      "size": 78650
+    },
+    {
+      "path": "CDs/[EAC][120125]キャラクターソング1 ツヴァイウィング(flac+webp)/BK/img003.webp",
+      "size": 352210
+    },
+    {
+      "path": "CDs/[EAC][120125]キャラクターソング1 ツヴァイウィング(flac+webp)/BK/img004.webp",
+      "size": 211120
+    },
+    {
+      "path": "CDs/[EAC][120125]キャラクターソング1 ツヴァイウィング(flac+webp)/BK/img005.webp",
+      "size": 312652
+    },
+    {
+      "path": "CDs/[EAC][120125]キャラクターソング1 ツヴァイウィング(flac+webp)/BK/img006.webp",
+      "size": 327342
+    },
+    {
+      "path": "CDs/[EAC][120125]キャラクターソング1 ツヴァイウィング(flac+webp)/BK/img007.webp",
+      "size": 227472
+    },
+    {
+      "path": "CDs/[EAC][120125]キャラクターソング1 ツヴァイウィング(flac+webp)/Cover.jpg",
+      "size": 237919
+    },
+    {
+      "path": "CDs/[EAC][120125]キャラクターソング1 ツヴァイウィング(flac+webp)/KICM-3242.cue",
+      "size": 1049
+    },
+    {
+      "path": "CDs/[EAC][120125]キャラクターソング1 ツヴァイウィング(flac+webp)/KICM-3242.flac",
+      "size": 139412294
+    },
+    {
+      "path": "CDs/[EAC][120125]キャラクターソング1 ツヴァイウィング(flac+webp)/KICM-3242.log",
+      "size": 1968
+    },
+    {
+      "path": "CDs/[EAC][120208]「Meteor Light」／高垣彩陽(flac+jpg)/BK/ドブスチビ01.jpg",
+      "size": 6070373
+    },
+    {
+      "path": "CDs/[EAC][120208]「Meteor Light」／高垣彩陽(flac+jpg)/BK/ドブスチビ02.jpg",
+      "size": 3015140
+    },
+    {
+      "path": "CDs/[EAC][120208]「Meteor Light」／高垣彩陽(flac+jpg)/BK/ドブスチビ03.jpg",
+      "size": 2753970
+    },
+    {
+      "path": "CDs/[EAC][120208]「Meteor Light」／高垣彩陽(flac+jpg)/BK/ドブスチビ04.jpg",
+      "size": 2585435
+    },
+    {
+      "path": "CDs/[EAC][120208]「Meteor Light」／高垣彩陽(flac+jpg)/BK/ドブスチビ05.jpg",
+      "size": 1087318
+    },
+    {
+      "path": "CDs/[EAC][120208]「Meteor Light」／高垣彩陽(flac+jpg)/BK/ドブスチビ06.jpg",
+      "size": 7324085
+    },
+    {
+      "path": "CDs/[EAC][120208]「Meteor Light」／高垣彩陽(flac+jpg)/BK/ドブスチビ07.jpg",
+      "size": 7181109
+    },
+    {
+      "path": "CDs/[EAC][120208]「Meteor Light」／高垣彩陽(flac+jpg)/BK/ドブスチビ08.jpg",
+      "size": 11976780
+    },
+    {
+      "path": "CDs/[EAC][120208]「Meteor Light」／高垣彩陽(flac+jpg)/BK/ドブスチビ09.jpg",
+      "size": 10906759
+    },
+    {
+      "path": "CDs/[EAC][120208]「Meteor Light」／高垣彩陽(flac+jpg)/BK/ドブスチビ10.jpg",
+      "size": 9533373
+    },
+    {
+      "path": "CDs/[EAC][120208]「Meteor Light」／高垣彩陽(flac+jpg)/BK/ドブスチビ11.jpg",
+      "size": 7788756
+    },
+    {
+      "path": "CDs/[EAC][120208]「Meteor Light」／高垣彩陽(flac+jpg)/BK/ドブスチビ12.jpg",
+      "size": 4217529
+    },
+    {
+      "path": "CDs/[EAC][120208]「Meteor Light」／高垣彩陽(flac+jpg)/Cover.jpg",
+      "size": 209677
+    },
+    {
+      "path": "CDs/[EAC][120208]「Meteor Light」／高垣彩陽(flac+jpg)/SMCL-257.cue",
+      "size": 492
+    },
+    {
+      "path": "CDs/[EAC][120208]「Meteor Light」／高垣彩陽(flac+jpg)/SMCL-257.flac",
+      "size": 95149397
+    },
+    {
+      "path": "CDs/[EAC][120208]「Meteor Light」／高垣彩陽(flac+jpg)/SMCL-257.log",
+      "size": 1133
+    },
+    {
+      "path": "CDs/[EAC][120229]キャラクターソング2 立花響(flac+webp)/BK/img000.webp",
+      "size": 324784
+    },
+    {
+      "path": "CDs/[EAC][120229]キャラクターソング2 立花響(flac+webp)/BK/img001.webp",
+      "size": 342806
+    },
+    {
+      "path": "CDs/[EAC][120229]キャラクターソング2 立花響(flac+webp)/BK/img002.webp",
+      "size": 80836
+    },
+    {
+      "path": "CDs/[EAC][120229]キャラクターソング2 立花響(flac+webp)/BK/img003.webp",
+      "size": 514304
+    },
+    {
+      "path": "CDs/[EAC][120229]キャラクターソング2 立花響(flac+webp)/BK/img004.webp",
+      "size": 281278
+    },
+    {
+      "path": "CDs/[EAC][120229]キャラクターソング2 立花響(flac+webp)/BK/img005.webp",
+      "size": 256110
+    },
+    {
+      "path": "CDs/[EAC][120229]キャラクターソング2 立花響(flac+webp)/BK/img006.webp",
+      "size": 364664
+    },
+    {
+      "path": "CDs/[EAC][120229]キャラクターソング2 立花響(flac+webp)/BK/img007.webp",
+      "size": 144760
+    },
+    {
+      "path": "CDs/[EAC][120229]キャラクターソング2 立花響(flac+webp)/Cover.jpg",
+      "size": 178428
+    },
+    {
+      "path": "CDs/[EAC][120229]キャラクターソング2 立花響(flac+webp)/KICM-3243.cue",
+      "size": 943
+    },
+    {
+      "path": "CDs/[EAC][120229]キャラクターソング2 立花響(flac+webp)/KICM-3243.flac",
+      "size": 140441141
+    },
+    {
+      "path": "CDs/[EAC][120229]キャラクターソング2 立花響(flac+webp)/KICM-3243.log",
+      "size": 1932
+    },
+    {
+      "path": "CDs/[EAC][120314]キャラクターソング3 風鳴翼(flac+webp)/BK/01.webp",
+      "size": 938536
+    },
+    {
+      "path": "CDs/[EAC][120314]キャラクターソング3 風鳴翼(flac+webp)/BK/02.webp",
+      "size": 586004
+    },
+    {
+      "path": "CDs/[EAC][120314]キャラクターソング3 風鳴翼(flac+webp)/BK/03.webp",
+      "size": 728374
+    },
+    {
+      "path": "CDs/[EAC][120314]キャラクターソング3 風鳴翼(flac+webp)/BK/04.webp",
+      "size": 286810
+    },
+    {
+      "path": "CDs/[EAC][120314]キャラクターソング3 風鳴翼(flac+webp)/BK/05.webp",
+      "size": 327664
+    },
+    {
+      "path": "CDs/[EAC][120314]キャラクターソング3 風鳴翼(flac+webp)/BK/06.webp",
+      "size": 72454
+    },
+    {
+      "path": "CDs/[EAC][120314]キャラクターソング3 風鳴翼(flac+webp)/BK/07.webp",
+      "size": 197380
+    },
+    {
+      "path": "CDs/[EAC][120314]キャラクターソング3 風鳴翼(flac+webp)/Cover.jpg",
+      "size": 200541
+    },
+    {
+      "path": "CDs/[EAC][120314]キャラクターソング3 風鳴翼(flac+webp)/KICM-3244.cue",
+      "size": 696
+    },
+    {
+      "path": "CDs/[EAC][120314]キャラクターソング3 風鳴翼(flac+webp)/KICM-3244.flac",
+      "size": 157602983
+    },
+    {
+      "path": "CDs/[EAC][120328]BONUS CD1 「君ト云ウ 音奏デ 尽キルマデ」／天羽奏(flac)/KIXA-90182.cue",
+      "size": 406
+    },
+    {
+      "path": "CDs/[EAC][120328]BONUS CD1 「君ト云ウ 音奏デ 尽キルマデ」／天羽奏(flac)/KIXA-90182.flac",
+      "size": 81450695
+    },
+    {
+      "path": "CDs/[EAC][120328]キャラクターソング4 雪音クリス(flac+webp)/BK/01.webp",
+      "size": 804650
+    },
+    {
+      "path": "CDs/[EAC][120328]キャラクターソング4 雪音クリス(flac+webp)/BK/02.webp",
+      "size": 699506
+    },
+    {
+      "path": "CDs/[EAC][120328]キャラクターソング4 雪音クリス(flac+webp)/BK/03.webp",
+      "size": 929056
+    },
+    {
+      "path": "CDs/[EAC][120328]キャラクターソング4 雪音クリス(flac+webp)/BK/04.webp",
+      "size": 446672
+    },
+    {
+      "path": "CDs/[EAC][120328]キャラクターソング4 雪音クリス(flac+webp)/BK/05.webp",
+      "size": 326266
+    },
+    {
+      "path": "CDs/[EAC][120328]キャラクターソング4 雪音クリス(flac+webp)/BK/06.webp",
+      "size": 135366
+    },
+    {
+      "path": "CDs/[EAC][120328]キャラクターソング4 雪音クリス(flac+webp)/BK/07.webp",
+      "size": 203776
+    },
+    {
+      "path": "CDs/[EAC][120328]キャラクターソング4 雪音クリス(flac+webp)/Cover.jpg",
+      "size": 175875
+    },
+    {
+      "path": "CDs/[EAC][120328]キャラクターソング4 雪音クリス(flac+webp)/KICM-3245.cue",
+      "size": 666
+    },
+    {
+      "path": "CDs/[EAC][120328]キャラクターソング4 雪音クリス(flac+webp)/KICM-3245.flac",
+      "size": 120534302
+    },
+    {
+      "path": "CDs/[EAC][120425]BONUS CD2 オリジナルサウンドトラック1(flac)/KIXA-90183.cue",
+      "size": 2435
+    },
+    {
+      "path": "CDs/[EAC][120425]BONUS CD2 オリジナルサウンドトラック1(flac)/KIXA-90183.flac",
+      "size": 140879260
+    },
+    {
+      "path": "CDs/[EAC][120530]BONUS CD3 オリジナルサウンドトラック2(flac)/KIXA-90184.cue",
+      "size": 1963
+    },
+    {
+      "path": "CDs/[EAC][120530]BONUS CD3 オリジナルサウンドトラック2(flac)/KIXA-90184.flac",
+      "size": 132255430
+    },
+    {
+      "path": "CDs/[EAC][120627]BONUS CD4 「陽だまりメモリア」／小日向未来(flac)/KIXA-90185.cue",
+      "size": 369
+    },
+    {
+      "path": "CDs/[EAC][120627]BONUS CD4 「陽だまりメモリア」／小日向未来(flac)/KIXA-90185.flac",
+      "size": 74339164
+    },
+    {
+      "path": "CDs/[EAC][120725]BONUS CD5 オリジナルサウンドトラック3(flac)/KIXA-90186.cue",
+      "size": 2182
+    },
+    {
+      "path": "CDs/[EAC][120725]BONUS CD5 オリジナルサウンドトラック3(flac)/KIXA-90186.flac",
+      "size": 141888164
+    },
+    {
+      "path": "CDs/[EAC][120829]BONUS CD6 「FIRST LOVE SONG」／立花響,風鳴翼,雪音クリス(flac)/KIXA-90187.cue",
+      "size": 392
+    },
+    {
+      "path": "CDs/[EAC][120829]BONUS CD6 「FIRST LOVE SONG」／立花響,風鳴翼,雪音クリス(flac)/KIXA-90187.flac",
+      "size": 68481661
+    },
+    {
+      "path": "readme about WebP.txt",
+      "size": 1193
+    },
+    {
+      "path": "SPs/[VCB-Studio] Senki Zesshou Symphogear [CM01][Ma10p_1080p][x265_flac].mkv",
+      "size": 17789426
+    },
+    {
+      "path": "SPs/[VCB-Studio] Senki Zesshou Symphogear [CM02][Ma10p_1080p][x265_flac].mkv",
+      "size": 17783244
+    },
+    {
+      "path": "SPs/[VCB-Studio] Senki Zesshou Symphogear [CM03][Ma10p_1080p][x265_flac].mkv",
+      "size": 17739951
+    },
+    {
+      "path": "SPs/[VCB-Studio] Senki Zesshou Symphogear [CM04][Ma10p_1080p][x265_flac].mkv",
+      "size": 17646489
+    },
+    {
+      "path": "SPs/[VCB-Studio] Senki Zesshou Symphogear [CM05][Ma10p_1080p][x265_flac].mkv",
+      "size": 17721316
+    },
+    {
+      "path": "SPs/[VCB-Studio] Senki Zesshou Symphogear [CM06][Ma10p_1080p][x265_flac].mkv",
+      "size": 21523054
+    },
+    {
+      "path": "SPs/[VCB-Studio] Senki Zesshou Symphogear [CM07][Ma10p_1080p][x265_flac].mkv",
+      "size": 27439319
+    },
+    {
+      "path": "SPs/[VCB-Studio] Senki Zesshou Symphogear [CM08][Ma10p_1080p][x265_flac].mkv",
+      "size": 14645005
+    },
+    {
+      "path": "SPs/[VCB-Studio] Senki Zesshou Symphogear [CM09][Ma10p_1080p][x265_flac].mkv",
+      "size": 15772120
+    },
+    {
+      "path": "SPs/[VCB-Studio] Senki Zesshou Symphogear [CM10][Ma10p_1080p][x265_flac].mkv",
+      "size": 19428465
+    },
+    {
+      "path": "SPs/[VCB-Studio] Senki Zesshou Symphogear [CM11][Ma10p_1080p][x265_flac].mkv",
+      "size": 22726432
+    },
+    {
+      "path": "SPs/[VCB-Studio] Senki Zesshou Symphogear [CM12][Ma10p_1080p][x265_flac].mkv",
+      "size": 21416032
+    },
+    {
+      "path": "SPs/[VCB-Studio] Senki Zesshou Symphogear [CM13][Ma10p_1080p][x265_flac].mkv",
+      "size": 13456172
+    },
+    {
+      "path": "SPs/[VCB-Studio] Senki Zesshou Symphogear [CM14][Ma10p_1080p][x265_flac].mkv",
+      "size": 19233118
+    },
+    {
+      "path": "SPs/[VCB-Studio] Senki Zesshou Symphogear [Menu01][Ma10p_1080p][x265_flac].mkv",
+      "size": 20382812
+    },
+    {
+      "path": "SPs/[VCB-Studio] Senki Zesshou Symphogear [Menu02][Ma10p_1080p][x265_flac].mkv",
+      "size": 19336097
+    },
+    {
+      "path": "SPs/[VCB-Studio] Senki Zesshou Symphogear [Menu03][Ma10p_1080p][x265_flac].mkv",
+      "size": 20456504
+    },
+    {
+      "path": "SPs/[VCB-Studio] Senki Zesshou Symphogear [Menu04][Ma10p_1080p][x265_flac].mkv",
+      "size": 16825527
+    },
+    {
+      "path": "SPs/[VCB-Studio] Senki Zesshou Symphogear [Menu05][Ma10p_1080p][x265_flac].mkv",
+      "size": 19040362
+    },
+    {
+      "path": "SPs/[VCB-Studio] Senki Zesshou Symphogear [Menu06][Ma10p_1080p][x265_flac].mkv",
+      "size": 20042620
+    },
+    {
+      "path": "SPs/[VCB-Studio] Senki Zesshou Symphogear [NCED][Ma10p_1080p][x265_flac].mkv",
+      "size": 127294414
+    },
+    {
+      "path": "SPs/[VCB-Studio] Senki Zesshou Symphogear [NCOP01][Ma10p_1080p][x265_flac].mkv",
+      "size": 97060209
+    },
+    {
+      "path": "SPs/[VCB-Studio] Senki Zesshou Symphogear [NCOP02][Ma10p_1080p][x265_flac].mkv",
+      "size": 96763268
+    },
+    {
+      "path": "SPs/[VCB-Studio] Senki Zesshou Symphogear [NCOP03][Ma10p_1080p][x265_flac].mkv",
+      "size": 97881252
+    },
+    {
+      "path": "SPs/[VCB-Studio] Senki Zesshou Symphogear [OP01][Ma10p_1080p][x265_flac].mkv",
+      "size": 100670792
+    },
+    {
+      "path": "SPs/[VCB-Studio] Senki Zesshou Symphogear [OP02][Ma10p_1080p][x265_flac].mkv",
+      "size": 96299467
+    },
+    {
+      "path": "SPs/[VCB-Studio] Senki Zesshou Symphogear [OP03][Ma10p_1080p][x265_flac].mkv",
+      "size": 95937981
+    },
+    {
+      "path": "SPs/[VCB-Studio] Senki Zesshou Symphogear [OP04][Ma10p_1080p][x265_flac].mkv",
+      "size": 95244804
+    },
+    {
+      "path": "SPs/[VCB-Studio] Senki Zesshou Symphogear [OP05][Ma10p_1080p][x265_flac].mkv",
+      "size": 99935190
+    },
+    {
+      "path": "SPs/[VCB-Studio] Senki Zesshou Symphogear [OP06][Ma10p_1080p][x265_flac].mkv",
+      "size": 95705957
+    },
+    {
+      "path": "SPs/[VCB-Studio] Senki Zesshou Symphogear [OP07][Ma10p_1080p][x265_flac].mkv",
+      "size": 96597241
+    },
+    {
+      "path": "SPs/[VCB-Studio] Senki Zesshou Symphogear [OP08][Ma10p_1080p][x265_flac].mkv",
+      "size": 95165813
+    },
+    {
+      "path": "SPs/[VCB-Studio] Senki Zesshou Symphogear [OP09][Ma10p_1080p][x265_flac].mkv",
+      "size": 96746825
+    },
+    {
+      "path": "SPs/[VCB-Studio] Senki Zesshou Symphogear [OP10][Ma10p_1080p][x265_flac].mkv",
+      "size": 97335874
+    },
+    {
+      "path": "SPs/[VCB-Studio] Senki Zesshou Symphogear [OP11][Ma10p_1080p][x265_flac].mkv",
+      "size": 99847940
+    },
+    {
+      "path": "SPs/[VCB-Studio] Senki Zesshou Symphogear [OP12][Ma10p_1080p][x265_flac].mkv",
+      "size": 99106191
+    },
+    {
+      "path": "SPs/[VCB-Studio] Senki Zesshou Symphogear [OP13][Ma10p_1080p][x265_flac].mkv",
+      "size": 99158377
+    },
+    {
+      "path": "SPs/[VCB-Studio] Senki Zesshou Symphogear [PV01][Ma10p_1080p][x265_flac].mkv",
+      "size": 115016504
+    },
+    {
+      "path": "SPs/[VCB-Studio] Senki Zesshou Symphogear [PV02][Ma10p_1080p][x265_flac].mkv",
+      "size": 125283603
+    },
+    {
+      "path": "SPs/[VCB-Studio] Senki Zesshou Symphogear [SP01][Ma10p_1080p][x265_flac].mkv",
+      "size": 177675658
+    },
+    {
+      "path": "SPs/[VCB-Studio] Senki Zesshou Symphogear [SP02][Ma10p_1080p][x265_aac].mkv",
+      "size": 746923295
+    },
+    {
+      "path": "SPs/[VCB-Studio] Senki Zesshou Symphogear [SP03][Ma10p_1080p][x265_aac].mkv",
+      "size": 732529564
+    },
+    {
+      "path": "SPs/[VCB-Studio] Senki Zesshou Symphogear [SP04][Ma10p_1080p][x265_aac].mkv",
+      "size": 363171124
+    }
+  ]
+}

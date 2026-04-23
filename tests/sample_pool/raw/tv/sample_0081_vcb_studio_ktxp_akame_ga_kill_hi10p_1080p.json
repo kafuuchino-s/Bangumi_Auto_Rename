@@ -1,0 +1,1241 @@
+{
+  "root_name": "[VCB-Studio&KTXP] Akame ga Kill! [Hi10p_1080p]",
+  "files": [
+    {
+      "path": "[VCB-Studio&KTXP] Akame ga Kill! [01][Hi10p_1080p][x264_2flac].mkv",
+      "size": 1189595204
+    },
+    {
+      "path": "[VCB-Studio&KTXP] Akame ga Kill! [01][Hi10p_1080p][x264_2flac].sc.ass",
+      "size": 50101
+    },
+    {
+      "path": "[VCB-Studio&KTXP] Akame ga Kill! [01][Hi10p_1080p][x264_2flac].tc.ass",
+      "size": 50132
+    },
+    {
+      "path": "[VCB-Studio&KTXP] Akame ga Kill! [02][Hi10p_1080p][x264_flac].mkv",
+      "size": 980758495
+    },
+    {
+      "path": "[VCB-Studio&KTXP] Akame ga Kill! [02][Hi10p_1080p][x264_flac].sc.ass",
+      "size": 52794
+    },
+    {
+      "path": "[VCB-Studio&KTXP] Akame ga Kill! [02][Hi10p_1080p][x264_flac].tc.ass",
+      "size": 52825
+    },
+    {
+      "path": "[VCB-Studio&KTXP] Akame ga Kill! [03][Hi10p_1080p][x264_flac].mkv",
+      "size": 1031517049
+    },
+    {
+      "path": "[VCB-Studio&KTXP] Akame ga Kill! [03][Hi10p_1080p][x264_flac].sc.ass",
+      "size": 47601
+    },
+    {
+      "path": "[VCB-Studio&KTXP] Akame ga Kill! [03][Hi10p_1080p][x264_flac].tc.ass",
+      "size": 47632
+    },
+    {
+      "path": "[VCB-Studio&KTXP] Akame ga Kill! [04][Hi10p_1080p][x264_flac].mkv",
+      "size": 915482880
+    },
+    {
+      "path": "[VCB-Studio&KTXP] Akame ga Kill! [04][Hi10p_1080p][x264_flac].sc.ass",
+      "size": 51387
+    },
+    {
+      "path": "[VCB-Studio&KTXP] Akame ga Kill! [04][Hi10p_1080p][x264_flac].tc.ass",
+      "size": 51426
+    },
+    {
+      "path": "[VCB-Studio&KTXP] Akame ga Kill! [05][Hi10p_1080p][x264_flac].mkv",
+      "size": 938260647
+    },
+    {
+      "path": "[VCB-Studio&KTXP] Akame ga Kill! [05][Hi10p_1080p][x264_flac].sc.ass",
+      "size": 46976
+    },
+    {
+      "path": "[VCB-Studio&KTXP] Akame ga Kill! [05][Hi10p_1080p][x264_flac].tc.ass",
+      "size": 47007
+    },
+    {
+      "path": "[VCB-Studio&KTXP] Akame ga Kill! [06][Hi10p_1080p][x264_2flac].mkv",
+      "size": 1472391980
+    },
+    {
+      "path": "[VCB-Studio&KTXP] Akame ga Kill! [06][Hi10p_1080p][x264_2flac].sc.ass",
+      "size": 34481
+    },
+    {
+      "path": "[VCB-Studio&KTXP] Akame ga Kill! [06][Hi10p_1080p][x264_2flac].tc.ass",
+      "size": 34504
+    },
+    {
+      "path": "[VCB-Studio&KTXP] Akame ga Kill! [07][Hi10p_1080p][x264_flac].mkv",
+      "size": 850233210
+    },
+    {
+      "path": "[VCB-Studio&KTXP] Akame ga Kill! [07][Hi10p_1080p][x264_flac].sc.ass",
+      "size": 52025
+    },
+    {
+      "path": "[VCB-Studio&KTXP] Akame ga Kill! [07][Hi10p_1080p][x264_flac].tc.ass",
+      "size": 52056
+    },
+    {
+      "path": "[VCB-Studio&KTXP] Akame ga Kill! [08][Hi10p_1080p][x264_2flac].mkv",
+      "size": 1359724222
+    },
+    {
+      "path": "[VCB-Studio&KTXP] Akame ga Kill! [08][Hi10p_1080p][x264_2flac].sc.ass",
+      "size": 41000
+    },
+    {
+      "path": "[VCB-Studio&KTXP] Akame ga Kill! [08][Hi10p_1080p][x264_2flac].tc.ass",
+      "size": 41031
+    },
+    {
+      "path": "[VCB-Studio&KTXP] Akame ga Kill! [09][Hi10p_1080p][x264_flac].mkv",
+      "size": 864327828
+    },
+    {
+      "path": "[VCB-Studio&KTXP] Akame ga Kill! [09][Hi10p_1080p][x264_flac].sc.ass",
+      "size": 49932
+    },
+    {
+      "path": "[VCB-Studio&KTXP] Akame ga Kill! [09][Hi10p_1080p][x264_flac].tc.ass",
+      "size": 49986
+    },
+    {
+      "path": "[VCB-Studio&KTXP] Akame ga Kill! [10][Hi10p_1080p][x264_2flac].mkv",
+      "size": 1136906549
+    },
+    {
+      "path": "[VCB-Studio&KTXP] Akame ga Kill! [10][Hi10p_1080p][x264_2flac].sc.ass",
+      "size": 52492
+    },
+    {
+      "path": "[VCB-Studio&KTXP] Akame ga Kill! [10][Hi10p_1080p][x264_2flac].tc.ass",
+      "size": 52526
+    },
+    {
+      "path": "[VCB-Studio&KTXP] Akame ga Kill! [11][Hi10p_1080p][x264_flac].mkv",
+      "size": 940112229
+    },
+    {
+      "path": "[VCB-Studio&KTXP] Akame ga Kill! [11][Hi10p_1080p][x264_flac].sc.ass",
+      "size": 42255
+    },
+    {
+      "path": "[VCB-Studio&KTXP] Akame ga Kill! [11][Hi10p_1080p][x264_flac].tc.ass",
+      "size": 42286
+    },
+    {
+      "path": "[VCB-Studio&KTXP] Akame ga Kill! [12][Hi10p_1080p][x264_flac].mkv",
+      "size": 879061875
+    },
+    {
+      "path": "[VCB-Studio&KTXP] Akame ga Kill! [12][Hi10p_1080p][x264_flac].sc.ass",
+      "size": 45615
+    },
+    {
+      "path": "[VCB-Studio&KTXP] Akame ga Kill! [12][Hi10p_1080p][x264_flac].tc.ass",
+      "size": 45646
+    },
+    {
+      "path": "[VCB-Studio&KTXP] Akame ga Kill! [13][Hi10p_1080p][x264_flac].mkv",
+      "size": 887779109
+    },
+    {
+      "path": "[VCB-Studio&KTXP] Akame ga Kill! [13][Hi10p_1080p][x264_flac].sc.ass",
+      "size": 47802
+    },
+    {
+      "path": "[VCB-Studio&KTXP] Akame ga Kill! [13][Hi10p_1080p][x264_flac].tc.ass",
+      "size": 47861
+    },
+    {
+      "path": "[VCB-Studio&KTXP] Akame ga Kill! [14][Hi10p_1080p][x264_2flac].mkv",
+      "size": 1170435848
+    },
+    {
+      "path": "[VCB-Studio&KTXP] Akame ga Kill! [14][Hi10p_1080p][x264_2flac].sc.ass",
+      "size": 53122
+    },
+    {
+      "path": "[VCB-Studio&KTXP] Akame ga Kill! [14][Hi10p_1080p][x264_2flac].tc.ass",
+      "size": 53153
+    },
+    {
+      "path": "[VCB-Studio&KTXP] Akame ga Kill! [15][Hi10p_1080p][x264_flac].mkv",
+      "size": 869495099
+    },
+    {
+      "path": "[VCB-Studio&KTXP] Akame ga Kill! [15][Hi10p_1080p][x264_flac].sc.ass",
+      "size": 47192
+    },
+    {
+      "path": "[VCB-Studio&KTXP] Akame ga Kill! [15][Hi10p_1080p][x264_flac].tc.ass",
+      "size": 47223
+    },
+    {
+      "path": "[VCB-Studio&KTXP] Akame ga Kill! [16][Hi10p_1080p][x264_flac].mkv",
+      "size": 1069277838
+    },
+    {
+      "path": "[VCB-Studio&KTXP] Akame ga Kill! [16][Hi10p_1080p][x264_flac].sc.ass",
+      "size": 34752
+    },
+    {
+      "path": "[VCB-Studio&KTXP] Akame ga Kill! [16][Hi10p_1080p][x264_flac].tc.ass",
+      "size": 31726
+    },
+    {
+      "path": "[VCB-Studio&KTXP] Akame ga Kill! [17][Hi10p_1080p][x264_2flac].mkv",
+      "size": 1191577583
+    },
+    {
+      "path": "[VCB-Studio&KTXP] Akame ga Kill! [17][Hi10p_1080p][x264_2flac].sc.ass",
+      "size": 37108
+    },
+    {
+      "path": "[VCB-Studio&KTXP] Akame ga Kill! [17][Hi10p_1080p][x264_2flac].tc.ass",
+      "size": 37095
+    },
+    {
+      "path": "[VCB-Studio&KTXP] Akame ga Kill! [18][Hi10p_1080p][x264_flac].mkv",
+      "size": 855189492
+    },
+    {
+      "path": "[VCB-Studio&KTXP] Akame ga Kill! [18][Hi10p_1080p][x264_flac].sc.ass",
+      "size": 44357
+    },
+    {
+      "path": "[VCB-Studio&KTXP] Akame ga Kill! [18][Hi10p_1080p][x264_flac].tc.ass",
+      "size": 44364
+    },
+    {
+      "path": "[VCB-Studio&KTXP] Akame ga Kill! [19][Hi10p_1080p][x264_flac].mkv",
+      "size": 1070231520
+    },
+    {
+      "path": "[VCB-Studio&KTXP] Akame ga Kill! [19][Hi10p_1080p][x264_flac].sc.ass",
+      "size": 38308
+    },
+    {
+      "path": "[VCB-Studio&KTXP] Akame ga Kill! [19][Hi10p_1080p][x264_flac].tc.ass",
+      "size": 38315
+    },
+    {
+      "path": "[VCB-Studio&KTXP] Akame ga Kill! [20][Hi10p_1080p][x264_2flac].mkv",
+      "size": 1196591177
+    },
+    {
+      "path": "[VCB-Studio&KTXP] Akame ga Kill! [20][Hi10p_1080p][x264_2flac].sc.ass",
+      "size": 40197
+    },
+    {
+      "path": "[VCB-Studio&KTXP] Akame ga Kill! [20][Hi10p_1080p][x264_2flac].tc.ass",
+      "size": 40197
+    },
+    {
+      "path": "[VCB-Studio&KTXP] Akame ga Kill! [21][Hi10p_1080p][x264_flac].mkv",
+      "size": 970977116
+    },
+    {
+      "path": "[VCB-Studio&KTXP] Akame ga Kill! [21][Hi10p_1080p][x264_flac].sc.ass",
+      "size": 39350
+    },
+    {
+      "path": "[VCB-Studio&KTXP] Akame ga Kill! [21][Hi10p_1080p][x264_flac].tc.ass",
+      "size": 39354
+    },
+    {
+      "path": "[VCB-Studio&KTXP] Akame ga Kill! [22][Hi10p_1080p][x264_flac].mkv",
+      "size": 951412606
+    },
+    {
+      "path": "[VCB-Studio&KTXP] Akame ga Kill! [22][Hi10p_1080p][x264_flac].sc.ass",
+      "size": 36156
+    },
+    {
+      "path": "[VCB-Studio&KTXP] Akame ga Kill! [22][Hi10p_1080p][x264_flac].tc.ass",
+      "size": 36179
+    },
+    {
+      "path": "[VCB-Studio&KTXP] Akame ga Kill! [23][Hi10p_1080p][x264_flac].mkv",
+      "size": 992428851
+    },
+    {
+      "path": "[VCB-Studio&KTXP] Akame ga Kill! [23][Hi10p_1080p][x264_flac].sc.ass",
+      "size": 35356
+    },
+    {
+      "path": "[VCB-Studio&KTXP] Akame ga Kill! [23][Hi10p_1080p][x264_flac].tc.ass",
+      "size": 35356
+    },
+    {
+      "path": "[VCB-Studio&KTXP] Akame ga Kill! [24][Hi10p_1080p][x264_2flac].mkv",
+      "size": 1250852213
+    },
+    {
+      "path": "[VCB-Studio&KTXP] Akame ga Kill! [24][Hi10p_1080p][x264_2flac].sc.ass",
+      "size": 28295
+    },
+    {
+      "path": "[VCB-Studio&KTXP] Akame ga Kill! [24][Hi10p_1080p][x264_2flac].tc.ass",
+      "size": 28295
+    },
+    {
+      "path": "[VCB-Studio&KTXP] Akame ga Kill! [FONTv2].7z",
+      "size": 86359243
+    },
+    {
+      "path": "CDs/[140813] ｢Skyreach｣／雨宮天 (flac+webp)/Scans/SMCL-346~7/01.webp",
+      "size": 7117022
+    },
+    {
+      "path": "CDs/[140813] ｢Skyreach｣／雨宮天 (flac+webp)/Scans/SMCL-346~7/02.webp",
+      "size": 8885608
+    },
+    {
+      "path": "CDs/[140813] ｢Skyreach｣／雨宮天 (flac+webp)/Scans/SMCL-346~7/03.webp",
+      "size": 5624770
+    },
+    {
+      "path": "CDs/[140813] ｢Skyreach｣／雨宮天 (flac+webp)/Scans/SMCL-346~7/04.webp",
+      "size": 8825328
+    },
+    {
+      "path": "CDs/[140813] ｢Skyreach｣／雨宮天 (flac+webp)/Scans/SMCL-346~7/05.webp",
+      "size": 4524900
+    },
+    {
+      "path": "CDs/[140813] ｢Skyreach｣／雨宮天 (flac+webp)/Scans/SMCL-346~7/06.webp",
+      "size": 2631828
+    },
+    {
+      "path": "CDs/[140813] ｢Skyreach｣／雨宮天 (flac+webp)/Scans/SMCL-346~7/07.webp",
+      "size": 1636210
+    },
+    {
+      "path": "CDs/[140813] ｢Skyreach｣／雨宮天 (flac+webp)/Scans/SMCL-346~7/08.webp",
+      "size": 1407498
+    },
+    {
+      "path": "CDs/[140813] ｢Skyreach｣／雨宮天 (flac+webp)/Scans/SMCL-346~7/09.webp",
+      "size": 3718512
+    },
+    {
+      "path": "CDs/[140813] ｢Skyreach｣／雨宮天 (flac+webp)/Scans/SMCL-348/01.webp",
+      "size": 5479656
+    },
+    {
+      "path": "CDs/[140813] ｢Skyreach｣／雨宮天 (flac+webp)/Scans/SMCL-348/02.webp",
+      "size": 8894240
+    },
+    {
+      "path": "CDs/[140813] ｢Skyreach｣／雨宮天 (flac+webp)/Scans/SMCL-348/03.webp",
+      "size": 5401208
+    },
+    {
+      "path": "CDs/[140813] ｢Skyreach｣／雨宮天 (flac+webp)/Scans/SMCL-348/04.webp",
+      "size": 7268928
+    },
+    {
+      "path": "CDs/[140813] ｢Skyreach｣／雨宮天 (flac+webp)/Scans/SMCL-348/05.webp",
+      "size": 2479770
+    },
+    {
+      "path": "CDs/[140813] ｢Skyreach｣／雨宮天 (flac+webp)/Scans/SMCL-348/06.webp",
+      "size": 2107064
+    },
+    {
+      "path": "CDs/[140813] ｢Skyreach｣／雨宮天 (flac+webp)/Scans/SMCL-348/07.webp",
+      "size": 1273258
+    },
+    {
+      "path": "CDs/[140813] ｢Skyreach｣／雨宮天 (flac+webp)/Scans/SMCL-348/08.webp",
+      "size": 2208878
+    },
+    {
+      "path": "CDs/[140813] ｢Skyreach｣／雨宮天 (flac+webp)/Scans/SMCL-348/09.webp",
+      "size": 1781162
+    },
+    {
+      "path": "CDs/[140813] ｢Skyreach｣／雨宮天 (flac+webp)/Scans/SMCL-349/01.webp",
+      "size": 10303636
+    },
+    {
+      "path": "CDs/[140813] ｢Skyreach｣／雨宮天 (flac+webp)/Scans/SMCL-349/02.webp",
+      "size": 7496660
+    },
+    {
+      "path": "CDs/[140813] ｢Skyreach｣／雨宮天 (flac+webp)/Scans/SMCL-349/03.webp",
+      "size": 6030568
+    },
+    {
+      "path": "CDs/[140813] ｢Skyreach｣／雨宮天 (flac+webp)/Scans/SMCL-349/04.webp",
+      "size": 4865548
+    },
+    {
+      "path": "CDs/[140813] ｢Skyreach｣／雨宮天 (flac+webp)/Scans/SMCL-349/05.webp",
+      "size": 2706984
+    },
+    {
+      "path": "CDs/[140813] ｢Skyreach｣／雨宮天 (flac+webp)/Scans/SMCL-349/06.webp",
+      "size": 1388862
+    },
+    {
+      "path": "CDs/[140813] ｢Skyreach｣／雨宮天 (flac+webp)/Scans/SMCL-349/07.webp",
+      "size": 1815166
+    },
+    {
+      "path": "CDs/[140813] ｢Skyreach｣／雨宮天 (flac+webp)/SMCL-349.cue",
+      "size": 375
+    },
+    {
+      "path": "CDs/[140813] ｢Skyreach｣／雨宮天 (flac+webp)/SMCL-349.flac",
+      "size": 52689499
+    },
+    {
+      "path": "CDs/[140813] ｢Skyreach｣／雨宮天 (flac+webp)/SMCL-349.jpg",
+      "size": 230937
+    },
+    {
+      "path": "CDs/[140813] ｢Skyreach｣／雨宮天 (flac+webp)/SMCL-349.log",
+      "size": 3294
+    },
+    {
+      "path": "CDs/[140813] ｢こんな世界、知りたくなかった。｣／沢井美空 [24bit_96kHz] (flac+webp+jpg)/01. こんな世界、知りたくなかった。.flac",
+      "size": 90747086
+    },
+    {
+      "path": "CDs/[140813] ｢こんな世界、知りたくなかった。｣／沢井美空 [24bit_96kHz] (flac+webp+jpg)/02. Blue.flac",
+      "size": 82407243
+    },
+    {
+      "path": "CDs/[140813] ｢こんな世界、知りたくなかった。｣／沢井美空 [24bit_96kHz] (flac+webp+jpg)/03. Fly!!.flac",
+      "size": 64771713
+    },
+    {
+      "path": "CDs/[140813] ｢こんな世界、知りたくなかった。｣／沢井美空 [24bit_96kHz] (flac+webp+jpg)/04. こんな世界、知りたくなかった。(Anime Ver.).flac",
+      "size": 31806323
+    },
+    {
+      "path": "CDs/[140813] ｢こんな世界、知りたくなかった。｣／沢井美空 [24bit_96kHz] (flac+webp+jpg)/05. こんな世界、知りたくなかった。(Instrumental).flac",
+      "size": 86996634
+    },
+    {
+      "path": "CDs/[140813] ｢こんな世界、知りたくなかった。｣／沢井美空 [24bit_96kHz] (flac+webp+jpg)/Scans/SRCL-8576/01.jpg",
+      "size": 7049401
+    },
+    {
+      "path": "CDs/[140813] ｢こんな世界、知りたくなかった。｣／沢井美空 [24bit_96kHz] (flac+webp+jpg)/Scans/SRCL-8576/02.jpg",
+      "size": 8633771
+    },
+    {
+      "path": "CDs/[140813] ｢こんな世界、知りたくなかった。｣／沢井美空 [24bit_96kHz] (flac+webp+jpg)/Scans/SRCL-8577~8/01.webp",
+      "size": 1023522
+    },
+    {
+      "path": "CDs/[140813] ｢こんな世界、知りたくなかった。｣／沢井美空 [24bit_96kHz] (flac+webp+jpg)/Scans/SRCL-8577~8/02.webp",
+      "size": 1250968
+    },
+    {
+      "path": "CDs/[140813] ｢こんな世界、知りたくなかった。｣／沢井美空 [24bit_96kHz] (flac+webp+jpg)/Scans/SRCL-8577~8/03.webp",
+      "size": 819202
+    },
+    {
+      "path": "CDs/[140813] ｢こんな世界、知りたくなかった。｣／沢井美空 [24bit_96kHz] (flac+webp+jpg)/Scans/SRCL-8577~8/04.webp",
+      "size": 813530
+    },
+    {
+      "path": "CDs/[140813] ｢こんな世界、知りたくなかった。｣／沢井美空 [24bit_96kHz] (flac+webp+jpg)/Scans/SRCL-8577~8/05.webp",
+      "size": 1210256
+    },
+    {
+      "path": "CDs/[140813] ｢こんな世界、知りたくなかった。｣／沢井美空 [24bit_96kHz] (flac+webp+jpg)/Scans/SRCL-8577~8/06.webp",
+      "size": 171600
+    },
+    {
+      "path": "CDs/[140813] ｢こんな世界、知りたくなかった。｣／沢井美空 [24bit_96kHz] (flac+webp+jpg)/Scans/SRCL-8577~8/07.webp",
+      "size": 1074848
+    },
+    {
+      "path": "CDs/[140813] ｢こんな世界、知りたくなかった。｣／沢井美空 [24bit_96kHz] (flac+webp+jpg)/Scans/SRCL-8577~8/08.webp",
+      "size": 1395302
+    },
+    {
+      "path": "CDs/[141126] ｢Liar Mask｣／真山りか (flac+webp)/DFCL-2098.cue",
+      "size": 486
+    },
+    {
+      "path": "CDs/[141126] ｢Liar Mask｣／真山りか (flac+webp)/DFCL-2098.flac",
+      "size": 118233097
+    },
+    {
+      "path": "CDs/[141126] ｢Liar Mask｣／真山りか (flac+webp)/DFCL-2098.jpg",
+      "size": 1010094
+    },
+    {
+      "path": "CDs/[141126] ｢Liar Mask｣／真山りか (flac+webp)/DFCL-2098.log",
+      "size": 3238
+    },
+    {
+      "path": "CDs/[141126] ｢Liar Mask｣／真山りか (flac+webp)/Scans/01.webp",
+      "size": 2341400
+    },
+    {
+      "path": "CDs/[141126] ｢Liar Mask｣／真山りか (flac+webp)/Scans/02.webp",
+      "size": 2508488
+    },
+    {
+      "path": "CDs/[141126] ｢Liar Mask｣／真山りか (flac+webp)/Scans/03.webp",
+      "size": 2344318
+    },
+    {
+      "path": "CDs/[141126] ｢Liar Mask｣／真山りか (flac+webp)/Scans/04.webp",
+      "size": 2538708
+    },
+    {
+      "path": "CDs/[141126] ｢Liar Mask｣／真山りか (flac+webp)/Scans/05.webp",
+      "size": 5250466
+    },
+    {
+      "path": "CDs/[141126] ｢Liar Mask｣／真山りか (flac+webp)/Scans/06.webp",
+      "size": 5055940
+    },
+    {
+      "path": "CDs/[141126] ｢Liar Mask｣／真山りか (flac+webp)/Scans/07.webp",
+      "size": 4333072
+    },
+    {
+      "path": "CDs/[141126] ｢Liar Mask｣／真山りか (flac+webp)/Scans/08.webp",
+      "size": 1685058
+    },
+    {
+      "path": "CDs/[141126] ｢Liar Mask｣／真山りか (flac+webp)/Scans/09.webp",
+      "size": 1714256
+    },
+    {
+      "path": "CDs/[141126] ｢Liar Mask｣／真山りか (flac+webp)/Scans/10.webp",
+      "size": 3158776
+    },
+    {
+      "path": "CDs/[141126] ｢Liar Mask｣／真山りか (flac+webp)/Scans/11.webp",
+      "size": 2182730
+    },
+    {
+      "path": "CDs/[141126] ｢Liar Mask｣／真山りか (flac+webp)/Scans/12.webp",
+      "size": 1061638
+    },
+    {
+      "path": "CDs/[141126] ｢Liar Mask｣／真山りか (flac+webp)/Scans/13.webp",
+      "size": 825650
+    },
+    {
+      "path": "CDs/[141126] ｢月灯り｣／雨宮天 [24bit_96kHz] (flac+webp)/01. 月灯り.flac",
+      "size": 91998654
+    },
+    {
+      "path": "CDs/[141126] ｢月灯り｣／雨宮天 [24bit_96kHz] (flac+webp)/02. チョ・イ・ス.flac",
+      "size": 133156177
+    },
+    {
+      "path": "CDs/[141126] ｢月灯り｣／雨宮天 [24bit_96kHz] (flac+webp)/03. 月灯り (Instrumental).flac",
+      "size": 86788714
+    },
+    {
+      "path": "CDs/[141126] ｢月灯り｣／雨宮天 [24bit_96kHz] (flac+webp)/Scans/SMCL-359~60/01.webp",
+      "size": 10310806
+    },
+    {
+      "path": "CDs/[141126] ｢月灯り｣／雨宮天 [24bit_96kHz] (flac+webp)/Scans/SMCL-359~60/02.webp",
+      "size": 8648538
+    },
+    {
+      "path": "CDs/[141126] ｢月灯り｣／雨宮天 [24bit_96kHz] (flac+webp)/Scans/SMCL-359~60/03.webp",
+      "size": 10067924
+    },
+    {
+      "path": "CDs/[141126] ｢月灯り｣／雨宮天 [24bit_96kHz] (flac+webp)/Scans/SMCL-359~60/04.webp",
+      "size": 10005538
+    },
+    {
+      "path": "CDs/[141126] ｢月灯り｣／雨宮天 [24bit_96kHz] (flac+webp)/Scans/SMCL-359~60/05.webp",
+      "size": 6040522
+    },
+    {
+      "path": "CDs/[141126] ｢月灯り｣／雨宮天 [24bit_96kHz] (flac+webp)/Scans/SMCL-359~60/06.webp",
+      "size": 6292072
+    },
+    {
+      "path": "CDs/[141126] ｢月灯り｣／雨宮天 [24bit_96kHz] (flac+webp)/Scans/SMCL-359~60/07.webp",
+      "size": 1481250
+    },
+    {
+      "path": "CDs/[141126] ｢月灯り｣／雨宮天 [24bit_96kHz] (flac+webp)/Scans/SMCL-359~60/08.webp",
+      "size": 2037768
+    },
+    {
+      "path": "CDs/[141126] ｢月灯り｣／雨宮天 [24bit_96kHz] (flac+webp)/Scans/SMCL-359~60/09.webp",
+      "size": 10247446
+    },
+    {
+      "path": "CDs/[141126] ｢月灯り｣／雨宮天 [24bit_96kHz] (flac+webp)/Scans/SMCL-361/01.webp",
+      "size": 10365566
+    },
+    {
+      "path": "CDs/[141126] ｢月灯り｣／雨宮天 [24bit_96kHz] (flac+webp)/Scans/SMCL-361/02.webp",
+      "size": 9482012
+    },
+    {
+      "path": "CDs/[141126] ｢月灯り｣／雨宮天 [24bit_96kHz] (flac+webp)/Scans/SMCL-361/03.webp",
+      "size": 11360966
+    },
+    {
+      "path": "CDs/[141126] ｢月灯り｣／雨宮天 [24bit_96kHz] (flac+webp)/Scans/SMCL-361/04.webp",
+      "size": 10033076
+    },
+    {
+      "path": "CDs/[141126] ｢月灯り｣／雨宮天 [24bit_96kHz] (flac+webp)/Scans/SMCL-361/05.webp",
+      "size": 6036400
+    },
+    {
+      "path": "CDs/[141126] ｢月灯り｣／雨宮天 [24bit_96kHz] (flac+webp)/Scans/SMCL-361/06.webp",
+      "size": 5846674
+    },
+    {
+      "path": "CDs/[141126] ｢月灯り｣／雨宮天 [24bit_96kHz] (flac+webp)/Scans/SMCL-361/07.webp",
+      "size": 1275494
+    },
+    {
+      "path": "CDs/[141126] ｢月灯り｣／雨宮天 [24bit_96kHz] (flac+webp)/Scans/SMCL-361/08.webp",
+      "size": 1919530
+    },
+    {
+      "path": "CDs/[141126] ｢月灯り｣／雨宮天 [24bit_96kHz] (flac+webp)/Scans/SMCL-361/09.webp",
+      "size": 6308612
+    },
+    {
+      "path": "CDs/[141126] ｢月灯り｣／雨宮天 [24bit_96kHz] (flac+webp)/Scans/SMCL-362/01.webp",
+      "size": 13758954
+    },
+    {
+      "path": "CDs/[141126] ｢月灯り｣／雨宮天 [24bit_96kHz] (flac+webp)/Scans/SMCL-362/02.webp",
+      "size": 12742488
+    },
+    {
+      "path": "CDs/[141126] ｢月灯り｣／雨宮天 [24bit_96kHz] (flac+webp)/Scans/SMCL-362/03.webp",
+      "size": 9167758
+    },
+    {
+      "path": "CDs/[141126] ｢月灯り｣／雨宮天 [24bit_96kHz] (flac+webp)/Scans/SMCL-362/04.webp",
+      "size": 4692860
+    },
+    {
+      "path": "CDs/[141126] ｢月灯り｣／雨宮天 [24bit_96kHz] (flac+webp)/Scans/SMCL-362/05.webp",
+      "size": 2872384
+    },
+    {
+      "path": "CDs/[141126] ｢月灯り｣／雨宮天 [24bit_96kHz] (flac+webp)/Scans/SMCL-362/06.webp",
+      "size": 2013176
+    },
+    {
+      "path": "CDs/[141126] ｢月灯り｣／雨宮天 [24bit_96kHz] (flac+webp)/Scans/SMCL-362/07.webp",
+      "size": 5930654
+    },
+    {
+      "path": "CDs/[150218] オリジナルサウンドトラック1／岩崎琢 (flac+webp)/Scans/box back.webp",
+      "size": 6539808
+    },
+    {
+      "path": "CDs/[150218] オリジナルサウンドトラック1／岩崎琢 (flac+webp)/Scans/box front.webp",
+      "size": 6350204
+    },
+    {
+      "path": "CDs/[150218] オリジナルサウンドトラック1／岩崎琢 (flac+webp)/Scans/box side.webp",
+      "size": 557926
+    },
+    {
+      "path": "CDs/[150218] オリジナルサウンドトラック1／岩崎琢 (flac+webp)/Scans/cd 01.webp",
+      "size": 2230788
+    },
+    {
+      "path": "CDs/[150218] オリジナルサウンドトラック1／岩崎琢 (flac+webp)/Scans/cd 02.webp",
+      "size": 2337396
+    },
+    {
+      "path": "CDs/[150218] オリジナルサウンドトラック1／岩崎琢 (flac+webp)/Scans/cd in.webp",
+      "size": 6117534
+    },
+    {
+      "path": "CDs/[150218] オリジナルサウンドトラック1／岩崎琢 (flac+webp)/Scans/cd out.webp",
+      "size": 6165784
+    },
+    {
+      "path": "CDs/[150218] オリジナルサウンドトラック1／岩崎琢 (flac+webp)/Scans/in all.webp",
+      "size": 10018216
+    },
+    {
+      "path": "CDs/[150218] オリジナルサウンドトラック1／岩崎琢 (flac+webp)/Scans/out all.webp",
+      "size": 9768838
+    },
+    {
+      "path": "CDs/[150218] オリジナルサウンドトラック1／岩崎琢 (flac+webp)/Scans/side.webp",
+      "size": 2095052
+    },
+    {
+      "path": "CDs/[150218] オリジナルサウンドトラック1／岩崎琢 (flac+webp)/THCA-60046-1.cue",
+      "size": 1921
+    },
+    {
+      "path": "CDs/[150218] オリジナルサウンドトラック1／岩崎琢 (flac+webp)/THCA-60046-1.flac",
+      "size": 373603532
+    },
+    {
+      "path": "CDs/[150218] オリジナルサウンドトラック1／岩崎琢 (flac+webp)/THCA-60046-1.jpg",
+      "size": 293233
+    },
+    {
+      "path": "CDs/[150218] オリジナルサウンドトラック1／岩崎琢 (flac+webp)/THCA-60046-1.log",
+      "size": 6790
+    },
+    {
+      "path": "CDs/[150218] オリジナルサウンドトラック1／岩崎琢 (flac+webp)/THCA-60046-2.cue",
+      "size": 1980
+    },
+    {
+      "path": "CDs/[150218] オリジナルサウンドトラック1／岩崎琢 (flac+webp)/THCA-60046-2.flac",
+      "size": 361979556
+    },
+    {
+      "path": "CDs/[150218] オリジナルサウンドトラック1／岩崎琢 (flac+webp)/THCA-60046-2.jpg",
+      "size": 293233
+    },
+    {
+      "path": "CDs/[150218] オリジナルサウンドトラック1／岩崎琢 (flac+webp)/THCA-60046-2.log",
+      "size": 6790
+    },
+    {
+      "path": "CDs/[150318] オリジナルサウンドトラック2／岩崎琢 (flac+webp)/Scans/01.webp",
+      "size": 2920088
+    },
+    {
+      "path": "CDs/[150318] オリジナルサウンドトラック2／岩崎琢 (flac+webp)/Scans/02.webp",
+      "size": 2626556
+    },
+    {
+      "path": "CDs/[150318] オリジナルサウンドトラック2／岩崎琢 (flac+webp)/Scans/03.webp",
+      "size": 4412718
+    },
+    {
+      "path": "CDs/[150318] オリジナルサウンドトラック2／岩崎琢 (flac+webp)/Scans/04.webp",
+      "size": 3441488
+    },
+    {
+      "path": "CDs/[150318] オリジナルサウンドトラック2／岩崎琢 (flac+webp)/Scans/05.webp",
+      "size": 1246484
+    },
+    {
+      "path": "CDs/[150318] オリジナルサウンドトラック2／岩崎琢 (flac+webp)/Scans/06.webp",
+      "size": 5505874
+    },
+    {
+      "path": "CDs/[150318] オリジナルサウンドトラック2／岩崎琢 (flac+webp)/Scans/07.webp",
+      "size": 6323816
+    },
+    {
+      "path": "CDs/[150318] オリジナルサウンドトラック2／岩崎琢 (flac+webp)/Scans/08.webp",
+      "size": 1549398
+    },
+    {
+      "path": "CDs/[150318] オリジナルサウンドトラック2／岩崎琢 (flac+webp)/THCA-60049.cue",
+      "size": 1895
+    },
+    {
+      "path": "CDs/[150318] オリジナルサウンドトラック2／岩崎琢 (flac+webp)/THCA-60049.flac",
+      "size": 294645261
+    },
+    {
+      "path": "CDs/[150318] オリジナルサウンドトラック2／岩崎琢 (flac+webp)/THCA-60049.jpg",
+      "size": 244838
+    },
+    {
+      "path": "CDs/[150318] オリジナルサウンドトラック2／岩崎琢 (flac+webp)/THCA-60049.log",
+      "size": 6980
+    },
+    {
+      "path": "CDs/[160907] ｢Various BLUE｣／雨宮天 [24bit_96kHz] (flac)/01. Absolute Blue.flac",
+      "size": 105843785
+    },
+    {
+      "path": "CDs/[160907] ｢Various BLUE｣／雨宮天 [24bit_96kHz] (flac)/02. 夢空.flac",
+      "size": 104138784
+    },
+    {
+      "path": "CDs/[160907] ｢Various BLUE｣／雨宮天 [24bit_96kHz] (flac)/03. Skyreach.flac",
+      "size": 112851424
+    },
+    {
+      "path": "CDs/[160907] ｢Various BLUE｣／雨宮天 [24bit_96kHz] (flac)/04. 羽根輪舞.flac",
+      "size": 100067732
+    },
+    {
+      "path": "CDs/[160907] ｢Various BLUE｣／雨宮天 [24bit_96kHz] (flac)/05. Glitter.flac",
+      "size": 111794347
+    },
+    {
+      "path": "CDs/[160907] ｢Various BLUE｣／雨宮天 [24bit_96kHz] (flac)/06. ASH.flac",
+      "size": 111578478
+    },
+    {
+      "path": "CDs/[160907] ｢Various BLUE｣／雨宮天 [24bit_96kHz] (flac)/07. チョ・イ・ス.flac",
+      "size": 132653890
+    },
+    {
+      "path": "CDs/[160907] ｢Various BLUE｣／雨宮天 [24bit_96kHz] (flac)/08. 月灯り.flac",
+      "size": 92028206
+    },
+    {
+      "path": "CDs/[160907] ｢Various BLUE｣／雨宮天 [24bit_96kHz] (flac)/09. Silent Sword.flac",
+      "size": 112688199
+    },
+    {
+      "path": "CDs/[160907] ｢Various BLUE｣／雨宮天 [24bit_96kHz] (flac)/10. Velvet Rays.flac",
+      "size": 105884913
+    },
+    {
+      "path": "CDs/[160907] ｢Various BLUE｣／雨宮天 [24bit_96kHz] (flac)/11. After the Tears.flac",
+      "size": 108586036
+    },
+    {
+      "path": "CDs/[160907] ｢Various BLUE｣／雨宮天 [24bit_96kHz] (flac)/12. RAINBOW.flac",
+      "size": 100673808
+    },
+    {
+      "path": "readme about WebP.txt",
+      "size": 1186
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [CM01v2][Hi10p_1080p][x264_flac].mkv",
+      "size": 60358663
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [CM02][Hi10p_1080p][x264_flac].mkv",
+      "size": 9217383
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [CM03][Hi10p_1080p][x264_flac].mkv",
+      "size": 21929666
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [CM04][Hi10p_1080p][x264_flac].mkv",
+      "size": 71728603
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [CM05][Hi10p_1080p][x264_flac].mkv",
+      "size": 20929145
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [CM06][Hi10p_1080p][x264_flac].mkv",
+      "size": 19866072
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [CM07][Hi10p_1080p][x264_flac].mkv",
+      "size": 14942861
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [CM08][Hi10p_1080p][x264_flac].mkv",
+      "size": 11922540
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [CM09][Hi10p_1080p][x264_flac].mkv",
+      "size": 13525697
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [CM10][Hi10p_1080p][x264_flac].mkv",
+      "size": 12510167
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [CM11][Hi10p_1080p][x264_flac].mkv",
+      "size": 11165542
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [CM12][Hi10p_1080p][x264_flac].mkv",
+      "size": 10649333
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [CM13][Hi10p_1080p][x264_flac].mkv",
+      "size": 17295421
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [CM14][Hi10p_1080p][x264_flac].mkv",
+      "size": 10464066
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [CM15][Hi10p_1080p][x264_flac].mkv",
+      "size": 19298014
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [CM16][Hi10p_1080p][x264_flac].mkv",
+      "size": 17080763
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [IV01][Hi10p_1080p][x264_flac].mkv",
+      "size": 1035964305
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [IV02][Hi10p_1080p][x264_flac].mkv",
+      "size": 438025966
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [IV03][Hi10p_1080p][x264_flac].mkv",
+      "size": 1439316275
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [Menu01][Hi10p_1080p][x264_flac].mkv",
+      "size": 35331423
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [Menu02][Hi10p_1080p][x264_flac].mkv",
+      "size": 45199816
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [Menu03][Hi10p_1080p][x264_flac].mkv",
+      "size": 45123006
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [Menu04][Hi10p_1080p][x264_flac].mkv",
+      "size": 26486027
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [Menu05][Hi10p_1080p][x264_flac].mkv",
+      "size": 34810598
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [Menu06][Hi10p_1080p][x264_flac].mkv",
+      "size": 45243759
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [Menu07][Hi10p_1080p][x264_flac].mkv",
+      "size": 43348587
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [Menu08][Hi10p_1080p][x264_flac].mkv",
+      "size": 40497631
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [NCED02][Hi10p_1080p][x264_flac].mkv",
+      "size": 84098702
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [NCED][1080p][x264_flac].mkv",
+      "size": 369203184
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [NCOP02][Hi10p_1080p][x264_flac].mkv",
+      "size": 162077296
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [NCOP][Hi10p_1080p][x264_flac].mkv",
+      "size": 95864671
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [PV01][Hi10p_1080p][x264_flac].mkv",
+      "size": 56635914
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP01][Hi10p_1080p][x264_flac].mkv",
+      "size": 22126949
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP01][Hi10p_1080p][x264_flac].sc.ass",
+      "size": 2413
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP01][Hi10p_1080p][x264_flac].tc.ass",
+      "size": 2413
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP02][Hi10p_1080p][x264_flac].mkv",
+      "size": 27926540
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP02][Hi10p_1080p][x264_flac].sc.ass",
+      "size": 3672
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP02][Hi10p_1080p][x264_flac].tc.ass",
+      "size": 3672
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP03][Hi10p_1080p][x264_flac].mkv",
+      "size": 24765839
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP03][Hi10p_1080p][x264_flac].sc.ass",
+      "size": 2346
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP03][Hi10p_1080p][x264_flac].tc.ass",
+      "size": 2346
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP04][Hi10p_1080p][x264_flac].mkv",
+      "size": 25119778
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP04][Hi10p_1080p][x264_flac].sc.ass",
+      "size": 3875
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP04][Hi10p_1080p][x264_flac].tc.ass",
+      "size": 3875
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP05][Hi10p_1080p][x264_flac].mkv",
+      "size": 32123963
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP05][Hi10p_1080p][x264_flac].sc.ass",
+      "size": 3426
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP05][Hi10p_1080p][x264_flac].tc.ass",
+      "size": 3426
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP06][Hi10p_1080p][x264_flac].mkv",
+      "size": 25892816
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP06][Hi10p_1080p][x264_flac].sc.ass",
+      "size": 2849
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP06][Hi10p_1080p][x264_flac].tc.ass",
+      "size": 2849
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP07][Hi10p_1080p][x264_flac].mkv",
+      "size": 28524686
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP07][Hi10p_1080p][x264_flac].sc.ass",
+      "size": 2947
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP07][Hi10p_1080p][x264_flac].tc.ass",
+      "size": 2956
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP08][Hi10p_1080p][x264_flac].mkv",
+      "size": 32978719
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP08][Hi10p_1080p][x264_flac].sc.ass",
+      "size": 2819
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP08][Hi10p_1080p][x264_flac].tc.ass",
+      "size": 2819
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP09][Hi10p_1080p][x264_flac].mkv",
+      "size": 25264164
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP09][Hi10p_1080p][x264_flac].sc.ass",
+      "size": 2716
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP09][Hi10p_1080p][x264_flac].tc.ass",
+      "size": 2753
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP10][Hi10p_1080p][x264_flac].mkv",
+      "size": 37701249
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP10][Hi10p_1080p][x264_flac].sc.ass",
+      "size": 3467
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP10][Hi10p_1080p][x264_flac].tc.ass",
+      "size": 3467
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP11][Hi10p_1080p][x264_flac].mkv",
+      "size": 27745684
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP11][Hi10p_1080p][x264_flac].sc.ass",
+      "size": 2272
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP11][Hi10p_1080p][x264_flac].tc.ass",
+      "size": 2212
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP12][Hi10p_1080p][x264_flac].mkv",
+      "size": 26700412
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP12][Hi10p_1080p][x264_flac].sc.ass",
+      "size": 3294
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP12][Hi10p_1080p][x264_flac].tc.ass",
+      "size": 3294
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP13][Hi10p_1080p][x264_flac].mkv",
+      "size": 29607582
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP13][Hi10p_1080p][x264_flac].sc.ass",
+      "size": 2382
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP13][Hi10p_1080p][x264_flac].tc.ass",
+      "size": 2382
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP14][Hi10p_1080p][x264_flac].mkv",
+      "size": 24047996
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP14][Hi10p_1080p][x264_flac].sc.ass",
+      "size": 5669
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP14][Hi10p_1080p][x264_flac].tc.ass",
+      "size": 5669
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP15][Hi10p_1080p][x264_flac].mkv",
+      "size": 23146278
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP15][Hi10p_1080p][x264_flac].sc.ass",
+      "size": 3055
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP15][Hi10p_1080p][x264_flac].tc.ass",
+      "size": 3055
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP16][Hi10p_1080p][x264_flac].mkv",
+      "size": 27996507
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP16][Hi10p_1080p][x264_flac].sc.ass",
+      "size": 2825
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP16][Hi10p_1080p][x264_flac].tc.ass",
+      "size": 2830
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP17][Hi10p_1080p][x264_flac].mkv",
+      "size": 31712025
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP17][Hi10p_1080p][x264_flac].sc.ass",
+      "size": 3694
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP17][Hi10p_1080p][x264_flac].tc.ass",
+      "size": 3673
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP18][Hi10p_1080p][x264_flac].mkv",
+      "size": 25994356
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP18][Hi10p_1080p][x264_flac].sc.ass",
+      "size": 3058
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP18][Hi10p_1080p][x264_flac].tc.ass",
+      "size": 3036
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP19][Hi10p_1080p][x264_flac].mkv",
+      "size": 30617310
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP19][Hi10p_1080p][x264_flac].sc.ass",
+      "size": 3489
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP19][Hi10p_1080p][x264_flac].tc.ass",
+      "size": 3462
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP20][Hi10p_1080p][x264_flac].mkv",
+      "size": 35246413
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP20][Hi10p_1080p][x264_flac].sc.ass",
+      "size": 3188
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP20][Hi10p_1080p][x264_flac].tc.ass",
+      "size": 3182
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP21][Hi10p_1080p][x264_flac].mkv",
+      "size": 48586339
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP21][Hi10p_1080p][x264_flac].sc.ass",
+      "size": 3887
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP21][Hi10p_1080p][x264_flac].tc.ass",
+      "size": 3906
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP22][Hi10p_1080p][x264_flac].mkv",
+      "size": 28081807
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP22][Hi10p_1080p][x264_flac].sc.ass",
+      "size": 3666
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP22][Hi10p_1080p][x264_flac].tc.ass",
+      "size": 3666
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP23][Hi10p_1080p][x264_flac].mkv",
+      "size": 29069741
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP23][Hi10p_1080p][x264_flac].sc.ass",
+      "size": 1817
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP23][Hi10p_1080p][x264_flac].tc.ass",
+      "size": 1817
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP24][Hi10p_1080p][x264_flac].mkv",
+      "size": 31052508
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP24][Hi10p_1080p][x264_flac].sc.ass",
+      "size": 2469
+    },
+    {
+      "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP24][Hi10p_1080p][x264_flac].tc.ass",
+      "size": 2469
+    }
+  ]
+}

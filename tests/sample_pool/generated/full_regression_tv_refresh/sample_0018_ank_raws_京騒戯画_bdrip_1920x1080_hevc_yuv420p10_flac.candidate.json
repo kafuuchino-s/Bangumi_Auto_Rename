@@ -1,0 +1,135 @@
+{
+  "status": "ok",
+  "type": "tv",
+  "title_candidate": "京騒戯画",
+  "tmdb_name": "京骚戏画",
+  "tmdb_id": 85065,
+  "timing": {
+    "analysis_seconds": 29.726
+  },
+  "file_mapping": [
+    {
+      "source_index": 9,
+      "file_path": "[ANK-Raws] 京騒戯画 00 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "tmdb_season": 0,
+      "tmdb_episode": 1,
+      "episode_type": "special",
+      "confidence": "High"
+    },
+    {
+      "source_index": 10,
+      "file_path": "[ANK-Raws] 京騒戯画 01 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 1,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 11,
+      "file_path": "[ANK-Raws] 京騒戯画 02 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 2,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 12,
+      "file_path": "[ANK-Raws] 京騒戯画 03 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 3,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 13,
+      "file_path": "[ANK-Raws] 京騒戯画 04 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 4,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 14,
+      "file_path": "[ANK-Raws] 京騒戯画 05 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 5,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 15,
+      "file_path": "[ANK-Raws] 京騒戯画 06 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 6,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 16,
+      "file_path": "[ANK-Raws] 京騒戯画 07 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 7,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 17,
+      "file_path": "[ANK-Raws] 京騒戯画 08 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 8,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 18,
+      "file_path": "[ANK-Raws] 京騒戯画 09 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 9,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 19,
+      "file_path": "[ANK-Raws] 京騒戯画 10 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 10,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 20,
+      "file_path": "[ANK-Raws] 京騒戯画 10.5 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "tmdb_season": 0,
+      "tmdb_episode": 3,
+      "episode_type": "special",
+      "confidence": "Medium"
+    }
+  ],
+  "conflict_details": [],
+  "analysis_result": {
+    "confidence": "Medium",
+    "reason": "正片编号可直接对应，00与10.5归入Season 0。",
+    "season_mapping": [],
+    "file_mapping_count": 12,
+    "unmatched_count": 8,
+    "conflict_count": 0
+  },
+  "hydration_notes": {
+    "hydrated_count": 12,
+    "examples": [
+      "hydrated:9:[ANK-Raws] 京騒戯画 00 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "hydrated:10:[ANK-Raws] 京騒戯画 01 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "hydrated:11:[ANK-Raws] 京騒戯画 02 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "hydrated:12:[ANK-Raws] 京騒戯画 03 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "hydrated:13:[ANK-Raws] 京騒戯画 04 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv"
+    ]
+  },
+  "task_plan": {
+    "is_movie": false,
+    "ai_type": "tv",
+    "tv_available": true,
+    "movie_available": false,
+    "selected_confidence": "High"
+  },
+  "final_type": "tv"
+}

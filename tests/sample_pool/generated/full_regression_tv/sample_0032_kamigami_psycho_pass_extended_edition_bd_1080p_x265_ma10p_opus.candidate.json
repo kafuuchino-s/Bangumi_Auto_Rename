@@ -1,0 +1,219 @@
+{
+  "status": "ok",
+  "type": "tv",
+  "title_candidate": "Psycho-Pass",
+  "tmdb_name": "Psycho-Pass",
+  "tmdb_id": 43865,
+  "timing": {
+    "analysis_seconds": 34.482
+  },
+  "file_mapping": [
+    {
+      "source_index": 1,
+      "file_path": "[Kamigami] Psycho-Pass Extended Edition - 01 [BD 1080p x265 Ma10p Opus].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 1,
+      "episode_type": "regular",
+      "confidence": "Medium"
+    },
+    {
+      "source_index": 2,
+      "file_path": "[Kamigami] Psycho-Pass Extended Edition - 02 [BD 1080p x265 Ma10p Opus].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 2,
+      "episode_type": "regular",
+      "confidence": "Medium"
+    },
+    {
+      "source_index": 3,
+      "file_path": "[Kamigami] Psycho-Pass Extended Edition - 03 [BD 1080p x265 Ma10p Opus].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 3,
+      "episode_type": "regular",
+      "confidence": "Medium"
+    },
+    {
+      "source_index": 4,
+      "file_path": "[Kamigami] Psycho-Pass Extended Edition - 04 [BD 1080p x265 Ma10p Opus].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 4,
+      "episode_type": "regular",
+      "confidence": "Medium"
+    },
+    {
+      "source_index": 5,
+      "file_path": "[Kamigami] Psycho-Pass Extended Edition - 05 [BD 1080p x265 Ma10p Opus].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 5,
+      "episode_type": "regular",
+      "confidence": "Medium"
+    },
+    {
+      "source_index": 6,
+      "file_path": "[Kamigami] Psycho-Pass Extended Edition - 06 [BD 1080p x265 Ma10p Opus].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 6,
+      "episode_type": "regular",
+      "confidence": "Medium"
+    },
+    {
+      "source_index": 7,
+      "file_path": "[Kamigami] Psycho-Pass Extended Edition - 07 [BD 1080p x265 Ma10p Opus].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 7,
+      "episode_type": "regular",
+      "confidence": "Medium"
+    },
+    {
+      "source_index": 8,
+      "file_path": "[Kamigami] Psycho-Pass Extended Edition - 08 [BD 1080p x265 Ma10p Opus].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 8,
+      "episode_type": "regular",
+      "confidence": "Medium"
+    },
+    {
+      "source_index": 9,
+      "file_path": "[Kamigami] Psycho-Pass Extended Edition - 09 [BD 1080p x265 Ma10p Opus].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 9,
+      "episode_type": "regular",
+      "confidence": "Medium"
+    },
+    {
+      "source_index": 10,
+      "file_path": "[Kamigami] Psycho-Pass Extended Edition - 10 [BD 1080p x265 Ma10p Opus].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 10,
+      "episode_type": "regular",
+      "confidence": "Medium"
+    },
+    {
+      "source_index": 11,
+      "file_path": "[Kamigami] Psycho-Pass Extended Edition - 11 [BD 1080p x265 Ma10p Opus].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 11,
+      "episode_type": "regular",
+      "confidence": "Medium"
+    }
+  ],
+  "conflict_details": [],
+  "analysis_result": {
+    "confidence": "Medium",
+    "reason": "本地文件均为连续编号 01-11，且未出现季番、特典或分段信息；TMDB 中 Psycho-Pass 第1季存在对应的正片集目，按文件编号顺序映射到 Season 1 的前 11 集。",
+    "season_mapping": [
+      {
+        "local_group_name": "Psycho-Pass Extended Edition",
+        "maps_to_tmdb_seasons": [
+          1
+        ]
+      }
+    ],
+    "file_mapping": [
+      {
+        "source_index": 1,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 1,
+        "episode_type": "regular",
+        "confidence": "Medium"
+      },
+      {
+        "source_index": 2,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 2,
+        "episode_type": "regular",
+        "confidence": "Medium"
+      },
+      {
+        "source_index": 3,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 3,
+        "episode_type": "regular",
+        "confidence": "Medium"
+      },
+      {
+        "source_index": 4,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 4,
+        "episode_type": "regular",
+        "confidence": "Medium"
+      },
+      {
+        "source_index": 5,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 5,
+        "episode_type": "regular",
+        "confidence": "Medium"
+      },
+      {
+        "source_index": 6,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 6,
+        "episode_type": "regular",
+        "confidence": "Medium"
+      },
+      {
+        "source_index": 7,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 7,
+        "episode_type": "regular",
+        "confidence": "Medium"
+      },
+      {
+        "source_index": 8,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 8,
+        "episode_type": "regular",
+        "confidence": "Medium"
+      },
+      {
+        "source_index": 9,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 9,
+        "episode_type": "regular",
+        "confidence": "Medium"
+      },
+      {
+        "source_index": 10,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 10,
+        "episode_type": "regular",
+        "confidence": "Medium"
+      },
+      {
+        "source_index": 11,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 11,
+        "episode_type": "regular",
+        "confidence": "Medium"
+      }
+    ],
+    "unmatched_files": [],
+    "conflict_details": [],
+    "extra_notes": "文件名仅提供稳定编号 01-11，且未出现 OVA/SP/Part 等特殊标记；按顺序对应 TMDB 第1季前11集。Extended Edition 可能与原版分集结构存在差异，但在当前信息下采用编号直映射。"
+  },
+  "hydration_notes": [
+    "hydrated:1:[Kamigami] Psycho-Pass Extended Edition - 01 [BD 1080p x265 Ma10p Opus].mkv",
+    "hydrated:2:[Kamigami] Psycho-Pass Extended Edition - 02 [BD 1080p x265 Ma10p Opus].mkv",
+    "hydrated:3:[Kamigami] Psycho-Pass Extended Edition - 03 [BD 1080p x265 Ma10p Opus].mkv",
+    "hydrated:4:[Kamigami] Psycho-Pass Extended Edition - 04 [BD 1080p x265 Ma10p Opus].mkv",
+    "hydrated:5:[Kamigami] Psycho-Pass Extended Edition - 05 [BD 1080p x265 Ma10p Opus].mkv",
+    "hydrated:6:[Kamigami] Psycho-Pass Extended Edition - 06 [BD 1080p x265 Ma10p Opus].mkv",
+    "hydrated:7:[Kamigami] Psycho-Pass Extended Edition - 07 [BD 1080p x265 Ma10p Opus].mkv",
+    "hydrated:8:[Kamigami] Psycho-Pass Extended Edition - 08 [BD 1080p x265 Ma10p Opus].mkv",
+    "hydrated:9:[Kamigami] Psycho-Pass Extended Edition - 09 [BD 1080p x265 Ma10p Opus].mkv",
+    "hydrated:10:[Kamigami] Psycho-Pass Extended Edition - 10 [BD 1080p x265 Ma10p Opus].mkv",
+    "hydrated:11:[Kamigami] Psycho-Pass Extended Edition - 11 [BD 1080p x265 Ma10p Opus].mkv"
+  ]
+}

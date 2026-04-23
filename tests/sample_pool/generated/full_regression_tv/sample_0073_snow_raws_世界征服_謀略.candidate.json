@@ -1,0 +1,48 @@
+{
+  "status": "ok",
+  "type": "movie",
+  "title_candidate": "世界征服～謀略のズヴィズダー～",
+  "timing": {
+    "analysis_seconds": 12.149
+  },
+  "collection_analysis": {
+    "is_collection": false,
+    "collection_name": "世界征服～謀略のズヴィズダー～",
+    "confidence": "High",
+    "reason": "目录为单部TV动画及特典，不是电影合集",
+    "file_mapping": [],
+    "unmatched_files": [
+      "[Snow-Raws] 世界征服 ~謀略のズヴィズダー~ 第01話(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[Snow-Raws] 世界征服 ~謀略のズヴィズダー~ 第02話(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[Snow-Raws] 世界征服 ~謀略のズヴィズダー~ 第03話(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[Snow-Raws] 世界征服 ~謀略のズヴィズダー~ 第04話(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[Snow-Raws] 世界征服 ~謀略のズヴィズダー~ 第05話(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[Snow-Raws] 世界征服 ~謀略のズヴィズダー~ 第06話(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[Snow-Raws] 世界征服 ~謀略のズヴィズダー~ 第07話(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[Snow-Raws] 世界征服 ~謀略のズヴィズダー~ 第08話(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[Snow-Raws] 世界征服 ~謀略のズヴィズダー~ 第09話(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[Snow-Raws] 世界征服 ~謀略のズヴィズダー~ 第10話(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[Snow-Raws] 世界征服 ~謀略のズヴィズダー~ 第11話(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[Snow-Raws] 世界征服 ~謀略のズヴィズダー~ 第12話(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[Snow-Raws] 世界征服 ~謀略のズヴィズダー~ 第13話(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "映像特典/[Snow-Raws] 世界征服 ~謀略のズヴィズダー~ CM(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "映像特典/[Snow-Raws] 世界征服 ~謀略のズヴィズダー~ ED(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "映像特典/[Snow-Raws] 世界征服 ~謀略のズヴィズダー~ MENU01(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "映像特典/[Snow-Raws] 世界征服 ~謀略のズヴィズダー~ MENU02(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "映像特典/[Snow-Raws] 世界征服 ~謀略のズヴィズダー~ MENU03(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "映像特典/[Snow-Raws] 世界征服 ~謀略のズヴィズダー~ MENU04(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "映像特典/[Snow-Raws] 世界征服 ~謀略のズヴィズダー~ MENU05(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "映像特典/[Snow-Raws] 世界征服 ~謀略のズヴィズダー~ MENU06(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "映像特典/[Snow-Raws] 世界征服 ~謀略のズヴィズダー~ MENU07(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "映像特典/[Snow-Raws] 世界征服 ~謀略のズヴィズダー~ OP(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "映像特典/[Snow-Raws] 世界征服 ~謀略のズヴィズダー~ PV(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "映像特典/[Snow-Raws] 世界征服 ~謀略のズヴィズダー~ SP(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "映像特典/[Snow-Raws] 世界征服 ~謀略のズヴィズダー~ 第十三话ED(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "映像特典/[Snow-Raws] 世界征服 ~謀略のズヴィズダー~ 第十二话OP(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv"
+    ],
+    "conflict_details": [
+      "全为TV动画正片与映像特典，无独立电影条目"
+    ],
+    "extra_notes": null
+  }
+}

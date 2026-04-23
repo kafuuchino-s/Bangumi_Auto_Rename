@@ -1,0 +1,42 @@
+{
+  "status": "ok",
+  "type": "movie",
+  "title_candidate": "World Witches Hasshin Shimasu!",
+  "timing": {
+    "analysis_seconds": 11.886
+  },
+  "collection_analysis": {
+    "is_collection": false,
+    "collection_name": "World Witches Hasshin Shimasu!",
+    "confidence": "High",
+    "reason": "文件均为剧集与特典，不是电影合集",
+    "file_mapping": [],
+    "unmatched_files": [
+      "[Moozzi2] World Witches Hasshin Shimasu! - 01 (BD 1920x1080 x265-10Bit Flac).mkv",
+      "[Moozzi2] World Witches Hasshin Shimasu! - 02 (BD 1920x1080 x265-10Bit Flac).mkv",
+      "[Moozzi2] World Witches Hasshin Shimasu! - 03 (BD 1920x1080 x265-10Bit Flac).mkv",
+      "[Moozzi2] World Witches Hasshin Shimasu! - 04 (BD 1920x1080 x265-10Bit Flac).mkv",
+      "[Moozzi2] World Witches Hasshin Shimasu! - 05 (BD 1920x1080 x265-10Bit Flac).mkv",
+      "[Moozzi2] World Witches Hasshin Shimasu! - 06 (BD 1920x1080 x265-10Bit Flac).mkv",
+      "[Moozzi2] World Witches Hasshin Shimasu! - 07 (BD 1920x1080 x265-10Bit Flac).mkv",
+      "[Moozzi2] World Witches Hasshin Shimasu! - 08 (BD 1920x1080 x265-10Bit Flac).mkv",
+      "[Moozzi2] World Witches Hasshin Shimasu! - 09 (BD 1920x1080 x265-10Bit Flac).mkv",
+      "[Moozzi2] World Witches Hasshin Shimasu! - 10 (BD 1920x1080 x265-10Bit Flac).mkv",
+      "[Moozzi2] World Witches Hasshin Shimasu! - 11 (BD 1920x1080 x265-10Bit Flac).mkv",
+      "[Moozzi2] World Witches Hasshin Shimasu! - 12 END (BD 1920x1080 x265-10Bit Flac).mkv",
+      "EXTRA/[Moozzi2] World Witches Hasshin Shimasu! [SP01] NCOP (BD 1920x1080 x265-10Bit Flac).mkv",
+      "EXTRA/[Moozzi2] World Witches Hasshin Shimasu! [SP02] NCED Collection 501 Hen Ver. Odd Episode (BD 1920x1080 x265-10Bit Flac).mkv",
+      "EXTRA/[Moozzi2] World Witches Hasshin Shimasu! [SP02] NCED Collection 502 Hen Ver. Even Episode (BD 1920x1080 x265-10Bit Flac).mkv",
+      "EXTRA/[Moozzi2] World Witches Hasshin Shimasu! [SP03] Yokoku Collection 501 Hen Ver. Odd Episode (BD 1920x1080 x265-10Bit Flac).mkv",
+      "EXTRA/[Moozzi2] World Witches Hasshin Shimasu! [SP03] Yokoku Collection 502 Hen Ver. Even Episode (BD 1920x1080 x265-10Bit Flac).mkv",
+      "EXTRA/[Moozzi2] World Witches Hasshin Shimasu! [SP04] World Witches Lecture - 01 (BD 1920x1080 x265-10Bit Flac).mkv",
+      "EXTRA/[Moozzi2] World Witches Hasshin Shimasu! [SP04] World Witches Lecture - 02 (BD 1920x1080 x265-10Bit Flac).mkv",
+      "EXTRA/[Moozzi2] World Witches Hasshin Shimasu! [SP05] ANE07 1st. Onee-chan General Election - 01 (BD 1920x1080 x265-10Bit Flac).mkv",
+      "EXTRA/[Moozzi2] World Witches Hasshin Shimasu! [SP05] ANE07 1st. Onee-chan General Election - 02 (BD 1920x1080 x265-10Bit Flac).mkv"
+    ],
+    "conflict_details": [
+      "文件均为12集剧集及特典，并非多部电影合集"
+    ],
+    "extra_notes": null
+  }
+}

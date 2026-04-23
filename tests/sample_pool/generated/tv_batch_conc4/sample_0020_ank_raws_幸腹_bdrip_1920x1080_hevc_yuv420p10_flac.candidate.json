@@ -1,0 +1,236 @@
+{
+  "status": "ok",
+  "type": "tv",
+  "title_candidate": "幸腹グラフィティ",
+  "tmdb_name": "幸腹グラフィティ",
+  "tmdb_id": 72921,
+  "file_mapping": [
+    {
+      "source_index": 4,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 1,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 5,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 2,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 6,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 3,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 7,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 4,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 8,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 5,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 9,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 6,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 10,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 7,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 11,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 8,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 12,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 9,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 13,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 10,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 14,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 11,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 15,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 12,
+      "episode_type": "regular",
+      "confidence": "High"
+    }
+  ],
+  "analysis_result": {
+    "confidence": "High",
+    "reason": "本地编号 01-12 的正片文件可直接对应 TMDB Season 1 的 S01E01-S01E12；其余文件为 OP/ED、CM、Info、PV、Menu 等非正片内容，TMDB 列表中无对应集目。",
+    "season_mapping": [
+      {
+        "local_group_name": "幸腹グラフィティ",
+        "maps_to_tmdb_seasons": [
+          1
+        ]
+      }
+    ],
+    "file_mapping": [
+      {
+        "source_index": 4,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 1,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 5,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 2,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 6,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 3,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 7,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 4,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 8,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 5,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 9,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 6,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 10,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 7,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 11,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 8,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 12,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 9,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 13,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 10,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 14,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 11,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 15,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 12,
+        "episode_type": "regular",
+        "confidence": "High"
+      }
+    ],
+    "unmatched_files": [
+      "[ANK-Raws] 幸腹グラフィティ (Creditless ED) (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[ANK-Raws] 幸腹グラフィティ (Creditless OP1) (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[ANK-Raws] 幸腹グラフィティ (Creditless OP2) (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[ANK-Raws] 幸腹グラフィティ CM01 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[ANK-Raws] 幸腹グラフィティ CM02 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[ANK-Raws] 幸腹グラフィティ CM03 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[ANK-Raws] 幸腹グラフィティ CM04 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[ANK-Raws] 幸腹グラフィティ Info01 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[ANK-Raws] 幸腹グラフィティ Info02 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[ANK-Raws] 幸腹グラフィティ PV01 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[ANK-Raws] 幸腹グラフィティ PV02 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "Menu (Vol.1)/Menu (Vol.1).mkv",
+      "Menu (Vol.2)/Menu (Vol.2).mkv",
+      "Menu (Vol.3)/Menu (Vol.3).mkv",
+      "Menu (Vol.4)/Menu (Vol.4).mkv",
+      "Menu (Vol.5)/Menu (Vol.5).mkv",
+      "Menu (Vol.6)/Menu (Vol.6).mkv"
+    ],
+    "conflict_details": [],
+    "extra_notes": null
+  }
+}

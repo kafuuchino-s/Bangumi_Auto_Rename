@@ -482,10 +482,6 @@ def test_extract_title_metadata_and_compatibility_helpers():
         AIClient,
         "_call_openai_simple",
         return_value=payload,
-    ), patch.object(
-        AIClient,
-        "_call_gemini_simple",
-        return_value=payload,
     ):
         metadata = ai_client.extract_title_metadata("[字幕组] 生徒会の一存 Lv.2 [BDRip]")
         assert metadata is not None
@@ -1343,13 +1339,48 @@ def test_process_movie_dir_falls_back_from_collection_to_single_movie():
             "genres": [{"id": 16, "name": "Animation"}],
         }
 
-        with patch.object(Rename, "check_task_type", return_value=(
-            "AURA～魔竜院光牙最後の闘い～",
-            info,
-            True,
-            True,
-            "High",
-        )), patch.object(AIClient, "is_available", return_value=True), patch.object(
+        with patch.object(
+            Rename,
+            "check_task_type",
+            return_value={
+                "selected_name": "AURA～魔竜院光牙最後の闘い～",
+                "selected_info": info,
+                "is_anime": True,
+                "is_movie": True,
+                "selected_confidence": "High",
+                "ai_type": "movie",
+                "tv_candidate": {
+                    "name": "",
+                    "info": {},
+                    "confidence": None,
+                    "available": False,
+                    "reason": "tmdb_not_found",
+                },
+                "movie_candidate": {
+                    "name": "AURA～魔竜院光牙最後の闘い～",
+                    "info": info,
+                    "confidence": "High",
+                    "available": True,
+                    "reason": "",
+                },
+                "tv_subset_claim": None,
+                "movie_subset_claim": None,
+                "mixed_parent_plan": {
+                    "planning_mode": "single_route",
+                    "selected_route_type": "movie",
+                    "selected_route": "movie",
+                    "mixed_subset_failure_reason": None,
+                    "mixed_subset_failure_detail": "",
+                    "tv_claimed_file_count": 0,
+                    "movie_claimed_file_count": 0,
+                    "overlap_relative_paths": [],
+                    "unclaimed_relative_paths": [],
+                    "mixed_single_route_fallback_blocked": False,
+                    "mixed_subset_blockers": [],
+                },
+                "should_try_both": False,
+            },
+        ), patch.object(AIClient, "is_available", return_value=True), patch.object(
             AIClient,
             "analyze_movie_collection",
             return_value=collection_result,
@@ -1383,28 +1414,221 @@ def test_process_movie_dir_falls_back_from_collection_to_single_movie():
 
 
 
-def test_ai_processor_resolves_nested_prefix_mapping_path():
-    """AI 返回带重复前缀目录的路径时，应仍能解析到唯一源文件。"""
-    processor = AIProcessor()
+def test_process_movie_dir_single_movie_fallback_resolves_tmdb_from_collection_mapping():
+    rename = Rename()
     temp_dir = Path(tempfile.mkdtemp())
     try:
-        base_path = temp_dir / "[KTXP] Mushishi Zoku Shou"
-        season_dir = base_path / "Disc1"
-        season_dir.mkdir(parents=True)
-        source_file = season_dir / "[KTXP] Mushishi Zoku Shou [01].mkv"
-        source_file.touch()
+        movie_dir = temp_dir / "Kimetsu Movie Bundle"
+        movie_dir.mkdir()
+        main_file = movie_dir / "[BeanSub] Gekijouban Kimetsu no Yaiba Mugen Ressha Hen.mkv"
+        extra_file = movie_dir / "[BeanSub] PV01.mkv"
+        main_file.touch()
+        extra_file.touch()
 
-        local_videos = [source_file]
-        relative_index = processor._build_relative_file_index(base_path, local_videos)
-        resolved, error, normalized = processor._resolve_mapping_source_path(
-            "[KTXP] Mushishi Zoku Shou/Disc1/[KTXP] Mushishi Zoku Shou [01].mkv",
-            base_path,
-            relative_index,
+        collection_result = MovieCollectionResult(
+            is_collection=False,
+            collection_name="鬼灭之刃 无限列车篇",
+            confidence="High",
+            reason="目录仅含一部正片，其余均为特典",
+            file_mapping=[
+                {
+                    "file_path": main_file.name,
+                    "movie_title": "Kimetsu no Yaiba Mugen Ressha Hen",
+                    "movie_number": None,
+                    "year": 2020,
+                    "confidence": "High",
+                }
+            ],
+            unmatched_files=[extra_file.name],
+            conflict_details=[],
+            extra_notes=None,
         )
+        generic_info = {
+            "id": 1613899,
+            "title": "鬼灭之刃 无限列车篇",
+            "release_date": None,
+            "genres": [{"id": 16, "name": "Animation"}],
+        }
+        resolved_movie_info = {
+            "id": 635302,
+            "title": "鬼灭之刃剧场版：无限列车篇",
+            "release_date": "2020-10-16",
+            "poster_path": "/poster.jpg",
+            "genres": [{"id": 16, "name": "Animation"}],
+        }
 
-        assert error is None
-        assert normalized == "[KTXP] Mushishi Zoku Shou/Disc1/[KTXP] Mushishi Zoku Shou [01].mkv"
-        assert resolved == source_file.resolve()
+        with patch.object(
+            Rename,
+            "check_task_type",
+            return_value={
+                "selected_name": "鬼灭之刃 无限列车篇",
+                "selected_info": generic_info,
+                "is_anime": True,
+                "is_movie": True,
+                "selected_confidence": "High",
+                "ai_type": "movie",
+                "tv_candidate": {
+                    "name": "",
+                    "info": {},
+                    "confidence": None,
+                    "available": False,
+                    "reason": "tmdb_not_found",
+                },
+                "movie_candidate": {
+                    "name": "鬼灭之刃 无限列车篇",
+                    "info": generic_info,
+                    "confidence": "High",
+                    "available": True,
+                    "reason": "",
+                },
+                "tv_subset_claim": None,
+                "movie_subset_claim": None,
+                "mixed_parent_plan": {
+                    "planning_mode": "single_route",
+                    "selected_route_type": "movie",
+                    "selected_route": "movie",
+                    "mixed_subset_failure_reason": None,
+                    "mixed_subset_failure_detail": "",
+                    "tv_claimed_file_count": 0,
+                    "movie_claimed_file_count": 0,
+                    "overlap_relative_paths": [],
+                    "unclaimed_relative_paths": [],
+                    "mixed_single_route_fallback_blocked": False,
+                    "mixed_subset_blockers": [],
+                },
+                "should_try_both": False,
+            },
+        ), patch.object(AIClient, "is_available", return_value=True), patch.object(
+            AIClient,
+            "analyze_movie_collection",
+            return_value=collection_result,
+        ), patch(
+            "src.rename.process.VideoAnalyzer.analyze_video_files",
+            return_value=[
+                {"path": main_file.name, "duration": 117.0},
+                {"path": extra_file.name, "duration": 2.0},
+            ],
+        ), patch(
+            "src.rename.process.Trans"
+        ) as trans_cls, patch.object(
+            rename.search,
+            "search_movies_by_title",
+            return_value=[
+                {
+                    "id": 635302,
+                    "title": "Demon Slayer -Kimetsu no Yaiba- The Movie: Mugen Train",
+                    "_match_score": 130,
+                },
+                {
+                    "id": 1613899,
+                    "title": "Kimetsu.no.Yaiba",
+                    "_match_score": 95,
+                },
+            ],
+        ), patch.object(
+            rename.search,
+            "get_movie_info_by_id",
+            return_value=resolved_movie_info,
+        ), patch.object(
+            Rename,
+            "_write_task_data",
+        ) as write_task_data:
+            trans_cls.return_value.trans_file.return_value = None
+            result = rename.process(movie_dir)
+
+        assert result is True
+        assert trans_cls.call_count == 1
+        written_mapping = trans_cls.call_args_list[0].args[0]
+        assert list(written_mapping.keys()) == [main_file]
+        assert extra_file not in written_mapping
+        assert write_task_data.call_count == 1
+        task_payload = write_task_data.call_args_list[0][0][0]
+        assert task_payload["name"] == "鬼灭之刃剧场版：无限列车篇"
+        assert task_payload["year"] == "2020"
+        assert task_payload["tmdb_id"] == 635302
+        assert task_payload["tmdb_name"] == "鬼灭之刃剧场版：无限列车篇"
+        assert task_payload["tmdb_year"] == "2020"
+    finally:
+        shutil.rmtree(temp_dir, ignore_errors=True)
+
+
+def test_evaluate_validated_movie_route_resolves_single_movie_subset_tmdb():
+    rename = Rename()
+    temp_dir = Path(tempfile.mkdtemp())
+    try:
+        movie_dir = temp_dir / "Kimetsu Movie Bundle"
+        movie_dir.mkdir()
+        main_file = movie_dir / "[BeanSub] Gekijouban Kimetsu no Yaiba Mugen Ressha Hen.mkv"
+        extra_file = movie_dir / "[BeanSub] PV01.mkv"
+        main_file.touch()
+        extra_file.touch()
+
+        collection_result = MovieCollectionResult(
+            is_collection=False,
+            collection_name="鬼灭之刃 无限列车篇",
+            confidence="High",
+            reason="目录仅含一部正片，其余均为特典",
+            file_mapping=[
+                {
+                    "file_path": main_file.name,
+                    "movie_title": "Kimetsu no Yaiba Mugen Ressha Hen",
+                    "movie_number": None,
+                    "year": 2020,
+                    "confidence": "High",
+                }
+            ],
+            unmatched_files=[extra_file.name],
+            conflict_details=[],
+            extra_notes=None,
+        )
+        generic_movie_info = {
+            "id": 1613899,
+            "title": "鬼灭之刃 无限列车篇",
+            "release_date": "2020-01-01",
+            "genres": [{"id": 16, "name": "Animation"}],
+        }
+        resolved_movie_info = {
+            "id": 635302,
+            "title": "鬼灭之刃剧场版：无限列车篇",
+            "release_date": "2020-10-16",
+            "poster_path": "/poster.jpg",
+            "genres": [{"id": 16, "name": "Animation"}],
+        }
+
+        with patch.object(
+            rename.search,
+            "search_movies_by_title",
+            return_value=[
+                {
+                    "id": 635302,
+                    "title": "Demon Slayer -Kimetsu no Yaiba- The Movie: Mugen Train",
+                    "_match_score": 130,
+                },
+                {
+                    "id": 1613899,
+                    "title": "Kimetsu.no.Yaiba",
+                    "_match_score": 95,
+                },
+            ],
+        ), patch.object(
+            rename.search,
+            "get_movie_info_by_id",
+            return_value=resolved_movie_info,
+        ):
+            route_eval = rename._evaluate_validated_movie_route(
+                movie_dir,
+                generic_movie_info,
+                "鬼灭之刃 无限列车篇",
+                injected_collection_result=collection_result,
+                ordered_video_files=[main_file, extra_file],
+            )
+
+        processed_movies = route_eval.get("processed_movies", [])
+        assert route_eval["valid"] is True
+        assert len(processed_movies) == 1
+        assert processed_movies[0]["tmdb_id"] == 635302
+        assert route_eval["tmdb_info"]["id"] == 635302
+        assert route_eval["tmdb_name"] == "鬼灭之刃剧场版：无限列车篇"
     finally:
         shutil.rmtree(temp_dir, ignore_errors=True)
 
@@ -1713,6 +1937,634 @@ def test_validate_tv_result_sanitizes_illegal_episode_mapping():
         assert ai_result.file_mapping[0].file_path == "PSYCHO-PASS 01.mkv"
         assert "PSYCHO-PASS SP.mkv" in ai_result.unmatched_files
         assert any("越界映射" in item for item in ai_result.conflict_details)
+    finally:
+        shutil.rmtree(temp_dir, ignore_errors=True)
+
+
+def test_validate_tv_result_filters_auxiliary_season0_mapping_without_title_overlap():
+    processor = AIProcessor()
+    temp_dir = Path(tempfile.mkdtemp())
+    try:
+        base_path = temp_dir / "KimetsuSpecials"
+        base_path.mkdir(parents=True)
+        main_file = base_path / "Yuukaku [34].mkv"
+        suspicious_review_file = (
+            base_path
+            / "SPs"
+            / "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [EP11 Review Avant][Ma10p_1080p][x265_aac].mkv"
+        )
+        suspicious_enroku_file = (
+            base_path
+            / "SPs"
+            / "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [Kimetsu Enroku 01][Ma10p_1080p][x265_aac].mkv"
+        )
+        suspicious_iv_file = (
+            base_path
+            / "SPs"
+            / "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [IV01][Ma10p_1080p][x265_aac].mkv"
+        )
+        suspicious_review_file.parent.mkdir(parents=True, exist_ok=True)
+        main_file.touch()
+        suspicious_review_file.touch()
+        suspicious_enroku_file.touch()
+        suspicious_iv_file.touch()
+
+        anime_info = {
+            "name": "鬼灭之刃",
+            "seasons": [
+                {
+                    "season_number": 0,
+                    "episodes": [
+                        {
+                            "episode_number": 1,
+                            "name": "Junior High and High School!! Kimetsu Academy Story: Valentine Edition #1",
+                            "overview": "",
+                        }
+                    ],
+                },
+                {
+                    "season_number": 3,
+                    "episode_count": 11,
+                    "episodes": [
+                        {
+                            "episode_number": 1,
+                            "name": "Someone's Dream",
+                            "overview": "",
+                        }
+                    ],
+                },
+            ],
+        }
+        ai_result = AIAnalysisResult(
+            confidence="High",
+            reason="test",
+            season_mapping=[],
+            file_mapping=[
+                EpisodeMapping(
+                    file_path="Yuukaku [34].mkv",
+                    tmdb_season=3,
+                    tmdb_episode=1,
+                    episode_type="regular",
+                    confidence="High",
+                ),
+                EpisodeMapping(
+                    file_path="SPs/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [EP11 Review Avant][Ma10p_1080p][x265_aac].mkv",
+                    tmdb_season=3,
+                    tmdb_episode=1,
+                    episode_type="special",
+                    confidence="Medium",
+                ),
+                EpisodeMapping(
+                    file_path="SPs/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [Kimetsu Enroku 01][Ma10p_1080p][x265_aac].mkv",
+                    tmdb_season=1,
+                    tmdb_episode=1,
+                    episode_type="special",
+                    confidence="Medium",
+                ),
+                EpisodeMapping(
+                    file_path="SPs/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [IV01][Ma10p_1080p][x265_aac].mkv",
+                    tmdb_season=3,
+                    tmdb_episode=4,
+                    episode_type="special",
+                    confidence="Medium",
+                ),
+            ],
+        )
+
+        ok, reason, detail = processor.validate_tv_result(
+            ai_result,
+            anime_info,
+            base_path,
+            [main_file, suspicious_review_file, suspicious_enroku_file, suspicious_iv_file],
+        )
+
+        assert ok is True
+        assert reason is None
+        assert detail == ""
+        assert [
+            (mapping.file_path, mapping.tmdb_season, mapping.tmdb_episode)
+            for mapping in ai_result.file_mapping
+        ] == [("Yuukaku [34].mkv", 3, 1)]
+        assert (
+            "SPs/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [EP11 Review Avant][Ma10p_1080p][x265_aac].mkv"
+            in ai_result.unmatched_files
+        )
+        assert (
+            "SPs/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [Kimetsu Enroku 01][Ma10p_1080p][x265_aac].mkv"
+            in ai_result.unmatched_files
+        )
+        assert (
+            "SPs/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [IV01][Ma10p_1080p][x265_aac].mkv"
+            in ai_result.unmatched_files
+        )
+        assert any("语义过滤" in item for item in ai_result.conflict_details)
+    finally:
+        shutil.rmtree(temp_dir, ignore_errors=True)
+
+
+def test_validate_tv_result_filters_menu_and_promo_season0_mapping_without_title_overlap():
+    processor = AIProcessor()
+    temp_dir = Path(tempfile.mkdtemp())
+    try:
+        base_path = temp_dir / "KimetsuMenuSpecials"
+        base_path.mkdir(parents=True)
+        menu_file = (
+            base_path
+            / "SPs"
+            / "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [MenuITA01][Ma10p_1080p][x265_flac].mkv"
+        )
+        promo_file = (
+            base_path
+            / "SPs"
+            / "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [Promotion Reel][Ma10p_1080p][x265_flac].mkv"
+        )
+        menu_file.parent.mkdir(parents=True, exist_ok=True)
+        menu_file.touch()
+        promo_file.touch()
+
+        anime_info = {
+            "name": "鬼灭之刃",
+            "seasons": [
+                {
+                    "season_number": 0,
+                    "episodes": [
+                        {
+                            "episode_number": 13,
+                            "name": "Zenitsu's Sugoroku (2)",
+                            "overview": "",
+                        },
+                        {
+                            "episode_number": 16,
+                            "name": "Junior High and High School!! Demon Slayer Banquet - Special Arc",
+                            "overview": "",
+                        },
+                    ],
+                }
+            ],
+        }
+        ai_result = AIAnalysisResult(
+            confidence="High",
+            reason="test",
+            season_mapping=[],
+            file_mapping=[
+                EpisodeMapping(
+                    file_path="SPs/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [MenuITA01][Ma10p_1080p][x265_flac].mkv",
+                    tmdb_season=0,
+                    tmdb_episode=13,
+                    episode_type="special",
+                    confidence="Medium",
+                ),
+                EpisodeMapping(
+                    file_path="SPs/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [Promotion Reel][Ma10p_1080p][x265_flac].mkv",
+                    tmdb_season=0,
+                    tmdb_episode=16,
+                    episode_type="special",
+                    confidence="Medium",
+                ),
+            ],
+        )
+
+        ok, reason, detail = processor.validate_tv_result(
+            ai_result,
+            anime_info,
+            base_path,
+            [menu_file, promo_file],
+        )
+
+        assert ok is False
+        assert reason == "ai_empty_mapping"
+        assert detail == "AI 未返回任何有效映射"
+        assert ai_result.file_mapping == []
+        assert (
+            "SPs/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [MenuITA01][Ma10p_1080p][x265_flac].mkv"
+            in ai_result.unmatched_files
+        )
+        assert (
+            "SPs/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [Promotion Reel][Ma10p_1080p][x265_flac].mkv"
+            in ai_result.unmatched_files
+        )
+        assert any(
+            "语义过滤:S00E13" in item for item in ai_result.conflict_details
+        )
+        assert any(
+            "语义过滤:S00E16" in item for item in ai_result.conflict_details
+        )
+    finally:
+        shutil.rmtree(temp_dir, ignore_errors=True)
+
+
+def test_validate_tv_result_keeps_auxiliary_season0_mapping_with_title_overlap():
+    processor = AIProcessor()
+    temp_dir = Path(tempfile.mkdtemp())
+    try:
+        base_path = temp_dir / "KimetsuLegitSpecial"
+        base_path.mkdir(parents=True)
+        special_file = base_path / "Valentine Edition 01.mkv"
+        special_file.touch()
+
+        anime_info = {
+            "name": "鬼灭之刃",
+            "seasons": [
+                {
+                    "season_number": 0,
+                    "episodes": [
+                        {
+                            "episode_number": 1,
+                            "name": "Junior High and High School!! Kimetsu Academy Story: Valentine Edition #1",
+                            "overview": "",
+                        }
+                    ],
+                }
+            ],
+        }
+        ai_result = AIAnalysisResult(
+            confidence="High",
+            reason="test",
+            season_mapping=[],
+            file_mapping=[
+                EpisodeMapping(
+                    file_path="Valentine Edition 01.mkv",
+                    tmdb_season=0,
+                    tmdb_episode=1,
+                    episode_type="special",
+                    confidence="High",
+                )
+            ],
+        )
+
+        ok, reason, detail = processor.validate_tv_result(
+            ai_result,
+            anime_info,
+            base_path,
+            [special_file],
+        )
+
+        assert ok is True
+        assert reason is None
+        assert detail == ""
+        assert [
+            (mapping.file_path, mapping.tmdb_season, mapping.tmdb_episode)
+            for mapping in ai_result.file_mapping
+        ] == [("Valentine Edition 01.mkv", 0, 1)]
+        assert not any("Season0语义过滤" in item for item in ai_result.conflict_details)
+    finally:
+        shutil.rmtree(temp_dir, ignore_errors=True)
+
+
+def test_validate_tv_result_semantic_filter_runs_before_duplicate_episode_dedupe():
+    processor = AIProcessor()
+    temp_dir = Path(tempfile.mkdtemp())
+    try:
+        base_path = temp_dir / "KimetsuCollision"
+        base_path.mkdir(parents=True)
+        main_file = base_path / "Yuukaku [34].mkv"
+        menu_file = (
+            base_path
+            / "SPs"
+            / "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [MenuITA01][Ma10p_1080p][x265_flac].mkv"
+        )
+        menu_file.parent.mkdir(parents=True, exist_ok=True)
+        main_file.touch()
+        menu_file.touch()
+
+        anime_info = {
+            "name": "鬼灭之刃",
+            "seasons": [
+                {
+                    "season_number": 3,
+                    "episode_count": 1,
+                    "episodes": [
+                        {
+                            "episode_number": 1,
+                            "name": "Someone's Dream",
+                            "overview": "",
+                        }
+                    ],
+                }
+            ],
+        }
+        ai_result = AIAnalysisResult(
+            confidence="High",
+            reason="test",
+            season_mapping=[],
+            file_mapping=[
+                EpisodeMapping(
+                    file_path="Yuukaku [34].mkv",
+                    tmdb_season=3,
+                    tmdb_episode=1,
+                    episode_type="regular",
+                    confidence="High",
+                ),
+                EpisodeMapping(
+                    file_path="SPs/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [MenuITA01][Ma10p_1080p][x265_flac].mkv",
+                    tmdb_season=3,
+                    tmdb_episode=1,
+                    episode_type="special",
+                    confidence="High",
+                ),
+            ],
+        )
+
+        ok, reason, detail = processor.validate_tv_result(
+            ai_result,
+            anime_info,
+            base_path,
+            [main_file, menu_file],
+        )
+
+        assert ok is True
+        assert reason is None
+        assert detail == ""
+        assert [
+            (mapping.file_path, mapping.tmdb_season, mapping.tmdb_episode)
+            for mapping in ai_result.file_mapping
+        ] == [("Yuukaku [34].mkv", 3, 1)]
+        assert (
+            "SPs/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [MenuITA01][Ma10p_1080p][x265_flac].mkv"
+            in ai_result.unmatched_files
+        )
+        assert any("语义过滤:S03E01" in item for item in ai_result.conflict_details)
+    finally:
+        shutil.rmtree(temp_dir, ignore_errors=True)
+
+
+def test_validate_tv_result_global_remap_main_file_survives_auxiliary_collision():
+    processor = AIProcessor()
+    temp_dir = Path(tempfile.mkdtemp())
+    try:
+        base_path = temp_dir / "KimetsuRemapCollision"
+        base_path.mkdir(parents=True)
+        main_file = base_path / "Yuukaku [34].mkv"
+        auxiliary_file = (
+            base_path
+            / "SPs"
+            / "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [Kimetsu Enroku 01][Ma10p_1080p][x265_aac].mkv"
+        )
+        auxiliary_file.parent.mkdir(parents=True, exist_ok=True)
+        main_file.touch()
+        auxiliary_file.touch()
+
+        anime_info = {
+            "name": "鬼灭之刃",
+            "seasons": [
+                {"season_number": 1, "episode_count": 26, "episodes": []},
+                {"season_number": 2, "episode_count": 7, "episodes": []},
+                {"season_number": 3, "episode_count": 11, "episodes": []},
+            ],
+        }
+        ai_result = AIAnalysisResult(
+            confidence="High",
+            reason="test",
+            season_mapping=[],
+            file_mapping=[
+                EpisodeMapping(
+                    file_path="Yuukaku [34].mkv",
+                    tmdb_season=1,
+                    tmdb_episode=11,
+                    episode_type="regular",
+                    confidence="High",
+                ),
+                EpisodeMapping(
+                    file_path="SPs/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [Kimetsu Enroku 01][Ma10p_1080p][x265_aac].mkv",
+                    tmdb_season=3,
+                    tmdb_episode=1,
+                    episode_type="special",
+                    confidence="High",
+                ),
+            ],
+        )
+
+        ok, reason, detail = processor.validate_tv_result(
+            ai_result,
+            anime_info,
+            base_path,
+            [main_file, auxiliary_file],
+        )
+
+        assert ok is True
+        assert reason is None
+        assert detail == ""
+        assert [
+            (mapping.file_path, mapping.tmdb_season, mapping.tmdb_episode)
+            for mapping in ai_result.file_mapping
+        ] == [("Yuukaku [34].mkv", 3, 1)]
+        assert any("全局编号重映射:S01E11->S03E01" in item for item in ai_result.conflict_details)
+        assert any("语义过滤:S03E01" in item for item in ai_result.conflict_details)
+        assert (
+            "SPs/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [Kimetsu Enroku 01][Ma10p_1080p][x265_aac].mkv"
+            in ai_result.unmatched_files
+        )
+    finally:
+        shutil.rmtree(temp_dir, ignore_errors=True)
+
+
+def test_validate_tv_result_remaps_global_episode_overflow():
+    processor = AIProcessor()
+    temp_dir = Path(tempfile.mkdtemp())
+    try:
+        base_path = temp_dir / "Kimetsu"
+        base_path.mkdir(parents=True)
+        ep27 = base_path / "Mugen [27].mkv"
+        ep34 = base_path / "Yuukaku [34].mkv"
+        ep27.touch()
+        ep34.touch()
+
+        anime_info = {
+            "name": "鬼灭之刃",
+            "seasons": [
+                {"season_number": 1, "episode_count": 26, "episodes": []},
+                {"season_number": 2, "episode_count": 7, "episodes": []},
+                {"season_number": 3, "episode_count": 11, "episodes": []},
+            ],
+        }
+        ai_result = AIAnalysisResult(
+            confidence="High",
+            reason="test",
+            season_mapping=[],
+            file_mapping=[
+                EpisodeMapping(
+                    file_path="Mugen [27].mkv",
+                    tmdb_season=1,
+                    tmdb_episode=27,
+                    episode_type="regular",
+                    confidence="High",
+                ),
+                EpisodeMapping(
+                    file_path="Yuukaku [34].mkv",
+                    tmdb_season=1,
+                    tmdb_episode=34,
+                    episode_type="regular",
+                    confidence="High",
+                ),
+            ],
+        )
+
+        ok, reason, detail = processor.validate_tv_result(
+            ai_result,
+            anime_info,
+            base_path,
+            [ep27, ep34],
+        )
+
+        assert ok is True
+        assert reason is None
+        assert detail == ""
+        remapped = sorted(
+            (mapping.file_path, mapping.tmdb_season, mapping.tmdb_episode)
+            for mapping in ai_result.file_mapping
+        )
+        assert remapped == [
+            ("Mugen [27].mkv", 2, 1),
+            ("Yuukaku [34].mkv", 3, 1),
+        ]
+        assert any("全局编号重映射:S01E27->S02E01" in item for item in ai_result.conflict_details)
+        assert any("全局编号重映射:S01E34->S03E01" in item for item in ai_result.conflict_details)
+    finally:
+        shutil.rmtree(temp_dir, ignore_errors=True)
+
+
+def test_validate_tv_result_remaps_global_episode_with_valid_but_wrong_local_numbering():
+    processor = AIProcessor()
+    temp_dir = Path(tempfile.mkdtemp())
+    try:
+        base_path = temp_dir / "KimetsuLocal"
+        base_path.mkdir(parents=True)
+        ep27 = base_path / "Mugen [27].mkv"
+        ep34 = base_path / "Yuukaku [34].mkv"
+        ep27.touch()
+        ep34.touch()
+
+        anime_info = {
+            "name": "鬼灭之刃",
+            "seasons": [
+                {"season_number": 1, "episode_count": 26, "episodes": []},
+                {"season_number": 2, "episode_count": 7, "episodes": []},
+                {"season_number": 3, "episode_count": 11, "episodes": []},
+            ],
+        }
+        ai_result = AIAnalysisResult(
+            confidence="High",
+            reason="test",
+            season_mapping=[],
+            file_mapping=[
+                EpisodeMapping(
+                    file_path="Mugen [27].mkv",
+                    tmdb_season=1,
+                    tmdb_episode=1,
+                    episode_type="regular",
+                    confidence="High",
+                ),
+                EpisodeMapping(
+                    file_path="Yuukaku [34].mkv",
+                    tmdb_season=1,
+                    tmdb_episode=11,
+                    episode_type="regular",
+                    confidence="High",
+                ),
+            ],
+        )
+
+        ok, reason, detail = processor.validate_tv_result(
+            ai_result,
+            anime_info,
+            base_path,
+            [ep27, ep34],
+        )
+
+        assert ok is True
+        assert reason is None
+        assert detail == ""
+        remapped = sorted(
+            (mapping.file_path, mapping.tmdb_season, mapping.tmdb_episode)
+            for mapping in ai_result.file_mapping
+        )
+        assert remapped == [
+            ("Mugen [27].mkv", 2, 1),
+            ("Yuukaku [34].mkv", 3, 1),
+        ]
+        assert any("全局编号重映射:S01E01->S02E01" in item for item in ai_result.conflict_details)
+        assert any("全局编号重映射:S01E11->S03E01" in item for item in ai_result.conflict_details)
+    finally:
+        shutil.rmtree(temp_dir, ignore_errors=True)
+
+
+def test_validate_tv_result_remaps_global_episode_before_duplicate_episode_dedupe():
+    processor = AIProcessor()
+    temp_dir = Path(tempfile.mkdtemp())
+    try:
+        base_path = temp_dir / "KimetsuDedupe"
+        base_path.mkdir(parents=True)
+        season1_ep01 = base_path / "Root [01].mkv"
+        season1_ep11 = base_path / "Root [11].mkv"
+        ep27 = base_path / "Mugen [27].mkv"
+        ep34 = base_path / "Yuukaku [34].mkv"
+        for file_path in [season1_ep01, season1_ep11, ep27, ep34]:
+            file_path.touch()
+
+        anime_info = {
+            "name": "鬼灭之刃",
+            "seasons": [
+                {"season_number": 1, "episode_count": 26, "episodes": []},
+                {"season_number": 2, "episode_count": 7, "episodes": []},
+                {"season_number": 3, "episode_count": 11, "episodes": []},
+            ],
+        }
+        ai_result = AIAnalysisResult(
+            confidence="High",
+            reason="test",
+            season_mapping=[],
+            file_mapping=[
+                EpisodeMapping(
+                    file_path="Root [01].mkv",
+                    tmdb_season=1,
+                    tmdb_episode=1,
+                    episode_type="regular",
+                    confidence="High",
+                ),
+                EpisodeMapping(
+                    file_path="Root [11].mkv",
+                    tmdb_season=1,
+                    tmdb_episode=11,
+                    episode_type="regular",
+                    confidence="High",
+                ),
+                EpisodeMapping(
+                    file_path="Mugen [27].mkv",
+                    tmdb_season=1,
+                    tmdb_episode=1,
+                    episode_type="regular",
+                    confidence="High",
+                ),
+                EpisodeMapping(
+                    file_path="Yuukaku [34].mkv",
+                    tmdb_season=1,
+                    tmdb_episode=11,
+                    episode_type="regular",
+                    confidence="High",
+                ),
+            ],
+        )
+
+        ok, reason, detail = processor.validate_tv_result(
+            ai_result,
+            anime_info,
+            base_path,
+            [season1_ep01, season1_ep11, ep27, ep34],
+        )
+
+        assert ok is True
+        assert reason is None
+        assert detail == ""
+        remapped = sorted(
+            (mapping.file_path, mapping.tmdb_season, mapping.tmdb_episode)
+            for mapping in ai_result.file_mapping
+        )
+        assert remapped == [
+            ("Mugen [27].mkv", 2, 1),
+            ("Root [01].mkv", 1, 1),
+            ("Root [11].mkv", 1, 11),
+            ("Yuukaku [34].mkv", 3, 1),
+        ]
     finally:
         shutil.rmtree(temp_dir, ignore_errors=True)
 

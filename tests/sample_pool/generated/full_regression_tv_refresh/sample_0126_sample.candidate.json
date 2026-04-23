@@ -1,0 +1,50 @@
+{
+  "status": "ai_failed",
+  "type": "tv",
+  "title_candidate": "ひだまりスケッチ",
+  "tmdb_name": "ひだまりスケッチ",
+  "tmdb_id": 45893,
+  "timing": {
+    "analysis_seconds": 17.091
+  },
+  "file_mapping": [],
+  "conflict_details": [],
+  "analysis_result": null,
+  "task_plan": {
+    "is_movie": false,
+    "ai_type": "tv",
+    "tv_available": true,
+    "movie_available": false,
+    "selected_confidence": "High"
+  },
+  "tv_candidate_result": {
+    "status": "ai_failed",
+    "type": "tv",
+    "title_candidate": "ひだまりスケッチ",
+    "timing": {
+      "analysis_seconds": 17.091
+    },
+    "file_mapping_count": 0,
+    "has_regular": false,
+    "has_special": false,
+    "has_movie_like": false
+  },
+  "movie_candidate_result": {
+    "status": "ok",
+    "type": "movie",
+    "title_candidate": "ひだまりスケッチ",
+    "timing": {
+      "analysis_seconds": 82.246
+    },
+    "collection_analysis": {
+      "is_collection": false,
+      "confidence": "High",
+      "reason": "这是动画系列而非电影合集",
+      "file_mapping_count": 0,
+      "unmatched_count": 189,
+      "conflict_count": 0,
+      "movie_like_paths": []
+    }
+  },
+  "final_type": "tv"
+}

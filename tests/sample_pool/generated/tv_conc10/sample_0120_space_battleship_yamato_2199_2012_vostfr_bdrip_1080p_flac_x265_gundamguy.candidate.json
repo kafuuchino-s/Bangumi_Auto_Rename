@@ -1,0 +1,444 @@
+{
+  "status": "ok",
+  "type": "tv",
+  "title_candidate": "Space Battleship Yamato 2199",
+  "tmdb_name": "Star Blazers: Space Battleship Yamato 2199",
+  "tmdb_id": 45844,
+  "file_mapping": [
+    {
+      "source_index": 2,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 1,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 3,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 2,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 4,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 3,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 5,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 4,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 6,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 5,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 7,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 6,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 8,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 7,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 9,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 8,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 10,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 9,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 11,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 10,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 12,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 11,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 13,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 12,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 14,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 13,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 15,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 14,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 16,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 15,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 17,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 16,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 18,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 17,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 19,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 18,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 20,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 19,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 21,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 20,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 22,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 21,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 23,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 22,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 24,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 23,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 25,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 24,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 26,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 25,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 27,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 26,
+      "episode_type": "regular",
+      "confidence": "High"
+    }
+  ],
+  "analysis_result": {
+    "confidence": "High",
+    "reason": "Série 目录中的文件名已明确标注 01-26，且与 TMDB Season 1 的 26 集顺序完全一致；Film 目录下文件为 2014 剧场版/OVA 性质条目，不在本次提供的 TMDB 剧集 S01/S02 集目内。",
+    "season_mapping": [
+      {
+        "local_group_name": "Série",
+        "maps_to_tmdb_seasons": [
+          1
+        ]
+      }
+    ],
+    "file_mapping": [
+      {
+        "source_index": 2,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 1,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 3,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 2,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 4,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 3,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 5,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 4,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 6,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 5,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 7,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 6,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 8,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 7,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 9,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 8,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 10,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 9,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 11,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 10,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 12,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 11,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 13,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 12,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 14,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 13,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 15,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 14,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 16,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 15,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 17,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 16,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 18,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 17,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 19,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 18,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 20,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 19,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 21,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 20,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 22,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 21,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 23,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 22,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 24,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 23,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 25,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 24,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 26,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 25,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 27,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 26,
+        "episode_type": "regular",
+        "confidence": "High"
+      }
+    ],
+    "unmatched_files": [
+      "Film/Space Battleship Yamato 2199 (2014) - Odyssey of the Celestial Ark - VOSTFR BDrip 1080p FLAC x265-GundamGuy.mkv"
+    ],
+    "conflict_details": [],
+    "extra_notes": "本地 Série 目录下的 01-26 可直接按文件编号对应 TMDB Season 1 的 01-26；Film 目录下的《Odyssey of the Celestial Ark》未包含在本次提供的 TMDB 剧集条目中，因此未映射。"
+  }
+}

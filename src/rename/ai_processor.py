@@ -1,4 +1,5 @@
 import re
+from difflib import SequenceMatcher
 from pathlib import Path
 from typing import cast
 
@@ -56,6 +57,58 @@ class AIProcessor:
         "greeting",
         "stage",
         "live",
+    )
+    AUXILIARY_SPECIAL_TOKENS: tuple[str, ...] = (
+        "avant",
+        "review",
+        "information",
+        "digest",
+        "guide",
+        "menu",
+        "preview",
+        "recap",
+        "commentary",
+        "interview",
+        "enroku",
+        "promotion",
+        "reel",
+    )
+    SEMANTIC_NOISE_TOKENS: tuple[str, ...] = (
+        "mkv",
+        "mp4",
+        "ass",
+        "srt",
+        "1080p",
+        "2160p",
+        "720p",
+        "x265",
+        "x264",
+        "hevc",
+        "av1",
+        "aac",
+        "flac",
+        "ddp",
+        "ac3",
+        "ma10p",
+        "vcb",
+        "studio",
+        "beansub",
+        "fzsd",
+        "web",
+        "webrip",
+        "webdl",
+        "bdrip",
+        "bluray",
+        "episode",
+        "season",
+        "special",
+        "specials",
+        "movie",
+        "the",
+        "and",
+        "part",
+        "ver",
+        "hen",
     )
 
     RESOURCE_TOKEN_MAP: list[tuple[str, str]] = [
@@ -376,6 +429,43 @@ class AIProcessor:
         normalized = value.casefold()
         return any(token in normalized for token in tokens)
 
+    def _extract_special_semantic_text(self, value: str) -> str:
+        stem = Path(value or '').stem.casefold()
+        normalized = re.sub(r'[\[\]\(\){}【】<>|｜/\\\-\._:+]+', ' ', stem)
+        normalized = re.sub(r'\s+', ' ', normalized).strip()
+        raw_tokens = re.findall(r'[a-z]{2,}|[\u3040-\u30ff]{2,}|[\u4e00-\u9fff]{2,}', normalized)
+        tokens: list[str] = []
+        for token in raw_tokens:
+            if token in self.SEMANTIC_NOISE_TOKENS:
+                continue
+            if re.fullmatch(r'(?:ep|e|sp|ova|oad|ona|iv)\d*', token):
+                continue
+            tokens.append(token)
+        return ' '.join(tokens)
+
+    def _has_special_title_overlap(self, file_name: str, episode_text: str) -> bool:
+        file_semantic = self._extract_special_semantic_text(file_name)
+        episode_semantic = self._extract_special_semantic_text(episode_text)
+        if not file_semantic or not episode_semantic:
+            return False
+
+        file_tokens = set(file_semantic.split())
+        episode_tokens = set(episode_semantic.split())
+        if len(file_tokens & episode_tokens) >= 2:
+            return True
+
+        similarity = SequenceMatcher(None, file_semantic, episode_semantic).ratio()
+        return similarity >= 0.5
+
+    def _is_auxiliary_special_filename(self, file_name: str) -> bool:
+        normalized = Path(file_name or '').stem.casefold()
+        return (
+            is_promotional_content(file_name)
+            or self._has_any_token(normalized, self.SPECIAL_EVENT_TOKENS)
+            or self._has_any_token(normalized, self.AUXILIARY_SPECIAL_TOKENS)
+            or re.search(r'\biv\s*0*\d+\b', normalized, re.IGNORECASE) is not None
+        )
+
     def _build_tmdb_episode_lookup(
         self, anime_info: AnimeInfoDict
     ) -> dict[tuple[int, int], AnimeEpisodeDict]:
@@ -389,14 +479,83 @@ class AIProcessor:
                     lookup[(season_num, ep_num)] = episode
         return lookup
 
+    def _build_global_episode_lookup(
+        self,
+        anime_info: AnimeInfoDict,
+    ) -> dict[int, tuple[int, int]]:
+        lookup: dict[int, tuple[int, int]] = {}
+        global_episode = 1
+
+        seasons = sorted(
+            (
+                season
+                for season in anime_info.get("seasons", [])
+                if isinstance(season.get("season_number"), int)
+                and cast(int, season.get("season_number")) > 0
+            ),
+            key=lambda season: cast(int, season.get("season_number")),
+        )
+
+        for season in seasons:
+            season_number = cast(int, season.get("season_number"))
+            episode_numbers = sorted(
+                ep_num
+                for ep in season.get("episodes", []) or []
+                for ep_num in [ep.get("episode_number")]
+                if isinstance(ep_num, int) and ep_num > 0
+            )
+            if not episode_numbers:
+                episode_count = season.get("episode_count", 0)
+                if isinstance(episode_count, int) and episode_count > 0:
+                    episode_numbers = list(range(1, episode_count + 1))
+
+            for local_episode in episode_numbers:
+                lookup[global_episode] = (season_number, local_episode)
+                global_episode += 1
+
+        return lookup
+
+    def _extract_global_episode_number(self, file_path: str) -> int | None:
+        file_name = Path(file_path or '').stem
+        patterns = [
+            r'\[(\d{1,4})\]',
+            r'(?<![A-Za-z0-9])(\d{1,3})(?![A-Za-z0-9])',
+        ]
+        for pattern in patterns:
+            match = re.search(pattern, file_name, flags=re.IGNORECASE)
+            if match:
+                try:
+                    episode_number = int(match.group(1))
+                except (TypeError, ValueError):
+                    continue
+                if episode_number > 0:
+                    return episode_number
+        return None
+
+    def _extract_explicit_episode_number(self, file_path: str) -> int | None:
+        file_name = Path(file_path or '').stem
+        patterns = [
+            r'\[(\d{1,4})\]',
+            r'\bEP(?:ISODE)?\s*0*(\d{1,4})\b',
+            r'\b第\s*0*(\d{1,4})\s*[话話集]\b',
+            r'(?<!\d)(\d{1,4})(?!\d)',
+        ]
+        for pattern in patterns:
+            match = re.search(pattern, file_name, flags=re.IGNORECASE)
+            if match:
+                try:
+                    episode_number = int(match.group(1))
+                except (TypeError, ValueError):
+                    continue
+                if episode_number > 0:
+                    return episode_number
+        return None
+
     def _is_semantically_conflicting_special(
         self,
         mapping: EpisodeMapping,
         episode_info: AnimeEpisodeDict | None,
     ) -> bool:
-        if getattr(mapping, 'tmdb_season', 0) != 0:
-            return False
-
         file_path = mapping.file_path or ''
         file_name = Path(file_path).name
         episode_name = episode_info.get('name', '') if episode_info else ''
@@ -406,9 +565,19 @@ class AIProcessor:
         file_is_event = self._has_any_token(file_name, self.SPECIAL_EVENT_TOKENS)
         file_is_audio = self._has_any_token(file_name, self.AUDIO_SPECIAL_TOKENS)
         episode_is_audio = self._has_any_token(episode_text, self.AUDIO_SPECIAL_TOKENS)
+        file_is_auxiliary = self._is_auxiliary_special_filename(file_name)
+
+        if getattr(mapping, 'tmdb_season', 0) > 0 and file_is_auxiliary and not file_is_audio:
+            return True
+
+        if getattr(mapping, 'tmdb_season', 0) != 0:
+            return False
 
         if file_is_event and episode_is_audio and not file_is_audio:
             return True
+
+        if file_is_auxiliary and not file_is_audio:
+            return not self._has_special_title_overlap(file_name, episode_name)
 
         return False
 
@@ -429,7 +598,7 @@ class AIProcessor:
                 file_path = mapping.file_path or ''
                 removed_paths.append(file_path)
                 notes.append(
-                    f"Season0语义过滤:S{key[0]:02d}E{key[1]:02d}:{Path(file_path).name}"
+                    f"语义过滤:S{key[0]:02d}E{key[1]:02d}:{Path(file_path).name}"
                 )
                 continue
             kept.append(mapping)
@@ -439,19 +608,68 @@ class AIProcessor:
     def _sanitize_illegal_episode_mappings(
         self,
         mappings: list[EpisodeMapping],
+        anime_info: AnimeInfoDict,
         tmdb_episode_keys: set[tuple[int, int]],
     ) -> tuple[list[EpisodeMapping], list[str], list[str]]:
         kept: list[EpisodeMapping] = []
         removed_paths: list[str] = []
         notes: list[str] = []
+        global_episode_lookup = self._build_global_episode_lookup(anime_info)
 
         for mapping in mappings:
             key = (mapping.tmdb_season, mapping.tmdb_episode)
+            file_path = mapping.file_path or ''
+            file_is_auxiliary = self._is_auxiliary_special_filename(Path(file_path).name)
+            global_episode_number = self._extract_global_episode_number(file_path)
+            remapped_key = (
+                global_episode_lookup.get(global_episode_number)
+                if (
+                    mapping.tmdb_season > 0
+                    and not file_is_auxiliary
+                    and global_episode_number is not None
+                )
+                else None
+            )
+
+            if (
+                remapped_key is not None
+                and remapped_key in tmdb_episode_keys
+                and remapped_key != key
+            ):
+                old_season, old_episode = key
+                new_season, new_episode = remapped_key
+                mapping.tmdb_season = new_season
+                mapping.tmdb_episode = new_episode
+                kept.append(mapping)
+                notes.append(
+                    f"全局编号重映射:S{old_season:02d}E{old_episode:02d}->S{new_season:02d}E{new_episode:02d}:{Path(file_path).name}"
+                )
+                continue
+
             if key in tmdb_episode_keys:
                 kept.append(mapping)
                 continue
 
-            file_path = mapping.file_path or ''
+            global_episode_number = self._extract_explicit_episode_number(file_path)
+            remapped_key = (
+                global_episode_lookup.get(global_episode_number)
+                if mapping.tmdb_season > 0
+                and not file_is_auxiliary
+                and global_episode_number is not None
+                and global_episode_number == mapping.tmdb_episode
+                else None
+            )
+            if remapped_key and remapped_key in tmdb_episode_keys:
+                old_season, old_episode = key
+                new_season, new_episode = remapped_key
+                mapping.tmdb_season = new_season
+                mapping.tmdb_episode = new_episode
+                kept.append(mapping)
+                notes.append(
+                    f"全局编号重映射:S{old_season:02d}E{old_episode:02d}->S{new_season:02d}E{new_episode:02d}:{Path(file_path).name}"
+                )
+                continue
+
             removed_paths.append(file_path)
             notes.append(
                 f"越界映射清洗:S{key[0]:02d}E{key[1]:02d}:{Path(file_path).name}"
@@ -459,15 +677,54 @@ class AIProcessor:
 
         return kept, removed_paths, notes
 
+    def _remap_global_episode_mappings(
+        self,
+        mappings: list[EpisodeMapping],
+        anime_info: AnimeInfoDict,
+        tmdb_episode_keys: set[tuple[int, int]],
+    ) -> list[str]:
+        notes: list[str] = []
+        global_episode_lookup = self._build_global_episode_lookup(anime_info)
+
+        for mapping in mappings:
+            key = (mapping.tmdb_season, mapping.tmdb_episode)
+            file_path = mapping.file_path or ''
+            file_is_auxiliary = self._is_auxiliary_special_filename(Path(file_path).name)
+            global_episode_number = self._extract_global_episode_number(file_path)
+            remapped_key = (
+                global_episode_lookup.get(global_episode_number)
+                if (
+                    mapping.tmdb_season > 0
+                    and not file_is_auxiliary
+                    and global_episode_number is not None
+                )
+                else None
+            )
+
+            if (
+                remapped_key is not None
+                and remapped_key in tmdb_episode_keys
+                and remapped_key != key
+            ):
+                old_season, old_episode = key
+                new_season, new_episode = remapped_key
+                mapping.tmdb_season = new_season
+                mapping.tmdb_episode = new_episode
+                notes.append(
+                    f"全局编号重映射:S{old_season:02d}E{old_episode:02d}->S{new_season:02d}E{new_episode:02d}:{Path(file_path).name}"
+                )
+
+        return notes
+
     def _sanitize_tv_mappings(
         self,
-        ai_result: AIAnalysisResult,
+        mappings: list[EpisodeMapping],
     ) -> tuple[list[EpisodeMapping], list[str]]:
         sanitized: list[EpisodeMapping] = []
         sanitizer_notes: list[str] = []
         by_file: dict[str, EpisodeMapping] = {}
 
-        for mapping in ai_result.file_mapping:
+        for mapping in mappings:
             raw_file_path = mapping.file_path
             if not isinstance(raw_file_path, str) or not raw_file_path.strip():
                 sanitizer_notes.append(
@@ -560,19 +817,28 @@ class AIProcessor:
         strict_conflicts.extend(source_hydration_conflicts)
         relative_file_index = self._build_relative_file_index(base_path, all_video_files)
 
-        # 先清洗重复映射，避免因 AI 模型返回歧义条目而整体失败
-        sanitized_mappings, sanitizer_notes = self._sanitize_tv_mappings(ai_result)
+        pre_sanitize_remap_notes = self._remap_global_episode_mappings(
+            ai_result.file_mapping,
+            anime_info,
+            tmdb_episode_keys,
+        )
+        ai_reported_conflicts.extend(pre_sanitize_remap_notes)
+
         semantic_removed_paths: list[str] = []
         semantic_notes: list[str] = []
         sanitized_mappings, semantic_removed_paths, semantic_notes = (
-            self._filter_semantic_special_mappings(sanitized_mappings, anime_info)
+            self._filter_semantic_special_mappings(ai_result.file_mapping, anime_info)
         )
-        sanitizer_notes.extend(semantic_notes)
+        ai_reported_conflicts.extend(semantic_notes)
+        # 先做语义过滤，避免辅助 SP 候选在重复季集去重阶段顶掉正片映射
+        sanitized_mappings, sanitizer_notes = self._sanitize_tv_mappings(sanitized_mappings)
+        sanitizer_notes = pre_sanitize_remap_notes + semantic_notes + sanitizer_notes
         illegal_removed_paths: list[str] = []
         illegal_notes: list[str] = []
         sanitized_mappings, illegal_removed_paths, illegal_notes = (
             self._sanitize_illegal_episode_mappings(
                 sanitized_mappings,
+                anime_info,
                 tmdb_episode_keys,
             )
         )

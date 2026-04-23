@@ -1,0 +1,110 @@
+{
+  "status": "ok",
+  "type": "tv",
+  "title_candidate": "Kimetsu no Yaiba",
+  "tmdb_name": "鬼灭之刃",
+  "tmdb_id": 85937,
+  "timing": {
+    "analysis_seconds": 29.573
+  },
+  "file_mapping": [
+    {
+      "source_index": 1,
+      "file_path": "[AI-Raws] 鬼滅の刃 柱稽古編 #1 (BD HEVC 1920x1080 FLAC)[C8ABED9A].mkv",
+      "tmdb_season": 5,
+      "tmdb_episode": 1,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 2,
+      "file_path": "[AI-Raws] 鬼滅の刃 柱稽古編 #2 (BD HEVC 1920x1080 FLAC)[349823AF].mkv",
+      "tmdb_season": 5,
+      "tmdb_episode": 2,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 3,
+      "file_path": "[AI-Raws] 鬼滅の刃 柱稽古編 #3 (BD HEVC 1920x1080 FLAC)[0DB0757B].mkv",
+      "tmdb_season": 5,
+      "tmdb_episode": 3,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 4,
+      "file_path": "[AI-Raws] 鬼滅の刃 柱稽古編 #4 (BD HEVC 1920x1080 FLAC)[8DE7E57F].mkv",
+      "tmdb_season": 5,
+      "tmdb_episode": 4,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 5,
+      "file_path": "[AI-Raws] 鬼滅の刃 柱稽古編 #5 (BD HEVC 1920x1080 FLAC)[E338B361].mkv",
+      "tmdb_season": 5,
+      "tmdb_episode": 5,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 6,
+      "file_path": "[AI-Raws] 鬼滅の刃 柱稽古編 #6 (BD HEVC 1920x1080 FLAC)[918382F0].mkv",
+      "tmdb_season": 5,
+      "tmdb_episode": 6,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 7,
+      "file_path": "[AI-Raws] 鬼滅の刃 柱稽古編 #7 (BD HEVC 1920x1080 FLAC)[A22ABA73].mkv",
+      "tmdb_season": 5,
+      "tmdb_episode": 7,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 8,
+      "file_path": "[AI-Raws] 鬼滅の刃 柱稽古編 #8 (BD HEVC 1920x1080 FLAC)[0BFF3E95].mkv",
+      "tmdb_season": 5,
+      "tmdb_episode": 8,
+      "episode_type": "regular",
+      "confidence": "High"
+    }
+  ],
+  "conflict_details": [],
+  "analysis_result": {
+    "confidence": "High",
+    "reason": "正片8集对应柱稽古篇第五季。",
+    "season_mapping": [
+      {
+        "local_group_name": "柱稽古編",
+        "maps_to_tmdb_seasons": [
+          5
+        ]
+      }
+    ],
+    "file_mapping_count": 8,
+    "unmatched_count": 8,
+    "conflict_count": 0
+  },
+  "hydration_notes": {
+    "hydrated_count": 8,
+    "examples": [
+      "hydrated:1:[AI-Raws] 鬼滅の刃 柱稽古編 #1 (BD HEVC 1920x1080 FLAC)[C8ABED9A].mkv",
+      "hydrated:2:[AI-Raws] 鬼滅の刃 柱稽古編 #2 (BD HEVC 1920x1080 FLAC)[349823AF].mkv",
+      "hydrated:3:[AI-Raws] 鬼滅の刃 柱稽古編 #3 (BD HEVC 1920x1080 FLAC)[0DB0757B].mkv",
+      "hydrated:4:[AI-Raws] 鬼滅の刃 柱稽古編 #4 (BD HEVC 1920x1080 FLAC)[8DE7E57F].mkv",
+      "hydrated:5:[AI-Raws] 鬼滅の刃 柱稽古編 #5 (BD HEVC 1920x1080 FLAC)[E338B361].mkv"
+    ]
+  },
+  "task_plan": {
+    "is_movie": false,
+    "ai_type": "tv",
+    "tv_available": true,
+    "movie_available": false,
+    "selected_confidence": "High"
+  },
+  "final_type": "tv"
+}

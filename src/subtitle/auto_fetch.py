@@ -412,6 +412,13 @@ class SubtitleAutoFetcher:
         task_data: Dict[str, Any],
         record_data: dict[str, object],
     ) -> Dict[str, Any]:
+        if bool(task_data.get("is_mixed_parent")):
+            return {
+                "type": "task",
+                "root": None,
+                "source": "mixed_parent_record",
+            }
+
         is_movie = bool(task_data.get("is_movie"))
         target_root = str(task_data.get("target_root") or "").strip()
         if target_root:

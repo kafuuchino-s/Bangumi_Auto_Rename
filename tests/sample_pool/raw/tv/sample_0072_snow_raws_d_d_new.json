@@ -1,0 +1,653 @@
+{
+  "root_name": "[Snow-Raws] ハイスクールD×D NEW",
+  "files": [
+    {
+      "path": "[Snow-Raws] ハイスクールD×D NEW OAD (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 933737458
+    },
+    {
+      "path": "[Snow-Raws] ハイスクールD×D NEW OAD (BD 1920x1080 HEVC-YUV420P10 FLAC).sc.ass",
+      "size": 45303
+    },
+    {
+      "path": "[Snow-Raws] ハイスクールD×D NEW OAD (BD 1920x1080 HEVC-YUV420P10 FLAC).tc.ass",
+      "size": 45337
+    },
+    {
+      "path": "[Snow-Raws] ハイスクールD×D NEW 第01話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 1082523168
+    },
+    {
+      "path": "[Snow-Raws] ハイスクールD×D NEW 第01話 (BD 1920x1080 HEVC-YUV420P10 FLAC).sc.ass",
+      "size": 52150
+    },
+    {
+      "path": "[Snow-Raws] ハイスクールD×D NEW 第01話 (BD 1920x1080 HEVC-YUV420P10 FLAC).tc.ass",
+      "size": 52192
+    },
+    {
+      "path": "[Snow-Raws] ハイスクールD×D NEW 第02話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 1070822853
+    },
+    {
+      "path": "[Snow-Raws] ハイスクールD×D NEW 第02話 (BD 1920x1080 HEVC-YUV420P10 FLAC).sc.ass",
+      "size": 51389
+    },
+    {
+      "path": "[Snow-Raws] ハイスクールD×D NEW 第02話 (BD 1920x1080 HEVC-YUV420P10 FLAC).tc.ass",
+      "size": 51431
+    },
+    {
+      "path": "[Snow-Raws] ハイスクールD×D NEW 第03話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 1254774822
+    },
+    {
+      "path": "[Snow-Raws] ハイスクールD×D NEW 第03話 (BD 1920x1080 HEVC-YUV420P10 FLAC).sc.ass",
+      "size": 47099
+    },
+    {
+      "path": "[Snow-Raws] ハイスクールD×D NEW 第03話 (BD 1920x1080 HEVC-YUV420P10 FLAC).tc.ass",
+      "size": 47141
+    },
+    {
+      "path": "[Snow-Raws] ハイスクールD×D NEW 第04話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 1267883354
+    },
+    {
+      "path": "[Snow-Raws] ハイスクールD×D NEW 第04話 (BD 1920x1080 HEVC-YUV420P10 FLAC).sc.ass",
+      "size": 50651
+    },
+    {
+      "path": "[Snow-Raws] ハイスクールD×D NEW 第04話 (BD 1920x1080 HEVC-YUV420P10 FLAC).tc.ass",
+      "size": 50693
+    },
+    {
+      "path": "[Snow-Raws] ハイスクールD×D NEW 第05話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 1442480091
+    },
+    {
+      "path": "[Snow-Raws] ハイスクールD×D NEW 第05話 (BD 1920x1080 HEVC-YUV420P10 FLAC).sc.ass",
+      "size": 48331
+    },
+    {
+      "path": "[Snow-Raws] ハイスクールD×D NEW 第05話 (BD 1920x1080 HEVC-YUV420P10 FLAC).tc.ass",
+      "size": 48373
+    },
+    {
+      "path": "[Snow-Raws] ハイスクールD×D NEW 第06話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 1210670033
+    },
+    {
+      "path": "[Snow-Raws] ハイスクールD×D NEW 第06話 (BD 1920x1080 HEVC-YUV420P10 FLAC).sc.ass",
+      "size": 45734
+    },
+    {
+      "path": "[Snow-Raws] ハイスクールD×D NEW 第06話 (BD 1920x1080 HEVC-YUV420P10 FLAC).tc.ass",
+      "size": 45776
+    },
+    {
+      "path": "[Snow-Raws] ハイスクールD×D NEW 第07話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 1079505671
+    },
+    {
+      "path": "[Snow-Raws] ハイスクールD×D NEW 第07話 (BD 1920x1080 HEVC-YUV420P10 FLAC).sc.ass",
+      "size": 52749
+    },
+    {
+      "path": "[Snow-Raws] ハイスクールD×D NEW 第07話 (BD 1920x1080 HEVC-YUV420P10 FLAC).tc.ass",
+      "size": 52791
+    },
+    {
+      "path": "[Snow-Raws] ハイスクールD×D NEW 第08話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 1086205496
+    },
+    {
+      "path": "[Snow-Raws] ハイスクールD×D NEW 第08話 (BD 1920x1080 HEVC-YUV420P10 FLAC).sc.ass",
+      "size": 53339
+    },
+    {
+      "path": "[Snow-Raws] ハイスクールD×D NEW 第08話 (BD 1920x1080 HEVC-YUV420P10 FLAC).tc.ass",
+      "size": 53381
+    },
+    {
+      "path": "[Snow-Raws] ハイスクールD×D NEW 第09話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 1080762013
+    },
+    {
+      "path": "[Snow-Raws] ハイスクールD×D NEW 第09話 (BD 1920x1080 HEVC-YUV420P10 FLAC).sc.ass",
+      "size": 50698
+    },
+    {
+      "path": "[Snow-Raws] ハイスクールD×D NEW 第09話 (BD 1920x1080 HEVC-YUV420P10 FLAC).tc.ass",
+      "size": 50737
+    },
+    {
+      "path": "[Snow-Raws] ハイスクールD×D NEW 第10話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 1000536321
+    },
+    {
+      "path": "[Snow-Raws] ハイスクールD×D NEW 第10話 (BD 1920x1080 HEVC-YUV420P10 FLAC).sc.ass",
+      "size": 46059
+    },
+    {
+      "path": "[Snow-Raws] ハイスクールD×D NEW 第10話 (BD 1920x1080 HEVC-YUV420P10 FLAC).tc.ass",
+      "size": 46101
+    },
+    {
+      "path": "[Snow-Raws] ハイスクールD×D NEW 第11話 (BD 1920x1080 HEVC-YUV420P10 FLAC).ass",
+      "size": 47114
+    },
+    {
+      "path": "[Snow-Raws] ハイスクールD×D NEW 第11話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 1332764178
+    },
+    {
+      "path": "[Snow-Raws] ハイスクールD×D NEW 第11話 (BD 1920x1080 HEVC-YUV420P10 FLAC).tc.ass",
+      "size": 47156
+    },
+    {
+      "path": "[Snow-Raws] ハイスクールD×D NEW 第12話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 1310275807
+    },
+    {
+      "path": "[Snow-Raws] ハイスクールD×D NEW 第12話 (BD 1920x1080 HEVC-YUV420P10 FLAC).sc.ass",
+      "size": 52993
+    },
+    {
+      "path": "[Snow-Raws] ハイスクールD×D NEW 第12話 (BD 1920x1080 HEVC-YUV420P10 FLAC).tc.ass",
+      "size": 53035
+    },
+    {
+      "path": "Scan/Vol.1/IMG_001.jpg",
+      "size": 2204547
+    },
+    {
+      "path": "Scan/Vol.1/IMG_002.jpg",
+      "size": 1572641
+    },
+    {
+      "path": "Scan/Vol.1/IMG_003.jpg",
+      "size": 1416396
+    },
+    {
+      "path": "Scan/Vol.1/IMG_004.jpg",
+      "size": 1570242
+    },
+    {
+      "path": "Scan/Vol.1/IMG_005.jpg",
+      "size": 2591456
+    },
+    {
+      "path": "Scan/Vol.1/IMG_006.jpg",
+      "size": 1424160
+    },
+    {
+      "path": "Scan/Vol.1/IMG_007.jpg",
+      "size": 1300537
+    },
+    {
+      "path": "Scan/Vol.1/IMG_008.jpg",
+      "size": 1278267
+    },
+    {
+      "path": "Scan/Vol.1/IMG_009.jpg",
+      "size": 1238771
+    },
+    {
+      "path": "Scan/Vol.1/IMG_010.jpg",
+      "size": 1176672
+    },
+    {
+      "path": "Scan/Vol.1/IMG_011.jpg",
+      "size": 2532516
+    },
+    {
+      "path": "Scan/Vol.1/IMG_012.jpg",
+      "size": 2399911
+    },
+    {
+      "path": "Scan/Vol.1/IMG_013.jpg",
+      "size": 2999965
+    },
+    {
+      "path": "Scan/Vol.1/IMG_014.jpg",
+      "size": 2106677
+    },
+    {
+      "path": "Scan/Vol.2/IMG_001.jpg",
+      "size": 640004
+    },
+    {
+      "path": "Scan/Vol.2/IMG_002.jpg",
+      "size": 472758
+    },
+    {
+      "path": "Scan/Vol.2/IMG_003.jpg",
+      "size": 1343869
+    },
+    {
+      "path": "Scan/Vol.2/IMG_004.jpg",
+      "size": 586715
+    },
+    {
+      "path": "Scan/Vol.2/IMG_005.jpg",
+      "size": 1478196
+    },
+    {
+      "path": "Scan/Vol.2/IMG_006.jpg",
+      "size": 918717
+    },
+    {
+      "path": "Scan/Vol.2/IMG_007.jpg",
+      "size": 1239041
+    },
+    {
+      "path": "Scan/Vol.2/IMG_008.jpg",
+      "size": 1273586
+    },
+    {
+      "path": "Scan/Vol.2/IMG_009.jpg",
+      "size": 1276502
+    },
+    {
+      "path": "Scan/Vol.2/IMG_010.jpg",
+      "size": 1228468
+    },
+    {
+      "path": "Scan/Vol.2/IMG_011.jpg",
+      "size": 1456328
+    },
+    {
+      "path": "Scan/Vol.2/IMG_012.jpg",
+      "size": 773307
+    },
+    {
+      "path": "Scan/Vol.2/IMG_013.jpg",
+      "size": 833040
+    },
+    {
+      "path": "Scan/Vol.2/IMG_014.jpg",
+      "size": 571981
+    },
+    {
+      "path": "Scan/Vol.3/IMG_001.jpg",
+      "size": 902117
+    },
+    {
+      "path": "Scan/Vol.3/IMG_002.jpg",
+      "size": 1266543
+    },
+    {
+      "path": "Scan/Vol.3/IMG_003.jpg",
+      "size": 593236
+    },
+    {
+      "path": "Scan/Vol.3/IMG_004.jpg",
+      "size": 1508699
+    },
+    {
+      "path": "Scan/Vol.3/IMG_005.jpg",
+      "size": 845953
+    },
+    {
+      "path": "Scan/Vol.3/IMG_006.jpg",
+      "size": 1198159
+    },
+    {
+      "path": "Scan/Vol.3/IMG_007.jpg",
+      "size": 1203628
+    },
+    {
+      "path": "Scan/Vol.3/IMG_008.jpg",
+      "size": 1178093
+    },
+    {
+      "path": "Scan/Vol.3/IMG_009.jpg",
+      "size": 1174975
+    },
+    {
+      "path": "Scan/Vol.3/IMG_010.jpg",
+      "size": 1213029
+    },
+    {
+      "path": "Scan/Vol.3/IMG_011.jpg",
+      "size": 1110632
+    },
+    {
+      "path": "Scan/Vol.3/IMG_012.jpg",
+      "size": 1404724
+    },
+    {
+      "path": "Scan/Vol.3/IMG_013.jpg",
+      "size": 1510438
+    },
+    {
+      "path": "Scan/Vol.3/IMG_014.jpg",
+      "size": 1605423
+    },
+    {
+      "path": "Scan/Vol.3/IMG_015.jpg",
+      "size": 1374695
+    },
+    {
+      "path": "Scan/Vol.4/IMG_001.jpg",
+      "size": 1389025
+    },
+    {
+      "path": "Scan/Vol.4/IMG_002.jpg",
+      "size": 1085632
+    },
+    {
+      "path": "Scan/Vol.4/IMG_003.jpg",
+      "size": 709031
+    },
+    {
+      "path": "Scan/Vol.4/IMG_004.jpg",
+      "size": 1535267
+    },
+    {
+      "path": "Scan/Vol.4/IMG_005.jpg",
+      "size": 954949
+    },
+    {
+      "path": "Scan/Vol.4/IMG_006.jpg",
+      "size": 1199726
+    },
+    {
+      "path": "Scan/Vol.4/IMG_007.jpg",
+      "size": 1240484
+    },
+    {
+      "path": "Scan/Vol.4/IMG_008.jpg",
+      "size": 1203974
+    },
+    {
+      "path": "Scan/Vol.4/IMG_009.jpg",
+      "size": 1198311
+    },
+    {
+      "path": "Scan/Vol.4/IMG_010.jpg",
+      "size": 1169121
+    },
+    {
+      "path": "Scan/Vol.4/IMG_011.jpg",
+      "size": 1206737
+    },
+    {
+      "path": "Scan/Vol.4/IMG_012.jpg",
+      "size": 1475372
+    },
+    {
+      "path": "Scan/Vol.4/IMG_013.jpg",
+      "size": 1511057
+    },
+    {
+      "path": "Scan/Vol.4/IMG_014.jpg",
+      "size": 1656158
+    },
+    {
+      "path": "Scan/Vol.4/IMG_015.jpg",
+      "size": 1272419
+    },
+    {
+      "path": "Scan/Vol.5/Book/IMG_001.jpg",
+      "size": 1777979
+    },
+    {
+      "path": "Scan/Vol.5/Book/IMG_002.jpg",
+      "size": 998139
+    },
+    {
+      "path": "Scan/Vol.5/Book/IMG_003.jpg",
+      "size": 954781
+    },
+    {
+      "path": "Scan/Vol.5/Book/IMG_004.jpg",
+      "size": 964217
+    },
+    {
+      "path": "Scan/Vol.5/Book/IMG_005.jpg",
+      "size": 957976
+    },
+    {
+      "path": "Scan/Vol.5/Book/IMG_006.jpg",
+      "size": 961937
+    },
+    {
+      "path": "Scan/Vol.5/Book/IMG_007.jpg",
+      "size": 920636
+    },
+    {
+      "path": "Scan/Vol.5/Book/IMG_008.jpg",
+      "size": 828929
+    },
+    {
+      "path": "Scan/Vol.5/Book/IMG_009.jpg",
+      "size": 1626352
+    },
+    {
+      "path": "Scan/Vol.5/Book/IMG_010.jpg",
+      "size": 1793691
+    },
+    {
+      "path": "Scan/Vol.5/Book/IMG_011.jpg",
+      "size": 2085188
+    },
+    {
+      "path": "Scan/Vol.5/Book/IMG_012.jpg",
+      "size": 1481783
+    },
+    {
+      "path": "Scan/Vol.5/IMG_001.jpg",
+      "size": 1363497
+    },
+    {
+      "path": "Scan/Vol.5/IMG_002.jpg",
+      "size": 1108473
+    },
+    {
+      "path": "Scan/Vol.5/IMG_003.jpg",
+      "size": 1042918
+    },
+    {
+      "path": "Scan/Vol.6/IMG_001.jpg",
+      "size": 1431072
+    },
+    {
+      "path": "Scan/Vol.6/IMG_002.jpg",
+      "size": 1179666
+    },
+    {
+      "path": "Scan/Vol.6/IMG_003.jpg",
+      "size": 996286
+    },
+    {
+      "path": "Scan/Vol.6/IMG_004.jpg",
+      "size": 1744903
+    },
+    {
+      "path": "Scan/Vol.6/IMG_005.jpg",
+      "size": 927997
+    },
+    {
+      "path": "Scan/Vol.6/IMG_006.jpg",
+      "size": 1009984
+    },
+    {
+      "path": "Scan/Vol.6/IMG_007.jpg",
+      "size": 1012145
+    },
+    {
+      "path": "Scan/Vol.6/IMG_008.jpg",
+      "size": 1000960
+    },
+    {
+      "path": "Scan/Vol.6/IMG_009.jpg",
+      "size": 1009898
+    },
+    {
+      "path": "Scan/Vol.6/IMG_010.jpg",
+      "size": 980882
+    },
+    {
+      "path": "Scan/Vol.6/IMG_011.jpg",
+      "size": 839576
+    },
+    {
+      "path": "Scan/Vol.6/IMG_012.jpg",
+      "size": 1679056
+    },
+    {
+      "path": "Scan/Vol.6/IMG_013.jpg",
+      "size": 1720578
+    },
+    {
+      "path": "Scan/Vol.6/IMG_014.jpg",
+      "size": 2081241
+    },
+    {
+      "path": "Scan/Vol.6/IMG_015.jpg",
+      "size": 1459107
+    },
+    {
+      "path": "映像特典/[Snow-Raws] ハイスクールD×D NEW CM01 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 14766457
+    },
+    {
+      "path": "映像特典/[Snow-Raws] ハイスクールD×D NEW CM02 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 14856481
+    },
+    {
+      "path": "映像特典/[Snow-Raws] ハイスクールD×D NEW ED01 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 67070509
+    },
+    {
+      "path": "映像特典/[Snow-Raws] ハイスクールD×D NEW ED02 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 67205820
+    },
+    {
+      "path": "映像特典/[Snow-Raws] ハイスクールD×D NEW MENU01 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 38551612
+    },
+    {
+      "path": "映像特典/[Snow-Raws] ハイスクールD×D NEW MENU02 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 38602054
+    },
+    {
+      "path": "映像特典/[Snow-Raws] ハイスクールD×D NEW MENU03 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 39007505
+    },
+    {
+      "path": "映像特典/[Snow-Raws] ハイスクールD×D NEW MENU04 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 13507981
+    },
+    {
+      "path": "映像特典/[Snow-Raws] ハイスクールD×D NEW MENU05 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 12981967
+    },
+    {
+      "path": "映像特典/[Snow-Raws] ハイスクールD×D NEW MENU06 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 13406597
+    },
+    {
+      "path": "映像特典/[Snow-Raws] ハイスクールD×D NEW MENU07.jpg",
+      "size": 1669081
+    },
+    {
+      "path": "映像特典/[Snow-Raws] ハイスクールD×D NEW OP01 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 120260895
+    },
+    {
+      "path": "映像特典/[Snow-Raws] ハイスクールD×D NEW OP02 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 118349519
+    },
+    {
+      "path": "映像特典/[Snow-Raws] ハイスクールD×D NEW PV01 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 204474231
+    },
+    {
+      "path": "映像特典/[Snow-Raws] ハイスクールD×D NEW PV02 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 293388911
+    },
+    {
+      "path": "映像特典/[Snow-Raws] ハイスクールD×D NEW PV03 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 18261942
+    },
+    {
+      "path": "映像特典/[Snow-Raws] ハイスクールD×D NEW PV04 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 17868189
+    },
+    {
+      "path": "映像特典/[Snow-Raws] ハイスクールD×D NEW PV05 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 274865425
+    },
+    {
+      "path": "映像特典/[Snow-Raws] ハイスクールD×D NEW PV06 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 213532227
+    },
+    {
+      "path": "映像特典/[Snow-Raws] ハイスクールD×D NEW PV07 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 101062028
+    },
+    {
+      "path": "映像特典/[Snow-Raws] ハイスクールD×D NEW PV08 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 304972040
+    },
+    {
+      "path": "映像特典/[Snow-Raws] ハイスクールD×D NEW PV09 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 291254841
+    },
+    {
+      "path": "映像特典/[Snow-Raws] ハイスクールD×D NEW PV10 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 332802421
+    },
+    {
+      "path": "映像特典/[Snow-Raws] ハイスクールD×D NEW SP01 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 379992272
+    },
+    {
+      "path": "映像特典/[Snow-Raws] ハイスクールD×D NEW SP02 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 318325988
+    },
+    {
+      "path": "映像特典/[Snow-Raws] ハイスクールD×D NEW SP03 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 461899216
+    },
+    {
+      "path": "映像特典/[Snow-Raws] ハイスクールD×D NEW SP04 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 342523946
+    },
+    {
+      "path": "映像特典/[Snow-Raws] ハイスクールD×D NEW SP05 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 785005068
+    },
+    {
+      "path": "映像特典/[Snow-Raws] ハイスクールD×D NEW SP06 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 343817566
+    },
+    {
+      "path": "特典CD/Vol.1/01 Трек01.flac",
+      "size": 98292267
+    },
+    {
+      "path": "特典CD/Vol.2/01 Трек01.flac",
+      "size": 88714652
+    },
+    {
+      "path": "特典CD/Vol.3/01 Трек01.flac",
+      "size": 113191747
+    },
+    {
+      "path": "特典CD/Vol.4/01 Трек01.flac",
+      "size": 91798839
+    },
+    {
+      "path": "特典CD/Vol.5/01 Трек01.flac",
+      "size": 117140109
+    },
+    {
+      "path": "特典CD/Vol.6/01 Трек01.flac",
+      "size": 98943532
+    }
+  ]
+}

@@ -8,7 +8,7 @@
 
 - ✨并且你可以通过简单的配置，让qBittorrent每次下载结束之后**自动执行转换！**
 
-- 🤖**AI识别主流程**：支持OpenAI和Google Gemini双引擎，智能分析动漫/剧集/电影映射关系，解决BD分集与TMDB数据不一致的问题！
+- 🤖**AI识别主流程**：当前以 **OpenAI 兼容 API** 为唯一运行时识别引擎，智能分析动漫/剧集/电影映射关系，解决 BD 分集与 TMDB 数据不一致的问题！
 
 - 🥳支持复杂的目录结构！以VCB-Studio的**Re:从零开始的异世界生活**剧集合集为例：
 
@@ -31,9 +31,7 @@
 - 提供置信度评估，低置信度结果会单独记录
 
 🔧 **可配置项**
-- **AI提供商选择**：OpenAI / Google Gemini
-- **OpenAI配置**：支持兼容API、自定义模型、自动输出格式路由
-- **Gemini配置**：原生API支持、自动输出格式路由与结构化输出
+- **OpenAI配置**：支持兼容 API、自定义模型、自动输出格式路由
 - **AI阈值与保存**：可调节置信度阈值，支持自动保存AI分析快照
 - **运行模式**：WEB版默认 `ai_force_strict=true`（AI不可用/低置信度/冲突会直接失败）
 - **Telegram通知**：支持批次汇总通知（可配置成功/失败触发）
@@ -55,11 +53,8 @@
 #### AI API密钥（可选）
 - **OpenAI API**：申请OpenAI API密钥，或使用兼容的国内API服务
   - 推荐模型：deepseek-reasoner（性价比高，效果好）
-  - 支持多种输出格式，兼容性强
-- **Google Gemini API**：申请Google AI Studio API密钥
-  - 推荐模型：gemini-2.5-flash（速度快，效果优秀）
-  - 原生结构化输出，解析更准确
-- 如不配置可用的AI提供商（或密钥不可用），任务会按 `ai_unavailable` 失败（默认严格模式）
+  - 当前支持的输出格式为 `structured_output` / `function_calling` / `text`
+- 如不配置可用的 OpenAI API 密钥（或密钥不可用），任务会按 `ai_unavailable` 失败（默认严格模式）
 
 ### 一、安装 (WEB版本)
 
@@ -67,7 +62,7 @@
 >
 > WEB版本提高了易用性、和识别准确率, 但要求必须本机内存在git和python环境！
 
-- 确保存在Python环境（版本需要`>=3.9`）, Git环境。
+- 确保存在Python环境（版本需要`>=3.10`）, Git环境。
 - 命令行执行
   - `git clone https://github.com/KimigaiiWuyi/Bangumi_Auto_Rename.git -b web`
   - `cd Bangumi_Auto_Rename`
@@ -84,7 +79,7 @@
 - 打开网页之后（默认端口5999，即地址为`http://127.0.0.1:5999`）
 - 先点击右上角配置按钮，配置以下内容：
   - **基础配置**：TMDB API密钥和各个整理路径
-  - **AI配置**（可选）：选择AI提供商、配置API密钥、选择模型等
+  - **AI配置**（可选）：配置 OpenAI API 密钥、模型、接口与输出格式等
 - 点击添加任务即可使用
 
 ### 三、AI主流程详细说明
@@ -93,23 +88,15 @@
 
 #### 配置AI功能
 1. 在配置页面的"AI识别配置"部分：
-   - **AI提供商选择**：选择OpenAI或Google Gemini
    - **置信度阈值**：设置结果采用的最低置信度要求
    - **自动保存AI分析**：启用后会把样例落盘到 `data/ai_analysis`
 
-2. **OpenAI配置**（选择OpenAI提供商时）：
+2. **OpenAI配置**：
    - **API密钥**：填入你的OpenAI兼容API密钥
    - **API地址**：默认为OpenAI官方URL，可改为其他兼容服务(一般以/v1结尾)
    - **模型选择**：推荐使用Deepseek-R1(deepseek-reasoner)
-   - **输出格式与自动路由**：支持 Function Calling / JSON Object / Structured Output / Text，并可自动回退
+   - **输出格式与自动路由**：支持 Structured Output / Function Calling / Text，并可自动路由
    - **API测试**：一键测试当前API支持的格式能力，并可写入推荐格式
-
-3. **Google Gemini配置**（选择Gemini提供商时）：
-   - **API密钥**：填入你的Google AI Studio API密钥
-   - **API地址**：默认为AI Studio Gemini URL，可改为Vertex或其它兼容服务
-   - **模型选择**：推荐使用gemini-2.5-flash
-   - **输出格式与自动路由**：支持 structured_output / json_object / text 自动切换
-   - **Gemini API测试**：可单独测试 Gemini 多格式可用性
 
 #### AI主流程优势
 - **智能映射**：自动分析本地文件与TMDB数据的对应关系
@@ -121,11 +108,11 @@
 
 #### 注意事项
 - AI主流程需要网络连接和API调用费用
-- 不同AI提供商的费用和速度有所差异
+- 当前文档与产品面均以 OpenAI 兼容 API 为准
 - 低置信度或映射冲突结果会在日志与任务记录中标记失败原因
 - 编辑任务页可修改 `is_anime / is_movie / 名称 / 季度` 后重试
 - 默认严格模式下，AI分析失败不会自动回退到传统规则
-- 建议先使用 OpenAI/Gemini API 测试功能验证配置是否正确
+- 建议先使用 OpenAI API 测试功能验证配置是否正确
 
 ### 四、字幕导入与自动对齐（ffsubsync）
 
@@ -184,8 +171,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -Command "Invoke-RestMethod -Uri '
 
 - 该程序依靠**TMDB API**（因为Emby也是一样的，可以保证精准度），因此对**网络环境**有一定要求！
 - **AI主流程**需要额外的API调用费用，但可以显著提高动漫识别准确率
-  - OpenAI API：官方按token计费，部分提供商有免费的Deepseek R1额度
-  - Google Gemini API：有免费额度，gemini-2.5-flash速度快
+  - OpenAI API：官方按token计费，部分兼容提供商可能提供更便宜或带免费额度的模型
   - 该功能仍在开发中，欢迎各位提供测试用例
   - 如需提交AI功能相关的反馈，建议启用`自动保存AI分析`，会在每次AI识别时保存用例至`data/ai_analysis`目录
 - 该程序更加适用于动画剧集的重命名，对于电影、剧集，本身Emby的刮削足够精准了。

@@ -1,0 +1,39 @@
+{
+  "status": "ok",
+  "type": "movie",
+  "title_candidate": "Strike Witches the Movie",
+  "timing": {
+    "analysis_seconds": 15.898
+  },
+  "collection_analysis": {
+    "is_collection": false,
+    "collection_name": "Strike Witches",
+    "confidence": "High",
+    "reason": "仅一部正片，其他为特典内容",
+    "file_mapping": [
+      {
+        "file_path": "[philosophy-raws][Strike Witches The Movie][Movie][BDRIP][HEVC Main10P FLAC][1920X1080].mkv",
+        "movie_title": "ストライクウィッチーズ",
+        "movie_number": null,
+        "year": 2012,
+        "confidence": "High"
+      }
+    ],
+    "unmatched_files": [
+      "Bonus/[philosophy-raws][Strike Witches The Movie][CM][BDRIP][HEVC Main10P FLAC][1920X1080].mkv",
+      "Bonus/[philosophy-raws][Strike Witches The Movie][MenuJP][BDRIP][HEVC Main10P FLAC][1920X1080].mkv",
+      "Bonus/[philosophy-raws][Strike Witches The Movie][MenuUS][BDRemux][H264 AC3][1920X1080].mkv",
+      "Bonus/[philosophy-raws][Strike Witches The Movie][PV1][BDRIP][HEVC Main10P FLAC][1920X1080].mkv",
+      "Bonus/[philosophy-raws][Strike Witches The Movie][PV2][BDRIP][HEVC Main10P FLAC][1920X1080].mkv",
+      "Bonus/[philosophy-raws][Strike Witches The Movie][PV3][BDRIP][HEVC Main10P AC3][1920X1080].mkv",
+      "Bonus/[philosophy-raws][Strike Witches The Movie][SP1][BDRIP][HEVC Main10P FLAC][1920X1080].mkv",
+      "Bonus/[philosophy-raws][Strike Witches The Movie][SP2][BDRIP][HEVC Main10P FLAC][1920X1080].mkv",
+      "Bonus/[philosophy-raws][Strike Witches The Movie][SP3][BDRIP][HEVC Main10P FLAC][1920X1080].mkv",
+      "Bonus/[philosophy-raws][Strike Witches The Movie][SP4][BDRIP][HEVC Main10P FLAC][1920X1080].mkv"
+    ],
+    "conflict_details": [
+      "仅1部正片，其余均为特典"
+    ],
+    "extra_notes": null
+  }
+}

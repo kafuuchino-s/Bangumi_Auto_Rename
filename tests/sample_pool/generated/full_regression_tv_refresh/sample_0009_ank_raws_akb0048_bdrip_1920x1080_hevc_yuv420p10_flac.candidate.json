@@ -1,0 +1,150 @@
+{
+  "status": "ok",
+  "type": "tv",
+  "title_candidate": "AKB0048",
+  "tmdb_name": "AKB0048",
+  "tmdb_id": 45982,
+  "timing": {
+    "analysis_seconds": 18.515
+  },
+  "file_mapping": [
+    {
+      "source_index": 6,
+      "file_path": "[ANK-Raws] AKB0048 01 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 1,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 7,
+      "file_path": "[ANK-Raws] AKB0048 02 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 2,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 8,
+      "file_path": "[ANK-Raws] AKB0048 03 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 3,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 9,
+      "file_path": "[ANK-Raws] AKB0048 04 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 4,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 10,
+      "file_path": "[ANK-Raws] AKB0048 05 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 5,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 11,
+      "file_path": "[ANK-Raws] AKB0048 06 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 6,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 12,
+      "file_path": "[ANK-Raws] AKB0048 07 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 7,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 13,
+      "file_path": "[ANK-Raws] AKB0048 08 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 8,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 14,
+      "file_path": "[ANK-Raws] AKB0048 09 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 9,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 15,
+      "file_path": "[ANK-Raws] AKB0048 10 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 10,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 16,
+      "file_path": "[ANK-Raws] AKB0048 11 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 11,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 17,
+      "file_path": "[ANK-Raws] AKB0048 12 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 12,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 18,
+      "file_path": "[ANK-Raws] AKB0048 13 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 13,
+      "episode_type": "regular",
+      "confidence": "High"
+    }
+  ],
+  "conflict_details": [],
+  "analysis_result": {
+    "confidence": "High",
+    "reason": "正片编号1-13直对应TMDB第1季前13集。",
+    "season_mapping": [
+      {
+        "local_group_name": "AKB0048",
+        "maps_to_tmdb_seasons": [
+          1
+        ]
+      }
+    ],
+    "file_mapping_count": 13,
+    "unmatched_count": 0,
+    "conflict_count": 0
+  },
+  "hydration_notes": {
+    "hydrated_count": 13,
+    "examples": [
+      "hydrated:6:[ANK-Raws] AKB0048 01 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "hydrated:7:[ANK-Raws] AKB0048 02 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "hydrated:8:[ANK-Raws] AKB0048 03 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "hydrated:9:[ANK-Raws] AKB0048 04 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "hydrated:10:[ANK-Raws] AKB0048 05 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv"
+    ]
+  },
+  "task_plan": {
+    "is_movie": false,
+    "ai_type": "tv",
+    "tv_available": true,
+    "movie_available": false,
+    "selected_confidence": "High"
+  },
+  "final_type": "tv"
+}

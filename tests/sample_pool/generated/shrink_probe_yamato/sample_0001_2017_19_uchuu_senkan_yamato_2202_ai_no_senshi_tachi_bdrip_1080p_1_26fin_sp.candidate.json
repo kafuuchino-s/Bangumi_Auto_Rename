@@ -1,0 +1,531 @@
+{
+  "status": "ok",
+  "type": "tv",
+  "title_candidate": "Uchuu Senkan Yamato 2202: Ai no Senshi-tachi",
+  "tmdb_name": "Star Blazers: Space Battleship Yamato 2199",
+  "tmdb_id": 45844,
+  "timing": {
+    "analysis_seconds": 50.05
+  },
+  "file_mapping": [
+    {
+      "source_index": 1,
+      "file_path": "[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][01][BDRIP][1080P][H264_FLACx2].mkv",
+      "tmdb_season": 2,
+      "tmdb_episode": 1,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 2,
+      "file_path": "[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][02][BDRIP][1080P][H264_FLACx2].mkv",
+      "tmdb_season": 2,
+      "tmdb_episode": 2,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 3,
+      "file_path": "[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][03][BDRIP][1080P][H264_FLACx2].mkv",
+      "tmdb_season": 2,
+      "tmdb_episode": 3,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 4,
+      "file_path": "[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][04][BDRIP][1080P][H264_FLAC].mkv",
+      "tmdb_season": 2,
+      "tmdb_episode": 4,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 5,
+      "file_path": "[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][05][BDRIP][1080P][H264_FLACx2].mkv",
+      "tmdb_season": 2,
+      "tmdb_episode": 5,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 6,
+      "file_path": "[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][06][BDRIP][1080P][H264_FLAC].mkv",
+      "tmdb_season": 2,
+      "tmdb_episode": 6,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 7,
+      "file_path": "[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][07][BDRIP][1080P][H264_FLAC].mkv",
+      "tmdb_season": 2,
+      "tmdb_episode": 7,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 8,
+      "file_path": "[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][08][BDRIP][1080P][H264_FLACx2].mkv",
+      "tmdb_season": 2,
+      "tmdb_episode": 8,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 9,
+      "file_path": "[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][09][BDRIP][1080P][H264_FLACx2].mkv",
+      "tmdb_season": 2,
+      "tmdb_episode": 9,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 10,
+      "file_path": "[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][10][BDRIP][1080P][H264_FLAC].mkv",
+      "tmdb_season": 2,
+      "tmdb_episode": 10,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 11,
+      "file_path": "[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][11][BDRIP][1080P][H264_FLACx2].mkv",
+      "tmdb_season": 2,
+      "tmdb_episode": 11,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 12,
+      "file_path": "[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][12][BDRIP][1080P][H264_FLAC].mkv",
+      "tmdb_season": 2,
+      "tmdb_episode": 12,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 13,
+      "file_path": "[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][13][BDRIP][1080P][H264_FLACx2].mkv",
+      "tmdb_season": 2,
+      "tmdb_episode": 13,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 14,
+      "file_path": "[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][14][BDRIP][1080P][H264_FLAC].mkv",
+      "tmdb_season": 2,
+      "tmdb_episode": 14,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 15,
+      "file_path": "[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][15][BDRIP][1080P][H264_FLACx2].mkv",
+      "tmdb_season": 2,
+      "tmdb_episode": 15,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 16,
+      "file_path": "[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][16][BDRIP][1080P][H264_FLAC].mkv",
+      "tmdb_season": 2,
+      "tmdb_episode": 16,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 17,
+      "file_path": "[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][17][BDRIP][1080P][H264_FLAC].mkv",
+      "tmdb_season": 2,
+      "tmdb_episode": 17,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 18,
+      "file_path": "[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][18][BDRIP][1080P][H264_FLACx2].mkv",
+      "tmdb_season": 2,
+      "tmdb_episode": 18,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 19,
+      "file_path": "[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][19][BDRIP][1080P][H264_FLAC].mkv",
+      "tmdb_season": 2,
+      "tmdb_episode": 19,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 20,
+      "file_path": "[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][20][BDRIP][1080P][H264_FLACx2].mkv",
+      "tmdb_season": 2,
+      "tmdb_episode": 20,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 21,
+      "file_path": "[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][21][BDRIP][1080P][H264_FLACx2].mkv",
+      "tmdb_season": 2,
+      "tmdb_episode": 21,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 22,
+      "file_path": "[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][22][BDRIP][1080P][H264_FLAC].mkv",
+      "tmdb_season": 2,
+      "tmdb_episode": 22,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 23,
+      "file_path": "[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][23][BDRIP][1080P][H264_FLAC].mkv",
+      "tmdb_season": 2,
+      "tmdb_episode": 23,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 24,
+      "file_path": "[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][24][BDRIP][1080P][H264_FLAC].mkv",
+      "tmdb_season": 2,
+      "tmdb_episode": 24,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 25,
+      "file_path": "[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][25][BDRIP][1080P][H264_FLACx2].mkv",
+      "tmdb_season": 2,
+      "tmdb_episode": 25,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 26,
+      "file_path": "[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][26][BDRIP][1080P][H264_FLACx2].mkv",
+      "tmdb_season": 2,
+      "tmdb_episode": 26,
+      "episode_type": "regular",
+      "confidence": "High"
+    }
+  ],
+  "conflict_details": [],
+  "analysis_result": {
+    "confidence": "High",
+    "reason": "文件名中的集数 01-26 可直接对应 TMDB Season 2 的 26 集，且标题指向《宇宙战舰大和号2202 爱的战士们》，因此正片可稳定映射到 S02E01-S02E26。",
+    "season_mapping": [
+      {
+        "local_group_name": "Uchuu Senkan Yamato 2202 Ai no Senshi-tachi",
+        "maps_to_tmdb_seasons": [
+          2
+        ]
+      }
+    ],
+    "file_mapping": [
+      {
+        "source_index": 1,
+        "file_path": null,
+        "tmdb_season": 2,
+        "tmdb_episode": 1,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 2,
+        "file_path": null,
+        "tmdb_season": 2,
+        "tmdb_episode": 2,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 3,
+        "file_path": null,
+        "tmdb_season": 2,
+        "tmdb_episode": 3,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 4,
+        "file_path": null,
+        "tmdb_season": 2,
+        "tmdb_episode": 4,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 5,
+        "file_path": null,
+        "tmdb_season": 2,
+        "tmdb_episode": 5,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 6,
+        "file_path": null,
+        "tmdb_season": 2,
+        "tmdb_episode": 6,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 7,
+        "file_path": null,
+        "tmdb_season": 2,
+        "tmdb_episode": 7,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 8,
+        "file_path": null,
+        "tmdb_season": 2,
+        "tmdb_episode": 8,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 9,
+        "file_path": null,
+        "tmdb_season": 2,
+        "tmdb_episode": 9,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 10,
+        "file_path": null,
+        "tmdb_season": 2,
+        "tmdb_episode": 10,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 11,
+        "file_path": null,
+        "tmdb_season": 2,
+        "tmdb_episode": 11,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 12,
+        "file_path": null,
+        "tmdb_season": 2,
+        "tmdb_episode": 12,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 13,
+        "file_path": null,
+        "tmdb_season": 2,
+        "tmdb_episode": 13,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 14,
+        "file_path": null,
+        "tmdb_season": 2,
+        "tmdb_episode": 14,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 15,
+        "file_path": null,
+        "tmdb_season": 2,
+        "tmdb_episode": 15,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 16,
+        "file_path": null,
+        "tmdb_season": 2,
+        "tmdb_episode": 16,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 17,
+        "file_path": null,
+        "tmdb_season": 2,
+        "tmdb_episode": 17,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 18,
+        "file_path": null,
+        "tmdb_season": 2,
+        "tmdb_episode": 18,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 19,
+        "file_path": null,
+        "tmdb_season": 2,
+        "tmdb_episode": 19,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 20,
+        "file_path": null,
+        "tmdb_season": 2,
+        "tmdb_episode": 20,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 21,
+        "file_path": null,
+        "tmdb_season": 2,
+        "tmdb_episode": 21,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 22,
+        "file_path": null,
+        "tmdb_season": 2,
+        "tmdb_episode": 22,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 23,
+        "file_path": null,
+        "tmdb_season": 2,
+        "tmdb_episode": 23,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 24,
+        "file_path": null,
+        "tmdb_season": 2,
+        "tmdb_episode": 24,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 25,
+        "file_path": null,
+        "tmdb_season": 2,
+        "tmdb_episode": 25,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 26,
+        "file_path": null,
+        "tmdb_season": 2,
+        "tmdb_episode": 26,
+        "episode_type": "regular",
+        "confidence": "High"
+      }
+    ],
+    "unmatched_files": [
+      "[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][Logo][BDRIP][1080P][H264_FLAC].mkv",
+      "[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][Vol.01][Menu][BDRIP][1080P][H264_FLAC].mkv",
+      "[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][Vol.01][SP01][NCOP][BDRIP][1080P][H264_FLAC].mkv",
+      "[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][Vol.01][SP02][NCED][BDRIP][1080P][H264_FLAC].mkv",
+      "[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][Vol.01][SP03][Uchuu Senkan Yamato 2202 Making Announcement][BDRIP][1080P][H264_FLAC].mkv",
+      "[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][Vol.01][SP04][Trailer #01][BDRIP][1080P][H264_FLAC].mkv",
+      "[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][Vol.01][SP05][Trailer #02][BDRIP][1080P][H264_FLAC].mkv",
+      "[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][Vol.01][SP06][Chapter 01 Theater Preview #01][BDRIP][1080P][H264_FLAC].mkv",
+      "[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][Vol.01][SP07][Chapter 01 Theater Preview #02][BDRIP][1080P][H264_FLAC].mkv",
+      "[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][Vol.02][Menu][BDRIP][1080P][H264_FLAC].mkv",
+      "[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][Vol.02][SP01][Chapter 01 Digest][BDRIP][1080P][H264_FLAC].mkv",
+      "[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][Vol.02][SP02][NCOP][BDRIP][1080P][H264_FLAC].mkv",
+      "[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][Vol.02][SP03][NCED][BDRIP][1080P][H264_FLAC].mkv",
+      "[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][Vol.02][SP04][Chapter 01 Theater Preview #03][1080P][H264_FLAC].mkv",
+      "[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][Vol.02][SP05][Chapter 01 CM Collection][1080P][H264_FLAC].mkv",
+      "[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][Vol.02][SP06][Chapter 02 Trailer][1080P][H264_FLAC].mkv",
+      "[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][Vol.02][SP07][Chapter 02 Theater Preview][1080P][H264_FLAC].mkv",
+      "[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][Vol.02][SP08][Chapter 02 CM Collection][1080P][H264_FLAC].mkv",
+      "[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][Vol.03][Menu][BDRIP][1080P][H264_FLAC].mkv",
+      "[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][Vol.03][SP01][Chapter 02 Digest][BDRIP][1080P][H264_FLAC].mkv",
+      "[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][Vol.03][SP02][NCED][BDRIP][1080P][H264_FLAC].mkv",
+      "[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][Vol.03][SP03][Chapter 03 Trailer][1080P][H264_FLAC].mkv",
+      "[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][Vol.03][SP04][Chapter 03 Theater Preview][1080P][H264_FLAC].mkv",
+      "[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][Vol.03][SP05][Chapter 03 CM Collection][1080P][H264_FLAC].mkv",
+      "[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][Vol.04][Menu][BDRIP][1080P][H264_FLAC].mkv",
+      "[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][Vol.04][SP01][Chapter 03 Digest][BDRIP][1080P][H264_FLAC].mkv",
+      "[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][Vol.04][SP02][NCOP][BDRIP][1080P][H264_FLAC].mkv",
+      "[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][Vol.04][SP03][NCED][BDRIP][1080P][H264_FLAC].mkv",
+      "[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][Vol.04][SP04][Chapter 04 Trailer][BDRIP][1080P][H264_FLAC].mkv",
+      "[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][Vol.04][SP05][Chapter 04 Theater Preview][BDRIP][1080P][H264_FLAC].mkv",
+      "[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][Vol.04][SP06][Chapter 04 CM Collection][BDRIP][1080P][H264_FLAC].mkv",
+      "[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][Vol.05][Menu][BDRIP][1080P][H264_FLAC].mkv",
+      "[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][Vol.05][SP01][Chapter 04 Digest][BDRIP][1080P][H264_FLAC].mkv",
+      "[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][Vol.05][SP02][NCED][BDRIP][1080P][H264_FLAC].mkv",
+      "[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][Vol.05][SP03][Chapter 05 Trailer][BDRIP][1080P][H264_FLAC].mkv",
+      "[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][Vol.05][SP04][Chapter 05 Theater Preview][BDRIP][1080P][H264_FLAC].mkv",
+      "[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][Vol.05][SP05][Chapter 05 CM Collection][BDRIP][1080P][H264_FLAC].mkv",
+      "[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][Vol.06][Menu][BDRIP][1080P][H264_FLAC].mkv",
+      "[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][Vol.06][SP01][Chapter 05 Digest][BDRIP][1080P][H264_FLAC].mkv",
+      "[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][Vol.06][SP02][NCED][BDRIP][1080P][H264_FLAC].mkv",
+      "[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][Vol.06][SP03][Chapter 06 Trailer][BDRIP][1080P][H264_FLAC].mkv",
+      "[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][Vol.06][SP04][Chapter 06 Theater Preview][BDRIP][1080P][H264_FLAC].mkv",
+      "[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][Vol.06][SP05][Chapter 06 CM Collection][BDRIP][1080P][H264_FLAC].mkv",
+      "[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][Vol.07][Menu][BDRIP][1080P][H264_FLAC].mkv",
+      "[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][Vol.07][SP01][Chapter 06 Digest][BDRIP][1080P][H264_FLAC].mkv",
+      "[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][Vol.07][SP02][EP26 NCED][BDRIP][1080P][H264_FLAC].mkv",
+      "[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][Vol.07][SP03][Chapter 07 Trailer][BDRIP][1080P][H264_FLAC].mkv",
+      "[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][Vol.07][SP04][Chapter 07 Theater Preview][BDRIP][1080P][H264_FLAC].mkv",
+      "[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][Vol.07][SP05][Chapter 07 CM Collection][BDRIP][1080P][H264_FLAC].mkv"
+    ],
+    "conflict_details": [],
+    "extra_notes": "本地文件名明确指向《宇宙战舰大和号2202 爱的战士们》，且 01-26 与 TMDB Season 2 的集号完全一致；额外的 Logo/Menu/NCOP/NCED/Trailer/Digest/CM 等附加内容未映射。"
+  },
+  "hydration_notes": [
+    "hydrated:1:[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][01][BDRIP][1080P][H264_FLACx2].mkv",
+    "hydrated:2:[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][02][BDRIP][1080P][H264_FLACx2].mkv",
+    "hydrated:3:[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][03][BDRIP][1080P][H264_FLACx2].mkv",
+    "hydrated:4:[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][04][BDRIP][1080P][H264_FLAC].mkv",
+    "hydrated:5:[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][05][BDRIP][1080P][H264_FLACx2].mkv",
+    "hydrated:6:[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][06][BDRIP][1080P][H264_FLAC].mkv",
+    "hydrated:7:[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][07][BDRIP][1080P][H264_FLAC].mkv",
+    "hydrated:8:[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][08][BDRIP][1080P][H264_FLACx2].mkv",
+    "hydrated:9:[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][09][BDRIP][1080P][H264_FLACx2].mkv",
+    "hydrated:10:[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][10][BDRIP][1080P][H264_FLAC].mkv",
+    "hydrated:11:[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][11][BDRIP][1080P][H264_FLACx2].mkv",
+    "hydrated:12:[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][12][BDRIP][1080P][H264_FLAC].mkv",
+    "hydrated:13:[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][13][BDRIP][1080P][H264_FLACx2].mkv",
+    "hydrated:14:[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][14][BDRIP][1080P][H264_FLAC].mkv",
+    "hydrated:15:[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][15][BDRIP][1080P][H264_FLACx2].mkv",
+    "hydrated:16:[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][16][BDRIP][1080P][H264_FLAC].mkv",
+    "hydrated:17:[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][17][BDRIP][1080P][H264_FLAC].mkv",
+    "hydrated:18:[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][18][BDRIP][1080P][H264_FLACx2].mkv",
+    "hydrated:19:[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][19][BDRIP][1080P][H264_FLAC].mkv",
+    "hydrated:20:[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][20][BDRIP][1080P][H264_FLACx2].mkv",
+    "hydrated:21:[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][21][BDRIP][1080P][H264_FLACx2].mkv",
+    "hydrated:22:[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][22][BDRIP][1080P][H264_FLAC].mkv",
+    "hydrated:23:[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][23][BDRIP][1080P][H264_FLAC].mkv",
+    "hydrated:24:[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][24][BDRIP][1080P][H264_FLAC].mkv",
+    "hydrated:25:[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][25][BDRIP][1080P][H264_FLACx2].mkv",
+    "hydrated:26:[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][26][BDRIP][1080P][H264_FLACx2].mkv"
+  ],
+  "task_plan": {
+    "is_movie": false,
+    "ai_type": "tv",
+    "tv_available": true,
+    "movie_available": false,
+    "selected_confidence": "High"
+  }
+}

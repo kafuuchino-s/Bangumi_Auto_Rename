@@ -1,0 +1,89 @@
+{
+  "status": "ok",
+  "type": "tv",
+  "title_candidate": "Gundam Build Fighters",
+  "tmdb_name": "高达创战者",
+  "tmdb_id": 60667,
+  "timing": {
+    "analysis_seconds": 39.848
+  },
+  "file_mapping": [
+    {
+      "source_index": 6,
+      "file_path": "[Moozzi2] Gundam Build Fighters GM no Gyakushuu (BD 1920x1080 x.264 FLACx2).mkv",
+      "tmdb_season": 0,
+      "tmdb_episode": 5,
+      "episode_type": "special",
+      "confidence": "High"
+    },
+    {
+      "source_index": 7,
+      "file_path": "[Moozzi2] Gundam Build Fighters Try Island Wars (BD 1920x1080 x.264 FLACx2).mkv",
+      "tmdb_season": 0,
+      "tmdb_episode": 4,
+      "episode_type": "special",
+      "confidence": "High"
+    }
+  ],
+  "conflict_details": [],
+  "analysis_result": {
+    "confidence": "Medium",
+    "reason": "仅确认两部已知特典对应",
+    "season_mapping": [],
+    "file_mapping_count": 2,
+    "unmatched_count": 0,
+    "conflict_count": 0
+  },
+  "hydration_notes": {
+    "hydrated_count": 2,
+    "examples": [
+      "hydrated:6:[Moozzi2] Gundam Build Fighters GM no Gyakushuu (BD 1920x1080 x.264 FLACx2).mkv",
+      "hydrated:7:[Moozzi2] Gundam Build Fighters Try Island Wars (BD 1920x1080 x.264 FLACx2).mkv"
+    ]
+  },
+  "task_plan": {
+    "is_movie": false,
+    "ai_type": "tv",
+    "tv_available": true,
+    "movie_available": false,
+    "selected_confidence": "High"
+  },
+  "tv_candidate_result": {
+    "status": "ok",
+    "type": "tv",
+    "title_candidate": "Gundam Build Fighters",
+    "timing": {
+      "analysis_seconds": 39.848
+    },
+    "file_mapping_count": 2,
+    "has_regular": false,
+    "has_special": true,
+    "has_movie_like": false,
+    "analysis_result": {
+      "confidence": "Medium",
+      "reason": "仅确认两部已知特典对应",
+      "season_mapping": [],
+      "file_mapping_count": 2,
+      "unmatched_count": 0,
+      "conflict_count": 0
+    }
+  },
+  "movie_candidate_result": {
+    "status": "ok",
+    "type": "movie",
+    "title_candidate": "Gundam Build Fighters",
+    "timing": {
+      "analysis_seconds": 22.894
+    },
+    "collection_analysis": {
+      "is_collection": true,
+      "confidence": "Medium",
+      "reason": "同系列多部OVA与特典短片并存",
+      "file_mapping_count": 7,
+      "unmatched_count": 8,
+      "conflict_count": 0,
+      "movie_like_paths": []
+    }
+  },
+  "final_type": "tv"
+}

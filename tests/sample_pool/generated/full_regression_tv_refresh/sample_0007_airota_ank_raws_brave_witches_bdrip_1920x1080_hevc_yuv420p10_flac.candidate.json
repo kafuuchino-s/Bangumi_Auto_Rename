@@ -1,0 +1,142 @@
+{
+  "status": "ok",
+  "type": "tv",
+  "title_candidate": "Brave Witches",
+  "tmdb_name": "Brave Witches",
+  "tmdb_id": 68102,
+  "timing": {
+    "analysis_seconds": 26.739
+  },
+  "file_mapping": [
+    {
+      "source_index": 15,
+      "file_path": "[Airota&ANK-Raws] Brave Witches 01 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 1,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 16,
+      "file_path": "[Airota&ANK-Raws] Brave Witches 02 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 2,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 17,
+      "file_path": "[Airota&ANK-Raws] Brave Witches 03 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 3,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 18,
+      "file_path": "[Airota&ANK-Raws] Brave Witches 04 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 4,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 19,
+      "file_path": "[Airota&ANK-Raws] Brave Witches 05 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 5,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 20,
+      "file_path": "[Airota&ANK-Raws] Brave Witches 06 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 6,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 21,
+      "file_path": "[Airota&ANK-Raws] Brave Witches 07 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 7,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 22,
+      "file_path": "[Airota&ANK-Raws] Brave Witches 08 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 8,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 23,
+      "file_path": "[Airota&ANK-Raws] Brave Witches 09 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 9,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 24,
+      "file_path": "[Airota&ANK-Raws] Brave Witches 10 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 10,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 25,
+      "file_path": "[Airota&ANK-Raws] Brave Witches 11 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 11,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 26,
+      "file_path": "[Airota&ANK-Raws] Brave Witches 12 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 12,
+      "episode_type": "regular",
+      "confidence": "High"
+    }
+  ],
+  "conflict_details": [],
+  "analysis_result": {
+    "confidence": "High",
+    "reason": "正片01-12与TMDB第1季集数一一对应。",
+    "season_mapping": [
+      {
+        "local_group_name": "Brave Witches",
+        "maps_to_tmdb_seasons": [
+          1
+        ]
+      }
+    ],
+    "file_mapping_count": 12,
+    "unmatched_count": 0,
+    "conflict_count": 0
+  },
+  "hydration_notes": {
+    "hydrated_count": 12,
+    "examples": [
+      "hydrated:15:[Airota&ANK-Raws] Brave Witches 01 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "hydrated:16:[Airota&ANK-Raws] Brave Witches 02 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "hydrated:17:[Airota&ANK-Raws] Brave Witches 03 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "hydrated:18:[Airota&ANK-Raws] Brave Witches 04 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "hydrated:19:[Airota&ANK-Raws] Brave Witches 05 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv"
+    ]
+  },
+  "task_plan": {
+    "is_movie": false,
+    "ai_type": "tv",
+    "tv_available": true,
+    "movie_available": false,
+    "selected_confidence": "High"
+  },
+  "final_type": "tv"
+}

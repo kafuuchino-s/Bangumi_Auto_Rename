@@ -1,0 +1,41 @@
+{
+  "status": "tmdb_not_found",
+  "type": "tv",
+  "title_candidate": "Gundam Build Fighters Special Build Disc",
+  "file_mapping": [],
+  "task_plan": {
+    "is_movie": false,
+    "ai_type": "tv",
+    "tv_available": true,
+    "movie_available": false,
+    "selected_confidence": "High"
+  },
+  "tv_candidate_result": {
+    "status": "tmdb_not_found",
+    "type": "tv",
+    "title_candidate": "Gundam Build Fighters Special Build Disc",
+    "timing": null,
+    "file_mapping_count": 0,
+    "has_regular": false,
+    "has_special": false,
+    "has_movie_like": false
+  },
+  "movie_candidate_result": {
+    "status": "ok",
+    "type": "movie",
+    "title_candidate": "Gundam Build Fighters Special Build Disc",
+    "timing": {
+      "analysis_seconds": 28.454
+    },
+    "collection_analysis": {
+      "is_collection": true,
+      "confidence": "Medium",
+      "reason": "同系列特典正片分文件存放",
+      "file_mapping_count": 7,
+      "unmatched_count": 8,
+      "conflict_count": 1,
+      "movie_like_paths": []
+    }
+  },
+  "final_type": "tv"
+}

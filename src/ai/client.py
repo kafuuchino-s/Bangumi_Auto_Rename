@@ -1,16 +1,15 @@
 import json
 import re
+import time
 from collections import OrderedDict
 from collections.abc import Mapping, Sequence
 from copy import deepcopy
 from datetime import datetime
 from pathlib import Path
 from threading import Lock
-from typing import Any, Dict, List, Optional, Tuple, Type, cast
+from typing import Any, Callable, Dict, List, Optional, Tuple, Type, cast
 
 from pydantic import BaseModel, ValidationError
-from google.genai.types import GenerateContentConfig
-
 from ..logger import logger
 from .prompt_support import (
     build_common_prompt as shared_build_common_prompt,
@@ -167,29 +166,16 @@ class AIClient:
         return schema
 
     def __init__(self):
-        self.provider = cm.get_config("ai_provider") or "openai"
+        self.provider = "openai"
         self.enabled = True
         self.confidence_threshold = cm.get_config("ai_confidence_threshold")
 
-        # 根据提供商创建相应的客户端
-        if self.provider.lower() == "gemini":
-            from .gemini_client import GeminiClient
+        from .openai_client import OpenAIClient
 
-            self._client: BaseAIClient = GeminiClient()
-        else:  # 默认使用OpenAI
-            from .openai_client import OpenAIClient
-
-            self._client: BaseAIClient = OpenAIClient()
+        self._client: BaseAIClient = OpenAIClient()
 
     def _get_openai_adapter(self) -> object | None:
-        if self.provider.lower() == "openai":
-            return self._client
-        return None
-
-    def _get_gemini_adapter(self) -> object | None:
-        if self.provider.lower() == "gemini":
-            return self._client
-        return None
+        return self._client
 
     def get_provider_runtime_info(self) -> dict[str, object]:
         openai_adapter = self._get_openai_adapter()
@@ -300,19 +286,12 @@ class AIClient:
                 "回退标题，并判断内容类型。只输出JSON格式结果，不要有任何额外的解释。"
             )
 
-            if self.provider.lower() == "gemini":
-                result = self._call_gemini_simple(
-                    system_prompt,
-                    prompt,
-                    schema=TitleExtractionResult,
-                )
-            else:
-                result = self._call_openai_simple(
-                    system_prompt,
-                    prompt,
-                    validation_key="title",
-                    schema=TitleExtractionResult,
-                )
+            result = self._call_openai_simple(
+                system_prompt,
+                prompt,
+                validation_key="title",
+                schema=TitleExtractionResult,
+            )
 
             if not result:
                 return None
@@ -389,19 +368,12 @@ class AIClient:
         )
 
         try:
-            if self.provider.lower() == "gemini":
-                result = self._call_gemini_simple(
-                    system_prompt,
-                    prompt,
-                    schema=MovieSearchQueriesResult,
-                )
-            else:
-                result = self._call_openai_simple(
-                    system_prompt,
-                    prompt,
-                    validation_key="queries",
-                    schema=MovieSearchQueriesResult,
-                )
+            result = self._call_openai_simple(
+                system_prompt,
+                prompt,
+                validation_key="queries",
+                schema=MovieSearchQueriesResult,
+            )
 
             if not result:
                 return None
@@ -511,19 +483,12 @@ class AIClient:
         )
 
         try:
-            if self.provider.lower() == "gemini":
-                result = self._call_gemini_simple(
-                    system_prompt,
-                    prompt,
-                    schema=SubtitleSearchQueriesResult,
-                )
-            else:
-                result = self._call_openai_simple(
-                    system_prompt,
-                    prompt,
-                    validation_key="queries",
-                    schema=SubtitleSearchQueriesResult,
-                )
+            result = self._call_openai_simple(
+                system_prompt,
+                prompt,
+                validation_key="queries",
+                schema=SubtitleSearchQueriesResult,
+            )
 
             if not result:
                 return None
@@ -542,6 +507,8 @@ class AIClient:
         max_retries: int = 2,
         validation_key: str = "title",
         schema: Optional[type[BaseModel]] = None,
+        streaming: bool = True,
+        stream_callback: Optional[Callable[[str], None]] = None,
     ) -> Optional[str]:
         """简单调用OpenAI API获取文本响应，支持重试和结构化输出
 
@@ -552,7 +519,13 @@ class AIClient:
             validation_key: 用于验证响应完整性的JSON键名，默认为"title"
             schema: 可选的Pydantic模型类，用于结构化输出
         """
-        output_format = cm.get_config("openai_output_format") or "function_calling"
+        output_format = cm.get_config("openai_output_format") or "structured_output"
+        if output_format == "json_object":
+            logger.warning(
+                "[AI] 检测到已弃用的 OpenAI 输出格式 json_object，运行时已回退为 structured_output"
+            )
+            output_format = "structured_output"
+        request_timeout_seconds = cm.get_config("ai_request_timeout_seconds") or 90
 
         for attempt in range(max_retries + 1):
             try:
@@ -578,7 +551,7 @@ class AIClient:
                 }
 
                 # 根据配置和schema添加结构化输出参数
-                if schema and output_format != "json_object":
+                if schema:
                     request_params["response_format"] = {
                         "type": "json_schema",
                         "json_schema": {
@@ -587,8 +560,9 @@ class AIClient:
                             "schema": self._build_openai_strict_schema(schema),
                         },
                     }
-                elif schema and output_format == "json_object":
-                    request_params["response_format"] = {"type": "json_object"}
+
+                if streaming:
+                    request_params["stream"] = True
 
                 interface = "responses_api"
                 resolve_api_interface = getattr(client, "resolve_api_interface", None)
@@ -606,9 +580,16 @@ class AIClient:
                         call_via_responses_api = getattr(client, "call_via_responses_api", None)
                         if not callable(call_via_responses_api):
                             return None
-                        message = call_via_responses_api(request_params)
-                        message_content = message.get("content") if isinstance(message, dict) else None
-                        content = message_content if isinstance(message_content, str) else None
+                        if streaming:
+                            stream_via_responses_api = getattr(client, "stream_via_responses_api", None)
+                            if not callable(stream_via_responses_api):
+                                return None
+                            streamed_content = stream_via_responses_api(request_params, stream_callback)
+                            content = streamed_content if isinstance(streamed_content, str) else None
+                        else:
+                            message = call_via_responses_api(request_params)
+                            message_content = message.get("content") if isinstance(message, dict) else None
+                            content = message_content if isinstance(message_content, str) else None
                         actual_interface = "responses_api"
                     except Exception as e:
                         logger.warning(
@@ -618,17 +599,31 @@ class AIClient:
                         call_via_chat_completions = getattr(client, "call_via_chat_completions", None)
                         if not callable(call_via_chat_completions):
                             return None
-                        message = call_via_chat_completions(request_params)
-                        message_content = message.get("content") if isinstance(message, dict) else None
-                        content = message_content if isinstance(message_content, str) else None
+                        if streaming:
+                            stream_via_chat_completions = getattr(client, "stream_via_chat_completions", None)
+                            if not callable(stream_via_chat_completions):
+                                return None
+                            streamed_content = stream_via_chat_completions(request_params, stream_callback)
+                            content = streamed_content if isinstance(streamed_content, str) else None
+                        else:
+                            message = call_via_chat_completions(request_params)
+                            message_content = message.get("content") if isinstance(message, dict) else None
+                            content = message_content if isinstance(message_content, str) else None
                         actual_interface = "chat_completions"
                 else:
                     call_via_chat_completions = getattr(client, "call_via_chat_completions", None)
                     if not callable(call_via_chat_completions):
                         return None
-                    message = call_via_chat_completions(request_params)
-                    message_content = message.get("content") if isinstance(message, dict) else None
-                    content = message_content if isinstance(message_content, str) else None
+                    if streaming:
+                        stream_via_chat_completions = getattr(client, "stream_via_chat_completions", None)
+                        if not callable(stream_via_chat_completions):
+                            return None
+                        streamed_content = stream_via_chat_completions(request_params, stream_callback)
+                        content = streamed_content if isinstance(streamed_content, str) else None
+                    else:
+                        message = call_via_chat_completions(request_params)
+                        message_content = message.get("content") if isinstance(message, dict) else None
+                        content = message_content if isinstance(message_content, str) else None
                     actual_interface = "chat_completions"
 
                 if hasattr(client, "last_configured_api_interface"):
@@ -677,101 +672,6 @@ class AIClient:
                 return None
         return None
 
-    def _call_gemini_simple(
-        self,
-        system_prompt: str,
-        prompt: str,
-        max_retries: int = 2,
-        validation_key: str = "title",
-        schema: Optional[type[BaseModel]] = None,
-    ) -> Optional[str]:
-        """简单调用Gemini API获取文本响应，支持重试和结构化输出
-
-        Args:
-            system_prompt: 系统提示词
-            prompt: 用户提示词
-            max_retries: 最大重试次数
-            validation_key: 用于验证响应完整性的JSON键名，默认为"title"
-            schema: 可选的Pydantic模型类，用于结构化输出
-        """
-        # Gemini 使用结构化输出时需要配置
-        use_structured = schema is not None
-
-        for attempt in range(max_retries + 1):
-            try:
-                client = self._get_gemini_adapter()
-                if client is None or not getattr(client, "client", None):
-                    return None
-
-                client_model = getattr(client, "model", None)
-                client_temperature = getattr(client, "temperature", None)
-                if not isinstance(client_model, str) or not client_model:
-                    return None
-                if not isinstance(client_temperature, (int, float)):
-                    return None
-
-                full_prompt = f"{system_prompt}\n\n{prompt}"
-
-                if use_structured:
-                    # 使用结构化输出
-                    if schema is None:
-                        return None
-                    schema_model = getattr(schema, "gemini_json_schema", None)
-                    if not callable(schema_model):
-                        return None
-                    config = GenerateContentConfig(
-                        response_mime_type="application/json",
-                        response_schema=schema_model(),
-                        temperature=float(client_temperature),
-                        max_output_tokens=16384,  # 限制输出长度
-                    )
-                    generate_content = getattr(client, "generate_content", None)
-                    if not callable(generate_content):
-                        return None
-                    response = generate_content(
-                        model=client_model,
-                        contents=full_prompt,
-                        config=config,
-                    )
-                else:
-                    # 普通文本输出
-                    config = GenerateContentConfig(
-                        temperature=float(client_temperature),
-                        max_output_tokens=16384,  # 限制输出长度
-                    )
-                    generate_content = getattr(client, "generate_content", None)
-                    if not callable(generate_content):
-                        return None
-                    response = generate_content(
-                        model=client_model,
-                        contents=full_prompt,
-                        config=config,
-                    )
-
-                response_text = getattr(response, "text", None)
-                if isinstance(response_text, str) and response_text:
-                    content = response_text
-                    # 检查返回内容是否是完整的JSON（有开闭括号）
-                    if content and f'"{validation_key}"' in content and '}' in content:
-                        return content
-                    elif attempt < max_retries:
-                        logger.warning(
-                            f"[AI] 响应格式不完整，重试第{attempt + 1}次"
-                        )
-                        continue
-                    return content
-
-                return None
-            except Exception as e:
-                if attempt < max_retries:
-                    logger.warning(
-                        f"[AI] Gemini调用失败，重试第{attempt + 1}次: {e}"
-                    )
-                    continue
-                logger.error(f"[AI] Gemini调用失败: {e}")
-                return None
-        return None
-
     def analyze_episode_mapping(
         self,
         anime_info: Mapping[str, object],
@@ -794,7 +694,7 @@ class AIClient:
             return None
 
         logger.info(f"[AI识别] 使用 {self.provider.upper()} 进行分析")
-        result = self._client.analyze_episode_mapping(
+        result = self.analyze_episode_mapping_stream(
             anime_info,
             local_files,
             bangumi_context=bangumi_context,
@@ -820,6 +720,41 @@ class AIClient:
         )
 
         return result
+
+    def analyze_episode_mapping_stream(
+        self,
+        anime_info: Mapping[str, object],
+        local_files: Sequence[Mapping[str, object]],
+        bangumi_context: Mapping[str, object] | None = None,
+        stream_callback: Optional[Callable[[str], None]] = None,
+    ) -> Optional[AIAnalysisResult]:
+        if not self.is_available():
+            logger.warning(f"[AI识别] AI功能未启用或{self.provider}客户端不可用")
+            return None
+
+        logger.info(f"[AI识别-流式] 使用 {self.provider.upper()} 进行分析")
+        start_time = time.time()
+        result_text = self._call_openai_simple(
+            shared_get_system_prompt(),
+            shared_build_common_prompt(anime_info, local_files, bangumi_context=bangumi_context),
+            validation_key="confidence",
+            schema=AIAnalysisResult,
+            streaming=True,
+            stream_callback=stream_callback,
+        )
+
+        if not result_text:
+            return None
+
+        try:
+            parsed = AIAnalysisResult.model_validate_json(result_text)
+            logger.info(
+                f"[AI识别-流式] 分析完成，耗时 {time.time() - start_time:.2f}s，置信度: {parsed.confidence}"
+            )
+            return parsed
+        except Exception as e:
+            logger.error(f"[AI识别-流式] 解析失败: {e}")
+            return None
 
     @staticmethod
     def _looks_like_special_path(path_value: str) -> bool:
@@ -1182,18 +1117,12 @@ class AIClient:
         )
 
         try:
-            if self.provider.lower() == "gemini":
-                result = self._call_gemini_simple(
-                    system_prompt, prompt,
-                    validation_key="is_collection",
-                    schema=MovieCollectionResult,
-                )
-            else:
-                result = self._call_openai_simple(
-                    system_prompt, prompt,
-                    validation_key="is_collection",
-                    schema=MovieCollectionResult,
-                )
+            result = self._call_openai_simple(
+                system_prompt,
+                prompt,
+                validation_key="is_collection",
+                schema=MovieCollectionResult,
+            )
 
             if result:
                 result = result.strip()
@@ -1470,18 +1399,12 @@ class AIClient:
                         f"[AI字幕匹配] 文件数量不匹配，重试第 {attempt} 次"
                     )
 
-                if self.provider.lower() == "gemini":
-                    result = self._call_gemini_simple(
-                        system_prompt, current_prompt,
-                        validation_key="mappings",
-                        schema=SubtitleMappingResult,
-                    )
-                else:
-                    result = self._call_openai_simple(
-                        system_prompt, current_prompt,
-                        validation_key="mappings",
-                        schema=SubtitleMappingResult,
-                    )
+                result = self._call_openai_simple(
+                    system_prompt,
+                    current_prompt,
+                    validation_key="mappings",
+                    schema=SubtitleMappingResult,
+                )
 
                 if result:
                     result = result.strip()
@@ -1670,20 +1593,12 @@ class AIClient:
         )
 
         try:
-            if self.provider.lower() == "gemini":
-                result = self._call_gemini_simple(
-                    system_prompt,
-                    prompt,
-                    validation_key="selected_index",
-                    schema=SubtitleCandidateDecision,
-                )
-            else:
-                result = self._call_openai_simple(
-                    system_prompt,
-                    prompt,
-                    validation_key="selected_index",
-                    schema=SubtitleCandidateDecision,
-                )
+            result = self._call_openai_simple(
+                system_prompt,
+                prompt,
+                validation_key="selected_index",
+                schema=SubtitleCandidateDecision,
+            )
 
             if not result:
                 return None
@@ -1827,20 +1742,12 @@ class AIClient:
         )
 
         try:
-            if self.provider.lower() == "gemini":
-                result = self._call_gemini_simple(
-                    system_prompt,
-                    prompt,
-                    validation_key="selected_index",
-                    schema=SubtitleThreadPackageDecision,
-                )
-            else:
-                result = self._call_openai_simple(
-                    system_prompt,
-                    prompt,
-                    validation_key="selected_index",
-                    schema=SubtitleThreadPackageDecision,
-                )
+            result = self._call_openai_simple(
+                system_prompt,
+                prompt,
+                validation_key="selected_index",
+                schema=SubtitleThreadPackageDecision,
+            )
 
             if not result:
                 return None

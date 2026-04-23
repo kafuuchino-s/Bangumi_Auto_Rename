@@ -1,0 +1,60 @@
+{
+  "status": "ok",
+  "type": "movie",
+  "title_candidate": "Tokyo Ravens",
+  "timing": {
+    "analysis_seconds": 12.691
+  },
+  "collection_analysis": {
+    "is_collection": false,
+    "collection_name": "Tokyo Ravens",
+    "confidence": "High",
+    "reason": "为TV动画剧集，非电影合集",
+    "file_mapping": [],
+    "unmatched_files": [
+      "[MMZY-Sub&VCB-Studio] Tokyo Ravens [01][Hi10p_1080p][x264_2flac].mkv",
+      "[MMZY-Sub&VCB-Studio] Tokyo Ravens [02][Hi10p_1080p][x264_flac].mkv",
+      "[MMZY-Sub&VCB-Studio] Tokyo Ravens [03][Hi10p_1080p][x264_flac].mkv",
+      "[MMZY-Sub&VCB-Studio] Tokyo Ravens [04][Hi10p_1080p][x264_2flac].mkv",
+      "[MMZY-Sub&VCB-Studio] Tokyo Ravens [05][Hi10p_1080p][x264_flac].mkv",
+      "[MMZY-Sub&VCB-Studio] Tokyo Ravens [06][Hi10p_1080p][x264_flac].mkv",
+      "[MMZY-Sub&VCB-Studio] Tokyo Ravens [07][Hi10p_1080p][x264_flac].mkv",
+      "[MMZY-Sub&VCB-Studio] Tokyo Ravens [08][Hi10p_1080p][x264_flac].mkv",
+      "[MMZY-Sub&VCB-Studio] Tokyo Ravens [09][Hi10p_1080p][x264_2flac].mkv",
+      "[MMZY-Sub&VCB-Studio] Tokyo Ravens [10][Hi10p_1080p][x264_2flac].mkv",
+      "[MMZY-Sub&VCB-Studio] Tokyo Ravens [11][Hi10p_1080p][x264_flac].mkv",
+      "[MMZY-Sub&VCB-Studio] Tokyo Ravens [12][Hi10p_1080p][x264_flac].mkv",
+      "[MMZY-Sub&VCB-Studio] Tokyo Ravens [13][Hi10p_1080p][x264_flac].mkv",
+      "[MMZY-Sub&VCB-Studio] Tokyo Ravens [14][Hi10p_1080p][x264_flac].mkv",
+      "[MMZY-Sub&VCB-Studio] Tokyo Ravens [15][Hi10p_1080p][x264_2flac].mkv",
+      "[MMZY-Sub&VCB-Studio] Tokyo Ravens [16][Hi10p_1080p][x264_flac].mkv",
+      "[MMZY-Sub&VCB-Studio] Tokyo Ravens [17][Hi10p_1080p][x264_flac].mkv",
+      "[MMZY-Sub&VCB-Studio] Tokyo Ravens [18][Hi10p_1080p][x264_2flac].mkv",
+      "[MMZY-Sub&VCB-Studio] Tokyo Ravens [19][Hi10p_1080p][x264_flac].mkv",
+      "[MMZY-Sub&VCB-Studio] Tokyo Ravens [20][Hi10p_1080p][x264_flac].mkv",
+      "[MMZY-Sub&VCB-Studio] Tokyo Ravens [21][Hi10p_1080p][x264_2flac].mkv",
+      "[MMZY-Sub&VCB-Studio] Tokyo Ravens [22][Hi10p_1080p][x264_flac].mkv",
+      "[MMZY-Sub&VCB-Studio] Tokyo Ravens [23][Hi10p_1080p][x264_flac].mkv",
+      "[MMZY-Sub&VCB-Studio] Tokyo Ravens [24][Hi10p_1080p][x264_2flac].mkv",
+      "SPs/[MMZY-Sub&VCB-Studio] Tokyo Ravens [Menu01][Hi10p_1080p][x264].mkv",
+      "SPs/[MMZY-Sub&VCB-Studio] Tokyo Ravens [Menu02][Hi10p_1080p][x264].mkv",
+      "SPs/[MMZY-Sub&VCB-Studio] Tokyo Ravens [Menu03][Hi10p_1080p][x264].mkv",
+      "SPs/[MMZY-Sub&VCB-Studio] Tokyo Ravens [Menu04][Hi10p_1080p][x264].mkv",
+      "SPs/[MMZY-Sub&VCB-Studio] Tokyo Ravens [Menu05][Hi10p_1080p][x264].mkv",
+      "SPs/[MMZY-Sub&VCB-Studio] Tokyo Ravens [Menu06][Hi10p_1080p][x264].mkv",
+      "SPs/[MMZY-Sub&VCB-Studio] Tokyo Ravens [Menu07][Hi10p_1080p][x264].mkv",
+      "SPs/[MMZY-Sub&VCB-Studio] Tokyo Ravens [Menu08][Hi10p_1080p][x264].mkv",
+      "SPs/[MMZY-Sub&VCB-Studio] Tokyo Ravens [NCED01][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[MMZY-Sub&VCB-Studio] Tokyo Ravens [NCED02][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[MMZY-Sub&VCB-Studio] Tokyo Ravens [NCOP01][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[MMZY-Sub&VCB-Studio] Tokyo Ravens [NCOP02][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[MMZY-Sub&VCB-Studio] Tokyo Ravens [SP01][1080p][BDRemux][h264_flac].mkv",
+      "SPs/[MMZY-Sub&VCB-Studio] Tokyo Ravens [SP02][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[MMZY-Sub&VCB-Studio] Tokyo Ravens [SP03][Hi10p_1080p][x264_flac].mkv"
+    ],
+    "conflict_details": [
+      "文件为24集TV动画及特典，非多部电影合集"
+    ],
+    "extra_notes": null
+  }
+}

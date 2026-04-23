@@ -1,0 +1,44 @@
+{
+  "status": "ok",
+  "type": "movie",
+  "title_candidate": "ARIA The CREPUSCOLO",
+  "timing": {
+    "analysis_seconds": 31.15
+  },
+  "collection_analysis": {
+    "is_collection": false,
+    "collection_name": "ARIA The CREPUSCOLO",
+    "confidence": "High",
+    "reason": "仅有一部正片，其余均为特典",
+    "file_mapping": [
+      {
+        "file_path": "[VCB-Studio] ARIA The CREPUSCOLO [Ma10p_1080p][x265_flac].mkv",
+        "movie_title": "ARIA The CREPUSCOLO",
+        "movie_number": null,
+        "year": 2021,
+        "confidence": "High"
+      }
+    ],
+    "unmatched_files": [
+      "SPs/[VCB-Studio] ARIA The CREPUSCOLO [Cast Redubbing][Ma10p_1080p][x265_aac].mkv",
+      "SPs/[VCB-Studio] ARIA The CREPUSCOLO [Character TV-SPOT 01][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] ARIA The CREPUSCOLO [Character TV-SPOT 02][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] ARIA The CREPUSCOLO [Character TV-SPOT 03][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] ARIA The CREPUSCOLO [Character TV-SPOT 04][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] ARIA The CREPUSCOLO [Character TV-SPOT 05][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] ARIA The CREPUSCOLO [Character TV-SPOT 06][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] ARIA The CREPUSCOLO [Character TV-SPOT 07][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] ARIA The CREPUSCOLO [Menu][Ma10p_1080p][x265].mkv",
+      "SPs/[VCB-Studio] ARIA The CREPUSCOLO [PV01][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] ARIA The CREPUSCOLO [PV02][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] ARIA The CREPUSCOLO [PV03][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] ARIA The CREPUSCOLO [PV04][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] ARIA The CREPUSCOLO [PV05][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] ARIA The CREPUSCOLO [PV06][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] ARIA The CREPUSCOLO [Stage Greeting 01][Ma10p_1080p][x265_aac].mkv",
+      "SPs/[VCB-Studio] ARIA The CREPUSCOLO [Stage Greeting 02][Ma10p_1080p][x265_aac].mkv"
+    ],
+    "conflict_details": [],
+    "extra_notes": null
+  }
+}

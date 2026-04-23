@@ -1,0 +1,10 @@
+{
+  "status": "ai_failed",
+  "type": "movie",
+  "title_candidate": "ハイスクールD×D BorN",
+  "timing": {
+    "analysis_seconds": 0.001
+  },
+  "collection_analysis": null,
+  "final_type": "movie"
+}

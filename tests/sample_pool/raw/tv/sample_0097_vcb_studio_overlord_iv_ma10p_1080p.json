@@ -1,0 +1,433 @@
+{
+  "root_name": "[VCB-Studio] OVERLORD IV [Ma10p_1080p]",
+  "files": [
+    {
+      "path": "[VCB-Studio] OVERLORD IV [01][Ma10p_1080p][x265_flac].mkv",
+      "size": 1015082359
+    },
+    {
+      "path": "[VCB-Studio] OVERLORD IV [01][Ma10p_1080p][x265_flac].sc.ass",
+      "size": 38572
+    },
+    {
+      "path": "[VCB-Studio] OVERLORD IV [02][Ma10p_1080p][x265_flac].mkv",
+      "size": 1167278776
+    },
+    {
+      "path": "[VCB-Studio] OVERLORD IV [02][Ma10p_1080p][x265_flac].sc.ass",
+      "size": 153133
+    },
+    {
+      "path": "[VCB-Studio] OVERLORD IV [03][Ma10p_1080p][x265_flac].mkv",
+      "size": 1129761925
+    },
+    {
+      "path": "[VCB-Studio] OVERLORD IV [03][Ma10p_1080p][x265_flac].sc.ass",
+      "size": 83613
+    },
+    {
+      "path": "[VCB-Studio] OVERLORD IV [04][Ma10p_1080p][x265_flac].mkv",
+      "size": 1250139187
+    },
+    {
+      "path": "[VCB-Studio] OVERLORD IV [04][Ma10p_1080p][x265_flac].sc.ass",
+      "size": 112817
+    },
+    {
+      "path": "[VCB-Studio] OVERLORD IV [05][Ma10p_1080p][x265_flac].mkv",
+      "size": 1241800854
+    },
+    {
+      "path": "[VCB-Studio] OVERLORD IV [05][Ma10p_1080p][x265_flac].sc.ass",
+      "size": 151471
+    },
+    {
+      "path": "[VCB-Studio] OVERLORD IV [06][Ma10p_1080p][x265_flac].mkv",
+      "size": 1268324601
+    },
+    {
+      "path": "[VCB-Studio] OVERLORD IV [06][Ma10p_1080p][x265_flac].sc.ass",
+      "size": 153675
+    },
+    {
+      "path": "[VCB-Studio] OVERLORD IV [07][Ma10p_1080p][x265_flac].mkv",
+      "size": 1418516257
+    },
+    {
+      "path": "[VCB-Studio] OVERLORD IV [07][Ma10p_1080p][x265_flac].sc.ass",
+      "size": 150058
+    },
+    {
+      "path": "[VCB-Studio] OVERLORD IV [08][Ma10p_1080p][x265_flac].mkv",
+      "size": 1151337045
+    },
+    {
+      "path": "[VCB-Studio] OVERLORD IV [08][Ma10p_1080p][x265_flac].sc.ass",
+      "size": 156152
+    },
+    {
+      "path": "[VCB-Studio] OVERLORD IV [09][Ma10p_1080p][x265_flac].mkv",
+      "size": 1451301345
+    },
+    {
+      "path": "[VCB-Studio] OVERLORD IV [09][Ma10p_1080p][x265_flac].sc.ass",
+      "size": 150846
+    },
+    {
+      "path": "[VCB-Studio] OVERLORD IV [10][Ma10p_1080p][x265_flac].mkv",
+      "size": 1286449751
+    },
+    {
+      "path": "[VCB-Studio] OVERLORD IV [10][Ma10p_1080p][x265_flac].sc.ass",
+      "size": 114361
+    },
+    {
+      "path": "[VCB-Studio] OVERLORD IV [11][Ma10p_1080p][x265_flac].mkv",
+      "size": 1464729730
+    },
+    {
+      "path": "[VCB-Studio] OVERLORD IV [11][Ma10p_1080p][x265_flac].sc.ass",
+      "size": 148509
+    },
+    {
+      "path": "[VCB-Studio] OVERLORD IV [12][Ma10p_1080p][x265_flac].mkv",
+      "size": 1243902722
+    },
+    {
+      "path": "[VCB-Studio] OVERLORD IV [12][Ma10p_1080p][x265_flac].sc.ass",
+      "size": 145856
+    },
+    {
+      "path": "[VCB-Studio] OVERLORD IV [13][Ma10p_1080p][x265_flac].mkv",
+      "size": 1172979880
+    },
+    {
+      "path": "[VCB-Studio] OVERLORD IV [13][Ma10p_1080p][x265_flac].sc.ass",
+      "size": 99165
+    },
+    {
+      "path": "CDs/[220727] ｢HOLLOW HUNGER｣／OxT (flac+webp)/01. HOLLOW HUNGER.flac",
+      "size": 33941979
+    },
+    {
+      "path": "CDs/[220727] ｢HOLLOW HUNGER｣／OxT (flac+webp)/02. CHAOS PHANTASM.flac",
+      "size": 31363500
+    },
+    {
+      "path": "CDs/[220727] ｢HOLLOW HUNGER｣／OxT (flac+webp)/03. HOLLOW HUNGER (instrumental).flac",
+      "size": 32627901
+    },
+    {
+      "path": "CDs/[220727] ｢HOLLOW HUNGER｣／OxT (flac+webp)/04. CHAOS PHANTASM (instrumental).flac",
+      "size": 30927953
+    },
+    {
+      "path": "CDs/[220727] ｢HOLLOW HUNGER｣／OxT (flac+webp)/Scans/01.webp",
+      "size": 14113702
+    },
+    {
+      "path": "CDs/[220727] ｢HOLLOW HUNGER｣／OxT (flac+webp)/Scans/02.webp",
+      "size": 13279374
+    },
+    {
+      "path": "CDs/[220727] ｢HOLLOW HUNGER｣／OxT (flac+webp)/Scans/03.webp",
+      "size": 5387834
+    },
+    {
+      "path": "CDs/[220727] ｢HOLLOW HUNGER｣／OxT (flac+webp)/Scans/04.webp",
+      "size": 25366920
+    },
+    {
+      "path": "CDs/[220727] ｢HOLLOW HUNGER｣／OxT (flac+webp)/Scans/05.webp",
+      "size": 25699490
+    },
+    {
+      "path": "CDs/[220727] ｢HOLLOW HUNGER｣／OxT (flac+webp)/Scans/06.webp",
+      "size": 15328840
+    },
+    {
+      "path": "CDs/[220727] ｢HOLLOW HUNGER｣／OxT (flac+webp)/Scans/07.webp",
+      "size": 16790318
+    },
+    {
+      "path": "CDs/[220727] ｢HOLLOW HUNGER｣／OxT (flac+webp)/Scans/08.webp",
+      "size": 643424
+    },
+    {
+      "path": "CDs/[220727] ｢HOLLOW HUNGER｣／OxT (flac+webp)/Scans/09.webp",
+      "size": 5731290
+    },
+    {
+      "path": "CDs/[220727] ｢HOLLOW HUNGER｣／OxT (flac+webp)/ZMCZ-15801.log",
+      "size": 7018
+    },
+    {
+      "path": "CDs/[220727] ｢HOLLOW HUNGER｣／OxT [24bit_48kHz] (flac)/01. HOLLOW HUNGER.flac",
+      "size": 53148847
+    },
+    {
+      "path": "CDs/[220727] ｢HOLLOW HUNGER｣／OxT [24bit_48kHz] (flac)/02. CHAOS PHANTASM.flac",
+      "size": 47297693
+    },
+    {
+      "path": "CDs/[220727] ｢HOLLOW HUNGER｣／OxT [24bit_48kHz] (flac)/03. HOLLOW HUNGER(instrumental).flac",
+      "size": 51675581
+    },
+    {
+      "path": "CDs/[220727] ｢HOLLOW HUNGER｣／OxT [24bit_48kHz] (flac)/04. CHAOS PHANTASM(instrumental).flac",
+      "size": 46844864
+    },
+    {
+      "path": "CDs/[220727] ｢HOLLOW HUNGER｣／OxT [24bit_48kHz] (flac)/天使动漫自购转载声明.txt",
+      "size": 1013
+    },
+    {
+      "path": "CDs/[220727] ｢No Man's Dawn｣／前島麻由 (flac+webp)/01. No Man's Dawn.flac",
+      "size": 32557583
+    },
+    {
+      "path": "CDs/[220727] ｢No Man's Dawn｣／前島麻由 (flac+webp)/02. Lights, camera, action.flac",
+      "size": 25342608
+    },
+    {
+      "path": "CDs/[220727] ｢No Man's Dawn｣／前島麻由 (flac+webp)/03. No Man's Dawn (instrumental).flac",
+      "size": 31764959
+    },
+    {
+      "path": "CDs/[220727] ｢No Man's Dawn｣／前島麻由 (flac+webp)/04. Lights, camera, action (instrumental).flac",
+      "size": 23358078
+    },
+    {
+      "path": "CDs/[220727] ｢No Man's Dawn｣／前島麻由 (flac+webp)/Scans/01.webp",
+      "size": 4171314
+    },
+    {
+      "path": "CDs/[220727] ｢No Man's Dawn｣／前島麻由 (flac+webp)/Scans/02.webp",
+      "size": 27379124
+    },
+    {
+      "path": "CDs/[220727] ｢No Man's Dawn｣／前島麻由 (flac+webp)/Scans/03.webp",
+      "size": 36739762
+    },
+    {
+      "path": "CDs/[220727] ｢No Man's Dawn｣／前島麻由 (flac+webp)/Scans/04.webp",
+      "size": 17270428
+    },
+    {
+      "path": "CDs/[220727] ｢No Man's Dawn｣／前島麻由 (flac+webp)/Scans/05.webp",
+      "size": 16948304
+    },
+    {
+      "path": "CDs/[220727] ｢No Man's Dawn｣／前島麻由 (flac+webp)/Scans/06.webp",
+      "size": 3326824
+    },
+    {
+      "path": "CDs/[220727] ｢No Man's Dawn｣／前島麻由 (flac+webp)/Scans/07.webp",
+      "size": 5741590
+    },
+    {
+      "path": "CDs/[220727] ｢No Man's Dawn｣／前島麻由 (flac+webp)/ZMCZ-15802.log",
+      "size": 7152
+    },
+    {
+      "path": "CDs/[220727] ｢No Man's Dawn｣／前島麻由 [24bit_48kHz] (flac)/01. No Man's Dawn.flac",
+      "size": 54501395
+    },
+    {
+      "path": "CDs/[220727] ｢No Man's Dawn｣／前島麻由 [24bit_48kHz] (flac)/02. Lights,camera,action.flac",
+      "size": 43014692
+    },
+    {
+      "path": "CDs/[220727] ｢No Man's Dawn｣／前島麻由 [24bit_48kHz] (flac)/03. No Man's Dawn(instrumental).flac",
+      "size": 53648874
+    },
+    {
+      "path": "CDs/[220727] ｢No Man's Dawn｣／前島麻由 [24bit_48kHz] (flac)/04. Lights,camera,action(instrumental).flac",
+      "size": 40910231
+    },
+    {
+      "path": "CDs/[220727] ｢No Man's Dawn｣／前島麻由 [24bit_48kHz] (flac)/天使动漫自购转载声明.txt",
+      "size": 1013
+    },
+    {
+      "path": "CDs/[221026] SPCD 01 Soundtrack／片山修志 (flac)/ZMXZ-15721-CD.cue",
+      "size": 4226
+    },
+    {
+      "path": "CDs/[221026] SPCD 01 Soundtrack／片山修志 (flac)/ZMXZ-15721-CD.flac",
+      "size": 387167942
+    },
+    {
+      "path": "CDs/[221026] SPCD 01 Soundtrack／片山修志 (flac)/ZMXZ-15721-CD.log",
+      "size": 9912
+    },
+    {
+      "path": "CDs/[221125] SPCD 02 Voice Drama (flac)/ZMXZ-15722-CD.cue",
+      "size": 216
+    },
+    {
+      "path": "CDs/[221125] SPCD 02 Voice Drama (flac)/ZMXZ-15722-CD.flac",
+      "size": 95126489
+    },
+    {
+      "path": "CDs/[221125] SPCD 02 Voice Drama (flac)/ZMXZ-15722-CD.log",
+      "size": 3190
+    },
+    {
+      "path": "SPs/[VCB-Studio] OVERLORD IV [CM01][Ma10p_1080p][x265_flac].mkv",
+      "size": 37289117
+    },
+    {
+      "path": "SPs/[VCB-Studio] OVERLORD IV [CM02][Ma10p_1080p][x265_flac].mkv",
+      "size": 24949271
+    },
+    {
+      "path": "SPs/[VCB-Studio] OVERLORD IV [CM03][Ma10p_1080p][x265_flac].mkv",
+      "size": 24809118
+    },
+    {
+      "path": "SPs/[VCB-Studio] OVERLORD IV [Menu01][Ma10p_1080p][x265_flac].mkv",
+      "size": 18838008
+    },
+    {
+      "path": "SPs/[VCB-Studio] OVERLORD IV [Menu02][Ma10p_1080p][x265_flac].mkv",
+      "size": 16781593
+    },
+    {
+      "path": "SPs/[VCB-Studio] OVERLORD IV [Menu03][Ma10p_1080p][x265_flac].mkv",
+      "size": 17152629
+    },
+    {
+      "path": "SPs/[VCB-Studio] OVERLORD IV [NCED][Ma10p_1080p][x265_flac].mkv",
+      "size": 95066609
+    },
+    {
+      "path": "SPs/[VCB-Studio] OVERLORD IV [NCOP][Ma10p_1080p][x265_flac].mkv",
+      "size": 168345718
+    },
+    {
+      "path": "SPs/[VCB-Studio] OVERLORD IV [Preview01_1][Ma10p_1080p][x265_flac].mkv",
+      "size": 34316100
+    },
+    {
+      "path": "SPs/[VCB-Studio] OVERLORD IV [Preview01_2][Ma10p_1080p][x265_flac].mkv",
+      "size": 36366041
+    },
+    {
+      "path": "SPs/[VCB-Studio] OVERLORD IV [Preview02][Ma10p_1080p][x265_flac].mkv",
+      "size": 32853084
+    },
+    {
+      "path": "SPs/[VCB-Studio] OVERLORD IV [Preview03][Ma10p_1080p][x265_flac].mkv",
+      "size": 32509567
+    },
+    {
+      "path": "SPs/[VCB-Studio] OVERLORD IV [Preview04][Ma10p_1080p][x265_flac].mkv",
+      "size": 37221227
+    },
+    {
+      "path": "SPs/[VCB-Studio] OVERLORD IV [Preview05][Ma10p_1080p][x265_flac].mkv",
+      "size": 31623090
+    },
+    {
+      "path": "SPs/[VCB-Studio] OVERLORD IV [Preview06][Ma10p_1080p][x265_flac].mkv",
+      "size": 29949579
+    },
+    {
+      "path": "SPs/[VCB-Studio] OVERLORD IV [Preview07][Ma10p_1080p][x265_flac].mkv",
+      "size": 44379911
+    },
+    {
+      "path": "SPs/[VCB-Studio] OVERLORD IV [Preview08][Ma10p_1080p][x265_flac].mkv",
+      "size": 31970802
+    },
+    {
+      "path": "SPs/[VCB-Studio] OVERLORD IV [Preview09][Ma10p_1080p][x265_flac].mkv",
+      "size": 25433131
+    },
+    {
+      "path": "SPs/[VCB-Studio] OVERLORD IV [Preview10][Ma10p_1080p][x265_flac].mkv",
+      "size": 40533774
+    },
+    {
+      "path": "SPs/[VCB-Studio] OVERLORD IV [Preview11][Ma10p_1080p][x265_flac].mkv",
+      "size": 37722856
+    },
+    {
+      "path": "SPs/[VCB-Studio] OVERLORD IV [Preview12][Ma10p_1080p][x265_flac].mkv",
+      "size": 25908489
+    },
+    {
+      "path": "SPs/[VCB-Studio] OVERLORD IV [Preview13][Ma10p_1080p][x265_flac].mkv",
+      "size": 35419045
+    },
+    {
+      "path": "SPs/[VCB-Studio] OVERLORD IV [PV01][Ma10p_1080p][x265_flac].mkv",
+      "size": 110684350
+    },
+    {
+      "path": "SPs/[VCB-Studio] OVERLORD IV [PV02][Ma10p_1080p][x265_flac].mkv",
+      "size": 127064625
+    },
+    {
+      "path": "SPs/[VCB-Studio] OVERLORD IV [PV03][Ma10p_1080p][x265_flac].mkv",
+      "size": 243652287
+    },
+    {
+      "path": "SPs/[VCB-Studio] OVERLORD IV [PV04][Ma10p_1080p][x265_flac].mkv",
+      "size": 546140705
+    },
+    {
+      "path": "SPs/[VCB-Studio] OVERLORD IV [SP01][Ma10p_1080p][x265_flac].mkv",
+      "size": 60412490
+    },
+    {
+      "path": "SPs/[VCB-Studio] OVERLORD IV [SP02][Ma10p_1080p][x265_flac].mkv",
+      "size": 63775275
+    },
+    {
+      "path": "SPs/[VCB-Studio] OVERLORD IV [SP03][Ma10p_1080p][x265_flac].mkv",
+      "size": 61319518
+    },
+    {
+      "path": "SPs/[VCB-Studio] OVERLORD IV [SP04][Ma10p_1080p][x265_flac].mkv",
+      "size": 62758776
+    },
+    {
+      "path": "SPs/[VCB-Studio] OVERLORD IV [SP05][Ma10p_1080p][x265_flac].mkv",
+      "size": 57719081
+    },
+    {
+      "path": "SPs/[VCB-Studio] OVERLORD IV [SP06][Ma10p_1080p][x265_flac].mkv",
+      "size": 63979803
+    },
+    {
+      "path": "SPs/[VCB-Studio] OVERLORD IV [SP07][Ma10p_1080p][x265_flac].mkv",
+      "size": 62002284
+    },
+    {
+      "path": "SPs/[VCB-Studio] OVERLORD IV [SP08][Ma10p_1080p][x265_flac].mkv",
+      "size": 63766530
+    },
+    {
+      "path": "SPs/[VCB-Studio] OVERLORD IV [SP09][Ma10p_1080p][x265_flac].mkv",
+      "size": 60354187
+    },
+    {
+      "path": "SPs/[VCB-Studio] OVERLORD IV [SP10][Ma10p_1080p][x265_flac].mkv",
+      "size": 60965549
+    },
+    {
+      "path": "SPs/[VCB-Studio] OVERLORD IV [SP11][Ma10p_1080p][x265_flac].mkv",
+      "size": 48192950
+    },
+    {
+      "path": "SPs/[VCB-Studio] OVERLORD IV [SP12][Ma10p_1080p][x265_flac].mkv",
+      "size": 54896042
+    },
+    {
+      "path": "SPs/[VCB-Studio] OVERLORD IV [SP13][Ma10p_1080p][x265_flac].mkv",
+      "size": 56189894
+    }
+  ]
+}

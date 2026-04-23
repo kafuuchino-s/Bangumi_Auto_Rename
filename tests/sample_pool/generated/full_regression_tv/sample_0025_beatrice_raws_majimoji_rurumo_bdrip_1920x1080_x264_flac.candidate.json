@@ -1,0 +1,52 @@
+{
+  "status": "ok",
+  "type": "movie",
+  "title_candidate": "Majimoji Rurumo",
+  "timing": {
+    "analysis_seconds": 14.482
+  },
+  "collection_analysis": {
+    "is_collection": false,
+    "collection_name": "Majimoji Rurumo",
+    "confidence": "High",
+    "reason": "目录为剧集与特典，非电影合集",
+    "file_mapping": [],
+    "unmatched_files": [
+      "[Beatrice-Raws] Majimoji Rurumo 01 [BDRip 1920x1080 x264 FLAC].mkv",
+      "[Beatrice-Raws] Majimoji Rurumo 02 [BDRip 1920x1080 x264 FLAC].mkv",
+      "[Beatrice-Raws] Majimoji Rurumo 03 [BDRip 1920x1080 x264 FLAC].mkv",
+      "[Beatrice-Raws] Majimoji Rurumo 04 [BDRip 1920x1080 x264 FLAC].mkv",
+      "[Beatrice-Raws] Majimoji Rurumo 05 [BDRip 1920x1080 x264 FLAC].mkv",
+      "[Beatrice-Raws] Majimoji Rurumo 06 [BDRip 1920x1080 x264 FLAC].mkv",
+      "[Beatrice-Raws] Majimoji Rurumo 07 [BDRip 1920x1080 x264 FLAC].mkv",
+      "[Beatrice-Raws] Majimoji Rurumo 08 [BDRip 1920x1080 x264 FLAC].mkv",
+      "[Beatrice-Raws] Majimoji Rurumo 09 [BDRip 1920x1080 x264 FLAC].mkv",
+      "[Beatrice-Raws] Majimoji Rurumo 10 [BDRip 1920x1080 x264 FLAC].mkv",
+      "[Beatrice-Raws] Majimoji Rurumo 11 [BDRip 1920x1080 x264 FLAC].mkv",
+      "[Beatrice-Raws] Majimoji Rurumo 12 [BDRip 1920x1080 x264 FLAC].mkv",
+      "BD menu/[Beatrice-Raws] Majimoji Rurumo (BD menu Vol 1) 01 [BDRip 1920x1080 x264 FLAC].mkv",
+      "BD menu/[Beatrice-Raws] Majimoji Rurumo (BD menu Vol 1) 02 [BDRip 1920x1080 x264 FLAC].mkv",
+      "BD menu/[Beatrice-Raws] Majimoji Rurumo (BD menu Vol 2) 01 [BDRip 1920x1080 x264 FLAC].mkv",
+      "BD menu/[Beatrice-Raws] Majimoji Rurumo (BD menu Vol 2) 02 [BDRip 1920x1080 x264 FLAC].mkv",
+      "BD menu/[Beatrice-Raws] Majimoji Rurumo (BD menu Vol 3) 01 [BDRip 1920x1080 x264 FLAC].mkv",
+      "BD menu/[Beatrice-Raws] Majimoji Rurumo (BD menu Vol 3) 02 [BDRip 1920x1080 x264 FLAC].mkv",
+      "BD menu/[Beatrice-Raws] Majimoji Rurumo (BD menu Vol 4) 01 [BDRip 1920x1080 x264 FLAC].mkv",
+      "BD menu/[Beatrice-Raws] Majimoji Rurumo (BD menu Vol 4) 02 [BDRip 1920x1080 x264 FLAC].mkv",
+      "BD menu/[Beatrice-Raws] Majimoji Rurumo (BD menu Vol 5) 01 [BDRip 1920x1080 x264 FLAC].mkv",
+      "BD menu/[Beatrice-Raws] Majimoji Rurumo (BD menu Vol 5) 02 [BDRip 1920x1080 x264 FLAC].mkv",
+      "BD menu/[Beatrice-Raws] Majimoji Rurumo (BD menu Vol 6) 01 [BDRip 1920x1080 x264 FLAC].mkv",
+      "BD menu/[Beatrice-Raws] Majimoji Rurumo (BD menu Vol 6) 02 [BDRip 1920x1080 x264 FLAC].mkv",
+      "NC/[Beatrice-Raws] Majimoji Rurumo (Creditless ED) [BDRip 1920x1080 x264 FLAC].mkv",
+      "NC/[Beatrice-Raws] Majimoji Rurumo (Creditless OP) [BDRip 1920x1080 x264 FLAC].mkv",
+      "PV & CM/[Beatrice-Raws] Majimoji Rurumo (BD&DVD CM) [BDRip 1920x1080 x264 FLAC].mkv",
+      "PV & CM/[Beatrice-Raws] Majimoji Rurumo (CM 01) [BDRip 1920x1080 x264 FLAC].mkv",
+      "PV & CM/[Beatrice-Raws] Majimoji Rurumo (CM 02) [BDRip 1920x1080 x264 FLAC].mkv",
+      "PV & CM/[Beatrice-Raws] Majimoji Rurumo (PV 01) [BDRip 1920x1080 x264 FLAC].mkv",
+      "PV & CM/[Beatrice-Raws] Majimoji Rurumo (PV 02) [BDRip 1920x1080 x264 FLAC].mkv"
+    ],
+    "conflict_details": [
+      "文件为12集电视动画及特典，不是电影合集"
+    ],
+    "extra_notes": null
+  }
+}

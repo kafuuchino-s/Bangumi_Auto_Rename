@@ -1,0 +1,51 @@
+{
+  "status": "ok",
+  "type": "tv",
+  "title_candidate": "The Disastrous Life of Saiki K.",
+  "tmdb_name": "The Disastrous Life of Saiki K.",
+  "tmdb_id": 67676,
+  "file_mapping": [
+    {
+      "source_index": 1,
+      "file_path": null,
+      "tmdb_season": 0,
+      "tmdb_episode": 1,
+      "episode_type": "special",
+      "confidence": "High"
+    },
+    {
+      "source_index": 2,
+      "file_path": null,
+      "tmdb_season": 0,
+      "tmdb_episode": 2,
+      "episode_type": "special",
+      "confidence": "High"
+    }
+  ],
+  "analysis_result": {
+    "confidence": "High",
+    "reason": "本地文件名已明确标注为 S00E01 与 S00E02，且 TMDB Season 0 中真实存在对应的特典条目 S00E01「完结篇 前篇」与 S00E02「完结篇 后篇」，可直接一一对应。",
+    "season_mapping": [],
+    "file_mapping": [
+      {
+        "source_index": 1,
+        "file_path": null,
+        "tmdb_season": 0,
+        "tmdb_episode": 1,
+        "episode_type": "special",
+        "confidence": "High"
+      },
+      {
+        "source_index": 2,
+        "file_path": null,
+        "tmdb_season": 0,
+        "tmdb_episode": 2,
+        "episode_type": "special",
+        "confidence": "High"
+      }
+    ],
+    "unmatched_files": [],
+    "conflict_details": [],
+    "extra_notes": null
+  }
+}

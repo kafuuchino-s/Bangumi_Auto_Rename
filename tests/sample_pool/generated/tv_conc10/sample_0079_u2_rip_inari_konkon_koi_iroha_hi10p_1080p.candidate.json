@@ -1,0 +1,232 @@
+{
+  "status": "ok",
+  "type": "tv",
+  "title_candidate": "Inari, Konkon, Koi Iroha",
+  "tmdb_name": "Inari Kon Kon",
+  "tmdb_id": 67143,
+  "file_mapping": [
+    {
+      "source_index": 1,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 1,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 2,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 2,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 3,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 3,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 4,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 4,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 5,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 5,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 6,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 6,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 7,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 7,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 8,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 8,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 9,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 9,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 10,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 10,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 11,
+      "file_path": null,
+      "tmdb_season": 0,
+      "tmdb_episode": 1,
+      "episode_type": "special",
+      "confidence": "High"
+    }
+  ],
+  "analysis_result": {
+    "confidence": "High",
+    "reason": "本地正片文件按文件名集数 01-10 与 TMDB Season 1 的 S01E01-S01E10 一一对应；[OVA] 文件对应 TMDB Season 0 的 S00E01。",
+    "season_mapping": [],
+    "file_mapping": [
+      {
+        "source_index": 1,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 1,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 2,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 2,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 3,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 3,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 4,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 4,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 5,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 5,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 6,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 6,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 7,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 7,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 8,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 8,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 9,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 9,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 10,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 10,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 11,
+        "file_path": null,
+        "tmdb_season": 0,
+        "tmdb_episode": 1,
+        "episode_type": "special",
+        "confidence": "High"
+      }
+    ],
+    "unmatched_files": [
+      "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[CMv2][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Menu_OVA_1][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Menu_OVA_2][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Menu_OVA_3][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Menu_Vol.1_1][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Menu_Vol.1_2][Hi10p_1080p][x264_2flac].mkv",
+      "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Menu_Vol.1_3][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Menu_Vol.2_1][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Menu_Vol.2_2][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Menu_Vol.2_3][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Menu_Vol.2_4][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Menu_Vol.3_1][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Menu_Vol.3_2][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Menu_Vol.3_3][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Menu_Vol.3_4][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Menu_Vol.4_1][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Menu_Vol.4_2][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Menu_Vol.4_3][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Menu_Vol.4_4][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Menu_Vol.4_5][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Menu_Vol.5_1][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Menu_Vol.5_2][Hi10p_1080p][x264_2flac].mkv",
+      "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Menu_Vol.5_3][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Menu_Vol.5_4][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[NCED][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[NCOP][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Preview_02][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Preview_03][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Preview_04][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Preview_05][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Preview_06][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Preview_07][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Preview_08][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Preview_09][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Preview_10][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[PV][Hi10p_1080p][x264_flac].mkv"
+    ],
+    "conflict_details": [],
+    "extra_notes": "正片文件按编号 01-10 直接对应 TMDB Season 1；[OVA] 文件对应 TMDB Season 0 的 S00E01。SPs 目录下其余内容为菜单、预告、CM、NCOP/NCED 等附加素材，TMDB 中无对应集目。"
+  }
+}

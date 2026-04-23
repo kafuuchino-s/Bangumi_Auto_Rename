@@ -1,0 +1,16 @@
+{
+  "status": "tmdb_not_found",
+  "type": "movie",
+  "title_candidate": "劇場版 Wake Up, Girls! 七人のアイドル",
+  "tmdb_name": "",
+  "tmdb_id": null,
+  "timing": {
+    "analysis_seconds": 15.004
+  },
+  "primary_files": [
+    {
+      "file_path": "[ANK-Raws] 劇場版 Wake Up, Girls! 七人のアイドル (BDrip x264 FLAC DTS-HDMA 5.1ch Hi10P).mkv"
+    }
+  ],
+  "final_type": "movie"
+}

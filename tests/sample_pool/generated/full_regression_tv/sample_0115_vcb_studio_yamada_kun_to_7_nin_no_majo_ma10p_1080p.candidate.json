@@ -1,0 +1,37 @@
+{
+  "status": "ok",
+  "type": "movie",
+  "title_candidate": "Yamada-kun to 7-nin no Majo",
+  "timing": {
+    "analysis_seconds": 9.413
+  },
+  "collection_analysis": {
+    "is_collection": false,
+    "collection_name": "Yamada-kun to 7-nin no Majo",
+    "confidence": "High",
+    "reason": "这是TV动画及特典，不是电影合集",
+    "file_mapping": [],
+    "unmatched_files": [
+      "[VCB-Studio] Yamada-kun to 7-nin no Majo [01][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Yamada-kun to 7-nin no Majo [02][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Yamada-kun to 7-nin no Majo [03][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Yamada-kun to 7-nin no Majo [04][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Yamada-kun to 7-nin no Majo [05][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Yamada-kun to 7-nin no Majo [06][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Yamada-kun to 7-nin no Majo [07][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Yamada-kun to 7-nin no Majo [08][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Yamada-kun to 7-nin no Majo [09][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Yamada-kun to 7-nin no Majo [10][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Yamada-kun to 7-nin no Majo [11][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Yamada-kun to 7-nin no Majo [12][Ma10p_1080p][x265_2flac].mkv",
+      "[VCB-Studio] Yamada-kun to 7-nin no Majo [OAD1][Hi10p_720p][x264_flac].mkv",
+      "[VCB-Studio] Yamada-kun to 7-nin no Majo [OAD2][Hi10p_720p][x264_flac].mkv",
+      "SPs/[VCB-Studio] Yamada-kun to 7-nin no Majo [NCED01][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Yamada-kun to 7-nin no Majo [NCOP01][Ma10p_1080p][x265_flac].mkv"
+    ],
+    "conflict_details": [
+      "文件均为TV动画正片、OAD及特典，不是电影合集"
+    ],
+    "extra_notes": null
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "status": "ok",
+  "type": "movie",
+  "title_candidate": "PSYCHO-PASS 3",
+  "timing": {
+    "analysis_seconds": 28.764
+  },
+  "collection_analysis": {
+    "is_collection": false,
+    "collection_name": "PSYCHO-PASS 3",
+    "confidence": "High",
+    "reason": "主体为剧集，只有1部剧场版",
+    "file_mapping": [
+      {
+        "file_path": "[VCB-Studio] PSYCHO-PASS 3 FIRST INSPECTOR [Ma10p_1080p]/[VCB-Studio] PSYCHO-PASS 3 FIRST INSPECTOR [Ma10p_1080p][x265_flac].mkv",
+        "movie_title": "PSYCHO-PASS サイコパス 3 FIRST INSPECTOR",
+        "movie_number": null,
+        "year": 2020,
+        "confidence": "High"
+      }
+    ],
+    "unmatched_files": [
+      "[VCB-Studio] PSYCHO-PASS 3 [Ma10p_1080p]/[VCB-Studio] PSYCHO-PASS 3 [01][Ma10p_1080p][x265_flac_aac].mkv",
+      "[VCB-Studio] PSYCHO-PASS 3 [Ma10p_1080p]/[VCB-Studio] PSYCHO-PASS 3 [02][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] PSYCHO-PASS 3 [Ma10p_1080p]/[VCB-Studio] PSYCHO-PASS 3 [03][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] PSYCHO-PASS 3 [Ma10p_1080p]/[VCB-Studio] PSYCHO-PASS 3 [04][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] PSYCHO-PASS 3 [Ma10p_1080p]/[VCB-Studio] PSYCHO-PASS 3 [05][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] PSYCHO-PASS 3 [Ma10p_1080p]/[VCB-Studio] PSYCHO-PASS 3 [06][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] PSYCHO-PASS 3 [Ma10p_1080p]/[VCB-Studio] PSYCHO-PASS 3 [07][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] PSYCHO-PASS 3 [Ma10p_1080p]/[VCB-Studio] PSYCHO-PASS 3 [08][Ma10p_1080p][x265_flac_aac].mkv",
+      "[VCB-Studio] PSYCHO-PASS 3 [Ma10p_1080p]/SPs/[VCB-Studio] PSYCHO-PASS 3 [IV01][Ma10p_1080p][x265_aac].mkv",
+      "[VCB-Studio] PSYCHO-PASS 3 [Ma10p_1080p]/SPs/[VCB-Studio] PSYCHO-PASS 3 [IV02][Ma10p_1080p][x265_aac].mkv",
+      "[VCB-Studio] PSYCHO-PASS 3 [Ma10p_1080p]/SPs/[VCB-Studio] PSYCHO-PASS 3 [IV03][Ma10p_1080p][x265_aac].mkv",
+      "[VCB-Studio] PSYCHO-PASS 3 [Ma10p_1080p]/SPs/[VCB-Studio] PSYCHO-PASS 3 [Menu01][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] PSYCHO-PASS 3 [Ma10p_1080p]/SPs/[VCB-Studio] PSYCHO-PASS 3 [Menu02][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] PSYCHO-PASS 3 [Ma10p_1080p]/SPs/[VCB-Studio] PSYCHO-PASS 3 [Menu03][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] PSYCHO-PASS 3 [Ma10p_1080p]/SPs/[VCB-Studio] PSYCHO-PASS 3 [Menu04][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] PSYCHO-PASS 3 [Ma10p_1080p]/SPs/[VCB-Studio] PSYCHO-PASS 3 [NCED][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] PSYCHO-PASS 3 [Ma10p_1080p]/SPs/[VCB-Studio] PSYCHO-PASS 3 [NCOP][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] PSYCHO-PASS 3 [Ma10p_1080p]/SPs/[VCB-Studio] PSYCHO-PASS 3 [PV01][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] PSYCHO-PASS 3 [Ma10p_1080p]/SPs/[VCB-Studio] PSYCHO-PASS 3 [PV02][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] PSYCHO-PASS 3 [Ma10p_1080p]/SPs/[VCB-Studio] PSYCHO-PASS 3 [SP][Ma10p_1080p][x265_aac].mkv",
+      "[VCB-Studio] PSYCHO-PASS 3 [Ma10p_1080p]/SPs/[VCB-Studio] PSYCHO-PASS 3 [SPOT01][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] PSYCHO-PASS 3 [Ma10p_1080p]/SPs/[VCB-Studio] PSYCHO-PASS 3 [SPOT02][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] PSYCHO-PASS 3 FIRST INSPECTOR [Ma10p_1080p]/SPs/[VCB-Studio] PSYCHO-PASS 3 FIRST INSPECTOR [Event][Ma10p_1080p][x265_aac].mkv",
+      "[VCB-Studio] PSYCHO-PASS 3 FIRST INSPECTOR [Ma10p_1080p]/SPs/[VCB-Studio] PSYCHO-PASS 3 FIRST INSPECTOR [Menu01][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] PSYCHO-PASS 3 FIRST INSPECTOR [Ma10p_1080p]/SPs/[VCB-Studio] PSYCHO-PASS 3 FIRST INSPECTOR [Menu02][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] PSYCHO-PASS 3 FIRST INSPECTOR [Ma10p_1080p]/SPs/[VCB-Studio] PSYCHO-PASS 3 FIRST INSPECTOR [Menu03][Ma10p_1080p][x265_flac].mkv"
+    ],
+    "conflict_details": [
+      "目录主要是TV剧集和特典，仅含1部电影"
+    ],
+    "extra_notes": null
+  }
+}

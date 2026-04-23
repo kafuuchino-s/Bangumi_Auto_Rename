@@ -67,7 +67,6 @@ class ConfigPage(ui.dialog):
             )
             ai_configs = [
                 "ai_auto_save",
-                "ai_provider",
                 "ai_confidence_threshold",
                 "ai_api_key",
                 "ai_base_url",
@@ -75,10 +74,6 @@ class ConfigPage(ui.dialog):
                 "openai_output_format",
                 "openai_api_interface",
                 "ai_temperature",
-                "gemini_api_key",
-                "gemini_base_url",
-                "gemini_model",
-                "gemini_temperature",
             ]
             for cn in ai_configs:
                 self._create_config_row(cn)
@@ -89,9 +84,6 @@ class ConfigPage(ui.dialog):
                     "🧪 测试AI识别功能", on_click=self._test_ai_recognition
                 ).props("outline")
                 RedButton("⚙️ 测试OpenAI API功能", on_click=self._test_openai_api).props(
-                    "outline"
-                )
-                RedButton("⚙️ 测试Gemini API功能", on_click=self._test_gemini_api).props(
                     "outline"
                 )
 
@@ -433,23 +425,14 @@ class ConfigPage(ui.dialog):
                         )
                         tg.style("font-size: 10px")
                         tg.classes("flex no-wrap w-full")
-                    elif cn == "ai_provider":
-                        tg = RedToogle(
-                            ["openai", "gemini"],
-                            value=cm.get_config(cn) or "openai",
-                            on_change=lambda e, c=cn: self._change(c, e.value),
-                        )
-                        tg.style("font-size: 10px")
-                        tg.classes("flex no-wrap w-full")
                     elif cn == "openai_output_format":
                         tg = RedToogle(
                             [
-                                "function_calling",
-                                "json_object",
                                 "structured_output",
+                                "function_calling",
                                 "text",
                             ],
-                            value=cm.get_config(cn) or "function_calling",
+                            value=cm.get_config(cn) or "structured_output",
                             on_change=lambda e, c=cn: self._change(c, e.value),
                         )
                         tg.style("font-size: 10px")
@@ -458,18 +441,6 @@ class ConfigPage(ui.dialog):
                         tg = RedToogle(
                             ["responses_api", "chat_completions"],
                             value=cm.get_config(cn) or "responses_api",
-                            on_change=lambda e, c=cn: self._change(c, e.value),
-                        )
-                        tg.style("font-size: 10px")
-                        tg.classes("flex no-wrap w-full")
-                    elif cn == "gemini_output_format":
-                        tg = RedToogle(
-                            [
-                                "structured_output",
-                                "json_object",
-                                "text",
-                            ],
-                            value=cm.get_config(cn) or "structured_output",
                             on_change=lambda e, c=cn: self._change(c, e.value),
                         )
                         tg.style("font-size: 10px")
@@ -510,7 +481,6 @@ class ConfigPage(ui.dialog):
         # 验证URL配置项
         url_configs = [
             "ai_base_url",
-            "gemini_base_url",
             "telegram_base_url",
             "subtitle_auto_fetch_acgrip_base_url",
         ]
@@ -525,18 +495,13 @@ class ConfigPage(ui.dialog):
                     return
 
         old_openai_model = cm.get_config("ai_model")
-        old_gemini_model = cm.get_config("gemini_model")
         new_openai_model = getattr(self.config, "ai_model", None)
-        new_gemini_model = getattr(self.config, "gemini_model", None)
 
         # 保存所有配置（部分运行时统计字段由测试流程自动维护，避免被弹窗旧值覆盖）
         runtime_managed_keys = {
             "openai_auto_routing_enabled",
             "openai_auto_format_order",
             "openai_format_stats",
-            "gemini_auto_routing_enabled",
-            "gemini_auto_format_order",
-            "gemini_format_stats",
         }
         for cn in self.config.__dict__:
             if cn in runtime_managed_keys:
@@ -553,14 +518,6 @@ class ConfigPage(ui.dialog):
             logger.info(
                 "[配置] 检测到OpenAI模型变更，已清空openai_format_stats: "
                 f"{old_openai_model} -> {new_openai_model}"
-            )
-
-        if old_gemini_model != new_gemini_model:
-            cm.set_config("gemini_format_stats", {})
-            model_reset_messages.append("Gemini累计测试统计已清零")
-            logger.info(
-                "[配置] 检测到Gemini模型变更，已清空gemini_format_stats: "
-                f"{old_gemini_model} -> {new_gemini_model}"
             )
 
         config_show = cm.config.copy()
@@ -604,25 +561,16 @@ class ConfigPage(ui.dialog):
         current_config = {}
         ai_config_keys = [
             "ai_auto_save",
-            "ai_provider",
             "ai_confidence_threshold",
             "openai_output_format",
             "openai_api_interface",
             "openai_auto_routing_enabled",
             "openai_auto_format_order",
             "openai_format_stats",
-            "gemini_output_format",
-            "gemini_auto_routing_enabled",
-            "gemini_auto_format_order",
-            "gemini_format_stats",
             "ai_api_key",
             "ai_base_url",
             "ai_model",
-            "gemini_api_key",
-            "gemini_base_url",
-            "gemini_model",
             "ai_temperature",
-            "gemini_temperature",
         ]
         for key in ai_config_keys:
             # 优先使用界面中的值，如果没有则使用配置文件中的值
@@ -680,9 +628,6 @@ class ConfigPage(ui.dialog):
                 ui.notify("❌ 请先配置OpenAI API密钥", type="negative")
                 return
 
-            # 测试按钮直接指定提供商，不受当前ai_provider门控影响
-            current_config["ai_provider"] = "openai"
-
             from ..ai.unified_ai_tester import UnifiedAITester
 
             tester = UnifiedAITester(current_config)
@@ -706,44 +651,6 @@ class ConfigPage(ui.dialog):
         except Exception as e:
             logger.error(f"[配置] OpenAI API测试失败: {str(e)}")
             ui.notify(f"❌ OpenAI API测试失败: {str(e)}", type="negative")
-
-    async def _test_gemini_api(self):
-        """测试Gemini API功能（使用当前界面配置，测试多种输出格式）"""
-        try:
-            ui.notify("⚙️ 开始测试Gemini API功能，请稍候...", type="info")
-            current_config = self._get_current_ui_config()
-
-            # 检查基本配置
-            if not current_config.get("gemini_api_key"):
-                ui.notify("❌ 请先配置Gemini API密钥", type="negative")
-                return
-
-            # 测试按钮直接指定提供商，不受当前ai_provider门控影响
-            current_config["ai_provider"] = "gemini"
-
-            from ..ai.unified_ai_tester import UnifiedAITester
-
-            tester = UnifiedAITester(current_config)
-
-            import asyncio
-
-            results = await asyncio.get_event_loop().run_in_executor(
-                None, tester.test_gemini_api_formats
-            )
-
-            self._show_gemini_formats_test_results(results)
-
-            # 记忆测试后推荐格式，界面内同步为推荐值
-            recommended = results.get("recommended_format")
-            if recommended:
-                self._change("gemini_output_format", recommended)
-                ui.notify(
-                    f"✅ 已记忆Gemini格式顺序，当前推荐: {recommended}",
-                    type="positive",
-                )
-        except Exception as e:
-            logger.error(f"[配置] Gemini API测试失败: {str(e)}")
-            ui.notify(f"❌ Gemini API测试失败: {str(e)}", type="negative")
 
     def _show_ai_test_results(self, result: Mapping[str, object]) -> None:
         """显示AI识别测试结果"""
@@ -784,29 +691,22 @@ class ConfigPage(ui.dialog):
                 config_used = result.get("config_used", {})
                 if not isinstance(config_used, Mapping):
                     config_used = {}
-                provider = config_used.get("ai_provider", "unknown")
-                provider_text = provider if isinstance(provider, str) else "unknown"
-                ui.label(f"🤖 AI提供商: {provider_text.upper()}")
+                ui.label("🤖 AI提供商: OPENAI")
                 ui.label(f"⏱️ 耗时: {result.get('duration', 0):.2f}秒")
 
-                if provider_text.lower() == "openai":
-                    output_format = config_used.get("openai_output_format", "unknown")
-                    ui.label(f"📋 输出格式: {output_format}")
-                    configured_interface = result.get("configured_interface")
-                    actual_interface = result.get("actual_interface")
-                    if configured_interface:
-                        ui.label(f"🌐 配置接口: {configured_interface}")
-                    if actual_interface:
-                        ui.label(f"🚀 实际接口: {actual_interface}")
-                    if result.get("interface_fallback"):
-                        fallback_reason = result.get("interface_fallback_reason")
-                        ui.label(
-                            f"↩️ 接口回退: 已触发 ({fallback_reason or '未提供原因'})"
-                        ).classes("text-orange")
-                elif provider_text.lower() == "gemini":
-                    output_format = config_used.get("gemini_output_format", "unknown")
-                    ui.label(f"📋 输出格式: {output_format}")
-
+                output_format = config_used.get("openai_output_format", "unknown")
+                ui.label(f"📋 输出格式: {output_format}")
+                configured_interface = result.get("configured_interface")
+                actual_interface = result.get("actual_interface")
+                if configured_interface:
+                    ui.label(f"🌐 配置接口: {configured_interface}")
+                if actual_interface:
+                    ui.label(f"🚀 实际接口: {actual_interface}")
+                if result.get("interface_fallback"):
+                    fallback_reason = result.get("interface_fallback_reason")
+                    ui.label(
+                        f"↩️ 接口回退: 已触发 ({fallback_reason or '未提供原因'})"
+                    ).classes("text-orange")
                 # AI失败情况：显示错误信息
                 if result_status == "ai_failed":
                     ui.separator()
@@ -943,10 +843,6 @@ class ConfigPage(ui.dialog):
     def _show_openai_formats_test_results(self, results: Mapping[str, object]) -> None:
         """显示OpenAI多格式测试结果"""
         self._show_provider_formats_test_results("OpenAI", results)
-
-    def _show_gemini_formats_test_results(self, results: Mapping[str, object]) -> None:
-        """显示Gemini多格式测试结果"""
-        self._show_provider_formats_test_results("Gemini", results)
 
     def _show_provider_formats_test_results(
         self, provider_name: str, results: Mapping[str, object]

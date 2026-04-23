@@ -2,7 +2,7 @@
 
 ## 概述
 
-本测试脚本采用重构的模块化架构，支持OpenAI和Gemini双AI提供商，提供三种测试模式，并新增了测试用例保存和读取功能，便于快速测试和社区收集测试用例。
+本测试脚本采用重构的模块化架构，当前围绕 **OpenAI-only** 运行时路径提供三种测试模式，并新增了测试用例保存和读取功能，便于快速测试和社区收集测试用例。
 
 ### 🏗️ 架构设计
 
@@ -25,12 +25,11 @@
 - **--input**: 从JSON测试用例文件加载数据
 - **优先级**: 当同时指定时，--input 优先
 
-### 🤖 支持的AI提供商
+### 🤖 当前支持的AI路径
 
-- **OpenAI**: 支持GPT-4、GPT-3.5等模型，兼容OpenAI API格式
-  - 支持多种输出格式：function_calling、json_object、structured_output、text
-- **Gemini**: 支持Google Gemini系列模型，原生结构化输出
-  - 支持自定义base URL配置
+- **OpenAI**: 支持 OpenAI 官方或兼容 API
+  - 当前活跃输出格式：`structured_output`、`function_calling`、`text`
+  - 支持自定义 base URL、模型与 API interface
 
 ## 使用方法
 
@@ -39,13 +38,13 @@
 请先在web ui中或json配置文件中完成以下配置：
 
 1. 配置TMDB API密钥
-2. 配置AI提供商API密钥（OpenAI或Gemini）
+2. 配置 OpenAI API 密钥
 3. 确保AI功能已启用
 
 ### 命令行参数
 
 ```bash
-python tests/test_ai_recognition.py [选项]
+python tools/test_ai_recognition.py [选项]
 
 必需参数:
   --mode {manual,auto,save}       测试模式
@@ -55,8 +54,7 @@ python tests/test_ai_recognition.py [选项]
   --input INPUT                   测试用例JSON文件路径
 
 可选参数:
-  --provider {openai,gemini}      AI提供商选择
-  --openai_output_format {function_calling,json_object,structured_output,text}
+  --openai_output_format {function_calling,structured_output,text}
                                   OpenAI输出格式选择
   --output OUTPUT                 保存测试用例的文件路径 (save模式可选，默认使用case_文件夹名.json)
 ```
@@ -66,11 +64,11 @@ python tests/test_ai_recognition.py [选项]
 #### 1. 手动模式测试
 
 ```bash
-# 使用默认AI提供商
-python tests/test_ai_recognition.py --mode manual --path "/path/to/anime"
+# 使用默认配置
+python tools/test_ai_recognition.py --mode manual --path "/path/to/anime"
 
-# 指定使用Gemini
-python tests/test_ai_recognition.py --mode manual --path "/path/to/anime" --provider gemini
+# 指定输出格式进行测试
+python tools/test_ai_recognition.py --mode manual --path "/path/to/anime" --openai_output_format function_calling
 ```
 
 手动模式会：
@@ -83,13 +81,11 @@ python tests/test_ai_recognition.py --mode manual --path "/path/to/anime" --prov
 
 ```bash
 # 使用OpenAI进行完整测试
-python tests/test_ai_recognition.py --mode auto --path "/path/to/anime" --provider openai
+python tools/test_ai_recognition.py --mode auto --path "/path/to/anime"
 
 # 使用OpenAI的特定输出格式
-python tests/test_ai_recognition.py --mode auto --path "/path/to/anime" --provider openai --openai_output_format function_calling
+python tools/test_ai_recognition.py --mode auto --path "/path/to/anime" --openai_output_format function_calling
 
-# 使用Gemini进行测试
-python tests/test_ai_recognition.py --mode auto --path "/path/to/anime" --provider gemini
 ```
 
 自动模式会：
@@ -102,10 +98,10 @@ python tests/test_ai_recognition.py --mode auto --path "/path/to/anime" --provid
 
 ```bash
 # 保存测试用例到JSON文件（指定输出文件名）
-python tests/test_ai_recognition.py --mode save --path "/path/to/anime" --output test_case.json
+python tools/test_ai_recognition.py --mode save --path "/path/to/anime" --output test_case.json
 
 # 保存测试用例（使用默认文件名：case_文件夹名.json）
-python tests/test_ai_recognition.py --mode save --path "/path/to/anime"
+python tools/test_ai_recognition.py --mode save --path "/path/to/anime"
 ```
 
 保存模式会：
@@ -119,20 +115,18 @@ python tests/test_ai_recognition.py --mode save --path "/path/to/anime"
 
 ```bash
 # 从JSON文件进行手动测试
-python tests/test_ai_recognition.py --mode manual --input test_case.json --provider gemini
+python tools/test_ai_recognition.py --mode manual --input test_case.json
 
 # 从JSON文件进行自动测试，指定OpenAI输出格式
-python tests/test_ai_recognition.py --mode auto --input test_case.json --provider openai --openai_output_format function_calling
+python tools/test_ai_recognition.py --mode auto --input test_case.json --openai_output_format function_calling
 
-# 对比不同AI提供商的结果
-python tests/test_ai_recognition.py --mode auto --input test_case.json --provider gemini
 ```
 
 从测试用例进行测试会：
 - 从JSON文件读取测试用例数据（支持测试用例文件和测试结果文件）
-- 使用指定的AI提供商进行分析
+- 使用当前 OpenAI 路径进行分析
 - 显示分析结果并保存
-- 支持批量测试和对比不同AI提供商
+- 支持批量测试和对比不同 OpenAI 配置
 - 测试结果文件可以直接作为输入用例使用
 
 ### OpenAI输出格式说明
@@ -140,13 +134,11 @@ python tests/test_ai_recognition.py --mode auto --input test_case.json --provide
 使用`--openai_output_format`参数可以指定OpenAI的输出格式：
 
 - **function_calling**: 使用函数调用模式，结构化程度最高
-- **json_object**: 使用JSON对象模式，要求返回有效JSON
 - **structured_output**: 使用结构化输出模式（需要支持的模型）
 - **text**: 普通文本模式，依赖prompt指导
 
 不同格式的特点：
 - `function_calling`: 最稳定，适合生产环境
-- `json_object`: 兼容性好，适合大多数场景
 - `structured_output`: 最新特性，需要新版本模型支持
 - `text`: 最基础，依赖模型理解能力
 
@@ -189,7 +181,6 @@ python tests/test_ai_recognition.py --mode auto --input test_case.json --provide
   "local_files": [ ... ],
   "analysis_result": {
     "mode": "测试模式",
-    "provider": "AI提供商",
     "timestamp": "分析时间",
     "ai_result": "AI分析结果",
     "mapping_analysis": "文件映射分析"
@@ -210,14 +201,14 @@ python tests/test_ai_recognition.py --mode auto --input test_case.json --provide
 - 包含 `path_name` 字段（文件夹名称，不含完整路径）
 
 #### AI分析结果文件 (manual/auto模式)
-- 手动模式: `manual_路径名_{provider}_{timestamp}.json`
-- 自动模式: `auto_路径名_{provider}_{timestamp}.json`
+- 手动模式: `manual_路径名_{timestamp}.json`
+- 自动模式: `auto_路径名_{timestamp}.json`
 - 路径名来源：从 `--path` 提取文件夹名或从测试用例的 `path_name` 字段
 
 #### 结果文件内容
 
 AI分析结果文件包含：
-- **测试元数据**：模式、提供商、时间戳、路径名称等
+- **测试元数据**：模式、时间戳、路径名称等
 - **动漫信息和本地文件信息**：TMDB数据和文件列表
 - **AI分析结果**：季度映射、文件映射、置信度等
 - **文件映射分析报告**：
@@ -234,7 +225,7 @@ AI分析结果文件包含：
 测试结果文件可以直接作为输入用例使用：
 ```bash
 # 使用之前的测试结果进行新的测试
-python tests/test_ai_recognition.py --mode auto --input auto_MyAnime_gemini_20250710_123456.json --provider openai
+python tools/test_ai_recognition.py --mode auto --input auto_MyAnime_20250710_123456.json
 ```
 
 ## 期待社区贡献
@@ -246,28 +237,28 @@ python tests/test_ai_recognition.py --mode auto --input auto_MyAnime_gemini_2025
 - 覆盖多季度、OVA、特典等复杂情况
 - 本地分季规则与TMDB不符的情况
 
-### 2. 不同AI模型对比
+### 2. 不同OpenAI模型/配置对比
 
-- 使用相同测试用例对比不同AI模型
-- 分析各提供商的优势和局限性
+- 使用相同测试用例对比不同 OpenAI 模型或兼容服务
+- 分析不同输出格式和接口配置的优势与局限性
 - 记录置信度和准确性差异
 
 ## 故障排除
 
 ### 常见问题
 
-1. **AI客户端不可用**: 检查提供商、API密钥与网络配置
-2. **API密钥未配置**: 确保正确配置对应AI提供商的API密钥
+1. **AI客户端不可用**: 检查 OpenAI 配置、API密钥与网络配置
+2. **API密钥未配置**: 确保正确配置 OpenAI API 密钥
 3. **网络连接问题**: 检查API地址和网络连接
 4. **文件路径错误**: 确保指定的路径存在且包含视频文件
 
 ### 调试技巧
 
 - 使用manual模式检查生成的prompt是否正确
-- 使用manual模式在AI提供商的web UI上快速测试prompt
+- 使用manual模式在 OpenAI 兼容模型的 Web UI / Playground 上快速测试 prompt
 - 查看详细的日志输出了解错误原因
 - 使用save模式保存问题用例便于重现
-- 对比不同AI模型的分析结果
+- 对比不同 OpenAI 模型或输出格式的分析结果
 
 ## 文件映射分析
 

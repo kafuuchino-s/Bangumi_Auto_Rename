@@ -1,0 +1,49 @@
+{
+  "status": "ok",
+  "type": "movie",
+  "title_candidate": "Inou Battle Within Everyday Life",
+  "timing": {
+    "analysis_seconds": 10.266
+  },
+  "collection_analysis": {
+    "is_collection": false,
+    "collection_name": "Inou Battle Within Everyday Life",
+    "confidence": "High",
+    "reason": "文件为12集动画及特典，不是电影合集",
+    "file_mapping": [],
+    "unmatched_files": [
+      "[VCB-Studio] Inou Battle Within Everyday Life [01][Ma10p_1080p][x265_flac_aac].mkv",
+      "[VCB-Studio] Inou Battle Within Everyday Life [02][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Inou Battle Within Everyday Life [03][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Inou Battle Within Everyday Life [04][Ma10p_1080p][x265_flac_aac].mkv",
+      "[VCB-Studio] Inou Battle Within Everyday Life [05][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Inou Battle Within Everyday Life [06][Ma10p_1080p][x265_flac_aac].mkv",
+      "[VCB-Studio] Inou Battle Within Everyday Life [07][Ma10p_1080p][x265_flac_aac].mkv",
+      "[VCB-Studio] Inou Battle Within Everyday Life [08][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Inou Battle Within Everyday Life [09][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Inou Battle Within Everyday Life [10][Ma10p_1080p][x265_flac_aac].mkv",
+      "[VCB-Studio] Inou Battle Within Everyday Life [11][Ma10p_1080p][x265_flac_aac].mkv",
+      "[VCB-Studio] Inou Battle Within Everyday Life [12][Ma10p_1080p][x265_flac_aac].mkv",
+      "SPs/[VCB-Studio] Inou Battle Within Everyday Life [CM01][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Inou Battle Within Everyday Life [CM02][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Inou Battle Within Everyday Life [CM03][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Inou Battle Within Everyday Life [CM04][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Inou Battle Within Everyday Life [Event][Ma10p_1080p][x265_aac].mkv",
+      "SPs/[VCB-Studio] Inou Battle Within Everyday Life [Menu01][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Inou Battle Within Everyday Life [Menu02][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Inou Battle Within Everyday Life [Menu03][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Inou Battle Within Everyday Life [Menu04][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Inou Battle Within Everyday Life [Menu05][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Inou Battle Within Everyday Life [Menu06][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Inou Battle Within Everyday Life [NCED][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Inou Battle Within Everyday Life [NCOP01][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Inou Battle Within Everyday Life [NCOP02][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Inou Battle Within Everyday Life [PV01][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Inou Battle Within Everyday Life [PV02][Ma10p_1080p][x265_flac].mkv"
+    ],
+    "conflict_details": [
+      "文件为TV动画正片与SP/特典，无独立电影"
+    ],
+    "extra_notes": null
+  }
+}

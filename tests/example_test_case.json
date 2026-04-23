@@ -1,79 +1,48 @@
 {
   "metadata": {
-    "created_at": "2024-12-19T10:30:00",
-    "path_name": "Jujutsu Kaisen",
-    "anime_name": "呪術廻戦",
-    "description": "测试用例：呪術廻戦 - 多季度动漫识别",
-    "file_count": 6,
-    "total_size_mb": 2048.5
+    "created_at": "2026-04-20T04:10:00",
+    "path_name": "Uchuu Senkan Yamato 2202 Ai no Senshi-tachi",
+    "anime_name": "宇宙战舰大和号2199",
+    "description": "简单 smoke case：单集 TV 映射，仅用于验证配置页 / API tester 功能是否正常",
+    "file_count": 1,
+    "total_size_mb": 2352.61
   },
   "anime_info": {
-    "id": 95479,
-    "name": "呪術廻戦",
-    "original_name": "Jujutsu Kaisen",
-    "first_air_date": "2020-10-03",
+    "id": 45844,
+    "name": "宇宙战舰大和号2199",
+    "original_name": "宇宙戦艦ヤマト２１９９",
+    "first_air_date": "2013-04-07",
     "number_of_seasons": 2,
-    "number_of_episodes": 48,
+    "number_of_episodes": 52,
+    "genres": [
+      {
+        "id": 16,
+        "name": "动画"
+      }
+    ],
     "seasons": [
       {
-        "id": 119834,
-        "season_number": 0,
-        "name": "特典",
-        "episode_count": 2,
-        "air_date": null
-      },
-      {
-        "id": 119835,
+        "id": 96453,
         "season_number": 1,
-        "name": "第一季",
-        "episode_count": 24,
-        "air_date": "2020-10-03"
+        "name": "宇宙战舰大和号2199",
+        "episode_count": 26,
+        "air_date": "2013-04-07"
       },
       {
-        "id": 119836,
+        "id": 123617,
         "season_number": 2,
-        "name": "第二季",
-        "episode_count": 24,
-        "air_date": "2023-07-06"
+        "name": "宇宙战舰大和号2199：宇宙战舰大和号2202 爱的战士们",
+        "episode_count": 26,
+        "air_date": "2018-10-06"
       }
     ]
   },
   "local_files": [
     {
-      "filename": "Jujutsu Kaisen S01E01.mkv",
-      "path": "Season 1/Jujutsu Kaisen S01E01.mkv",
-      "size": 367001600,
-      "duration": 23.5
-    },
-    {
-      "filename": "Jujutsu Kaisen S01E02.mkv",
-      "path": "Season 1/Jujutsu Kaisen S01E02.mkv",
-      "size": 356505600,
-      "duration": 23.8
-    },
-    {
-      "filename": "Jujutsu Kaisen S02E01.mkv",
-      "path": "Season 2/Jujutsu Kaisen S02E01.mkv",
-      "size": 378201600,
-      "duration": 24.2
-    },
-    {
-      "filename": "Jujutsu Kaisen S02E02.mkv",
-      "path": "Season 2/Jujutsu Kaisen S02E02.mkv",
-      "size": 389401600,
-      "duration": 24.0
-    },
-    {
-      "filename": "Jujutsu Kaisen OVA01.mkv",
-      "path": "Specials/Jujutsu Kaisen OVA01.mkv",
-      "size": 298301600,
-      "duration": 22.1
-    },
-    {
-      "filename": "Jujutsu Kaisen OVA02.mkv",
-      "path": "Specials/Jujutsu Kaisen OVA02.mkv",
-      "size": 312801600,
-      "duration": 21.8
+      "filename": "[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][01][BDRIP][1080P][H264_FLACx2].mkv",
+      "path": "[Uchuu Senkan Yamato 2202 Ai no Senshi-tachi][01][BDRIP][1080P][H264_FLACx2].mkv",
+      "size": 2466887995,
+      "duration": 25.0
     }
   ]
 }

@@ -1,0 +1,15 @@
+{
+  "status": "ok",
+  "type": "movie",
+  "title_candidate": "Psycho-Pass Providence",
+  "tmdb_name": "Psycho-Pass: Providence",
+  "tmdb_id": 1012652,
+  "timing": {
+    "analysis_seconds": 43.508
+  },
+  "primary_files": [
+    {
+      "file_path": "(2023.12.20)Psycho-Pass Providence-[1080p][BDRIP][x265.FLAC].mkv"
+    }
+  ]
+}

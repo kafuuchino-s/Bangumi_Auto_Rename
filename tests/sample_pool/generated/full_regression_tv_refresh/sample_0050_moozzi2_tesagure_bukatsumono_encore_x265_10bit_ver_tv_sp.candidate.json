@@ -1,0 +1,41 @@
+{
+  "status": "tmdb_not_found",
+  "type": "tv",
+  "title_candidate": "Tesagure! Bukatsumono Encore",
+  "file_mapping": [],
+  "task_plan": {
+    "is_movie": false,
+    "ai_type": "tv",
+    "tv_available": true,
+    "movie_available": false,
+    "selected_confidence": "High"
+  },
+  "tv_candidate_result": {
+    "status": "tmdb_not_found",
+    "type": "tv",
+    "title_candidate": "Tesagure! Bukatsumono Encore",
+    "timing": null,
+    "file_mapping_count": 0,
+    "has_regular": false,
+    "has_special": false,
+    "has_movie_like": false
+  },
+  "movie_candidate_result": {
+    "status": "ok",
+    "type": "movie",
+    "title_candidate": "Tesagure! Bukatsumono Encore",
+    "timing": {
+      "analysis_seconds": 22.133
+    },
+    "collection_analysis": {
+      "is_collection": false,
+      "confidence": "High",
+      "reason": "目录为动画剧集及特典",
+      "file_mapping_count": 0,
+      "unmatched_count": 54,
+      "conflict_count": 2,
+      "movie_like_paths": []
+    }
+  },
+  "final_type": "tv"
+}

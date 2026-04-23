@@ -1,0 +1,518 @@
+{
+  "status": "ok",
+  "type": "tv",
+  "title_candidate": "ひだまりスケッチ",
+  "tmdb_name": "向阳素描",
+  "tmdb_id": 45893,
+  "timing": {
+    "analysis_seconds": 34.041
+  },
+  "file_mapping": [
+    {
+      "source_index": 1,
+      "file_path": "[DewDream] ひだまりスケッチ  (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ - 01 (BDrip1080p Ma10p x265 2FLAC).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 1,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 2,
+      "file_path": "[DewDream] ひだまりスケッチ  (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ - 02 (BDrip1080p Ma10p x265 2FLAC).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 2,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 3,
+      "file_path": "[DewDream] ひだまりスケッチ  (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ - 03 (BDrip1080p Ma10p x265 2FLAC).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 3,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 4,
+      "file_path": "[DewDream] ひだまりスケッチ  (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ - 04 (BDrip1080p Ma10p x265 2FLAC).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 4,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 5,
+      "file_path": "[DewDream] ひだまりスケッチ  (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ - 05 (BDrip1080p Ma10p x265 2FLAC).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 5,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 6,
+      "file_path": "[DewDream] ひだまりスケッチ  (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ - 06 (BDrip1080p Ma10p x265 2FLAC).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 6,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 7,
+      "file_path": "[DewDream] ひだまりスケッチ  (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ - 07 (BDrip1080p Ma10p x265 2FLAC).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 7,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 8,
+      "file_path": "[DewDream] ひだまりスケッチ  (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ - 08 (BDrip1080p Ma10p x265 2FLAC).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 8,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 9,
+      "file_path": "[DewDream] ひだまりスケッチ  (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ - 09 (BDrip1080p Ma10p x265 2FLAC).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 9,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 10,
+      "file_path": "[DewDream] ひだまりスケッチ  (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ - 10 (BDrip1080p Ma10p x265 2FLAC).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 10,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 11,
+      "file_path": "[DewDream] ひだまりスケッチ  (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ - 11 (BDrip1080p Ma10p x265 2FLAC).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 11,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 12,
+      "file_path": "[DewDream] ひだまりスケッチ  (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ - 12 (BDrip1080p Ma10p x265 2FLAC).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 12,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 39,
+      "file_path": "[DewDream] ひだまりスケッチ  ×365 (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ×365 - 01 (BDrip1080p Ma10p x265 2FLAC).mkv",
+      "tmdb_season": 2,
+      "tmdb_episode": 1,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 40,
+      "file_path": "[DewDream] ひだまりスケッチ  ×365 (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ×365 - 02 (BDrip1080p Ma10p x265 2FLAC).mkv",
+      "tmdb_season": 2,
+      "tmdb_episode": 2,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 41,
+      "file_path": "[DewDream] ひだまりスケッチ  ×365 (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ×365 - 03 (BDrip1080p Ma10p x265 2FLAC).mkv",
+      "tmdb_season": 2,
+      "tmdb_episode": 3,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 42,
+      "file_path": "[DewDream] ひだまりスケッチ  ×365 (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ×365 - 04 (BDrip1080p Ma10p x265 2FLAC).mkv",
+      "tmdb_season": 2,
+      "tmdb_episode": 4,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 43,
+      "file_path": "[DewDream] ひだまりスケッチ  ×365 (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ×365 - 05 (BDrip1080p Ma10p x265 2FLAC).mkv",
+      "tmdb_season": 2,
+      "tmdb_episode": 5,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 44,
+      "file_path": "[DewDream] ひだまりスケッチ  ×365 (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ×365 - 06 (BDrip1080p Ma10p x265 2FLAC).mkv",
+      "tmdb_season": 2,
+      "tmdb_episode": 6,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 45,
+      "file_path": "[DewDream] ひだまりスケッチ  ×365 (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ×365 - 07 (BDrip1080p Ma10p x265 2FLAC).mkv",
+      "tmdb_season": 2,
+      "tmdb_episode": 7,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 46,
+      "file_path": "[DewDream] ひだまりスケッチ  ×365 (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ×365 - 08 (BDrip1080p Ma10p x265 2FLAC).mkv",
+      "tmdb_season": 2,
+      "tmdb_episode": 8,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 47,
+      "file_path": "[DewDream] ひだまりスケッチ  ×365 (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ×365 - 09 (BDrip1080p Ma10p x265 2FLAC).mkv",
+      "tmdb_season": 2,
+      "tmdb_episode": 9,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 48,
+      "file_path": "[DewDream] ひだまりスケッチ  ×365 (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ×365 - 10 (BDrip1080p Ma10p x265 2FLAC).mkv",
+      "tmdb_season": 2,
+      "tmdb_episode": 10,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 49,
+      "file_path": "[DewDream] ひだまりスケッチ  ×365 (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ×365 - 11 (BDrip1080p Ma10p x265 2FLAC).mkv",
+      "tmdb_season": 2,
+      "tmdb_episode": 11,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 50,
+      "file_path": "[DewDream] ひだまりスケッチ  ×365 (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ×365 - 12 (BDrip1080p Ma10p x265 2FLAC).mkv",
+      "tmdb_season": 2,
+      "tmdb_episode": 12,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 51,
+      "file_path": "[DewDream] ひだまりスケッチ  ×365 (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ×365 - 13 (BDrip1080p Ma10p x265 2FLAC).mkv",
+      "tmdb_season": 2,
+      "tmdb_episode": 13,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 107,
+      "file_path": "[DewDream] ひだまりスケッチ ×☆☆☆ (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ×☆☆☆ - 01 (BDrip1080p Ma10p x265 2FLAC).mkv",
+      "tmdb_season": 3,
+      "tmdb_episode": 1,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 108,
+      "file_path": "[DewDream] ひだまりスケッチ ×☆☆☆ (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ×☆☆☆ - 02 (BDrip1080p Ma10p x265 2FLAC).mkv",
+      "tmdb_season": 3,
+      "tmdb_episode": 2,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 109,
+      "file_path": "[DewDream] ひだまりスケッチ ×☆☆☆ (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ×☆☆☆ - 03 (BDrip1080p Ma10p x265 2FLAC).mkv",
+      "tmdb_season": 3,
+      "tmdb_episode": 3,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 110,
+      "file_path": "[DewDream] ひだまりスケッチ ×☆☆☆ (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ×☆☆☆ - 04 (BDrip1080p Ma10p x265 2FLAC).mkv",
+      "tmdb_season": 3,
+      "tmdb_episode": 4,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 111,
+      "file_path": "[DewDream] ひだまりスケッチ ×☆☆☆ (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ×☆☆☆ - 05 (BDrip1080p Ma10p x265 2FLAC).mkv",
+      "tmdb_season": 3,
+      "tmdb_episode": 5,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 112,
+      "file_path": "[DewDream] ひだまりスケッチ ×☆☆☆ (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ×☆☆☆ - 06 (BDrip1080p Ma10p x265 2FLAC).mkv",
+      "tmdb_season": 3,
+      "tmdb_episode": 6,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 113,
+      "file_path": "[DewDream] ひだまりスケッチ ×☆☆☆ (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ×☆☆☆ - 07 (BDrip1080p Ma10p x265 2FLAC).mkv",
+      "tmdb_season": 3,
+      "tmdb_episode": 7,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 114,
+      "file_path": "[DewDream] ひだまりスケッチ ×☆☆☆ (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ×☆☆☆ - 08 (BDrip1080p Ma10p x265 2FLAC).mkv",
+      "tmdb_season": 3,
+      "tmdb_episode": 8,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 115,
+      "file_path": "[DewDream] ひだまりスケッチ ×☆☆☆ (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ×☆☆☆ - 09 (BDrip1080p Ma10p x265 2FLAC).mkv",
+      "tmdb_season": 3,
+      "tmdb_episode": 9,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 116,
+      "file_path": "[DewDream] ひだまりスケッチ ×☆☆☆ (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ×☆☆☆ - 10 (BDrip1080p Ma10p x265 2FLAC).mkv",
+      "tmdb_season": 3,
+      "tmdb_episode": 10,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 117,
+      "file_path": "[DewDream] ひだまりスケッチ ×☆☆☆ (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ×☆☆☆ - 11 (BDrip1080p Ma10p x265 2FLAC).mkv",
+      "tmdb_season": 3,
+      "tmdb_episode": 11,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 118,
+      "file_path": "[DewDream] ひだまりスケッチ ×☆☆☆ (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ×☆☆☆ - 12 (BDrip1080p Ma10p x265 2FLAC).mkv",
+      "tmdb_season": 3,
+      "tmdb_episode": 12,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 136,
+      "file_path": "[DewDream] ひだまりスケッチ ×ハニカム (BDRip1080p Ma10)/[DewDream] ひだまりスケッチ×ハニカム - 01 (BDrip1080p Ma10p x265 2FLAC).mkv",
+      "tmdb_season": 4,
+      "tmdb_episode": 1,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 137,
+      "file_path": "[DewDream] ひだまりスケッチ ×ハニカム (BDRip1080p Ma10)/[DewDream] ひだまりスケッチ×ハニカム - 02 (BDrip1080p Ma10p x265 2FLAC).mkv",
+      "tmdb_season": 4,
+      "tmdb_episode": 2,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 138,
+      "file_path": "[DewDream] ひだまりスケッチ ×ハニカム (BDRip1080p Ma10)/[DewDream] ひだまりスケッチ×ハニカム - 03 (BDrip1080p Ma10p x265 2FLAC).mkv",
+      "tmdb_season": 4,
+      "tmdb_episode": 3,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 139,
+      "file_path": "[DewDream] ひだまりスケッチ ×ハニカム (BDRip1080p Ma10)/[DewDream] ひだまりスケッチ×ハニカム - 04 (BDrip1080p Ma10p x265 2FLAC).mkv",
+      "tmdb_season": 4,
+      "tmdb_episode": 4,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 140,
+      "file_path": "[DewDream] ひだまりスケッチ ×ハニカム (BDRip1080p Ma10)/[DewDream] ひだまりスケッチ×ハニカム - 05 (BDrip1080p Ma10p x265 2FLAC).mkv",
+      "tmdb_season": 4,
+      "tmdb_episode": 5,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 141,
+      "file_path": "[DewDream] ひだまりスケッチ ×ハニカム (BDRip1080p Ma10)/[DewDream] ひだまりスケッチ×ハニカム - 06 (BDrip1080p Ma10p x265 2FLAC).mkv",
+      "tmdb_season": 4,
+      "tmdb_episode": 6,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 142,
+      "file_path": "[DewDream] ひだまりスケッチ ×ハニカム (BDRip1080p Ma10)/[DewDream] ひだまりスケッチ×ハニカム - 07 (BDrip1080p Ma10p x265 2FLAC).mkv",
+      "tmdb_season": 4,
+      "tmdb_episode": 7,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 143,
+      "file_path": "[DewDream] ひだまりスケッチ ×ハニカム (BDRip1080p Ma10)/[DewDream] ひだまりスケッチ×ハニカム - 08 (BDrip1080p Ma10p x265 2FLAC).mkv",
+      "tmdb_season": 4,
+      "tmdb_episode": 8,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 144,
+      "file_path": "[DewDream] ひだまりスケッチ ×ハニカム (BDRip1080p Ma10)/[DewDream] ひだまりスケッチ×ハニカム - 09 (BDrip1080p Ma10p x265 2FLAC).mkv",
+      "tmdb_season": 4,
+      "tmdb_episode": 9,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 145,
+      "file_path": "[DewDream] ひだまりスケッチ ×ハニカム (BDRip1080p Ma10)/[DewDream] ひだまりスケッチ×ハニカム - 10 (BDrip1080p Ma10p x265 2FLAC).mkv",
+      "tmdb_season": 4,
+      "tmdb_episode": 10,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 146,
+      "file_path": "[DewDream] ひだまりスケッチ ×ハニカム (BDRip1080p Ma10)/[DewDream] ひだまりスケッチ×ハニカム - 11 (BDrip1080p Ma10p x265 2FLAC).mkv",
+      "tmdb_season": 4,
+      "tmdb_episode": 11,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 147,
+      "file_path": "[DewDream] ひだまりスケッチ ×ハニカム (BDRip1080p Ma10)/[DewDream] ひだまりスケッチ×ハニカム - 12 (BDrip1080p Ma10p x265 2FLAC).mkv",
+      "tmdb_season": 4,
+      "tmdb_episode": 12,
+      "episode_type": "regular",
+      "confidence": "High"
+    }
+  ],
+  "conflict_details": [],
+  "analysis_result": {
+    "confidence": "High",
+    "reason": "正片分季编号与TMDB集数直接对应。",
+    "season_mapping": [
+      {
+        "local_group_name": "[DewDream] ひだまりスケッチ  (BDRip1080p Ma10p)",
+        "maps_to_tmdb_seasons": [
+          1
+        ]
+      },
+      {
+        "local_group_name": "[DewDream] ひだまりスケッチ  ×365 (BDRip1080p Ma10p)",
+        "maps_to_tmdb_seasons": [
+          2
+        ]
+      },
+      {
+        "local_group_name": "[DewDream] ひだまりスケッチ ×☆☆☆ (BDRip1080p Ma10p)",
+        "maps_to_tmdb_seasons": [
+          3
+        ]
+      },
+      {
+        "local_group_name": "[DewDream] ひだまりスケッチ ×ハニカム (BDRip1080p Ma10)",
+        "maps_to_tmdb_seasons": [
+          4
+        ]
+      }
+    ],
+    "file_mapping_count": 49,
+    "unmatched_count": 0,
+    "conflict_count": 0
+  },
+  "hydration_notes": {
+    "hydrated_count": 49,
+    "examples": [
+      "hydrated:1:[DewDream] ひだまりスケッチ  (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ - 01 (BDrip1080p Ma10p x265 2FLAC).mkv",
+      "hydrated:2:[DewDream] ひだまりスケッチ  (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ - 02 (BDrip1080p Ma10p x265 2FLAC).mkv",
+      "hydrated:3:[DewDream] ひだまりスケッチ  (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ - 03 (BDrip1080p Ma10p x265 2FLAC).mkv",
+      "hydrated:4:[DewDream] ひだまりスケッチ  (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ - 04 (BDrip1080p Ma10p x265 2FLAC).mkv",
+      "hydrated:5:[DewDream] ひだまりスケッチ  (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ - 05 (BDrip1080p Ma10p x265 2FLAC).mkv"
+    ]
+  },
+  "task_plan": {
+    "is_movie": false,
+    "ai_type": "tv",
+    "tv_available": true,
+    "movie_available": false,
+    "selected_confidence": "High"
+  },
+  "tv_candidate_result": {
+    "status": "ok",
+    "type": "tv",
+    "title_candidate": "ひだまりスケッチ",
+    "timing": {
+      "analysis_seconds": 34.041
+    },
+    "file_mapping_count": 49,
+    "has_regular": true,
+    "has_special": false,
+    "has_movie_like": false,
+    "analysis_result": {
+      "confidence": "High",
+      "reason": "正片分季编号与TMDB集数直接对应。",
+      "season_mapping": [
+        {
+          "local_group_name": "[DewDream] ひだまりスケッチ  (BDRip1080p Ma10p)",
+          "maps_to_tmdb_seasons": [
+            1
+          ]
+        },
+        {
+          "local_group_name": "[DewDream] ひだまりスケッチ  ×365 (BDRip1080p Ma10p)",
+          "maps_to_tmdb_seasons": [
+            2
+          ]
+        },
+        {
+          "local_group_name": "[DewDream] ひだまりスケッチ ×☆☆☆ (BDRip1080p Ma10p)",
+          "maps_to_tmdb_seasons": [
+            3
+          ]
+        },
+        {
+          "local_group_name": "[DewDream] ひだまりスケッチ ×ハニカム (BDRip1080p Ma10)",
+          "maps_to_tmdb_seasons": [
+            4
+          ]
+        }
+      ],
+      "file_mapping_count": 49,
+      "unmatched_count": 0,
+      "conflict_count": 0
+    }
+  },
+  "movie_candidate_result": {
+    "status": "ok",
+    "type": "movie",
+    "title_candidate": "ひだまりスケッチ",
+    "timing": {
+      "analysis_seconds": 98.602
+    },
+    "collection_analysis": {
+      "is_collection": false,
+      "confidence": "High",
+      "reason": "均为TV动画分集与特典，无电影正片",
+      "file_mapping_count": 0,
+      "unmatched_count": 189,
+      "conflict_count": 1,
+      "movie_like_paths": []
+    }
+  },
+  "final_type": "tv"
+}

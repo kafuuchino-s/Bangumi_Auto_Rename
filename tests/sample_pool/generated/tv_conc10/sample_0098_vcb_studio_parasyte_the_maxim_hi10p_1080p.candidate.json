@@ -1,0 +1,423 @@
+{
+  "status": "ok",
+  "type": "tv",
+  "title_candidate": "Parasyte: The Maxim",
+  "tmdb_name": "Parasyte -the maxim-",
+  "tmdb_id": 61459,
+  "file_mapping": [
+    {
+      "source_index": 1,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 1,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 2,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 2,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 3,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 3,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 4,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 4,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 5,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 5,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 6,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 6,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 7,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 7,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 8,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 8,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 9,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 9,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 10,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 10,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 11,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 11,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 12,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 12,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 13,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 13,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 14,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 14,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 15,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 15,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 16,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 16,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 17,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 17,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 18,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 18,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 19,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 19,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 20,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 20,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 21,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 21,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 22,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 22,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 23,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 23,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 24,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 24,
+      "episode_type": "regular",
+      "confidence": "High"
+    }
+  ],
+  "analysis_result": {
+    "confidence": "High",
+    "reason": "本地正片文件使用连续编号 [01]–[24]，与 TMDB Season 1 的 24 集一一对应，且作品首播时间与集数规模均吻合。",
+    "season_mapping": [
+      {
+        "local_group_name": "Parasyte：The Maxim",
+        "maps_to_tmdb_seasons": [
+          1
+        ]
+      }
+    ],
+    "file_mapping": [
+      {
+        "source_index": 1,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 1,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 2,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 2,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 3,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 3,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 4,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 4,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 5,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 5,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 6,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 6,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 7,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 7,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 8,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 8,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 9,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 9,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 10,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 10,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 11,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 11,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 12,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 12,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 13,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 13,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 14,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 14,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 15,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 15,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 16,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 16,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 17,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 17,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 18,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 18,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 19,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 19,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 20,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 20,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 21,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 21,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 22,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 22,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 23,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 23,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 24,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 24,
+        "episode_type": "regular",
+        "confidence": "High"
+      }
+    ],
+    "unmatched_files": [
+      "SPs/[VCB-Studio] Parasyte：The Maxim [CM01][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[VCB-Studio] Parasyte：The Maxim [CM02][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[VCB-Studio] Parasyte：The Maxim [Menu01][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[VCB-Studio] Parasyte：The Maxim [Menu02][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[VCB-Studio] Parasyte：The Maxim [Menu03][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[VCB-Studio] Parasyte：The Maxim [Menu04][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[VCB-Studio] Parasyte：The Maxim [Menu05][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[VCB-Studio] Parasyte：The Maxim [Menu06][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[VCB-Studio] Parasyte：The Maxim [NCED01][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[VCB-Studio] Parasyte：The Maxim [NCED02][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[VCB-Studio] Parasyte：The Maxim [NCED03][Hi10p_1080p][x264_flac].mkv",
+      "SPs/[VCB-Studio] Parasyte：The Maxim [NCOP][Hi10p_1080p][x264_flac].mkv"
+    ],
+    "conflict_details": [],
+    "extra_notes": "正片文件名中的方括号集数 [01]–[24] 与 TMDB Season 1 的 S01E01–S01E24 直接对应；SPs/ 目录下的 CM、Menu、NCOP、NCED 为特典素材，本次提供的 TMDB 列表中未给出可用的 Season 0 对应条目，因此不映射。"
+  }
+}

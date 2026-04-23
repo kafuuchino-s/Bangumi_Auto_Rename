@@ -1,0 +1,59 @@
+{
+  "status": "ok",
+  "type": "movie",
+  "title_candidate": "Danshi Koukousei no Nichijou",
+  "timing": {
+    "analysis_seconds": 15.661
+  },
+  "collection_analysis": {
+    "is_collection": false,
+    "collection_name": "男子高校生の日常",
+    "confidence": "High",
+    "reason": "这是单部TV动画及其特典，不是电影合集",
+    "file_mapping": [],
+    "unmatched_files": [
+      "[VCB-Studio] Danshi Kokosei no Nichijou [01][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Danshi Kokosei no Nichijou [02][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Danshi Kokosei no Nichijou [03][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Danshi Kokosei no Nichijou [04][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Danshi Kokosei no Nichijou [05][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Danshi Kokosei no Nichijou [06][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Danshi Kokosei no Nichijou [07][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Danshi Kokosei no Nichijou [08][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Danshi Kokosei no Nichijou [09][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Danshi Kokosei no Nichijou [10][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Danshi Kokosei no Nichijou [11][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Danshi Kokosei no Nichijou [12v2][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [CM01][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [CM02][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [Menu01_1v2][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [Menu02_1][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [Menu03_1][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [Menu04_1][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [Menu05_1][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [Menu06_1][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [NCED01][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [NCED_Web Broadcasting_1][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [NCED_Web Broadcasting_2][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [NCOP01][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [NCOP_Web Broadcasting][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [PV01v2][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [PV02][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [PV03][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [PV04][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [PV05][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [SP01][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [SP02][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [SP03][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [SP04][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [SP05][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [SP06][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [SP_EP08][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [SP_Web Broadcasting][Ma10p_1080p][x265_flac].mkv"
+    ],
+    "conflict_details": [
+      "目录为TV动画正片及特典，不是电影合集"
+    ],
+    "extra_notes": null
+  }
+}

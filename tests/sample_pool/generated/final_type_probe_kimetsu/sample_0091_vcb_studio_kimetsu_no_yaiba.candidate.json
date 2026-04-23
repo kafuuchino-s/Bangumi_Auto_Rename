@@ -1,0 +1,410 @@
+{
+  "status": "ok",
+  "type": "tv",
+  "title_candidate": "Kimetsu no Yaiba",
+  "tmdb_name": "Demon Slayer: Kimetsu no Yaiba",
+  "tmdb_id": 85937,
+  "timing": {
+    "analysis_seconds": 48.282
+  },
+  "file_mapping": [
+    {
+      "source_index": 23,
+      "file_path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [01][Ma10p_1080p][x265_flac_aac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 1,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 24,
+      "file_path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [02][Ma10p_1080p][x265_flac_aac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 2,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 25,
+      "file_path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [03][Ma10p_1080p][x265_flac_aac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 3,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 26,
+      "file_path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [04][Ma10p_1080p][x265_flac_aac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 4,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 27,
+      "file_path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [05][Ma10p_1080p][x265_flac_aac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 5,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 28,
+      "file_path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [06][Ma10p_1080p][x265_flac_aac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 6,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 29,
+      "file_path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [07][Ma10p_1080p][x265_flac_aac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 7,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 30,
+      "file_path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [08][Ma10p_1080p][x265_flac_aac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 8,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 31,
+      "file_path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [09][Ma10p_1080p][x265_flac_aac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 9,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 32,
+      "file_path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [10][Ma10p_1080p][x265_flac_aac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 10,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 33,
+      "file_path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [11][Ma10p_1080p][x265_flac_aac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 11,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 34,
+      "file_path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [12][Ma10p_1080p][x265_flac_aac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 12,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 35,
+      "file_path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [13][Ma10p_1080p][x265_flac_aac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 13,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 36,
+      "file_path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [14][Ma10p_1080p][x265_flac_aac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 14,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 37,
+      "file_path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [15][Ma10p_1080p][x265_flac_aac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 15,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 38,
+      "file_path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [16][Ma10p_1080p][x265_flac_aac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 16,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 39,
+      "file_path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [17][Ma10p_1080p][x265_flac_aac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 17,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 40,
+      "file_path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [18][Ma10p_1080p][x265_flac_aac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 18,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 41,
+      "file_path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [19][Ma10p_1080p][x265_flac_aac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 19,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 42,
+      "file_path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [20][Ma10p_1080p][x265_flac_aac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 20,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 43,
+      "file_path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [21][Ma10p_1080p][x265_flac_aac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 21,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 44,
+      "file_path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [22][Ma10p_1080p][x265_flac_aac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 22,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 45,
+      "file_path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [23][Ma10p_1080p][x265_flac_aac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 23,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 46,
+      "file_path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [24][Ma10p_1080p][x265_flac_aac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 24,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 47,
+      "file_path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [25][Ma10p_1080p][x265_flac_aac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 25,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 48,
+      "file_path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [26][Ma10p_1080p][x265_flac_aac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 26,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 79,
+      "file_path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Mugen Ressha Hen [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [27][Ma10p_1080p][x265_flac_aac].mkv",
+      "tmdb_season": 2,
+      "tmdb_episode": 1,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 80,
+      "file_path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Mugen Ressha Hen [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [28][Ma10p_1080p][x265_flac].mkv",
+      "tmdb_season": 2,
+      "tmdb_episode": 2,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 81,
+      "file_path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Mugen Ressha Hen [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [29][Ma10p_1080p][x265_flac].mkv",
+      "tmdb_season": 2,
+      "tmdb_episode": 3,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 82,
+      "file_path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Mugen Ressha Hen [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [30][Ma10p_1080p][x265_flac].mkv",
+      "tmdb_season": 2,
+      "tmdb_episode": 4,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 83,
+      "file_path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Mugen Ressha Hen [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [31][Ma10p_1080p][x265_flac].mkv",
+      "tmdb_season": 2,
+      "tmdb_episode": 5,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 84,
+      "file_path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Mugen Ressha Hen [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [32][Ma10p_1080p][x265_flac].mkv",
+      "tmdb_season": 2,
+      "tmdb_episode": 6,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 85,
+      "file_path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Mugen Ressha Hen [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [33][Ma10p_1080p][x265_flac].mkv",
+      "tmdb_season": 2,
+      "tmdb_episode": 7,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 97,
+      "file_path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [34][Ma10p_1080p][x265_flac].mkv",
+      "tmdb_season": 3,
+      "tmdb_episode": 1,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 98,
+      "file_path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [35][Ma10p_1080p][x265_flac].mkv",
+      "tmdb_season": 3,
+      "tmdb_episode": 2,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 99,
+      "file_path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [36][Ma10p_1080p][x265_flac].mkv",
+      "tmdb_season": 3,
+      "tmdb_episode": 3,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 100,
+      "file_path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [37][Ma10p_1080p][x265_flac].mkv",
+      "tmdb_season": 3,
+      "tmdb_episode": 4,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 101,
+      "file_path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [38][Ma10p_1080p][x265_flac].mkv",
+      "tmdb_season": 3,
+      "tmdb_episode": 5,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 102,
+      "file_path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [39][Ma10p_1080p][x265_flac].mkv",
+      "tmdb_season": 3,
+      "tmdb_episode": 6,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 103,
+      "file_path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [40][Ma10p_1080p][x265_flac].mkv",
+      "tmdb_season": 3,
+      "tmdb_episode": 7,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 104,
+      "file_path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [41][Ma10p_1080p][x265_flac].mkv",
+      "tmdb_season": 3,
+      "tmdb_episode": 8,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 105,
+      "file_path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [42][Ma10p_1080p][x265_flac].mkv",
+      "tmdb_season": 3,
+      "tmdb_episode": 9,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 106,
+      "file_path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [43][Ma10p_1080p][x265_flac].mkv",
+      "tmdb_season": 3,
+      "tmdb_episode": 10,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 107,
+      "file_path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [44][Ma10p_1080p][x265_flac].mkv",
+      "tmdb_season": 3,
+      "tmdb_episode": 11,
+      "episode_type": "regular",
+      "confidence": "High"
+    }
+  ],
+  "conflict_details": [],
+  "analysis_result": {
+    "confidence": "High",
+    "reason": "正片可按目录集号直接对应TMDB季内编号。",
+    "season_mapping": [
+      {
+        "local_group_name": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]",
+        "maps_to_tmdb_seasons": [
+          1
+        ]
+      },
+      {
+        "local_group_name": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Mugen Ressha Hen [Ma10p_1080p]",
+        "maps_to_tmdb_seasons": [
+          2
+        ]
+      },
+      {
+        "local_group_name": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [Ma10p_1080p]",
+        "maps_to_tmdb_seasons": [
+          3
+        ]
+      }
+    ],
+    "file_mapping_count": 44,
+    "unmatched_count": 0,
+    "conflict_count": 0
+  },
+  "hydration_notes": {
+    "hydrated_count": 44,
+    "examples": [
+      "hydrated:23:[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [01][Ma10p_1080p][x265_flac_aac].mkv",
+      "hydrated:24:[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [02][Ma10p_1080p][x265_flac_aac].mkv",
+      "hydrated:25:[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [03][Ma10p_1080p][x265_flac_aac].mkv",
+      "hydrated:26:[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [04][Ma10p_1080p][x265_flac_aac].mkv",
+      "hydrated:27:[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [05][Ma10p_1080p][x265_flac_aac].mkv"
+    ]
+  },
+  "task_plan": {
+    "is_movie": false,
+    "ai_type": "tv",
+    "tv_available": true,
+    "movie_available": false,
+    "selected_confidence": "High"
+  },
+  "final_type": "tv"
+}

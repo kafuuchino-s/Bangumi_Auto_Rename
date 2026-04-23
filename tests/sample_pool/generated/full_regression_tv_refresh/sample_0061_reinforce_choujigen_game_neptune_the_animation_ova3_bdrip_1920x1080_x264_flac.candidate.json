@@ -1,0 +1,43 @@
+{
+  "status": "ok",
+  "type": "tv",
+  "title_candidate": "Choujigen Game Neptune The Animation",
+  "tmdb_name": "Hyperdimension Neptunia",
+  "tmdb_id": 63525,
+  "timing": {
+    "analysis_seconds": 26.361
+  },
+  "file_mapping": [
+    {
+      "source_index": 1,
+      "file_path": "[ReinForce] Choujigen Game Neptune The Animation OVA3 (BDRip 1920x1080 x264 FLAC).mkv",
+      "tmdb_season": 0,
+      "tmdb_episode": 3,
+      "episode_type": "special",
+      "confidence": "Low"
+    }
+  ],
+  "conflict_details": [],
+  "analysis_result": {
+    "confidence": "Low",
+    "reason": "OVA3 推定对应第 3 个特典",
+    "season_mapping": [],
+    "file_mapping_count": 1,
+    "unmatched_count": 0,
+    "conflict_count": 0
+  },
+  "hydration_notes": {
+    "hydrated_count": 1,
+    "examples": [
+      "hydrated:1:[ReinForce] Choujigen Game Neptune The Animation OVA3 (BDRip 1920x1080 x264 FLAC).mkv"
+    ]
+  },
+  "task_plan": {
+    "is_movie": false,
+    "ai_type": "tv",
+    "tv_available": true,
+    "movie_available": false,
+    "selected_confidence": "High"
+  },
+  "final_type": "tv"
+}

@@ -1,0 +1,1014 @@
+{
+  "status": "ok",
+  "type": "tv",
+  "title_candidate": "Minami-ke",
+  "tmdb_name": "Minami-ke",
+  "tmdb_id": 56354,
+  "file_mapping": [
+    {
+      "source_index": 29,
+      "file_path": null,
+      "tmdb_season": 0,
+      "tmdb_episode": 1,
+      "episode_type": "special",
+      "confidence": "High"
+    },
+    {
+      "source_index": 31,
+      "file_path": null,
+      "tmdb_season": 0,
+      "tmdb_episode": 2,
+      "episode_type": "special",
+      "confidence": "High"
+    },
+    {
+      "source_index": 30,
+      "file_path": null,
+      "tmdb_season": 0,
+      "tmdb_episode": 3,
+      "episode_type": "special",
+      "confidence": "High"
+    },
+    {
+      "source_index": 1,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 1,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 2,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 2,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 3,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 3,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 4,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 4,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 5,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 5,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 6,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 6,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 7,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 7,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 8,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 8,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 9,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 9,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 10,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 10,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 11,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 11,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 12,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 12,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 13,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 13,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 62,
+      "file_path": null,
+      "tmdb_season": 2,
+      "tmdb_episode": 1,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 63,
+      "file_path": null,
+      "tmdb_season": 2,
+      "tmdb_episode": 2,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 64,
+      "file_path": null,
+      "tmdb_season": 2,
+      "tmdb_episode": 3,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 65,
+      "file_path": null,
+      "tmdb_season": 2,
+      "tmdb_episode": 4,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 66,
+      "file_path": null,
+      "tmdb_season": 2,
+      "tmdb_episode": 5,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 67,
+      "file_path": null,
+      "tmdb_season": 2,
+      "tmdb_episode": 6,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 68,
+      "file_path": null,
+      "tmdb_season": 2,
+      "tmdb_episode": 7,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 69,
+      "file_path": null,
+      "tmdb_season": 2,
+      "tmdb_episode": 8,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 70,
+      "file_path": null,
+      "tmdb_season": 2,
+      "tmdb_episode": 9,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 71,
+      "file_path": null,
+      "tmdb_season": 2,
+      "tmdb_episode": 10,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 72,
+      "file_path": null,
+      "tmdb_season": 2,
+      "tmdb_episode": 11,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 73,
+      "file_path": null,
+      "tmdb_season": 2,
+      "tmdb_episode": 12,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 74,
+      "file_path": null,
+      "tmdb_season": 2,
+      "tmdb_episode": 13,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 35,
+      "file_path": null,
+      "tmdb_season": 3,
+      "tmdb_episode": 1,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 36,
+      "file_path": null,
+      "tmdb_season": 3,
+      "tmdb_episode": 2,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 37,
+      "file_path": null,
+      "tmdb_season": 3,
+      "tmdb_episode": 3,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 38,
+      "file_path": null,
+      "tmdb_season": 3,
+      "tmdb_episode": 4,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 39,
+      "file_path": null,
+      "tmdb_season": 3,
+      "tmdb_episode": 5,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 40,
+      "file_path": null,
+      "tmdb_season": 3,
+      "tmdb_episode": 6,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 41,
+      "file_path": null,
+      "tmdb_season": 3,
+      "tmdb_episode": 7,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 42,
+      "file_path": null,
+      "tmdb_season": 3,
+      "tmdb_episode": 8,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 43,
+      "file_path": null,
+      "tmdb_season": 3,
+      "tmdb_episode": 9,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 44,
+      "file_path": null,
+      "tmdb_season": 3,
+      "tmdb_episode": 10,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 45,
+      "file_path": null,
+      "tmdb_season": 3,
+      "tmdb_episode": 11,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 46,
+      "file_path": null,
+      "tmdb_season": 3,
+      "tmdb_episode": 12,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 47,
+      "file_path": null,
+      "tmdb_season": 3,
+      "tmdb_episode": 13,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 92,
+      "file_path": null,
+      "tmdb_season": 4,
+      "tmdb_episode": 1,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 93,
+      "file_path": null,
+      "tmdb_season": 4,
+      "tmdb_episode": 2,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 94,
+      "file_path": null,
+      "tmdb_season": 4,
+      "tmdb_episode": 3,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 95,
+      "file_path": null,
+      "tmdb_season": 4,
+      "tmdb_episode": 4,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 96,
+      "file_path": null,
+      "tmdb_season": 4,
+      "tmdb_episode": 5,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 97,
+      "file_path": null,
+      "tmdb_season": 4,
+      "tmdb_episode": 6,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 98,
+      "file_path": null,
+      "tmdb_season": 4,
+      "tmdb_episode": 7,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 99,
+      "file_path": null,
+      "tmdb_season": 4,
+      "tmdb_episode": 8,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 100,
+      "file_path": null,
+      "tmdb_season": 4,
+      "tmdb_episode": 9,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 101,
+      "file_path": null,
+      "tmdb_season": 4,
+      "tmdb_episode": 10,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 102,
+      "file_path": null,
+      "tmdb_season": 4,
+      "tmdb_episode": 11,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 103,
+      "file_path": null,
+      "tmdb_season": 4,
+      "tmdb_episode": 12,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 104,
+      "file_path": null,
+      "tmdb_season": 4,
+      "tmdb_episode": 13,
+      "episode_type": "regular",
+      "confidence": "High"
+    }
+  ],
+  "analysis_result": {
+    "confidence": "Medium",
+    "reason": "本地文件中，Minami-ke 主线各分季目录的 01-13 号文件可直接按集号对应到 TMDB 的 S01-S04；OAD 目录中的 Betsubara / Omatase / Natsuyasumi 三个文件与 Season 0 的三条特别篇标题一致。其余文件均为 CM、Menu、NCOP、NCED 或版本变体，不属于 TMDB 已存在的剧集条目。",
+    "season_mapping": [
+      {
+        "local_group_name": "[VCB-Studio] Minami-ke [Ma10p_1080p]",
+        "maps_to_tmdb_seasons": [
+          1
+        ]
+      },
+      {
+        "local_group_name": "[VCB-Studio] Minami-ke Okawari [Ma10p_1080p]",
+        "maps_to_tmdb_seasons": [
+          2
+        ]
+      },
+      {
+        "local_group_name": "[VCB-Studio] Minami-ke Okaeri [Ma10p_1080p]",
+        "maps_to_tmdb_seasons": [
+          3
+        ]
+      },
+      {
+        "local_group_name": "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]",
+        "maps_to_tmdb_seasons": [
+          4
+        ]
+      }
+    ],
+    "file_mapping": [
+      {
+        "source_index": 29,
+        "file_path": null,
+        "tmdb_season": 0,
+        "tmdb_episode": 1,
+        "episode_type": "special",
+        "confidence": "High"
+      },
+      {
+        "source_index": 31,
+        "file_path": null,
+        "tmdb_season": 0,
+        "tmdb_episode": 2,
+        "episode_type": "special",
+        "confidence": "High"
+      },
+      {
+        "source_index": 30,
+        "file_path": null,
+        "tmdb_season": 0,
+        "tmdb_episode": 3,
+        "episode_type": "special",
+        "confidence": "High"
+      },
+      {
+        "source_index": 1,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 1,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 2,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 2,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 3,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 3,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 4,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 4,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 5,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 5,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 6,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 6,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 7,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 7,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 8,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 8,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 9,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 9,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 10,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 10,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 11,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 11,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 12,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 12,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 13,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 13,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 62,
+        "file_path": null,
+        "tmdb_season": 2,
+        "tmdb_episode": 1,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 63,
+        "file_path": null,
+        "tmdb_season": 2,
+        "tmdb_episode": 2,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 64,
+        "file_path": null,
+        "tmdb_season": 2,
+        "tmdb_episode": 3,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 65,
+        "file_path": null,
+        "tmdb_season": 2,
+        "tmdb_episode": 4,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 66,
+        "file_path": null,
+        "tmdb_season": 2,
+        "tmdb_episode": 5,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 67,
+        "file_path": null,
+        "tmdb_season": 2,
+        "tmdb_episode": 6,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 68,
+        "file_path": null,
+        "tmdb_season": 2,
+        "tmdb_episode": 7,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 69,
+        "file_path": null,
+        "tmdb_season": 2,
+        "tmdb_episode": 8,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 70,
+        "file_path": null,
+        "tmdb_season": 2,
+        "tmdb_episode": 9,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 71,
+        "file_path": null,
+        "tmdb_season": 2,
+        "tmdb_episode": 10,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 72,
+        "file_path": null,
+        "tmdb_season": 2,
+        "tmdb_episode": 11,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 73,
+        "file_path": null,
+        "tmdb_season": 2,
+        "tmdb_episode": 12,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 74,
+        "file_path": null,
+        "tmdb_season": 2,
+        "tmdb_episode": 13,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 35,
+        "file_path": null,
+        "tmdb_season": 3,
+        "tmdb_episode": 1,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 36,
+        "file_path": null,
+        "tmdb_season": 3,
+        "tmdb_episode": 2,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 37,
+        "file_path": null,
+        "tmdb_season": 3,
+        "tmdb_episode": 3,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 38,
+        "file_path": null,
+        "tmdb_season": 3,
+        "tmdb_episode": 4,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 39,
+        "file_path": null,
+        "tmdb_season": 3,
+        "tmdb_episode": 5,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 40,
+        "file_path": null,
+        "tmdb_season": 3,
+        "tmdb_episode": 6,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 41,
+        "file_path": null,
+        "tmdb_season": 3,
+        "tmdb_episode": 7,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 42,
+        "file_path": null,
+        "tmdb_season": 3,
+        "tmdb_episode": 8,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 43,
+        "file_path": null,
+        "tmdb_season": 3,
+        "tmdb_episode": 9,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 44,
+        "file_path": null,
+        "tmdb_season": 3,
+        "tmdb_episode": 10,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 45,
+        "file_path": null,
+        "tmdb_season": 3,
+        "tmdb_episode": 11,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 46,
+        "file_path": null,
+        "tmdb_season": 3,
+        "tmdb_episode": 12,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 47,
+        "file_path": null,
+        "tmdb_season": 3,
+        "tmdb_episode": 13,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 92,
+        "file_path": null,
+        "tmdb_season": 4,
+        "tmdb_episode": 1,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 93,
+        "file_path": null,
+        "tmdb_season": 4,
+        "tmdb_episode": 2,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 94,
+        "file_path": null,
+        "tmdb_season": 4,
+        "tmdb_episode": 3,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 95,
+        "file_path": null,
+        "tmdb_season": 4,
+        "tmdb_episode": 4,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 96,
+        "file_path": null,
+        "tmdb_season": 4,
+        "tmdb_episode": 5,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 97,
+        "file_path": null,
+        "tmdb_season": 4,
+        "tmdb_episode": 6,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 98,
+        "file_path": null,
+        "tmdb_season": 4,
+        "tmdb_episode": 7,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 99,
+        "file_path": null,
+        "tmdb_season": 4,
+        "tmdb_episode": 8,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 100,
+        "file_path": null,
+        "tmdb_season": 4,
+        "tmdb_episode": 9,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 101,
+        "file_path": null,
+        "tmdb_season": 4,
+        "tmdb_episode": 10,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 102,
+        "file_path": null,
+        "tmdb_season": 4,
+        "tmdb_episode": 11,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 103,
+        "file_path": null,
+        "tmdb_season": 4,
+        "tmdb_episode": 12,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 104,
+        "file_path": null,
+        "tmdb_season": 4,
+        "tmdb_episode": 13,
+        "episode_type": "regular",
+        "confidence": "High"
+      }
+    ],
+    "unmatched_files": [
+      "[VCB-Studio] Minami-ke [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke [CM Collection 01][Ma10p_720p][x265_flac].mkv",
+      "[VCB-Studio] Minami-ke [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke [CM Collection 02][Ma10p_720p][x265_flac].mkv",
+      "[VCB-Studio] Minami-ke [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke [CM Collection 03][Ma10p_720p][x265_flac].mkv",
+      "[VCB-Studio] Minami-ke [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke [IV][Ma10p_720p][x265_aac].mkv",
+      "[VCB-Studio] Minami-ke [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke [Menu01_1][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Minami-ke [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke [Menu01_2][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Minami-ke [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke [Menu02_1][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Minami-ke [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke [Menu02_2][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Minami-ke [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke [Menu03_1][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Minami-ke [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke [Menu03_2][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Minami-ke [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke [Menu04_1][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Minami-ke [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke [Menu04_2][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Minami-ke [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke [NCED][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Minami-ke [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke [NCED_EP13][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Minami-ke [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke [NCOP][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Minami-ke OAD [Ma10p_720p]/SPs/[VCB-Studio] Minami-ke Betsubara [Menu][Ma10p_720p][x265_ac3].mkv",
+      "[VCB-Studio] Minami-ke OAD [Ma10p_720p]/SPs/[VCB-Studio] Minami-ke Natsuyasumi [Menu][Ma10p_720p][x265_ac3].mkv",
+      "[VCB-Studio] Minami-ke OAD [Ma10p_720p]/SPs/[VCB-Studio] Minami-ke Omatase [Menu][Ma10p_720p][x265_ac3].mkv",
+      "[VCB-Studio] Minami-ke Okaeri [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Okaeri [CM Collection 01][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Minami-ke Okaeri [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Okaeri [CM Collection 02][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Minami-ke Okaeri [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Okaeri [CM Collection 03][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Minami-ke Okaeri [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Okaeri [Menu01_1][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Minami-ke Okaeri [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Okaeri [Menu01_2][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Minami-ke Okaeri [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Okaeri [Menu02_1][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Minami-ke Okaeri [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Okaeri [Menu02_2][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Minami-ke Okaeri [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Okaeri [Menu03_1][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Minami-ke Okaeri [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Okaeri [Menu03_2][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Minami-ke Okaeri [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Okaeri [Menu04_1][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Minami-ke Okaeri [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Okaeri [Menu04_2][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Minami-ke Okaeri [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Okaeri [NCED Full Size Ver.][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Minami-ke Okaeri [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Okaeri [NCED][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Minami-ke Okaeri [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Okaeri [NCOP][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Minami-ke Okawari [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Okawari [CM01][Ma10p_720p][x265_flac].mkv",
+      "[VCB-Studio] Minami-ke Okawari [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Okawari [CM02][Ma10p_720p][x265_flac].mkv",
+      "[VCB-Studio] Minami-ke Okawari [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Okawari [CM03][Ma10p_720p][x265_flac].mkv",
+      "[VCB-Studio] Minami-ke Okawari [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Okawari [Menu01][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Minami-ke Okawari [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Okawari [Menu02_1][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Minami-ke Okawari [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Okawari [Menu02_2][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Minami-ke Okawari [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Okawari [Menu03_1][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Minami-ke Okawari [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Okawari [Menu03_2][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Minami-ke Okawari [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Okawari [Menu04_1][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Minami-ke Okawari [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Okawari [Menu04_2][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Minami-ke Okawari [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Okawari [NCED Full Size Ver.][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Minami-ke Okawari [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Okawari [NCED01][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Minami-ke Okawari [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Okawari [NCED02][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Minami-ke Okawari [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Okawari [NCED03][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Minami-ke Okawari [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Okawari [NCED04][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Minami-ke Okawari [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Okawari [NCED05][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Minami-ke Okawari [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Okawari [NCOP][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Tadaima [11 NCED Ver.][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Tadaima [13 NCED Ver.][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Tadaima [CM01][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Tadaima [CM02][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Tadaima [CM03][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Tadaima [CM04][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Tadaima [CM05][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Tadaima [CM06][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Tadaima [CM07][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Tadaima [CM08][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Tadaima [CM09][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Tadaima [CM10][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Tadaima [CM11][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Tadaima [CM12][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Tadaima [CM13][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Tadaima [CM14][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Tadaima [CM15][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Tadaima [CM16][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Tadaima [CM17][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Tadaima [CM18][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Tadaima [Menu01_1][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Tadaima [Menu01_2][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Tadaima [Menu01_3][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Tadaima [Menu01_4][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Tadaima [Menu02_1][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Tadaima [Menu02_2][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Tadaima [Menu02_3][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Tadaima [Menu02_4][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Tadaima [Menu03_1][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Tadaima [Menu03_2][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Tadaima [Menu03_3][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Tadaima [Menu03_4][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Tadaima [Menu04_1][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Tadaima [Menu04_2][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Tadaima [Menu04_3][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Tadaima [Menu04_4][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Tadaima [Menu04_5][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Tadaima [Menu04_6][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Tadaima [NCED][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Tadaima [NCOP][Ma10p_1080p][x265_flac].mkv"
+    ],
+    "conflict_details": [],
+    "extra_notes": "Season 2-4 的正片仅给出了分季目录名与 01-13 编号，未在题面中展开对应 TMDB 集目，因此按目录标题+顺序映射；Season 0 的三集 OAD 依据标题与 TMDB 特别篇标题匹配。其余 CM / Menu / NCOP / NCED / 变体文件均视为附属内容，不做 TMDB 集映射。"
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "status": "ok",
+  "type": "movie",
+  "title_candidate": "Strike Witches: Road to Berlin",
+  "timing": {
+    "analysis_seconds": 12.678
+  },
+  "collection_analysis": {
+    "is_collection": false,
+    "collection_name": "Strike Witches: Road to Berlin",
+    "confidence": "High",
+    "reason": "这是单部TV动画及特典，不是电影合集",
+    "file_mapping": [],
+    "unmatched_files": [
+      "[Moozzi2] Strike Witches Road to Berlin - 01 (BD 1920x1080 x265-10Bit Flac).mkv",
+      "[Moozzi2] Strike Witches Road to Berlin - 02 (BD 1920x1080 x265-10Bit Flac).mkv",
+      "[Moozzi2] Strike Witches Road to Berlin - 03 (BD 1920x1080 x265-10Bit Flac).mkv",
+      "[Moozzi2] Strike Witches Road to Berlin - 04 (BD 1920x1080 x265-10Bit Flac).mkv",
+      "[Moozzi2] Strike Witches Road to Berlin - 05 (BD 1920x1080 x265-10Bit Flac).mkv",
+      "[Moozzi2] Strike Witches Road to Berlin - 06 (BD 1920x1080 x265-10Bit Flac).mkv",
+      "[Moozzi2] Strike Witches Road to Berlin - 07 (BD 1920x1080 x265-10Bit Flac).mkv",
+      "[Moozzi2] Strike Witches Road to Berlin - 08 (BD 1920x1080 x265-10Bit Flac).mkv",
+      "[Moozzi2] Strike Witches Road to Berlin - 09 (BD 1920x1080 x265-10Bit Flac).mkv",
+      "[Moozzi2] Strike Witches Road to Berlin - 10 (BD 1920x1080 x265-10Bit Flac).mkv",
+      "[Moozzi2] Strike Witches Road to Berlin - 11 (BD 1920x1080 x265-10Bit Flac).mkv",
+      "[Moozzi2] Strike Witches Road to Berlin - 12 END (BD 1920x1080 x265-10Bit Flac).mkv",
+      "EXTRA/[Moozzi2] Strike Witches Road to Berlin [SP01] NCOP (BD 1920x1080 x265-10Bit Flac).mkv",
+      "EXTRA/[Moozzi2] Strike Witches Road to Berlin [SP02] NCED - 01 (BD 1920x1080 x265-10Bit Flac).mkv",
+      "EXTRA/[Moozzi2] Strike Witches Road to Berlin [SP02] NCED - 02 (BD 1920x1080 x265-10Bit Flac).mkv",
+      "EXTRA/[Moozzi2] Strike Witches Road to Berlin [SP02] NCED - 03 (BD 1920x1080 x265-10Bit Flac).mkv",
+      "EXTRA/[Moozzi2] Strike Witches Road to Berlin [SP02] NCED - 04 (BD 1920x1080 x265-10Bit Flac).mkv",
+      "EXTRA/[Moozzi2] Strike Witches Road to Berlin [SP02] NCED - 05 (BD 1920x1080 x265-10Bit Flac).mkv",
+      "EXTRA/[Moozzi2] Strike Witches Road to Berlin [SP02] NCED - 06 (BD 1920x1080 x265-10Bit Flac).mkv",
+      "EXTRA/[Moozzi2] Strike Witches Road to Berlin [SP02] NCED - 07 (BD 1920x1080 x265-10Bit Flac).mkv",
+      "EXTRA/[Moozzi2] Strike Witches Road to Berlin [SP02] NCED - 08 (BD 1920x1080 x265-10Bit Flac).mkv",
+      "EXTRA/[Moozzi2] Strike Witches Road to Berlin [SP02] NCED - 09 (BD 1920x1080 x265-10Bit Flac).mkv",
+      "EXTRA/[Moozzi2] Strike Witches Road to Berlin [SP02] NCED - 10 (BD 1920x1080 x265-10Bit Flac).mkv",
+      "EXTRA/[Moozzi2] Strike Witches Road to Berlin [SP02] NCED - 11 (BD 1920x1080 x265-10Bit Flac).mkv",
+      "EXTRA/[Moozzi2] Strike Witches Road to Berlin [SP02] NCED - 12 (BD 1920x1080 x265-10Bit Flac).mkv",
+      "EXTRA/[Moozzi2] Strike Witches Road to Berlin [SP03] PV - 01 (BD 1920x1080 x265-10Bit Flac).mkv",
+      "EXTRA/[Moozzi2] Strike Witches Road to Berlin [SP03] PV - 02 (BD 1920x1080 x265-10Bit Flac).mkv",
+      "EXTRA/[Moozzi2] Strike Witches Road to Berlin [SP04] TV-CM Collection (BD 1920x1080 x265-10Bit Flac).mkv",
+      "EXTRA/[Moozzi2] Strike Witches Road to Berlin [SP05] BD & DVD Selling Notice CM Collection (BD 1920x1080 x265-10Bit Flac).mkv"
+    ],
+    "conflict_details": [
+      "文件均为01-12集及特典，非多部电影合集"
+    ],
+    "extra_notes": null
+  }
+}

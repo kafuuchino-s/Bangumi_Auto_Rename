@@ -1,0 +1,1457 @@
+{
+  "root_name": "[ReinForce] Nanatsu no Taizai (BDRip 1920x1080 x264 FLAC)",
+  "files": [
+    {
+      "path": "Gekijouban Nanatsu no Taizai ~Tenkuu no Torawarebito~/[ReinForce] Gekijouban Nanatsu no Taizai ~Tenkuu no Torawarebito~ (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 116813
+    },
+    {
+      "path": "Gekijouban Nanatsu no Taizai ~Tenkuu no Torawarebito~/[ReinForce] Gekijouban Nanatsu no Taizai ~Tenkuu no Torawarebito~ (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 5898605148
+    },
+    {
+      "path": "Gekijouban Nanatsu no Taizai ~Tenkuu no Torawarebito~/Extra/Gekijouban Nanatsu no Taizai ~Tenkuu no Torawarebito~ DTS-HD MA 5.1.mka",
+      "size": 3197931603
+    },
+    {
+      "path": "Gekijouban Nanatsu no Taizai ~Tenkuu no Torawarebito~/Extra/Menu.mkv",
+      "size": 244550263
+    },
+    {
+      "path": "OAD/[ReinForce] Nanatsu no Taizai OAD 1 (DVDRip 852x480 x264 FLAC).default.chs.ass",
+      "size": 32771
+    },
+    {
+      "path": "OAD/[ReinForce] Nanatsu no Taizai OAD 1 (DVDRip 852x480 x264 FLAC).mkv",
+      "size": 376378358
+    },
+    {
+      "path": "OAD/[ReinForce] Nanatsu no Taizai OAD 2 (DVDRip 852x480 x264 FLAC).default.chs.ass",
+      "size": 27563
+    },
+    {
+      "path": "OAD/[ReinForce] Nanatsu no Taizai OAD 2 (DVDRip 852x480 x264 FLAC).mkv",
+      "size": 301332812
+    },
+    {
+      "path": "OAD/[ReinForce] Nanatsu no Taizai OAD 3 (DVDRip 852x480 x264 FLAC).default.chs.ass",
+      "size": 27911
+    },
+    {
+      "path": "OAD/[ReinForce] Nanatsu no Taizai OAD 3 (DVDRip 852x480 x264 FLAC).mkv",
+      "size": 380364346
+    },
+    {
+      "path": "OAD/Menu/Menu.flac",
+      "size": 5599836
+    },
+    {
+      "path": "OAD/Menu/OAD 1.png",
+      "size": 723904
+    },
+    {
+      "path": "OAD/Menu/OAD 2.png",
+      "size": 585838
+    },
+    {
+      "path": "OAD/Menu/OAD 3.png",
+      "size": 737352
+    },
+    {
+      "path": "OAD/OAD3/Scan 001.png",
+      "size": 47272479
+    },
+    {
+      "path": "OAD/OAD3/Scan 002.png",
+      "size": 10072900
+    },
+    {
+      "path": "S1/[ReinForce] Nanatsu no Taizai - 01 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 36929
+    },
+    {
+      "path": "S1/[ReinForce] Nanatsu no Taizai - 01 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 1845398150
+    },
+    {
+      "path": "S1/[ReinForce] Nanatsu no Taizai - 02 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 35783
+    },
+    {
+      "path": "S1/[ReinForce] Nanatsu no Taizai - 02 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 1820247368
+    },
+    {
+      "path": "S1/[ReinForce] Nanatsu no Taizai - 03 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 36824
+    },
+    {
+      "path": "S1/[ReinForce] Nanatsu no Taizai - 03 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 2243643813
+    },
+    {
+      "path": "S1/[ReinForce] Nanatsu no Taizai - 04 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 33701
+    },
+    {
+      "path": "S1/[ReinForce] Nanatsu no Taizai - 04 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 1707275519
+    },
+    {
+      "path": "S1/[ReinForce] Nanatsu no Taizai - 05 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 37480
+    },
+    {
+      "path": "S1/[ReinForce] Nanatsu no Taizai - 05 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 1849309227
+    },
+    {
+      "path": "S1/[ReinForce] Nanatsu no Taizai - 06 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 35549
+    },
+    {
+      "path": "S1/[ReinForce] Nanatsu no Taizai - 06 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 1861211110
+    },
+    {
+      "path": "S1/[ReinForce] Nanatsu no Taizai - 07 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 36448
+    },
+    {
+      "path": "S1/[ReinForce] Nanatsu no Taizai - 07 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 1548115968
+    },
+    {
+      "path": "S1/[ReinForce] Nanatsu no Taizai - 08 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 35415
+    },
+    {
+      "path": "S1/[ReinForce] Nanatsu no Taizai - 08 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 1528693083
+    },
+    {
+      "path": "S1/[ReinForce] Nanatsu no Taizai - 09 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 40676
+    },
+    {
+      "path": "S1/[ReinForce] Nanatsu no Taizai - 09 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 1623842626
+    },
+    {
+      "path": "S1/[ReinForce] Nanatsu no Taizai - 10 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 37454
+    },
+    {
+      "path": "S1/[ReinForce] Nanatsu no Taizai - 10 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 1741393743
+    },
+    {
+      "path": "S1/[ReinForce] Nanatsu no Taizai - 11 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 39006
+    },
+    {
+      "path": "S1/[ReinForce] Nanatsu no Taizai - 11 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 1884687361
+    },
+    {
+      "path": "S1/[ReinForce] Nanatsu no Taizai - 12 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 36465
+    },
+    {
+      "path": "S1/[ReinForce] Nanatsu no Taizai - 12 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 1952082222
+    },
+    {
+      "path": "S1/[ReinForce] Nanatsu no Taizai - 13 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 30356
+    },
+    {
+      "path": "S1/[ReinForce] Nanatsu no Taizai - 13 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 1938998589
+    },
+    {
+      "path": "S1/[ReinForce] Nanatsu no Taizai - 14 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 33944
+    },
+    {
+      "path": "S1/[ReinForce] Nanatsu no Taizai - 14 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 1697616036
+    },
+    {
+      "path": "S1/[ReinForce] Nanatsu no Taizai - 15 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 61736
+    },
+    {
+      "path": "S1/[ReinForce] Nanatsu no Taizai - 15 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 2086437909
+    },
+    {
+      "path": "S1/[ReinForce] Nanatsu no Taizai - 16 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 38906
+    },
+    {
+      "path": "S1/[ReinForce] Nanatsu no Taizai - 16 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 1726551179
+    },
+    {
+      "path": "S1/[ReinForce] Nanatsu no Taizai - 17 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 34911
+    },
+    {
+      "path": "S1/[ReinForce] Nanatsu no Taizai - 17 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 1854944873
+    },
+    {
+      "path": "S1/[ReinForce] Nanatsu no Taizai - 18 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 32732
+    },
+    {
+      "path": "S1/[ReinForce] Nanatsu no Taizai - 18 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 1732424805
+    },
+    {
+      "path": "S1/[ReinForce] Nanatsu no Taizai - 19 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 30337
+    },
+    {
+      "path": "S1/[ReinForce] Nanatsu no Taizai - 19 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 1848206681
+    },
+    {
+      "path": "S1/[ReinForce] Nanatsu no Taizai - 20 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 28714
+    },
+    {
+      "path": "S1/[ReinForce] Nanatsu no Taizai - 20 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 2040490064
+    },
+    {
+      "path": "S1/[ReinForce] Nanatsu no Taizai - 21 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 36045
+    },
+    {
+      "path": "S1/[ReinForce] Nanatsu no Taizai - 21 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 1700054227
+    },
+    {
+      "path": "S1/[ReinForce] Nanatsu no Taizai - 22 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 30866
+    },
+    {
+      "path": "S1/[ReinForce] Nanatsu no Taizai - 22 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 1969710130
+    },
+    {
+      "path": "S1/[ReinForce] Nanatsu no Taizai - 23 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 27505
+    },
+    {
+      "path": "S1/[ReinForce] Nanatsu no Taizai - 23 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 1867499434
+    },
+    {
+      "path": "S1/[ReinForce] Nanatsu no Taizai - 24 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 32669
+    },
+    {
+      "path": "S1/[ReinForce] Nanatsu no Taizai - 24 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 1904163304
+    },
+    {
+      "path": "S1/Extra/BD Menu/BD Menu Vol.1.mkv",
+      "size": 102007556
+    },
+    {
+      "path": "S1/Extra/BD Menu/BD Menu Vol.2.mkv",
+      "size": 90450508
+    },
+    {
+      "path": "S1/Extra/BD Menu/BD Menu Vol.3.mkv",
+      "size": 98452812
+    },
+    {
+      "path": "S1/Extra/BD Menu/BD Menu Vol.4.mkv",
+      "size": 94002722
+    },
+    {
+      "path": "S1/Extra/BD Menu/BD Menu Vol.5.mkv",
+      "size": 86903083
+    },
+    {
+      "path": "S1/Extra/BD Menu/BD Menu Vol.6.mkv",
+      "size": 90849927
+    },
+    {
+      "path": "S1/Extra/BD Menu/BD Menu Vol.7.mkv",
+      "size": 95124892
+    },
+    {
+      "path": "S1/Extra/BD Menu/BD Menu Vol.8.mkv",
+      "size": 82571674
+    },
+    {
+      "path": "S1/Extra/BD Menu/BD Menu Vol.9.mkv",
+      "size": 114149895
+    },
+    {
+      "path": "S1/Extra/CD/CD Vol.1/オリジナルドラマCD 「迷え！七つの大罪学園！SP」.cue",
+      "size": 1458
+    },
+    {
+      "path": "S1/Extra/CD/CD Vol.1/オリジナルドラマCD 「迷え！七つの大罪学園！SP」.log",
+      "size": 3569
+    },
+    {
+      "path": "S1/Extra/CD/CD Vol.1/オリジナルドラマCD 「迷え！七つの大罪学園！SP」.wav",
+      "size": 215005772
+    },
+    {
+      "path": "S1/Extra/CD/CD Vol.2/Audio CD.cue",
+      "size": 289
+    },
+    {
+      "path": "S1/Extra/CD/CD Vol.2/Audio CD.log",
+      "size": 3312
+    },
+    {
+      "path": "S1/Extra/CD/CD Vol.2/Audio CD.wav",
+      "size": 383503052
+    },
+    {
+      "path": "S1/Extra/CD/CD Vol.3/The Seven Deadly Sins Vol.3 Bonus CD.cue",
+      "size": 719
+    },
+    {
+      "path": "S1/Extra/CD/CD Vol.3/The Seven Deadly Sins Vol.3 Bonus CD.log",
+      "size": 3378
+    },
+    {
+      "path": "S1/Extra/CD/CD Vol.3/The Seven Deadly Sins Vol.3 Bonus CD.wav",
+      "size": 239231372
+    },
+    {
+      "path": "S1/Extra/CD/CD Vol.4/The Seven Deadly Sins Vol.4 Bonus CD.cue",
+      "size": 767
+    },
+    {
+      "path": "S1/Extra/CD/CD Vol.4/The Seven Deadly Sins Vol.4 Bonus CD.log",
+      "size": 3457
+    },
+    {
+      "path": "S1/Extra/CD/CD Vol.4/The Seven Deadly Sins Vol.4 Bonus CD.wav",
+      "size": 510209996
+    },
+    {
+      "path": "S1/Extra/CD/CD Vol.5/オリジナルドラマCD 「迷え！七つの大罪学園！SP」第3話.cue",
+      "size": 501
+    },
+    {
+      "path": "S1/Extra/CD/CD Vol.5/オリジナルドラマCD 「迷え！七つの大罪学園！SP」第3話.log",
+      "size": 3984
+    },
+    {
+      "path": "S1/Extra/CD/CD Vol.5/オリジナルドラマCD 「迷え！七つの大罪学園！SP」第3話.wav",
+      "size": 269120588
+    },
+    {
+      "path": "S1/Extra/CD/CD Vol.6/七つの大罪トークCD「罪つみ人びト―ク!!vol.3」.cue",
+      "size": 669
+    },
+    {
+      "path": "S1/Extra/CD/CD Vol.6/七つの大罪トークCD「罪つみ人びト―ク!!vol.3」.log",
+      "size": 3439
+    },
+    {
+      "path": "S1/Extra/CD/CD Vol.6/七つの大罪トークCD「罪つみ人びト―ク!!vol.3」.wav",
+      "size": 466952012
+    },
+    {
+      "path": "S1/Extra/CD/CD Vol.7/The Seven Deadly Sins Vol.7 Bonus CD.cue",
+      "size": 636
+    },
+    {
+      "path": "S1/Extra/CD/CD Vol.7/The Seven Deadly Sins Vol.7 Bonus CD.log",
+      "size": 3377
+    },
+    {
+      "path": "S1/Extra/CD/CD Vol.7/The Seven Deadly Sins Vol.7 Bonus CD.wav",
+      "size": 244617452
+    },
+    {
+      "path": "S1/Extra/CD/CD Vol.8/The Seven Deadly Sins Vol.8 Bonus CD.cue",
+      "size": 508
+    },
+    {
+      "path": "S1/Extra/CD/CD Vol.8/The Seven Deadly Sins Vol.8 Bonus CD.log",
+      "size": 3348
+    },
+    {
+      "path": "S1/Extra/CD/CD Vol.8/The Seven Deadly Sins Vol.8 Bonus CD.wav",
+      "size": 623701052
+    },
+    {
+      "path": "S1/Extra/CD/CD Vol.9/The Seven Deadly Sins Vol.9 Bonus CD.cue",
+      "size": 484
+    },
+    {
+      "path": "S1/Extra/CD/CD Vol.9/The Seven Deadly Sins Vol.9 Bonus CD.log",
+      "size": 4443
+    },
+    {
+      "path": "S1/Extra/CD/CD Vol.9/The Seven Deadly Sins Vol.9 Bonus CD.wav",
+      "size": 280704188
+    },
+    {
+      "path": "S1/Extra/Creditless/[ReinForce] Nanatsu no Taizai - ED1 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 142590428
+    },
+    {
+      "path": "S1/Extra/Creditless/[ReinForce] Nanatsu no Taizai - ED2 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 170199656
+    },
+    {
+      "path": "S1/Extra/Creditless/[ReinForce] Nanatsu no Taizai - OP1 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 123806967
+    },
+    {
+      "path": "S1/Extra/Creditless/[ReinForce] Nanatsu no Taizai - OP2 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 170277954
+    },
+    {
+      "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 01 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 35740
+    },
+    {
+      "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 01 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 1269992435
+    },
+    {
+      "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 02 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 37097
+    },
+    {
+      "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 02 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 1322363542
+    },
+    {
+      "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 03 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 30410
+    },
+    {
+      "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 03 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 1372181059
+    },
+    {
+      "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 04 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 27961
+    },
+    {
+      "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 04 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 1400832560
+    },
+    {
+      "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 05 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 25145
+    },
+    {
+      "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 05 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 1473442937
+    },
+    {
+      "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 06 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 33925
+    },
+    {
+      "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 06 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 1145850355
+    },
+    {
+      "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 07 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 32713
+    },
+    {
+      "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 07 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 1222331757
+    },
+    {
+      "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 08 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 29159
+    },
+    {
+      "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 08 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 1398265423
+    },
+    {
+      "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 09 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 29982
+    },
+    {
+      "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 09 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 1248338177
+    },
+    {
+      "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 10 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 30551
+    },
+    {
+      "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 10 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 1292066950
+    },
+    {
+      "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 11 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 28858
+    },
+    {
+      "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 11 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 1170968080
+    },
+    {
+      "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 12 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 33415
+    },
+    {
+      "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 12 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 1242598509
+    },
+    {
+      "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 13 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 31159
+    },
+    {
+      "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 13 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 1269705967
+    },
+    {
+      "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 14 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 29489
+    },
+    {
+      "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 14 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 1263266700
+    },
+    {
+      "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 15 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 30253
+    },
+    {
+      "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 15 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 1221172154
+    },
+    {
+      "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 16 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 32058
+    },
+    {
+      "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 16 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 1209092194
+    },
+    {
+      "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 17 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 33261
+    },
+    {
+      "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 17 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 1195711727
+    },
+    {
+      "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 18 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 31888
+    },
+    {
+      "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 18 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 1266056111
+    },
+    {
+      "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 19 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 25351
+    },
+    {
+      "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 19 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 1289764802
+    },
+    {
+      "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 20 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 28267
+    },
+    {
+      "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 20 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 1188353929
+    },
+    {
+      "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 21 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 32089
+    },
+    {
+      "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 21 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 1121619919
+    },
+    {
+      "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 22 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 29240
+    },
+    {
+      "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 22 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 1589575255
+    },
+    {
+      "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 23 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 32954
+    },
+    {
+      "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 23 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 1414912314
+    },
+    {
+      "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 24 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 34724
+    },
+    {
+      "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 24 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 1121742832
+    },
+    {
+      "path": "S2/Extra/CD/CD1/澤野弘之 - ORIGINAL SOUND TRACK VOL.1.cue",
+      "size": 1963
+    },
+    {
+      "path": "S2/Extra/CD/CD1/澤野弘之 - ORIGINAL SOUND TRACK VOL.1.log",
+      "size": 8614
+    },
+    {
+      "path": "S2/Extra/CD/CD1/澤野弘之 - ORIGINAL SOUND TRACK VOL.1.wav",
+      "size": 477533660
+    },
+    {
+      "path": "S2/Extra/CD/CD2/澤野弘之·KOHTA YAMAMOTO·和田貴史 - ORIGINAL SOUND TRACK VOL.2.cue",
+      "size": 1846
+    },
+    {
+      "path": "S2/Extra/CD/CD2/澤野弘之·KOHTA YAMAMOTO·和田貴史 - ORIGINAL SOUND TRACK VOL.2.log",
+      "size": 8178
+    },
+    {
+      "path": "S2/Extra/CD/CD2/澤野弘之·KOHTA YAMAMOTO·和田貴史 - ORIGINAL SOUND TRACK VOL.2.wav",
+      "size": 273977468
+    },
+    {
+      "path": "S2/Extra/CD/CD3/宮野真守 木村良平 櫻井孝宏 金元寿子 - わんぱく三人組、旅に出る.cue",
+      "size": 868
+    },
+    {
+      "path": "S2/Extra/CD/CD3/宮野真守 木村良平 櫻井孝宏 金元寿子 - わんぱく三人組、旅に出る.log",
+      "size": 6770
+    },
+    {
+      "path": "S2/Extra/CD/CD3/宮野真守 木村良平 櫻井孝宏 金元寿子 - わんぱく三人組、旅に出る.wav",
+      "size": 190128668
+    },
+    {
+      "path": "S2/Extra/CD/CD4/梶 裕貴 東地宏樹 久野美咲 杉田智和 - 罪人——ク!!のふっかつ Vol.1.cue",
+      "size": 885
+    },
+    {
+      "path": "S2/Extra/CD/CD4/梶 裕貴 東地宏樹 久野美咲 杉田智和 - 罪人——ク!!のふっかつ Vol.1.log",
+      "size": 6814
+    },
+    {
+      "path": "S2/Extra/CD/CD4/梶 裕貴 東地宏樹 久野美咲 杉田智和 - 罪人——ク!!のふっかつ Vol.1.wav",
+      "size": 318004556
+    },
+    {
+      "path": "S2/Extra/CD/CD5/雨宮 天 鈴木達央 岩崎ひろし M·A·O  - 罪人——ク!!のふっかつ Vol.2.cue",
+      "size": 897
+    },
+    {
+      "path": "S2/Extra/CD/CD5/雨宮 天 鈴木達央 岩崎ひろし M·A·O  - 罪人——ク!!のふっかつ Vol.2.log",
+      "size": 6862
+    },
+    {
+      "path": "S2/Extra/CD/CD5/雨宮 天 鈴木達央 岩崎ひろし M·A·O  - 罪人——ク!!のふっかつ Vol.2.wav",
+      "size": 467365964
+    },
+    {
+      "path": "S2/Extra/CD/CD6/福山 潤 悠木 碧 小野大輔 小林裕介 - 罪人——ク!!のふっかつ Vol.3.cue",
+      "size": 879
+    },
+    {
+      "path": "S2/Extra/CD/CD6/福山 潤 悠木 碧 小野大輔 小林裕介 - 罪人——ク!!のふっかつ Vol.3.log",
+      "size": 6826
+    },
+    {
+      "path": "S2/Extra/CD/CD6/福山 潤 悠木 碧 小野大輔 小林裕介 - 罪人——ク!!のふっかつ Vol.3.wav",
+      "size": 564258956
+    },
+    {
+      "path": "S2/Extra/CD/CD7/梶 裕貴 雨宮 天 久野美咲 悠木 碧 鈴木達央 福山 潤 髙木裕平 坂本真綾  - 七つ大罪 ミニミニ大パニック！.cue",
+      "size": 1473
+    },
+    {
+      "path": "S2/Extra/CD/CD7/梶 裕貴 雨宮 天 久野美咲 悠木 碧 鈴木達央 福山 潤 髙木裕平 坂本真綾  - 七つ大罪 ミニミニ大パニック！.log",
+      "size": 7478
+    },
+    {
+      "path": "S2/Extra/CD/CD7/梶 裕貴 雨宮 天 久野美咲 悠木 碧 鈴木達央 福山 潤 髙木裕平 坂本真綾  - 七つ大罪 ミニミニ大パニック！.wav",
+      "size": 229258892
+    },
+    {
+      "path": "S2/Extra/CD/CD8/髙木裕平 坂本真綾 津田健次郎 高垣彩陽 - 罪人——ク!!のふっかつ Vol.4.cue",
+      "size": 903
+    },
+    {
+      "path": "S2/Extra/CD/CD8/髙木裕平 坂本真綾 津田健次郎 高垣彩陽 - 罪人——ク!!のふっかつ Vol.4.log",
+      "size": 6926
+    },
+    {
+      "path": "S2/Extra/CD/CD8/髙木裕平 坂本真綾 津田健次郎 高垣彩陽 - 罪人——ク!!のふっかつ Vol.4.wav",
+      "size": 420692876
+    },
+    {
+      "path": "S2/Extra/CD/CD9/梶 裕貴 宮野真守 木村良平 櫻井孝宏 - 罪人——ク!!のふっかつ Vol.5.cue",
+      "size": 885
+    },
+    {
+      "path": "S2/Extra/CD/CD9/梶 裕貴 宮野真守 木村良平 櫻井孝宏 - 罪人——ク!!のふっかつ Vol.5.log",
+      "size": 6922
+    },
+    {
+      "path": "S2/Extra/CD/CD9/梶 裕貴 宮野真守 木村良平 櫻井孝宏 - 罪人——ク!!のふっかつ Vol.5.wav",
+      "size": 359848988
+    },
+    {
+      "path": "S2/Extra/Creditless/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu ED (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 77174966
+    },
+    {
+      "path": "S2/Extra/Creditless/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu ED2 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 80707037
+    },
+    {
+      "path": "S2/Extra/Creditless/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu OP (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 132134509
+    },
+    {
+      "path": "S2/Extra/Creditless/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu OP2 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 122223249
+    },
+    {
+      "path": "S2/Extra/Creditless/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu OP3 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 99807813
+    },
+    {
+      "path": "S2/Extra/Creditless/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu OP3v2 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 102103898
+    },
+    {
+      "path": "S2/Extra/Menu/Vol 1.mkv",
+      "size": 67995228
+    },
+    {
+      "path": "S2/Extra/Menu/Vol 2.mkv",
+      "size": 67091301
+    },
+    {
+      "path": "S2/Extra/Menu/Vol 3.mkv",
+      "size": 85016442
+    },
+    {
+      "path": "S2/Extra/Menu/Vol 4.mkv",
+      "size": 75315919
+    },
+    {
+      "path": "S2/Extra/Menu/Vol 5.mkv",
+      "size": 65161073
+    },
+    {
+      "path": "S2/Extra/Menu/Vol 6.mkv",
+      "size": 66256824
+    },
+    {
+      "path": "S2/Extra/Menu/Vol 7.mkv",
+      "size": 82050259
+    },
+    {
+      "path": "S2/Extra/Menu/Vol 8.mkv",
+      "size": 66800066
+    },
+    {
+      "path": "S2/Extra/Menu/Vol 9.mkv",
+      "size": 66582989
+    },
+    {
+      "path": "S2/Extra/PV/PV01.mkv",
+      "size": 66231787
+    },
+    {
+      "path": "S2/Extra/PV/PV02.mkv",
+      "size": 32135739
+    },
+    {
+      "path": "S2/Extra/PV/PV03.mkv",
+      "size": 37316122
+    },
+    {
+      "path": "S2/Extra/PV/PV04.mkv",
+      "size": 30620233
+    },
+    {
+      "path": "S2/Extra/PV/PV05.mkv",
+      "size": 31119064
+    },
+    {
+      "path": "S2/Extra/PV/PV06.mkv",
+      "size": 31328266
+    },
+    {
+      "path": "S2/Extra/PV/PV07.mkv",
+      "size": 35319561
+    },
+    {
+      "path": "S2/Extra/PV/PV08.mkv",
+      "size": 38758898
+    },
+    {
+      "path": "S2/Extra/PV/PV09.mkv",
+      "size": 31141658
+    },
+    {
+      "path": "S2/Extra/PV/PV10.mkv",
+      "size": 32387674
+    },
+    {
+      "path": "S2/Extra/PV/PV11.mkv",
+      "size": 35216313
+    },
+    {
+      "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 01 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 29508
+    },
+    {
+      "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 01 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 2535140104
+    },
+    {
+      "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 02 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 28087
+    },
+    {
+      "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 02 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 2444934213
+    },
+    {
+      "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 03 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 31086
+    },
+    {
+      "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 03 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 2359247704
+    },
+    {
+      "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 04 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 21458
+    },
+    {
+      "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 04 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 2639786553
+    },
+    {
+      "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 05 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 29481
+    },
+    {
+      "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 05 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 2430155097
+    },
+    {
+      "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 06 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 30013
+    },
+    {
+      "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 06 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 2274973087
+    },
+    {
+      "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 07 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 28772
+    },
+    {
+      "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 07 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 2427931353
+    },
+    {
+      "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 08 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 32772
+    },
+    {
+      "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 08 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 2295840203
+    },
+    {
+      "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 09 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 32073
+    },
+    {
+      "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 09 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 2433164068
+    },
+    {
+      "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 10 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 23903
+    },
+    {
+      "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 10 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 2617983766
+    },
+    {
+      "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 11 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 25799
+    },
+    {
+      "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 11 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 2669133836
+    },
+    {
+      "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 12 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 23651
+    },
+    {
+      "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 12 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 2581698754
+    },
+    {
+      "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 13 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 27092
+    },
+    {
+      "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 13 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 2622226171
+    },
+    {
+      "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 14 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 31101
+    },
+    {
+      "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 14 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 2260268624
+    },
+    {
+      "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 15 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 23615
+    },
+    {
+      "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 15 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 2520168947
+    },
+    {
+      "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 16 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 25402
+    },
+    {
+      "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 16 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 2420728738
+    },
+    {
+      "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 17 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 29776
+    },
+    {
+      "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 17 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 2731760213
+    },
+    {
+      "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 18 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 30145
+    },
+    {
+      "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 18 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 2317262352
+    },
+    {
+      "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 19 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 32771
+    },
+    {
+      "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 19 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 2374250750
+    },
+    {
+      "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 20 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 29904
+    },
+    {
+      "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 20 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 2290419047
+    },
+    {
+      "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 21 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 29921
+    },
+    {
+      "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 21 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 2235343773
+    },
+    {
+      "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 22 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 26462
+    },
+    {
+      "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 22 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 2438648496
+    },
+    {
+      "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 23 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 24530
+    },
+    {
+      "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 23 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 2576110576
+    },
+    {
+      "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 24 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 20595
+    },
+    {
+      "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 24 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 2606006606
+    },
+    {
+      "path": "S3/Extra/Creditless/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ ED1 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 200547931
+    },
+    {
+      "path": "S3/Extra/Creditless/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ ED2 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 235190744
+    },
+    {
+      "path": "S3/Extra/Creditless/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ OP1 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 215669898
+    },
+    {
+      "path": "S3/Extra/Creditless/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ OP2 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 263094189
+    },
+    {
+      "path": "S3/Extra/Menu/Menu.flac",
+      "size": 5966719
+    },
+    {
+      "path": "S3/Extra/Menu/Menu.png",
+      "size": 3113418
+    },
+    {
+      "path": "S3/Extra/Menu/SP DVD 1.png",
+      "size": 422720
+    },
+    {
+      "path": "S3/Extra/Menu/SP DVD 2.png",
+      "size": 463019
+    },
+    {
+      "path": "S3/Extra/Menu/SP DVD 3.png",
+      "size": 459110
+    },
+    {
+      "path": "S3/Extra/Menu/SP DVD 4.png",
+      "size": 473086
+    },
+    {
+      "path": "S3/Extra/OST/01. 72-∶THE1／KG-GR-1.wav",
+      "size": 30350972
+    },
+    {
+      "path": "S3/Extra/OST/02. 72-∶THE1／KG-GR-2.wav",
+      "size": 25712828
+    },
+    {
+      "path": "S3/Extra/OST/03. Tanegoshi-sai.wav",
+      "size": 37834992
+    },
+    {
+      "path": "S3/Extra/OST/04. Kikaijikake no Kokoro.wav",
+      "size": 39257964
+    },
+    {
+      "path": "S3/Extra/OST/05. Thousand Love.wav",
+      "size": 64621950
+    },
+    {
+      "path": "S3/Extra/OST/06. Majinzoku no Onnen.wav",
+      "size": 38719354
+    },
+    {
+      "path": "S3/Extra/OST/07. Jousai Toshi Corand.wav",
+      "size": 34382272
+    },
+    {
+      "path": "S3/Extra/OST/08. Majin-ou.wav",
+      "size": 52066944
+    },
+    {
+      "path": "S3/Extra/OST/09. Seisen no Genjitsu.wav",
+      "size": 38091366
+    },
+    {
+      "path": "S3/Extra/OST/10. Majinzoku Shingun.wav",
+      "size": 56027720
+    },
+    {
+      "path": "S3/Extra/OST/11. Thousand Love -PF-.wav",
+      "size": 34321152
+    },
+    {
+      "path": "S3/Extra/OST/12. 72-∶THE1／KG-GR-3.wav",
+      "size": 25712830
+    },
+    {
+      "path": "S3/Extra/OST/13. 72-∶THE1／KG-GR-4.wav",
+      "size": 35198446
+    },
+    {
+      "path": "S3/Extra/OST/Cover.jpg",
+      "size": 350053
+    },
+    {
+      "path": "S3/Extra/SP DVD 「ホーク塗り絵」.mkv",
+      "size": 287877418
+    },
+    {
+      "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 01 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 23115
+    },
+    {
+      "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 01 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 2580824377
+    },
+    {
+      "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 02 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 29485
+    },
+    {
+      "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 02 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 2446590006
+    },
+    {
+      "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 03 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 26675
+    },
+    {
+      "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 03 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 2807166482
+    },
+    {
+      "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 04 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 25894
+    },
+    {
+      "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 04 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 2663659711
+    },
+    {
+      "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 05 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 28038
+    },
+    {
+      "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 05 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 2328872499
+    },
+    {
+      "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 06 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 25643
+    },
+    {
+      "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 06 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 2399685397
+    },
+    {
+      "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 07 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 26577
+    },
+    {
+      "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 07 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 2568859909
+    },
+    {
+      "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 08 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 26472
+    },
+    {
+      "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 08 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 2209308324
+    },
+    {
+      "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 09 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 22906
+    },
+    {
+      "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 09 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 2366023586
+    },
+    {
+      "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 10 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 22147
+    },
+    {
+      "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 10 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 2306475659
+    },
+    {
+      "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 11 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 21253
+    },
+    {
+      "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 11 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 2479264131
+    },
+    {
+      "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 12 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 19030
+    },
+    {
+      "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 12 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 2782144172
+    },
+    {
+      "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 13 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 30087
+    },
+    {
+      "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 13 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 1913453187
+    },
+    {
+      "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 14 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 27644
+    },
+    {
+      "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 14 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 2195514335
+    },
+    {
+      "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 15 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 28890
+    },
+    {
+      "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 15 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 2513526503
+    },
+    {
+      "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 16 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 25414
+    },
+    {
+      "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 16 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 2837223986
+    },
+    {
+      "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 17 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 29724
+    },
+    {
+      "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 17 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 2702506272
+    },
+    {
+      "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 18 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 27547
+    },
+    {
+      "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 18 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 2424645744
+    },
+    {
+      "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 19 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 20840
+    },
+    {
+      "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 19 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 2640332643
+    },
+    {
+      "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 20 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 24025
+    },
+    {
+      "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 20 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 2506262570
+    },
+    {
+      "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 21 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 31077
+    },
+    {
+      "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 21 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 2105580487
+    },
+    {
+      "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 22 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 29688
+    },
+    {
+      "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 22 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 2083477567
+    },
+    {
+      "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 23 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 27669
+    },
+    {
+      "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 23 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 2415621615
+    },
+    {
+      "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 24 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 29647
+    },
+    {
+      "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 24 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 2329131297
+    },
+    {
+      "path": "S4/Extra/CD/01. TSADS-FP1.flac",
+      "size": 25402459
+    },
+    {
+      "path": "S4/Extra/CD/02. 混沌の王.flac",
+      "size": 28581743
+    },
+    {
+      "path": "S4/Extra/CD/03. Indra.flac",
+      "size": 27171838
+    },
+    {
+      "path": "S4/Extra/CD/04. In Purgatory.flac",
+      "size": 20112331
+    },
+    {
+      "path": "S4/Extra/CD/05. Gowther's Trick.flac",
+      "size": 19428680
+    },
+    {
+      "path": "S4/Extra/CD/06. 魔神王メリオダス.flac",
+      "size": 35426736
+    },
+    {
+      "path": "S4/Extra/CD/07. 最期の闘い.flac",
+      "size": 21208742
+    },
+    {
+      "path": "S4/Extra/CD/08. 魔神王ゼルドリス.flac",
+      "size": 32023981
+    },
+    {
+      "path": "S4/Extra/CD/09. Cath Palug.flac",
+      "size": 25308747
+    },
+    {
+      "path": "S4/Extra/CD/10. 継がれゆくもの -Gt-.flac",
+      "size": 9496384
+    },
+    {
+      "path": "S4/Extra/CD/11. 継がれゆくもの.flac",
+      "size": 26899958
+    },
+    {
+      "path": "S4/Extra/CD/OST.cue",
+      "size": 2184
+    },
+    {
+      "path": "S4/Extra/CD/OST.log",
+      "size": 5287
+    },
+    {
+      "path": "S4/Extra/Creditless/[ReinForce] Nanatsu no Taizai Funnu no Shimpan ED1 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 162734257
+    },
+    {
+      "path": "S4/Extra/Creditless/[ReinForce] Nanatsu no Taizai Funnu no Shimpan ED2 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 175876070
+    },
+    {
+      "path": "S4/Extra/Creditless/[ReinForce] Nanatsu no Taizai Funnu no Shimpan OP1 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 210358882
+    },
+    {
+      "path": "S4/Extra/Creditless/[ReinForce] Nanatsu no Taizai Funnu no Shimpan OP2 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 183688865
+    },
+    {
+      "path": "S4/Extra/Menu/Disc 1.flac",
+      "size": 2777856
+    },
+    {
+      "path": "S4/Extra/Menu/Disc 1.png",
+      "size": 3000372
+    },
+    {
+      "path": "S4/Extra/Menu/Disc 2.flac",
+      "size": 2777856
+    },
+    {
+      "path": "S4/Extra/Menu/Disc 2.png",
+      "size": 3218479
+    },
+    {
+      "path": "Seisen no Shirushi/[ReinForce] Nanatsu no Taizai ~Seisen no Shirushi~ 01 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 31703
+    },
+    {
+      "path": "Seisen no Shirushi/[ReinForce] Nanatsu no Taizai ~Seisen no Shirushi~ 01 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 1431254185
+    },
+    {
+      "path": "Seisen no Shirushi/[ReinForce] Nanatsu no Taizai ~Seisen no Shirushi~ 02 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 29075
+    },
+    {
+      "path": "Seisen no Shirushi/[ReinForce] Nanatsu no Taizai ~Seisen no Shirushi~ 02 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 1596895387
+    },
+    {
+      "path": "Seisen no Shirushi/[ReinForce] Nanatsu no Taizai ~Seisen no Shirushi~ 03 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 29477
+    },
+    {
+      "path": "Seisen no Shirushi/[ReinForce] Nanatsu no Taizai ~Seisen no Shirushi~ 03 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 1277119247
+    },
+    {
+      "path": "Seisen no Shirushi/[ReinForce] Nanatsu no Taizai ~Seisen no Shirushi~ 04 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
+      "size": 34143
+    },
+    {
+      "path": "Seisen no Shirushi/[ReinForce] Nanatsu no Taizai ~Seisen no Shirushi~ 04 (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 1190239149
+    },
+    {
+      "path": "Seisen no Shirushi/Extra/[ReinForce] Nanatsu no Taizai ~Seisen no Shirushi~ ED (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 87005964
+    },
+    {
+      "path": "Seisen no Shirushi/Extra/[ReinForce] Nanatsu no Taizai ~Seisen no Shirushi~ OP (BDRip 1920x1080 x264 FLAC).mkv",
+      "size": 125407173
+    },
+    {
+      "path": "Seisen no Shirushi/Extra/CD/01. CD Track 01.wav",
+      "size": 133967724
+    },
+    {
+      "path": "Seisen no Shirushi/Extra/CD/02. CD Track 02.wav",
+      "size": 62612748
+    },
+    {
+      "path": "Seisen no Shirushi/Extra/CD/03. CD Track 03.wav",
+      "size": 121297500
+    },
+    {
+      "path": "Seisen no Shirushi/Extra/Menu/Disc 1.png",
+      "size": 3623587
+    },
+    {
+      "path": "Seisen no Shirushi/Extra/Menu/Disc 2.png",
+      "size": 3467924
+    },
+    {
+      "path": "Seisen no Shirushi/Extra/Menu/Menu.flac",
+      "size": 19038351
+    }
+  ]
+}

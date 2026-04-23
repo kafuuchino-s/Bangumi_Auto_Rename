@@ -1,0 +1,94 @@
+{
+  "status": "ok",
+  "type": "movie",
+  "title_candidate": "空之境界",
+  "timing": {
+    "analysis_seconds": 39.124
+  },
+  "collection_analysis": {
+    "is_collection": true,
+    "collection_name": "空の境界",
+    "confidence": "High",
+    "reason": "同属空の境界系列，正片章序明确",
+    "file_mapping": [
+      {
+        "file_path": "[AI-Raws] 劇場版 空の境界 #01 俯瞰風景 (BD HEVC 1920x1080 yuv444p10le FLAC 字幕[日本語／英語])[DB63CC66].mkv",
+        "movie_title": "空の境界 第一章 俯瞰風景",
+        "movie_number": 1,
+        "year": null,
+        "confidence": "High"
+      },
+      {
+        "file_path": "[AI-Raws] 劇場版 空の境界 #02 殺人考察(前) (BD HEVC 1920x1080 yuv444p10le FLAC 字幕[日本語／英語])[CF45D43D].mkv",
+        "movie_title": "空の境界 第二章 殺人考察（前）",
+        "movie_number": 2,
+        "year": null,
+        "confidence": "High"
+      },
+      {
+        "file_path": "[AI-Raws] 劇場版 空の境界 #03 痛覚残留 (BD HEVC 1920x1080 yuv444p10le FLAC 字幕[日本語／英語])[D59D9785].mkv",
+        "movie_title": "空の境界 第三章 痛覚残留",
+        "movie_number": 3,
+        "year": null,
+        "confidence": "High"
+      },
+      {
+        "file_path": "[AI-Raws] 劇場版 空の境界 #04 伽藍の洞 (BD HEVC 1920x1080 yuv444p10le FLAC 字幕[日本語／英語])[DD4E108B].mkv",
+        "movie_title": "空の境界 第四章 伽藍の洞",
+        "movie_number": 4,
+        "year": null,
+        "confidence": "High"
+      },
+      {
+        "file_path": "[AI-Raws] 劇場版 空の境界 #05 矛盾螺旋 (BD HEVC 1920x1080 yuv444p10le FLAC 字幕[日本語／英語])[6BE8A810].mkv",
+        "movie_title": "空の境界 第五章 矛盾螺旋",
+        "movie_number": 5,
+        "year": null,
+        "confidence": "High"
+      },
+      {
+        "file_path": "[AI-Raws] 劇場版 空の境界 #06 忘卻録音 (BD HEVC 1920x1080 yuv444p10le FLAC 字幕[日本語／英語])[7109725D].mkv",
+        "movie_title": "空の境界 第六章 忘却録音",
+        "movie_number": 6,
+        "year": null,
+        "confidence": "High"
+      },
+      {
+        "file_path": "[AI-Raws] 劇場版 空の境界 #07 殺人考察(後) (BD HEVC 1920x1080 yuv444p10le FLAC 字幕[日本語／英語])[8E949771].mkv",
+        "movie_title": "空の境界 第七章 殺人考察（後）",
+        "movie_number": 7,
+        "year": null,
+        "confidence": "High"
+      },
+      {
+        "file_path": "[AI-Raws] 劇場版 空の境界 #08 空の境界 (BD HEVC 1920x1080 yuv444p10le FLAC 字幕[日本語／英語])[346B1F64].mkv",
+        "movie_title": "空の境界 第八章 空の境界",
+        "movie_number": 8,
+        "year": null,
+        "confidence": "High"
+      },
+      {
+        "file_path": "[AI-Raws] 劇場版 空の境界 #09 未来福音 (BD HEVC 1920x1080 yuv444p10le FLAC)[1A799E21].mkv",
+        "movie_title": "空の境界 第九章 未来福音",
+        "movie_number": 9,
+        "year": null,
+        "confidence": "High"
+      }
+    ],
+    "unmatched_files": [
+      "[AI-Raws] 劇場版 空の境界 #09 未来福音 extra chorus (BD HEVC 1920x1080 yuv444p10le FLAC)[ECB6AB57].mkv",
+      "[AI-Raws] 劇場版 空の境界 Remix - Gate of Seventh Heaven - (BD HEVC 1920x1080 yuv444p10le FLAC 字幕[日本語／英語])[09376BC3].mkv",
+      "[AI-Raws] 劇場版 空の境界 劇場マナーCM #01 (BD HEVC 1920x1080 yuv444p10le FLAC)[7D9DFA76].mkv",
+      "[AI-Raws] 劇場版 空の境界 劇場マナーCM #02 (BD HEVC 1920x1080 yuv444p10le FLAC)[E1CB6567].mkv",
+      "[AI-Raws] 劇場版 空の境界 劇場マナーCM #03 (BD HEVC 1920x1080 yuv444p10le FLAC)[DBAD976C].mkv",
+      "[AI-Raws] 劇場版 空の境界 劇場マナーCM #04 (BD HEVC 1920x1080 yuv444p10le FLAC)[17FC4840].mkv",
+      "[AI-Raws] 劇場版 空の境界 劇場マナーCM #05 (BD HEVC 1920x1080 yuv444p10le FLAC)[F5AFE5B1].mkv",
+      "[AI-Raws] 劇場版 空の境界 劇場マナーCM #06 (BD HEVC 1920x1080 yuv444p10le FLAC)[B1DE75A1].mkv",
+      "[AI-Raws] 劇場版 空の境界 劇場マナーCM #07 (BD HEVC 1920x1080 yuv444p10le FLAC)[73362D6A].mkv",
+      "[AI-Raws] 劇場版 空の境界 劇場マナーCM #08 (BD HEVC 1920x1080 yuv444p10le FLAC)[23F6DAE3].mkv",
+      "[AI-Raws] 劇場版 空の境界 第七章公開直前特別番組 - 全七章の軌跡 - (BD HEVC 1920x1080 FLAC 字幕[日本語／英語])[5143B1D0].mkv"
+    ],
+    "conflict_details": [],
+    "extra_notes": null
+  }
+}

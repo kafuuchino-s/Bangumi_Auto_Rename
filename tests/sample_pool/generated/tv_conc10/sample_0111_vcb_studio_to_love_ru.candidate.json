@@ -1,0 +1,1378 @@
+{
+  "status": "ok",
+  "type": "tv",
+  "title_candidate": "To LOVE-Ru",
+  "tmdb_name": "To LOVE-Ru",
+  "tmdb_id": 34742,
+  "file_mapping": [
+    {
+      "source_index": 1,
+      "file_path": null,
+      "tmdb_season": 2,
+      "tmdb_episode": 1,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 2,
+      "file_path": null,
+      "tmdb_season": 2,
+      "tmdb_episode": 2,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 3,
+      "file_path": null,
+      "tmdb_season": 2,
+      "tmdb_episode": 3,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 4,
+      "file_path": null,
+      "tmdb_season": 2,
+      "tmdb_episode": 4,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 5,
+      "file_path": null,
+      "tmdb_season": 2,
+      "tmdb_episode": 5,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 6,
+      "file_path": null,
+      "tmdb_season": 2,
+      "tmdb_episode": 6,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 7,
+      "file_path": null,
+      "tmdb_season": 2,
+      "tmdb_episode": 7,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 8,
+      "file_path": null,
+      "tmdb_season": 2,
+      "tmdb_episode": 8,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 9,
+      "file_path": null,
+      "tmdb_season": 2,
+      "tmdb_episode": 9,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 10,
+      "file_path": null,
+      "tmdb_season": 2,
+      "tmdb_episode": 10,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 11,
+      "file_path": null,
+      "tmdb_season": 2,
+      "tmdb_episode": 11,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 12,
+      "file_path": null,
+      "tmdb_season": 2,
+      "tmdb_episode": 12,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 22,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 1,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 23,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 2,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 24,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 3,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 25,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 4,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 26,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 5,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 27,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 6,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 28,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 7,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 29,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 8,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 30,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 9,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 31,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 10,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 32,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 11,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 33,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 12,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 34,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 13,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 35,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 14,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 36,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 15,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 37,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 16,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 38,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 17,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 39,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 18,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 40,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 19,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 41,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 20,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 42,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 21,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 43,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 22,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 44,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 23,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 45,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 24,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 46,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 25,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 47,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 26,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 48,
+      "file_path": null,
+      "tmdb_season": 0,
+      "tmdb_episode": 1,
+      "episode_type": "special",
+      "confidence": "High"
+    },
+    {
+      "source_index": 49,
+      "file_path": null,
+      "tmdb_season": 0,
+      "tmdb_episode": 2,
+      "episode_type": "special",
+      "confidence": "High"
+    },
+    {
+      "source_index": 50,
+      "file_path": null,
+      "tmdb_season": 0,
+      "tmdb_episode": 3,
+      "episode_type": "special",
+      "confidence": "High"
+    },
+    {
+      "source_index": 51,
+      "file_path": null,
+      "tmdb_season": 0,
+      "tmdb_episode": 4,
+      "episode_type": "special",
+      "confidence": "High"
+    },
+    {
+      "source_index": 52,
+      "file_path": null,
+      "tmdb_season": 0,
+      "tmdb_episode": 5,
+      "episode_type": "special",
+      "confidence": "High"
+    },
+    {
+      "source_index": 53,
+      "file_path": null,
+      "tmdb_season": 0,
+      "tmdb_episode": 6,
+      "episode_type": "special",
+      "confidence": "High"
+    },
+    {
+      "source_index": 67,
+      "file_path": null,
+      "tmdb_season": 4,
+      "tmdb_episode": 1,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 68,
+      "file_path": null,
+      "tmdb_season": 4,
+      "tmdb_episode": 2,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 69,
+      "file_path": null,
+      "tmdb_season": 4,
+      "tmdb_episode": 3,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 70,
+      "file_path": null,
+      "tmdb_season": 4,
+      "tmdb_episode": 4,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 71,
+      "file_path": null,
+      "tmdb_season": 4,
+      "tmdb_episode": 5,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 72,
+      "file_path": null,
+      "tmdb_season": 4,
+      "tmdb_episode": 6,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 73,
+      "file_path": null,
+      "tmdb_season": 4,
+      "tmdb_episode": 7,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 74,
+      "file_path": null,
+      "tmdb_season": 4,
+      "tmdb_episode": 8,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 75,
+      "file_path": null,
+      "tmdb_season": 4,
+      "tmdb_episode": 9,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 76,
+      "file_path": null,
+      "tmdb_season": 4,
+      "tmdb_episode": 10,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 77,
+      "file_path": null,
+      "tmdb_season": 4,
+      "tmdb_episode": 11,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 78,
+      "file_path": null,
+      "tmdb_season": 4,
+      "tmdb_episode": 12,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 79,
+      "file_path": null,
+      "tmdb_season": 4,
+      "tmdb_episode": 13,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 80,
+      "file_path": null,
+      "tmdb_season": 4,
+      "tmdb_episode": 14,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 92,
+      "file_path": null,
+      "tmdb_season": 3,
+      "tmdb_episode": 1,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 93,
+      "file_path": null,
+      "tmdb_season": 3,
+      "tmdb_episode": 2,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 94,
+      "file_path": null,
+      "tmdb_season": 3,
+      "tmdb_episode": 3,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 95,
+      "file_path": null,
+      "tmdb_season": 3,
+      "tmdb_episode": 4,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 96,
+      "file_path": null,
+      "tmdb_season": 3,
+      "tmdb_episode": 5,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 97,
+      "file_path": null,
+      "tmdb_season": 3,
+      "tmdb_episode": 6,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 98,
+      "file_path": null,
+      "tmdb_season": 3,
+      "tmdb_episode": 7,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 99,
+      "file_path": null,
+      "tmdb_season": 3,
+      "tmdb_episode": 8,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 100,
+      "file_path": null,
+      "tmdb_season": 3,
+      "tmdb_episode": 9,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 101,
+      "file_path": null,
+      "tmdb_season": 3,
+      "tmdb_episode": 10,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 102,
+      "file_path": null,
+      "tmdb_season": 3,
+      "tmdb_episode": 11,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 103,
+      "file_path": null,
+      "tmdb_season": 3,
+      "tmdb_episode": 12,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 116,
+      "file_path": null,
+      "tmdb_season": 0,
+      "tmdb_episode": 7,
+      "episode_type": "special",
+      "confidence": "High"
+    },
+    {
+      "source_index": 117,
+      "file_path": null,
+      "tmdb_season": 0,
+      "tmdb_episode": 8,
+      "episode_type": "special",
+      "confidence": "High"
+    },
+    {
+      "source_index": 118,
+      "file_path": null,
+      "tmdb_season": 0,
+      "tmdb_episode": 9,
+      "episode_type": "special",
+      "confidence": "High"
+    },
+    {
+      "source_index": 119,
+      "file_path": null,
+      "tmdb_season": 0,
+      "tmdb_episode": 10,
+      "episode_type": "special",
+      "confidence": "High"
+    },
+    {
+      "source_index": 120,
+      "file_path": null,
+      "tmdb_season": 0,
+      "tmdb_episode": 11,
+      "episode_type": "special",
+      "confidence": "High"
+    },
+    {
+      "source_index": 121,
+      "file_path": null,
+      "tmdb_season": 0,
+      "tmdb_episode": 12,
+      "episode_type": "special",
+      "confidence": "High"
+    },
+    {
+      "source_index": 122,
+      "file_path": null,
+      "tmdb_season": 0,
+      "tmdb_episode": 13,
+      "episode_type": "special",
+      "confidence": "High"
+    },
+    {
+      "source_index": 123,
+      "file_path": null,
+      "tmdb_season": 0,
+      "tmdb_episode": 14,
+      "episode_type": "special",
+      "confidence": "High"
+    },
+    {
+      "source_index": 124,
+      "file_path": null,
+      "tmdb_season": 0,
+      "tmdb_episode": 15,
+      "episode_type": "special",
+      "confidence": "High"
+    },
+    {
+      "source_index": 125,
+      "file_path": null,
+      "tmdb_season": 0,
+      "tmdb_episode": 16,
+      "episode_type": "special",
+      "confidence": "High"
+    }
+  ],
+  "analysis_result": {
+    "confidence": "High",
+    "reason": "本地文件的主系列、续作与特典子目录清晰，文件名编号可直接对应到 TMDB 已存在的 S01/S02/S03/S04 正片集与 Season 0 特典集；未在 TMDB 中单列的 NCOP/NCED/Menu/CM/SP 等内容不强行映射。",
+    "season_mapping": [
+      {
+        "local_group_name": "[VCB-Studio] Motto To LOVE-Ru [Ma10p_1080p]",
+        "maps_to_tmdb_seasons": [
+          2
+        ]
+      },
+      {
+        "local_group_name": "[VCB-Studio] To LOVE-Ru [Ma10p_1080p]",
+        "maps_to_tmdb_seasons": [
+          1
+        ]
+      },
+      {
+        "local_group_name": "[VCB-Studio] To LOVE-Ru Darkness [Ma10p_1080p]",
+        "maps_to_tmdb_seasons": [
+          3
+        ]
+      },
+      {
+        "local_group_name": "[VCB-Studio] To LOVE-Ru Darkness 2nd [Ma10p_1080p]",
+        "maps_to_tmdb_seasons": [
+          4
+        ]
+      },
+      {
+        "local_group_name": "[VCB-Studio] To LOVE-Ru Darkness OADs [Ma10p_1080p]",
+        "maps_to_tmdb_seasons": [
+          0
+        ]
+      }
+    ],
+    "file_mapping": [
+      {
+        "source_index": 1,
+        "file_path": null,
+        "tmdb_season": 2,
+        "tmdb_episode": 1,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 2,
+        "file_path": null,
+        "tmdb_season": 2,
+        "tmdb_episode": 2,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 3,
+        "file_path": null,
+        "tmdb_season": 2,
+        "tmdb_episode": 3,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 4,
+        "file_path": null,
+        "tmdb_season": 2,
+        "tmdb_episode": 4,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 5,
+        "file_path": null,
+        "tmdb_season": 2,
+        "tmdb_episode": 5,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 6,
+        "file_path": null,
+        "tmdb_season": 2,
+        "tmdb_episode": 6,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 7,
+        "file_path": null,
+        "tmdb_season": 2,
+        "tmdb_episode": 7,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 8,
+        "file_path": null,
+        "tmdb_season": 2,
+        "tmdb_episode": 8,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 9,
+        "file_path": null,
+        "tmdb_season": 2,
+        "tmdb_episode": 9,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 10,
+        "file_path": null,
+        "tmdb_season": 2,
+        "tmdb_episode": 10,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 11,
+        "file_path": null,
+        "tmdb_season": 2,
+        "tmdb_episode": 11,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 12,
+        "file_path": null,
+        "tmdb_season": 2,
+        "tmdb_episode": 12,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 22,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 1,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 23,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 2,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 24,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 3,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 25,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 4,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 26,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 5,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 27,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 6,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 28,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 7,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 29,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 8,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 30,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 9,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 31,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 10,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 32,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 11,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 33,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 12,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 34,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 13,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 35,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 14,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 36,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 15,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 37,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 16,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 38,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 17,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 39,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 18,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 40,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 19,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 41,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 20,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 42,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 21,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 43,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 22,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 44,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 23,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 45,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 24,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 46,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 25,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 47,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 26,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 48,
+        "file_path": null,
+        "tmdb_season": 0,
+        "tmdb_episode": 1,
+        "episode_type": "special",
+        "confidence": "High"
+      },
+      {
+        "source_index": 49,
+        "file_path": null,
+        "tmdb_season": 0,
+        "tmdb_episode": 2,
+        "episode_type": "special",
+        "confidence": "High"
+      },
+      {
+        "source_index": 50,
+        "file_path": null,
+        "tmdb_season": 0,
+        "tmdb_episode": 3,
+        "episode_type": "special",
+        "confidence": "High"
+      },
+      {
+        "source_index": 51,
+        "file_path": null,
+        "tmdb_season": 0,
+        "tmdb_episode": 4,
+        "episode_type": "special",
+        "confidence": "High"
+      },
+      {
+        "source_index": 52,
+        "file_path": null,
+        "tmdb_season": 0,
+        "tmdb_episode": 5,
+        "episode_type": "special",
+        "confidence": "High"
+      },
+      {
+        "source_index": 53,
+        "file_path": null,
+        "tmdb_season": 0,
+        "tmdb_episode": 6,
+        "episode_type": "special",
+        "confidence": "High"
+      },
+      {
+        "source_index": 67,
+        "file_path": null,
+        "tmdb_season": 4,
+        "tmdb_episode": 1,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 68,
+        "file_path": null,
+        "tmdb_season": 4,
+        "tmdb_episode": 2,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 69,
+        "file_path": null,
+        "tmdb_season": 4,
+        "tmdb_episode": 3,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 70,
+        "file_path": null,
+        "tmdb_season": 4,
+        "tmdb_episode": 4,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 71,
+        "file_path": null,
+        "tmdb_season": 4,
+        "tmdb_episode": 5,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 72,
+        "file_path": null,
+        "tmdb_season": 4,
+        "tmdb_episode": 6,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 73,
+        "file_path": null,
+        "tmdb_season": 4,
+        "tmdb_episode": 7,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 74,
+        "file_path": null,
+        "tmdb_season": 4,
+        "tmdb_episode": 8,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 75,
+        "file_path": null,
+        "tmdb_season": 4,
+        "tmdb_episode": 9,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 76,
+        "file_path": null,
+        "tmdb_season": 4,
+        "tmdb_episode": 10,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 77,
+        "file_path": null,
+        "tmdb_season": 4,
+        "tmdb_episode": 11,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 78,
+        "file_path": null,
+        "tmdb_season": 4,
+        "tmdb_episode": 12,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 79,
+        "file_path": null,
+        "tmdb_season": 4,
+        "tmdb_episode": 13,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 80,
+        "file_path": null,
+        "tmdb_season": 4,
+        "tmdb_episode": 14,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 92,
+        "file_path": null,
+        "tmdb_season": 3,
+        "tmdb_episode": 1,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 93,
+        "file_path": null,
+        "tmdb_season": 3,
+        "tmdb_episode": 2,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 94,
+        "file_path": null,
+        "tmdb_season": 3,
+        "tmdb_episode": 3,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 95,
+        "file_path": null,
+        "tmdb_season": 3,
+        "tmdb_episode": 4,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 96,
+        "file_path": null,
+        "tmdb_season": 3,
+        "tmdb_episode": 5,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 97,
+        "file_path": null,
+        "tmdb_season": 3,
+        "tmdb_episode": 6,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 98,
+        "file_path": null,
+        "tmdb_season": 3,
+        "tmdb_episode": 7,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 99,
+        "file_path": null,
+        "tmdb_season": 3,
+        "tmdb_episode": 8,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 100,
+        "file_path": null,
+        "tmdb_season": 3,
+        "tmdb_episode": 9,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 101,
+        "file_path": null,
+        "tmdb_season": 3,
+        "tmdb_episode": 10,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 102,
+        "file_path": null,
+        "tmdb_season": 3,
+        "tmdb_episode": 11,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 103,
+        "file_path": null,
+        "tmdb_season": 3,
+        "tmdb_episode": 12,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 116,
+        "file_path": null,
+        "tmdb_season": 0,
+        "tmdb_episode": 7,
+        "episode_type": "special",
+        "confidence": "High"
+      },
+      {
+        "source_index": 117,
+        "file_path": null,
+        "tmdb_season": 0,
+        "tmdb_episode": 8,
+        "episode_type": "special",
+        "confidence": "High"
+      },
+      {
+        "source_index": 118,
+        "file_path": null,
+        "tmdb_season": 0,
+        "tmdb_episode": 9,
+        "episode_type": "special",
+        "confidence": "High"
+      },
+      {
+        "source_index": 119,
+        "file_path": null,
+        "tmdb_season": 0,
+        "tmdb_episode": 10,
+        "episode_type": "special",
+        "confidence": "High"
+      },
+      {
+        "source_index": 120,
+        "file_path": null,
+        "tmdb_season": 0,
+        "tmdb_episode": 11,
+        "episode_type": "special",
+        "confidence": "High"
+      },
+      {
+        "source_index": 121,
+        "file_path": null,
+        "tmdb_season": 0,
+        "tmdb_episode": 12,
+        "episode_type": "special",
+        "confidence": "High"
+      },
+      {
+        "source_index": 122,
+        "file_path": null,
+        "tmdb_season": 0,
+        "tmdb_episode": 13,
+        "episode_type": "special",
+        "confidence": "High"
+      },
+      {
+        "source_index": 123,
+        "file_path": null,
+        "tmdb_season": 0,
+        "tmdb_episode": 14,
+        "episode_type": "special",
+        "confidence": "High"
+      },
+      {
+        "source_index": 124,
+        "file_path": null,
+        "tmdb_season": 0,
+        "tmdb_episode": 15,
+        "episode_type": "special",
+        "confidence": "High"
+      },
+      {
+        "source_index": 125,
+        "file_path": null,
+        "tmdb_season": 0,
+        "tmdb_episode": 16,
+        "episode_type": "special",
+        "confidence": "High"
+      }
+    ],
+    "unmatched_files": [
+      "[VCB-Studio] Motto To LOVE-Ru [Ma10p_1080p]/SPs/[VCB-Studio] Motto To LOVE-Ru [Menu01][1080p][x265_flac].mkv",
+      "[VCB-Studio] Motto To LOVE-Ru [Ma10p_1080p]/SPs/[VCB-Studio] Motto To LOVE-Ru [Menu02][1080p][x265_flac].mkv",
+      "[VCB-Studio] Motto To LOVE-Ru [Ma10p_1080p]/SPs/[VCB-Studio] Motto To LOVE-Ru [Menu03][1080p][x265_flac].mkv",
+      "[VCB-Studio] Motto To LOVE-Ru [Ma10p_1080p]/SPs/[VCB-Studio] Motto To LOVE-Ru [Menu04][1080p][x265_flac].mkv",
+      "[VCB-Studio] Motto To LOVE-Ru [Ma10p_1080p]/SPs/[VCB-Studio] Motto To LOVE-Ru [Menu05][1080p][x265_flac].mkv",
+      "[VCB-Studio] Motto To LOVE-Ru [Ma10p_1080p]/SPs/[VCB-Studio] Motto To LOVE-Ru [Menu06][1080p][x265_flac].mkv",
+      "[VCB-Studio] Motto To LOVE-Ru [Ma10p_1080p]/SPs/[VCB-Studio] Motto To LOVE-Ru [NCED][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Motto To LOVE-Ru [Ma10p_1080p]/SPs/[VCB-Studio] Motto To LOVE-Ru [NCED_EP12][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Motto To LOVE-Ru [Ma10p_1080p]/SPs/[VCB-Studio] Motto To LOVE-Ru [NCOP][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] To LOVE-Ru [Ma10p_1080p]/SPs/[VCB-Studio] To LOVE-Ru [Menu01][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] To LOVE-Ru [Ma10p_1080p]/SPs/[VCB-Studio] To LOVE-Ru [Menu02][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] To LOVE-Ru [Ma10p_1080p]/SPs/[VCB-Studio] To LOVE-Ru [Menu03][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] To LOVE-Ru [Ma10p_1080p]/SPs/[VCB-Studio] To LOVE-Ru [Menu04][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] To LOVE-Ru [Ma10p_1080p]/SPs/[VCB-Studio] To LOVE-Ru [Menu05][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] To LOVE-Ru [Ma10p_1080p]/SPs/[VCB-Studio] To LOVE-Ru [NCED01][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] To LOVE-Ru [Ma10p_1080p]/SPs/[VCB-Studio] To LOVE-Ru [NCED02][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] To LOVE-Ru [Ma10p_1080p]/SPs/[VCB-Studio] To LOVE-Ru [NCED03][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] To LOVE-Ru [Ma10p_1080p]/SPs/[VCB-Studio] To LOVE-Ru [NCED04][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] To LOVE-Ru [Ma10p_1080p]/SPs/[VCB-Studio] To LOVE-Ru [NCED05][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] To LOVE-Ru [Ma10p_1080p]/SPs/[VCB-Studio] To LOVE-Ru [NCED06][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] To LOVE-Ru [Ma10p_1080p]/SPs/[VCB-Studio] To LOVE-Ru [NCOP01][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] To LOVE-Ru [Ma10p_1080p]/SPs/[VCB-Studio] To LOVE-Ru [NCOP02][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] To LOVE-Ru Darkness 2nd [Ma10p_1080p]/SPs/[VCB-Studio] To LOVE-Ru Darkness 2nd [Menu01][1080p][x265_flac].mkv",
+      "[VCB-Studio] To LOVE-Ru Darkness 2nd [Ma10p_1080p]/SPs/[VCB-Studio] To LOVE-Ru Darkness 2nd [Menu02][1080p][x265_flac].mkv",
+      "[VCB-Studio] To LOVE-Ru Darkness 2nd [Ma10p_1080p]/SPs/[VCB-Studio] To LOVE-Ru Darkness 2nd [Menu03][1080p][x265_flac].mkv",
+      "[VCB-Studio] To LOVE-Ru Darkness 2nd [Ma10p_1080p]/SPs/[VCB-Studio] To LOVE-Ru Darkness 2nd [Menu04][1080p][x265_flac].mkv",
+      "[VCB-Studio] To LOVE-Ru Darkness 2nd [Ma10p_1080p]/SPs/[VCB-Studio] To LOVE-Ru Darkness 2nd [Menu05][1080p][x265_flac].mkv",
+      "[VCB-Studio] To LOVE-Ru Darkness 2nd [Ma10p_1080p]/SPs/[VCB-Studio] To LOVE-Ru Darkness 2nd [Menu06][1080p][x265_flac].mkv",
+      "[VCB-Studio] To LOVE-Ru Darkness 2nd [Ma10p_1080p]/SPs/[VCB-Studio] To LOVE-Ru Darkness 2nd [Menu07][1080p][x265_flac].mkv",
+      "[VCB-Studio] To LOVE-Ru Darkness 2nd [Ma10p_1080p]/SPs/[VCB-Studio] To LOVE-Ru Darkness 2nd [NCED][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] To LOVE-Ru Darkness 2nd [Ma10p_1080p]/SPs/[VCB-Studio] To LOVE-Ru Darkness 2nd [NCED_EP14][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] To LOVE-Ru Darkness 2nd [Ma10p_1080p]/SPs/[VCB-Studio] To LOVE-Ru Darkness 2nd [NCOP][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] To LOVE-Ru Darkness 2nd [Ma10p_1080p]/SPs/[VCB-Studio] To LOVE-Ru Darkness 2nd [SP][Ma10p_720p][x265_flac].mkv",
+      "[VCB-Studio] To LOVE-Ru Darkness [Ma10p_1080p]/SPs/[VCB-Studio] To LOVE-Ru Darkness [CM01][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] To LOVE-Ru Darkness [Ma10p_1080p]/SPs/[VCB-Studio] To LOVE-Ru Darkness [CM02][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] To LOVE-Ru Darkness [Ma10p_1080p]/SPs/[VCB-Studio] To LOVE-Ru Darkness [CM03][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] To LOVE-Ru Darkness [Ma10p_1080p]/SPs/[VCB-Studio] To LOVE-Ru Darkness [CM04][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] To LOVE-Ru Darkness [Ma10p_1080p]/SPs/[VCB-Studio] To LOVE-Ru Darkness [Menu01][1080p][x265_flac].mkv",
+      "[VCB-Studio] To LOVE-Ru Darkness [Ma10p_1080p]/SPs/[VCB-Studio] To LOVE-Ru Darkness [Menu02][1080p][x265_flac].mkv",
+      "[VCB-Studio] To LOVE-Ru Darkness [Ma10p_1080p]/SPs/[VCB-Studio] To LOVE-Ru Darkness [Menu03][1080p][x265_flac].mkv",
+      "[VCB-Studio] To LOVE-Ru Darkness [Ma10p_1080p]/SPs/[VCB-Studio] To LOVE-Ru Darkness [Menu04][1080p][x265_flac].mkv",
+      "[VCB-Studio] To LOVE-Ru Darkness [Ma10p_1080p]/SPs/[VCB-Studio] To LOVE-Ru Darkness [Menu05][1080p][x265_flac].mkv",
+      "[VCB-Studio] To LOVE-Ru Darkness [Ma10p_1080p]/SPs/[VCB-Studio] To LOVE-Ru Darkness [Menu06][1080p][x265_flac].mkv",
+      "[VCB-Studio] To LOVE-Ru Darkness [Ma10p_1080p]/SPs/[VCB-Studio] To LOVE-Ru Darkness [NCED][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] To LOVE-Ru Darkness [Ma10p_1080p]/SPs/[VCB-Studio] To LOVE-Ru Darkness [NCOP][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] To LOVE-Ru Darkness OADs [Ma10p_1080p]/SPs/[VCB-Studio] To LOVE-Ru Darkness OADs [Menu01][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] To LOVE-Ru Darkness OADs [Ma10p_1080p]/SPs/[VCB-Studio] To LOVE-Ru Darkness OADs [Menu02][Ma10p_1080p][x265_flac].mkv"
+    ],
+    "conflict_details": [],
+    "extra_notes": "正片按系列名与集数直接对应；Motto To LOVE-Ru 对应 TMDB Season 2（TMDB 详细集目未展开，但可由系列结构与总集数确认）。SPs/NCOP/NCED/Menu/CM/SP 等未在 TMDB SxxExx 中单列的内容未映射。"
+  }
+}

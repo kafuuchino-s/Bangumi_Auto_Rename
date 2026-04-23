@@ -1,0 +1,243 @@
+{
+  "status": "ok",
+  "type": "tv",
+  "title_candidate": "Brave Witches",
+  "tmdb_name": "Brave Witches",
+  "tmdb_id": 68102,
+  "file_mapping": [
+    {
+      "source_index": 15,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 1,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 16,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 2,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 17,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 3,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 18,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 4,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 19,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 5,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 20,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 6,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 21,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 7,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 22,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 8,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 23,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 9,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 24,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 10,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 25,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 11,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 26,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 12,
+      "episode_type": "regular",
+      "confidence": "High"
+    }
+  ],
+  "analysis_result": {
+    "confidence": "High",
+    "reason": "本地文件中 [015]-[026] 的编号与 TMDB 第 1 季 S01E01-S01E12 完整一一对应，标题与集数范围也一致；其余文件均为 OP/ED/CM/Info/PV/其他作品或超出 TMDB 已列出的正片范围，未做强行映射。",
+    "season_mapping": [
+      {
+        "local_group_name": "Brave Witches",
+        "maps_to_tmdb_seasons": [
+          1
+        ]
+      }
+    ],
+    "file_mapping": [
+      {
+        "source_index": 15,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 1,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 16,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 2,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 17,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 3,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 18,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 4,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 19,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 5,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 20,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 6,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 21,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 7,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 22,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 8,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 23,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 9,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 24,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 10,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 25,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 11,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 26,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 12,
+        "episode_type": "regular",
+        "confidence": "High"
+      }
+    ],
+    "unmatched_files": [
+      "[Airota&ANK-Raws] Brave Witches (Creditless ED) (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[Airota&ANK-Raws] Brave Witches (Creditless ED10) (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[Airota&ANK-Raws] Brave Witches (Creditless ED11) (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[Airota&ANK-Raws] Brave Witches (Creditless ED12) (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[Airota&ANK-Raws] Brave Witches (Creditless ED13) (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[Airota&ANK-Raws] Brave Witches (Creditless ED2) (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[Airota&ANK-Raws] Brave Witches (Creditless ED3) (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[Airota&ANK-Raws] Brave Witches (Creditless ED4) (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[Airota&ANK-Raws] Brave Witches (Creditless ED5) (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[Airota&ANK-Raws] Brave Witches (Creditless ED6) (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[Airota&ANK-Raws] Brave Witches (Creditless ED7) (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[Airota&ANK-Raws] Brave Witches (Creditless ED8) (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[Airota&ANK-Raws] Brave Witches (Creditless ED9) (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[Airota&ANK-Raws] Brave Witches (Creditless OP) (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[Airota&ANK-Raws] Brave Witches 13 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[Airota&ANK-Raws] Brave Witches CM01 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[Airota&ANK-Raws] Brave Witches Info01 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[Airota&ANK-Raws] Brave Witches Info02 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[Airota&ANK-Raws] Brave Witches Info03 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[Airota&ANK-Raws] Brave Witches Info04 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[Airota&ANK-Raws] Brave Witches Info05 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[Airota&ANK-Raws] Brave Witches PV01 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "Barかよ 本編.mkv",
+      "Barかよ出張版.mkv"
+    ],
+    "conflict_details": [],
+    "extra_notes": null
+  }
+}

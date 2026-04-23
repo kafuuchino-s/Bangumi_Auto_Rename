@@ -1,0 +1,2413 @@
+{
+  "root_name": "[VCB-Studio] Haiyore! Nyaruko-san",
+  "files": [
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san [01][Ma10p_1080p][x265_flac].mkv",
+      "size": 991566599
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san [01][Ma10p_1080p][x265_flac].SumiSora.sc.ass",
+      "size": 89394
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san [02][Ma10p_1080p][x265_flac_aac].mkv",
+      "size": 1204928911
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san [02][Ma10p_1080p][x265_flac_aac].SumiSora.sc.ass",
+      "size": 80038
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san [03][Ma10p_1080p][x265_flac_aac].mkv",
+      "size": 1013450065
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san [03][Ma10p_1080p][x265_flac_aac].SumiSora.sc.ass",
+      "size": 85260
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san [04][Ma10p_1080p][x265_flac].mkv",
+      "size": 886228090
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san [04][Ma10p_1080p][x265_flac].SumiSora.sc.ass",
+      "size": 87698
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san [05][Ma10p_1080p][x265_flac_aac].mkv",
+      "size": 1022862425
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san [05][Ma10p_1080p][x265_flac_aac].SumiSora.sc.ass",
+      "size": 85720
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san [06][Ma10p_1080p][x265_flac].mkv",
+      "size": 942507021
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san [06][Ma10p_1080p][x265_flac].SumiSora.sc.ass",
+      "size": 82636
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san [07][Ma10p_1080p][x265_flac].mkv",
+      "size": 809904845
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san [07][Ma10p_1080p][x265_flac].SumiSora.sc.ass",
+      "size": 92020
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san [08][Ma10p_1080p][x265_flac_aac].mkv",
+      "size": 945014809
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san [08][Ma10p_1080p][x265_flac_aac].SumiSora.sc.ass",
+      "size": 88278
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san [09][Ma10p_1080p][x265_flac].mkv",
+      "size": 938477181
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san [09][Ma10p_1080p][x265_flac].SumiSora.sc.ass",
+      "size": 88822
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san [10][Ma10p_1080p][x265_flac_aac].mkv",
+      "size": 1147533841
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san [10][Ma10p_1080p][x265_flac_aac].SumiSora.sc.ass",
+      "size": 78960
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san [11][Ma10p_1080p][x265_flac].mkv",
+      "size": 945265055
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san [11][Ma10p_1080p][x265_flac].SumiSora.sc.ass",
+      "size": 85764
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san [12][Ma10p_1080p][x265_flac_aac].mkv",
+      "size": 1202122129
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san [12][Ma10p_1080p][x265_flac_aac].SumiSora.sc.ass",
+      "size": 74940
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san [OVA][Ma10p_1080p][x265_flac].mkv",
+      "size": 821845690
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san [OVA][Ma10p_1080p][x265_flac].白月.sc.ass",
+      "size": 32108
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/CDs/[120523] ｢ずっと Be with you｣／RAMMに這いよるニャル子さん (flac+webp)/AVCA-49669.cue",
+      "size": 773
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/CDs/[120523] ｢ずっと Be with you｣／RAMMに這いよるニャル子さん (flac+webp)/AVCA-49669.flac",
+      "size": 203342236
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/CDs/[120523] ｢ずっと Be with you｣／RAMMに這いよるニャル子さん (flac+webp)/AVCA-49669.log",
+      "size": 1764
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/CDs/[120523] ｢ずっと Be with you｣／RAMMに這いよるニャル子さん (flac+webp)/Scans/01.webp",
+      "size": 481724
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/CDs/[120523] ｢ずっと Be with you｣／RAMMに這いよるニャル子さん (flac+webp)/Scans/02.webp",
+      "size": 382682
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/CDs/[120523] ｢ずっと Be with you｣／RAMMに這いよるニャル子さん (flac+webp)/Scans/03.webp",
+      "size": 315376
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/CDs/[120523] ｢ずっと Be with you｣／RAMMに這いよるニャル子さん (flac+webp)/Scans/04.webp",
+      "size": 154724
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/CDs/[120523] ｢ずっと Be with you｣／RAMMに這いよるニャル子さん (flac+webp)/Scans/05.webp",
+      "size": 252784
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/CDs/[120523] ｢ずっと Be with you｣／RAMMに這いよるニャル子さん (flac+webp)/Scans/06.webp",
+      "size": 121996
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/CDs/[120523] ｢ずっと Be with you｣／RAMMに這いよるニャル子さん (flac+webp)/Scans/07.webp",
+      "size": 124684
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/CDs/[120523] ｢太陽曰く燃えよカオス｣／後ろから這いより隊G (flac+webp)/AVCA-49666.cue",
+      "size": 754
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/CDs/[120523] ｢太陽曰く燃えよカオス｣／後ろから這いより隊G (flac+webp)/AVCA-49666.flac",
+      "size": 124988721
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/CDs/[120523] ｢太陽曰く燃えよカオス｣／後ろから這いより隊G (flac+webp)/AVCA-49666.log",
+      "size": 1623
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/CDs/[120523] ｢太陽曰く燃えよカオス｣／後ろから這いより隊G (flac+webp)/Scans/01.webp",
+      "size": 639522
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/CDs/[120523] ｢太陽曰く燃えよカオス｣／後ろから這いより隊G (flac+webp)/Scans/02.webp",
+      "size": 609898
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/CDs/[120523] ｢太陽曰く燃えよカオス｣／後ろから這いより隊G (flac+webp)/Scans/03.webp",
+      "size": 385132
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/CDs/[120523] ｢太陽曰く燃えよカオス｣／後ろから這いより隊G (flac+webp)/Scans/04.webp",
+      "size": 170696
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/CDs/[120523] ｢太陽曰く燃えよカオス｣／後ろから這いより隊G (flac+webp)/Scans/05.webp",
+      "size": 272122
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/CDs/[120523] ｢太陽曰く燃えよカオス｣／後ろから這いより隊G (flac+webp)/Scans/06.webp",
+      "size": 140510
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/CDs/[120523] ｢太陽曰く燃えよカオス｣／後ろから這いより隊G (flac+webp)/Scans/07.webp",
+      "size": 140276
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/CDs/[120622] SPCD 01 (flac)/AVXA-49710.cue",
+      "size": 626
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/CDs/[120622] SPCD 01 (flac)/AVXA-49710.flac",
+      "size": 106855206
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/CDs/[120622] SPCD 01 (flac)/AVXA-49710.log",
+      "size": 1417
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/CDs/[120727] SPCD 02 (flac)/AVXA-49711.cue",
+      "size": 609
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/CDs/[120727] SPCD 02 (flac)/AVXA-49711.flac",
+      "size": 103578979
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/CDs/[120727] SPCD 02 (flac)/AVXA-49711.log",
+      "size": 1416
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/CDs/[120801] ｢邪神曲たち｣ (flac+webp)/AVCA-49837.cue",
+      "size": 1537
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/CDs/[120801] ｢邪神曲たち｣ (flac+webp)/AVCA-49837.flac",
+      "size": 485085272
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/CDs/[120801] ｢邪神曲たち｣ (flac+webp)/AVCA-49837.log",
+      "size": 1878
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/CDs/[120801] ｢邪神曲たち｣ (flac+webp)/AVCA-49838.cue",
+      "size": 5513
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/CDs/[120801] ｢邪神曲たち｣ (flac+webp)/AVCA-49838.flac",
+      "size": 440643804
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/CDs/[120801] ｢邪神曲たち｣ (flac+webp)/AVCA-49838.log",
+      "size": 4288
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/CDs/[120801] ｢邪神曲たち｣ (flac+webp)/Scans/01.webp",
+      "size": 763980
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/CDs/[120801] ｢邪神曲たち｣ (flac+webp)/Scans/02.webp",
+      "size": 340840
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/CDs/[120801] ｢邪神曲たち｣ (flac+webp)/Scans/03.webp",
+      "size": 371594
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/CDs/[120801] ｢邪神曲たち｣ (flac+webp)/Scans/04.webp",
+      "size": 361852
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/CDs/[120801] ｢邪神曲たち｣ (flac+webp)/Scans/05.webp",
+      "size": 327150
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/CDs/[120801] ｢邪神曲たち｣ (flac+webp)/Scans/06.webp",
+      "size": 377404
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/CDs/[120801] ｢邪神曲たち｣ (flac+webp)/Scans/07.webp",
+      "size": 355376
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/CDs/[120801] ｢邪神曲たち｣ (flac+webp)/Scans/08.webp",
+      "size": 303984
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/CDs/[120801] ｢邪神曲たち｣ (flac+webp)/Scans/09.webp",
+      "size": 252060
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/CDs/[120801] ｢邪神曲たち｣ (flac+webp)/Scans/10.webp",
+      "size": 134358
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/CDs/[120801] ｢邪神曲たち｣ (flac+webp)/Scans/11.webp",
+      "size": 157676
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/CDs/[120824] SPCD 03 (flac)/AVXA-49712.cue",
+      "size": 665
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/CDs/[120824] SPCD 03 (flac)/AVXA-49712.flac",
+      "size": 111280069
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/CDs/[120824] SPCD 03 (flac)/AVXA-49712.log",
+      "size": 1415
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/CDs/[120928] SPCD 04 (flac)/AVXA-49713.cue",
+      "size": 587
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/CDs/[120928] SPCD 04 (flac)/AVXA-49713.flac",
+      "size": 100454477
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/CDs/[120928] SPCD 04 (flac)/AVXA-49713.log",
+      "size": 1421
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/CDs/[121026] SPCD 05 (flac)/AVXA-49714.cue",
+      "size": 758
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/CDs/[121026] SPCD 05 (flac)/AVXA-49714.flac",
+      "size": 94928426
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/CDs/[121026] SPCD 05 (flac)/AVXA-49714.log",
+      "size": 1425
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/CDs/[121130] SPCD 06 (flac)/AVXA-49715.cue",
+      "size": 702
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/CDs/[121130] SPCD 06 (flac)/AVXA-49715.flac",
+      "size": 84393351
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/CDs/[121130] SPCD 06 (flac)/AVXA-49715.log",
+      "size": 1421
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/Scans/Visual Collection/01.webp",
+      "size": 378906
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/Scans/Visual Collection/02.webp",
+      "size": 583252
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/Scans/Visual Collection/03.webp",
+      "size": 371832
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/Scans/Visual Collection/04.webp",
+      "size": 734552
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/Scans/Visual Collection/05.webp",
+      "size": 299528
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/Scans/Visual Collection/06.webp",
+      "size": 818216
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/Scans/Visual Collection/07.webp",
+      "size": 423792
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/Scans/Visual Collection/08.webp",
+      "size": 332686
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/Scans/Visual Collection/09.webp",
+      "size": 420826
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/Scans/Visual Collection/10.webp",
+      "size": 296120
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/Scans/Visual Collection/11.webp",
+      "size": 440058
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/Scans/Visual Collection/12.webp",
+      "size": 505000
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/Scans/Visual Collection/13.webp",
+      "size": 312218
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/Scans/Visual Collection/14.webp",
+      "size": 364770
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/Scans/Visual Collection/15.webp",
+      "size": 324074
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/Scans/Visual Collection/16.webp",
+      "size": 408048
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/Scans/Visual Collection/17.webp",
+      "size": 215636
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/Scans/Visual Collection/18.webp",
+      "size": 397832
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/Scans/Visual Collection/19.webp",
+      "size": 303046
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/Scans/Visual Collection/20.webp",
+      "size": 329806
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/Scans/Visual Collection/21.webp",
+      "size": 266314
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/Scans/Visual Collection/22.webp",
+      "size": 397026
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/Scans/Visual Collection/23.webp",
+      "size": 384764
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/Scans/Visual Collection/24.webp",
+      "size": 463722
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/Scans/Visual Collection/25.webp",
+      "size": 330122
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/Scans/Visual Collection/26.webp",
+      "size": 268064
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/Scans/Visual Collection/27.webp",
+      "size": 232138
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/Scans/Visual Collection/28.webp",
+      "size": 243180
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/Scans/Visual Collection/29.webp",
+      "size": 178244
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/Scans/Visual Collection/30.webp",
+      "size": 216106
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/Scans/Visual Collection/31.webp",
+      "size": 312072
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/Scans/Visual Collection/32.webp",
+      "size": 447062
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/Scans/Visual Collection/33.webp",
+      "size": 377354
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/Scans/Visual Collection/34.webp",
+      "size": 360850
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/Scans/Visual Collection/35.webp",
+      "size": 298810
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/Scans/Visual Collection/36.webp",
+      "size": 393982
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/Scans/Visual Collection/37.webp",
+      "size": 211832
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/Scans/Visual Collection/38.webp",
+      "size": 313516
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/Scans/Visual Collection/39.webp",
+      "size": 429140
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/Scans/Visual Collection/40.webp",
+      "size": 299368
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/Scans/Visual Collection/41.webp",
+      "size": 302794
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/Scans/Visual Collection/42.webp",
+      "size": 314296
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san [Advice][Ma10p_1080p][x265_flac].mkv",
+      "size": 16523363
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san [CM01][Ma10p_1080p][x265_flac].mkv",
+      "size": 21104452
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san [CM02][Ma10p_1080p][x265_flac].mkv",
+      "size": 38716230
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san [CM03 OP_DVD][Ma10p_720p][x265_flac].mkv",
+      "size": 11623555
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san [CM04 OP_DVD][Ma10p_720p][x265_flac].mkv",
+      "size": 20727893
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san [CM05 ED_DVD][Ma10p_720p][x265_flac].mkv",
+      "size": 10727663
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san [CM06 ED_DVD][Ma10p_720p][x265_flac].mkv",
+      "size": 19379534
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san [Gallery].zip",
+      "size": 37136825
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san [IV][Ma10p_576p][x265_aac].mkv",
+      "size": 426293133
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san [Menu ED_DVD].png",
+      "size": 1486217
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san [Menu OP_DVD].png",
+      "size": 1161129
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san [Menu SP_DVD].png",
+      "size": 1023316
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san [Menu01].flac",
+      "size": 6300848
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san [Menu01_1].png",
+      "size": 1856383
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san [Menu01_2].png",
+      "size": 1377036
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san [Menu01_3].png",
+      "size": 1506379
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san [Menu01_4].png",
+      "size": 1569691
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san [Menu02].flac",
+      "size": 5031017
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san [Menu02_1].png",
+      "size": 1503477
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san [Menu02_2].png",
+      "size": 1587014
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san [Menu02_3].png",
+      "size": 1935736
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san [Menu02_4].png",
+      "size": 1775214
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san [Menu03].flac",
+      "size": 6199216
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san [Menu03_1].png",
+      "size": 1883538
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san [Menu03_2].png",
+      "size": 1840389
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san [Menu03_3].png",
+      "size": 1824873
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san [Menu03_4].png",
+      "size": 1503633
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san [Menu04].flac",
+      "size": 5657807
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san [Menu04_1].png",
+      "size": 1752795
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san [Menu04_2].png",
+      "size": 1674103
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san [Menu04_3].png",
+      "size": 2203656
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san [Menu04_4].png",
+      "size": 1693358
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san [Menu05].flac",
+      "size": 5246048
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san [Menu05_1].png",
+      "size": 1643976
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san [Menu05_2].png",
+      "size": 1820668
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san [Menu05_3].png",
+      "size": 1629447
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san [Menu05_4].png",
+      "size": 1743959
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san [Menu06].flac",
+      "size": 6276576
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san [Menu06_1].png",
+      "size": 2224256
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san [Menu06_2].png",
+      "size": 1746635
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san [Menu06_3].png",
+      "size": 1639665
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san [Menu06_4].png",
+      "size": 2227866
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san [NCED][Ma10p_1080p][x265_flac].mkv",
+      "size": 96430992
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san [NCOP][Ma10p_1080p][x265_flac].mkv",
+      "size": 88178936
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san [PV01 OP_DVD][Ma10p_720p][x265_flac].mkv",
+      "size": 69800941
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san [PV02 OP_DVD][Ma10p_720p][x265_flac].mkv",
+      "size": 57570003
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san [PV03 ED_DVD][Ma10p_720p][x265_flac].mkv",
+      "size": 49657306
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san [PV04 SP_DVD][Ma10p_720p][x265_flac].mkv",
+      "size": 4638361
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san [SP OP_DVD][Ma10p_720p][x265_flac].mkv",
+      "size": 66407719
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san F [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san F [Ma10p_1080p][x265_flac].mkv",
+      "size": 1378738074
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san F [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san F [Ma10p_1080p][x265_flac].SumiSora.sc.ass",
+      "size": 52861
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san F [Ma10p_1080p]/CDs/[150508] ｢這いよれOnce Nyagain｣／きっとエンゲージ (flac+webp)/EYCA-10458.cue",
+      "size": 877
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san F [Ma10p_1080p]/CDs/[150508] ｢這いよれOnce Nyagain｣／きっとエンゲージ (flac+webp)/EYCA-10458.flac",
+      "size": 122365038
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san F [Ma10p_1080p]/CDs/[150508] ｢這いよれOnce Nyagain｣／きっとエンゲージ (flac+webp)/EYCA-10458.log",
+      "size": 3544
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san F [Ma10p_1080p]/CDs/[150508] ｢這いよれOnce Nyagain｣／きっとエンゲージ (flac+webp)/Scans/01.webp",
+      "size": 955134
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san F [Ma10p_1080p]/CDs/[150508] ｢這いよれOnce Nyagain｣／きっとエンゲージ (flac+webp)/Scans/02.webp",
+      "size": 537182
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san F [Ma10p_1080p]/CDs/[150508] ｢這いよれOnce Nyagain｣／きっとエンゲージ (flac+webp)/Scans/03.webp",
+      "size": 1279884
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san F [Ma10p_1080p]/CDs/[150508] ｢這いよれOnce Nyagain｣／きっとエンゲージ (flac+webp)/Scans/04.webp",
+      "size": 880574
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san F [Ma10p_1080p]/CDs/[150508] ｢這いよれOnce Nyagain｣／きっとエンゲージ (flac+webp)/Scans/05.webp",
+      "size": 286650
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san F [Ma10p_1080p]/CDs/[150508] ｢這いよれOnce Nyagain｣／きっとエンゲージ (flac+webp)/Scans/06.webp",
+      "size": 377802
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san F [Ma10p_1080p]/CDs/[150508] ｢這いよれOnce Nyagain｣／きっとエンゲージ (flac+webp)/Scans/07.webp",
+      "size": 417774
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san F [Ma10p_1080p]/CDs/[150508] ｢這いよれOnce Nyagain｣／きっとエンゲージ (flac+webp)/Scans/08.webp",
+      "size": 276538
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san F [Ma10p_1080p]/CDs/[150508] ｢這いよれOnce Nyagain｣／きっとエンゲージ [24bit_48kHz] (flac)/01. 這いよれOnce Nyagain.flac",
+      "size": 56625455
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san F [Ma10p_1080p]/CDs/[150508] ｢這いよれOnce Nyagain｣／きっとエンゲージ [24bit_48kHz] (flac)/02. きっとエンゲージ.flac",
+      "size": 52470044
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san F [Ma10p_1080p]/CDs/[150508] ｢這いよれOnce Nyagain｣／きっとエンゲージ [24bit_48kHz] (flac)/03. 這いよれOnce Nyagain(Instrumental).flac",
+      "size": 55855424
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san F [Ma10p_1080p]/CDs/[150508] ｢這いよれOnce Nyagain｣／きっとエンゲージ [24bit_48kHz] (flac)/04. きっとエンゲージ(Instrumental).flac",
+      "size": 51681609
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san F [Ma10p_1080p]/CDs/[150508] ｢邪選曲たち｣ [24bit_48kHz] (flac)/01. 太陽曰く燃えよカオス.flac",
+      "size": 56741961
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san F [Ma10p_1080p]/CDs/[150508] ｢邪選曲たち｣ [24bit_48kHz] (flac)/02. ずっとBe with you.flac",
+      "size": 52162780
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san F [Ma10p_1080p]/CDs/[150508] ｢邪選曲たち｣ [24bit_48kHz] (flac)/03. Sister,Friend,Lover.flac",
+      "size": 52529026
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san F [Ma10p_1080p]/CDs/[150508] ｢邪選曲たち｣ [24bit_48kHz] (flac)/04. 黒鋼のストライバー.flac",
+      "size": 56425102
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san F [Ma10p_1080p]/CDs/[150508] ｢邪選曲たち｣ [24bit_48kHz] (flac)/05. キミのとなりで.flac",
+      "size": 54203176
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san F [Ma10p_1080p]/CDs/[150508] ｢邪選曲たち｣ [24bit_48kHz] (flac)/06. 恋は渾沌の隷也.flac",
+      "size": 58302973
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san F [Ma10p_1080p]/CDs/[150508] ｢邪選曲たち｣ [24bit_48kHz] (flac)/07. 禍々しくも聖なるかな.flac",
+      "size": 79847209
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san F [Ma10p_1080p]/Scans/01.webp",
+      "size": 2554700
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san F [Ma10p_1080p]/Scans/02.webp",
+      "size": 9334732
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san F [Ma10p_1080p]/Scans/03.webp",
+      "size": 3855888
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san F [Ma10p_1080p]/Scans/04.webp",
+      "size": 2586760
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san F [Ma10p_1080p]/Scans/05.webp",
+      "size": 1521554
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san F [Ma10p_1080p]/Scans/06.webp",
+      "size": 2148452
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san F [Ma10p_1080p]/Scans/07.webp",
+      "size": 4557870
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san F [Ma10p_1080p]/Scans/08.webp",
+      "size": 4852928
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san F [Ma10p_1080p]/Scans/09.webp",
+      "size": 452712
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san F [Ma10p_1080p]/Scans/10.webp",
+      "size": 4355916
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san F [Ma10p_1080p]/Scans/11.webp",
+      "size": 7094722
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san F [Ma10p_1080p]/Scans/12.webp",
+      "size": 4789090
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san F [Ma10p_1080p]/Scans/13.webp",
+      "size": 5222346
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san F [Ma10p_1080p]/Scans/14.webp",
+      "size": 6846548
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san F [Ma10p_1080p]/Scans/15.webp",
+      "size": 7065458
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san F [Ma10p_1080p]/Scans/16.webp",
+      "size": 5735360
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san F [Ma10p_1080p]/Scans/17.webp",
+      "size": 5921518
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san F [Ma10p_1080p]/Scans/18.webp",
+      "size": 4392834
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san F [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san & Haiyore! Nyaruko-san W [Summary][Ma10p_1080p][x265_flac].mkv",
+      "size": 1317326059
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san F [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san F [Menu].flac",
+      "size": 9811409
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san F [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san F [Menu].png",
+      "size": 2487817
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san F [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san F [NCED][Ma10p_1080p][x265_flac].mkv",
+      "size": 147847600
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san F [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san F [NCOP][Ma10p_1080p][x265_flac].mkv",
+      "size": 118815201
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san F [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san F [PV01][Ma10p_1080p][x265_flac].mkv",
+      "size": 23769685
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san F [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san F [PV02][Ma10p_1080p][x265_flac].mkv",
+      "size": 235434464
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san F [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san F [Trailer][Ma10p_1080p][x265_flac].mkv",
+      "size": 77472561
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san W [01][Ma10p_1080p][x265_flac_aac].mkv",
+      "size": 1182818210
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san W [01][Ma10p_1080p][x265_flac_aac].SumiSora.sc.ass",
+      "size": 59509
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san W [02][Ma10p_1080p][x265_flac].mkv",
+      "size": 1254723264
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san W [02][Ma10p_1080p][x265_flac].SumiSora.sc.ass",
+      "size": 48815
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san W [03][Ma10p_1080p][x265_flac].mkv",
+      "size": 1472169419
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san W [03][Ma10p_1080p][x265_flac].SumiSora.sc.ass",
+      "size": 52306
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san W [04][Ma10p_1080p][x265_flac_aac].mkv",
+      "size": 1057961930
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san W [04][Ma10p_1080p][x265_flac_aac].SumiSora.sc.ass",
+      "size": 50521
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san W [05][Ma10p_1080p][x265_flac_aac].mkv",
+      "size": 1069312248
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san W [05][Ma10p_1080p][x265_flac_aac].SumiSora.sc.ass",
+      "size": 51965
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san W [06][Ma10p_1080p][x265_flac].mkv",
+      "size": 1028357735
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san W [06][Ma10p_1080p][x265_flac].SumiSora.sc.ass",
+      "size": 45924
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san W [07][Ma10p_1080p][x265_flac_aac].mkv",
+      "size": 1215986983
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san W [07][Ma10p_1080p][x265_flac_aac].SumiSora.sc.ass",
+      "size": 47922
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san W [08][Ma10p_1080p][x265_flac].mkv",
+      "size": 1190339165
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san W [08][Ma10p_1080p][x265_flac].SumiSora.sc.ass",
+      "size": 43117
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san W [09][Ma10p_1080p][x265_flac].mkv",
+      "size": 1327471022
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san W [09][Ma10p_1080p][x265_flac].SumiSora.sc.ass",
+      "size": 49060
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san W [10][Ma10p_1080p][x265_flac_aac].mkv",
+      "size": 1178958799
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san W [10][Ma10p_1080p][x265_flac_aac].SumiSora.sc.ass",
+      "size": 46921
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san W [11][Ma10p_1080p][x265_flac].mkv",
+      "size": 1239851102
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san W [11][Ma10p_1080p][x265_flac].SumiSora.sc.ass",
+      "size": 48644
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san W [12][Ma10p_1080p][x265_flac_aac].mkv",
+      "size": 1197259799
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san W [12][Ma10p_1080p][x265_flac_aac].SumiSora.sc.ass",
+      "size": 48431
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san W [OVA][Ma10p_1080p][x265_flac].mkv",
+      "size": 833337396
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san W [OVA][Ma10p_1080p][x265_flac].SumiSora.sc.ass",
+      "size": 66314
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130220] Character Song Series Vol.01 ／後ろから這いより隊Ｎ（ニャル子） (flac+webp)/AVCA-62122.cue",
+      "size": 691
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130220] Character Song Series Vol.01 ／後ろから這いより隊Ｎ（ニャル子） (flac+webp)/AVCA-62122.flac",
+      "size": 129780291
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130220] Character Song Series Vol.01 ／後ろから這いより隊Ｎ（ニャル子） (flac+webp)/AVCA-62122.log",
+      "size": 4098
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130220] Character Song Series Vol.01 ／後ろから這いより隊Ｎ（ニャル子） (flac+webp)/Scans/01.webp",
+      "size": 1600112
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130220] Character Song Series Vol.01 ／後ろから這いより隊Ｎ（ニャル子） (flac+webp)/Scans/02.webp",
+      "size": 681558
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130220] Character Song Series Vol.01 ／後ろから這いより隊Ｎ（ニャル子） (flac+webp)/Scans/03.webp",
+      "size": 1143912
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130220] Character Song Series Vol.01 ／後ろから這いより隊Ｎ（ニャル子） (flac+webp)/Scans/04.webp",
+      "size": 586282
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130220] Character Song Series Vol.01 ／後ろから這いより隊Ｎ（ニャル子） (flac+webp)/Scans/05.webp",
+      "size": 432102
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130220] Character Song Series Vol.01 ／後ろから這いより隊Ｎ（ニャル子） (flac+webp)/Scans/06.webp",
+      "size": 323774
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130220] Character Song Series Vol.02 ／後ろから這いより隊Ｍ（真尋） (flac+webp)/AVCA-62123.cue",
+      "size": 640
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130220] Character Song Series Vol.02 ／後ろから這いより隊Ｍ（真尋） (flac+webp)/AVCA-62123.flac",
+      "size": 126720511
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130220] Character Song Series Vol.02 ／後ろから這いより隊Ｍ（真尋） (flac+webp)/AVCA-62123.log",
+      "size": 4082
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130220] Character Song Series Vol.02 ／後ろから這いより隊Ｍ（真尋） (flac+webp)/Scans/01.webp",
+      "size": 1719020
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130220] Character Song Series Vol.02 ／後ろから這いより隊Ｍ（真尋） (flac+webp)/Scans/02.webp",
+      "size": 643026
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130220] Character Song Series Vol.02 ／後ろから這いより隊Ｍ（真尋） (flac+webp)/Scans/03.webp",
+      "size": 1039094
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130220] Character Song Series Vol.02 ／後ろから這いより隊Ｍ（真尋） (flac+webp)/Scans/04.webp",
+      "size": 748596
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130220] Character Song Series Vol.02 ／後ろから這いより隊Ｍ（真尋） (flac+webp)/Scans/05.webp",
+      "size": 373960
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130220] Character Song Series Vol.02 ／後ろから這いより隊Ｍ（真尋） (flac+webp)/Scans/06.webp",
+      "size": 354954
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130320] Character Song Series Vol.03 ／後ろから這いより隊C（クー子） (flac+webp)/AVCA-62124.cue",
+      "size": 688
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130320] Character Song Series Vol.03 ／後ろから這いより隊C（クー子） (flac+webp)/AVCA-62124.flac",
+      "size": 139764281
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130320] Character Song Series Vol.03 ／後ろから這いより隊C（クー子） (flac+webp)/AVCA-62124.log",
+      "size": 4094
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130320] Character Song Series Vol.03 ／後ろから這いより隊C（クー子） (flac+webp)/Scans/01.webp",
+      "size": 1768548
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130320] Character Song Series Vol.03 ／後ろから這いより隊C（クー子） (flac+webp)/Scans/02.webp",
+      "size": 601772
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130320] Character Song Series Vol.03 ／後ろから這いより隊C（クー子） (flac+webp)/Scans/03.webp",
+      "size": 940108
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130320] Character Song Series Vol.03 ／後ろから這いより隊C（クー子） (flac+webp)/Scans/04.webp",
+      "size": 767224
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130320] Character Song Series Vol.03 ／後ろから這いより隊C（クー子） (flac+webp)/Scans/05.webp",
+      "size": 266886
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130320] Character Song Series Vol.03 ／後ろから這いより隊C（クー子） (flac+webp)/Scans/06.webp",
+      "size": 381846
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130327] Character Song Series Vol.05 ／後ろから這いより隊T（暮井珠緒） (flac+webp)/AVCA-62126.cue",
+      "size": 631
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130327] Character Song Series Vol.05 ／後ろから這いより隊T（暮井珠緒） (flac+webp)/AVCA-62126.flac",
+      "size": 132618761
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130327] Character Song Series Vol.05 ／後ろから這いより隊T（暮井珠緒） (flac+webp)/AVCA-62126.log",
+      "size": 4078
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130327] Character Song Series Vol.05 ／後ろから這いより隊T（暮井珠緒） (flac+webp)/Scans/01.webp",
+      "size": 1608134
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130327] Character Song Series Vol.05 ／後ろから這いより隊T（暮井珠緒） (flac+webp)/Scans/02.webp",
+      "size": 611234
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130327] Character Song Series Vol.05 ／後ろから這いより隊T（暮井珠緒） (flac+webp)/Scans/03.webp",
+      "size": 922124
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130327] Character Song Series Vol.05 ／後ろから這いより隊T（暮井珠緒） (flac+webp)/Scans/04.webp",
+      "size": 636080
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130327] Character Song Series Vol.05 ／後ろから這いより隊T（暮井珠緒） (flac+webp)/Scans/05.webp",
+      "size": 370014
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130327] Character Song Series Vol.05 ／後ろから這いより隊T（暮井珠緒） (flac+webp)/Scans/06.webp",
+      "size": 370736
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130327] Character Song Series Vol.06 ／後ろから這いより隊Y（余市健彦） (flac+webp)/AVCA-62127.cue",
+      "size": 607
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130327] Character Song Series Vol.06 ／後ろから這いより隊Y（余市健彦） (flac+webp)/AVCA-62127.flac",
+      "size": 130844652
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130327] Character Song Series Vol.06 ／後ろから這いより隊Y（余市健彦） (flac+webp)/AVCA-62127.log",
+      "size": 4084
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130327] Character Song Series Vol.06 ／後ろから這いより隊Y（余市健彦） (flac+webp)/Scans/01.webp",
+      "size": 1684608
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130327] Character Song Series Vol.06 ／後ろから這いより隊Y（余市健彦） (flac+webp)/Scans/02.webp",
+      "size": 598362
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130327] Character Song Series Vol.06 ／後ろから這いより隊Y（余市健彦） (flac+webp)/Scans/03.webp",
+      "size": 811108
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130327] Character Song Series Vol.06 ／後ろから這いより隊Y（余市健彦） (flac+webp)/Scans/04.webp",
+      "size": 676792
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130327] Character Song Series Vol.06 ／後ろから這いより隊Y（余市健彦） (flac+webp)/Scans/05.webp",
+      "size": 346452
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130327] Character Song Series Vol.06 ／後ろから這いより隊Y（余市健彦） (flac+webp)/Scans/06.webp",
+      "size": 287836
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130410] Character Song Series Vol.04 ／後ろから這いより隊H（ハス太） (flac+webp)/AVCA-62125.cue",
+      "size": 645
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130410] Character Song Series Vol.04 ／後ろから這いより隊H（ハス太） (flac+webp)/AVCA-62125.flac",
+      "size": 129106832
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130410] Character Song Series Vol.04 ／後ろから這いより隊H（ハス太） (flac+webp)/AVCA-62125.log",
+      "size": 4088
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130410] Character Song Series Vol.04 ／後ろから這いより隊H（ハス太） (flac+webp)/Scans/01.webp",
+      "size": 1681836
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130410] Character Song Series Vol.04 ／後ろから這いより隊H（ハス太） (flac+webp)/Scans/02.webp",
+      "size": 648460
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130410] Character Song Series Vol.04 ／後ろから這いより隊H（ハス太） (flac+webp)/Scans/03.webp",
+      "size": 646468
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130410] Character Song Series Vol.04 ／後ろから這いより隊H（ハス太） (flac+webp)/Scans/04.webp",
+      "size": 736608
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130410] Character Song Series Vol.04 ／後ろから這いより隊H（ハス太） (flac+webp)/Scans/05.webp",
+      "size": 252024
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130410] Character Song Series Vol.04 ／後ろから這いより隊H（ハス太） (flac+webp)/Scans/06.webp",
+      "size": 316752
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130410] ｢邪名曲たち｣ (flac)/AVCA-62285.cue",
+      "size": 1341
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130410] ｢邪名曲たち｣ (flac)/AVCA-62285.flac",
+      "size": 279525626
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130410] ｢邪名曲たち｣ (flac)/AVCA-62285.log",
+      "size": 2070
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130410] ｢邪名曲たち｣ (flac)/AVCA-62286.cue",
+      "size": 179
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130410] ｢邪名曲たち｣ (flac)/AVCA-62286.flac",
+      "size": 64476325
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130410] ｢邪名曲たち｣ (flac)/AVCA-62286.log",
+      "size": 1737
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130424] ED Song Series Vol.01／RAMMに這いよるXXX (flac+webp)/AVCA-62335.cue",
+      "size": 1112
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130424] ED Song Series Vol.01／RAMMに這いよるXXX (flac+webp)/AVCA-62335.flac",
+      "size": 118046675
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130424] ED Song Series Vol.01／RAMMに這いよるXXX (flac+webp)/AVCA-62335.log",
+      "size": 4144
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130424] ED Song Series Vol.01／RAMMに這いよるXXX (flac+webp)/Scans/01.webp",
+      "size": 620008
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130424] ED Song Series Vol.01／RAMMに這いよるXXX (flac+webp)/Scans/02.webp",
+      "size": 531188
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130424] ED Song Series Vol.01／RAMMに這いよるXXX (flac+webp)/Scans/03.webp",
+      "size": 249326
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130424] ED Song Series Vol.01／RAMMに這いよるXXX (flac+webp)/Scans/04.webp",
+      "size": 233384
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130424] ED Song Series Vol.01／RAMMに這いよるXXX (flac+webp)/Scans/05.webp",
+      "size": 302156
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130424] ED Song Series Vol.01／RAMMに這いよるXXX (flac+webp)/Scans/06.webp",
+      "size": 293010
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130424] ED Song Series Vol.01／RAMMに這いよるXXX (flac+webp)/Scans/07.webp",
+      "size": 168390
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130424] ｢恋は渾沌の隷也｣／後ろから這いより隊G (flac+webp)/AVCA-62333.cue",
+      "size": 1447
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130424] ｢恋は渾沌の隷也｣／後ろから這いより隊G (flac+webp)/AVCA-62333.flac",
+      "size": 126224884
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130424] ｢恋は渾沌の隷也｣／後ろから這いより隊G (flac+webp)/AVCA-62333.log",
+      "size": 4216
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130424] ｢恋は渾沌の隷也｣／後ろから這いより隊G (flac+webp)/Scans/01.webp",
+      "size": 556666
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130424] ｢恋は渾沌の隷也｣／後ろから這いより隊G (flac+webp)/Scans/02.webp",
+      "size": 548614
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130424] ｢恋は渾沌の隷也｣／後ろから這いより隊G (flac+webp)/Scans/03.webp",
+      "size": 317204
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130424] ｢恋は渾沌の隷也｣／後ろから這いより隊G (flac+webp)/Scans/04.webp",
+      "size": 317090
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130424] ｢恋は渾沌の隷也｣／後ろから這いより隊G (flac+webp)/Scans/05.webp",
+      "size": 222440
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130424] ｢恋は渾沌の隷也｣／後ろから這いより隊G (flac+webp)/Scans/06.webp",
+      "size": 227228
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130424] ｢恋は渾沌の隷也｣／後ろから這いより隊G (flac+webp)/Scans/07.webp",
+      "size": 125150
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130522] ED Song Series Vol.02／RAMMに這いよるYYY (flac+webp)/AVCA-62337.cue",
+      "size": 888
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130522] ED Song Series Vol.02／RAMMに這いよるYYY (flac+webp)/AVCA-62337.flac",
+      "size": 113042690
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130522] ED Song Series Vol.02／RAMMに這いよるYYY (flac+webp)/AVCA-62337.log",
+      "size": 2342
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130522] ED Song Series Vol.02／RAMMに這いよるYYY (flac+webp)/Scans/01.webp",
+      "size": 1002076
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130522] ED Song Series Vol.02／RAMMに這いよるYYY (flac+webp)/Scans/02.webp",
+      "size": 476546
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130522] ED Song Series Vol.02／RAMMに這いよるYYY (flac+webp)/Scans/03.webp",
+      "size": 258640
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130522] ED Song Series Vol.02／RAMMに這いよるYYY (flac+webp)/Scans/04.webp",
+      "size": 250112
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130522] ED Song Series Vol.02／RAMMに這いよるYYY (flac+webp)/Scans/05.webp",
+      "size": 399240
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130522] ED Song Series Vol.02／RAMMに這いよるYYY (flac+webp)/Scans/06.webp",
+      "size": 342966
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130522] ED Song Series Vol.02／RAMMに這いよるYYY (flac+webp)/Scans/07.webp",
+      "size": 271918
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130531] SPCD 01 (flac)/AVXA-62407.cue",
+      "size": 471
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130531] SPCD 01 (flac)/AVXA-62407.flac",
+      "size": 188304168
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130531] SPCD 01 (flac)/AVXA-62407.log",
+      "size": 1398
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130628] SPCD 02 (flac)/AVXA-62408.cue",
+      "size": 448
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130628] SPCD 02 (flac)/AVXA-62408.flac",
+      "size": 223095742
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130628] SPCD 02 (flac)/AVXA-62408.log",
+      "size": 1399
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130717] ED Song Series Vol.03／RAMMに這いよるZZZ (flac)/01. 愛クルセイダース†ストライバー.flac",
+      "size": 31639205
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130717] ED Song Series Vol.03／RAMMに這いよるZZZ (flac)/02. ユゴスよりの使者.flac",
+      "size": 27964617
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130717] ED Song Series Vol.03／RAMMに這いよるZZZ (flac)/03. 愛クルセイダース†ストライバー (Instrumental).flac",
+      "size": 31101084
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130717] ED Song Series Vol.03／RAMMに這いよるZZZ (flac)/04. ユゴスよりの使者 (Instrumental).flac",
+      "size": 26080741
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130726] SPCD 03 (flac)/AVXA-62409.cue",
+      "size": 483
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130726] SPCD 03 (flac)/AVXA-62409.flac",
+      "size": 225316510
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130726] SPCD 03 (flac)/AVXA-62409.log",
+      "size": 1395
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130830] SPCD 04 (flac)/AVXA-62410.cue",
+      "size": 471
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130830] SPCD 04 (flac)/AVXA-62410.flac",
+      "size": 256448925
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130830] SPCD 04 (flac)/AVXA-62410.log",
+      "size": 1395
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130927] SPCD 05 (flac)/AVXA-62411.cue",
+      "size": 477
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130927] SPCD 05 (flac)/AVXA-62411.flac",
+      "size": 258180063
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[130927] SPCD 05 (flac)/AVXA-62411.log",
+      "size": 1399
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[131016] ｢邪礼曲たち｣ (flac)/AVCA-62969.cue",
+      "size": 1785
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[131016] ｢邪礼曲たち｣ (flac)/AVCA-62969.flac",
+      "size": 388519691
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[131016] ｢邪礼曲たち｣ (flac)/AVCA-62969.log",
+      "size": 4220
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[131025] SPCD 06 (flac)/AVXA-62412.cue",
+      "size": 499
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[131025] SPCD 06 (flac)/AVXA-62412.flac",
+      "size": 291401921
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[131025] SPCD 06 (flac)/AVXA-62412.log",
+      "size": 1400
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[140326] S1 & S2 CD BOX (flac+webp)/AVCA-74284.cue",
+      "size": 1704
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[140326] S1 & S2 CD BOX (flac+webp)/AVCA-74284.flac",
+      "size": 485086034
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[140326] S1 & S2 CD BOX (flac+webp)/AVCA-74284.log",
+      "size": 4124
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[140326] S1 & S2 CD BOX (flac+webp)/AVCA-74285.cue",
+      "size": 2433
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[140326] S1 & S2 CD BOX (flac+webp)/AVCA-74285.flac",
+      "size": 388519691
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[140326] S1 & S2 CD BOX (flac+webp)/AVCA-74285.log",
+      "size": 4626
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[140326] S1 & S2 CD BOX (flac+webp)/AVCA-74286.cue",
+      "size": 2978
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[140326] S1 & S2 CD BOX (flac+webp)/AVCA-74286.flac",
+      "size": 449409189
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[140326] S1 & S2 CD BOX (flac+webp)/AVCA-74286.log",
+      "size": 4876
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[140326] S1 & S2 CD BOX (flac+webp)/AVCA-74287.cue",
+      "size": 4141
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[140326] S1 & S2 CD BOX (flac+webp)/AVCA-74287.flac",
+      "size": 354059219
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[140326] S1 & S2 CD BOX (flac+webp)/AVCA-74287.log",
+      "size": 5632
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[140326] S1 & S2 CD BOX (flac+webp)/Cover.jpg",
+      "size": 6709324
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[140326] S1 & S2 CD BOX (flac+webp)/Scans/01.webp",
+      "size": 21134736
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[140326] S1 & S2 CD BOX (flac+webp)/Scans/02.webp",
+      "size": 14151426
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[140326] S1 & S2 CD BOX (flac+webp)/Scans/03.webp",
+      "size": 15552636
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[140326] S1 & S2 CD BOX (flac+webp)/Scans/04.webp",
+      "size": 2064190
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[140326] S1 & S2 CD BOX (flac+webp)/Scans/05.webp",
+      "size": 2786282
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[140326] S1 & S2 CD BOX (flac+webp)/Scans/06.webp",
+      "size": 2885440
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[140326] S1 & S2 CD BOX (flac+webp)/Scans/07.webp",
+      "size": 1554440
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[140326] S1 & S2 CD BOX (flac+webp)/Scans/08.webp",
+      "size": 14107340
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[140326] S1 & S2 CD BOX (flac+webp)/Scans/09.webp",
+      "size": 19755816
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[140326] S1 & S2 CD BOX (flac+webp)/Scans/10.webp",
+      "size": 1529840
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[140326] S1 & S2 CD BOX (flac+webp)/Scans/11.webp",
+      "size": 23375890
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[140326] S1 & S2 CD BOX (flac+webp)/Scans/12.webp",
+      "size": 10991930
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[140326] S1 & S2 CD BOX (flac+webp)/Scans/13.webp",
+      "size": 31137540
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[140326] S1 & S2 CD BOX (flac+webp)/Scans/14.webp",
+      "size": 33197962
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[140326] S1 & S2 CD BOX (flac+webp)/Scans/15.webp",
+      "size": 32005122
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[140326] S1 & S2 CD BOX (flac+webp)/Scans/16.webp",
+      "size": 30889978
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[140326] S1 & S2 CD BOX (flac+webp)/Scans/17.webp",
+      "size": 32224678
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[140326] S1 & S2 CD BOX (flac+webp)/Scans/18.webp",
+      "size": 31117328
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[140326] S1 & S2 CD BOX (flac+webp)/Scans/19.webp",
+      "size": 28486260
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[140326] S1 & S2 CD BOX (flac+webp)/Scans/20.webp",
+      "size": 30815046
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[140326] S1 & S2 CD BOX (flac+webp)/Scans/21.webp",
+      "size": 29070964
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[140326] S1 & S2 CD BOX (flac+webp)/Scans/22.webp",
+      "size": 30326314
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[140326] S1 & S2 CD BOX (flac+webp)/Scans/23.webp",
+      "size": 30894324
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[140326] S1 & S2 CD BOX (flac+webp)/Scans/24.webp",
+      "size": 32148180
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[140326] S1 & S2 CD BOX (flac+webp)/Scans/25.webp",
+      "size": 32376234
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[140326] S1 & S2 CD BOX (flac+webp)/Scans/26.webp",
+      "size": 29159268
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[140326] S1 & S2 CD BOX (flac+webp)/Scans/27.webp",
+      "size": 29694892
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[140326] S1 & S2 CD BOX (flac+webp)/Scans/28.webp",
+      "size": 12586736
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[140326] S1 & S2 CD BOX (flac+webp)/Scans/29.webp",
+      "size": 9569276
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[140326] S1 & S2 CD BOX (flac+webp)/Scans/30.webp",
+      "size": 10363806
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[140326] S1 & S2 CD BOX (flac+webp)/Scans/31.webp",
+      "size": 6482516
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[140326] S1 & S2 CD BOX (flac+webp)/Scans/32.webp",
+      "size": 7080634
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/CDs/[140326] S1 & S2 CD BOX (flac+webp)/Scans/33.webp",
+      "size": 12350914
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/Scans/Vol.01/三方背ケース.jpg",
+      "size": 3872006
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/Scans/Vol.01/本編ディスク.jpg",
+      "size": 935650
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/Scans/Vol.01/特典CD.jpg",
+      "size": 854107
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/Scans/Vol.01/透明ケース入り表.jpg",
+      "size": 2216946
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/Scans/Vol.01/透明ケース入り裏.jpg",
+      "size": 1795294
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/Scans/Vol.02/ケース入り表_2巻.jpg",
+      "size": 1535267
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/Scans/Vol.02/ケース入り裏_2巻.jpg",
+      "size": 1373436
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/Scans/Vol.02/三方背ジャケ表_2巻.jpg",
+      "size": 1540705
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/Scans/Vol.02/三方背ジャケ裏_2巻.jpg",
+      "size": 1417887
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/Scans/Vol.02/本編Disc_2巻.jpg",
+      "size": 785759
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/Scans/Vol.02/特典CD_2巻.jpg",
+      "size": 800005
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/Scans/Vol.03/ケース入り表_3巻.jpg",
+      "size": 2322361
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/Scans/Vol.03/ケース入り裏_3巻.jpg",
+      "size": 2024610
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/Scans/Vol.03/三方背ジャケ表_3巻.jpg",
+      "size": 1543170
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/Scans/Vol.03/三方背ジャケ裏_3巻.jpg",
+      "size": 2274000
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/Scans/Vol.03/本編Disc_3巻.jpg",
+      "size": 950815
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/Scans/Vol.03/特典CD_3巻.jpg",
+      "size": 883714
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/Scans/Vol.04/ケース入り表_4巻.jpg",
+      "size": 1937008
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/Scans/Vol.04/ケース入り裏_4巻.jpg",
+      "size": 1182837
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/Scans/Vol.04/三方背ジャケ表_4巻.jpg",
+      "size": 1652384
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/Scans/Vol.04/三方背ジャケ裏_4巻.jpg",
+      "size": 1851507
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/Scans/Vol.04/本編Disc_4巻.jpg",
+      "size": 989071
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/Scans/Vol.04/特典CD_4巻.jpg",
+      "size": 834818
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/Scans/Vol.05/ケース入り表_5巻.jpg",
+      "size": 1480513
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/Scans/Vol.05/ケース入り裏_5巻.jpg",
+      "size": 1222075
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/Scans/Vol.05/三方背ジャケ表_5巻.jpg",
+      "size": 1356345
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/Scans/Vol.05/三方背ジャケ裏_5巻.jpg",
+      "size": 1241124
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/Scans/Vol.05/本編Disc_5巻.jpg",
+      "size": 733320
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/Scans/Vol.05/特典CD_5巻.jpg",
+      "size": 1161582
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/Scans/Vol.06/ケース入り表_6巻.jpg",
+      "size": 2293249
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/Scans/Vol.06/ケース入り裏_6巻.jpg",
+      "size": 1765768
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/Scans/Vol.06/三方背ジャケ表_6巻.jpg",
+      "size": 1653634
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/Scans/Vol.06/三方背ジャケ裏_6巻.jpg",
+      "size": 1250110
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/Scans/Vol.06/本編Disc_6巻.jpg",
+      "size": 730328
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/Scans/Vol.06/特典CD_6巻.jpg",
+      "size": 954923
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san W [Advice][Ma10p_1080p][x265_flac].mkv",
+      "size": 12100675
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san W [CM01][Ma10p_1080p][x265_flac].mkv",
+      "size": 30226263
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san W [CM02 OP_DVD][Ma10p_720p][x265_flac].mkv",
+      "size": 9973898
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san W [CM03 ED01_DVD][Ma10p_720p][x265_flac].mkv",
+      "size": 9739665
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san W [CM04 ED02_DVD][Ma10p_720p][x265_flac].mkv",
+      "size": 8998568
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san W [CM05 ED03_DVD][Ma10p_720p][x265_flac].mkv",
+      "size": 9582241
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san W [Gallery].zip",
+      "size": 89916335
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san W [IV][Ma10p_576p][x265_aac].mkv",
+      "size": 557444519
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san W [Menu Best_Album_DVD].png",
+      "size": 1190309
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san W [Menu ED01_DVD].png",
+      "size": 1128224
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san W [Menu ED02_DVD].png",
+      "size": 950980
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san W [Menu ED03_DVD].png",
+      "size": 986094
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san W [Menu OP_DVD].png",
+      "size": 1028735
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san W [Menu SP_DVD].png",
+      "size": 1037292
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san W [Menu01].png",
+      "size": 2235392
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san W [Menu02].png",
+      "size": 2199483
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san W [Menu03].png",
+      "size": 2176340
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san W [Menu04].png",
+      "size": 2329729
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san W [Menu05].png",
+      "size": 2262220
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san W [Menu06].png",
+      "size": 2286440
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san W [Menu].flac",
+      "size": 9454273
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san W [NCED01][Ma10p_1080p][x265_flac].mkv",
+      "size": 116376746
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san W [NCED02][Ma10p_1080p][x265_flac].mkv",
+      "size": 227108587
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san W [NCED03][Ma10p_1080p][x265_flac].mkv",
+      "size": 97156821
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san W [NCED04][Ma10p_1080p][x265_flac].mkv",
+      "size": 188617707
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san W [NCED05][Ma10p_1080p][x265_flac].mkv",
+      "size": 127983683
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san W [NCED06][Ma10p_1080p][x265_flac].mkv",
+      "size": 80974799
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san W [NCED07][Ma10p_1080p][x265_flac].mkv",
+      "size": 131470661
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san W [NCOP][Ma10p_1080p][x265_flac].mkv",
+      "size": 146244800
+    },
+    {
+      "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san W [PV OP_DVD][Ma10p_720p][x265_flac].mkv",
+      "size": 91724805
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/[VCB-Studio] Haiyoru! Nyaruani 2 [01-12][Ma10p_720p][x265_2ac3].ass",
+      "size": 59067
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/[VCB-Studio] Haiyoru! Nyaruani 2 [01-12][Ma10p_720p][x265_2ac3].mkv",
+      "size": 558553121
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/[VCB-Studio] Haiyoru! Nyaruani [01-09][Ma10p_720p][x265_2ac3].ass",
+      "size": 27805
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/[VCB-Studio] Haiyoru! Nyaruani [01-09][Ma10p_720p][x265_2ac3].mkv",
+      "size": 126854105
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[091023] 這いよれ！ニャル子さん (flac+webp)/CLUB HOBi 特典ディスク (flac)/ドラマCD 這いよれ！ニャル子さんを10倍楽しく聴く方法！？ おかわり.cue",
+      "size": 366
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[091023] 這いよれ！ニャル子さん (flac+webp)/CLUB HOBi 特典ディスク (flac)/ドラマCD 這いよれ！ニャル子さんを10倍楽しく聴く方法！？ おかわり.flac",
+      "size": 128924862
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[091023] 這いよれ！ニャル子さん (flac+webp)/CLUB HOBi 特典ディスク (flac)/ドラマCD 這いよれ！ニャル子さんを10倍楽しく聴く方法！？ おかわり.log",
+      "size": 1484
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[091023] 這いよれ！ニャル子さん (flac+webp)/HBDC-072.cue",
+      "size": 598
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[091023] 這いよれ！ニャル子さん (flac+webp)/HBDC-072.flac",
+      "size": 316808370
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[091023] 這いよれ！ニャル子さん (flac+webp)/HBDC-072.log",
+      "size": 1813
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[091023] 這いよれ！ニャル子さん (flac+webp)/Scans/01.webp",
+      "size": 1172678
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[091023] 這いよれ！ニャル子さん (flac+webp)/Scans/02.webp",
+      "size": 352970
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[091023] 這いよれ！ニャル子さん (flac+webp)/Scans/03.webp",
+      "size": 738612
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[091023] 這いよれ！ニャル子さん (flac+webp)/Scans/04.webp",
+      "size": 693424
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[091023] 這いよれ！ニャル子さん (flac+webp)/Scans/05.webp",
+      "size": 1030134
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[091023] 這いよれ！ニャル子さん (flac+webp)/Scans/06.webp",
+      "size": 1217672
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[091023] 這いよれ！ニャル子さん (flac+webp)/Scans/07.webp",
+      "size": 1330256
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[091023] 這いよれ！ニャル子さん (flac+webp)/Scans/08.webp",
+      "size": 942058
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[091023] 這いよれ！ニャル子さん (flac+webp)/Scans/09.webp",
+      "size": 586316
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[091023] 這いよれ！ニャル子さん (flac+webp)/Scans/10.webp",
+      "size": 444144
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[091023] 這いよれ！ニャル子さん (flac+webp)/Scans/11.webp",
+      "size": 918762
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[091023] 這いよれ！ニャル子さん (flac+webp)/Scans/12.webp",
+      "size": 986450
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[100625] 這いよれ！ニャル子さん EX (flac+webp)/CLUB HOBi 特典ディスク (flac)/這いよる！にゃるラジ おかわりCD VOL.2.cue",
+      "size": 321
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[100625] 這いよれ！ニャル子さん EX (flac+webp)/CLUB HOBi 特典ディスク (flac)/這いよる！にゃるラジ おかわりCD VOL.2.flac",
+      "size": 197169348
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[100625] 這いよれ！ニャル子さん EX (flac+webp)/CLUB HOBi 特典ディスク (flac)/這いよる！にゃるラジ おかわりCD VOL.2.log",
+      "size": 1436
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[100625] 這いよれ！ニャル子さん EX (flac+webp)/HBDC-080.cue",
+      "size": 710
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[100625] 這いよれ！ニャル子さん EX (flac+webp)/HBDC-080.flac",
+      "size": 336383536
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[100625] 這いよれ！ニャル子さん EX (flac+webp)/HBDC-080.log",
+      "size": 1809
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[100625] 這いよれ！ニャル子さん EX (flac+webp)/Scans/01.webp",
+      "size": 1154378
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[100625] 這いよれ！ニャル子さん EX (flac+webp)/Scans/02.webp",
+      "size": 333536
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[100625] 這いよれ！ニャル子さん EX (flac+webp)/Scans/03.webp",
+      "size": 820834
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[100625] 這いよれ！ニャル子さん EX (flac+webp)/Scans/04.webp",
+      "size": 710712
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[100625] 這いよれ！ニャル子さん EX (flac+webp)/Scans/05.webp",
+      "size": 1171950
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[100625] 這いよれ！ニャル子さん EX (flac+webp)/Scans/06.webp",
+      "size": 1490900
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[100625] 這いよれ！ニャル子さん EX (flac+webp)/Scans/07.webp",
+      "size": 1101500
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[100625] 這いよれ！ニャル子さん EX (flac+webp)/Scans/08.webp",
+      "size": 751402
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[100625] 這いよれ！ニャル子さん EX (flac+webp)/Scans/09.webp",
+      "size": 436988
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[100625] 這いよれ！ニャル子さん EX (flac+webp)/Scans/10.webp",
+      "size": 892312
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[100625] 這いよれ！ニャル子さん EX (flac+webp)/Scans/11.webp",
+      "size": 927878
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[101224] 這いよれ！ニャル子さん DX (flac+webp)/CLUB HOBi 特典ディスク (flac)/這いよる！にゃるラジ おかわりCD VOL.3.cue",
+      "size": 321
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[101224] 這いよれ！ニャル子さん DX (flac+webp)/CLUB HOBi 特典ディスク (flac)/這いよる！にゃるラジ おかわりCD VOL.3.flac",
+      "size": 150885352
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[101224] 這いよれ！ニャル子さん DX (flac+webp)/CLUB HOBi 特典ディスク (flac)/這いよる！にゃるラジ おかわりCD VOL.3.log",
+      "size": 1450
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[101224] 這いよれ！ニャル子さん DX (flac+webp)/HBDC-085.cue",
+      "size": 788
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[101224] 這いよれ！ニャル子さん DX (flac+webp)/HBDC-085.flac",
+      "size": 354377069
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[101224] 這いよれ！ニャル子さん DX (flac+webp)/HBDC-085.log",
+      "size": 1796
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[101224] 這いよれ！ニャル子さん DX (flac+webp)/Scans/01.webp",
+      "size": 2532952
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[101224] 這いよれ！ニャル子さん DX (flac+webp)/Scans/02.webp",
+      "size": 721518
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[101224] 這いよれ！ニャル子さん DX (flac+webp)/Scans/03.webp",
+      "size": 1626730
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[101224] 這いよれ！ニャル子さん DX (flac+webp)/Scans/04.webp",
+      "size": 1655534
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[101224] 這いよれ！ニャル子さん DX (flac+webp)/Scans/05.webp",
+      "size": 2645040
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[101224] 這いよれ！ニャル子さん DX (flac+webp)/Scans/06.webp",
+      "size": 2580278
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[101224] 這いよれ！ニャル子さん DX (flac+webp)/Scans/07.webp",
+      "size": 2379656
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[101224] 這いよれ！ニャル子さん DX (flac+webp)/Scans/08.webp",
+      "size": 1536246
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[101224] 這いよれ！ニャル子さん DX (flac+webp)/Scans/09.webp",
+      "size": 881746
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[101224] 這いよれ！ニャル子さん DX (flac+webp)/Scans/10.webp",
+      "size": 2057224
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[101224] 這いよれ！ニャル子さん DX (flac+webp)/Scans/11.webp",
+      "size": 1120534
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[101224] 這いよれ！ニャル子さん DX (flac+webp)/初回プレス特典 DLコンテンツ/freetalk.mp3",
+      "size": 14520613
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[110315] ｢好き、好き、大好き。｣／阿澄佳奈 (flac)/好き、好き、大好き。.cue",
+      "size": 203
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[110315] ｢好き、好き、大好き。｣／阿澄佳奈 (flac)/好き、好き、大好き。.flac",
+      "size": 31101681
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[110315] ｢好き、好き、大好き。｣／阿澄佳奈 (flac)/好き、好き、大好き。.log",
+      "size": 1379
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[110427] ｢Light In a Small Prism｣／LISP (flac+webp)/AVC1-29923.cue",
+      "size": 1602
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[110427] ｢Light In a Small Prism｣／LISP (flac+webp)/AVC1-29923.flac",
+      "size": 415898489
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[110427] ｢Light In a Small Prism｣／LISP (flac+webp)/AVC1-29923.log",
+      "size": 2294
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[110427] ｢Light In a Small Prism｣／LISP (flac+webp)/Scans/01.webp",
+      "size": 699574
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[110427] ｢Light In a Small Prism｣／LISP (flac+webp)/Scans/02.webp",
+      "size": 780780
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[110427] ｢Light In a Small Prism｣／LISP (flac+webp)/Scans/03.webp",
+      "size": 597278
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[110427] ｢Light In a Small Prism｣／LISP (flac+webp)/Scans/04.webp",
+      "size": 60914
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[110427] ｢Light In a Small Prism｣／LISP (flac+webp)/Scans/05.webp",
+      "size": 377840
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[110427] ｢Light In a Small Prism｣／LISP (flac+webp)/Scans/06.webp",
+      "size": 779638
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[110427] ｢Light In a Small Prism｣／LISP (flac+webp)/Scans/07.webp",
+      "size": 486746
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[110427] ｢Light In a Small Prism｣／LISP (flac+webp)/Scans/08.webp",
+      "size": 378756
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[110427] ｢Light In a Small Prism｣／LISP (flac+webp)/Scans/09.webp",
+      "size": 513154
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[110427] ｢Light In a Small Prism｣／LISP (flac+webp)/Scans/10.webp",
+      "size": 260488
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[110427] ｢Light In a Small Prism｣／LISP (flac+webp)/Scans/11.webp",
+      "size": 253016
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[110427] ｢Light In a Small Prism｣／LISP (flac+webp)/Scans/12.webp",
+      "size": 628322
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[110427] ｢Light In a Small Prism｣／LISP (flac+webp)/Scans/13.webp",
+      "size": 538804
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[110427] ｢Light In a Small Prism｣／LISP (flac+webp)/Scans/14.webp",
+      "size": 976454
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[110427] ｢Light In a Small Prism｣／LISP (flac+webp)/Scans/15.webp",
+      "size": 976472
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[110427] ｢Light In a Small Prism｣／LISP (flac+webp)/Scans/16.webp",
+      "size": 826082
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[110427] ｢Light In a Small Prism｣／LISP (flac+webp)/Scans/17.webp",
+      "size": 833000
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[110427] ｢Light In a Small Prism｣／LISP (flac+webp)/Scans/18.webp",
+      "size": 1317906
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[110427] ｢Light In a Small Prism｣／LISP (flac+webp)/Scans/19.webp",
+      "size": 1060224
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[110427] ｢Light In a Small Prism｣／LISP (flac+webp)/Scans/20.webp",
+      "size": 1398154
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[110427] ｢Light In a Small Prism｣／LISP (flac+webp)/Scans/21.webp",
+      "size": 1136546
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[110427] ｢Light In a Small Prism｣／LISP (flac+webp)/Scans/22.webp",
+      "size": 701214
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[110427] ｢Light In a Small Prism｣／LISP (flac+webp)/Scans/23.webp",
+      "size": 654432
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[110427] ｢Light In a Small Prism｣／LISP (flac+webp)/Scans/24.webp",
+      "size": 686962
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[110427] ｢Light In a Small Prism｣／LISP (flac+webp)/Scans/25.webp",
+      "size": 1161362
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[110427] ｢Light In a Small Prism｣／LISP (flac+webp)/Scans/26.webp",
+      "size": 1123864
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[110427] ｢Light In a Small Prism｣／LISP (flac+webp)/Scans/27.webp",
+      "size": 257844
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[110427] ｢Light In a Small Prism｣／LISP (flac+webp)/Scans/28.webp",
+      "size": 1140410
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[110427] ｢Light In a Small Prism｣／LISP (flac+webp)/Scans/29.webp",
+      "size": 1141456
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[110427] ｢Light In a Small Prism｣／LISP (flac+webp)/Scans/30.webp",
+      "size": 1497440
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[110427] ｢Light In a Small Prism｣／LISP (flac+webp)/Scans/31.webp",
+      "size": 1265032
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[110427] ｢Light In a Small Prism｣／LISP (flac+webp)/Scans/32.webp",
+      "size": 1076690
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[110427] ｢Light In a Small Prism｣／LISP (flac+webp)/Scans/33.webp",
+      "size": 1517162
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[110427] ｢Light In a Small Prism｣／LISP (flac+webp)/Scans/34.webp",
+      "size": 1376060
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[110427] ｢Light In a Small Prism｣／LISP (flac+webp)/Scans/35.webp",
+      "size": 1466264
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[110427] ｢Light In a Small Prism｣／LISP (flac+webp)/Scans/36.webp",
+      "size": 1514176
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[110427] ｢Light In a Small Prism｣／LISP (flac+webp)/Scans/37.webp",
+      "size": 929494
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[110525] 這いよれ！ニャル子さん GX (flac+webp)/CLUB HOBi 特典ディスク (flac)/這いよる！にゃるラジ おかわりCD VOL.4.cue",
+      "size": 321
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[110525] 這いよれ！ニャル子さん GX (flac+webp)/CLUB HOBi 特典ディスク (flac)/這いよる！にゃるラジ おかわりCD VOL.4.flac",
+      "size": 229711590
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[110525] 這いよれ！ニャル子さん GX (flac+webp)/CLUB HOBi 特典ディスク (flac)/這いよる！にゃるラジ おかわりCD VOL.4.log",
+      "size": 1456
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[110525] 這いよれ！ニャル子さん GX (flac+webp)/HBDC-092.cue",
+      "size": 753
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[110525] 這いよれ！ニャル子さん GX (flac+webp)/HBDC-092.flac",
+      "size": 325690552
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[110525] 這いよれ！ニャル子さん GX (flac+webp)/HBDC-092.log",
+      "size": 1884
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[110525] 這いよれ！ニャル子さん GX (flac+webp)/Scans/01.webp",
+      "size": 2658046
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[110525] 這いよれ！ニャル子さん GX (flac+webp)/Scans/02.webp",
+      "size": 779070
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[110525] 這いよれ！ニャル子さん GX (flac+webp)/Scans/03.webp",
+      "size": 2013380
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[110525] 這いよれ！ニャル子さん GX (flac+webp)/Scans/04.webp",
+      "size": 1505892
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[110525] 這いよれ！ニャル子さん GX (flac+webp)/Scans/05.webp",
+      "size": 2191462
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[110525] 這いよれ！ニャル子さん GX (flac+webp)/Scans/06.webp",
+      "size": 2535750
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[110525] 這いよれ！ニャル子さん GX (flac+webp)/Scans/07.webp",
+      "size": 2468182
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[110525] 這いよれ！ニャル子さん GX (flac+webp)/Scans/08.webp",
+      "size": 1268864
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[110525] 這いよれ！ニャル子さん GX (flac+webp)/Scans/09.webp",
+      "size": 879776
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[110525] 這いよれ！ニャル子さん GX (flac+webp)/Scans/10.webp",
+      "size": 2041646
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[110525] 這いよれ！ニャル子さん GX (flac+webp)/Scans/11.webp",
+      "size": 1224648
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[110525] 這いよれ！ニャル子さん GX (flac+webp)/初回プレス特典 DLコンテンツ 「ニャル子と真尋のデュエットソング」/san001-1「『SAN年目のいくぢなし』」.mp3",
+      "size": 6836749
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[110525] 這いよれ！ニャル子さん GX (flac+webp)/初回プレス特典 DLコンテンツ 「ニャル子と真尋のデュエットソング」/san001-2「『SAN年目のいくぢなし』 真尋Ver.」.mp3",
+      "size": 6836761
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[110525] 這いよれ！ニャル子さん GX (flac+webp)/初回プレス特典 DLコンテンツ 「ニャル子と真尋のデュエットソング」/san001-3「『SAN年目のいくぢなし』 ニャル子Ver.」.mp3",
+      "size": 6836771
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[110525] 這いよれ！ニャル子さん GX (flac+webp)/初回プレス特典 DLコンテンツ 「ニャル子と真尋のデュエットソング」/san001-4「『SAN年目のいくぢなし』 カラオケVer.」.mp3",
+      "size": 6836763
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[110525] 這いよれ！ニャル子さん GX (flac+webp)/初回プレス特典 DLコンテンツ 「ニャル子と真尋のデュエットソング」/SAN年目のいくぢなし 歌詞.txt",
+      "size": 2284
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/SPs/[VCB-Studio] Haiyoru! Nyaruani 2 [NCED][Ma10p_720p][x265_ac3].mkv",
+      "size": 20413884
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/SPs/[VCB-Studio] Haiyoru! Nyaruani [Menu01].png",
+      "size": 1141904
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/SPs/[VCB-Studio] Haiyoru! Nyaruani [Menu02].png",
+      "size": 989916
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/SPs/[VCB-Studio] Haiyoru! Nyaruani [Menu03].png",
+      "size": 1048931
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/SPs/[VCB-Studio] Haiyoru! Nyaruani [MenuSP].png",
+      "size": 998887
+    },
+    {
+      "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/SPs/[VCB-Studio] Haiyoru! Nyaruani [SP01-02][Ma10p_720p][x265_ac3].mkv",
+      "size": 21466520
+    }
+  ]
+}

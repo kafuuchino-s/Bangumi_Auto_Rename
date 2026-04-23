@@ -1,0 +1,70 @@
+{
+  "status": "ok",
+  "type": "tv",
+  "title_candidate": "Nanatsu no Taizai",
+  "tmdb_name": "Seven Mortal Sins",
+  "tmdb_id": 71018,
+  "timing": {
+    "analysis_seconds": 5.686
+  },
+  "file_mapping": [],
+  "conflict_details": [],
+  "analysis_result": {
+    "confidence": "Low",
+    "reason": "文件均不属于该TMDB作品。",
+    "season_mapping": [],
+    "file_mapping_count": 0,
+    "unmatched_count": 0,
+    "conflict_count": 0
+  },
+  "task_plan": {
+    "is_movie": false,
+    "ai_type": "tv",
+    "tv_available": true,
+    "movie_available": false,
+    "selected_confidence": "High"
+  },
+  "tv_candidate_result": {
+    "status": "ok",
+    "type": "tv",
+    "title_candidate": "Nanatsu no Taizai",
+    "timing": {
+      "analysis_seconds": 5.686
+    },
+    "file_mapping_count": 0,
+    "has_regular": false,
+    "has_special": false,
+    "has_movie_like": false,
+    "analysis_result": {
+      "confidence": "Low",
+      "reason": "文件均不属于该TMDB作品。",
+      "season_mapping": [],
+      "file_mapping_count": 0,
+      "unmatched_count": 0,
+      "conflict_count": 0
+    }
+  },
+  "movie_candidate_result": {
+    "status": "ok",
+    "type": "movie",
+    "title_candidate": "Nanatsu no Taizai",
+    "timing": {
+      "analysis_seconds": 51.066
+    },
+    "collection_analysis": {
+      "is_collection": false,
+      "confidence": "High",
+      "reason": "以TV季、OVA和特典为主，仅含1部剧场版",
+      "file_mapping_count": 1,
+      "unmatched_count": 154,
+      "conflict_count": 1,
+      "movie_like_paths": [
+        "Gekijouban Nanatsu no Taizai ~Tenkuu no Torawarebito~/[ReinForce] Gekijouban Nanatsu no Taizai ~Tenkuu no Torawarebito~ (BDRip 1920x1080 x264 FLAC).mkv"
+      ]
+    }
+  },
+  "movie_like_paths_from_paths": [
+    "Gekijouban Nanatsu no Taizai ~Tenkuu no Torawarebito~/[ReinForce] Gekijouban Nanatsu no Taizai ~Tenkuu no Torawarebito~ (BDRip 1920x1080 x264 FLAC).mkv"
+  ],
+  "final_type": "tv"
+}

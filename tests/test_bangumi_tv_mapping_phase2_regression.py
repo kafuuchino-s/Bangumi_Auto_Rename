@@ -70,45 +70,6 @@ def test_phase2_invalid_mapping_rejects_ambiguous_synthesized_path(tmp_path):
     assert "路径不唯一:MagiRepo/" in detail
 
 
-def test_phase2_invalid_mapping_rejects_ambiguous_synthesized_path(tmp_path):
-    (tmp_path / "Disc1").mkdir()
-    (tmp_path / "Disc2").mkdir()
-    file_name = "[VCB-Studio] Puella Magi Madoka Magica [01].mkv"
-    actual_file_1 = tmp_path / "Disc1" / file_name
-    actual_file_2 = tmp_path / "Disc2" / file_name
-    actual_file_1.write_text("video", encoding="utf-8")
-    actual_file_2.write_text("video", encoding="utf-8")
-
-    ai_result = AIAnalysisResult(
-        confidence="High",
-        reason="模拟 To LOVE-Ru / Magia Record 类跨目录拼接路径",
-        season_mapping=[],
-        file_mapping=[
-            EpisodeMapping(
-                file_path=f"MagiRepo/{file_name}",
-                tmdb_season=1,
-                tmdb_episode=1,
-                episode_type="regular",
-                confidence="High",
-            )
-        ],
-        unmatched_files=[],
-        conflict_details=[],
-        extra_notes=None,
-    )
-
-    ok, reason, detail = AIProcessor().validate_tv_result(
-        ai_result,
-        _build_anime_info(),
-        base_path=tmp_path,
-        video_files=[actual_file_1, actual_file_2],
-    )
-
-    assert ok is False
-    assert reason == "ai_invalid_mapping"
-    assert "路径不唯一:MagiRepo/" in detail
-
-
 
 def test_phase2_invalid_mapping_rejects_truncated_basename_with_nested_hint(tmp_path):
     (tmp_path / "Disc1").mkdir()

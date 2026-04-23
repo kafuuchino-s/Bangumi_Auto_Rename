@@ -13,12 +13,14 @@ from typing import Dict, List
 
 import shutil
 import tempfile
+from unittest.mock import patch
 
 # 添加项目根目录到路径
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from src.ai.models import AIAnalysisResult, EpisodeMapping, SeasonMapping
 from src.rename.ai_processor import AIProcessor
+from src.rename.get_info import Search
 
 
 def test_tmdb_first_matching():
@@ -523,6 +525,92 @@ def test_build_movie_search_queries_subtitle_split():
     assert any("Garden of Sinners" in q for q in queries), (
         f"应含副标题查询: {queries}"
     )
+
+
+def test_search_movie_multi_language_merges_unique_candidates():
+    """电影多语言搜索应合并候选，而不是在首个命中语言提前返回。"""
+
+    class FakeTMDBSearch:
+        calls = []
+
+        def __init__(self):
+            self.__dict__['results'] = []
+
+        def movie(self, query, language, year=None):
+            FakeTMDBSearch.calls.append((query, language, year))
+            if language == 'zh-CN':
+                self.__dict__['results'] = [
+                    {'id': 1613899, 'title': 'Kimetsu.no.Yaiba', 'popularity': 1.0},
+                ]
+            elif language == 'ja-JP':
+                self.__dict__['results'] = [
+                    {
+                        'id': 635302,
+                        'title': '劇場版「鬼滅の刃」無限列車編',
+                        'original_title': '劇場版「鬼滅の刃」無限列車編',
+                        'popularity': 10.0,
+                    },
+                ]
+            else:
+                self.__dict__['results'] = [
+                    {
+                        'id': 635302,
+                        'title': 'Demon Slayer -Kimetsu no Yaiba- The Movie: Mugen Train',
+                        'original_title': '劇場版「鬼滅の刃」無限列車編',
+                        'popularity': 12.0,
+                    },
+                ]
+
+    search = Search()
+    with patch('src.rename.get_info.tmdb.Search', FakeTMDBSearch):
+        results = search._search_movie_multi_language(
+            'Gekijouban Kimetsu no Yaiba Mugen Ressha Hen',
+            year=2020,
+        )
+
+    assert results is not None
+    assert {item['id'] for item in results} == {635302, 1613899}
+    merged_candidate = next(item for item in results if item['id'] == 635302)
+    assert merged_candidate['_matched_languages'] == ['en-US', 'ja-JP']
+    assert FakeTMDBSearch.calls == [
+        ('Gekijouban Kimetsu no Yaiba Mugen Ressha Hen', 'en-US', 2020),
+        ('Gekijouban Kimetsu no Yaiba Mugen Ressha Hen', 'ja-JP', 2020),
+        ('Gekijouban Kimetsu no Yaiba Mugen Ressha Hen', 'zh-CN', 2020),
+    ]
+
+
+def test_score_movie_candidate_prefers_movie_signaled_title():
+    """带明显剧场版信号的候选应优先于泛化系列名。"""
+    search = Search()
+    source_title = 'Gekijouban Kimetsu no Yaiba Mugen Ressha Hen'
+    query = 'Kimetsu no Yaiba Mugen Ressha Hen'
+
+    theatrical_score = search._score_movie_candidate(
+        source_title=source_title,
+        query=query,
+        candidate={
+            'id': 635302,
+            'title': 'Demon Slayer -Kimetsu no Yaiba- The Movie: Mugen Train',
+            'original_title': '劇場版「鬼滅の刃」無限列車編',
+            'release_date': '2020-10-16',
+        },
+        year=2020,
+        query_index=0,
+    )
+    generic_score = search._score_movie_candidate(
+        source_title=source_title,
+        query=query,
+        candidate={
+            'id': 1613899,
+            'title': 'Kimetsu.no.Yaiba',
+            'original_title': 'Kimetsu.no.Yaiba',
+            'release_date': '2020-10-16',
+        },
+        year=2020,
+        query_index=0,
+    )
+
+    assert theatrical_score > generic_score
 
 
 def test_validate_tv_result_keeps_valid_subset_when_tmdb_has_no_special():

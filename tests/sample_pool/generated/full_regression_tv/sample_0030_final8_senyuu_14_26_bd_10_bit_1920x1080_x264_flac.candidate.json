@@ -1,0 +1,38 @@
+{
+  "status": "ok",
+  "type": "movie",
+  "title_candidate": "Senyuu",
+  "timing": {
+    "analysis_seconds": 8.162
+  },
+  "collection_analysis": {
+    "is_collection": false,
+    "collection_name": "Senyuu",
+    "confidence": "High",
+    "reason": "均为剧集与特典，非电影合集",
+    "file_mapping": [],
+    "unmatched_files": [
+      "[Final8]Senyuu - 14v2 (BD 10-bit 1920x1080 x264 FLAC)[5457CE6F].mkv",
+      "[Final8]Senyuu - 15v2 (BD 10-bit 1920x1080 x264 FLAC)[D5EEAD96].mkv",
+      "[Final8]Senyuu - 16v2 (BD 10-bit 1920x1080 x264 FLAC)[3EC3CB73].mkv",
+      "[Final8]Senyuu - 17 (BD 10-bit 1920x1080 x264 FLAC)[6738350B].mkv",
+      "[Final8]Senyuu - 18 (BD 10-bit 1920x1080 x264 FLAC)[F9F93825].mkv",
+      "[Final8]Senyuu - 19 (BD 10-bit 1920x1080 x264 FLAC)[3091FE18].mkv",
+      "[Final8]Senyuu - 20 (BD 10-bit 1920x1080 x264 FLAC)[95D0A906].mkv",
+      "[Final8]Senyuu - 21 (BD 10-bit 1920x1080 x264 FLAC)[471A37BD].mkv",
+      "[Final8]Senyuu - 22 (BD 10-bit 1920x1080 x264 FLAC)[CD9BFCF4].mkv",
+      "[Final8]Senyuu - 23 (BD 10-bit 1920x1080 x264 FLAC)[6BA8B13A].mkv",
+      "[Final8]Senyuu - 24 (BD 10-bit 1920x1080 x264 FLAC)[EDA80687].mkv",
+      "[Final8]Senyuu - 25 (BD 10-bit 1920x1080 x264 FLAC)[7EC73B76].mkv",
+      "[Final8]Senyuu - 26 (BD 10-bit 1920x1080 x264 FLAC)[4A956E43].mkv",
+      "[Final8]Senyuu - OVA 3 (BD 10-bit 1920x1080 x264 FLAC)[AFD8979A].mkv",
+      "[Final8]Senyuu - OVA 4 (BD 10-bit 1920x1080 x264 FLAC)[DA12A315].mkv",
+      "[Final8]Senyuu NCED2 (BD 10-bit 1920x1080 x264 FLAC)[56E18871].mkv",
+      "[Final8]Senyuu NCOP2v2 (BD 10-bit 1920x1080 x264 FLAC)[AD1EA90F].mkv"
+    ],
+    "conflict_details": [
+      "文件均为动画剧集、OVA和片头片尾特典，不是电影"
+    ],
+    "extra_notes": null
+  }
+}

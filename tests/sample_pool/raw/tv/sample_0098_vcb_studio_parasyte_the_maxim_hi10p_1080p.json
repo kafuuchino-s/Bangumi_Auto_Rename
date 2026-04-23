@@ -1,0 +1,805 @@
+{
+  "root_name": "[VCB-Studio] Parasyte：The Maxim [Hi10p_1080p]",
+  "files": [
+    {
+      "path": "[VCB-Studio] Parasyte：The Maxim [01][Hi10p_1080p][x264_2flac].chs.ass",
+      "size": 51595
+    },
+    {
+      "path": "[VCB-Studio] Parasyte：The Maxim [01][Hi10p_1080p][x264_2flac].mkv",
+      "size": 1339165650
+    },
+    {
+      "path": "[VCB-Studio] Parasyte：The Maxim [02][Hi10p_1080p][x264_flac].chs.ass",
+      "size": 55320
+    },
+    {
+      "path": "[VCB-Studio] Parasyte：The Maxim [02][Hi10p_1080p][x264_flac].mkv",
+      "size": 1081839233
+    },
+    {
+      "path": "[VCB-Studio] Parasyte：The Maxim [03][Hi10p_1080p][x264_flac].chs.ass",
+      "size": 67763
+    },
+    {
+      "path": "[VCB-Studio] Parasyte：The Maxim [03][Hi10p_1080p][x264_flac].mkv",
+      "size": 922972553
+    },
+    {
+      "path": "[VCB-Studio] Parasyte：The Maxim [04][Hi10p_1080p][x264_flac].chs.ass",
+      "size": 58920
+    },
+    {
+      "path": "[VCB-Studio] Parasyte：The Maxim [04][Hi10p_1080p][x264_flac].mkv",
+      "size": 1070122438
+    },
+    {
+      "path": "[VCB-Studio] Parasyte：The Maxim [05][Hi10p_1080p][x264_flac].chs.ass",
+      "size": 57947
+    },
+    {
+      "path": "[VCB-Studio] Parasyte：The Maxim [05][Hi10p_1080p][x264_flac].mkv",
+      "size": 1096159691
+    },
+    {
+      "path": "[VCB-Studio] Parasyte：The Maxim [06][Hi10p_1080p][x264_2flac].chs.ass",
+      "size": 57009
+    },
+    {
+      "path": "[VCB-Studio] Parasyte：The Maxim [06][Hi10p_1080p][x264_2flac].mkv",
+      "size": 1238280031
+    },
+    {
+      "path": "[VCB-Studio] Parasyte：The Maxim [07][Hi10p_1080p][x264_flac].chs.ass",
+      "size": 57075
+    },
+    {
+      "path": "[VCB-Studio] Parasyte：The Maxim [07][Hi10p_1080p][x264_flac].mkv",
+      "size": 1289844114
+    },
+    {
+      "path": "[VCB-Studio] Parasyte：The Maxim [08][Hi10p_1080p][x264_flac].chs.ass",
+      "size": 61449
+    },
+    {
+      "path": "[VCB-Studio] Parasyte：The Maxim [08][Hi10p_1080p][x264_flac].mkv",
+      "size": 997143428
+    },
+    {
+      "path": "[VCB-Studio] Parasyte：The Maxim [09][Hi10p_1080p][x264_flac].chs.ass",
+      "size": 53583
+    },
+    {
+      "path": "[VCB-Studio] Parasyte：The Maxim [09][Hi10p_1080p][x264_flac].mkv",
+      "size": 1013287639
+    },
+    {
+      "path": "[VCB-Studio] Parasyte：The Maxim [10][Hi10p_1080p][x264_flac].chs.ass",
+      "size": 55505
+    },
+    {
+      "path": "[VCB-Studio] Parasyte：The Maxim [10][Hi10p_1080p][x264_flac].mkv",
+      "size": 1134643533
+    },
+    {
+      "path": "[VCB-Studio] Parasyte：The Maxim [11][Hi10p_1080p][x264_flac].chs.ass",
+      "size": 55078
+    },
+    {
+      "path": "[VCB-Studio] Parasyte：The Maxim [11][Hi10p_1080p][x264_flac].mkv",
+      "size": 1133694655
+    },
+    {
+      "path": "[VCB-Studio] Parasyte：The Maxim [12][Hi10p_1080p][x264_2flac].chs.ass",
+      "size": 61305
+    },
+    {
+      "path": "[VCB-Studio] Parasyte：The Maxim [12][Hi10p_1080p][x264_2flac].mkv",
+      "size": 1237611405
+    },
+    {
+      "path": "[VCB-Studio] Parasyte：The Maxim [13][Hi10p_1080p][x264_flac].chs.ass",
+      "size": 58408
+    },
+    {
+      "path": "[VCB-Studio] Parasyte：The Maxim [13][Hi10p_1080p][x264_flac].mkv",
+      "size": 1096913748
+    },
+    {
+      "path": "[VCB-Studio] Parasyte：The Maxim [14][Hi10p_1080p][x264_flac].chs.ass",
+      "size": 68192
+    },
+    {
+      "path": "[VCB-Studio] Parasyte：The Maxim [14][Hi10p_1080p][x264_flac].mkv",
+      "size": 981273713
+    },
+    {
+      "path": "[VCB-Studio] Parasyte：The Maxim [15][Hi10p_1080p][x264_flac].chs.ass",
+      "size": 51987
+    },
+    {
+      "path": "[VCB-Studio] Parasyte：The Maxim [15][Hi10p_1080p][x264_flac].mkv",
+      "size": 1138680847
+    },
+    {
+      "path": "[VCB-Studio] Parasyte：The Maxim [16][Hi10p_1080p][x264_flac].chs.ass",
+      "size": 60051
+    },
+    {
+      "path": "[VCB-Studio] Parasyte：The Maxim [16][Hi10p_1080p][x264_flac].mkv",
+      "size": 1406998150
+    },
+    {
+      "path": "[VCB-Studio] Parasyte：The Maxim [17][Hi10p_1080p][x264_flac].chs.ass",
+      "size": 49962
+    },
+    {
+      "path": "[VCB-Studio] Parasyte：The Maxim [17][Hi10p_1080p][x264_flac].mkv",
+      "size": 1085322558
+    },
+    {
+      "path": "[VCB-Studio] Parasyte：The Maxim [18][Hi10p_1080p][x264_flac].chs.ass",
+      "size": 56467
+    },
+    {
+      "path": "[VCB-Studio] Parasyte：The Maxim [18][Hi10p_1080p][x264_flac].mkv",
+      "size": 986158197
+    },
+    {
+      "path": "[VCB-Studio] Parasyte：The Maxim [19][Hi10p_1080p][x264_flac].chs.ass",
+      "size": 58262
+    },
+    {
+      "path": "[VCB-Studio] Parasyte：The Maxim [19][Hi10p_1080p][x264_flac].mkv",
+      "size": 987887837
+    },
+    {
+      "path": "[VCB-Studio] Parasyte：The Maxim [20][Hi10p_1080p][x264_flac].chs.ass",
+      "size": 45408
+    },
+    {
+      "path": "[VCB-Studio] Parasyte：The Maxim [20][Hi10p_1080p][x264_flac].mkv",
+      "size": 1125414433
+    },
+    {
+      "path": "[VCB-Studio] Parasyte：The Maxim [21][Hi10p_1080p][x264_flac].chs.ass",
+      "size": 52972
+    },
+    {
+      "path": "[VCB-Studio] Parasyte：The Maxim [21][Hi10p_1080p][x264_flac].mkv",
+      "size": 1100306119
+    },
+    {
+      "path": "[VCB-Studio] Parasyte：The Maxim [22][Hi10p_1080p][x264_flac].chs.ass",
+      "size": 61619
+    },
+    {
+      "path": "[VCB-Studio] Parasyte：The Maxim [22][Hi10p_1080p][x264_flac].mkv",
+      "size": 1220844410
+    },
+    {
+      "path": "[VCB-Studio] Parasyte：The Maxim [23][Hi10p_1080p][x264_flac].chs.ass",
+      "size": 58875
+    },
+    {
+      "path": "[VCB-Studio] Parasyte：The Maxim [23][Hi10p_1080p][x264_flac].mkv",
+      "size": 1349013259
+    },
+    {
+      "path": "[VCB-Studio] Parasyte：The Maxim [24][Hi10p_1080p][x264_flac].chs.ass",
+      "size": 57230
+    },
+    {
+      "path": "[VCB-Studio] Parasyte：The Maxim [24][Hi10p_1080p][x264_flac].mkv",
+      "size": 1082945982
+    },
+    {
+      "path": "CDs/[EAC][141203] It's The Right Time／三浦大知 (flac+jpg)/BK/Type A/IMG-1.jpg",
+      "size": 876264
+    },
+    {
+      "path": "CDs/[EAC][141203] It's The Right Time／三浦大知 (flac+jpg)/BK/Type A/IMG-10.jpg",
+      "size": 3245835
+    },
+    {
+      "path": "CDs/[EAC][141203] It's The Right Time／三浦大知 (flac+jpg)/BK/Type A/IMG-11.jpg",
+      "size": 1736748
+    },
+    {
+      "path": "CDs/[EAC][141203] It's The Right Time／三浦大知 (flac+jpg)/BK/Type A/IMG-12.jpg",
+      "size": 792190
+    },
+    {
+      "path": "CDs/[EAC][141203] It's The Right Time／三浦大知 (flac+jpg)/BK/Type A/IMG-13.jpg",
+      "size": 596655
+    },
+    {
+      "path": "CDs/[EAC][141203] It's The Right Time／三浦大知 (flac+jpg)/BK/Type A/IMG-2.jpg",
+      "size": 1415725
+    },
+    {
+      "path": "CDs/[EAC][141203] It's The Right Time／三浦大知 (flac+jpg)/BK/Type A/IMG-3.jpg",
+      "size": 857087
+    },
+    {
+      "path": "CDs/[EAC][141203] It's The Right Time／三浦大知 (flac+jpg)/BK/Type A/IMG-4.jpg",
+      "size": 1486423
+    },
+    {
+      "path": "CDs/[EAC][141203] It's The Right Time／三浦大知 (flac+jpg)/BK/Type A/IMG-5.jpg",
+      "size": 854956
+    },
+    {
+      "path": "CDs/[EAC][141203] It's The Right Time／三浦大知 (flac+jpg)/BK/Type A/IMG-6.jpg",
+      "size": 2127707
+    },
+    {
+      "path": "CDs/[EAC][141203] It's The Right Time／三浦大知 (flac+jpg)/BK/Type A/IMG-7.jpg",
+      "size": 2370405
+    },
+    {
+      "path": "CDs/[EAC][141203] It's The Right Time／三浦大知 (flac+jpg)/BK/Type A/IMG-8.jpg",
+      "size": 2384542
+    },
+    {
+      "path": "CDs/[EAC][141203] It's The Right Time／三浦大知 (flac+jpg)/BK/Type A/IMG-9.jpg",
+      "size": 1392043
+    },
+    {
+      "path": "CDs/[EAC][141203] It's The Right Time／三浦大知 (flac+jpg)/BK/Type B/img001.jpg",
+      "size": 3100725
+    },
+    {
+      "path": "CDs/[EAC][141203] It's The Right Time／三浦大知 (flac+jpg)/BK/Type B/img002.jpg",
+      "size": 3466299
+    },
+    {
+      "path": "CDs/[EAC][141203] It's The Right Time／三浦大知 (flac+jpg)/BK/Type B/img003.jpg",
+      "size": 1328003
+    },
+    {
+      "path": "CDs/[EAC][141203] It's The Right Time／三浦大知 (flac+jpg)/BK/Type B/img004.jpg",
+      "size": 725048
+    },
+    {
+      "path": "CDs/[EAC][141203] It's The Right Time／三浦大知 (flac+jpg)/BK/Type B/img005.jpg",
+      "size": 749970
+    },
+    {
+      "path": "CDs/[EAC][141203] It's The Right Time／三浦大知 (flac+jpg)/三浦大知 - ふれあうだけで ～Always with you～ , IT'S THE RIGHT TIME.cue",
+      "size": 645
+    },
+    {
+      "path": "CDs/[EAC][141203] It's The Right Time／三浦大知 (flac+jpg)/三浦大知 - ふれあうだけで ～Always with you～ , IT'S THE RIGHT TIME.flac",
+      "size": 76090818
+    },
+    {
+      "path": "CDs/[EAC][141203] It's The Right Time／三浦大知 (flac+jpg)/三浦大知 - ふれあうだけで ～Always with you～ , IT'S THE RIGHT TIME.log",
+      "size": 4006
+    },
+    {
+      "path": "CDs/[EAC][141224] Original Soundtrack (flac+jpg)/BK/img001.jpg",
+      "size": 3421100
+    },
+    {
+      "path": "CDs/[EAC][141224] Original Soundtrack (flac+jpg)/BK/img002.jpg",
+      "size": 4090003
+    },
+    {
+      "path": "CDs/[EAC][141224] Original Soundtrack (flac+jpg)/BK/img003.jpg",
+      "size": 4252775
+    },
+    {
+      "path": "CDs/[EAC][141224] Original Soundtrack (flac+jpg)/BK/img004.jpg",
+      "size": 4337404
+    },
+    {
+      "path": "CDs/[EAC][141224] Original Soundtrack (flac+jpg)/BK/img005.jpg",
+      "size": 955860
+    },
+    {
+      "path": "CDs/[EAC][141224] Original Soundtrack (flac+jpg)/BK/img006.jpg",
+      "size": 2336710
+    },
+    {
+      "path": "CDs/[EAC][141224] Original Soundtrack (flac+jpg)/Ken Arai - 寄生獣 セイの格率 オリジナル・サウンドトラック.cue",
+      "size": 2864
+    },
+    {
+      "path": "CDs/[EAC][141224] Original Soundtrack (flac+jpg)/Ken Arai - 寄生獣 セイの格率 オリジナル・サウンドトラック.flac",
+      "size": 565662535
+    },
+    {
+      "path": "CDs/[EAC][141224] Original Soundtrack (flac+jpg)/Ken Arai - 寄生獣 セイの格率 オリジナル・サウンドトラック.log",
+      "size": 3758
+    },
+    {
+      "path": "CDs/[EAC][150107] Let Me Hear／Fear,and Loathing in Las Vegas (flac+jpg)/BK/IMG_0001.jpg",
+      "size": 5920648
+    },
+    {
+      "path": "CDs/[EAC][150107] Let Me Hear／Fear,and Loathing in Las Vegas (flac+jpg)/BK/IMG_0002.jpg",
+      "size": 6876050
+    },
+    {
+      "path": "CDs/[EAC][150107] Let Me Hear／Fear,and Loathing in Las Vegas (flac+jpg)/BK/IMG_0003.jpg",
+      "size": 4282180
+    },
+    {
+      "path": "CDs/[EAC][150107] Let Me Hear／Fear,and Loathing in Las Vegas (flac+jpg)/BK/IMG_0004.jpg",
+      "size": 3995881
+    },
+    {
+      "path": "CDs/[EAC][150107] Let Me Hear／Fear,and Loathing in Las Vegas (flac+jpg)/BK/IMG_0005.jpg",
+      "size": 2189980
+    },
+    {
+      "path": "CDs/[EAC][150107] Let Me Hear／Fear,and Loathing in Las Vegas (flac+jpg)/BK/IMG_0006.jpg",
+      "size": 961196
+    },
+    {
+      "path": "CDs/[EAC][150107] Let Me Hear／Fear,and Loathing in Las Vegas (flac+jpg)/BK/IMG_0007.jpg",
+      "size": 2349206
+    },
+    {
+      "path": "CDs/[EAC][150107] Let Me Hear／Fear,and Loathing in Las Vegas (flac+jpg)/Fear, and Loathing in Las Vegas - Let Me Hear.cue",
+      "size": 682
+    },
+    {
+      "path": "CDs/[EAC][150107] Let Me Hear／Fear,and Loathing in Las Vegas (flac+jpg)/Fear, and Loathing in Las Vegas - Let Me Hear.flac",
+      "size": 92790721
+    },
+    {
+      "path": "CDs/[EAC][150107] Let Me Hear／Fear,and Loathing in Las Vegas (flac+jpg)/Fear, and Loathing in Las Vegas - Let Me Hear.log",
+      "size": 3406
+    },
+    {
+      "path": "CDs/特典CD (flac)/Ken Arai - 寄生獣 セイの格率 スペシャルサウンドトラックCD.cue",
+      "size": 2027
+    },
+    {
+      "path": "CDs/特典CD (flac)/Ken Arai - 寄生獣 セイの格率 スペシャルサウンドトラックCD.flac",
+      "size": 202685513
+    },
+    {
+      "path": "CDs/特典CD (flac)/Ken Arai - 寄生獣 セイの格率 スペシャルサウンドトラックCD.log",
+      "size": 3328
+    },
+    {
+      "path": "Scans/BDBOX 1/BD 1.jpg",
+      "size": 515736
+    },
+    {
+      "path": "Scans/BDBOX 1/BD 2.jpg",
+      "size": 505460
+    },
+    {
+      "path": "Scans/BDBOX 1/BD 3.jpg",
+      "size": 527073
+    },
+    {
+      "path": "Scans/BDBOX 1/Booklet/01.jpg",
+      "size": 1532073
+    },
+    {
+      "path": "Scans/BDBOX 1/Booklet/02-03.jpg",
+      "size": 1958554
+    },
+    {
+      "path": "Scans/BDBOX 1/Booklet/04-05.jpg",
+      "size": 1471149
+    },
+    {
+      "path": "Scans/BDBOX 1/Booklet/06-07.jpg",
+      "size": 2790464
+    },
+    {
+      "path": "Scans/BDBOX 1/Booklet/08-09.jpg",
+      "size": 2867188
+    },
+    {
+      "path": "Scans/BDBOX 1/Booklet/10-11.jpg",
+      "size": 2837481
+    },
+    {
+      "path": "Scans/BDBOX 1/Booklet/12-13.jpg",
+      "size": 2752707
+    },
+    {
+      "path": "Scans/BDBOX 1/Booklet/14-15.jpg",
+      "size": 2790130
+    },
+    {
+      "path": "Scans/BDBOX 1/Booklet/16-17.jpg",
+      "size": 2799994
+    },
+    {
+      "path": "Scans/BDBOX 1/Booklet/18-19.jpg",
+      "size": 2726270
+    },
+    {
+      "path": "Scans/BDBOX 1/Booklet/20-21.jpg",
+      "size": 1808713
+    },
+    {
+      "path": "Scans/BDBOX 1/Booklet/22-23.jpg",
+      "size": 1732532
+    },
+    {
+      "path": "Scans/BDBOX 1/Booklet/24-25.jpg",
+      "size": 1771186
+    },
+    {
+      "path": "Scans/BDBOX 1/Booklet/26-27.jpg",
+      "size": 1804636
+    },
+    {
+      "path": "Scans/BDBOX 1/Booklet/28-29.jpg",
+      "size": 3357450
+    },
+    {
+      "path": "Scans/BDBOX 1/Booklet/30-31.jpg",
+      "size": 3369470
+    },
+    {
+      "path": "Scans/BDBOX 1/Booklet/32-33.jpg",
+      "size": 3420609
+    },
+    {
+      "path": "Scans/BDBOX 1/Booklet/34-35.jpg",
+      "size": 1923573
+    },
+    {
+      "path": "Scans/BDBOX 1/Booklet/36-37.jpg",
+      "size": 1896201
+    },
+    {
+      "path": "Scans/BDBOX 1/Booklet/38-39.jpg",
+      "size": 1575463
+    },
+    {
+      "path": "Scans/BDBOX 1/Booklet/40-41.jpg",
+      "size": 1729394
+    },
+    {
+      "path": "Scans/BDBOX 1/Booklet/42-43.jpg",
+      "size": 3073693
+    },
+    {
+      "path": "Scans/BDBOX 1/Booklet/44.jpg",
+      "size": 1534846
+    },
+    {
+      "path": "Scans/BDBOX 1/Booklet/Cover&Back.jpg",
+      "size": 1399903
+    },
+    {
+      "path": "Scans/BDBOX 1/BOX.jpg",
+      "size": 1416654
+    },
+    {
+      "path": "Scans/BDBOX 1/Cover 1.jpg",
+      "size": 2258758
+    },
+    {
+      "path": "Scans/BDBOX 1/Cover 2.jpg",
+      "size": 2717525
+    },
+    {
+      "path": "Scans/BDBOX 1/Disc Tray 1.jpg",
+      "size": 829522
+    },
+    {
+      "path": "Scans/BDBOX 1/Disc Tray 2.jpg",
+      "size": 852383
+    },
+    {
+      "path": "Scans/BDBOX 1/Sheet.jpg",
+      "size": 2136178
+    },
+    {
+      "path": "Scans/BDBOX 1/Stickers.jpg",
+      "size": 867055
+    },
+    {
+      "path": "Scans/BDBOX 2/Album Back.jpg",
+      "size": 474874
+    },
+    {
+      "path": "Scans/BDBOX 2/Album Cover.jpg",
+      "size": 540702
+    },
+    {
+      "path": "Scans/BDBOX 2/BD 1.jpg",
+      "size": 634017
+    },
+    {
+      "path": "Scans/BDBOX 2/BD 2.jpg",
+      "size": 625113
+    },
+    {
+      "path": "Scans/BDBOX 2/BD 3.jpg",
+      "size": 633249
+    },
+    {
+      "path": "Scans/BDBOX 2/Booklet/01.jpg",
+      "size": 1776373
+    },
+    {
+      "path": "Scans/BDBOX 2/Booklet/02-03.jpg",
+      "size": 1932087
+    },
+    {
+      "path": "Scans/BDBOX 2/Booklet/04-05.jpg",
+      "size": 1494181
+    },
+    {
+      "path": "Scans/BDBOX 2/Booklet/06-07.jpg",
+      "size": 2858576
+    },
+    {
+      "path": "Scans/BDBOX 2/Booklet/08-09.jpg",
+      "size": 2805658
+    },
+    {
+      "path": "Scans/BDBOX 2/Booklet/10-11.jpg",
+      "size": 2725659
+    },
+    {
+      "path": "Scans/BDBOX 2/Booklet/12-13.jpg",
+      "size": 1753661
+    },
+    {
+      "path": "Scans/BDBOX 2/Booklet/14-15.jpg",
+      "size": 1822326
+    },
+    {
+      "path": "Scans/BDBOX 2/Booklet/16-17.jpg",
+      "size": 2128706
+    },
+    {
+      "path": "Scans/BDBOX 2/Booklet/18-19.jpg",
+      "size": 3373356
+    },
+    {
+      "path": "Scans/BDBOX 2/Booklet/20-21.jpg",
+      "size": 3384611
+    },
+    {
+      "path": "Scans/BDBOX 2/Booklet/22-23.jpg",
+      "size": 3281892
+    },
+    {
+      "path": "Scans/BDBOX 2/Booklet/24-25.jpg",
+      "size": 1899360
+    },
+    {
+      "path": "Scans/BDBOX 2/Booklet/26-27.jpg",
+      "size": 1873989
+    },
+    {
+      "path": "Scans/BDBOX 2/Booklet/28-29.jpg",
+      "size": 1810910
+    },
+    {
+      "path": "Scans/BDBOX 2/Booklet/30-31.jpg",
+      "size": 1853940
+    },
+    {
+      "path": "Scans/BDBOX 2/Booklet/32-33.jpg",
+      "size": 2114253
+    },
+    {
+      "path": "Scans/BDBOX 2/Booklet/34-35.jpg",
+      "size": 2023680
+    },
+    {
+      "path": "Scans/BDBOX 2/Booklet/36-37.jpg",
+      "size": 1711516
+    },
+    {
+      "path": "Scans/BDBOX 2/Booklet/38-39.jpg",
+      "size": 1765599
+    },
+    {
+      "path": "Scans/BDBOX 2/Booklet/40-41.jpg",
+      "size": 1760392
+    },
+    {
+      "path": "Scans/BDBOX 2/Booklet/42-43.jpg",
+      "size": 2824243
+    },
+    {
+      "path": "Scans/BDBOX 2/Booklet/44.jpg",
+      "size": 1794064
+    },
+    {
+      "path": "Scans/BDBOX 2/Booklet/Cover&Back.jpg",
+      "size": 1652372
+    },
+    {
+      "path": "Scans/BDBOX 2/Box.jpg",
+      "size": 1272105
+    },
+    {
+      "path": "Scans/BDBOX 2/Card 1.jpg",
+      "size": 358053
+    },
+    {
+      "path": "Scans/BDBOX 2/Card 2.jpg",
+      "size": 324937
+    },
+    {
+      "path": "Scans/BDBOX 2/Card 3.jpg",
+      "size": 429223
+    },
+    {
+      "path": "Scans/BDBOX 2/Card 4.jpg",
+      "size": 372841
+    },
+    {
+      "path": "Scans/BDBOX 2/Card 5.jpg",
+      "size": 462828
+    },
+    {
+      "path": "Scans/BDBOX 2/Card 6.jpg",
+      "size": 456944
+    },
+    {
+      "path": "Scans/BDBOX 2/CD.jpg",
+      "size": 349759
+    },
+    {
+      "path": "Scans/BDBOX 2/Cover 1.jpg",
+      "size": 2455388
+    },
+    {
+      "path": "Scans/BDBOX 2/Cover 2.jpg",
+      "size": 2500856
+    },
+    {
+      "path": "Scans/BDBOX 2/Disc Tray 1.jpg",
+      "size": 880821
+    },
+    {
+      "path": "Scans/BDBOX 2/Disc Tray 2.jpg",
+      "size": 851169
+    },
+    {
+      "path": "Scans/BDBOX 2/Otsukaresama/01.jpg",
+      "size": 1812868
+    },
+    {
+      "path": "Scans/BDBOX 2/Otsukaresama/02-03.jpg",
+      "size": 1799648
+    },
+    {
+      "path": "Scans/BDBOX 2/Otsukaresama/04-05.jpg",
+      "size": 1852807
+    },
+    {
+      "path": "Scans/BDBOX 2/Otsukaresama/06-07.jpg",
+      "size": 1791745
+    },
+    {
+      "path": "Scans/BDBOX 2/Otsukaresama/08-09.jpg",
+      "size": 1894632
+    },
+    {
+      "path": "Scans/BDBOX 2/Otsukaresama/10-11.jpg",
+      "size": 2206830
+    },
+    {
+      "path": "Scans/BDBOX 2/Otsukaresama/12-13.jpg",
+      "size": 2008961
+    },
+    {
+      "path": "Scans/BDBOX 2/Otsukaresama/14-15.jpg",
+      "size": 2648881
+    },
+    {
+      "path": "Scans/BDBOX 2/Otsukaresama/16-17.jpg",
+      "size": 2783354
+    },
+    {
+      "path": "Scans/BDBOX 2/Otsukaresama/18-19.jpg",
+      "size": 2802349
+    },
+    {
+      "path": "Scans/BDBOX 2/Otsukaresama/20-21.jpg",
+      "size": 2447745
+    },
+    {
+      "path": "Scans/BDBOX 2/Otsukaresama/22-23.jpg",
+      "size": 2643135
+    },
+    {
+      "path": "Scans/BDBOX 2/Otsukaresama/24-25.jpg",
+      "size": 2018870
+    },
+    {
+      "path": "Scans/BDBOX 2/Otsukaresama/26-27.jpg",
+      "size": 2078399
+    },
+    {
+      "path": "Scans/BDBOX 2/Otsukaresama/28-29.jpg",
+      "size": 2131628
+    },
+    {
+      "path": "Scans/BDBOX 2/Otsukaresama/30-31.jpg",
+      "size": 1900899
+    },
+    {
+      "path": "Scans/BDBOX 2/Otsukaresama/32-33.jpg",
+      "size": 1877593
+    },
+    {
+      "path": "Scans/BDBOX 2/Otsukaresama/34-35.jpg",
+      "size": 1814787
+    },
+    {
+      "path": "Scans/BDBOX 2/Otsukaresama/Back.jpg",
+      "size": 1328916
+    },
+    {
+      "path": "Scans/BDBOX 2/Otsukaresama/Cover.jpg",
+      "size": 1320250
+    },
+    {
+      "path": "Scans/BDBOX 2/Otsukaresama/End.jpg",
+      "size": 2024385
+    },
+    {
+      "path": "Scans/BDBOX 2/Sheet.jpg",
+      "size": 2038867
+    },
+    {
+      "path": "SPs/[VCB-Studio] Parasyte：The Maxim [CM01][Hi10p_1080p][x264_flac].mkv",
+      "size": 17307637
+    },
+    {
+      "path": "SPs/[VCB-Studio] Parasyte：The Maxim [CM02][Hi10p_1080p][x264_flac].mkv",
+      "size": 149521666
+    },
+    {
+      "path": "SPs/[VCB-Studio] Parasyte：The Maxim [Menu01][Hi10p_1080p][x264_flac].mkv",
+      "size": 86299034
+    },
+    {
+      "path": "SPs/[VCB-Studio] Parasyte：The Maxim [Menu02][Hi10p_1080p][x264_flac].mkv",
+      "size": 79812912
+    },
+    {
+      "path": "SPs/[VCB-Studio] Parasyte：The Maxim [Menu03][Hi10p_1080p][x264_flac].mkv",
+      "size": 91242392
+    },
+    {
+      "path": "SPs/[VCB-Studio] Parasyte：The Maxim [Menu04][Hi10p_1080p][x264_flac].mkv",
+      "size": 71970975
+    },
+    {
+      "path": "SPs/[VCB-Studio] Parasyte：The Maxim [Menu05][Hi10p_1080p][x264_flac].mkv",
+      "size": 64975261
+    },
+    {
+      "path": "SPs/[VCB-Studio] Parasyte：The Maxim [Menu06][Hi10p_1080p][x264_flac].mkv",
+      "size": 76578687
+    },
+    {
+      "path": "SPs/[VCB-Studio] Parasyte：The Maxim [NCED01][Hi10p_1080p][x264_flac].mkv",
+      "size": 60209209
+    },
+    {
+      "path": "SPs/[VCB-Studio] Parasyte：The Maxim [NCED02][Hi10p_1080p][x264_flac].mkv",
+      "size": 59642353
+    },
+    {
+      "path": "SPs/[VCB-Studio] Parasyte：The Maxim [NCED03][Hi10p_1080p][x264_flac].mkv",
+      "size": 54380105
+    },
+    {
+      "path": "SPs/[VCB-Studio] Parasyte：The Maxim [NCOP][Hi10p_1080p][x264_flac].mkv",
+      "size": 135214939
+    }
+  ]
+}

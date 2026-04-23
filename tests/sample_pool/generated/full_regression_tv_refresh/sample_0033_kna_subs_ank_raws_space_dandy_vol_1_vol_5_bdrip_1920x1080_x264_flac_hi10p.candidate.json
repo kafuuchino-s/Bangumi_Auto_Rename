@@ -1,0 +1,180 @@
+{
+  "status": "ok",
+  "type": "tv",
+  "title_candidate": "Space Dandy",
+  "tmdb_name": "Space Dandy",
+  "tmdb_id": 60874,
+  "timing": {
+    "analysis_seconds": 22.399
+  },
+  "file_mapping": [
+    {
+      "source_index": 1,
+      "file_path": "[KNA-Subs&ANK-Raws] Space Dandy Vol.1 (BDrip 1920x1080 x264 FLAC Hi10P)/[KNA-Subs&ANK-Raws] Space Dandy 01 (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 1,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 2,
+      "file_path": "[KNA-Subs&ANK-Raws] Space Dandy Vol.1 (BDrip 1920x1080 x264 FLAC Hi10P)/[KNA-Subs&ANK-Raws] Space Dandy 02 (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 2,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 21,
+      "file_path": "[KNA-Subs&ANK-Raws] Space Dandy Vol.2 (BDrip 1920x1080 x264 FLAC Hi10P)/[KNA-Subs&ANK-Raws] Space Dandy 03 (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 3,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 22,
+      "file_path": "[KNA-Subs&ANK-Raws] Space Dandy Vol.2 (BDrip 1920x1080 x264 FLAC Hi10P)/[KNA-Subs&ANK-Raws] Space Dandy 04 (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 4,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 23,
+      "file_path": "[KNA-Subs&ANK-Raws] Space Dandy Vol.2 (BDrip 1920x1080 x264 FLAC Hi10P)/[KNA-Subs&ANK-Raws] Space Dandy 05 (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 5,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 35,
+      "file_path": "[KNA-Subs&ANK-Raws] Space Dandy Vol.3 (BDrip 1920x1080 x264 FLAC Hi10P)/[KNA-Subs&ANK-Raws] Space Dandy 06 (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 6,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 36,
+      "file_path": "[KNA-Subs&ANK-Raws] Space Dandy Vol.3 (BDrip 1920x1080 x264 FLAC Hi10P)/[KNA-Subs&ANK-Raws] Space Dandy 07 (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 7,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 37,
+      "file_path": "[KNA-Subs&ANK-Raws] Space Dandy Vol.3 (BDrip 1920x1080 x264 FLAC Hi10P)/[KNA-Subs&ANK-Raws] Space Dandy 08 (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 8,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 52,
+      "file_path": "[KNA-Subs&ANK-Raws] Space Dandy Vol.4 (BDrip 1920x1080 x264 FLAC Hi10P)/[KNA-Subs&ANK-Raws] Space Dandy 09 (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 9,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 53,
+      "file_path": "[KNA-Subs&ANK-Raws] Space Dandy Vol.4 (BDrip 1920x1080 x264 FLAC Hi10P)/[KNA-Subs&ANK-Raws] Space Dandy 10 (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 10,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 54,
+      "file_path": "[KNA-Subs&ANK-Raws] Space Dandy Vol.4 (BDrip 1920x1080 x264 FLAC Hi10P)/[KNA-Subs&ANK-Raws] Space Dandy 11 (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 11,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 66,
+      "file_path": "[KNA-Subs&ANK-Raws] Space Dandy Vol.5 (BDrip 1920x1080 x264 FLAC Hi10P)/[KNA-Subs&ANK-Raws] Space Dandy 12 (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 12,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 67,
+      "file_path": "[KNA-Subs&ANK-Raws] Space Dandy Vol.5 (BDrip 1920x1080 x264 FLAC Hi10P)/[KNA-Subs&ANK-Raws] Space Dandy 13 (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 13,
+      "episode_type": "regular",
+      "confidence": "High"
+    }
+  ],
+  "conflict_details": [],
+  "analysis_result": {
+    "confidence": "High",
+    "reason": "正片编号连续，直接对应第1季1-13集。",
+    "season_mapping": [],
+    "file_mapping_count": 13,
+    "unmatched_count": 8,
+    "conflict_count": 0
+  },
+  "hydration_notes": {
+    "hydrated_count": 13,
+    "examples": [
+      "hydrated:1:[KNA-Subs&ANK-Raws] Space Dandy Vol.1 (BDrip 1920x1080 x264 FLAC Hi10P)/[KNA-Subs&ANK-Raws] Space Dandy 01 (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
+      "hydrated:2:[KNA-Subs&ANK-Raws] Space Dandy Vol.1 (BDrip 1920x1080 x264 FLAC Hi10P)/[KNA-Subs&ANK-Raws] Space Dandy 02 (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
+      "hydrated:21:[KNA-Subs&ANK-Raws] Space Dandy Vol.2 (BDrip 1920x1080 x264 FLAC Hi10P)/[KNA-Subs&ANK-Raws] Space Dandy 03 (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
+      "hydrated:22:[KNA-Subs&ANK-Raws] Space Dandy Vol.2 (BDrip 1920x1080 x264 FLAC Hi10P)/[KNA-Subs&ANK-Raws] Space Dandy 04 (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
+      "hydrated:23:[KNA-Subs&ANK-Raws] Space Dandy Vol.2 (BDrip 1920x1080 x264 FLAC Hi10P)/[KNA-Subs&ANK-Raws] Space Dandy 05 (BDrip 1920x1080 x264 FLAC Hi10P).mkv"
+    ]
+  },
+  "task_plan": {
+    "is_movie": false,
+    "ai_type": "tv",
+    "tv_available": true,
+    "movie_available": false,
+    "selected_confidence": "High"
+  },
+  "tv_candidate_result": {
+    "status": "ok",
+    "type": "tv",
+    "title_candidate": "Space Dandy",
+    "timing": {
+      "analysis_seconds": 22.399
+    },
+    "file_mapping_count": 13,
+    "has_regular": true,
+    "has_special": false,
+    "has_movie_like": false,
+    "analysis_result": {
+      "confidence": "High",
+      "reason": "正片编号连续，直接对应第1季1-13集。",
+      "season_mapping": [],
+      "file_mapping_count": 13,
+      "unmatched_count": 8,
+      "conflict_count": 0
+    }
+  },
+  "movie_candidate_result": {
+    "status": "ok",
+    "type": "movie",
+    "title_candidate": "Space Dandy",
+    "timing": {
+      "analysis_seconds": 38.778
+    },
+    "collection_analysis": {
+      "is_collection": false,
+      "confidence": "High",
+      "reason": "均为动画剧集与特典，并非电影合集",
+      "file_mapping_count": 0,
+      "unmatched_count": 75,
+      "conflict_count": 1,
+      "movie_like_paths": []
+    }
+  },
+  "final_type": "tv"
+}

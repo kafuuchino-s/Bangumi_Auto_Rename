@@ -1,0 +1,777 @@
+{
+  "root_name": "[Snow-Raws] ぷちます! プチ・アイドルマスター",
+  "files": [
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第01話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 81007658
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第01話 (BD 1920x1080 HEVC-YUV420P10 FLAC).sc.ass",
+      "size": 9645
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第01話 (BD 1920x1080 HEVC-YUV420P10 FLAC).tc.ass",
+      "size": 9645
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第02話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 91155976
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第02話 (BD 1920x1080 HEVC-YUV420P10 FLAC).sc.ass",
+      "size": 7942
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第02話 (BD 1920x1080 HEVC-YUV420P10 FLAC).tc.ass",
+      "size": 7906
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第03話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 90889204
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第03話 (BD 1920x1080 HEVC-YUV420P10 FLAC).sc.ass",
+      "size": 8607
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第03話 (BD 1920x1080 HEVC-YUV420P10 FLAC).tc.ass",
+      "size": 8607
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第04話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 110582268
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第04話 (BD 1920x1080 HEVC-YUV420P10 FLAC).sc.ass",
+      "size": 9080
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第04話 (BD 1920x1080 HEVC-YUV420P10 FLAC).tc.ass",
+      "size": 9083
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第05話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 89934170
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第05話 (BD 1920x1080 HEVC-YUV420P10 FLAC).sc.ass",
+      "size": 9347
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第05話 (BD 1920x1080 HEVC-YUV420P10 FLAC).tc.ass",
+      "size": 9347
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第06話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 67419256
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第06話 (BD 1920x1080 HEVC-YUV420P10 FLAC).sc.ass",
+      "size": 8076
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第06話 (BD 1920x1080 HEVC-YUV420P10 FLAC).tc.ass",
+      "size": 8076
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第07話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 86574166
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第07話 (BD 1920x1080 HEVC-YUV420P10 FLAC).sc.ass",
+      "size": 9220
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第07話 (BD 1920x1080 HEVC-YUV420P10 FLAC).tc.ass",
+      "size": 9220
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第08話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 74162660
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第08話 (BD 1920x1080 HEVC-YUV420P10 FLAC).sc.ass",
+      "size": 8983
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第08話 (BD 1920x1080 HEVC-YUV420P10 FLAC).tc.ass",
+      "size": 8983
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第09話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 76047179
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第09話 (BD 1920x1080 HEVC-YUV420P10 FLAC).sc.ass",
+      "size": 10373
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第09話 (BD 1920x1080 HEVC-YUV420P10 FLAC).tc.ass",
+      "size": 10373
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第10話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 88401085
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第10話 (BD 1920x1080 HEVC-YUV420P10 FLAC).sc.ass",
+      "size": 8784
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第10話 (BD 1920x1080 HEVC-YUV420P10 FLAC).tc.ass",
+      "size": 8784
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第11話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 128842494
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第11話 (BD 1920x1080 HEVC-YUV420P10 FLAC).sc.ass",
+      "size": 8098
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第11話 (BD 1920x1080 HEVC-YUV420P10 FLAC).tc.ass",
+      "size": 8098
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第12話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 87433529
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第12話 (BD 1920x1080 HEVC-YUV420P10 FLAC).sc.ass",
+      "size": 8980
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第12話 (BD 1920x1080 HEVC-YUV420P10 FLAC).tc.ass",
+      "size": 8980
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第13話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 140511702
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第13話 (BD 1920x1080 HEVC-YUV420P10 FLAC).sc.ass",
+      "size": 9418
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第13話 (BD 1920x1080 HEVC-YUV420P10 FLAC).tc.ass",
+      "size": 9415
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第14話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 124682101
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第14話 (BD 1920x1080 HEVC-YUV420P10 FLAC).sc.ass",
+      "size": 8500
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第14話 (BD 1920x1080 HEVC-YUV420P10 FLAC).tc.ass",
+      "size": 8506
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第15話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 102978681
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第15話 (BD 1920x1080 HEVC-YUV420P10 FLAC).sc.ass",
+      "size": 8029
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第15話 (BD 1920x1080 HEVC-YUV420P10 FLAC).tc.ass",
+      "size": 8029
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第16話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 73179908
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第16話 (BD 1920x1080 HEVC-YUV420P10 FLAC).sc.ass",
+      "size": 9387
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第16話 (BD 1920x1080 HEVC-YUV420P10 FLAC).tc.ass",
+      "size": 9387
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第17話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 83182958
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第17話 (BD 1920x1080 HEVC-YUV420P10 FLAC).sc.ass",
+      "size": 9680
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第17話 (BD 1920x1080 HEVC-YUV420P10 FLAC).tc.ass",
+      "size": 9680
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第18話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 75733516
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第18話 (BD 1920x1080 HEVC-YUV420P10 FLAC).sc.ass",
+      "size": 8958
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第18話 (BD 1920x1080 HEVC-YUV420P10 FLAC).tc.ass",
+      "size": 8961
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第19話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 81916631
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第19話 (BD 1920x1080 HEVC-YUV420P10 FLAC).sc.ass",
+      "size": 9770
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第19話 (BD 1920x1080 HEVC-YUV420P10 FLAC).tc.ass",
+      "size": 9770
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第20話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 66560409
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第20話 (BD 1920x1080 HEVC-YUV420P10 FLAC).sc.ass",
+      "size": 10080
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第20話 (BD 1920x1080 HEVC-YUV420P10 FLAC).tc.ass",
+      "size": 10080
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第21話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 87691802
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第21話 (BD 1920x1080 HEVC-YUV420P10 FLAC).sc.ass",
+      "size": 9627
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第21話 (BD 1920x1080 HEVC-YUV420P10 FLAC).tc.ass",
+      "size": 9627
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第22話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 69265216
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第22話 (BD 1920x1080 HEVC-YUV420P10 FLAC).sc.ass",
+      "size": 9288
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第22話 (BD 1920x1080 HEVC-YUV420P10 FLAC).tc.ass",
+      "size": 9288
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第23話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 76600307
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第23話 (BD 1920x1080 HEVC-YUV420P10 FLAC).sc.ass",
+      "size": 8746
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第23話 (BD 1920x1080 HEVC-YUV420P10 FLAC).tc.ass",
+      "size": 8746
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第24話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 110554540
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第24話 (BD 1920x1080 HEVC-YUV420P10 FLAC).sc.ass",
+      "size": 8928
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第24話 (BD 1920x1080 HEVC-YUV420P10 FLAC).tc.ass",
+      "size": 8928
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第25話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 111520045
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第25話 (BD 1920x1080 HEVC-YUV420P10 FLAC).sc.ass",
+      "size": 8221
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第25話 (BD 1920x1080 HEVC-YUV420P10 FLAC).tc.ass",
+      "size": 8221
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第26話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 99785335
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第26話 (BD 1920x1080 HEVC-YUV420P10 FLAC).sc.ass",
+      "size": 9021
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第26話 (BD 1920x1080 HEVC-YUV420P10 FLAC).tc.ass",
+      "size": 9021
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第27話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 114817234
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第27話 (BD 1920x1080 HEVC-YUV420P10 FLAC).sc.ass",
+      "size": 9050
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第27話 (BD 1920x1080 HEVC-YUV420P10 FLAC).tc.ass",
+      "size": 9050
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第28話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 104337521
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第28話 (BD 1920x1080 HEVC-YUV420P10 FLAC).sc.ass",
+      "size": 8995
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第28話 (BD 1920x1080 HEVC-YUV420P10 FLAC).tc.ass",
+      "size": 8995
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第29話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 124454582
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第29話 (BD 1920x1080 HEVC-YUV420P10 FLAC).sc.ass",
+      "size": 9419
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第29話 (BD 1920x1080 HEVC-YUV420P10 FLAC).tc.ass",
+      "size": 9419
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第30話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 103200544
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第30話 (BD 1920x1080 HEVC-YUV420P10 FLAC).sc.ass",
+      "size": 9329
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第30話 (BD 1920x1080 HEVC-YUV420P10 FLAC).tc.ass",
+      "size": 9326
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第31話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 97675476
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第31話 (BD 1920x1080 HEVC-YUV420P10 FLAC).sc.ass",
+      "size": 10159
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第31話 (BD 1920x1080 HEVC-YUV420P10 FLAC).tc.ass",
+      "size": 10159
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第32話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 94349763
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第32話 (BD 1920x1080 HEVC-YUV420P10 FLAC).sc.ass",
+      "size": 9120
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第32話 (BD 1920x1080 HEVC-YUV420P10 FLAC).tc.ass",
+      "size": 9120
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第33話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 118058162
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第33話 (BD 1920x1080 HEVC-YUV420P10 FLAC).sc.ass",
+      "size": 9266
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第33話 (BD 1920x1080 HEVC-YUV420P10 FLAC).tc.ass",
+      "size": 9266
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第34話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 98579258
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第34話 (BD 1920x1080 HEVC-YUV420P10 FLAC).sc.ass",
+      "size": 9012
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第34話 (BD 1920x1080 HEVC-YUV420P10 FLAC).tc.ass",
+      "size": 9012
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第35話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 95652669
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第35話 (BD 1920x1080 HEVC-YUV420P10 FLAC).sc.ass",
+      "size": 9869
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第35話 (BD 1920x1080 HEVC-YUV420P10 FLAC).tc.ass",
+      "size": 9869
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第36話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 113109111
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第36話 (BD 1920x1080 HEVC-YUV420P10 FLAC).sc.ass",
+      "size": 9508
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第36話 (BD 1920x1080 HEVC-YUV420P10 FLAC).tc.ass",
+      "size": 9508
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第37話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 104693798
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第37話 (BD 1920x1080 HEVC-YUV420P10 FLAC).sc.ass",
+      "size": 8921
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第37話 (BD 1920x1080 HEVC-YUV420P10 FLAC).tc.ass",
+      "size": 8921
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第38話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 98766962
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第38話 (BD 1920x1080 HEVC-YUV420P10 FLAC).sc.ass",
+      "size": 9778
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第38話 (BD 1920x1080 HEVC-YUV420P10 FLAC).tc.ass",
+      "size": 9778
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第39話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 99769537
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第39話 (BD 1920x1080 HEVC-YUV420P10 FLAC).sc.ass",
+      "size": 8940
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第39話 (BD 1920x1080 HEVC-YUV420P10 FLAC).tc.ass",
+      "size": 8940
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第40話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 103365306
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第40話 (BD 1920x1080 HEVC-YUV420P10 FLAC).sc.ass",
+      "size": 9179
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第40話 (BD 1920x1080 HEVC-YUV420P10 FLAC).tc.ass",
+      "size": 9179
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第41話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 93452713
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第41話 (BD 1920x1080 HEVC-YUV420P10 FLAC).sc.ass",
+      "size": 9012
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第41話 (BD 1920x1080 HEVC-YUV420P10 FLAC).tc.ass",
+      "size": 9012
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第42話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 112040351
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第42話 (BD 1920x1080 HEVC-YUV420P10 FLAC).sc.ass",
+      "size": 8860
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第42話 (BD 1920x1080 HEVC-YUV420P10 FLAC).tc.ass",
+      "size": 8860
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第43話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 113967121
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第43話 (BD 1920x1080 HEVC-YUV420P10 FLAC).sc.ass",
+      "size": 9116
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第43話 (BD 1920x1080 HEVC-YUV420P10 FLAC).tc.ass",
+      "size": 9116
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第44話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 82724459
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第44話 (BD 1920x1080 HEVC-YUV420P10 FLAC).sc.ass",
+      "size": 8601
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第44話 (BD 1920x1080 HEVC-YUV420P10 FLAC).tc.ass",
+      "size": 8601
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第45話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 91949167
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第45話 (BD 1920x1080 HEVC-YUV420P10 FLAC).sc.ass",
+      "size": 8741
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第45話 (BD 1920x1080 HEVC-YUV420P10 FLAC).tc.ass",
+      "size": 8741
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第46話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 67017267
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第46話 (BD 1920x1080 HEVC-YUV420P10 FLAC).sc.ass",
+      "size": 9474
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第46話 (BD 1920x1080 HEVC-YUV420P10 FLAC).tc.ass",
+      "size": 9474
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第47話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 72228381
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第47話 (BD 1920x1080 HEVC-YUV420P10 FLAC).sc.ass",
+      "size": 9749
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第47話 (BD 1920x1080 HEVC-YUV420P10 FLAC).tc.ass",
+      "size": 9752
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第48話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 84566485
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第48話 (BD 1920x1080 HEVC-YUV420P10 FLAC).sc.ass",
+      "size": 9761
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第48話 (BD 1920x1080 HEVC-YUV420P10 FLAC).tc.ass",
+      "size": 9761
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第49話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 80024440
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第49話 (BD 1920x1080 HEVC-YUV420P10 FLAC).sc.ass",
+      "size": 10209
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第49話 (BD 1920x1080 HEVC-YUV420P10 FLAC).tc.ass",
+      "size": 10209
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第50話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 76991593
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第50話 (BD 1920x1080 HEVC-YUV420P10 FLAC).sc.ass",
+      "size": 9344
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第50話 (BD 1920x1080 HEVC-YUV420P10 FLAC).tc.ass",
+      "size": 9344
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第51話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 69605656
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第51話 (BD 1920x1080 HEVC-YUV420P10 FLAC).sc.ass",
+      "size": 6847
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第51話 (BD 1920x1080 HEVC-YUV420P10 FLAC).tc.ass",
+      "size": 6847
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第52話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 89874922
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第52話 (BD 1920x1080 HEVC-YUV420P10 FLAC).sc.ass",
+      "size": 7789
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第52話 (BD 1920x1080 HEVC-YUV420P10 FLAC).tc.ass",
+      "size": 7789
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第53話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 78208432
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第53話 (BD 1920x1080 HEVC-YUV420P10 FLAC).sc.ass",
+      "size": 7921
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第53話 (BD 1920x1080 HEVC-YUV420P10 FLAC).tc.ass",
+      "size": 7921
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第54話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 70968998
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第54話 (BD 1920x1080 HEVC-YUV420P10 FLAC).sc.ass",
+      "size": 8211
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第54話 (BD 1920x1080 HEVC-YUV420P10 FLAC).tc.ass",
+      "size": 8211
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第55話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 70765770
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第55話 (BD 1920x1080 HEVC-YUV420P10 FLAC).sc.ass",
+      "size": 8318
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第55話 (BD 1920x1080 HEVC-YUV420P10 FLAC).tc.ass",
+      "size": 8318
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第56話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 66667830
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第56話 (BD 1920x1080 HEVC-YUV420P10 FLAC).sc.ass",
+      "size": 8426
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第56話 (BD 1920x1080 HEVC-YUV420P10 FLAC).tc.ass",
+      "size": 8426
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第57話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 62627991
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第57話 (BD 1920x1080 HEVC-YUV420P10 FLAC).sc.ass",
+      "size": 7708
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第57話 (BD 1920x1080 HEVC-YUV420P10 FLAC).tc.ass",
+      "size": 7708
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第58話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 79041762
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第58話 (BD 1920x1080 HEVC-YUV420P10 FLAC).sc.ass",
+      "size": 8819
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第58話 (BD 1920x1080 HEVC-YUV420P10 FLAC).tc.ass",
+      "size": 8819
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第59話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 91567938
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第59話 (BD 1920x1080 HEVC-YUV420P10 FLAC).sc.ass",
+      "size": 7785
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第59話 (BD 1920x1080 HEVC-YUV420P10 FLAC).tc.ass",
+      "size": 7785
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第60話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 76962475
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第60話 (BD 1920x1080 HEVC-YUV420P10 FLAC).sc.ass",
+      "size": 7812
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第60話 (BD 1920x1080 HEVC-YUV420P10 FLAC).tc.ass",
+      "size": 7631
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第61話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 55825494
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第61話 (BD 1920x1080 HEVC-YUV420P10 FLAC).sc.ass",
+      "size": 8290
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第61話 (BD 1920x1080 HEVC-YUV420P10 FLAC).tc.ass",
+      "size": 8290
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第62話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 63087850
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第62話 (BD 1920x1080 HEVC-YUV420P10 FLAC).sc.ass",
+      "size": 9986
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第62話 (BD 1920x1080 HEVC-YUV420P10 FLAC).tc.ass",
+      "size": 9986
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第63話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 73396216
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第63話 (BD 1920x1080 HEVC-YUV420P10 FLAC).sc.ass",
+      "size": 9592
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第63話 (BD 1920x1080 HEVC-YUV420P10 FLAC).tc.ass",
+      "size": 9592
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第64話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 107394564
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第64話 (BD 1920x1080 HEVC-YUV420P10 FLAC).sc.ass",
+      "size": 9030
+    },
+    {
+      "path": "[Snow-Raws] ぷちます! プチ・アイドルマスター 第64話 (BD 1920x1080 HEVC-YUV420P10 FLAC).tc.ass",
+      "size": 9030
+    },
+    {
+      "path": "映像特典/[Snow-Raws] ぷちます! プチ・アイドルマスター MENU (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "size": 236849367
+    }
+  ]
+}

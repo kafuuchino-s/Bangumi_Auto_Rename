@@ -1,0 +1,243 @@
+{
+  "status": "ok",
+  "type": "tv",
+  "title_candidate": "六畳間の侵略者！？",
+  "tmdb_name": "六畳間の侵略者!?",
+  "tmdb_id": 70805,
+  "file_mapping": [
+    {
+      "source_index": 17,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 1,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 18,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 2,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 19,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 3,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 20,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 4,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 21,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 5,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 22,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 6,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 23,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 7,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 24,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 8,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 25,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 9,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 26,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 10,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 27,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 11,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 28,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 12,
+      "episode_type": "regular",
+      "confidence": "High"
+    }
+  ],
+  "analysis_result": {
+    "confidence": "High",
+    "reason": "TMDB 仅提供第 1 季 12 集正片信息，本地文件中 01-12 编号文件与 TMDB 集号直接对应；其余文件均为 OP/ED、Preview、PV、CM 等附加内容，TMDB 列表中没有对应的 SxxExx 条目。",
+    "season_mapping": [
+      {
+        "local_group_name": "六畳間の侵略者！？",
+        "maps_to_tmdb_seasons": [
+          1
+        ]
+      }
+    ],
+    "file_mapping": [
+      {
+        "source_index": 17,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 1,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 18,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 2,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 19,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 3,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 20,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 4,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 21,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 5,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 22,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 6,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 23,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 7,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 24,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 8,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 25,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 9,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 26,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 10,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 27,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 11,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 28,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 12,
+        "episode_type": "regular",
+        "confidence": "High"
+      }
+    ],
+    "unmatched_files": [
+      "[ANK-Raws] 六畳間の侵略者！？ (Creditless ED) (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[ANK-Raws] 六畳間の侵略者！？ (Creditless OP) (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[ANK-Raws] 六畳間の侵略者！？ (Ep_02 Preview) (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[ANK-Raws] 六畳間の侵略者！？ (Ep_03 Preview) (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[ANK-Raws] 六畳間の侵略者！？ (Ep_04 Preview) (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[ANK-Raws] 六畳間の侵略者！？ (Ep_05 Preview) (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[ANK-Raws] 六畳間の侵略者！？ (Ep_06 Preview) (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[ANK-Raws] 六畳間の侵略者！？ (Ep_07 Creditless ED) (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[ANK-Raws] 六畳間の侵略者！？ (Ep_07 Preview) (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[ANK-Raws] 六畳間の侵略者！？ (Ep_08 Preview) (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[ANK-Raws] 六畳間の侵略者！？ (Ep_09 Preview) (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[ANK-Raws] 六畳間の侵略者！？ (Ep_10 Preview) (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[ANK-Raws] 六畳間の侵略者！？ (Ep_11 Preview) (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[ANK-Raws] 六畳間の侵略者！？ (Ep_12 Creditless ED) (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[ANK-Raws] 六畳間の侵略者！？ (Ep_12 Creditless OP) (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[ANK-Raws] 六畳間の侵略者！？ (Ep_12 Preview) (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[ANK-Raws] 六畳間の侵略者！？ PV01 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[ANK-Raws] 六畳間の侵略者！？ PV02 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[ANK-Raws] 六畳間の侵略者！？ PV03 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "「CM01 孝太郎篇」.mkv",
+      "「CM02 早苗篇」.mkv",
+      "「CM03 ティア篇」.mkv",
+      "「CM04 キリハ篇」.mkv",
+      "「CM05 ゆりか篇」.mkv"
+    ],
+    "conflict_details": [],
+    "extra_notes": "本地目录中仅编号 01-12 的正片文件可与 TMDB 第 1 季正集对应；OP/ED、Preview、PV、CM 等附加内容不属于 TMDB 已列出的剧集条目，因此未映射。"
+  }
+}

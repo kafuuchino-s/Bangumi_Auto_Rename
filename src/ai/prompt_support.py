@@ -48,6 +48,12 @@ def _extract_episode_hints(
 ) -> tuple[set[int], bool]:
     episode_numbers: set[int] = set()
     should_include_season_zero = False
+    episode_patterns = [
+        re.compile(r"\[(\d{1,3})(?:v\d+)?\]", re.IGNORECASE),
+        re.compile(r"\b(?:ep|episode|e)\s*0*(\d{1,3})(?:\.5)?\b", re.IGNORECASE),
+        re.compile(r"第\s*0*(\d{1,3})(?:\.5)?\s*[话話集]"),
+        re.compile(r"(?<![A-Za-z0-9])(\d{1,3})(?:\.5)?(?![A-Za-z0-9])"),
+    ]
 
     for file_info in local_files:
         path_value = str(file_info.get("path") or file_info.get("filename") or "")
@@ -62,10 +68,11 @@ def _extract_episode_hints(
             remove_episode(remove_season(Path(path_value).stem)),
         ]
         for candidate in candidates:
-            for match in re.finditer(r"(?<!\d)(\d{1,3})(?:\.5)?(?!\d)", candidate):
-                episode_num = int(match.group(1))
-                if 0 < episode_num <= 999:
-                    episode_numbers.add(episode_num)
+            for pattern in episode_patterns:
+                for match in pattern.finditer(candidate):
+                    episode_num = int(match.group(1))
+                    if 0 < episode_num <= 999:
+                        episode_numbers.add(episode_num)
             if re.search(r"(?<!\d)\d+\.5(?!\d)", candidate):
                 should_include_season_zero = True
     return episode_numbers, should_include_season_zero
@@ -108,11 +115,14 @@ def _select_prompt_seasons(
 
     if episode_numbers and not explicit_preferred_seasons:
         season_match_counts: dict[int, int] = {}
+        cumulative_match_counts: dict[int, int] = {}
+        ordered_non_special_seasons: list[tuple[int, int]] = []
         for season in seasons:
             season_number = season.get("season_number")
             if not isinstance(season_number, int):
                 continue
             season_episodes = _coerce_mapping_sequence(season.get("episodes", []))
+            episode_count_value = season.get("episode_count", 0)
             episode_numbers_in_season: set[int] = set()
             for ep in season_episodes:
                 episode_number = ep.get("episode_number")
@@ -122,11 +132,46 @@ def _select_prompt_seasons(
             if direct_match_count > 0:
                 season_match_counts[season_number] = direct_match_count
 
+            if season_number > 0:
+                max_episode_number = max(episode_numbers_in_season, default=0)
+                episode_count = (
+                    episode_count_value
+                    if isinstance(episode_count_value, int)
+                    and episode_count_value > 0
+                    else max_episode_number
+                    if max_episode_number > 0
+                    else len(episode_numbers_in_season)
+                )
+                if episode_count > 0:
+                    ordered_non_special_seasons.append((season_number, episode_count))
+
         non_special_match_counts = {
             season_number: match_count
             for season_number, match_count in season_match_counts.items()
             if season_number != 0
         }
+
+        if not non_special_match_counts and ordered_non_special_seasons:
+            cumulative_start = 1
+            for season_number, episode_count in sorted(ordered_non_special_seasons):
+                cumulative_end = cumulative_start + episode_count - 1
+                cumulative_hits = sum(
+                    1
+                    for episode_number in episode_numbers
+                    if cumulative_start <= episode_number <= cumulative_end
+                )
+                if cumulative_hits > 0:
+                    cumulative_match_counts[season_number] = cumulative_hits
+                cumulative_start = cumulative_end + 1
+
+            if cumulative_match_counts:
+                best_cumulative_match_count = max(cumulative_match_counts.values())
+                non_special_match_counts = {
+                    season_number: match_count
+                    for season_number, match_count in cumulative_match_counts.items()
+                    if match_count == best_cumulative_match_count
+                }
+
         if non_special_match_counts:
             best_match_count = max(non_special_match_counts.values())
             selected_numbers.add(
@@ -148,12 +193,49 @@ def _select_prompt_seasons(
     return filtered_seasons or seasons
 
 
+def _should_expand_tmdb_episode_details(
+    local_files: Sequence[Mapping[str, object]],
+    prompt_seasons: Sequence[Mapping[str, object]],
+) -> bool:
+    if len(prompt_seasons) > 1:
+        return True
+
+    episode_numbers, should_include_season_zero = _extract_episode_hints(local_files)
+    if should_include_season_zero:
+        return True
+
+    return len(episode_numbers) <= 2
+
+
+def _should_expand_bangumi_episode_details(
+    local_files: Sequence[Mapping[str, object]],
+) -> bool:
+    episode_numbers, should_include_season_zero = _extract_episode_hints(local_files)
+    if should_include_season_zero:
+        return True
+    return len(episode_numbers) <= 2
+
+
+def _is_video_path(path_value: str) -> bool:
+    return Path(path_value).suffix.casefold() in {
+        ".mkv",
+        ".mp4",
+        ".avi",
+        ".m2ts",
+        ".ts",
+        ".mov",
+        ".wmv",
+        ".flv",
+    }
+
+
 def _build_tmdb_prompt_section(
     anime_info: Mapping[str, object],
     local_files: Sequence[Mapping[str, object]],
 ) -> str:
     seasons = _coerce_mapping_sequence(anime_info.get("seasons", []))
     prompt_seasons = _select_prompt_seasons(anime_info, local_files)
+    expand_episode_details = _should_expand_tmdb_episode_details(local_files, prompt_seasons)
 
     lines = ["TMDB 季度摘要："]
     for season in seasons:
@@ -163,27 +245,38 @@ def _build_tmdb_prompt_section(
         lines.append(f"- Season {season_num}: {season_name} (共 {episode_count} 集)")
 
     lines.append("")
-    lines.append("TMDB 候选季度详细集目：")
-    for season in prompt_seasons:
-        season_num = season.get("season_number", 0)
-        season_name = season.get("name", f"Season {season_num}")
-        episodes = _coerce_mapping_sequence(season.get("episodes", []))
-        episode_count_value = season.get("episode_count", 0)
-        episode_count = len(episodes) if episodes else episode_count_value if isinstance(episode_count_value, int) else 0
-        lines.append(f"【Season {season_num}】{season_name} (共 {episode_count} 集)")
-        if episodes:
-            for ep in episodes:
-                ep_num_value = ep.get("episode_number", 0)
-                ep_num = ep_num_value if isinstance(ep_num_value, int) else 0
-                ep_name = ep.get("name", "")
-                runtime = ep.get("runtime")
-                line = f"  S{season_num:02d}E{ep_num:02d}: {ep_name}"
-                if runtime:
-                    line += f" (runtime={runtime}m)"
-                lines.append(line)
-        elif episode_count > 0:
-            lines.append(f"  E01 - E{episode_count:02d}")
-        lines.append("")
+    if expand_episode_details:
+        lines.append("TMDB 候选季度关键集目：")
+        for season in prompt_seasons[:2]:
+            season_num = season.get("season_number", 0)
+            season_name = season.get("name", f"Season {season_num}")
+            episodes = _coerce_mapping_sequence(season.get("episodes", []))
+            episode_count_value = season.get("episode_count", 0)
+            episode_count = len(episodes) if episodes else episode_count_value if isinstance(episode_count_value, int) else 0
+            lines.append(f"【Season {season_num}】{season_name} (共 {episode_count} 集)")
+            if episodes:
+                selected_episodes = episodes[:8]
+                for ep in selected_episodes:
+                    ep_num_value = ep.get("episode_number", 0)
+                    ep_num = ep_num_value if isinstance(ep_num_value, int) else 0
+                    ep_name = ep.get("name", "")
+                    lines.append(f"  S{season_num:02d}E{ep_num:02d}: {ep_name}")
+                if len(episodes) > len(selected_episodes):
+                    lines.append(f"  ... 其余 {len(episodes) - len(selected_episodes)} 集未展开")
+            elif episode_count > 0:
+                lines.append(f"  E01 - E{episode_count:02d}")
+            lines.append("")
+    else:
+        lines.append("TMDB 候选季度范围：")
+        for season in prompt_seasons[:2]:
+            season_num = season.get("season_number", 0)
+            season_name = season.get("name", f"Season {season_num}")
+            episode_count_value = season.get("episode_count", 0)
+            episode_count = episode_count_value if isinstance(episode_count_value, int) else 0
+            if episode_count > 0:
+                lines.append(f"- Season {season_num} {season_name}: E01-E{episode_count:02d}")
+            else:
+                lines.append(f"- Season {season_num} {season_name}")
 
     if len(prompt_seasons) < len(seasons):
         lines.append("提示: 以上只展开高相关季度；最终仍只能映射到全部 TMDB 真实存在的 SxxExx。")
@@ -192,6 +285,7 @@ def _build_tmdb_prompt_section(
 
 def _build_bangumi_prompt_section(
     bangumi_context: Mapping[str, object] | None,
+    local_files: Sequence[Mapping[str, object]],
 ) -> str:
     if not bangumi_context:
         return "Bangumi 辅助上下文：不可用（本次按 TMDB-only 处理）\n"
@@ -211,7 +305,10 @@ def _build_bangumi_prompt_section(
     if keywords:
         lines.append(f"搜索词: {', '.join(str(item) for item in keywords[:6])}")
 
-    for subject_item in subjects[:4]:
+    expand_episode_details = _should_expand_bangumi_episode_details(local_files)
+    subject_limit = 2 if expand_episode_details else 1
+
+    for subject_item in subjects[:subject_limit]:
         subject = subject_item.get("subject", {})
         subject_mapping = dict(subject) if isinstance(subject, Mapping) else {}
         relation = subject_item.get("relation_to_main", "") or "main"
@@ -231,27 +328,23 @@ def _build_bangumi_prompt_section(
             lines.append("  episodes: 无")
             continue
 
-        lines.append("  episodes:")
-        for episode in episodes[:60]:
-            episode_type = episode.get("type")
-            duration_seconds = episode.get("duration_seconds")
-            duration_text = episode.get("duration") or ""
-            episode_line = (
-                "    - "
-                f"sort={episode.get('sort', 0)} "
-                f"ep={episode.get('ep')} "
-                f"type={episode_type} "
-                f"airdate={episode.get('airdate') or ''} "
-                f"title={episode.get('name_cn') or episode.get('name') or ''}"
-            )
-            if duration_seconds:
-                episode_line += f" duration_seconds={duration_seconds}"
-            elif duration_text:
-                episode_line += f" duration={duration_text}"
-            lines.append(episode_line)
-            desc = str(episode.get("desc") or "").strip()
-            if desc:
-                lines.append(f"      desc={desc[:120]}")
+        if expand_episode_details:
+            lines.append("  episodes:")
+            for episode in episodes[:12]:
+                episode_type = episode.get("type")
+                episode_line = (
+                    "    - "
+                    f"sort={episode.get('sort', 0)} "
+                    f"ep={episode.get('ep')} "
+                    f"type={episode_type} "
+                    f"airdate={episode.get('airdate') or ''} "
+                    f"title={episode.get('name_cn') or episode.get('name') or ''}"
+                )
+                lines.append(episode_line)
+            if len(episodes) > 12:
+                lines.append(f"    ... 其余 {len(episodes) - 12} 条未展开")
+        else:
+            lines.append(f"  episodes: 共 {len(episodes)} 条（默认不展开明细）")
 
     lines.append(
         "Bangumi 使用规则：relation 只是辅助语义，不等于 TMDB season；最终输出只能使用上面 TMDB 中真实存在的 SxxExx；拿不准时宁可放到 unmatched_files。"
@@ -275,9 +368,14 @@ def build_common_prompt(
 """
     tmdb_details = _build_tmdb_prompt_section(anime_info, local_files)
 
-    files_info = "本地文件信息（每行一个稳定 source_index + 可直接复制的 source_path，路径均为相对路径）:\n"
+    files_info = "本地视频文件信息（每行一个稳定 source_index + 可直接复制的 source_path，路径均为相对路径）:\n"
     top_level_dirs: list[str] = []
-    for i, file_info in enumerate(local_files, 1):
+    video_local_files = [
+        file_info
+        for file_info in local_files
+        if _is_video_path(str(file_info.get("path") or file_info.get("filename") or ""))
+    ]
+    for i, file_info in enumerate(video_local_files, 1):
         path_value = str(file_info.get("path") or "")
         duration_str = ""
         duration_value = file_info.get("duration")
@@ -295,7 +393,11 @@ def build_common_prompt(
         files_info += "顶层子目录: " + ", ".join(top_level_dirs[:12]) + "\n"
         files_info += "提示: 如果不同文件落在不同子目录（如 Disc/SP/OVA/NCOP/NCED/Extras），这些子目录语义通常很重要，不能忽略。\n"
 
-    bangumi_info = _build_bangumi_prompt_section(bangumi_context)
+    non_video_count = len(local_files) - len(video_local_files)
+    if non_video_count > 0:
+        files_info += f"已忽略 {non_video_count} 个非视频文件（如字幕/压缩包/附件），不参与本次 TV 映射。\n"
+
+    bangumi_info = _build_bangumi_prompt_section(bangumi_context, video_local_files)
 
     prompt = f"""请分析以下动漫的本地文件与TMDB数据的对应关系：
 
@@ -353,15 +455,16 @@ def build_common_prompt(
    - 不要混用新的路径分隔符格式
 
 6. **可观测性要求（必须满足）**：
-   - 返回 `unmatched_files`，列出所有未匹配文件路径（相对路径）
-   - `conflict_details` 仅填写“硬冲突”（例如：重复映射、集数越界、文件不存在）
+   - `reason` 保持极短，只用 1 句（建议 10-30 字）概括核心判断，不要写长段解释
+   - 返回 `unmatched_files` 时，优先保留最有代表性的前 8 个未匹配路径即可；如果未匹配很多，不要穷举全部
+   - `conflict_details` 仅填写“硬冲突”（例如：重复映射、集数越界、文件不存在），并限制为最关键的前 5 条
    - 证据不足/不确定但可执行的说明（例如仅凭小数集数推断）请写入 `extra_notes`，不要写入 `conflict_details`
    - 如果 confidence 为 High/Medium，`file_mapping` 必须尽量覆盖可匹配文件
 
 7. **TMDB 合法性约束**：
    - 只能使用上面 TMDB 列表中真实存在的 `SxxExx`
    - 不要因为文件名带 `SP / OVA / Part` 就自行发明新的 Season 0 / special 编号
-   - 对拿不准或 TMDB 中不存在的文件，宁可放入 `unmatched_files`
+    - 对拿不准或 TMDB 中不存在的文件，宁可放入 `unmatched_files`
 
 8. **Bangumi 使用约束**：
    - Bangumi 只作为辅助证据，不是最终编号体系
@@ -374,10 +477,11 @@ def build_common_prompt(
    - 多子目录场景下，必须同时结合“文件名 + 所在子目录语义 + 时长”判断
    - `SP / OVA / OAD / Special / NCOP / NCED / Extras / Bonus / Menu` 等目录或标签通常不是正片
    - 如果输入列表里同时存在“根目录文件 + 子目录文件”或“同编号不同版本文件”，必须按输入中那条完整路径逐字复制；不要把别的文件所在目录或版本标签套到当前文件上
-   - 如果只能确定部分文件，优先输出有把握的合法映射，其余文件放入 `unmatched_files`
+    - 如果只能确定部分文件，优先输出有把握的合法映射，其余文件放入 `unmatched_files`
    - 对 `SP01 / SP02 / OVA01` 这类 special 编号，若只能看到近似路径但无法确认哪一条才是输入中的真实文件，宁可放入 `unmatched_files`
    - 如果某个 `source_index` 已能确定合法落点，但你不确定自己是否能把 `file_path` 逐字抄对，就只返回 `source_index`，不要硬写一个可能出错的 `file_path`
-   - 当目录里同时包含 TMDB 已存在的正片/特典与 TMDB 不存在的附加短片时，先覆盖可合法落点的那部分，其余放入 `unmatched_files`
+    - 当目录里同时包含 TMDB 已存在的正片/特典与 TMDB 不存在的附加短片时，先覆盖可合法落点的那部分，其余放入 `unmatched_files`
+    - 若 `unmatched_files` 数量很多，只保留最具代表性的样例路径，不要为求完整而长列表输出
    - 不要因为目录复杂就返回空的 `file_mapping`
    - 不要因为仍有一部分 extras / SP 无法落到 TMDB，就返回空的 `file_mapping`
 

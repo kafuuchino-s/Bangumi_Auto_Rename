@@ -1,0 +1,226 @@
+{
+  "status": "ok",
+  "type": "tv",
+  "title_candidate": "Strike Witches 501 Butai Hasshin Shimasu!",
+  "tmdb_name": "Strike Witches: 501st JOINT FIGHTER WING Take Off!",
+  "tmdb_id": 87693,
+  "file_mapping": [
+    {
+      "source_index": 1,
+      "file_path": "[Moozzi2] Strike Witches 501 Butai Hasshin Shimasu! - 01 (BD 1920x1080 x.264 Flac).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 1,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 2,
+      "file_path": "[Moozzi2] Strike Witches 501 Butai Hasshin Shimasu! - 02 (BD 1920x1080 x.264 Flac).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 2,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 3,
+      "file_path": "[Moozzi2] Strike Witches 501 Butai Hasshin Shimasu! - 03 (BD 1920x1080 x.264 Flac).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 3,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 4,
+      "file_path": "[Moozzi2] Strike Witches 501 Butai Hasshin Shimasu! - 04 (BD 1920x1080 x.264 Flac).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 4,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 5,
+      "file_path": "[Moozzi2] Strike Witches 501 Butai Hasshin Shimasu! - 05 (BD 1920x1080 x.264 Flac).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 5,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 6,
+      "file_path": "[Moozzi2] Strike Witches 501 Butai Hasshin Shimasu! - 06 (BD 1920x1080 x.264 Flac).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 6,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 7,
+      "file_path": "[Moozzi2] Strike Witches 501 Butai Hasshin Shimasu! - 07 (BD 1920x1080 x.264 Flac).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 7,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 8,
+      "file_path": "[Moozzi2] Strike Witches 501 Butai Hasshin Shimasu! - 08 (BD 1920x1080 x.264 Flac).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 8,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 9,
+      "file_path": "[Moozzi2] Strike Witches 501 Butai Hasshin Shimasu! - 09 (BD 1920x1080 x.264 Flac).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 9,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 10,
+      "file_path": "[Moozzi2] Strike Witches 501 Butai Hasshin Shimasu! - 10 (BD 1920x1080 x.264 Flac).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 10,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 11,
+      "file_path": "[Moozzi2] Strike Witches 501 Butai Hasshin Shimasu! - 11 (BD 1920x1080 x.264 Flac).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 11,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 12,
+      "file_path": "[Moozzi2] Strike Witches 501 Butai Hasshin Shimasu! - 12 END (BD 1920x1080 x.264 Flac).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 12,
+      "episode_type": "regular",
+      "confidence": "High"
+    }
+  ],
+  "analysis_result": {
+    "confidence": "High",
+    "reason": "文件名主编号 01-12 与 TMDB Season 1 的 12 集逐一对应，且作品名称也与 Season 1（501部队出发！）一致；Season 2 为不同作品条目，不应混映。",
+    "season_mapping": [
+      {
+        "local_group_name": "Strike Witches 501 Butai Hasshin Shimasu!",
+        "maps_to_tmdb_seasons": [
+          1
+        ]
+      }
+    ],
+    "file_mapping": [
+      {
+        "source_index": 1,
+        "file_path": "[Moozzi2] Strike Witches 501 Butai Hasshin Shimasu! - 01 (BD 1920x1080 x.264 Flac).mkv",
+        "tmdb_season": 1,
+        "tmdb_episode": 1,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 2,
+        "file_path": "[Moozzi2] Strike Witches 501 Butai Hasshin Shimasu! - 02 (BD 1920x1080 x.264 Flac).mkv",
+        "tmdb_season": 1,
+        "tmdb_episode": 2,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 3,
+        "file_path": "[Moozzi2] Strike Witches 501 Butai Hasshin Shimasu! - 03 (BD 1920x1080 x.264 Flac).mkv",
+        "tmdb_season": 1,
+        "tmdb_episode": 3,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 4,
+        "file_path": "[Moozzi2] Strike Witches 501 Butai Hasshin Shimasu! - 04 (BD 1920x1080 x.264 Flac).mkv",
+        "tmdb_season": 1,
+        "tmdb_episode": 4,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 5,
+        "file_path": "[Moozzi2] Strike Witches 501 Butai Hasshin Shimasu! - 05 (BD 1920x1080 x.264 Flac).mkv",
+        "tmdb_season": 1,
+        "tmdb_episode": 5,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 6,
+        "file_path": "[Moozzi2] Strike Witches 501 Butai Hasshin Shimasu! - 06 (BD 1920x1080 x.264 Flac).mkv",
+        "tmdb_season": 1,
+        "tmdb_episode": 6,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 7,
+        "file_path": "[Moozzi2] Strike Witches 501 Butai Hasshin Shimasu! - 07 (BD 1920x1080 x.264 Flac).mkv",
+        "tmdb_season": 1,
+        "tmdb_episode": 7,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 8,
+        "file_path": "[Moozzi2] Strike Witches 501 Butai Hasshin Shimasu! - 08 (BD 1920x1080 x.264 Flac).mkv",
+        "tmdb_season": 1,
+        "tmdb_episode": 8,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 9,
+        "file_path": "[Moozzi2] Strike Witches 501 Butai Hasshin Shimasu! - 09 (BD 1920x1080 x.264 Flac).mkv",
+        "tmdb_season": 1,
+        "tmdb_episode": 9,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 10,
+        "file_path": "[Moozzi2] Strike Witches 501 Butai Hasshin Shimasu! - 10 (BD 1920x1080 x.264 Flac).mkv",
+        "tmdb_season": 1,
+        "tmdb_episode": 10,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 11,
+        "file_path": "[Moozzi2] Strike Witches 501 Butai Hasshin Shimasu! - 11 (BD 1920x1080 x.264 Flac).mkv",
+        "tmdb_season": 1,
+        "tmdb_episode": 11,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 12,
+        "file_path": "[Moozzi2] Strike Witches 501 Butai Hasshin Shimasu! - 12 END (BD 1920x1080 x.264 Flac).mkv",
+        "tmdb_season": 1,
+        "tmdb_episode": 12,
+        "episode_type": "regular",
+        "confidence": "High"
+      }
+    ],
+    "unmatched_files": [
+      "EXTRA/[Moozzi2] Strike Witches 501 [SP01] NCOP (BD 1920x1080 x.264 Flac).mkv",
+      "EXTRA/[Moozzi2] Strike Witches 501 [SP02] NCED Collection - 01 [ EP.01~06 ] (BD 1920x1080 x.264 Flac).mkv",
+      "EXTRA/[Moozzi2] Strike Witches 501 [SP02] NCED Collection - 02 [ EP.07~12 ] (BD 1920x1080 x.264 Flac).mkv",
+      "EXTRA/[Moozzi2] Strike Witches 501 [SP03] Witches Lecture - 01 (BD 1920x1080 x.264 Flac).mkv",
+      "EXTRA/[Moozzi2] Strike Witches 501 [SP03] Witches Lecture - 02 (BD 1920x1080 x.264 Flac).mkv",
+      "EXTRA/[Moozzi2] Strike Witches 501 [SP04] The 2nd Round of Sister Draft Packing Video - 01 (BD 1920x1080 x.264 Flac).mkv",
+      "EXTRA/[Moozzi2] Strike Witches 501 [SP04] The 2nd Round of Sister Draft Packing Video - 02 (BD 1920x1080 x.264 Flac).mkv"
+    ],
+    "conflict_details": [],
+    "extra_notes": "本地正片文件名以 01-12 编号，直接对应 TMDB Season 1 的 S01E01-S01E12；EXTRA 目录下为 NCOP/NCED/访谈类附加文件，TMDB 提供的候选条目中没有可合法对应的 Season 0 或 specials 条目，因此不做映射。"
+  }
+}

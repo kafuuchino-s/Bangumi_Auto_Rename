@@ -1,0 +1,186 @@
+{
+  "status": "ok",
+  "type": "tv",
+  "title_candidate": "Choujigen Game Neptune",
+  "tmdb_name": "Hyperdimension Neptunia",
+  "tmdb_id": 63525,
+  "timing": {
+    "analysis_seconds": 10.544
+  },
+  "file_mapping": [
+    {
+      "source_index": 1,
+      "file_path": "[VCB-Studio] Choujigen Game Neptune [01][Hi10p_1080p][x264_flac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 1,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 2,
+      "file_path": "[VCB-Studio] Choujigen Game Neptune [02][Hi10p_1080p][x264_2flac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 2,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 3,
+      "file_path": "[VCB-Studio] Choujigen Game Neptune [03][Hi10p_1080p][x264_flac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 3,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 4,
+      "file_path": "[VCB-Studio] Choujigen Game Neptune [04][Hi10p_1080p][x264_2flac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 4,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 5,
+      "file_path": "[VCB-Studio] Choujigen Game Neptune [05][Hi10p_1080p][x264_flac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 5,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 6,
+      "file_path": "[VCB-Studio] Choujigen Game Neptune [06][Hi10p_1080p][x264_2flac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 6,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 7,
+      "file_path": "[VCB-Studio] Choujigen Game Neptune [07][Hi10p_1080p][x264_2flac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 7,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 8,
+      "file_path": "[VCB-Studio] Choujigen Game Neptune [08][Hi10p_1080p][x264_flac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 8,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 9,
+      "file_path": "[VCB-Studio] Choujigen Game Neptune [09][Hi10p_1080p][x264_flac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 9,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 10,
+      "file_path": "[VCB-Studio] Choujigen Game Neptune [10][Hi10p_1080p][x264_2flac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 10,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 11,
+      "file_path": "[VCB-Studio] Choujigen Game Neptune [11][Hi10p_1080p][x264_flac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 11,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 12,
+      "file_path": "[VCB-Studio] Choujigen Game Neptune [12][Hi10p_1080p][x264_2flac].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 12,
+      "episode_type": "regular",
+      "confidence": "High"
+    }
+  ],
+  "conflict_details": [],
+  "analysis_result": {
+    "confidence": "High",
+    "reason": "文件编号 01-12 与正片季集顺序一致。",
+    "season_mapping": [
+      {
+        "local_group_name": "Choujigen Game Neptune",
+        "maps_to_tmdb_seasons": [
+          1
+        ]
+      }
+    ],
+    "file_mapping_count": 12,
+    "unmatched_count": 0,
+    "conflict_count": 0
+  },
+  "hydration_notes": {
+    "hydrated_count": 12,
+    "examples": [
+      "hydrated:1:[VCB-Studio] Choujigen Game Neptune [01][Hi10p_1080p][x264_flac].mkv",
+      "hydrated:2:[VCB-Studio] Choujigen Game Neptune [02][Hi10p_1080p][x264_2flac].mkv",
+      "hydrated:3:[VCB-Studio] Choujigen Game Neptune [03][Hi10p_1080p][x264_flac].mkv",
+      "hydrated:4:[VCB-Studio] Choujigen Game Neptune [04][Hi10p_1080p][x264_2flac].mkv",
+      "hydrated:5:[VCB-Studio] Choujigen Game Neptune [05][Hi10p_1080p][x264_flac].mkv"
+    ]
+  },
+  "task_plan": {
+    "is_movie": false,
+    "ai_type": "tv",
+    "tv_available": true,
+    "movie_available": false,
+    "selected_confidence": "High"
+  },
+  "tv_candidate_result": {
+    "status": "ok",
+    "type": "tv",
+    "title_candidate": "Choujigen Game Neptune",
+    "timing": {
+      "analysis_seconds": 10.544
+    },
+    "file_mapping_count": 12,
+    "has_regular": true,
+    "has_special": false,
+    "has_movie_like": false,
+    "analysis_result": {
+      "confidence": "High",
+      "reason": "文件编号 01-12 与正片季集顺序一致。",
+      "season_mapping": [
+        {
+          "local_group_name": "Choujigen Game Neptune",
+          "maps_to_tmdb_seasons": [
+            1
+          ]
+        }
+      ],
+      "file_mapping_count": 12,
+      "unmatched_count": 0,
+      "conflict_count": 0
+    }
+  },
+  "movie_candidate_result": {
+    "status": "ok",
+    "type": "movie",
+    "title_candidate": "Choujigen Game Neptune",
+    "timing": {
+      "analysis_seconds": 43.544
+    },
+    "collection_analysis": {
+      "is_collection": false,
+      "confidence": "High",
+      "reason": "目录为动画剧集及特典，并非电影合集",
+      "file_mapping_count": 0,
+      "unmatched_count": 37,
+      "conflict_count": 0,
+      "movie_like_paths": []
+    }
+  },
+  "final_type": "tv"
+}

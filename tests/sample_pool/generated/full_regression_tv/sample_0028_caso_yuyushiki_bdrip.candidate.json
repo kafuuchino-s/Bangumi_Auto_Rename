@@ -1,0 +1,52 @@
+{
+  "status": "ok",
+  "type": "movie",
+  "title_candidate": "Yuyushiki",
+  "timing": {
+    "analysis_seconds": 11.896
+  },
+  "collection_analysis": {
+    "is_collection": false,
+    "collection_name": "Yuyushiki",
+    "confidence": "High",
+    "reason": "仅为动画剧集与特典，非电影合集",
+    "file_mapping": [],
+    "unmatched_files": [
+      "[CASO][YuYuShiki][01][BDRIP][1080p_MKV][x264_FLAC][E283107B].mkv",
+      "[CASO][YuYuShiki][02][BDRIP][1080p_MKV][x264_FLAC][1E03536D].mkv",
+      "[CASO][YuYuShiki][03][BDRIP][1080p_MKV][x264_FLAC][3FD88D15].mkv",
+      "[CASO][YuYuShiki][04][BDRIP][1080p_MKV][x264_FLAC][A1ECAFC7].mkv",
+      "[CASO][YuYuShiki][05][BDRIP][1080p_MKV][x264_FLAC][6C82ABD3].mkv",
+      "[CASO][YuYuShiki][06][BDRIP][1080p_MKV][x264_FLAC][ECC5734B].mkv",
+      "[CASO][YuYuShiki][07][BDRIP][1080p_MKV][x264_FLAC][F7950B9F].mkv",
+      "[CASO][YuYuShiki][08][BDRIP][1080p_MKV][x264_FLAC][A717CB3A].mkv",
+      "[CASO][YuYuShiki][09][BDRIP][1080p_MKV][x264_FLAC][527ED587].mkv",
+      "[CASO][YuYuShiki][10][BDRIP][1080p_MKV][x264_FLAC][C898AD1F].mkv",
+      "[CASO][YuYuShiki][11][BDRIP][1080p_MKV][x264_FLAC][C01AF0A8].mkv",
+      "[CASO][YuYuShiki][12][BDRIP][1080p_MKV][x264_FLAC][EC3AB591].mkv",
+      "[CASO][YuYuShiki][Menu][BDRIP][1080p_MKV][x264_FLAC][BEEDA29B].mkv",
+      "[CASO][YuYuShiki][NCED01][BDRIP][1080p_MKV][x264_FLAC][A9882489].mkv",
+      "[CASO][YuYuShiki][NCED02][BDRIP][1080p_MKV][x264_FLAC][CC9ED347].mkv",
+      "[CASO][YuYuShiki][NCED03][BDRIP][1080p_MKV][x264_FLAC][F1A592FC].mkv",
+      "[CASO][YuYuShiki][NCED04][BDRIP][1080p_MKV][x264_FLAC][C90D8035].mkv",
+      "[CASO][YuYuShiki][NCED05][BDRIP][1080p_MKV][x264_FLAC][81C792C2].mkv",
+      "[CASO][YuYuShiki][NCED06][BDRIP][1080p_MKV][x264_FLAC][27A92DFF].mkv",
+      "[CASO][YuYuShiki][NCED07][BDRIP][1080p_MKV][x264_FLAC][76EE7871].mkv",
+      "[CASO][YuYuShiki][NCED08][BDRIP][1080p_MKV][x264_FLAC][BBE5E7FC].mkv",
+      "[CASO][YuYuShiki][NCED09][BDRIP][1080p_MKV][x264_FLAC][F4EDB912].mkv",
+      "[CASO][YuYuShiki][NCED10][BDRIP][1080p_MKV][x264_FLAC][6919C629].mkv",
+      "[CASO][YuYuShiki][NCED11][BDRIP][1080p_MKV][x264_FLAC][D215FCF1].mkv",
+      "[CASO][YuYuShiki][NCOP01][BDRIP][1080p_MKV][x264_FLAC][0AD838F3].mkv",
+      "[CASO][YuYuShiki][SP01][BDRIP][1080p_MKV][x264_FLAC][46D07315].mkv",
+      "[CASO][YuYuShiki][SP02][BDRIP][1080p_MKV][x264_FLAC][64465953].mkv",
+      "[CASO][YuYuShiki][SP03][BDRIP][1080p_MKV][x264_FLAC][E1925D03].mkv",
+      "[CASO][YuYuShiki][SP04][BDRIP][1080p_MKV][x264_FLAC][E5092B72].mkv",
+      "[CASO][YuYuShiki][SP05][BDRIP][1080p_MKV][x264_FLAC][CB7514AF].mkv",
+      "[CASO][YuYuShiki][SP06][BDRIP][1080p_MKV][x264_FLAC][8D12EC46].mkv"
+    ],
+    "conflict_details": [
+      "文件均为动画剧集、OP/ED与SP特典，不是电影合集"
+    ],
+    "extra_notes": null
+  }
+}

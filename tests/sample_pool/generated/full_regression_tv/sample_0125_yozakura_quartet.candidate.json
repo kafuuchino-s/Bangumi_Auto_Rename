@@ -1,0 +1,52 @@
+{
+  "status": "ok",
+  "type": "movie",
+  "title_candidate": "Yozakura Quartet",
+  "timing": {
+    "analysis_seconds": 22.238
+  },
+  "collection_analysis": {
+    "is_collection": false,
+    "collection_name": "Yozakura Quartet",
+    "confidence": "High",
+    "reason": "均为剧集/OVA与特典，非电影合集",
+    "file_mapping": [],
+    "unmatched_files": [
+      "[Quetzal] Yoza-Quar! (BD 1080p x264 10bit - Opus 2.0)/[Quetzal] Yoza-Quar! 01 (BD 1080p x264 10bit - Opus 2.0).mkv",
+      "[Quetzal] Yoza-Quar! (BD 1080p x264 10bit - Opus 2.0)/[Quetzal] Yoza-Quar! 02 (BD 1080p x264 10bit - Opus 2.0).mkv",
+      "[Quetzal] Yoza-Quar! (BD 1080p x264 10bit - Opus 2.0)/[Quetzal] Yoza-Quar! 03 (BD 1080p x264 10bit - Opus 2.0).mkv",
+      "[Quetzal] Yoza-Quar! (BD 1080p x264 10bit - Opus 2.0)/[Quetzal] Yoza-Quar! 04 (BD 1080p x264 10bit - Opus 2.0).mkv",
+      "[Quetzal] Yoza-Quar! (BD 1080p x264 10bit - Opus 2.0)/[Quetzal] Yoza-Quar! 05 (BD 1080p x264 10bit - Opus 2.0).mkv",
+      "[Quetzal] Yoza-Quar! (BD 1080p x264 10bit - Opus 2.0)/[Quetzal] Yoza-Quar! 06 (BD 1080p x264 10bit - Opus 2.0).mkv",
+      "[Quetzal] Yozakura Quartet - Hana no Uta (BD 1080p x264 10bit - Opus 2.0)/[Quetzal] Yozakura Quartet - Hana no Uta 01 (BD 1080p x264 10bit - Opus 2.0).mkv",
+      "[Quetzal] Yozakura Quartet - Hana no Uta (BD 1080p x264 10bit - Opus 2.0)/[Quetzal] Yozakura Quartet - Hana no Uta 02 (BD 1080p x264 10bit - Opus 2.0).mkv",
+      "[Quetzal] Yozakura Quartet - Hana no Uta (BD 1080p x264 10bit - Opus 2.0)/[Quetzal] Yozakura Quartet - Hana no Uta 03 (BD 1080p x264 10bit - Opus 2.0).mkv",
+      "[Quetzal] Yozakura Quartet - Hana no Uta (BD 1080p x264 10bit - Opus 2.0)/[Quetzal] Yozakura Quartet - Hana no Uta 04 (BD 1080p x264 10bit - Opus 2.0).mkv",
+      "[Quetzal] Yozakura Quartet - Hana no Uta (BD 1080p x264 10bit - Opus 2.0)/[Quetzal] Yozakura Quartet - Hana no Uta 05 (BD 1080p x264 10bit - Opus 2.0).mkv",
+      "[Quetzal] Yozakura Quartet - Hana no Uta (BD 1080p x264 10bit - Opus 2.0)/[Quetzal] Yozakura Quartet - Hana no Uta 06 (BD 1080p x264 10bit - Opus 2.0).mkv",
+      "[Quetzal] Yozakura Quartet - Hana no Uta (BD 1080p x264 10bit - Opus 2.0)/[Quetzal] Yozakura Quartet - Hana no Uta 07 (BD 1080p x264 10bit - Opus 2.0).mkv",
+      "[Quetzal] Yozakura Quartet - Hana no Uta (BD 1080p x264 10bit - Opus 2.0)/[Quetzal] Yozakura Quartet - Hana no Uta 08 (BD 1080p x264 10bit - Opus 2.0).mkv",
+      "[Quetzal] Yozakura Quartet - Hana no Uta (BD 1080p x264 10bit - Opus 2.0)/[Quetzal] Yozakura Quartet - Hana no Uta 09 (BD 1080p x264 10bit - Opus 2.0).mkv",
+      "[Quetzal] Yozakura Quartet - Hana no Uta (BD 1080p x264 10bit - Opus 2.0)/[Quetzal] Yozakura Quartet - Hana no Uta 10 (BD 1080p x264 10bit - Opus 2.0).mkv",
+      "[Quetzal] Yozakura Quartet - Hana no Uta (BD 1080p x264 10bit - Opus 2.0)/[Quetzal] Yozakura Quartet - Hana no Uta 11 (BD 1080p x264 10bit - Opus 2.0).mkv",
+      "[Quetzal] Yozakura Quartet - Hana no Uta (BD 1080p x264 10bit - Opus 2.0)/[Quetzal] Yozakura Quartet - Hana no Uta 12 (BD 1080p x264 10bit - Opus 2.0).mkv",
+      "[Quetzal] Yozakura Quartet - Hana no Uta (BD 1080p x264 10bit - Opus 2.0)/[Quetzal] Yozakura Quartet - Hana no Uta 13 (BD 1080p x264 10bit - Opus 2.0).mkv",
+      "[Quetzal] Yozakura Quartet - Hana no Uta (BD 1080p x264 10bit - Opus 2.0)/[Quetzal] Yozakura Quartet - Hana no Uta NCED (BD 1080p x264 10bit - Opus 2.0).mkv",
+      "[Quetzal] Yozakura Quartet - Hana no Uta (BD 1080p x264 10bit - Opus 2.0)/[Quetzal] Yozakura Quartet - Hana no Uta NCOP01 (BD 1080p x264 10bit - Opus 2.0).mkv",
+      "[Quetzal] Yozakura Quartet - Hana no Uta (BD 1080p x264 10bit - Opus 2.0)/[Quetzal] Yozakura Quartet - Hana no Uta NCOP02 (BD 1080p x264 10bit - Opus 2.0).mkv",
+      "[Quetzal] Yozakura Quartet - Hoshi no Umi (BD 1080p x264 10bit - Opus 2.0)/[Quetzal] Yozakura Quartet - Hoshi no Umi 01 (BD 1080p x264 10bit - Opus 2.0).mkv",
+      "[Quetzal] Yozakura Quartet - Hoshi no Umi (BD 1080p x264 10bit - Opus 2.0)/[Quetzal] Yozakura Quartet - Hoshi no Umi 02 (BD 1080p x264 10bit - Opus 2.0).mkv",
+      "[Quetzal] Yozakura Quartet - Hoshi no Umi (BD 1080p x264 10bit - Opus 2.0)/[Quetzal] Yozakura Quartet - Hoshi no Umi 03 (BD 1080p x264 10bit - Opus 2.0).mkv",
+      "[Quetzal] Yozakura Quartet - Hoshi no Umi (BD 1080p x264 10bit - Opus 2.0)/[Quetzal] Yozakura Quartet - Hoshi no Umi NCED01 (BD 1080p x264 10bit - Opus 2.0).mkv",
+      "[Quetzal] Yozakura Quartet - Hoshi no Umi (BD 1080p x264 10bit - Opus 2.0)/[Quetzal] Yozakura Quartet - Hoshi no Umi NCED02 (BD 1080p x264 10bit - Opus 2.0).mkv",
+      "[Quetzal] Yozakura Quartet - Hoshi no Umi (BD 1080p x264 10bit - Opus 2.0)/[Quetzal] Yozakura Quartet - Hoshi no Umi NCOP01 (BD 1080p x264 10bit - Opus 2.0).mkv",
+      "[Quetzal] Yozakura Quartet - Hoshi no Umi (BD 1080p x264 10bit - Opus 2.0)/[Quetzal] Yozakura Quartet - Hoshi no Umi NCOP02 (BD 1080p x264 10bit - Opus 2.0).mkv",
+      "[Quetzal] Yozakura Quartet - Hoshi no Umi (BD 1080p x264 10bit - Opus 2.0)/[Quetzal] Yozakura Quartet - Hoshi no Umi NCOP03 (BD 1080p x264 10bit - Opus 2.0).mkv"
+    ],
+    "conflict_details": [
+      "文件均为动画剧集、OVA及特典，不是电影",
+      "缺少可对应的TMDB正片电影条目"
+    ],
+    "extra_notes": null
+  }
+}

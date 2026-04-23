@@ -1,0 +1,621 @@
+{
+  "root_name": "[VCB-Studio] Inou Battle Within Everyday Life [Ma10p_1080p]",
+  "files": [
+    {
+      "path": "[VCB-Studio] Inou Battle Within Everyday Life [01][Ma10p_1080p][x265_flac_aac].default.chi.zh-cn.ass",
+      "size": 36522
+    },
+    {
+      "path": "[VCB-Studio] Inou Battle Within Everyday Life [01][Ma10p_1080p][x265_flac_aac].mkv",
+      "size": 1142307769
+    },
+    {
+      "path": "[VCB-Studio] Inou Battle Within Everyday Life [02][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
+      "size": 43176
+    },
+    {
+      "path": "[VCB-Studio] Inou Battle Within Everyday Life [02][Ma10p_1080p][x265_flac].mkv",
+      "size": 900486058
+    },
+    {
+      "path": "[VCB-Studio] Inou Battle Within Everyday Life [03][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
+      "size": 38843
+    },
+    {
+      "path": "[VCB-Studio] Inou Battle Within Everyday Life [03][Ma10p_1080p][x265_flac].mkv",
+      "size": 917382268
+    },
+    {
+      "path": "[VCB-Studio] Inou Battle Within Everyday Life [04][Ma10p_1080p][x265_flac_aac].default.chi.zh-cn.ass",
+      "size": 34580
+    },
+    {
+      "path": "[VCB-Studio] Inou Battle Within Everyday Life [04][Ma10p_1080p][x265_flac_aac].mkv",
+      "size": 1036786256
+    },
+    {
+      "path": "[VCB-Studio] Inou Battle Within Everyday Life [05][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
+      "size": 36016
+    },
+    {
+      "path": "[VCB-Studio] Inou Battle Within Everyday Life [05][Ma10p_1080p][x265_flac].mkv",
+      "size": 854822221
+    },
+    {
+      "path": "[VCB-Studio] Inou Battle Within Everyday Life [06][Ma10p_1080p][x265_flac_aac].default.chi.zh-cn.ass",
+      "size": 38742
+    },
+    {
+      "path": "[VCB-Studio] Inou Battle Within Everyday Life [06][Ma10p_1080p][x265_flac_aac].mkv",
+      "size": 969501336
+    },
+    {
+      "path": "[VCB-Studio] Inou Battle Within Everyday Life [07][Ma10p_1080p][x265_flac_aac].default.chi.zh-cn.ass",
+      "size": 38761
+    },
+    {
+      "path": "[VCB-Studio] Inou Battle Within Everyday Life [07][Ma10p_1080p][x265_flac_aac].mkv",
+      "size": 976186314
+    },
+    {
+      "path": "[VCB-Studio] Inou Battle Within Everyday Life [08][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
+      "size": 36720
+    },
+    {
+      "path": "[VCB-Studio] Inou Battle Within Everyday Life [08][Ma10p_1080p][x265_flac].mkv",
+      "size": 1102128658
+    },
+    {
+      "path": "[VCB-Studio] Inou Battle Within Everyday Life [09][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
+      "size": 35669
+    },
+    {
+      "path": "[VCB-Studio] Inou Battle Within Everyday Life [09][Ma10p_1080p][x265_flac].mkv",
+      "size": 824135156
+    },
+    {
+      "path": "[VCB-Studio] Inou Battle Within Everyday Life [10][Ma10p_1080p][x265_flac_aac].default.chi.zh-cn.ass",
+      "size": 32088
+    },
+    {
+      "path": "[VCB-Studio] Inou Battle Within Everyday Life [10][Ma10p_1080p][x265_flac_aac].mkv",
+      "size": 1021649414
+    },
+    {
+      "path": "[VCB-Studio] Inou Battle Within Everyday Life [11][Ma10p_1080p][x265_flac_aac].default.chi.zh-cn.ass",
+      "size": 32848
+    },
+    {
+      "path": "[VCB-Studio] Inou Battle Within Everyday Life [11][Ma10p_1080p][x265_flac_aac].mkv",
+      "size": 1036931586
+    },
+    {
+      "path": "[VCB-Studio] Inou Battle Within Everyday Life [12][Ma10p_1080p][x265_flac_aac].default.chi.zh-cn.ass",
+      "size": 32856
+    },
+    {
+      "path": "[VCB-Studio] Inou Battle Within Everyday Life [12][Ma10p_1080p][x265_flac_aac].mkv",
+      "size": 840387215
+    },
+    {
+      "path": "CDs/[141119] ｢OVERLAPPERS｣ (flac+webp)/Cover.jpg",
+      "size": 339735
+    },
+    {
+      "path": "CDs/[141119] ｢OVERLAPPERS｣ (flac+webp)/EYCA-10073.cue",
+      "size": 1052
+    },
+    {
+      "path": "CDs/[141119] ｢OVERLAPPERS｣ (flac+webp)/EYCA-10073.flac",
+      "size": 119120438
+    },
+    {
+      "path": "CDs/[141119] ｢OVERLAPPERS｣ (flac+webp)/EYCA-10073.log",
+      "size": 3922
+    },
+    {
+      "path": "CDs/[141119] ｢OVERLAPPERS｣ (flac+webp)/Scans/EYCA-10073/01.webp",
+      "size": 3911270
+    },
+    {
+      "path": "CDs/[141119] ｢OVERLAPPERS｣ (flac+webp)/Scans/EYCA-10073/02.webp",
+      "size": 8906168
+    },
+    {
+      "path": "CDs/[141119] ｢OVERLAPPERS｣ (flac+webp)/Scans/EYCA-10073/03.webp",
+      "size": 2285316
+    },
+    {
+      "path": "CDs/[141119] ｢OVERLAPPERS｣ (flac+webp)/Scans/EYCA-10073/04.webp",
+      "size": 1085514
+    },
+    {
+      "path": "CDs/[141119] ｢OVERLAPPERS｣ (flac+webp)/Scans/EYCA-10073/05.webp",
+      "size": 4740724
+    },
+    {
+      "path": "CDs/[141119] ｢OVERLAPPERS｣ (flac+webp)/Scans/EYCA-10073/06.webp",
+      "size": 3131358
+    },
+    {
+      "path": "CDs/[141119] ｢OVERLAPPERS｣ (flac+webp)/Scans/EYCA-10073/07.webp",
+      "size": 431932
+    },
+    {
+      "path": "CDs/[141119] ｢OVERLAPPERS｣ (flac+webp)/Scans/EYCA-10074/01.webp",
+      "size": 2777772
+    },
+    {
+      "path": "CDs/[141119] ｢OVERLAPPERS｣ (flac+webp)/Scans/EYCA-10074/02.webp",
+      "size": 1166762
+    },
+    {
+      "path": "CDs/[141119] ｢OVERLAPPERS｣ (flac+webp)/Scans/EYCA-10074/03.webp",
+      "size": 525224
+    },
+    {
+      "path": "CDs/[141119] ｢OVERLAPPERS｣ (flac+webp)/Scans/EYCA-10074/04.webp",
+      "size": 313782
+    },
+    {
+      "path": "CDs/[141119] ｢OVERLAPPERS｣ (flac+webp)/Scans/EYCA-10074/05.webp",
+      "size": 1916798
+    },
+    {
+      "path": "CDs/[141119] ｢OVERLAPPERS｣ (flac+webp)/Scans/EYCA-10074/06.webp",
+      "size": 727814
+    },
+    {
+      "path": "CDs/[141119] ｢OVERLAPPERS｣ (flac+webp)/Scans/EYCA-10074/07.webp",
+      "size": 483462
+    },
+    {
+      "path": "CDs/[141119] ｢You Gotta Love Me！｣ (flac+webp)/Cover.jpg",
+      "size": 192492
+    },
+    {
+      "path": "CDs/[141119] ｢You Gotta Love Me！｣ (flac+webp)/EYCA-10075.cue",
+      "size": 944
+    },
+    {
+      "path": "CDs/[141119] ｢You Gotta Love Me！｣ (flac+webp)/EYCA-10075.flac",
+      "size": 125654903
+    },
+    {
+      "path": "CDs/[141119] ｢You Gotta Love Me！｣ (flac+webp)/EYCA-10075.log",
+      "size": 4056
+    },
+    {
+      "path": "CDs/[141119] ｢You Gotta Love Me！｣ (flac+webp)/Scans/EYCA-10075/01.webp",
+      "size": 4196634
+    },
+    {
+      "path": "CDs/[141119] ｢You Gotta Love Me！｣ (flac+webp)/Scans/EYCA-10075/02.webp",
+      "size": 4720912
+    },
+    {
+      "path": "CDs/[141119] ｢You Gotta Love Me！｣ (flac+webp)/Scans/EYCA-10075/03.webp",
+      "size": 2914630
+    },
+    {
+      "path": "CDs/[141119] ｢You Gotta Love Me！｣ (flac+webp)/Scans/EYCA-10075/04.webp",
+      "size": 968462
+    },
+    {
+      "path": "CDs/[141119] ｢You Gotta Love Me！｣ (flac+webp)/Scans/EYCA-10075/05.webp",
+      "size": 4372464
+    },
+    {
+      "path": "CDs/[141119] ｢You Gotta Love Me！｣ (flac+webp)/Scans/EYCA-10075/06.webp",
+      "size": 1525252
+    },
+    {
+      "path": "CDs/[141119] ｢You Gotta Love Me！｣ (flac+webp)/Scans/EYCA-10075/07.webp",
+      "size": 829714
+    },
+    {
+      "path": "CDs/[141119] ｢You Gotta Love Me！｣ (flac+webp)/Scans/EYCA-10076/01.webp",
+      "size": 4402116
+    },
+    {
+      "path": "CDs/[141119] ｢You Gotta Love Me！｣ (flac+webp)/Scans/EYCA-10076/02.webp",
+      "size": 4449446
+    },
+    {
+      "path": "CDs/[141119] ｢You Gotta Love Me！｣ (flac+webp)/Scans/EYCA-10076/03.webp",
+      "size": 3014118
+    },
+    {
+      "path": "CDs/[141119] ｢You Gotta Love Me！｣ (flac+webp)/Scans/EYCA-10076/04.webp",
+      "size": 1106164
+    },
+    {
+      "path": "CDs/[141119] ｢You Gotta Love Me！｣ (flac+webp)/Scans/EYCA-10076/05.webp",
+      "size": 4212712
+    },
+    {
+      "path": "CDs/[141119] ｢You Gotta Love Me！｣ (flac+webp)/Scans/EYCA-10076/06.webp",
+      "size": 1537030
+    },
+    {
+      "path": "CDs/[141119] ｢You Gotta Love Me！｣ (flac+webp)/Scans/EYCA-10076/07.webp",
+      "size": 844644
+    },
+    {
+      "path": "CDs/[141226] SPCD 01 (flac)/01. Nobody knows,Oh yeah!.flac",
+      "size": 32118831
+    },
+    {
+      "path": "CDs/[141226] SPCD 01 (flac)/02. Nobody knows,Oh yeah!(Instrumental).flac",
+      "size": 31735057
+    },
+    {
+      "path": "CDs/[141226] SPCD 01 (flac)/03. 工藤美玲は恋愛系のなかで.flac",
+      "size": 60332802
+    },
+    {
+      "path": "CDs/[141226] SPCD 01 (flac)/天使动漫自购转载声明.txt",
+      "size": 934
+    },
+    {
+      "path": "CDs/[150128] ｢OVERLAPPERS｣ [24bit_48kHz] (flac)/01. OVERLAPPERS.flac",
+      "size": 59627699
+    },
+    {
+      "path": "CDs/[150128] ｢OVERLAPPERS｣ [24bit_48kHz] (flac)/02. 異能性発見学.flac",
+      "size": 47857131
+    },
+    {
+      "path": "CDs/[150128] ｢OVERLAPPERS｣ [24bit_48kHz] (flac)/03. OVERLAPPERS(Instrumental).flac",
+      "size": 58269372
+    },
+    {
+      "path": "CDs/[150128] ｢OVERLAPPERS｣ [24bit_48kHz] (flac)/04. 異能性発見学(Instrumental).flac",
+      "size": 47066789
+    },
+    {
+      "path": "CDs/[150128] ｢OVERLAPPERS｣ [24bit_48kHz] (flac)/天使动漫自购转载声明.txt",
+      "size": 934
+    },
+    {
+      "path": "CDs/[150128] ｢You Gotta Love Me！｣ [24bit_48kHz] (flac)/01. You Gotta Love Me！.flac",
+      "size": 53617942
+    },
+    {
+      "path": "CDs/[150128] ｢You Gotta Love Me！｣ [24bit_48kHz] (flac)/02. サディスティックラブ.flac",
+      "size": 57354704
+    },
+    {
+      "path": "CDs/[150128] ｢You Gotta Love Me！｣ [24bit_48kHz] (flac)/03. You Gotta Love Me！(Instrumental).flac",
+      "size": 53132859
+    },
+    {
+      "path": "CDs/[150128] ｢You Gotta Love Me！｣ [24bit_48kHz] (flac)/04. サディスティックラブ(Instrumental).flac",
+      "size": 56881310
+    },
+    {
+      "path": "CDs/[150128] ｢You Gotta Love Me！｣ [24bit_48kHz] (flac)/天使动漫自购转载声明.txt",
+      "size": 934
+    },
+    {
+      "path": "CDs/[150130] SPCD 02 (flac)/01. Nobody knows,Oh yeah! -創世-.flac",
+      "size": 29335575
+    },
+    {
+      "path": "CDs/[150130] SPCD 02 (flac)/02. Nobody knows,Oh yeah! -創世-(Instrumental).flac",
+      "size": 28016037
+    },
+    {
+      "path": "CDs/[150130] SPCD 02 (flac)/03. 九鬼円は友情系のなかで.flac",
+      "size": 61245190
+    },
+    {
+      "path": "CDs/[150130] SPCD 02 (flac)/天使动漫自购转载声明.txt",
+      "size": 934
+    },
+    {
+      "path": "CDs/[150227] SPCD 03 (flac)/01. Nobody knows,Oh yeah! -始原-.flac",
+      "size": 36529292
+    },
+    {
+      "path": "CDs/[150227] SPCD 03 (flac)/02. Nobody knows,Oh yeah! -始原-(Instrumental).flac",
+      "size": 34479847
+    },
+    {
+      "path": "CDs/[150227] SPCD 03 (flac)/03. 高梨舞矢は密告系のなかで.flac",
+      "size": 41343512
+    },
+    {
+      "path": "CDs/[150227] SPCD 03 (flac)/天使动漫自购转载声明.txt",
+      "size": 934
+    },
+    {
+      "path": "CDs/[150327] SPCD 04 (flac)/01. Nobody knows,Oh yeah! -五帝-.flac",
+      "size": 33488573
+    },
+    {
+      "path": "CDs/[150327] SPCD 04 (flac)/02. Nobody knows,Oh yeah! -五帝-(Instrumental).flac",
+      "size": 32803910
+    },
+    {
+      "path": "CDs/[150327] SPCD 04 (flac)/03. 安藤真智は暴力系のなかで.flac",
+      "size": 49677882
+    },
+    {
+      "path": "CDs/[150327] SPCD 04 (flac)/天使动漫自购转载声明.txt",
+      "size": 934
+    },
+    {
+      "path": "CDs/[150424] SPCD 05 (flac)/01. Nobody knows,Oh yeah! -強欲-.flac",
+      "size": 27514430
+    },
+    {
+      "path": "CDs/[150424] SPCD 05 (flac)/02. Nobody knows,Oh yeah! -強欲-(Instrumental).flac",
+      "size": 26892089
+    },
+    {
+      "path": "CDs/[150424] SPCD 05 (flac)/03. 齋藤一十三は惚気系のなかで.flac",
+      "size": 46142574
+    },
+    {
+      "path": "CDs/[150424] SPCD 05 (flac)/天使动漫自购转载声明.txt",
+      "size": 934
+    },
+    {
+      "path": "CDs/[150529] SPCD 06 (flac)/01. Nobody knows,Oh yeah! -堕天使の鉄槌は愚者へと振り下ろされる-.flac",
+      "size": 35524622
+    },
+    {
+      "path": "CDs/[150529] SPCD 06 (flac)/02. Nobody knows,Oh yeah! -堕天使の鉄槌は愚者へと振り下ろされる-(Instrumental).flac",
+      "size": 34602429
+    },
+    {
+      "path": "CDs/[150529] SPCD 06 (flac)/03. 相模静夢は変態系のなかで.flac",
+      "size": 52425773
+    },
+    {
+      "path": "CDs/[150529] SPCD 06 (flac)/天使动漫自购转载声明.txt",
+      "size": 934
+    },
+    {
+      "path": "Scans/Vol.1/01.jpg",
+      "size": 2660121
+    },
+    {
+      "path": "Scans/Vol.1/02.jpg",
+      "size": 4565991
+    },
+    {
+      "path": "Scans/Vol.1/03.jpg",
+      "size": 5338461
+    },
+    {
+      "path": "Scans/Vol.1/04.jpg",
+      "size": 2403842
+    },
+    {
+      "path": "Scans/Vol.1/05.jpg",
+      "size": 5303020
+    },
+    {
+      "path": "Scans/Vol.1/06.jpg",
+      "size": 1309745
+    },
+    {
+      "path": "Scans/Vol.1/07.jpg",
+      "size": 3156025
+    },
+    {
+      "path": "Scans/Vol.1/08.jpg",
+      "size": 6350339
+    },
+    {
+      "path": "Scans/Vol.1/09.jpg",
+      "size": 7208652
+    },
+    {
+      "path": "Scans/Vol.2/01.jpg",
+      "size": 7368908
+    },
+    {
+      "path": "Scans/Vol.2/02.jpg",
+      "size": 3253152
+    },
+    {
+      "path": "Scans/Vol.2/03.jpg",
+      "size": 8246948
+    },
+    {
+      "path": "Scans/Vol.2/04.jpg",
+      "size": 1338185
+    },
+    {
+      "path": "Scans/Vol.2/05.jpg",
+      "size": 2660335
+    },
+    {
+      "path": "Scans/Vol.2/06.jpg",
+      "size": 6348903
+    },
+    {
+      "path": "Scans/Vol.2/07.jpg",
+      "size": 7088079
+    },
+    {
+      "path": "Scans/Vol.3/01.jpg",
+      "size": 6223640
+    },
+    {
+      "path": "Scans/Vol.3/02.jpg",
+      "size": 6175171
+    },
+    {
+      "path": "Scans/Vol.3/03.jpg",
+      "size": 2621329
+    },
+    {
+      "path": "Scans/Vol.3/04.jpg",
+      "size": 1712957
+    },
+    {
+      "path": "Scans/Vol.3/05.jpg",
+      "size": 3303677
+    },
+    {
+      "path": "Scans/Vol.3/06.jpg",
+      "size": 6277510
+    },
+    {
+      "path": "Scans/Vol.3/07.jpg",
+      "size": 6992408
+    },
+    {
+      "path": "Scans/Vol.4/01.jpg",
+      "size": 1254560
+    },
+    {
+      "path": "Scans/Vol.4/02.jpg",
+      "size": 314948
+    },
+    {
+      "path": "Scans/Vol.4/03.jpg",
+      "size": 603101
+    },
+    {
+      "path": "Scans/Vol.4/04.jpg",
+      "size": 7594276
+    },
+    {
+      "path": "Scans/Vol.4/05.jpg",
+      "size": 3799583
+    },
+    {
+      "path": "Scans/Vol.4/06.jpg",
+      "size": 2803097
+    },
+    {
+      "path": "Scans/Vol.4/07.jpg",
+      "size": 2601212
+    },
+    {
+      "path": "Scans/Vol.5/01.jpg",
+      "size": 15666829
+    },
+    {
+      "path": "Scans/Vol.5/02.jpg",
+      "size": 4036090
+    },
+    {
+      "path": "Scans/Vol.5/03.jpg",
+      "size": 2958035
+    },
+    {
+      "path": "Scans/Vol.5/04.jpg",
+      "size": 1447856
+    },
+    {
+      "path": "Scans/Vol.5/05.jpg",
+      "size": 6080278
+    },
+    {
+      "path": "Scans/Vol.5/06.jpg",
+      "size": 7069065
+    },
+    {
+      "path": "Scans/Vol.5/07.jpg",
+      "size": 11118790
+    },
+    {
+      "path": "Scans/Vol.6/01.jpg",
+      "size": 6920232
+    },
+    {
+      "path": "Scans/Vol.6/02.jpg",
+      "size": 3274329
+    },
+    {
+      "path": "Scans/Vol.6/03.jpg",
+      "size": 8198757
+    },
+    {
+      "path": "Scans/Vol.6/04.jpg",
+      "size": 1571461
+    },
+    {
+      "path": "Scans/Vol.6/05.jpg",
+      "size": 6632149
+    },
+    {
+      "path": "Scans/Vol.6/06.jpg",
+      "size": 7675420
+    },
+    {
+      "path": "Scans/Vol.6/07.jpg",
+      "size": 2865129
+    },
+    {
+      "path": "SPs/[VCB-Studio] Inou Battle Within Everyday Life [CM01][Ma10p_1080p][x265_flac].mkv",
+      "size": 25350888
+    },
+    {
+      "path": "SPs/[VCB-Studio] Inou Battle Within Everyday Life [CM02][Ma10p_1080p][x265_flac].mkv",
+      "size": 26046408
+    },
+    {
+      "path": "SPs/[VCB-Studio] Inou Battle Within Everyday Life [CM03][Ma10p_1080p][x265_flac].mkv",
+      "size": 44753862
+    },
+    {
+      "path": "SPs/[VCB-Studio] Inou Battle Within Everyday Life [CM04][Ma10p_1080p][x265_flac].mkv",
+      "size": 45452623
+    },
+    {
+      "path": "SPs/[VCB-Studio] Inou Battle Within Everyday Life [Event][Ma10p_1080p][x265_aac].mkv",
+      "size": 1288478541
+    },
+    {
+      "path": "SPs/[VCB-Studio] Inou Battle Within Everyday Life [Menu01][Ma10p_1080p][x265_flac].mkv",
+      "size": 30299747
+    },
+    {
+      "path": "SPs/[VCB-Studio] Inou Battle Within Everyday Life [Menu02][Ma10p_1080p][x265_flac].mkv",
+      "size": 32628219
+    },
+    {
+      "path": "SPs/[VCB-Studio] Inou Battle Within Everyday Life [Menu03][Ma10p_1080p][x265_flac].mkv",
+      "size": 26256221
+    },
+    {
+      "path": "SPs/[VCB-Studio] Inou Battle Within Everyday Life [Menu04][Ma10p_1080p][x265_flac].mkv",
+      "size": 29576074
+    },
+    {
+      "path": "SPs/[VCB-Studio] Inou Battle Within Everyday Life [Menu05][Ma10p_1080p][x265_flac].mkv",
+      "size": 28849315
+    },
+    {
+      "path": "SPs/[VCB-Studio] Inou Battle Within Everyday Life [Menu06][Ma10p_1080p][x265_flac].mkv",
+      "size": 30054175
+    },
+    {
+      "path": "SPs/[VCB-Studio] Inou Battle Within Everyday Life [NCED][Ma10p_1080p][x265_flac].mkv",
+      "size": 97300466
+    },
+    {
+      "path": "SPs/[VCB-Studio] Inou Battle Within Everyday Life [NCOP01][Ma10p_1080p][x265_flac].mkv",
+      "size": 115119509
+    },
+    {
+      "path": "SPs/[VCB-Studio] Inou Battle Within Everyday Life [NCOP02][Ma10p_1080p][x265_flac].mkv",
+      "size": 115457445
+    },
+    {
+      "path": "SPs/[VCB-Studio] Inou Battle Within Everyday Life [PV01][Ma10p_1080p][x265_flac].mkv",
+      "size": 93663422
+    },
+    {
+      "path": "SPs/[VCB-Studio] Inou Battle Within Everyday Life [PV02][Ma10p_1080p][x265_flac].mkv",
+      "size": 183597539
+    }
+  ]
+}

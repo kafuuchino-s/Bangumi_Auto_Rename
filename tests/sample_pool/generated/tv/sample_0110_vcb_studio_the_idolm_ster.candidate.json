@@ -1,0 +1,37 @@
+{
+  "status": "ai_failed",
+  "type": "movie",
+  "title_candidate": "THE IDOLM@STER",
+  "timing": {
+    "analysis_seconds": 0.0
+  },
+  "collection_analysis": null,
+  "tv_candidate_result": {
+    "status": "tmdb_not_found",
+    "type": "tv",
+    "title_candidate": "THE IDOLM@STER",
+    "timing": null,
+    "file_mapping_count": 0,
+    "has_regular": false,
+    "has_special": false,
+    "has_movie_like": false
+  },
+  "movie_candidate_result": {
+    "status": "ai_failed",
+    "type": "movie",
+    "title_candidate": "THE IDOLM@STER",
+    "timing": {
+      "analysis_seconds": 0.0
+    }
+  },
+  "movie_like_paths_from_paths": [
+    "[VCB-Studio] THE IDOLM@STER MOVIE [Ma10p_1080p]/[VCB-Studio] THE IDOLM@STER MOVIE [Ma10p_1080p][x265_flac].mkv",
+    "[VCB-Studio] THE IDOLM@STER MOVIE [Ma10p_1080p]/[VCB-Studio] THE IDOLM@STER SHINY FESTA [01 Music in the world][Ma10p_1080p][x265_flac].mkv",
+    "[VCB-Studio] THE IDOLM@STER MOVIE [Ma10p_1080p]/[VCB-Studio] THE IDOLM@STER SHINY FESTA [02 Music is a friend][Ma10p_1080p][x265_flac].mkv",
+    "[VCB-Studio] THE IDOLM@STER MOVIE [Ma10p_1080p]/[VCB-Studio] THE IDOLM@STER SHINY FESTA [03 Music of love][Ma10p_1080p][x265_flac].mkv",
+    "[VCB-Studio] THE IDOLM@STER MOVIE [Ma10p_1080p]/SPs/[VCB-Studio] THE IDOLM@STER MOVIE [DVD_IV01][Ma10p_720p][x265_ac3].mkv",
+    "[VCB-Studio] THE IDOLM@STER MOVIE [Ma10p_1080p]/SPs/[VCB-Studio] THE IDOLM@STER MOVIE [DVD_IV02][Ma10p_720p][x265_ac3].mkv",
+    "[VCB-Studio] THE IDOLM@STER MOVIE [Ma10p_1080p]/SPs/[VCB-Studio] THE IDOLM@STER MOVIE [Preview][Ma10p_1080p][x265_flac].mkv"
+  ],
+  "final_type": "movie"
+}

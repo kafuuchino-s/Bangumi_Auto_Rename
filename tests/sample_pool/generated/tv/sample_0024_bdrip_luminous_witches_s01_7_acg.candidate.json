@@ -1,0 +1,28 @@
+{
+  "status": "ai_failed",
+  "type": "movie",
+  "title_candidate": "Luminous Witches",
+  "timing": {
+    "analysis_seconds": 0.0
+  },
+  "collection_analysis": null,
+  "tv_candidate_result": {
+    "status": "tmdb_not_found",
+    "type": "tv",
+    "title_candidate": "Luminous Witches",
+    "timing": null,
+    "file_mapping_count": 0,
+    "has_regular": false,
+    "has_special": false,
+    "has_movie_like": false
+  },
+  "movie_candidate_result": {
+    "status": "ai_failed",
+    "type": "movie",
+    "title_candidate": "Luminous Witches",
+    "timing": {
+      "analysis_seconds": 0.0
+    }
+  },
+  "final_type": "movie"
+}

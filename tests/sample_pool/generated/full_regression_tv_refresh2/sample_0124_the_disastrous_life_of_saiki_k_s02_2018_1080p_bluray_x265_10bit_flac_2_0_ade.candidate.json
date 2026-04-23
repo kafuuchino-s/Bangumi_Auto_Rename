@@ -1,0 +1,238 @@
+{
+  "status": "ok",
+  "type": "tv",
+  "title_candidate": "The Disastrous Life of Saiki K.",
+  "tmdb_name": "齐木楠雄的灾难",
+  "tmdb_id": 67676,
+  "timing": {
+    "analysis_seconds": 12.15
+  },
+  "file_mapping": [
+    {
+      "source_index": 1,
+      "file_path": "The.Disastrous.Life.of.Saiki.K.S02E01.2018.1080p.BluRay.x265.10bit.FLAC.2.0-ADE.mkv",
+      "tmdb_season": 2,
+      "tmdb_episode": 1,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 2,
+      "file_path": "The.Disastrous.Life.of.Saiki.K.S02E02.2018.1080p.BluRay.x265.10bit.FLAC.2.0-ADE.mkv",
+      "tmdb_season": 2,
+      "tmdb_episode": 2,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 3,
+      "file_path": "The.Disastrous.Life.of.Saiki.K.S02E03.2018.1080p.BluRay.x265.10bit.FLAC.2.0-ADE.mkv",
+      "tmdb_season": 2,
+      "tmdb_episode": 3,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 4,
+      "file_path": "The.Disastrous.Life.of.Saiki.K.S02E04.2018.1080p.BluRay.x265.10bit.FLAC.2.0-ADE.mkv",
+      "tmdb_season": 2,
+      "tmdb_episode": 4,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 5,
+      "file_path": "The.Disastrous.Life.of.Saiki.K.S02E05.2018.1080p.BluRay.x265.10bit.FLAC.2.0-ADE.mkv",
+      "tmdb_season": 2,
+      "tmdb_episode": 5,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 6,
+      "file_path": "The.Disastrous.Life.of.Saiki.K.S02E06.2018.1080p.BluRay.x265.10bit.FLAC.2.0-ADE.mkv",
+      "tmdb_season": 2,
+      "tmdb_episode": 6,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 7,
+      "file_path": "The.Disastrous.Life.of.Saiki.K.S02E07.2018.1080p.BluRay.x265.10bit.FLAC.2.0-ADE.mkv",
+      "tmdb_season": 2,
+      "tmdb_episode": 7,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 8,
+      "file_path": "The.Disastrous.Life.of.Saiki.K.S02E08.2018.1080p.BluRay.x265.10bit.FLAC.2.0-ADE.mkv",
+      "tmdb_season": 2,
+      "tmdb_episode": 8,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 9,
+      "file_path": "The.Disastrous.Life.of.Saiki.K.S02E09.2018.1080p.BluRay.x265.10bit.FLAC.2.0-ADE.mkv",
+      "tmdb_season": 2,
+      "tmdb_episode": 9,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 10,
+      "file_path": "The.Disastrous.Life.of.Saiki.K.S02E10.2018.1080p.BluRay.x265.10bit.FLAC.2.0-ADE.mkv",
+      "tmdb_season": 2,
+      "tmdb_episode": 10,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 11,
+      "file_path": "The.Disastrous.Life.of.Saiki.K.S02E11.2018.1080p.BluRay.x265.10bit.FLAC.2.0-ADE.mkv",
+      "tmdb_season": 2,
+      "tmdb_episode": 11,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 12,
+      "file_path": "The.Disastrous.Life.of.Saiki.K.S02E12.2018.1080p.BluRay.x265.10bit.FLAC.2.0-ADE.mkv",
+      "tmdb_season": 2,
+      "tmdb_episode": 12,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 13,
+      "file_path": "The.Disastrous.Life.of.Saiki.K.S02E13.2018.1080p.BluRay.x265.10bit.FLAC.2.0-ADE.mkv",
+      "tmdb_season": 2,
+      "tmdb_episode": 13,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 14,
+      "file_path": "The.Disastrous.Life.of.Saiki.K.S02E14.2018.1080p.BluRay.x265.10bit.FLAC.2.0-ADE.mkv",
+      "tmdb_season": 2,
+      "tmdb_episode": 14,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 15,
+      "file_path": "The.Disastrous.Life.of.Saiki.K.S02E15.2018.1080p.BluRay.x265.10bit.FLAC.2.0-ADE.mkv",
+      "tmdb_season": 2,
+      "tmdb_episode": 15,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 16,
+      "file_path": "The.Disastrous.Life.of.Saiki.K.S02E16.2018.1080p.BluRay.x265.10bit.FLAC.2.0-ADE.mkv",
+      "tmdb_season": 2,
+      "tmdb_episode": 16,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 17,
+      "file_path": "The.Disastrous.Life.of.Saiki.K.S02E17.2018.1080p.BluRay.x265.10bit.FLAC.2.0-ADE.mkv",
+      "tmdb_season": 2,
+      "tmdb_episode": 17,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 18,
+      "file_path": "The.Disastrous.Life.of.Saiki.K.S02E18.2018.1080p.BluRay.x265.10bit.FLAC.2.0-ADE.mkv",
+      "tmdb_season": 2,
+      "tmdb_episode": 18,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 19,
+      "file_path": "The.Disastrous.Life.of.Saiki.K.S02E19.2018.1080p.BluRay.x265.10bit.FLAC.2.0-ADE.mkv",
+      "tmdb_season": 2,
+      "tmdb_episode": 19,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 20,
+      "file_path": "The.Disastrous.Life.of.Saiki.K.S02E20.2018.1080p.BluRay.x265.10bit.FLAC.2.0-ADE.mkv",
+      "tmdb_season": 2,
+      "tmdb_episode": 20,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 21,
+      "file_path": "The.Disastrous.Life.of.Saiki.K.S02E21.2018.1080p.BluRay.x265.10bit.FLAC.2.0-ADE.mkv",
+      "tmdb_season": 2,
+      "tmdb_episode": 21,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 22,
+      "file_path": "The.Disastrous.Life.of.Saiki.K.S02E22.2018.1080p.BluRay.x265.10bit.FLAC.2.0-ADE.mkv",
+      "tmdb_season": 2,
+      "tmdb_episode": 22,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 23,
+      "file_path": "The.Disastrous.Life.of.Saiki.K.S02E23.2018.1080p.BluRay.x265.10bit.FLAC.2.0-ADE.mkv",
+      "tmdb_season": 2,
+      "tmdb_episode": 23,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 24,
+      "file_path": "The.Disastrous.Life.of.Saiki.K.S02E24.2018.1080p.BluRay.x265.10bit.FLAC.2.0-ADE.mkv",
+      "tmdb_season": 2,
+      "tmdb_episode": 24,
+      "episode_type": "regular",
+      "confidence": "High"
+    }
+  ],
+  "conflict_details": [],
+  "analysis_result": {
+    "confidence": "High",
+    "reason": "文件名集号与TMDB第二季逐一对应。",
+    "season_mapping": [
+      {
+        "local_group_name": "The.Disastrous.Life.of.Saiki.K.S02",
+        "maps_to_tmdb_seasons": [
+          2
+        ]
+      }
+    ],
+    "file_mapping_count": 24,
+    "unmatched_count": 0,
+    "conflict_count": 0
+  },
+  "hydration_notes": {
+    "hydrated_count": 24,
+    "examples": [
+      "hydrated:1:The.Disastrous.Life.of.Saiki.K.S02E01.2018.1080p.BluRay.x265.10bit.FLAC.2.0-ADE.mkv",
+      "hydrated:2:The.Disastrous.Life.of.Saiki.K.S02E02.2018.1080p.BluRay.x265.10bit.FLAC.2.0-ADE.mkv",
+      "hydrated:3:The.Disastrous.Life.of.Saiki.K.S02E03.2018.1080p.BluRay.x265.10bit.FLAC.2.0-ADE.mkv",
+      "hydrated:4:The.Disastrous.Life.of.Saiki.K.S02E04.2018.1080p.BluRay.x265.10bit.FLAC.2.0-ADE.mkv",
+      "hydrated:5:The.Disastrous.Life.of.Saiki.K.S02E05.2018.1080p.BluRay.x265.10bit.FLAC.2.0-ADE.mkv"
+    ]
+  },
+  "task_plan": {
+    "is_movie": false,
+    "ai_type": "tv",
+    "tv_available": true,
+    "movie_available": false,
+    "selected_confidence": "High"
+  },
+  "final_type": "tv"
+}

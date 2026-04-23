@@ -1,0 +1,16 @@
+{
+  "status": "tmdb_not_found",
+  "type": "movie",
+  "title_candidate": "七大罪 怨嗟的爱丁堡 后篇 The Seven Deadly Sins Grudge of Edinburgh Part",
+  "tmdb_name": "",
+  "tmdb_id": null,
+  "timing": {
+    "analysis_seconds": 15.004
+  },
+  "primary_files": [
+    {
+      "file_path": "The.Seven.Deadly.Sins.Grudge.of.Edinburgh.Part.2.2023.1080p.NF.WEB-DL.x264.DDP5.1-PTerWEB.mkv"
+    }
+  ],
+  "final_type": "movie"
+}

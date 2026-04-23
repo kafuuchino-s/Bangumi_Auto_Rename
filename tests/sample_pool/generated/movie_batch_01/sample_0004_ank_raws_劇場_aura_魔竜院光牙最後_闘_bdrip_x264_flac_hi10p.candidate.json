@@ -1,0 +1,45 @@
+{
+  "status": "ok",
+  "type": "movie",
+  "title_candidate": "AURA～魔竜院光牙最後の闘い～",
+  "collection_analysis": {
+    "is_collection": false,
+    "collection_name": "AURA～魔竜院光牙最後の闘い～",
+    "confidence": "High",
+    "reason": "仅一部正片，其他均为特典文件",
+    "file_mapping": [
+      {
+        "file_path": "劇場アニメ AURA~魔竜院光牙最後の闘い~ (BDrip x264 FLAC Hi10P)-ank.mkv",
+        "movie_title": "AURA～魔竜院光牙最後の闘い～",
+        "movie_number": null,
+        "year": 2013,
+        "confidence": "High"
+      }
+    ],
+    "unmatched_files": [
+      "Menu 01.mkv",
+      "Menu 02.mkv",
+      "Menu 03.mkv",
+      "劇場アニメ AURA~魔竜院光牙最後の闘い~ CM01 (BDrip x264 FLAC Hi10P)-ank.mkv",
+      "劇場アニメ AURA~魔竜院光牙最後の闘い~ CM02 (BDrip x264 FLAC Hi10P)-ank.mkv",
+      "劇場アニメ AURA~魔竜院光牙最後の闘い~ CM03 (BDrip x264 FLAC Hi10P)-ank.mkv",
+      "劇場アニメ AURA~魔竜院光牙最後の闘い~ CM04 (BDrip x264 FLAC Hi10P)-ank.mkv",
+      "劇場アニメ AURA~魔竜院光牙最後の闘い~ CM05 (BDrip x264 FLAC Hi10P)-ank.mkv",
+      "劇場アニメ AURA~魔竜院光牙最後の闘い~ CM06 (BDrip x264 FLAC Hi10P)-ank.mkv",
+      "劇場アニメ AURA~魔竜院光牙最後の闘い~ CM07 (BDrip x264 FLAC Hi10P)-ank.mkv",
+      "劇場アニメ AURA~魔竜院光牙最後の闘い~ CM08 (BDrip x264 FLAC Hi10P)-ank.mkv",
+      "劇場アニメ AURA~魔竜院光牙最後の闘い~ CM09 (BDrip x264 FLAC Hi10P)-ank.mkv",
+      "劇場アニメ AURA~魔竜院光牙最後の闘い~ CM10 (BDrip x264 FLAC Hi10P)-ank.mkv",
+      "劇場アニメ AURA~魔竜院光牙最後の闘い~ CM11 (BDrip x264 FLAC Hi10P)-ank.mkv",
+      "劇場アニメ AURA~魔竜院光牙最後の闘い~ CM12 (BDrip x264 FLAC Hi10P)-ank.mkv",
+      "劇場アニメ AURA~魔竜院光牙最後の闘い~ CM13 (BDrip x264 FLAC Hi10P)-ank.mkv",
+      "劇場アニメ AURA~魔竜院光牙最後の闘い~ CM14 (BDrip x264 FLAC Hi10P)-ank.mkv",
+      "劇場アニメ AURA~魔竜院光牙最後の闘い~ Info01 (BDrip x264 FLAC Hi10P)-ank.mkv",
+      "劇場アニメ AURA~魔竜院光牙最後の闘い~ PV01 (BDrip x264 FLAC Hi10P)-ank.mkv"
+    ],
+    "conflict_details": [
+      "目录仅含1部正片，其余为菜单、CM、PV等特典"
+    ],
+    "extra_notes": null
+  }
+}

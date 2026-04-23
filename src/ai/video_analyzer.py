@@ -24,6 +24,9 @@ class VideoAnalyzer:
         Returns:
             视频时长（分钟），失败返回None
         """
+        if file_path.exists() and file_path.stat().st_size == 0:
+            return None
+
         parser = None
         try:
             parser = createParser(str(file_path))

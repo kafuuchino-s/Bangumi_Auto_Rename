@@ -1,0 +1,51 @@
+{
+  "status": "ok",
+  "type": "movie",
+  "title_candidate": "Seitokai no Ichizon",
+  "timing": {
+    "analysis_seconds": 15.758
+  },
+  "collection_analysis": {
+    "is_collection": false,
+    "collection_name": "Seitokai no Ichizon",
+    "confidence": "High",
+    "reason": "全部为TV正片及特典，非电影合集",
+    "file_mapping": [],
+    "unmatched_files": [
+      "[ANK-Raws] Seitokai no Ichizon (Creditless ED1) (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
+      "[ANK-Raws] Seitokai no Ichizon (Creditless ED10) (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
+      "[ANK-Raws] Seitokai no Ichizon (Creditless ED11) (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
+      "[ANK-Raws] Seitokai no Ichizon (Creditless ED12) (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
+      "[ANK-Raws] Seitokai no Ichizon (Creditless ED2) (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
+      "[ANK-Raws] Seitokai no Ichizon (Creditless ED3) (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
+      "[ANK-Raws] Seitokai no Ichizon (Creditless ED4) (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
+      "[ANK-Raws] Seitokai no Ichizon (Creditless ED5) (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
+      "[ANK-Raws] Seitokai no Ichizon (Creditless ED6) (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
+      "[ANK-Raws] Seitokai no Ichizon (Creditless ED7) (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
+      "[ANK-Raws] Seitokai no Ichizon (Creditless ED8) (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
+      "[ANK-Raws] Seitokai no Ichizon (Creditless ED9) (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
+      "[ANK-Raws] Seitokai no Ichizon (Creditless OP) (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
+      "[ANK-Raws] Seitokai no Ichizon - 01 (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
+      "[ANK-Raws] Seitokai no Ichizon - 02 (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
+      "[ANK-Raws] Seitokai no Ichizon - 03 (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
+      "[ANK-Raws] Seitokai no Ichizon - 04 (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
+      "[ANK-Raws] Seitokai no Ichizon - 05 (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
+      "[ANK-Raws] Seitokai no Ichizon - 06 (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
+      "[ANK-Raws] Seitokai no Ichizon - 07 (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
+      "[ANK-Raws] Seitokai no Ichizon - 08 (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
+      "[ANK-Raws] Seitokai no Ichizon - 09 (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
+      "[ANK-Raws] Seitokai no Ichizon - 10 (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
+      "[ANK-Raws] Seitokai no Ichizon - 11 (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
+      "[ANK-Raws] Seitokai no Ichizon - 12 (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
+      "[ANK-Raws] Seitokai no Ichizon - CM (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
+      "[ANK-Raws] Seitokai no Ichizon - Info (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
+      "[ANK-Raws] Seitokai no Ichizon - PV (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
+      "Menu 01.mkv",
+      "Menu 02.mkv"
+    ],
+    "conflict_details": [
+      "文件均为TV剧集、OP/ED与特典，不是电影合集"
+    ],
+    "extra_notes": null
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "status": "ok",
+  "type": "movie",
+  "title_candidate": "モーレツ宇宙海賊 ABYSS OF HYPERSPACE -亜空の深淵-",
+  "collection_analysis": {
+    "is_collection": false,
+    "collection_name": "モーレツ宇宙海賊",
+    "confidence": "High",
+    "reason": "单部剧场版，余者为特典花絮",
+    "file_mapping": [
+      {
+        "file_path": "[KNA-Subs&ANK-Raws] モーレツ宇宙海賊 ABYSS OF HYPERSPACE -亜空の深淵- (BDrip 1920x1080 AVC-YUV420P10 FLACx2 TrueHD).mkv",
+        "movie_title": "Bodacious Space Pirates: Abyss of Hyperspace",
+        "movie_number": null,
+        "year": 2014,
+        "confidence": "High"
+      }
+    ],
+    "unmatched_files": [
+      "[KNA-Subs&ANK-Raws] モーレツ宇宙海賊 ABYSS OF HYPERSPACE -亜空の深淵- CM01 (BDrip 1920x1080 AVC-YUV420P10 FLAC).mkv",
+      "[KNA-Subs&ANK-Raws] モーレツ宇宙海賊 ABYSS OF HYPERSPACE -亜空の深淵- CM02 (BDrip 1920x1080 AVC-YUV420P10 FLAC).mkv",
+      "[KNA-Subs&ANK-Raws] モーレツ宇宙海賊 ABYSS OF HYPERSPACE -亜空の深淵- CM03 (BDrip 1920x1080 AVC-YUV420P10 FLAC).mkv",
+      "[KNA-Subs&ANK-Raws] モーレツ宇宙海賊 ABYSS OF HYPERSPACE -亜空の深淵- Info01 (BDrip 1920x1080 AVC-YUV420P10 FLAC).mkv",
+      "[KNA-Subs&ANK-Raws] モーレツ宇宙海賊 ABYSS OF HYPERSPACE -亜空の深淵- Info02 (BDrip 1920x1080 AVC-YUV420P10 FLAC).mkv",
+      "[KNA-Subs&ANK-Raws] モーレツ宇宙海賊 ABYSS OF HYPERSPACE -亜空の深淵- Info03 (BDrip 1920x1080 AVC-YUV420P10 FLAC).mkv"
+    ],
+    "conflict_details": [],
+    "extra_notes": null
+  }
+}

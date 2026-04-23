@@ -1,0 +1,261 @@
+{
+  "status": "ok",
+  "type": "tv",
+  "title_candidate": "六畳間の侵略者！？",
+  "tmdb_name": "六畳間の侵略者!?",
+  "tmdb_id": 70805,
+  "timing": {
+    "analysis_seconds": 21.898
+  },
+  "file_mapping": [
+    {
+      "source_index": 17,
+      "file_path": "[ANK-Raws] 六畳間の侵略者！？ 01 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 1,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 18,
+      "file_path": "[ANK-Raws] 六畳間の侵略者！？ 02 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 2,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 19,
+      "file_path": "[ANK-Raws] 六畳間の侵略者！？ 03 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 3,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 20,
+      "file_path": "[ANK-Raws] 六畳間の侵略者！？ 04 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 4,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 21,
+      "file_path": "[ANK-Raws] 六畳間の侵略者！？ 05 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 5,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 22,
+      "file_path": "[ANK-Raws] 六畳間の侵略者！？ 06 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 6,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 23,
+      "file_path": "[ANK-Raws] 六畳間の侵略者！？ 07 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 7,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 24,
+      "file_path": "[ANK-Raws] 六畳間の侵略者！？ 08 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 8,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 25,
+      "file_path": "[ANK-Raws] 六畳間の侵略者！？ 09 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 9,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 26,
+      "file_path": "[ANK-Raws] 六畳間の侵略者！？ 10 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 10,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 27,
+      "file_path": "[ANK-Raws] 六畳間の侵略者！？ 11 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 11,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 28,
+      "file_path": "[ANK-Raws] 六畳間の侵略者！？ 12 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 12,
+      "episode_type": "regular",
+      "confidence": "High"
+    }
+  ],
+  "conflict_details": [],
+  "analysis_result": {
+    "confidence": "High",
+    "reason": "文件名中的集数 01-12 与 TMDB Season 1 的 S01E01-S01E12 完全一致，且该季共 12 集，结构明确；其余文件为 OP/ED/Preview/PV/CM 等附加内容，TMDB 未列出对应 special 条目。",
+    "season_mapping": [
+      {
+        "local_group_name": "Invaders of the Rokujouma!?",
+        "maps_to_tmdb_seasons": [
+          1
+        ]
+      }
+    ],
+    "file_mapping": [
+      {
+        "source_index": 17,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 1,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 18,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 2,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 19,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 3,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 20,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 4,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 21,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 5,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 22,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 6,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 23,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 7,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 24,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 8,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 25,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 9,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 26,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 10,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 27,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 11,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 28,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 12,
+        "episode_type": "regular",
+        "confidence": "High"
+      }
+    ],
+    "unmatched_files": [
+      "[ANK-Raws] 六畳間の侵略者！？ (Creditless ED) (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[ANK-Raws] 六畳間の侵略者！？ (Creditless OP) (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[ANK-Raws] 六畳間の侵略者！？ (Ep_02 Preview) (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[ANK-Raws] 六畳間の侵略者！？ (Ep_03 Preview) (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[ANK-Raws] 六畳間の侵略者！？ (Ep_04 Preview) (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[ANK-Raws] 六畳間の侵略者！？ (Ep_05 Preview) (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[ANK-Raws] 六畳間の侵略者！？ (Ep_06 Preview) (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[ANK-Raws] 六畳間の侵略者！？ (Ep_07 Creditless ED) (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[ANK-Raws] 六畳間の侵略者！？ (Ep_07 Preview) (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[ANK-Raws] 六畳間の侵略者！？ (Ep_08 Preview) (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[ANK-Raws] 六畳間の侵略者！？ (Ep_09 Preview) (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[ANK-Raws] 六畳間の侵略者！？ (Ep_10 Preview) (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[ANK-Raws] 六畳間の侵略者！？ (Ep_11 Preview) (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[ANK-Raws] 六畳間の侵略者！？ (Ep_12 Creditless ED) (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[ANK-Raws] 六畳間の侵略者！？ (Ep_12 Creditless OP) (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[ANK-Raws] 六畳間の侵略者！？ (Ep_12 Preview) (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[ANK-Raws] 六畳間の侵略者！？ PV01 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[ANK-Raws] 六畳間の侵略者！？ PV02 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "[ANK-Raws] 六畳間の侵略者！？ PV03 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "「CM01 孝太郎篇」.mkv",
+      "「CM02 早苗篇」.mkv",
+      "「CM03 ティア篇」.mkv",
+      "「CM04 キリハ篇」.mkv",
+      "「CM05 ゆりか篇」.mkv"
+    ],
+    "conflict_details": [],
+    "extra_notes": "本地正片编号 01-12 可与 TMDB Season 1 的 S01E01-S01E12 直接对应；其余文件均为 OP/ED、Preview、PV 或 CM 类附加内容，TMDB 列表中未提供对应 special 条目，因此未映射。"
+  },
+  "hydration_notes": [
+    "hydrated:17:[ANK-Raws] 六畳間の侵略者！？ 01 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+    "hydrated:18:[ANK-Raws] 六畳間の侵略者！？ 02 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+    "hydrated:19:[ANK-Raws] 六畳間の侵略者！？ 03 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+    "hydrated:20:[ANK-Raws] 六畳間の侵略者！？ 04 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+    "hydrated:21:[ANK-Raws] 六畳間の侵略者！？ 05 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+    "hydrated:22:[ANK-Raws] 六畳間の侵略者！？ 06 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+    "hydrated:23:[ANK-Raws] 六畳間の侵略者！？ 07 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+    "hydrated:24:[ANK-Raws] 六畳間の侵略者！？ 08 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+    "hydrated:25:[ANK-Raws] 六畳間の侵略者！？ 09 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+    "hydrated:26:[ANK-Raws] 六畳間の侵略者！？ 10 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+    "hydrated:27:[ANK-Raws] 六畳間の侵略者！？ 11 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+    "hydrated:28:[ANK-Raws] 六畳間の侵略者！？ 12 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv"
+  ]
+}

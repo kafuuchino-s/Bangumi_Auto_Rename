@@ -1,0 +1,34 @@
+{
+  "status": "ok",
+  "type": "movie",
+  "title_candidate": "Wake Up, Girls! 続・劇場版",
+  "collection_analysis": {
+    "is_collection": true,
+    "collection_name": "Wake Up, Girls! 続・劇場版",
+    "confidence": "High",
+    "reason": "同目录包含前后篇两部正片",
+    "file_mapping": [
+      {
+        "file_path": "[ANK-Raws] Wake Up, Girls！続･劇場版 前篇「青春の影」(BDrip 1920x1080 HEVC-YUV420P10 FLAC DTS-HDMA).mkv",
+        "movie_title": "Wake Up, Girls! 青春の影",
+        "movie_number": 1,
+        "year": 2015,
+        "confidence": "High"
+      },
+      {
+        "file_path": "[ANK-Raws] Wake Up, Girls！続･劇場版 後篇「Beyond the Bottom」(BDrip 1920x1080 HEVC-YUV420P10 FLAC DTS-HDMA).mkv",
+        "movie_title": "Wake Up, Girls! Beyond the Bottom",
+        "movie_number": 2,
+        "year": 2015,
+        "confidence": "High"
+      }
+    ],
+    "unmatched_files": [
+      "Menu (前篇)/Menu (前篇).mkv"
+    ],
+    "conflict_details": [
+      "Menu (前篇) 为菜单文件，非正片"
+    ],
+    "extra_notes": null
+  }
+}

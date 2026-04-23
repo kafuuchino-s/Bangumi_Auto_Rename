@@ -1,0 +1,87 @@
+{
+  "status": "ok",
+  "type": "movie",
+  "title_candidate": "ARIA The BENEDIZIONE",
+  "timing": {
+    "analysis_seconds": 18.179
+  },
+  "collection_analysis": {
+    "is_collection": false,
+    "collection_name": "ARIA The BENEDIZIONE",
+    "confidence": "High",
+    "reason": "仅含一部正片，其余均为特典",
+    "file_mapping": [
+      {
+        "file_path": "[VCB-Studio] ARIA The BENEDIZIONE [Ma10p_1080p][x265_flac].mkv",
+        "movie_title": "ARIA The BENEDIZIONE",
+        "movie_number": null,
+        "year": 2021,
+        "confidence": "High"
+      }
+    ],
+    "unmatched_files": [
+      "SPs/[VCB-Studio] ARIA The BENEDIZIONE [Cast Redubbing][Ma10p_1080p][x265_aac].mkv",
+      "SPs/[VCB-Studio] ARIA The BENEDIZIONE [Menu][Ma10p_1080p][x265].mkv",
+      "SPs/[VCB-Studio] ARIA The BENEDIZIONE [Mini Game Video 01][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] ARIA The BENEDIZIONE [Mini Game Video 02][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] ARIA The BENEDIZIONE [Mini Game Video 03][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] ARIA The BENEDIZIONE [Mini Game Video 04][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] ARIA The BENEDIZIONE [Mini Game Video 05][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] ARIA The BENEDIZIONE [Museum Visiting][Ma10p_1080p][x265_aac].mkv",
+      "SPs/[VCB-Studio] ARIA The BENEDIZIONE [PV01][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] ARIA The BENEDIZIONE [PV02][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] ARIA The BENEDIZIONE [PV03][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] ARIA The BENEDIZIONE [PV04][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] ARIA The BENEDIZIONE [Stage Greeting][Ma10p_1080p][x265_aac].mkv"
+    ],
+    "conflict_details": [],
+    "extra_notes": null
+  },
+  "task_plan": {
+    "is_movie": true,
+    "ai_type": "movie",
+    "tv_available": false,
+    "movie_available": true,
+    "selected_confidence": "High"
+  },
+  "tv_candidate_result": {
+    "status": "tmdb_not_found",
+    "type": "tv",
+    "title_candidate": "ARIA The BENEDIZIONE",
+    "timing": null,
+    "file_mapping_count": 0,
+    "has_regular": false,
+    "has_special": false,
+    "has_movie_like": false
+  },
+  "movie_candidate_result": {
+    "status": "ok",
+    "type": "movie",
+    "title_candidate": "ARIA The BENEDIZIONE",
+    "timing": {
+      "analysis_seconds": 18.179
+    },
+    "collection_analysis": {
+      "is_collection": false,
+      "confidence": "High",
+      "reason": "仅含一部正片，其余均为特典",
+      "file_mapping_count": 1,
+      "unmatched_count": 13,
+      "conflict_count": 0,
+      "movie_like_paths": [
+        "[VCB-Studio] ARIA The BENEDIZIONE [Ma10p_1080p][x265_flac].mkv"
+      ]
+    }
+  },
+  "movie_like_paths_from_paths": [
+    "[VCB-Studio] ARIA The BENEDIZIONE [Ma10p_1080p][x265_flac].mkv",
+    "SPs/[VCB-Studio] ARIA The BENEDIZIONE [Cast Redubbing][Ma10p_1080p][x265_aac].mkv",
+    "SPs/[VCB-Studio] ARIA The BENEDIZIONE [Mini Game Video 01][Ma10p_1080p][x265_flac].mkv",
+    "SPs/[VCB-Studio] ARIA The BENEDIZIONE [Mini Game Video 02][Ma10p_1080p][x265_flac].mkv",
+    "SPs/[VCB-Studio] ARIA The BENEDIZIONE [Mini Game Video 03][Ma10p_1080p][x265_flac].mkv",
+    "SPs/[VCB-Studio] ARIA The BENEDIZIONE [Mini Game Video 04][Ma10p_1080p][x265_flac].mkv",
+    "SPs/[VCB-Studio] ARIA The BENEDIZIONE [Mini Game Video 05][Ma10p_1080p][x265_flac].mkv",
+    "SPs/[VCB-Studio] ARIA The BENEDIZIONE [Museum Visiting][Ma10p_1080p][x265_aac].mkv"
+  ],
+  "final_type": "movie"
+}

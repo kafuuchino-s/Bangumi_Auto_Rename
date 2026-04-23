@@ -1,0 +1,681 @@
+{
+  "root_name": "[Moozzi2] Watamote - TV + OAD",
+  "files": [
+    {
+      "path": "[Moozzi2] Watamote - 01 (BD 1920x1080 x.264 Flac).default.chi.zh-cn.ass",
+      "size": 39675
+    },
+    {
+      "path": "[Moozzi2] Watamote - 01 (BD 1920x1080 x.264 Flac).mkv",
+      "size": 1035451543
+    },
+    {
+      "path": "[Moozzi2] Watamote - 02 (BD 1920x1080 x.264 Flac).default.chi.zh-cn.ass",
+      "size": 40631
+    },
+    {
+      "path": "[Moozzi2] Watamote - 02 (BD 1920x1080 x.264 Flac).mkv",
+      "size": 1017643452
+    },
+    {
+      "path": "[Moozzi2] Watamote - 03 (BD 1920x1080 x.264 Flac).default.chi.zh-cn.ass",
+      "size": 37618
+    },
+    {
+      "path": "[Moozzi2] Watamote - 03 (BD 1920x1080 x.264 Flac).mkv",
+      "size": 1079709653
+    },
+    {
+      "path": "[Moozzi2] Watamote - 04 (BD 1920x1080 x.264 Flac).default.chi.zh-cn.ass",
+      "size": 35530
+    },
+    {
+      "path": "[Moozzi2] Watamote - 04 (BD 1920x1080 x.264 Flac).mkv",
+      "size": 1216396566
+    },
+    {
+      "path": "[Moozzi2] Watamote - 05 (BD 1920x1080 x.264 Flac).default.chi.zh-cn.ass",
+      "size": 37235
+    },
+    {
+      "path": "[Moozzi2] Watamote - 05 (BD 1920x1080 x.264 Flac).mkv",
+      "size": 1044682208
+    },
+    {
+      "path": "[Moozzi2] Watamote - 06 (BD 1920x1080 x.264 Flac).default.chi.zh-cn.ass",
+      "size": 33823
+    },
+    {
+      "path": "[Moozzi2] Watamote - 06 (BD 1920x1080 x.264 Flac).mkv",
+      "size": 1067633169
+    },
+    {
+      "path": "[Moozzi2] Watamote - 07 (BD 1920x1080 x.264 Flac).default.chi.zh-cn.ass",
+      "size": 47392
+    },
+    {
+      "path": "[Moozzi2] Watamote - 07 (BD 1920x1080 x.264 Flac).mkv",
+      "size": 866662979
+    },
+    {
+      "path": "[Moozzi2] Watamote - 08 (BD 1920x1080 x.264 Flac).default.chi.zh-cn.ass",
+      "size": 39422
+    },
+    {
+      "path": "[Moozzi2] Watamote - 08 (BD 1920x1080 x.264 Flac).mkv",
+      "size": 954590499
+    },
+    {
+      "path": "[Moozzi2] Watamote - 09 (BD 1920x1080 x.264 Flac).default.chi.zh-cn.ass",
+      "size": 38155
+    },
+    {
+      "path": "[Moozzi2] Watamote - 09 (BD 1920x1080 x.264 Flac).mkv",
+      "size": 1040877104
+    },
+    {
+      "path": "[Moozzi2] Watamote - 10 (BD 1920x1080 x.264 Flac).default.chi.zh-cn.ass",
+      "size": 38350
+    },
+    {
+      "path": "[Moozzi2] Watamote - 10 (BD 1920x1080 x.264 Flac).mkv",
+      "size": 996429001
+    },
+    {
+      "path": "[Moozzi2] Watamote - 11 (BD 1920x1080 x.264 Flac).default.chi.zh-cn.ass",
+      "size": 29702
+    },
+    {
+      "path": "[Moozzi2] Watamote - 11 (BD 1920x1080 x.264 Flac).mkv",
+      "size": 926009338
+    },
+    {
+      "path": "[Moozzi2] Watamote - 12 END (BD 1920x1080 x.264 Flac).default.chi.zh-cn.ass",
+      "size": 30515
+    },
+    {
+      "path": "[Moozzi2] Watamote - 12 END (BD 1920x1080 x.264 Flac).mkv",
+      "size": 895740587
+    },
+    {
+      "path": "[Moozzi2] Watamote - 13 OAD (DVD 1024x576 x.264 AAC).default.chi.zh-cn.ass",
+      "size": 34357
+    },
+    {
+      "path": "[Moozzi2] Watamote - 13 OAD (DVD 1024x576 x.264 AAC).mkv",
+      "size": 261775874
+    },
+    {
+      "path": "[Moozzi2] Watamote - TV + OAD.md5",
+      "size": 2554
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP00] Menu - 01 - [ PNG ].png",
+      "size": 929195
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP00] Menu - 02 - [ PNG ].png",
+      "size": 971483
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP00] Menu - 03 - [ PNG ].png",
+      "size": 1018113
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP00] Menu - 04 - [ PNG ].png",
+      "size": 906664
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP00] Menu - 05 - [ PNG ].png",
+      "size": 861109
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP00] Menu - 06 - [ PNG ].png",
+      "size": 960177
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP00] Menu - OAD - [ PNG ].png",
+      "size": 916484
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP01] NCOP - 01 (BD 1920x1080 x.264 Flac).mkv",
+      "size": 444520976
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP01] NCOP - 02 (BD 1920x1080 x.264 Flac).mkv",
+      "size": 413500617
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP01] NCOP - 03 [ EP.12 Special ] (BD 1920x1080 x.264 Flac).mkv",
+      "size": 145805156
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP02] NCED - 01 [ EP.02 ] (BD 1920x1080 x.264 Flac).mkv",
+      "size": 81447246
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP02] NCED - 02 [ EP.05 ] (BD 1920x1080 x.264 Flac).mkv",
+      "size": 69603355
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP02] NCED - 03 [ EP.06 ] (BD 1920x1080 x.264 Flac).mkv",
+      "size": 90677312
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP02] NCED - 04 [ EP.11 ] (BD 1920x1080 x.264 Flac).mkv",
+      "size": 47113530
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP03] PV (BD 1920x1080 x.264 Flac).mkv",
+      "size": 79095646
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP04] TV-CM - 01 [ 15sec. ] (BD 1920x1080 x.264 Flac).mkv",
+      "size": 10089426
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP04] TV-CM - 02 [ 30sec. ] (BD 1920x1080 x.264 Flac).mkv",
+      "size": 19039079
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP05] BD&DVD Selling CM - 01 [ 15sec. ] (BD x.264 Flac).mkv",
+      "size": 17439286
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP05] BD&DVD Selling CM - 02 [ 30sec. ] (BD x.264 Flac).mkv",
+      "size": 28701966
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP06] Bonus CD/[SP06] Bonus CD - 01/01 夢想恋歌.flac",
+      "size": 29372276
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP06] Bonus CD/[SP06] Bonus CD - 01/02 夢想恋歌 (オリジナルカラオケ).flac",
+      "size": 28111130
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP06] Bonus CD/[SP06] Bonus CD - 01/03 オーディオドラマ「喪劇場その1」.flac",
+      "size": 11018093
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP06] Bonus CD/[SP06] Bonus CD - 01/CD音轨01.flac",
+      "size": 29368062
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP06] Bonus CD/[SP06] Bonus CD - 01/CD音轨02.flac",
+      "size": 28109050
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP06] Bonus CD/[SP06] Bonus CD - 01/CD音轨03.flac",
+      "size": 11016322
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP06] Bonus CD/[SP06] Bonus CD - 01/Various Artists - 私がモテないのはどう考えてもお前らが悪い! 第1巻 特典「ワタモテ」バラエティCD1.log",
+      "size": 6180
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP06] Bonus CD/[SP06] Bonus CD - 01/私がモテないのはどう考えてもお前らが悪い! 第1巻 特典「ワタモテ」バラエティCD1.cue",
+      "size": 669
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP06] Bonus CD/[SP06] Bonus CD - 02/01 あゝ黄昏の街.flac",
+      "size": 1497776
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP06] Bonus CD/[SP06] Bonus CD - 02/02 本気ぃとんく.flac",
+      "size": 6282346
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP06] Bonus CD/[SP06] Bonus CD - 02/03 綿の気持ち.flac",
+      "size": 7403883
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP06] Bonus CD/[SP06] Bonus CD - 02/04 夢見る乙女　もこっち.flac",
+      "size": 6482440
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP06] Bonus CD/[SP06] Bonus CD - 02/05 惨劇の夜.flac",
+      "size": 13553743
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP06] Bonus CD/[SP06] Bonus CD - 02/06 下水道.flac",
+      "size": 7213008
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP06] Bonus CD/[SP06] Bonus CD - 02/07 貝のメロディー.flac",
+      "size": 8676166
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP06] Bonus CD/[SP06] Bonus CD - 02/08 ＢＲＩＧＨＴ ＯＦ ＢＲＩＧＨＴ.flac",
+      "size": 6150412
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP06] Bonus CD/[SP06] Bonus CD - 02/09 誘惑 ス・レスーレ.flac",
+      "size": 4655760
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP06] Bonus CD/[SP06] Bonus CD - 02/10 ゼロの刻.flac",
+      "size": 9895748
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP06] Bonus CD/[SP06] Bonus CD - 02/11 一杯のかけそば.flac",
+      "size": 5192052
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP06] Bonus CD/[SP06] Bonus CD - 02/12 ご光臨.flac",
+      "size": 6505945
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP06] Bonus CD/[SP06] Bonus CD - 02/13 ノーカントリー.flac",
+      "size": 6189464
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP06] Bonus CD/[SP06] Bonus CD - 02/14 オーディオドラマ「喪劇場その2」.flac",
+      "size": 10048818
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP06] Bonus CD/[SP06] Bonus CD - 02/「ワタモテ」バラエティＣＤ②.cue",
+      "size": 2317
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP06] Bonus CD/[SP06] Bonus CD - 02/さまざまなアーティスト - 「ワタモテ」バラエティＣＤ②.log",
+      "size": 12542
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP06] Bonus CD/[SP06] Bonus CD - 03/01 夜のとばりよ さようなら.flac",
+      "size": 30280439
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP06] Bonus CD/[SP06] Bonus CD - 03/02 夜のとばりよ さようなら(オリジナルカラオケ).flac",
+      "size": 29084478
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP06] Bonus CD/[SP06] Bonus CD - 03/03 オーディオドラマ「喪劇場 その3」.flac",
+      "size": 9599581
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP06] Bonus CD/[SP06] Bonus CD - 03/「ワタモテ」バラエティCD③.cue",
+      "size": 810
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP06] Bonus CD/[SP06] Bonus CD - 03/さまざまなアーティスト - 「ワタモテ」バラエティCD③.log",
+      "size": 3101
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP06] Bonus CD/[SP06] Bonus CD - 04/01 BOOK ON BGM.flac",
+      "size": 12773870
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP06] Bonus CD/[SP06] Bonus CD - 04/02 リア充☆リア充.flac",
+      "size": 5656608
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP06] Bonus CD/[SP06] Bonus CD - 04/03 クリシュナ王に捧ぐ.flac",
+      "size": 5305234
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP06] Bonus CD/[SP06] Bonus CD - 04/04 時間と戦慄.flac",
+      "size": 8402574
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP06] Bonus CD/[SP06] Bonus CD - 04/05 ムンギュンタイガ山へ.flac",
+      "size": 1952277
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP06] Bonus CD/[SP06] Bonus CD - 04/06 違いのわからない女.flac",
+      "size": 7081077
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP06] Bonus CD/[SP06] Bonus CD - 04/07 dicapitated away.flac",
+      "size": 6985054
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP06] Bonus CD/[SP06] Bonus CD - 04/08 視線の下がった人のアンダンテ.flac",
+      "size": 5674825
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP06] Bonus CD/[SP06] Bonus CD - 04/09 哀しみの血と薔薇.flac",
+      "size": 4613198
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP06] Bonus CD/[SP06] Bonus CD - 04/10 JITOME.flac",
+      "size": 4367917
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP06] Bonus CD/[SP06] Bonus CD - 04/11 ワタモテのテーマ4.flac",
+      "size": 2337751
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP06] Bonus CD/[SP06] Bonus CD - 04/12 ワタモテのテーマ2.flac",
+      "size": 8278514
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP06] Bonus CD/[SP06] Bonus CD - 04/13 [鬼キュンポップ]鬼が笑う.flac",
+      "size": 8201699
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP06] Bonus CD/[SP06] Bonus CD - 04/14 オーディオドラマ「喪劇場その4」.flac",
+      "size": 9668781
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP06] Bonus CD/[SP06] Bonus CD - 04/『私がモテないのはどう考えてもお前らが悪い!』VOL.4-「ワタモテ」バラエティCD4.cue",
+      "size": 2124
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP06] Bonus CD/[SP06] Bonus CD - 04/『私がモテないのはどう考えてもお前らが悪い!』VOL.4-「ワタモテ」バラエティCD4.log",
+      "size": 13102
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP06] Bonus CD/[SP06] Bonus CD - 05/01 喪10挿入歌「日常キラリ」.flac",
+      "size": 16405683
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP06] Bonus CD/[SP06] Bonus CD - 05/02 喪10挿入歌「日常キラリ」オリジナルカラオケ.flac",
+      "size": 11591609
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP06] Bonus CD/[SP06] Bonus CD - 05/03 オーディオドラマ「喪劇場その5」.flac",
+      "size": 9983248
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP06] Bonus CD/[SP06] Bonus CD - 05/ワタモテ - 私がモテないのはどう考えてもお前らが悪い!　第5巻「ワタモテ」バラエティCD➄.log",
+      "size": 6178
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP06] Bonus CD/[SP06] Bonus CD - 05/私がモテないのはどう考えてもお前らが悪い!　第5巻「ワタモテ」バラエティCD➄.cue",
+      "size": 700
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP06] Bonus CD/[SP06] Bonus CD - 06/01 太陽に正反対ロマン.flac",
+      "size": 11490670
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP06] Bonus CD/[SP06] Bonus CD - 06/02 ウキウキ アフター5.flac",
+      "size": 7450388
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP06] Bonus CD/[SP06] Bonus CD - 06/03 長ネギマンボ.flac",
+      "size": 10039538
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP06] Bonus CD/[SP06] Bonus CD - 06/04 パジャパニ.flac",
+      "size": 4132588
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP06] Bonus CD/[SP06] Bonus CD - 06/05 焦燥B.flac",
+      "size": 5400719
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP06] Bonus CD/[SP06] Bonus CD - 06/06 Mute Booing.flac",
+      "size": 6163351
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP06] Bonus CD/[SP06] Bonus CD - 06/07 女神ラクシュミー.flac",
+      "size": 2041227
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP06] Bonus CD/[SP06] Bonus CD - 06/08 焦燥A.flac",
+      "size": 6210871
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP06] Bonus CD/[SP06] Bonus CD - 06/09 ひねくれ娘.flac",
+      "size": 5189701
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP06] Bonus CD/[SP06] Bonus CD - 06/10 Cola Shaker.flac",
+      "size": 7880388
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP06] Bonus CD/[SP06] Bonus CD - 06/11 Walk in the pain.flac",
+      "size": 7083646
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP06] Bonus CD/[SP06] Bonus CD - 06/12 Fly to dark.flac",
+      "size": 10372522
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP06] Bonus CD/[SP06] Bonus CD - 06/13 予告.flac",
+      "size": 2183972
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP06] Bonus CD/[SP06] Bonus CD - 06/14 そこらの着ぐるみの風船と私.flac",
+      "size": 28472003
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP06] Bonus CD/[SP06] Bonus CD - 06/15 そこらの着ぐるみの風船と私(Instrumental).flac",
+      "size": 26409021
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP06] Bonus CD/[SP06] Bonus CD - 06/16 オーディオドラマ「喪劇場 その6」.flac",
+      "size": 11133340
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP06] Bonus CD/[SP06] Bonus CD - 06/Sadesper Record - 「ワタモテ」バラエティCD⑥.log",
+      "size": 15686
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP06] Bonus CD/[SP06] Bonus CD - 06/「ワタモテ」バラエティCD⑥.cue",
+      "size": 2479
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP07] BD Scans/[SP07] BD Scan - 01/1.bmp",
+      "size": 12094086
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP07] BD Scans/[SP07] BD Scan - 01/2.bmp",
+      "size": 13410630
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP07] BD Scans/[SP07] BD Scan - 01/3.bmp",
+      "size": 13644342
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP07] BD Scans/[SP07] BD Scan - 01/4.bmp",
+      "size": 19159782
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP07] BD Scans/[SP07] BD Scan - 01/5.bmp",
+      "size": 19709190
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP07] BD Scans/[SP07] BD Scan - 01/6.bmp",
+      "size": 19337670
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP07] BD Scans/[SP07] BD Scan - 01/7.bmp",
+      "size": 19069398
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP07] BD Scans/[SP07] BD Scan - 02/SCAN_.bmp",
+      "size": 19123830
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP07] BD Scans/[SP07] BD Scan - 02/SCAN_1.bmp",
+      "size": 19069398
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP07] BD Scans/[SP07] BD Scan - 02/SCAN_2.bmp",
+      "size": 19914102
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP07] BD Scans/[SP07] BD Scan - 02/SCAN_3.bmp",
+      "size": 19151910
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP07] BD Scans/[SP07] BD Scan - 02/SCAN_4.bmp",
+      "size": 13083894
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP07] BD Scans/[SP07] BD Scan - 02/SCAN_5.bmp",
+      "size": 14566518
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP07] BD Scans/[SP07] BD Scan - 02/SCAN_6.bmp",
+      "size": 12094086
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP07] BD Scans/[SP07] BD Scan - 03/SCAN_1.bmp",
+      "size": 11676150
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP07] BD Scans/[SP07] BD Scan - 03/SCAN_10.bmp",
+      "size": 6095286
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP07] BD Scans/[SP07] BD Scan - 03/SCAN_11.bmp",
+      "size": 13300470
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP07] BD Scans/[SP07] BD Scan - 03/SCAN_2.bmp",
+      "size": 11425590
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP07] BD Scans/[SP07] BD Scan - 03/SCAN_3.bmp",
+      "size": 18918054
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP07] BD Scans/[SP07] BD Scan - 03/SCAN_4.bmp",
+      "size": 18635766
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP07] BD Scans/[SP07] BD Scan - 03/SCAN_5.bmp",
+      "size": 19523430
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP07] BD Scans/[SP07] BD Scan - 03/SCAN_6.bmp",
+      "size": 19069398
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP07] BD Scans/[SP07] BD Scan - 03/SCAN_7.bmp",
+      "size": 12964950
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP07] BD Scans/[SP07] BD Scan - 03/SCAN_8.bmp",
+      "size": 13864374
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP07] BD Scans/[SP07] BD Scan - 03/SCAN_9.bmp",
+      "size": 7326534
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP07] BD Scans/[SP07] BD Scan - 04/SCAN_1.bmp",
+      "size": 11212182
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP07] BD Scans/[SP07] BD Scan - 04/SCAN_10.bmp",
+      "size": 5950854
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP07] BD Scans/[SP07] BD Scan - 04/SCAN_11.bmp",
+      "size": 12404790
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP07] BD Scans/[SP07] BD Scan - 04/SCAN_2.bmp",
+      "size": 11376342
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP07] BD Scans/[SP07] BD Scan - 04/SCAN_3.bmp",
+      "size": 5930550
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP07] BD Scans/[SP07] BD Scan - 04/SCAN_4.bmp",
+      "size": 18684054
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP07] BD Scans/[SP07] BD Scan - 04/SCAN_5.bmp",
+      "size": 18635766
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP07] BD Scans/[SP07] BD Scan - 04/SCAN_6.bmp",
+      "size": 18936342
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP07] BD Scans/[SP07] BD Scan - 04/SCAN_7.bmp",
+      "size": 18706518
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP07] BD Scans/[SP07] BD Scan - 04/SCAN_8.bmp",
+      "size": 13147254
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP07] BD Scans/[SP07] BD Scan - 04/SCAN_9.bmp",
+      "size": 13231782
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP07] BD Scans/[SP07] BD Scan - 05/SCAN1.bmp",
+      "size": 11426454
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP07] BD Scans/[SP07] BD Scan - 05/SCAN10.bmp",
+      "size": 12533814
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP07] BD Scans/[SP07] BD Scan - 05/SCAN2.bmp",
+      "size": 11525814
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP07] BD Scans/[SP07] BD Scan - 05/SCAN3.bmp",
+      "size": 19295926
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP07] BD Scans/[SP07] BD Scan - 05/SCAN4.bmp",
+      "size": 18982710
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP07] BD Scans/[SP07] BD Scan - 05/SCAN5.bmp",
+      "size": 19222774
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP07] BD Scans/[SP07] BD Scan - 05/SCAN6.bmp",
+      "size": 18356022
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP07] BD Scans/[SP07] BD Scan - 05/SCAN7.bmp",
+      "size": 12545910
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP07] BD Scans/[SP07] BD Scan - 05/SCAN8.bmp",
+      "size": 12964950
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP07] BD Scans/[SP07] BD Scan - 05/SCAN9.bmp",
+      "size": 13314726
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP07] BD Scans/[SP07] BD Scan - 06/SCAN_0.bmp",
+      "size": 6086502
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP07] BD Scans/[SP07] BD Scan - 06/SCAN_1.bmp",
+      "size": 12478518
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP07] BD Scans/[SP07] BD Scan - 06/SCAN_2.bmp",
+      "size": 18927414
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP07] BD Scans/[SP07] BD Scan - 06/SCAN_3.bmp",
+      "size": 18112054
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP07] BD Scans/[SP07] BD Scan - 06/SCAN_4.bmp",
+      "size": 18600054
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP07] BD Scans/[SP07] BD Scan - 06/SCAN_5.bmp",
+      "size": 18329526
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP07] BD Scans/[SP07] BD Scan - 06/SCAN_6.bmp",
+      "size": 12823686
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP07] BD Scans/[SP07] BD Scan - 06/SCAN_7.bmp",
+      "size": 5977014
+    },
+    {
+      "path": "EXTRA/[Moozzi2] Watamote [SP07] BD Scans/[SP07] BD Scan - 06/SCAN_8.bmp",
+      "size": 6057270
+    }
+  ]
+}

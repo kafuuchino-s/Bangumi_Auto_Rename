@@ -1,0 +1,38 @@
+{
+  "status": "ai_failed",
+  "type": "movie",
+  "title_candidate": "Puella Magi Madoka Magica",
+  "timing": {
+    "analysis_seconds": 0.0
+  },
+  "collection_analysis": null,
+  "tv_candidate_result": {
+    "status": "tmdb_not_found",
+    "type": "tv",
+    "title_candidate": "Puella Magi Madoka Magica",
+    "timing": null,
+    "file_mapping_count": 0,
+    "has_regular": false,
+    "has_special": false,
+    "has_movie_like": false
+  },
+  "movie_candidate_result": {
+    "status": "ai_failed",
+    "type": "movie",
+    "title_candidate": "Puella Magi Madoka Magica",
+    "timing": {
+      "analysis_seconds": 0.0
+    }
+  },
+  "movie_like_paths_from_paths": [
+    "[VCB-Studio] Puella Magi Madoka Magica Concept Movie [Ma10p_1080p]/[VCB-Studio] Puella Magi Madoka Magica Concept Movie [Ma10p_1080p][x265_flac].mkv",
+    "[VCB-Studio] Puella Magi Madoka Magica Movie 1 Beginnings [Ma10p_1080p]/[VCB-Studio] Puella Magi Madoka Magica Movie 1 Beginnings [Ma10p_1080p][x265_flac].mkv",
+    "[VCB-Studio] Puella Magi Madoka Magica Movie 1 Beginnings [Ma10p_1080p]/SPs/[VCB-Studio] Puella Magi Madoka Magica Movie 1 Beginnings [Trailer][Ma10p_1080p][x265_flac].mkv",
+    "[VCB-Studio] Puella Magi Madoka Magica Movie 2 Eternal [Ma10p_1080p]/[VCB-Studio] Puella Magi Madoka Magica Movie 2 Eternal [Ma10p_1080p][x265_flac].mkv",
+    "[VCB-Studio] Puella Magi Madoka Magica Movie 2 Eternal [Ma10p_1080p]/SPs/[VCB-Studio] Puella Magi Madoka Magica Movie 2 Eternal [Trailer01][Ma10p_1080p][x265_flac].mkv",
+    "[VCB-Studio] Puella Magi Madoka Magica Movie 2 Eternal [Ma10p_1080p]/SPs/[VCB-Studio] Puella Magi Madoka Magica Movie 2 Eternal [Trailer02][Ma10p_1080p][x265_flac].mkv",
+    "[VCB-Studio] Puella Magi Madoka Magica Movie 3 Rebellion [Ma10p_1080p]/[VCB-Studio] Puella Magi Madoka Magica Movie 3 Rebellion [Ma10p_1080p][x265_flac].mkv",
+    "[VCB-Studio] Puella Magi Madoka Magica Movie 3 Rebellion [Ma10p_1080p]/SPs/[VCB-Studio] Puella Magi Madoka Magica Movie 3 Rebellion [Madogatari Recap][Ma10p_1080p][x265_flac].mkv"
+  ],
+  "final_type": "movie"
+}

@@ -1,0 +1,37 @@
+{
+  "status": "ok",
+  "type": "tv",
+  "title_candidate": "超次元ゲイム ネプテューヌ ～ねぷのなつやすみ～",
+  "tmdb_name": "超次元ゲイム ネプテューヌ The Animation",
+  "tmdb_id": 63525,
+  "file_mapping": [
+    {
+      "source_index": 1,
+      "file_path": null,
+      "tmdb_season": 0,
+      "tmdb_episode": 2,
+      "episode_type": "special",
+      "confidence": "High"
+    }
+  ],
+  "analysis_result": {
+    "confidence": "High",
+    "reason": "本地文件名“超次元ゲイム ネプテューヌ ～ねぷのなつやすみ～”与 TMDB Season 0 的“S00E02: 涅普的暑假”标题高度一致，且属于特典/特别篇范畴；另一文件为同目录下的 MENU 特典，TMDB 列表中无对应集目。",
+    "season_mapping": [],
+    "file_mapping": [
+      {
+        "source_index": 1,
+        "file_path": null,
+        "tmdb_season": 0,
+        "tmdb_episode": 2,
+        "episode_type": "special",
+        "confidence": "High"
+      }
+    ],
+    "unmatched_files": [
+      "映像特典/[Snow-Raws] 超次元ゲイム ネプテューヌ ～ねぷのなつやすみ～ MENU (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv"
+    ],
+    "conflict_details": [],
+    "extra_notes": "“映像特典”目录下的 MENU 文件未在 TMDB 特别篇条目中找到对应项，故未映射。"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "status": "ai_failed",
+  "type": "movie",
+  "title_candidate": "Seitokai no Ichizon",
+  "timing": {
+    "analysis_seconds": 0.0
+  },
+  "collection_analysis": null,
+  "final_type": "movie"
+}

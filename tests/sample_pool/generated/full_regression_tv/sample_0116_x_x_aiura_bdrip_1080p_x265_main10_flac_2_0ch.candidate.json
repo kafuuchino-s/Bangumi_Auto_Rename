@@ -1,0 +1,40 @@
+{
+  "status": "ok",
+  "type": "movie",
+  "title_candidate": "AIURA",
+  "timing": {
+    "analysis_seconds": 11.407
+  },
+  "collection_analysis": {
+    "is_collection": false,
+    "collection_name": "AIURA",
+    "confidence": "High",
+    "reason": "内容为12集TV动画及特典，非多电影合集",
+    "file_mapping": [],
+    "unmatched_files": [
+      "[x_x] AIURA [Ep01] [BDRip 1080p x265 Main10 Flac 2.0ch].mkv",
+      "[x_x] AIURA [Ep02] [BDRip 1080p x265 Main10 Flac 2.0ch].mkv",
+      "[x_x] AIURA [Ep03] [BDRip 1080p x265 Main10 Flac 2.0ch].mkv",
+      "[x_x] AIURA [Ep04] [BDRip 1080p x265 Main10 Flac 2.0ch].mkv",
+      "[x_x] AIURA [Ep05] [BDRip 1080p x265 Main10 Flac 2.0ch].mkv",
+      "[x_x] AIURA [Ep06] [BDRip 1080p x265 Main10 Flac 2.0ch].mkv",
+      "[x_x] AIURA [Ep07] [BDRip 1080p x265 Main10 Flac 2.0ch].mkv",
+      "[x_x] AIURA [Ep08] [BDRip 1080p x265 Main10 Flac 2.0ch].mkv",
+      "[x_x] AIURA [Ep09] [BDRip 1080p x265 Main10 Flac 2.0ch].mkv",
+      "[x_x] AIURA [Ep10] [BDRip 1080p x265 Main10 Flac 2.0ch].mkv",
+      "[x_x] AIURA [Ep11] [BDRip 1080p x265 Main10 Flac 2.0ch].mkv",
+      "[x_x] AIURA [Ep12] [BDRip 1080p x265 Main10 Flac 2.0ch].mkv",
+      "[x_x] AIURA [Main Story Straight Play] [BDRip 1080p x265 Main10 2xFlac 2.0ch].mkv",
+      "Menus/[x_x] AIURA [Menu] [BDRip 1080p x264 RGB Lossless].mkv",
+      "特典映像/[x_x] AIURA [NCED] [BDRip 1080p x265 Main10 Flac 2.0ch].mkv",
+      "特典映像/[x_x] AIURA [NCOP] [BDRip 1080p x265 Main10 Flac 2.0ch].mkv",
+      "特典映像/[x_x] AIURA [Warning1] [BDRip 1080p x265 Main Lossless Flac 2.0ch].mkv",
+      "特典映像/[x_x] AIURA [Warning2] [BDRip 1080p x265 Main Lossless Flac 2.0ch].mkv",
+      "特典映像/[x_x] AIURA [Warning3] [BDRip 1080p x265 Main Lossless Flac 2.0ch].mkv"
+    ],
+    "conflict_details": [
+      "文件内容为12集TV动画、菜单与特典，非电影合集"
+    ],
+    "extra_notes": null
+  }
+}

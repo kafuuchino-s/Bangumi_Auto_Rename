@@ -1,0 +1,437 @@
+{
+  "root_name": "[VCB-Studio] Danshi Kokosei no Nichijou [Ma10p_1080p]",
+  "files": [
+    {
+      "path": "[VCB-Studio] Danshi Kokosei no Nichijou [01][Ma10p_1080p][x265_flac].mkv",
+      "size": 539881550
+    },
+    {
+      "path": "[VCB-Studio] Danshi Kokosei no Nichijou [02][Ma10p_1080p][x265_flac].mkv",
+      "size": 409843454
+    },
+    {
+      "path": "[VCB-Studio] Danshi Kokosei no Nichijou [03][Ma10p_1080p][x265_flac].mkv",
+      "size": 478878799
+    },
+    {
+      "path": "[VCB-Studio] Danshi Kokosei no Nichijou [04][Ma10p_1080p][x265_flac].mkv",
+      "size": 523923974
+    },
+    {
+      "path": "[VCB-Studio] Danshi Kokosei no Nichijou [05][Ma10p_1080p][x265_flac].mkv",
+      "size": 558207646
+    },
+    {
+      "path": "[VCB-Studio] Danshi Kokosei no Nichijou [06][Ma10p_1080p][x265_flac].mkv",
+      "size": 585537064
+    },
+    {
+      "path": "[VCB-Studio] Danshi Kokosei no Nichijou [07][Ma10p_1080p][x265_flac].mkv",
+      "size": 770069009
+    },
+    {
+      "path": "[VCB-Studio] Danshi Kokosei no Nichijou [08][Ma10p_1080p][x265_flac].mkv",
+      "size": 507352961
+    },
+    {
+      "path": "[VCB-Studio] Danshi Kokosei no Nichijou [09][Ma10p_1080p][x265_flac].mkv",
+      "size": 853831618
+    },
+    {
+      "path": "[VCB-Studio] Danshi Kokosei no Nichijou [10][Ma10p_1080p][x265_flac].mkv",
+      "size": 535716782
+    },
+    {
+      "path": "[VCB-Studio] Danshi Kokosei no Nichijou [11][Ma10p_1080p][x265_flac].mkv",
+      "size": 670677536
+    },
+    {
+      "path": "[VCB-Studio] Danshi Kokosei no Nichijou [12v2][Ma10p_1080p][x265_flac].mkv",
+      "size": 461749211
+    },
+    {
+      "path": "CDs/[EAC][120222]「Shiny tale」／Mix Speaker's,Inc. (flac+cue+jpg)(アニメ盤)/BK/IMG_0001.jpg",
+      "size": 4293635
+    },
+    {
+      "path": "CDs/[EAC][120222]「Shiny tale」／Mix Speaker's,Inc. (flac+cue+jpg)(アニメ盤)/BK/IMG_0002.jpg",
+      "size": 3924273
+    },
+    {
+      "path": "CDs/[EAC][120222]「Shiny tale」／Mix Speaker's,Inc. (flac+cue+jpg)(アニメ盤)/BK/IMG_0003.jpg",
+      "size": 1561289
+    },
+    {
+      "path": "CDs/[EAC][120222]「Shiny tale」／Mix Speaker's,Inc. (flac+cue+jpg)(アニメ盤)/BK/IMG_0004.jpg",
+      "size": 1468057
+    },
+    {
+      "path": "CDs/[EAC][120222]「Shiny tale」／Mix Speaker's,Inc. (flac+cue+jpg)(アニメ盤)/BK/IMG_0005.jpg",
+      "size": 1719445
+    },
+    {
+      "path": "CDs/[EAC][120222]「Shiny tale」／Mix Speaker's,Inc. (flac+cue+jpg)(アニメ盤)/BK/IMG_0006.jpg",
+      "size": 8240826
+    },
+    {
+      "path": "CDs/[EAC][120222]「Shiny tale」／Mix Speaker's,Inc. (flac+cue+jpg)(アニメ盤)/BK/IMG_0007-V2.jpg",
+      "size": 4642571
+    },
+    {
+      "path": "CDs/[EAC][120222]「Shiny tale」／Mix Speaker's,Inc. (flac+cue+jpg)(アニメ盤)/BK/IMG_0007.jpg",
+      "size": 4652427
+    },
+    {
+      "path": "CDs/[EAC][120222]「Shiny tale」／Mix Speaker's,Inc. (flac+cue+jpg)(アニメ盤)/BK/IMG_0008.jpg",
+      "size": 1493880
+    },
+    {
+      "path": "CDs/[EAC][120222]「Shiny tale」／Mix Speaker's,Inc. (flac+cue+jpg)(アニメ盤)/HMCH-1047.cue",
+      "size": 889
+    },
+    {
+      "path": "CDs/[EAC][120222]「Shiny tale」／Mix Speaker's,Inc. (flac+cue+jpg)(アニメ盤)/HMCH-1047.flac",
+      "size": 141188954
+    },
+    {
+      "path": "CDs/[EAC][120222]「Shiny tale」／Mix Speaker's,Inc. (flac+cue+jpg)(アニメ盤)/HMCH-1047.log",
+      "size": 1606
+    },
+    {
+      "path": "CDs/[EAC][120222]「おひさま／イエーイ!!」／雨先案内人 (flac+cue+jpg)/BK_1/01.jpg",
+      "size": 1294403
+    },
+    {
+      "path": "CDs/[EAC][120222]「おひさま／イエーイ!!」／雨先案内人 (flac+cue+jpg)/BK_1/02.jpg",
+      "size": 1115361
+    },
+    {
+      "path": "CDs/[EAC][120222]「おひさま／イエーイ!!」／雨先案内人 (flac+cue+jpg)/BK_1/03.jpg",
+      "size": 827742
+    },
+    {
+      "path": "CDs/[EAC][120222]「おひさま／イエーイ!!」／雨先案内人 (flac+cue+jpg)/BK_1/04.jpg",
+      "size": 436406
+    },
+    {
+      "path": "CDs/[EAC][120222]「おひさま／イエーイ!!」／雨先案内人 (flac+cue+jpg)/BK_1/05.jpg",
+      "size": 375263
+    },
+    {
+      "path": "CDs/[EAC][120222]「おひさま／イエーイ!!」／雨先案内人 (flac+cue+jpg)/BK_1/06.jpg",
+      "size": 204981
+    },
+    {
+      "path": "CDs/[EAC][120222]「おひさま／イエーイ!!」／雨先案内人 (flac+cue+jpg)/BK_1/07.jpg",
+      "size": 379349
+    },
+    {
+      "path": "CDs/[EAC][120222]「おひさま／イエーイ!!」／雨先案内人 (flac+cue+jpg)/BK_2/IMG_0001.jpg",
+      "size": 633974
+    },
+    {
+      "path": "CDs/[EAC][120222]「おひさま／イエーイ!!」／雨先案内人 (flac+cue+jpg)/BK_2/IMG_0002.jpg",
+      "size": 2204169
+    },
+    {
+      "path": "CDs/[EAC][120222]「おひさま／イエーイ!!」／雨先案内人 (flac+cue+jpg)/BK_2/IMG_0003.jpg",
+      "size": 857327
+    },
+    {
+      "path": "CDs/[EAC][120222]「おひさま／イエーイ!!」／雨先案内人 (flac+cue+jpg)/BK_2/IMG_0004.jpg",
+      "size": 1793788
+    },
+    {
+      "path": "CDs/[EAC][120222]「おひさま／イエーイ!!」／雨先案内人 (flac+cue+jpg)/BK_2/IMG_0005.jpg",
+      "size": 2197460
+    },
+    {
+      "path": "CDs/[EAC][120222]「おひさま／イエーイ!!」／雨先案内人 (flac+cue+jpg)/BK_2/IMG_0006.jpg",
+      "size": 3284129
+    },
+    {
+      "path": "CDs/[EAC][120222]「おひさま／イエーイ!!」／雨先案内人 (flac+cue+jpg)/BK_2/IMG_0007.jpg",
+      "size": 832781
+    },
+    {
+      "path": "CDs/[EAC][120222]「おひさま／イエーイ!!」／雨先案内人 (flac+cue+jpg)/BK_2/IMG_0008.jpg",
+      "size": 359201
+    },
+    {
+      "path": "CDs/[EAC][120222]「おひさま／イエーイ!!」／雨先案内人 (flac+cue+jpg)/CDImage.cue",
+      "size": 462
+    },
+    {
+      "path": "CDs/[EAC][120222]「おひさま／イエーイ!!」／雨先案内人 (flac+cue+jpg)/CDImage.flac",
+      "size": 78426290
+    },
+    {
+      "path": "CDs/[EAC][120222]「おひさま／イエーイ!!」／雨先案内人 (flac+cue+jpg)/CDImage.log",
+      "size": 1125
+    },
+    {
+      "path": "CDs/[EAC][120403] SPCD of Vol.1 (flac+cue)/CDImage.cue",
+      "size": 2524
+    },
+    {
+      "path": "CDs/[EAC][120403] SPCD of Vol.1 (flac+cue)/CDImage.flac",
+      "size": 171466577
+    },
+    {
+      "path": "CDs/[EAC][120403] SPCD of Vol.1 (flac+cue)/CDImage.log",
+      "size": 2262
+    },
+    {
+      "path": "CDs/[EAC][120502] SPCD of Vol.2 (flac+cue)/CDImage.cue",
+      "size": 1370
+    },
+    {
+      "path": "CDs/[EAC][120502] SPCD of Vol.2 (flac+cue)/CDImage.flac",
+      "size": 123739782
+    },
+    {
+      "path": "CDs/[EAC][120502] SPCD of Vol.2 (flac+cue)/CDImage.log",
+      "size": 1883
+    },
+    {
+      "path": "CDs/[EAC][120523] OST (flac+cue+jpg)/BK/IMG_0001.jpg",
+      "size": 1373435
+    },
+    {
+      "path": "CDs/[EAC][120523] OST (flac+cue+jpg)/BK/IMG_0002.jpg",
+      "size": 1770454
+    },
+    {
+      "path": "CDs/[EAC][120523] OST (flac+cue+jpg)/BK/IMG_0003.jpg",
+      "size": 668497
+    },
+    {
+      "path": "CDs/[EAC][120523] OST (flac+cue+jpg)/BK/IMG_0004.jpg",
+      "size": 1173633
+    },
+    {
+      "path": "CDs/[EAC][120523] OST (flac+cue+jpg)/BK/IMG_0005.jpg",
+      "size": 1785827
+    },
+    {
+      "path": "CDs/[EAC][120523] OST (flac+cue+jpg)/BK/IMG_0006.jpg",
+      "size": 1999022
+    },
+    {
+      "path": "CDs/[EAC][120523] OST (flac+cue+jpg)/BK/IMG_0007.jpg",
+      "size": 2016630
+    },
+    {
+      "path": "CDs/[EAC][120523] OST (flac+cue+jpg)/BK/IMG_0008.jpg",
+      "size": 2494862
+    },
+    {
+      "path": "CDs/[EAC][120523] OST (flac+cue+jpg)/「男子高校生の日常」オリジナル・サウンドトラック.cue",
+      "size": 6410
+    },
+    {
+      "path": "CDs/[EAC][120523] OST (flac+cue+jpg)/「男子高校生の日常」オリジナル・サウンドトラック.flac",
+      "size": 414344779
+    },
+    {
+      "path": "CDs/[EAC][120523] OST (flac+cue+jpg)/「男子高校生の日常」オリジナル・サウンドトラック.log",
+      "size": 11894
+    },
+    {
+      "path": "CDs/[EAC][120602] SPCD of Vol.3 (flac+cue)/CDImage.cue",
+      "size": 1578
+    },
+    {
+      "path": "CDs/[EAC][120602] SPCD of Vol.3 (flac+cue)/CDImage.flac",
+      "size": 173245562
+    },
+    {
+      "path": "CDs/[EAC][120602] SPCD of Vol.3 (flac+cue)/CDImage.log",
+      "size": 3246
+    },
+    {
+      "path": "CDs/[EAC][120703] SPCD of Vol.4 (flac+cue)/CDImage.cue",
+      "size": 882
+    },
+    {
+      "path": "CDs/[EAC][120703] SPCD of Vol.4 (flac+cue)/CDImage.flac",
+      "size": 120919171
+    },
+    {
+      "path": "CDs/[EAC][120703] SPCD of Vol.4 (flac+cue)/CDImage.log",
+      "size": 2396
+    },
+    {
+      "path": "CDs/[EAC][120802] SPCD of Vol.5 (flac+cue)/CDImage.cue",
+      "size": 1057
+    },
+    {
+      "path": "CDs/[EAC][120802] SPCD of Vol.5 (flac+cue)/CDImage.flac",
+      "size": 127014665
+    },
+    {
+      "path": "CDs/[EAC][120802] SPCD of Vol.5 (flac+cue)/CDImage.log",
+      "size": 2640
+    },
+    {
+      "path": "CDs/[EAC][120904] SPCD of Vol.6 (flac+cue)/CDImage.cue",
+      "size": 1230
+    },
+    {
+      "path": "CDs/[EAC][120904] SPCD of Vol.6 (flac+cue)/CDImage.flac",
+      "size": 137753138
+    },
+    {
+      "path": "CDs/[EAC][120904] SPCD of Vol.6 (flac+cue)/CDImage.log",
+      "size": 2882
+    },
+    {
+      "path": "Scans/Vol.1/omake_0001.jpg",
+      "size": 5629151
+    },
+    {
+      "path": "Scans/Vol.1/omake_0002.jpg",
+      "size": 10496600
+    },
+    {
+      "path": "Scans/Vol.1/omake_0003.jpg",
+      "size": 5811457
+    },
+    {
+      "path": "Scans/Vol.1/omake_0004.jpg",
+      "size": 3471209
+    },
+    {
+      "path": "Scans/Vol.1/omake_0005.jpg",
+      "size": 9154597
+    },
+    {
+      "path": "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [CM01][Ma10p_1080p][x265_flac].mkv",
+      "size": 23040918
+    },
+    {
+      "path": "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [CM02][Ma10p_1080p][x265_flac].mkv",
+      "size": 23081754
+    },
+    {
+      "path": "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [Menu01_1v2][Ma10p_1080p][x265_flac].mkv",
+      "size": 16400396
+    },
+    {
+      "path": "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [Menu01_2].png",
+      "size": 3257550
+    },
+    {
+      "path": "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [Menu02_1][Ma10p_1080p][x265_flac].mkv",
+      "size": 14348049
+    },
+    {
+      "path": "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [Menu02_2].png",
+      "size": 2543401
+    },
+    {
+      "path": "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [Menu03_1][Ma10p_1080p][x265_flac].mkv",
+      "size": 13275479
+    },
+    {
+      "path": "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [Menu03_2].png",
+      "size": 2792348
+    },
+    {
+      "path": "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [Menu04_1][Ma10p_1080p][x265_flac].mkv",
+      "size": 20570270
+    },
+    {
+      "path": "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [Menu04_2].png",
+      "size": 2942042
+    },
+    {
+      "path": "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [Menu05_1][Ma10p_1080p][x265_flac].mkv",
+      "size": 16861211
+    },
+    {
+      "path": "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [Menu05_2].png",
+      "size": 3083262
+    },
+    {
+      "path": "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [Menu06_1][Ma10p_1080p][x265_flac].mkv",
+      "size": 23912794
+    },
+    {
+      "path": "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [Menu06_2].png",
+      "size": 3239582
+    },
+    {
+      "path": "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [NCED01][Ma10p_1080p][x265_flac].mkv",
+      "size": 39975111
+    },
+    {
+      "path": "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [NCED_Web Broadcasting_1][Ma10p_1080p][x265_flac].mkv",
+      "size": 5356193
+    },
+    {
+      "path": "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [NCED_Web Broadcasting_2][Ma10p_1080p][x265_flac].mkv",
+      "size": 52150420
+    },
+    {
+      "path": "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [NCOP01][Ma10p_1080p][x265_flac].mkv",
+      "size": 56151255
+    },
+    {
+      "path": "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [NCOP_Web Broadcasting][Ma10p_1080p][x265_flac].mkv",
+      "size": 25023479
+    },
+    {
+      "path": "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [PV01v2][Ma10p_1080p][x265_flac].mkv",
+      "size": 14035543
+    },
+    {
+      "path": "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [PV02][Ma10p_1080p][x265_flac].mkv",
+      "size": 7578540
+    },
+    {
+      "path": "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [PV03][Ma10p_1080p][x265_flac].mkv",
+      "size": 7494941
+    },
+    {
+      "path": "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [PV04][Ma10p_1080p][x265_flac].mkv",
+      "size": 7484927
+    },
+    {
+      "path": "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [PV05][Ma10p_1080p][x265_flac].mkv",
+      "size": 55929128
+    },
+    {
+      "path": "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [SP01][Ma10p_1080p][x265_flac].mkv",
+      "size": 25927256
+    },
+    {
+      "path": "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [SP02][Ma10p_1080p][x265_flac].mkv",
+      "size": 21717743
+    },
+    {
+      "path": "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [SP03][Ma10p_1080p][x265_flac].mkv",
+      "size": 25983366
+    },
+    {
+      "path": "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [SP04][Ma10p_1080p][x265_flac].mkv",
+      "size": 47067238
+    },
+    {
+      "path": "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [SP05][Ma10p_1080p][x265_flac].mkv",
+      "size": 32428519
+    },
+    {
+      "path": "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [SP06][Ma10p_1080p][x265_flac].mkv",
+      "size": 40964126
+    },
+    {
+      "path": "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [SP_EP08][Ma10p_1080p][x265_flac].mkv",
+      "size": 51358955
+    },
+    {
+      "path": "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [SP_Web Broadcasting][Ma10p_1080p][x265_flac].mkv",
+      "size": 953151540
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "status": "ok",
+  "type": "movie",
+  "title_candidate": "The Seven Deadly Sins: Grudge of Edinburgh Part 1",
+  "tmdb_name": "The Seven Deadly Sins: Grudge of Edinburgh Part 1",
+  "tmdb_id": 989937,
+  "timing": {
+    "analysis_seconds": 2.58
+  },
+  "primary_files": [
+    {
+      "file_path": "The.Seven.Deadly.Sins.Grudge.of.Edinburgh.Part.1.2022.1080p.NF.WEB-DL.DDP5.1.x264-PTerWEB.mkv"
+    }
+  ],
+  "task_plan": {
+    "is_movie": true,
+    "ai_type": "movie",
+    "tv_available": false,
+    "movie_available": true,
+    "selected_confidence": "High"
+  },
+  "final_type": "movie"
+}

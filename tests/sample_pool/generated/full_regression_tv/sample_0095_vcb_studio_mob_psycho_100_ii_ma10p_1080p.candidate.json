@@ -1,0 +1,62 @@
+{
+  "status": "ok",
+  "type": "movie",
+  "title_candidate": "Mob Psycho 100 II",
+  "timing": {
+    "analysis_seconds": 17.716
+  },
+  "collection_analysis": {
+    "is_collection": false,
+    "collection_name": "Mob Psycho 100 II",
+    "confidence": "High",
+    "reason": "文件为动画剧集与特典，不是电影合集",
+    "file_mapping": [],
+    "unmatched_files": [
+      "[VCB-Studio] Mob Psycho 100 II [01][Ma10p_1080p][x265_flac_aac].mkv",
+      "[VCB-Studio] Mob Psycho 100 II [02][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Mob Psycho 100 II [03][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Mob Psycho 100 II [04][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Mob Psycho 100 II [05][Ma10p_1080p][x265_flac_aac].mkv",
+      "[VCB-Studio] Mob Psycho 100 II [06][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Mob Psycho 100 II [07][Ma10p_1080p][x265_flac_aac].mkv",
+      "[VCB-Studio] Mob Psycho 100 II [08][Ma10p_1080p][x265_flac_aac].mkv",
+      "[VCB-Studio] Mob Psycho 100 II [09][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Mob Psycho 100 II [10][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Mob Psycho 100 II [11][Ma10p_1080p][x265_flac_aac].mkv",
+      "[VCB-Studio] Mob Psycho 100 II [12][Ma10p_1080p][x265_flac].mkv",
+      "[VCB-Studio] Mob Psycho 100 II [13][Ma10p_1080p][x265_flac_aac].mkv",
+      "[VCB-Studio] Mob Psycho 100 II [OVA][Ma10p_1080p][x265_flac_aac].mkv",
+      "SPs/[VCB-Studio] Mob Psycho 100 II [CM01][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Mob Psycho 100 II [CM02][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Mob Psycho 100 II [CM03][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Mob Psycho 100 II [Menu01][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Mob Psycho 100 II [Menu02][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Mob Psycho 100 II [Menu03][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Mob Psycho 100 II [Menu04][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Mob Psycho 100 II [Menu05][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Mob Psycho 100 II [Menu06][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Mob Psycho 100 II [Menu_OVA][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Mob Psycho 100 II [NCED][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Mob Psycho 100 II [NCED_EP01][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Mob Psycho 100 II [NCED_EP05][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Mob Psycho 100 II [NCED_EP07][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Mob Psycho 100 II [NCED_EP13][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Mob Psycho 100 II [NCED_OVA][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Mob Psycho 100 II [NCOP_OVA][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Mob Psycho 100 II [PV01][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Mob Psycho 100 II [PV02][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Mob Psycho 100 II [PV_OVA][Ma10p_1080p][x265_flac].mkv",
+      "SPs/[VCB-Studio] Mob Psycho 100 II [SP01][Ma10p_1080p][x265].mkv",
+      "SPs/[VCB-Studio] Mob Psycho 100 II [SP02][Ma10p_1080p][x265].mkv",
+      "SPs/[VCB-Studio] Mob Psycho 100 II [SP03][Ma10p_1080p][x265].mkv",
+      "SPs/[VCB-Studio] Mob Psycho 100 II [SP04][Ma10p_1080p][x265].mkv",
+      "SPs/[VCB-Studio] Mob Psycho 100 II [SP05][Ma10p_1080p][x265].mkv",
+      "SPs/[VCB-Studio] Mob Psycho 100 II [SP06][Ma10p_1080p][x265].mkv",
+      "SPs/[VCB-Studio] Mob Psycho 100 II [Storyboard][Ma10p_1080p][x265_flac].mkv"
+    ],
+    "conflict_details": [
+      "主文件为第1-13话及OVA，SP均为特典内容"
+    ],
+    "extra_notes": null
+  }
+}

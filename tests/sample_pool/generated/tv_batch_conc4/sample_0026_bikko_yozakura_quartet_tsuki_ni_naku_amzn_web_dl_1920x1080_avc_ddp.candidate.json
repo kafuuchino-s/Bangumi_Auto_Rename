@@ -1,0 +1,74 @@
+{
+  "status": "ok",
+  "type": "tv",
+  "title_candidate": "Yozakura Quartet: Tsuki ni Naku",
+  "tmdb_name": "Yozakura Quartet: Tsuki ni Naku",
+  "tmdb_id": 118218,
+  "file_mapping": [
+    {
+      "source_index": 1,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 1,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 2,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 2,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 3,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 3,
+      "episode_type": "regular",
+      "confidence": "High"
+    }
+  ],
+  "analysis_result": {
+    "confidence": "High",
+    "reason": "本地文件名中的 E01/E02/E03 与 TMDB Season 1 的第 1/2/3 集直接对应，且 TMDB 候选季度中存在完整的三集条目，可稳定映射。",
+    "season_mapping": [
+      {
+        "local_group_name": "Yozakura Quartet: Tsuki ni Naku",
+        "maps_to_tmdb_seasons": [
+          1
+        ]
+      }
+    ],
+    "file_mapping": [
+      {
+        "source_index": 1,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 1,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 2,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 2,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 3,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 3,
+        "episode_type": "regular",
+        "confidence": "High"
+      }
+    ],
+    "unmatched_files": [],
+    "conflict_details": [],
+    "extra_notes": null
+  }
+}

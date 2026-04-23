@@ -1,0 +1,59 @@
+{
+  "status": "ok",
+  "type": "tv",
+  "title_candidate": "The Disastrous Life of Saiki K.",
+  "tmdb_name": "齐木楠雄的灾难",
+  "tmdb_id": 67676,
+  "timing": {
+    "analysis_seconds": 12.951
+  },
+  "file_mapping": [
+    {
+      "source_index": 1,
+      "file_path": "The.Disastrous.Life.of.Saiki.K.S00E01.2018.1080p.NF.WEB-DL.x264.DDP.2.0-AnimeF@ADWeb.mkv",
+      "tmdb_season": 0,
+      "tmdb_episode": 1,
+      "episode_type": "special",
+      "confidence": "High"
+    },
+    {
+      "source_index": 2,
+      "file_path": "The.Disastrous.Life.of.Saiki.K.S00E02.2018.1080p.NF.WEB-DL.x264.DDP.2.0-AnimeF@ADWeb.mkv",
+      "tmdb_season": 0,
+      "tmdb_episode": 2,
+      "episode_type": "special",
+      "confidence": "High"
+    }
+  ],
+  "conflict_details": [],
+  "analysis_result": {
+    "confidence": "High",
+    "reason": "文件编号直接对应TMDB特典集",
+    "season_mapping": [
+      {
+        "local_group_name": "S00",
+        "maps_to_tmdb_seasons": [
+          0
+        ]
+      }
+    ],
+    "file_mapping_count": 2,
+    "unmatched_count": 0,
+    "conflict_count": 0
+  },
+  "hydration_notes": {
+    "hydrated_count": 2,
+    "examples": [
+      "hydrated:1:The.Disastrous.Life.of.Saiki.K.S00E01.2018.1080p.NF.WEB-DL.x264.DDP.2.0-AnimeF@ADWeb.mkv",
+      "hydrated:2:The.Disastrous.Life.of.Saiki.K.S00E02.2018.1080p.NF.WEB-DL.x264.DDP.2.0-AnimeF@ADWeb.mkv"
+    ]
+  },
+  "task_plan": {
+    "is_movie": false,
+    "ai_type": "tv",
+    "tv_available": true,
+    "movie_available": false,
+    "selected_confidence": "High"
+  },
+  "final_type": "tv"
+}

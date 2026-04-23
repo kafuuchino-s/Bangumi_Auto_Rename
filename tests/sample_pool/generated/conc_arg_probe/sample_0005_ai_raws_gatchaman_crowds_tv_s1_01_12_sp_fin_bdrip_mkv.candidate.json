@@ -1,0 +1,227 @@
+{
+  "status": "ok",
+  "type": "tv",
+  "title_candidate": "Gatchaman Crowds",
+  "tmdb_name": "Gatchaman Crowds",
+  "tmdb_id": 61527,
+  "file_mapping": [
+    {
+      "source_index": 1,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 1,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 2,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 2,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 3,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 3,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 4,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 4,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 5,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 5,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 6,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 6,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 7,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 7,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 8,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 8,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 9,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 9,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 10,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 10,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 11,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 11,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 12,
+      "file_path": null,
+      "tmdb_season": 1,
+      "tmdb_episode": 12,
+      "episode_type": "regular",
+      "confidence": "High"
+    }
+  ],
+  "analysis_result": {
+    "confidence": "High",
+    "reason": "本地文件前 12 集文件名以 #01-#12 直接对应 TMDB Season 1 的 12 集正片，标题与集号均一致，属于确定性匹配。其余文件均为 NCOP/NCED 或 12DC 等附加内容，当前 TMDB 列表未提供可验证的 special 集目，因此不做强行映射。",
+    "season_mapping": [
+      {
+        "local_group_name": "GATCHAMAN CROWDS",
+        "maps_to_tmdb_seasons": [
+          1
+        ]
+      }
+    ],
+    "file_mapping": [
+      {
+        "source_index": 1,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 1,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 2,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 2,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 3,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 3,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 4,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 4,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 5,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 5,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 6,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 6,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 7,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 7,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 8,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 8,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 9,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 9,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 10,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 10,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 11,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 11,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 12,
+        "file_path": null,
+        "tmdb_season": 1,
+        "tmdb_episode": 12,
+        "episode_type": "regular",
+        "confidence": "High"
+      }
+    ],
+    "unmatched_files": [
+      "[AI-Raws] GATCHAMAN CROWDS #12DC (BD HEVC 1920x1080 yuv444p10le FLAC)[5DF6676C].mkv",
+      "[AI-Raws] GATCHAMAN CROWDS ノクレジットED (BD HEVC 1920x1080 yuv444p10le FLAC)[29B8A63E].mkv",
+      "[AI-Raws] GATCHAMAN CROWDS ノクレジットOP (BD HEVC 1920x1080 yuv444p10le FLAC)[C53AE4AD].mkv",
+      "[AI-Raws] GATCHAMAN CROWDS ノクレジットOP Ver.2 (BD HEVC 1920x1080 yuv444p10le FLAC)[9B6A7F15].mkv",
+      "[AI-Raws] GATCHAMAN CROWDS ノクレジットOP Ver.3 (BD HEVC 1920x1080 yuv444p10le FLAC)[9CA49B78].mkv",
+      "[AI-Raws] GATCHAMAN CROWDS ノクレジットOP Ver.4 (BD HEVC 1920x1080 yuv444p10le FLAC)[11E1459B].mkv",
+      "[AI-Raws] GATCHAMAN CROWDS ノクレジットOP Ver.5 (BD HEVC 1920x1080 yuv444p10le FLAC)[7110A80B].mkv",
+      "[AI-Raws] GATCHAMAN CROWDS ノクレジットOP Ver.6 (BD HEVC 1920x1080 yuv444p10le FLAC)[2B1C6731].mkv"
+    ],
+    "conflict_details": [],
+    "extra_notes": "本地正片编号 #01-#12 可直接对应 TMDB Season 1 的 S01E01-S01E12；#12DC 及各类 NCOP/NCED 为 BD 附加内容，TMDB 当前列表未提供可映射的 special 条目，因此未纳入映射。"
+  }
+}

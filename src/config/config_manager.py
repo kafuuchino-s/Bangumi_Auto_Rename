@@ -1,4 +1,5 @@
 import json
+import os
 import platform
 import threading
 from contextlib import contextmanager
@@ -17,35 +18,21 @@ CONFIG_DEFAULT = {
     "overwrite_existing": False,  # 是否覆盖已存在的文件
     "docker_mnt": "/media",
     "host_path_prefix": "",  # Windows宿主机路径前缀，用于qBittorrent路径转换
-    "ai_provider": "openai",
     "ai_api_key": "",
     "ai_base_url": "https://api.openai.com/v1",
     "ai_model": "gpt-4o-mini",
     "ai_temperature": 0.1,  # OpenAI温度
-    "gemini_api_key": "",
-    "gemini_base_url": "https://generativelanguage.googleapis.com",
-    "gemini_model": "gemini-2.5-flash",
-    "gemini_temperature": 0.5,  # Gemini温度
     "ai_force_strict": True,
     "ai_confidence_threshold": "Medium",
-    "openai_output_format": "function_calling",  # OpenAI输出格式选择（兼容旧配置）
+    "openai_output_format": "structured_output",  # OpenAI输出格式选择
     "openai_api_interface": "responses_api",  # OpenAI接口类型：responses_api/chat_completions
     "openai_auto_routing_enabled": True,  # OpenAI自动路由
     "openai_auto_format_order": [
-        "function_calling",
-        "json_object",
         "structured_output",
+        "function_calling",
         "text",
     ],  # OpenAI自动路由顺序
     "openai_format_stats": {},  # OpenAI格式测试统计
-    "gemini_output_format": "structured_output",  # Gemini输出格式选择（兼容旧配置）
-    "gemini_auto_routing_enabled": True,  # Gemini自动路由
-    "gemini_auto_format_order": [
-        "structured_output",
-        "json_object",
-        "text",
-    ],  # Gemini自动路由顺序
-    "gemini_format_stats": {},  # Gemini格式测试统计
     "ai_auto_save": False,  # 是否自动保存AI分析结果
     "log_level": "INFO",  # 日志等级
     "queue_max_workers": 1,  # 队列并行处理数
@@ -100,26 +87,18 @@ CN_MAP = {
     "overwrite_existing": "🔄 覆盖已存在文件",
     "docker_mnt": "📁 Docker挂载路径",
     "host_path_prefix": "📁 宿主机路径前缀",
-    "ai_provider": "🤖 AI提供商",
     "ai_api_key": "🤖 OpenAI API密钥",
     "ai_base_url": "🌐 OpenAI API地址",
     "ai_model": "🧠 OpenAI模型",
-    "gemini_api_key": "💎 Gemini API密钥",
-    "gemini_base_url": "🌐 Gemini API地址",
-    "gemini_model": "💎 Gemini模型",
     "ai_force_strict": "🚨 AI严格模式（运维）",
     "ai_confidence_threshold": "📊 AI置信度阈值",
+    "ai_request_timeout_seconds": "⏱️ AI请求超时秒数",
     "openai_output_format": "🎯 OpenAI输出格式",
     "openai_api_interface": "🌐 OpenAI接口类型",
     "openai_auto_routing_enabled": "🧭 OpenAI自动路由",
     "openai_auto_format_order": "📈 OpenAI自动路由顺序",
     "openai_format_stats": "🧪 OpenAI格式测试统计",
-    "gemini_output_format": "💎 Gemini输出格式",
-    "gemini_auto_routing_enabled": "🧭 Gemini自动路由",
-    "gemini_auto_format_order": "📈 Gemini自动路由顺序",
-    "gemini_format_stats": "🧪 Gemini格式测试统计",
     "ai_temperature": "🔥 OpenAI温度",
-    "gemini_temperature": "🔥 Gemini温度",
     "ai_auto_save": "💾 自动保存AI分析",
     "log_level": "📝 日志等级",
     "queue_max_workers": "🔢 队列并行数（建议1-5）",
@@ -159,6 +138,8 @@ class ConfigManager:
         self._io_lock = threading.RLock()
         self._runtime_local = threading.local()
         self.config: dict[str, Any] = {}
+        readonly_env = os.environ.get('BANGUMI_CONFIG_READONLY', '')
+        self._readonly_mode = readonly_env.lower() in {'1', 'true', 'yes', 'on'}
 
         if not CONFIG_PATH.exists():
             with open(CONFIG_PATH, 'w', encoding='UTF-8') as file:
@@ -219,7 +200,8 @@ class ConfigManager:
             self.config = {key: self.config[key] for key in CONFIG_DEFAULT}
 
             # 重新写回
-            self.write_config()
+            if not self._readonly_mode:
+                self.write_config()
 
     def get_config(self, key: str) -> Any:
         runtime_overrides = self._get_runtime_overrides()

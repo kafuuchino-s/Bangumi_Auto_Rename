@@ -1,0 +1,23 @@
+{
+  "status": "ok",
+  "type": "movie",
+  "title_candidate": "The Seven Deadly Sins: Grudge of Edinburgh Part 2",
+  "tmdb_name": "The Seven Deadly Sins: Grudge of Edinburgh Part 2",
+  "tmdb_id": 1064835,
+  "timing": {
+    "analysis_seconds": 1.649
+  },
+  "primary_files": [
+    {
+      "file_path": "The.Seven.Deadly.Sins.Grudge.of.Edinburgh.Part.2.2023.1080p.NF.WEB-DL.x264.DDP5.1-PTerWEB.mkv"
+    }
+  ],
+  "task_plan": {
+    "is_movie": true,
+    "ai_type": "movie",
+    "tv_available": false,
+    "movie_available": true,
+    "selected_confidence": "High"
+  },
+  "final_type": "movie"
+}

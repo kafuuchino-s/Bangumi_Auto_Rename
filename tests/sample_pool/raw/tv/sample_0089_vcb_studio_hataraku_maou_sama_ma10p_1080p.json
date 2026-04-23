@@ -1,0 +1,889 @@
+{
+  "root_name": "[VCB-Studio] Hataraku Maou-sama! [Ma10p_1080p]",
+  "files": [
+    {
+      "path": "[VCB-Studio] Hataraku Maou-sama! [01][Ma10p_1080p][x265_flac_aac].mkv",
+      "size": 969036617
+    },
+    {
+      "path": "[VCB-Studio] Hataraku Maou-sama! [02][Ma10p_1080p][x265_flac].mkv",
+      "size": 816337561
+    },
+    {
+      "path": "[VCB-Studio] Hataraku Maou-sama! [03][Ma10p_1080p][x265_flac_aac].mkv",
+      "size": 801127552
+    },
+    {
+      "path": "[VCB-Studio] Hataraku Maou-sama! [04][Ma10p_1080p][x265_flac].mkv",
+      "size": 788073233
+    },
+    {
+      "path": "[VCB-Studio] Hataraku Maou-sama! [05][Ma10p_1080p][x265_flac_aac].mkv",
+      "size": 1050749124
+    },
+    {
+      "path": "[VCB-Studio] Hataraku Maou-sama! [06][Ma10p_1080p][x265_flac].mkv",
+      "size": 781734045
+    },
+    {
+      "path": "[VCB-Studio] Hataraku Maou-sama! [07][Ma10p_1080p][x265_flac_aac].mkv",
+      "size": 881966687
+    },
+    {
+      "path": "[VCB-Studio] Hataraku Maou-sama! [08][Ma10p_1080p][x265_flac].mkv",
+      "size": 953709481
+    },
+    {
+      "path": "[VCB-Studio] Hataraku Maou-sama! [09][Ma10p_1080p][x265_flac_aac].mkv",
+      "size": 935712733
+    },
+    {
+      "path": "[VCB-Studio] Hataraku Maou-sama! [10][Ma10p_1080p][x265_flac].mkv",
+      "size": 957943143
+    },
+    {
+      "path": "[VCB-Studio] Hataraku Maou-sama! [11][Ma10p_1080p][x265_flac].mkv",
+      "size": 817114722
+    },
+    {
+      "path": "[VCB-Studio] Hataraku Maou-sama! [12][Ma10p_1080p][x265_flac].mkv",
+      "size": 859533282
+    },
+    {
+      "path": "[VCB-Studio] Hataraku Maou-sama! [13][Ma10p_1080p][x265_flac_aac].mkv",
+      "size": 847344867
+    },
+    {
+      "path": "CDs/[130424] ｢ZERO!!｣／栗林みな実 (flac+webp)/Cover.jpg",
+      "size": 530439
+    },
+    {
+      "path": "CDs/[130424] ｢ZERO!!｣／栗林みな実 (flac+webp)/LACM-34083.cue",
+      "size": 781
+    },
+    {
+      "path": "CDs/[130424] ｢ZERO!!｣／栗林みな実 (flac+webp)/LACM-34083.flac",
+      "size": 153445790
+    },
+    {
+      "path": "CDs/[130424] ｢ZERO!!｣／栗林みな実 (flac+webp)/LACM-34083.log",
+      "size": 1918
+    },
+    {
+      "path": "CDs/[130424] ｢ZERO!!｣／栗林みな実 (flac+webp)/Scans/01.webp",
+      "size": 345740
+    },
+    {
+      "path": "CDs/[130424] ｢ZERO!!｣／栗林みな実 (flac+webp)/Scans/02.webp",
+      "size": 421710
+    },
+    {
+      "path": "CDs/[130424] ｢ZERO!!｣／栗林みな実 (flac+webp)/Scans/03.webp",
+      "size": 333080
+    },
+    {
+      "path": "CDs/[130424] ｢ZERO!!｣／栗林みな実 (flac+webp)/Scans/04.webp",
+      "size": 337858
+    },
+    {
+      "path": "CDs/[130424] ｢ZERO!!｣／栗林みな実 (flac+webp)/Scans/05.webp",
+      "size": 155566
+    },
+    {
+      "path": "CDs/[130424] ｢ZERO!!｣／栗林みな実 (flac+webp)/Scans/06.webp",
+      "size": 126556
+    },
+    {
+      "path": "CDs/[130424] ｢ZERO!!｣／栗林みな実 (flac+webp)/Scans/07.webp",
+      "size": 104182
+    },
+    {
+      "path": "CDs/[130522] ｢月花｣／nano.RIPE (flac+webp)/LACM-14088.cue",
+      "size": 583
+    },
+    {
+      "path": "CDs/[130522] ｢月花｣／nano.RIPE (flac+webp)/LACM-14088.flac",
+      "size": 101630614
+    },
+    {
+      "path": "CDs/[130522] ｢月花｣／nano.RIPE (flac+webp)/LACM-14088.log",
+      "size": 1498
+    },
+    {
+      "path": "CDs/[130522] ｢月花｣／nano.RIPE (flac+webp)/Scans/01.webp",
+      "size": 632312
+    },
+    {
+      "path": "CDs/[130522] ｢月花｣／nano.RIPE (flac+webp)/Scans/02.webp",
+      "size": 241092
+    },
+    {
+      "path": "CDs/[130522] ｢月花｣／nano.RIPE (flac+webp)/Scans/03.webp",
+      "size": 259178
+    },
+    {
+      "path": "CDs/[130522] ｢月花｣／nano.RIPE (flac+webp)/Scans/04.webp",
+      "size": 601200
+    },
+    {
+      "path": "CDs/[130522] ｢月花｣／nano.RIPE (flac+webp)/Scans/05.webp",
+      "size": 514862
+    },
+    {
+      "path": "CDs/[130522] ｢月花｣／nano.RIPE (flac+webp)/Scans/06.webp",
+      "size": 484356
+    },
+    {
+      "path": "CDs/[130522] ｢月花｣／nano.RIPE (flac+webp)/Scans/07.webp",
+      "size": 763646
+    },
+    {
+      "path": "CDs/[130522] ｢月花｣／nano.RIPE (flac+webp)/Scans/08.webp",
+      "size": 534226
+    },
+    {
+      "path": "CDs/[130522] ｢月花｣／nano.RIPE (flac+webp)/Scans/09.webp",
+      "size": 609552
+    },
+    {
+      "path": "CDs/[130522] ｢月花｣／nano.RIPE (flac+webp)/Scans/10.webp",
+      "size": 413810
+    },
+    {
+      "path": "CDs/[130522] ｢月花｣／nano.RIPE (flac+webp)/Scans/11.webp",
+      "size": 414252
+    },
+    {
+      "path": "CDs/[130522] ｢月花｣／nano.RIPE (flac+webp)/Scans/12.webp",
+      "size": 392538
+    },
+    {
+      "path": "CDs/[130626] ORIGINAL SOUNDTRACK／中西亮輔 (flac+webp)/Cover.jpg",
+      "size": 567807
+    },
+    {
+      "path": "CDs/[130626] ORIGINAL SOUNDTRACK／中西亮輔 (flac+webp)/LACA-9295.cue",
+      "size": 4408
+    },
+    {
+      "path": "CDs/[130626] ORIGINAL SOUNDTRACK／中西亮輔 (flac+webp)/LACA-9295.flac",
+      "size": 316791670
+    },
+    {
+      "path": "CDs/[130626] ORIGINAL SOUNDTRACK／中西亮輔 (flac+webp)/LACA-9295.log",
+      "size": 6634
+    },
+    {
+      "path": "CDs/[130626] ORIGINAL SOUNDTRACK／中西亮輔 (flac+webp)/LACA-9296.cue",
+      "size": 3868
+    },
+    {
+      "path": "CDs/[130626] ORIGINAL SOUNDTRACK／中西亮輔 (flac+webp)/LACA-9296.flac",
+      "size": 259486428
+    },
+    {
+      "path": "CDs/[130626] ORIGINAL SOUNDTRACK／中西亮輔 (flac+webp)/LACA-9296.log",
+      "size": 6256
+    },
+    {
+      "path": "CDs/[130626] ORIGINAL SOUNDTRACK／中西亮輔 (flac+webp)/Scans/01.webp",
+      "size": 357894
+    },
+    {
+      "path": "CDs/[130626] ORIGINAL SOUNDTRACK／中西亮輔 (flac+webp)/Scans/02.webp",
+      "size": 556842
+    },
+    {
+      "path": "CDs/[130626] ORIGINAL SOUNDTRACK／中西亮輔 (flac+webp)/Scans/03.webp",
+      "size": 167444
+    },
+    {
+      "path": "CDs/[130626] ORIGINAL SOUNDTRACK／中西亮輔 (flac+webp)/Scans/04.webp",
+      "size": 157908
+    },
+    {
+      "path": "CDs/[130626] ORIGINAL SOUNDTRACK／中西亮輔 (flac+webp)/Scans/05.webp",
+      "size": 1258928
+    },
+    {
+      "path": "CDs/[130626] ORIGINAL SOUNDTRACK／中西亮輔 (flac+webp)/Scans/06.webp",
+      "size": 815178
+    },
+    {
+      "path": "CDs/[130626] ORIGINAL SOUNDTRACK／中西亮輔 (flac+webp)/Scans/07.webp",
+      "size": 551198
+    },
+    {
+      "path": "CDs/[130626] ORIGINAL SOUNDTRACK／中西亮輔 (flac+webp)/Scans/08.webp",
+      "size": 934660
+    },
+    {
+      "path": "CDs/[130807] SPCD 01 (flac)/PCXG-50242.cue",
+      "size": 387
+    },
+    {
+      "path": "CDs/[130807] SPCD 01 (flac)/PCXG-50242.flac",
+      "size": 119980623
+    },
+    {
+      "path": "CDs/[130807] SPCD 01 (flac)/PCXG-50242.log",
+      "size": 3624
+    },
+    {
+      "path": "CDs/[130810] ｢ラジオでもはたらく勇者さま！｣ 勇者セット (mp3)/maousama_01.mp3",
+      "size": 29023448
+    },
+    {
+      "path": "CDs/[130810] ｢ラジオでもはたらく勇者さま！｣ 勇者セット (mp3)/maousama_02.mp3",
+      "size": 25514624
+    },
+    {
+      "path": "CDs/[130810] ｢ラジオでもはたらく勇者さま！｣ 勇者セット (mp3)/maousama_03.mp3",
+      "size": 31190624
+    },
+    {
+      "path": "CDs/[130810] ｢ラジオでもはたらく勇者さま！｣ 勇者セット (mp3)/maousama_04.mp3",
+      "size": 25445576
+    },
+    {
+      "path": "CDs/[130810] ｢ラジオでもはたらく勇者さま！｣ 勇者セット (mp3)/maousama_05.mp3",
+      "size": 24249776
+    },
+    {
+      "path": "CDs/[130810] ｢ラジオでもはたらく勇者さま！｣ 勇者セット (mp3)/maousama_06.mp3",
+      "size": 29355632
+    },
+    {
+      "path": "CDs/[130810] ｢ラジオでもはたらく勇者さま！｣ 勇者セット (mp3)/maousama_07.mp3",
+      "size": 37733744
+    },
+    {
+      "path": "CDs/[130810] ｢ラジオでもはたらく勇者さま！｣ 勇者セット (mp3)/maousama_08.mp3",
+      "size": 25341560
+    },
+    {
+      "path": "CDs/[130810] ｢ラジオでもはたらく勇者さま！｣ 勇者セット (mp3)/maousama_09.mp3",
+      "size": 26674880
+    },
+    {
+      "path": "CDs/[130810] ｢ラジオでもはたらく勇者さま！｣ 勇者セット (mp3)/maousama_10.mp3",
+      "size": 32961584
+    },
+    {
+      "path": "CDs/[130810] ｢ラジオでもはたらく勇者さま！｣ 勇者セット (mp3)/maousama_11.mp3",
+      "size": 28941320
+    },
+    {
+      "path": "CDs/[130810] ｢ラジオでもはたらく勇者さま！｣ 勇者セット (mp3)/maousama_12.mp3",
+      "size": 29085392
+    },
+    {
+      "path": "CDs/[130810] ｢ラジオでもはたらく勇者さま！｣ 勇者セット (mp3)/maousama_13.mp3",
+      "size": 25370144
+    },
+    {
+      "path": "CDs/[130810] ｢ラジオでもはたらく勇者さま！｣ 勇者セット (mp3)/maousama_14.mp3",
+      "size": 33354392
+    },
+    {
+      "path": "CDs/[130810] ｢ラジオでもはたらく勇者さま！｣ 勇者セット (mp3)/maousama_15.mp3",
+      "size": 36723152
+    },
+    {
+      "path": "CDs/[130810] ｢ラジオでもはたらく勇者さま！｣ 勇者セット (mp3)/maousama_16.mp3",
+      "size": 31834592
+    },
+    {
+      "path": "CDs/[130810] ｢ラジオでもはたらく勇者さま！｣ 勇者セット (mp3)/maousama_17.mp3",
+      "size": 26424560
+    },
+    {
+      "path": "CDs/[130810] ｢ラジオでもはたらく勇者さま！｣ 勇者セット (mp3)/maousama_18.mp3",
+      "size": 32218136
+    },
+    {
+      "path": "CDs/[130810] ｢ラジオでもはたらく勇者さま！｣ 勇者セット (mp3)/maousama_aftertalk.mp3",
+      "size": 9101528
+    },
+    {
+      "path": "CDs/[130810] ｢ラジオでもはたらく勇者さま！｣ 魔王セット (flac)/BRCG-00025.cue",
+      "size": 217
+    },
+    {
+      "path": "CDs/[130810] ｢ラジオでもはたらく勇者さま！｣ 魔王セット (flac)/BRCG-00025.flac",
+      "size": 234776936
+    },
+    {
+      "path": "CDs/[130810] ｢ラジオでもはたらく勇者さま！｣ 魔王セット (flac)/BRCG-00025.log",
+      "size": 2792
+    },
+    {
+      "path": "CDs/[130911] Character Song ｢歌う魔王さま！？｣ (flac+jpg)/01. マグロナルド幡ヶ谷駅前店へようこそ.flac",
+      "size": 29573726
+    },
+    {
+      "path": "CDs/[130911] Character Song ｢歌う魔王さま！？｣ (flac+jpg)/02. 正義に映す月.flac",
+      "size": 33970808
+    },
+    {
+      "path": "CDs/[130911] Character Song ｢歌う魔王さま！？｣ (flac+jpg)/03. エンド・オブ・デイズ.flac",
+      "size": 35466820
+    },
+    {
+      "path": "CDs/[130911] Character Song ｢歌う魔王さま！？｣ (flac+jpg)/04. Respect _ LOVE!!.flac",
+      "size": 28876192
+    },
+    {
+      "path": "CDs/[130911] Character Song ｢歌う魔王さま！？｣ (flac+jpg)/05. 堕天の甘美な悦楽.flac",
+      "size": 32443750
+    },
+    {
+      "path": "CDs/[130911] Character Song ｢歌う魔王さま！？｣ (flac+jpg)/06. うどん慕情.flac",
+      "size": 28559665
+    },
+    {
+      "path": "CDs/[130911] Character Song ｢歌う魔王さま！？｣ (flac+jpg)/Scans/01.jpg",
+      "size": 1176773
+    },
+    {
+      "path": "CDs/[130911] Character Song ｢歌う魔王さま！？｣ (flac+jpg)/Scans/02.jpg",
+      "size": 2457419
+    },
+    {
+      "path": "CDs/[130911] Character Song ｢歌う魔王さま！？｣ (flac+jpg)/Scans/03.jpg",
+      "size": 3216809
+    },
+    {
+      "path": "CDs/[130911] Character Song ｢歌う魔王さま！？｣ (flac+jpg)/Scans/04.jpg",
+      "size": 2275776
+    },
+    {
+      "path": "CDs/[130911] Character Song ｢歌う魔王さま！？｣ (flac+jpg)/Scans/05.jpg",
+      "size": 468056
+    },
+    {
+      "path": "CDs/[130911] Character Song ｢歌う魔王さま！？｣ (flac+jpg)/Scans/06.jpg",
+      "size": 1391467
+    },
+    {
+      "path": "CDs/[130911] Character Song ｢歌う魔王さま！？｣ (flac+jpg)/Scans/07.jpg",
+      "size": 806640
+    },
+    {
+      "path": "CDs/[130911] Character Song ｢歌う魔王さま！？｣ (flac+jpg)/Scans/08.jpg",
+      "size": 200185
+    },
+    {
+      "path": "CDs/[130911] Character Song ｢歌う魔王さま！？｣ (flac+jpg)/Scans/09.jpg",
+      "size": 323792
+    },
+    {
+      "path": "CDs/[130911] Character Song ｢歌う魔王さま！？｣ (flac+jpg)/Scans/10.jpg",
+      "size": 483134
+    },
+    {
+      "path": "CDs/[130911] Character Song ｢歌う魔王さま！？｣ (flac+jpg)/Scans/11.jpg",
+      "size": 442815
+    },
+    {
+      "path": "CDs/[131204] SPCD 02 (flac)/CDImage.cue",
+      "size": 234
+    },
+    {
+      "path": "CDs/[131204] SPCD 02 (flac)/CDImage.flac",
+      "size": 158107809
+    },
+    {
+      "path": "CDs/[131204] SPCD 02 (flac)/CDImage.log",
+      "size": 2920
+    },
+    {
+      "path": "CDs/[131215] SPCD 03 (flac)/DSP-2009.cue",
+      "size": 150
+    },
+    {
+      "path": "CDs/[131215] SPCD 03 (flac)/DSP-2009.flac",
+      "size": 222677157
+    },
+    {
+      "path": "CDs/[131215] SPCD 03 (flac)/DSP-2009.log",
+      "size": 2770
+    },
+    {
+      "path": "Scans/Vol.01/01.webp",
+      "size": 507236
+    },
+    {
+      "path": "Scans/Vol.01/02.webp",
+      "size": 479154
+    },
+    {
+      "path": "Scans/Vol.01/03.webp",
+      "size": 58900
+    },
+    {
+      "path": "Scans/Vol.01/04.webp",
+      "size": 358458
+    },
+    {
+      "path": "Scans/Vol.01/05.webp",
+      "size": 375084
+    },
+    {
+      "path": "Scans/Vol.01/06.webp",
+      "size": 612794
+    },
+    {
+      "path": "Scans/Vol.01/07.webp",
+      "size": 831184
+    },
+    {
+      "path": "Scans/Vol.01/08.webp",
+      "size": 653450
+    },
+    {
+      "path": "Scans/Vol.01/09.webp",
+      "size": 557024
+    },
+    {
+      "path": "Scans/Vol.01/Booklet/01.webp",
+      "size": 320562
+    },
+    {
+      "path": "Scans/Vol.01/Booklet/02.webp",
+      "size": 843866
+    },
+    {
+      "path": "Scans/Vol.01/Booklet/03.webp",
+      "size": 745334
+    },
+    {
+      "path": "Scans/Vol.01/Booklet/04.webp",
+      "size": 896026
+    },
+    {
+      "path": "Scans/Vol.01/Booklet/05.webp",
+      "size": 1083162
+    },
+    {
+      "path": "Scans/Vol.01/Booklet/06.webp",
+      "size": 1110224
+    },
+    {
+      "path": "Scans/Vol.01/Novel.zip",
+      "size": 117147115
+    },
+    {
+      "path": "Scans/Vol.02/01.webp",
+      "size": 551168
+    },
+    {
+      "path": "Scans/Vol.02/02.webp",
+      "size": 363884
+    },
+    {
+      "path": "Scans/Vol.02/03.webp",
+      "size": 62706
+    },
+    {
+      "path": "Scans/Vol.02/04.webp",
+      "size": 569964
+    },
+    {
+      "path": "Scans/Vol.02/05.webp",
+      "size": 468102
+    },
+    {
+      "path": "Scans/Vol.02/06.webp",
+      "size": 750848
+    },
+    {
+      "path": "Scans/Vol.02/07.webp",
+      "size": 519142
+    },
+    {
+      "path": "Scans/Vol.02/08.webp",
+      "size": 464880
+    },
+    {
+      "path": "Scans/Vol.02/09.webp",
+      "size": 167170
+    },
+    {
+      "path": "Scans/Vol.02/Booklet/01.webp",
+      "size": 895898
+    },
+    {
+      "path": "Scans/Vol.02/Booklet/02.webp",
+      "size": 687774
+    },
+    {
+      "path": "Scans/Vol.02/Booklet/03.webp",
+      "size": 1068466
+    },
+    {
+      "path": "Scans/Vol.02/Booklet/04.webp",
+      "size": 1099654
+    },
+    {
+      "path": "Scans/Vol.02/Booklet/05.webp",
+      "size": 1066272
+    },
+    {
+      "path": "Scans/Vol.02/Booklet/Booklet Back.webp",
+      "size": 168538
+    },
+    {
+      "path": "Scans/Vol.02/Booklet/Booklet Front.webp",
+      "size": 222038
+    },
+    {
+      "path": "Scans/Vol.03/01.webp",
+      "size": 494358
+    },
+    {
+      "path": "Scans/Vol.03/02.webp",
+      "size": 549912
+    },
+    {
+      "path": "Scans/Vol.03/03.webp",
+      "size": 79100
+    },
+    {
+      "path": "Scans/Vol.03/04.webp",
+      "size": 539420
+    },
+    {
+      "path": "Scans/Vol.03/05.webp",
+      "size": 484474
+    },
+    {
+      "path": "Scans/Vol.03/06.webp",
+      "size": 722062
+    },
+    {
+      "path": "Scans/Vol.03/07.webp",
+      "size": 518004
+    },
+    {
+      "path": "Scans/Vol.03/08.webp",
+      "size": 415700
+    },
+    {
+      "path": "Scans/Vol.03/Booklet/01.webp",
+      "size": 918232
+    },
+    {
+      "path": "Scans/Vol.03/Booklet/02.webp",
+      "size": 748268
+    },
+    {
+      "path": "Scans/Vol.03/Booklet/03.webp",
+      "size": 1216820
+    },
+    {
+      "path": "Scans/Vol.03/Booklet/04.webp",
+      "size": 1181336
+    },
+    {
+      "path": "Scans/Vol.03/Booklet/05.webp",
+      "size": 1068052
+    },
+    {
+      "path": "Scans/Vol.03/Booklet/Booklet Back.webp",
+      "size": 188736
+    },
+    {
+      "path": "Scans/Vol.03/Booklet/Booklet Front.webp",
+      "size": 220202
+    },
+    {
+      "path": "Scans/Vol.04/01.webp",
+      "size": 660588
+    },
+    {
+      "path": "Scans/Vol.04/02.webp",
+      "size": 331166
+    },
+    {
+      "path": "Scans/Vol.04/03.webp",
+      "size": 61172
+    },
+    {
+      "path": "Scans/Vol.04/04.webp",
+      "size": 442348
+    },
+    {
+      "path": "Scans/Vol.04/05.webp",
+      "size": 386390
+    },
+    {
+      "path": "Scans/Vol.04/06.webp",
+      "size": 660662
+    },
+    {
+      "path": "Scans/Vol.04/07.webp",
+      "size": 569930
+    },
+    {
+      "path": "Scans/Vol.04/08.webp",
+      "size": 822840
+    },
+    {
+      "path": "Scans/Vol.04/Booklet/01.webp",
+      "size": 1102926
+    },
+    {
+      "path": "Scans/Vol.04/Booklet/02.webp",
+      "size": 782638
+    },
+    {
+      "path": "Scans/Vol.04/Booklet/03.webp",
+      "size": 774650
+    },
+    {
+      "path": "Scans/Vol.04/Booklet/04.webp",
+      "size": 1073628
+    },
+    {
+      "path": "Scans/Vol.04/Booklet/05.webp",
+      "size": 1073402
+    },
+    {
+      "path": "Scans/Vol.04/Booklet/Booklet Back.webp",
+      "size": 204286
+    },
+    {
+      "path": "Scans/Vol.04/Booklet/Booklet Front.webp",
+      "size": 254962
+    },
+    {
+      "path": "Scans/Vol.05/01.webp",
+      "size": 618448
+    },
+    {
+      "path": "Scans/Vol.05/02.webp",
+      "size": 480504
+    },
+    {
+      "path": "Scans/Vol.05/03.webp",
+      "size": 59760
+    },
+    {
+      "path": "Scans/Vol.05/04.webp",
+      "size": 593060
+    },
+    {
+      "path": "Scans/Vol.05/05.webp",
+      "size": 564064
+    },
+    {
+      "path": "Scans/Vol.05/06.webp",
+      "size": 419870
+    },
+    {
+      "path": "Scans/Vol.05/07.webp",
+      "size": 889244
+    },
+    {
+      "path": "Scans/Vol.05/Booklet/01.webp",
+      "size": 1008890
+    },
+    {
+      "path": "Scans/Vol.05/Booklet/02.webp",
+      "size": 831564
+    },
+    {
+      "path": "Scans/Vol.05/Booklet/03.webp",
+      "size": 803398
+    },
+    {
+      "path": "Scans/Vol.05/Booklet/04.webp",
+      "size": 1177802
+    },
+    {
+      "path": "Scans/Vol.05/Booklet/05.webp",
+      "size": 1272096
+    },
+    {
+      "path": "Scans/Vol.05/Booklet/Booklet Back.webp",
+      "size": 174664
+    },
+    {
+      "path": "Scans/Vol.05/Booklet/Booklet Front.webp",
+      "size": 240644
+    },
+    {
+      "path": "Scans/Vol.05/全巻収納Box/全巻収納Box 上.webp",
+      "size": 63690
+    },
+    {
+      "path": "Scans/Vol.05/全巻収納Box/全巻収納Box 下.webp",
+      "size": 80904
+    },
+    {
+      "path": "Scans/Vol.05/全巻収納Box/全巻収納Box 前.webp",
+      "size": 287860
+    },
+    {
+      "path": "Scans/Vol.05/全巻収納Box/全巻収納Box 右.webp",
+      "size": 660938
+    },
+    {
+      "path": "Scans/Vol.05/全巻収納Box/全巻収納Box 左.webp",
+      "size": 673158
+    },
+    {
+      "path": "Scans/Vol.05/全巻収納Box/帯.webp",
+      "size": 542222
+    },
+    {
+      "path": "Scans/Vol.06/01.webp",
+      "size": 667444
+    },
+    {
+      "path": "Scans/Vol.06/02.webp",
+      "size": 431866
+    },
+    {
+      "path": "Scans/Vol.06/03.webp",
+      "size": 46738
+    },
+    {
+      "path": "Scans/Vol.06/04.webp",
+      "size": 879032
+    },
+    {
+      "path": "Scans/Vol.06/05.webp",
+      "size": 534452
+    },
+    {
+      "path": "Scans/Vol.06/06.webp",
+      "size": 741928
+    },
+    {
+      "path": "Scans/Vol.06/07.webp",
+      "size": 451640
+    },
+    {
+      "path": "Scans/Vol.06/08.webp",
+      "size": 664658
+    },
+    {
+      "path": "Scans/Vol.06/Booklet/01.webp",
+      "size": 1333568
+    },
+    {
+      "path": "Scans/Vol.06/Booklet/02.webp",
+      "size": 1002950
+    },
+    {
+      "path": "Scans/Vol.06/Booklet/03.webp",
+      "size": 1167516
+    },
+    {
+      "path": "Scans/Vol.06/Booklet/04.webp",
+      "size": 1092894
+    },
+    {
+      "path": "Scans/Vol.06/Booklet/05.webp",
+      "size": 1366486
+    },
+    {
+      "path": "Scans/Vol.06/Booklet/Booklet Cover.webp",
+      "size": 744914
+    },
+    {
+      "path": "Scans/Vol.06/Novel.zip",
+      "size": 78681225
+    },
+    {
+      "path": "SPs/[VCB-Studio] Hataraku Maou-sama! [CM01][Ma10p_1080p][x265_flac].mkv",
+      "size": 14205126
+    },
+    {
+      "path": "SPs/[VCB-Studio] Hataraku Maou-sama! [CM02][Ma10p_1080p][x265_flac].mkv",
+      "size": 18707028
+    },
+    {
+      "path": "SPs/[VCB-Studio] Hataraku Maou-sama! [CM03][Ma10p_1080p][x265_flac].mkv",
+      "size": 27249770
+    },
+    {
+      "path": "SPs/[VCB-Studio] Hataraku Maou-sama! [Menu01].png",
+      "size": 1503705
+    },
+    {
+      "path": "SPs/[VCB-Studio] Hataraku Maou-sama! [Menu02].png",
+      "size": 1518590
+    },
+    {
+      "path": "SPs/[VCB-Studio] Hataraku Maou-sama! [Menu03].png",
+      "size": 1413499
+    },
+    {
+      "path": "SPs/[VCB-Studio] Hataraku Maou-sama! [Menu04].png",
+      "size": 1353790
+    },
+    {
+      "path": "SPs/[VCB-Studio] Hataraku Maou-sama! [Menu05].png",
+      "size": 1483716
+    },
+    {
+      "path": "SPs/[VCB-Studio] Hataraku Maou-sama! [Menu06].png",
+      "size": 1582866
+    },
+    {
+      "path": "SPs/[VCB-Studio] Hataraku Maou-sama! [NCED(EP02 ON AIR Ver.)][Ma10p_1080p][x265_flac].mkv",
+      "size": 60365366
+    },
+    {
+      "path": "SPs/[VCB-Studio] Hataraku Maou-sama! [NCED01][Ma10p_1080p][x265_flac].mkv",
+      "size": 50153255
+    },
+    {
+      "path": "SPs/[VCB-Studio] Hataraku Maou-sama! [NCED02][Ma10p_1080p][x265_flac].mkv",
+      "size": 106963423
+    },
+    {
+      "path": "SPs/[VCB-Studio] Hataraku Maou-sama! [NCED03][Ma10p_1080p][x265_flac].mkv",
+      "size": 69955499
+    },
+    {
+      "path": "SPs/[VCB-Studio] Hataraku Maou-sama! [NCOP(EP03&EP04 ON AIR Ver.)][Ma10p_1080p][x265_flac].mkv",
+      "size": 162381066
+    },
+    {
+      "path": "SPs/[VCB-Studio] Hataraku Maou-sama! [NCOP01][Ma10p_1080p][x265_flac].mkv",
+      "size": 100034116
+    },
+    {
+      "path": "SPs/[VCB-Studio] Hataraku Maou-sama! [NCOP02][Ma10p_1080p][x265_flac].mkv",
+      "size": 99927753
+    },
+    {
+      "path": "SPs/[VCB-Studio] Hataraku Maou-sama! [NCOP03][Ma10p_1080p][x265_flac].mkv",
+      "size": 100567930
+    },
+    {
+      "path": "SPs/[VCB-Studio] Hataraku Maou-sama! [NCOP04][Ma10p_1080p][x265_flac].mkv",
+      "size": 100578493
+    },
+    {
+      "path": "SPs/[VCB-Studio] Hataraku Maou-sama! [PV01][Ma10p_1080p][x265_flac].mkv",
+      "size": 86563308
+    },
+    {
+      "path": "SPs/[VCB-Studio] Hataraku Maou-sama! [PV02][Ma10p_1080p][x265_flac].mkv",
+      "size": 59695161
+    },
+    {
+      "path": "SPs/[VCB-Studio] Hataraku Maou-sama! [PV03][Ma10p_1080p][x265_flac].mkv",
+      "size": 214035931
+    },
+    {
+      "path": "SPs/[VCB-Studio] Hataraku Maou-sama! [SP(EP01 Avant Title Non-Credit Ver.)][Ma10p_1080p][x265_flac].mkv",
+      "size": 260638845
+    }
+  ]
+}

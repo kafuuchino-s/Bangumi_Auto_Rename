@@ -1,0 +1,310 @@
+{
+  "status": "ok",
+  "type": "tv",
+  "title_candidate": "Space Dandy",
+  "tmdb_name": "Space Dandy",
+  "tmdb_id": 60874,
+  "file_mapping": [
+    {
+      "source_index": 10,
+      "file_path": null,
+      "tmdb_season": 2,
+      "tmdb_episode": 1,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 11,
+      "file_path": null,
+      "tmdb_season": 2,
+      "tmdb_episode": 2,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 22,
+      "file_path": null,
+      "tmdb_season": 2,
+      "tmdb_episode": 3,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 23,
+      "file_path": null,
+      "tmdb_season": 2,
+      "tmdb_episode": 4,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 24,
+      "file_path": null,
+      "tmdb_season": 2,
+      "tmdb_episode": 5,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 38,
+      "file_path": null,
+      "tmdb_season": 2,
+      "tmdb_episode": 6,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 39,
+      "file_path": null,
+      "tmdb_season": 2,
+      "tmdb_episode": 7,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 40,
+      "file_path": null,
+      "tmdb_season": 2,
+      "tmdb_episode": 8,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 52,
+      "file_path": null,
+      "tmdb_season": 2,
+      "tmdb_episode": 9,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 53,
+      "file_path": null,
+      "tmdb_season": 2,
+      "tmdb_episode": 10,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 54,
+      "file_path": null,
+      "tmdb_season": 2,
+      "tmdb_episode": 11,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 1,
+      "file_path": null,
+      "tmdb_season": 2,
+      "tmdb_episode": 12,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 2,
+      "file_path": null,
+      "tmdb_season": 2,
+      "tmdb_episode": 13,
+      "episode_type": "regular",
+      "confidence": "High"
+    }
+  ],
+  "analysis_result": {
+    "confidence": "High",
+    "reason": "文件名中的主集数 14-26 与 TMDB 第二季 13 集一一对应，且顺序完整；这是一套典型的 BD 总集数编号到 TMDB 分季编号的映射关系。",
+    "season_mapping": [
+      {
+        "local_group_name": "[KNA-Subs&ANK-Raws] Space Dandy Vol.6 (BDrip 1920x1080 x264 FLAC Hi10P)",
+        "maps_to_tmdb_seasons": [
+          2
+        ]
+      },
+      {
+        "local_group_name": "[KNA-Subs&ANK-Raws] Space Dandy Vol.7 (BDrip 1920x1080 x264 FLAC Hi10P)",
+        "maps_to_tmdb_seasons": [
+          2
+        ]
+      },
+      {
+        "local_group_name": "[KNA-Subs&ANK-Raws] Space Dandy Vol.8 (BDrip 1920x1080 x264 FLAC Hi10P)",
+        "maps_to_tmdb_seasons": [
+          2
+        ]
+      },
+      {
+        "local_group_name": "[KNA-Subs&ANK-Raws] Space Dandy Vol.9 (BDrip 1920x1080 x264 FLAC Hi10P)",
+        "maps_to_tmdb_seasons": [
+          2
+        ]
+      },
+      {
+        "local_group_name": "[KNA-Subs&ANK-Raws] Space Dandy Vol.10 (BDrip 1920x1080 x264 FLAC Hi10P)",
+        "maps_to_tmdb_seasons": [
+          2
+        ]
+      }
+    ],
+    "file_mapping": [
+      {
+        "source_index": 10,
+        "file_path": null,
+        "tmdb_season": 2,
+        "tmdb_episode": 1,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 11,
+        "file_path": null,
+        "tmdb_season": 2,
+        "tmdb_episode": 2,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 22,
+        "file_path": null,
+        "tmdb_season": 2,
+        "tmdb_episode": 3,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 23,
+        "file_path": null,
+        "tmdb_season": 2,
+        "tmdb_episode": 4,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 24,
+        "file_path": null,
+        "tmdb_season": 2,
+        "tmdb_episode": 5,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 38,
+        "file_path": null,
+        "tmdb_season": 2,
+        "tmdb_episode": 6,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 39,
+        "file_path": null,
+        "tmdb_season": 2,
+        "tmdb_episode": 7,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 40,
+        "file_path": null,
+        "tmdb_season": 2,
+        "tmdb_episode": 8,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 52,
+        "file_path": null,
+        "tmdb_season": 2,
+        "tmdb_episode": 9,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 53,
+        "file_path": null,
+        "tmdb_season": 2,
+        "tmdb_episode": 10,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 54,
+        "file_path": null,
+        "tmdb_season": 2,
+        "tmdb_episode": 11,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 1,
+        "file_path": null,
+        "tmdb_season": 2,
+        "tmdb_episode": 12,
+        "episode_type": "regular",
+        "confidence": "High"
+      },
+      {
+        "source_index": 2,
+        "file_path": null,
+        "tmdb_season": 2,
+        "tmdb_episode": 13,
+        "episode_type": "regular",
+        "confidence": "High"
+      }
+    ],
+    "unmatched_files": [
+      "[KNA-Subs&ANK-Raws] Space Dandy Vol.10 (BDrip 1920x1080 x264 FLAC Hi10P)/[KNA-Subs&ANK-Raws] Space Dandy Extra 05 (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
+      "[KNA-Subs&ANK-Raws] Space Dandy Vol.10 (BDrip 1920x1080 x264 FLAC Hi10P)/MENU (Vol.10).mkv",
+      "[KNA-Subs&ANK-Raws] Space Dandy Vol.10 (BDrip 1920x1080 x264 FLAC Hi10P)/オリジナル脚本&設定画&デザイン画(Vol.10)/オリジナル脚本&設定画&デザイン画 01.mkv",
+      "[KNA-Subs&ANK-Raws] Space Dandy Vol.10 (BDrip 1920x1080 x264 FLAC Hi10P)/オリジナル脚本&設定画&デザイン画(Vol.10)/オリジナル脚本&設定画&デザイン画 02.mkv",
+      "[KNA-Subs&ANK-Raws] Space Dandy Vol.10 (BDrip 1920x1080 x264 FLAC Hi10P)/オリジナル脚本&設定画&デザイン画(Vol.10)/オリジナル脚本&設定画&デザイン画 03.mkv",
+      "[KNA-Subs&ANK-Raws] Space Dandy Vol.10 (BDrip 1920x1080 x264 FLAC Hi10P)/オリジナル脚本&設定画&デザイン画(Vol.10)/オリジナル脚本&設定画&デザイン画 04.mkv",
+      "[KNA-Subs&ANK-Raws] Space Dandy Vol.10 (BDrip 1920x1080 x264 FLAC Hi10P)/オリジナル脚本&設定画&デザイン画(Vol.10)/オリジナル脚本&設定画&デザイン画 05.mkv",
+      "[KNA-Subs&ANK-Raws] Space Dandy Vol.6 (BDrip 1920x1080 x264 FLAC Hi10P)/[KNA-Subs&ANK-Raws] Space Dandy CM (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
+      "[KNA-Subs&ANK-Raws] Space Dandy Vol.6 (BDrip 1920x1080 x264 FLAC Hi10P)/MENU (Vol.6).mkv",
+      "[KNA-Subs&ANK-Raws] Space Dandy Vol.6 (BDrip 1920x1080 x264 FLAC Hi10P)/オリジナル脚本&設定画&デザイン画(Vol.6)/オリジナル脚本&設定画&デザイン画 01.mkv",
+      "[KNA-Subs&ANK-Raws] Space Dandy Vol.6 (BDrip 1920x1080 x264 FLAC Hi10P)/オリジナル脚本&設定画&デザイン画(Vol.6)/オリジナル脚本&設定画&デザイン画 02.mkv",
+      "[KNA-Subs&ANK-Raws] Space Dandy Vol.6 (BDrip 1920x1080 x264 FLAC Hi10P)/オリジナル脚本&設定画&デザイン画(Vol.6)/オリジナル脚本&設定画&デザイン画 03.mkv",
+      "[KNA-Subs&ANK-Raws] Space Dandy Vol.6 (BDrip 1920x1080 x264 FLAC Hi10P)/オリジナル脚本&設定画&デザイン画(Vol.6)/オリジナル脚本&設定画&デザイン画 04.mkv",
+      "[KNA-Subs&ANK-Raws] Space Dandy Vol.6 (BDrip 1920x1080 x264 FLAC Hi10P)/オリジナル脚本&設定画&デザイン画(Vol.6)/オリジナル脚本&設定画&デザイン画 05.mkv",
+      "[KNA-Subs&ANK-Raws] Space Dandy Vol.6 (BDrip 1920x1080 x264 FLAC Hi10P)/オリジナル脚本&設定画&デザイン画(Vol.6)/オリジナル脚本&設定画&デザイン画 06.mkv",
+      "[KNA-Subs&ANK-Raws] Space Dandy Vol.6 (BDrip 1920x1080 x264 FLAC Hi10P)/オリジナル脚本&設定画&デザイン画(Vol.6)/オリジナル脚本&設定画&デザイン画 07.mkv",
+      "[KNA-Subs&ANK-Raws] Space Dandy Vol.6 (BDrip 1920x1080 x264 FLAC Hi10P)/オリジナル脚本&設定画&デザイン画(Vol.6)/オリジナル脚本&設定画&デザイン画 08.mkv",
+      "[KNA-Subs&ANK-Raws] Space Dandy Vol.7 (BDrip 1920x1080 x264 FLAC Hi10P)/[KNA-Subs&ANK-Raws] Space Dandy CM01 (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
+      "[KNA-Subs&ANK-Raws] Space Dandy Vol.7 (BDrip 1920x1080 x264 FLAC Hi10P)/[KNA-Subs&ANK-Raws] Space Dandy CM02 (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
+      "[KNA-Subs&ANK-Raws] Space Dandy Vol.7 (BDrip 1920x1080 x264 FLAC Hi10P)/MENU (Vol.7).mkv",
+      "[KNA-Subs&ANK-Raws] Space Dandy Vol.7 (BDrip 1920x1080 x264 FLAC Hi10P)/オリジナル脚本&設定画&デザイン画(Vol.7)/オリジナル脚本&設定画&デザイン画 01.mkv",
+      "[KNA-Subs&ANK-Raws] Space Dandy Vol.7 (BDrip 1920x1080 x264 FLAC Hi10P)/オリジナル脚本&設定画&デザイン画(Vol.7)/オリジナル脚本&設定画&デザイン画 02.mkv",
+      "[KNA-Subs&ANK-Raws] Space Dandy Vol.7 (BDrip 1920x1080 x264 FLAC Hi10P)/オリジナル脚本&設定画&デザイン画(Vol.7)/オリジナル脚本&設定画&デザイン画 03.mkv",
+      "[KNA-Subs&ANK-Raws] Space Dandy Vol.7 (BDrip 1920x1080 x264 FLAC Hi10P)/オリジナル脚本&設定画&デザイン画(Vol.7)/オリジナル脚本&設定画&デザイン画 04.mkv",
+      "[KNA-Subs&ANK-Raws] Space Dandy Vol.7 (BDrip 1920x1080 x264 FLAC Hi10P)/オリジナル脚本&設定画&デザイン画(Vol.7)/オリジナル脚本&設定画&デザイン画 05.mkv",
+      "[KNA-Subs&ANK-Raws] Space Dandy Vol.7 (BDrip 1920x1080 x264 FLAC Hi10P)/オリジナル脚本&設定画&デザイン画(Vol.7)/オリジナル脚本&設定画&デザイン画 06.mkv",
+      "[KNA-Subs&ANK-Raws] Space Dandy Vol.7 (BDrip 1920x1080 x264 FLAC Hi10P)/オリジナル脚本&設定画&デザイン画(Vol.7)/オリジナル脚本&設定画&デザイン画 07.mkv",
+      "[KNA-Subs&ANK-Raws] Space Dandy Vol.7 (BDrip 1920x1080 x264 FLAC Hi10P)/オリジナル脚本&設定画&デザイン画(Vol.7)/オリジナル脚本&設定画&デザイン画 08.mkv",
+      "[KNA-Subs&ANK-Raws] Space Dandy Vol.7 (BDrip 1920x1080 x264 FLAC Hi10P)/オリジナル脚本&設定画&デザイン画(Vol.7)/オリジナル脚本&設定画&デザイン画 09.mkv",
+      "[KNA-Subs&ANK-Raws] Space Dandy Vol.7 (BDrip 1920x1080 x264 FLAC Hi10P)/オリジナル脚本&設定画&デザイン画(Vol.7)/オリジナル脚本&設定画&デザイン画 10.mkv",
+      "[KNA-Subs&ANK-Raws] Space Dandy Vol.8 (BDrip 1920x1080 x264 FLAC Hi10P)/[KNA-Subs&ANK-Raws] Space Dandy Extra 03 (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
+      "[KNA-Subs&ANK-Raws] Space Dandy Vol.8 (BDrip 1920x1080 x264 FLAC Hi10P)/MENU (Vol.8).mkv",
+      "[KNA-Subs&ANK-Raws] Space Dandy Vol.8 (BDrip 1920x1080 x264 FLAC Hi10P)/オリジナル脚本&設定画&デザイン画(Vol.8)/オリジナル脚本&設定画&デザイン画 01.mkv",
+      "[KNA-Subs&ANK-Raws] Space Dandy Vol.8 (BDrip 1920x1080 x264 FLAC Hi10P)/オリジナル脚本&設定画&デザイン画(Vol.8)/オリジナル脚本&設定画&デザイン画 02.mkv",
+      "[KNA-Subs&ANK-Raws] Space Dandy Vol.8 (BDrip 1920x1080 x264 FLAC Hi10P)/オリジナル脚本&設定画&デザイン画(Vol.8)/オリジナル脚本&設定画&デザイン画 03.mkv",
+      "[KNA-Subs&ANK-Raws] Space Dandy Vol.8 (BDrip 1920x1080 x264 FLAC Hi10P)/オリジナル脚本&設定画&デザイン画(Vol.8)/オリジナル脚本&設定画&デザイン画 04.mkv",
+      "[KNA-Subs&ANK-Raws] Space Dandy Vol.8 (BDrip 1920x1080 x264 FLAC Hi10P)/オリジナル脚本&設定画&デザイン画(Vol.8)/オリジナル脚本&設定画&デザイン画 05.mkv",
+      "[KNA-Subs&ANK-Raws] Space Dandy Vol.8 (BDrip 1920x1080 x264 FLAC Hi10P)/オリジナル脚本&設定画&デザイン画(Vol.8)/オリジナル脚本&設定画&デザイン画 06.mkv",
+      "[KNA-Subs&ANK-Raws] Space Dandy Vol.8 (BDrip 1920x1080 x264 FLAC Hi10P)/オリジナル脚本&設定画&デザイン画(Vol.8)/オリジナル脚本&設定画&デザイン画 07.mkv",
+      "[KNA-Subs&ANK-Raws] Space Dandy Vol.8 (BDrip 1920x1080 x264 FLAC Hi10P)/オリジナル脚本&設定画&デザイン画(Vol.8)/オリジナル脚本&設定画&デザイン画 08.mkv",
+      "[KNA-Subs&ANK-Raws] Space Dandy Vol.8 (BDrip 1920x1080 x264 FLAC Hi10P)/オリジナル脚本&設定画&デザイン画(Vol.8)/オリジナル脚本&設定画&デザイン画 09.mkv",
+      "[KNA-Subs&ANK-Raws] Space Dandy Vol.9 (BDrip 1920x1080 x264 FLAC Hi10P)/[KNA-Subs&ANK-Raws] Space Dandy Extra 04 (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
+      "[KNA-Subs&ANK-Raws] Space Dandy Vol.9 (BDrip 1920x1080 x264 FLAC Hi10P)/MENU (Vol.9).mkv",
+      "[KNA-Subs&ANK-Raws] Space Dandy Vol.9 (BDrip 1920x1080 x264 FLAC Hi10P)/オリジナル脚本&設定画&デザイン画(Vol.9)/オリジナル脚本&設定画&デザイン画 01.mkv",
+      "[KNA-Subs&ANK-Raws] Space Dandy Vol.9 (BDrip 1920x1080 x264 FLAC Hi10P)/オリジナル脚本&設定画&デザイン画(Vol.9)/オリジナル脚本&設定画&デザイン画 02.mkv",
+      "[KNA-Subs&ANK-Raws] Space Dandy Vol.9 (BDrip 1920x1080 x264 FLAC Hi10P)/オリジナル脚本&設定画&デザイン画(Vol.9)/オリジナル脚本&設定画&デザイン画 03.mkv",
+      "[KNA-Subs&ANK-Raws] Space Dandy Vol.9 (BDrip 1920x1080 x264 FLAC Hi10P)/オリジナル脚本&設定画&デザイン画(Vol.9)/オリジナル脚本&設定画&デザイン画 04.mkv",
+      "[KNA-Subs&ANK-Raws] Space Dandy Vol.9 (BDrip 1920x1080 x264 FLAC Hi10P)/オリジナル脚本&設定画&デザイン画(Vol.9)/オリジナル脚本&設定画&デザイン画 05.mkv",
+      "[KNA-Subs&ANK-Raws] Space Dandy Vol.9 (BDrip 1920x1080 x264 FLAC Hi10P)/オリジナル脚本&設定画&デザイン画(Vol.9)/オリジナル脚本&設定画&デザイン画 06.mkv",
+      "[KNA-Subs&ANK-Raws] Space Dandy Vol.9 (BDrip 1920x1080 x264 FLAC Hi10P)/オリジナル脚本&設定画&デザイン画(Vol.9)/オリジナル脚本&設定画&デザイン画 07.mkv",
+      "[KNA-Subs&ANK-Raws] Space Dandy Vol.9 (BDrip 1920x1080 x264 FLAC Hi10P)/オリジナル脚本&設定画&デザイン画(Vol.9)/オリジナル脚本&設定画&デザイン画 08.mkv"
+    ],
+    "conflict_details": [],
+    "extra_notes": "本地文件采用总集数编号；Vol.6-10 中的正片文件 14-26 可直接对应 TMDB 第二季 S02E01-S02E13。其余文件为 CM、MENU、设定画/脚本、Extra 等附加内容，TMDB 列表中未提供可确认的对应项，因此不做强行映射。"
+  }
+}

@@ -1,0 +1,186 @@
+{
+  "status": "ok",
+  "type": "tv",
+  "title_candidate": "AIURA",
+  "tmdb_name": "Aiura",
+  "tmdb_id": 50076,
+  "timing": {
+    "analysis_seconds": 19.269
+  },
+  "file_mapping": [
+    {
+      "source_index": 1,
+      "file_path": "[x_x] AIURA [Ep01] [BDRip 1080p x265 Main10 Flac 2.0ch].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 1,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 2,
+      "file_path": "[x_x] AIURA [Ep02] [BDRip 1080p x265 Main10 Flac 2.0ch].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 2,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 3,
+      "file_path": "[x_x] AIURA [Ep03] [BDRip 1080p x265 Main10 Flac 2.0ch].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 3,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 4,
+      "file_path": "[x_x] AIURA [Ep04] [BDRip 1080p x265 Main10 Flac 2.0ch].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 4,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 5,
+      "file_path": "[x_x] AIURA [Ep05] [BDRip 1080p x265 Main10 Flac 2.0ch].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 5,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 6,
+      "file_path": "[x_x] AIURA [Ep06] [BDRip 1080p x265 Main10 Flac 2.0ch].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 6,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 7,
+      "file_path": "[x_x] AIURA [Ep07] [BDRip 1080p x265 Main10 Flac 2.0ch].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 7,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 8,
+      "file_path": "[x_x] AIURA [Ep08] [BDRip 1080p x265 Main10 Flac 2.0ch].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 8,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 9,
+      "file_path": "[x_x] AIURA [Ep09] [BDRip 1080p x265 Main10 Flac 2.0ch].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 9,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 10,
+      "file_path": "[x_x] AIURA [Ep10] [BDRip 1080p x265 Main10 Flac 2.0ch].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 10,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 11,
+      "file_path": "[x_x] AIURA [Ep11] [BDRip 1080p x265 Main10 Flac 2.0ch].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 11,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 12,
+      "file_path": "[x_x] AIURA [Ep12] [BDRip 1080p x265 Main10 Flac 2.0ch].mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 12,
+      "episode_type": "regular",
+      "confidence": "High"
+    }
+  ],
+  "conflict_details": [],
+  "analysis_result": {
+    "confidence": "High",
+    "reason": "正片12集与TMDB第1季逐集对应。",
+    "season_mapping": [
+      {
+        "local_group_name": "AIURA",
+        "maps_to_tmdb_seasons": [
+          1
+        ]
+      }
+    ],
+    "file_mapping_count": 12,
+    "unmatched_count": 7,
+    "conflict_count": 0
+  },
+  "hydration_notes": {
+    "hydrated_count": 12,
+    "examples": [
+      "hydrated:1:[x_x] AIURA [Ep01] [BDRip 1080p x265 Main10 Flac 2.0ch].mkv",
+      "hydrated:2:[x_x] AIURA [Ep02] [BDRip 1080p x265 Main10 Flac 2.0ch].mkv",
+      "hydrated:3:[x_x] AIURA [Ep03] [BDRip 1080p x265 Main10 Flac 2.0ch].mkv",
+      "hydrated:4:[x_x] AIURA [Ep04] [BDRip 1080p x265 Main10 Flac 2.0ch].mkv",
+      "hydrated:5:[x_x] AIURA [Ep05] [BDRip 1080p x265 Main10 Flac 2.0ch].mkv"
+    ]
+  },
+  "task_plan": {
+    "is_movie": false,
+    "ai_type": "tv",
+    "tv_available": true,
+    "movie_available": false,
+    "selected_confidence": "High"
+  },
+  "tv_candidate_result": {
+    "status": "ok",
+    "type": "tv",
+    "title_candidate": "AIURA",
+    "timing": {
+      "analysis_seconds": 19.269
+    },
+    "file_mapping_count": 12,
+    "has_regular": true,
+    "has_special": false,
+    "has_movie_like": false,
+    "analysis_result": {
+      "confidence": "High",
+      "reason": "正片12集与TMDB第1季逐集对应。",
+      "season_mapping": [
+        {
+          "local_group_name": "AIURA",
+          "maps_to_tmdb_seasons": [
+            1
+          ]
+        }
+      ],
+      "file_mapping_count": 12,
+      "unmatched_count": 7,
+      "conflict_count": 0
+    }
+  },
+  "movie_candidate_result": {
+    "status": "ok",
+    "type": "movie",
+    "title_candidate": "AIURA",
+    "timing": {
+      "analysis_seconds": 13.172
+    },
+    "collection_analysis": {
+      "is_collection": false,
+      "confidence": "High",
+      "reason": "包含剧集与特典，非多部电影合集",
+      "file_mapping_count": 0,
+      "unmatched_count": 19,
+      "conflict_count": 2,
+      "movie_like_paths": []
+    }
+  },
+  "final_type": "tv"
+}

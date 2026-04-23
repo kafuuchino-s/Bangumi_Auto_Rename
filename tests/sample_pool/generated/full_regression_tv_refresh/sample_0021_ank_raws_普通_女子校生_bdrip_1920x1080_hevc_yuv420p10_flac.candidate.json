@@ -1,0 +1,135 @@
+{
+  "status": "ok",
+  "type": "tv",
+  "title_candidate": "普通の女子校生が【ろこどる】やってみた。",
+  "tmdb_name": "普通の女子校生が【ろこどる】やってみた。",
+  "tmdb_id": 66856,
+  "timing": {
+    "analysis_seconds": 21.439
+  },
+  "file_mapping": [
+    {
+      "source_index": 5,
+      "file_path": "[ANK-Raws] 普通の女子校生が【ろこどる】やってみた。 01 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 1,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 6,
+      "file_path": "[ANK-Raws] 普通の女子校生が【ろこどる】やってみた。 02 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 2,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 7,
+      "file_path": "[ANK-Raws] 普通の女子校生が【ろこどる】やってみた。 03 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 3,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 8,
+      "file_path": "[ANK-Raws] 普通の女子校生が【ろこどる】やってみた。 04 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 4,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 9,
+      "file_path": "[ANK-Raws] 普通の女子校生が【ろこどる】やってみた。 05 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 5,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 10,
+      "file_path": "[ANK-Raws] 普通の女子校生が【ろこどる】やってみた。 06 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 6,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 11,
+      "file_path": "[ANK-Raws] 普通の女子校生が【ろこどる】やってみた。 07 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 7,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 12,
+      "file_path": "[ANK-Raws] 普通の女子校生が【ろこどる】やってみた。 08 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 8,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 13,
+      "file_path": "[ANK-Raws] 普通の女子校生が【ろこどる】やってみた。 09 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 9,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 14,
+      "file_path": "[ANK-Raws] 普通の女子校生が【ろこどる】やってみた。 10 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 10,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 15,
+      "file_path": "[ANK-Raws] 普通の女子校生が【ろこどる】やってみた。 11 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 11,
+      "episode_type": "regular",
+      "confidence": "High"
+    },
+    {
+      "source_index": 16,
+      "file_path": "[ANK-Raws] 普通の女子校生が【ろこどる】やってみた。 12 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "tmdb_season": 1,
+      "tmdb_episode": 12,
+      "episode_type": "regular",
+      "confidence": "High"
+    }
+  ],
+  "conflict_details": [],
+  "analysis_result": {
+    "confidence": "High",
+    "reason": "文件01-12与S1E01-12直接对应。",
+    "season_mapping": [],
+    "file_mapping_count": 12,
+    "unmatched_count": 0,
+    "conflict_count": 0
+  },
+  "hydration_notes": {
+    "hydrated_count": 12,
+    "examples": [
+      "hydrated:5:[ANK-Raws] 普通の女子校生が【ろこどる】やってみた。 01 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "hydrated:6:[ANK-Raws] 普通の女子校生が【ろこどる】やってみた。 02 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "hydrated:7:[ANK-Raws] 普通の女子校生が【ろこどる】やってみた。 03 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "hydrated:8:[ANK-Raws] 普通の女子校生が【ろこどる】やってみた。 04 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
+      "hydrated:9:[ANK-Raws] 普通の女子校生が【ろこどる】やってみた。 05 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv"
+    ]
+  },
+  "task_plan": {
+    "is_movie": false,
+    "ai_type": "tv",
+    "tv_available": true,
+    "movie_available": false,
+    "selected_confidence": "High"
+  },
+  "final_type": "tv"
+}
