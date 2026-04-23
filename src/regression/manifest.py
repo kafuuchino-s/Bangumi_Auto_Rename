@@ -27,6 +27,14 @@ CHANGED_PATH_TAG_RULES: tuple[tuple[str, tuple[str, ...]], ...] = (
 )
 
 
+def _match_changed_path_rules(normalized_path: str) -> list[tuple[str, tuple[str, ...]]]:
+    return [
+        (pattern, tags)
+        for pattern, tags in CHANGED_PATH_TAG_RULES
+        if fnmatch(normalized_path, pattern)
+    ]
+
+
 def _load_json(path: Path) -> dict[str, Any]:
     with open(path, 'r', encoding='utf-8') as file:
         data = json.load(file)
@@ -62,9 +70,7 @@ def infer_risk_tags_from_changed_paths(
             continue
         matched_tags: list[str] = []
         matched_rules: list[str] = []
-        for pattern, tags in CHANGED_PATH_TAG_RULES:
-            if not fnmatch(normalized_path, pattern):
-                continue
+        for pattern, tags in _match_changed_path_rules(normalized_path):
             matched_rules.append(pattern)
             for tag in tags:
                 if tag not in matched_tags:
@@ -83,19 +89,33 @@ def infer_risk_tags_from_changed_paths(
     return inferred_tags, inference
 
 
+def is_changed_path_relevant(path: str) -> bool:
+    normalized_path = _normalize_changed_path(path)
+    if not normalized_path:
+        return False
+    return bool(_match_changed_path_rules(normalized_path))
+
+
 def filter_manifest_entries(
     entries: list[RenameSample],
     *,
     mode: str,
-    sample_id: str | None = None,
+    sample_id: str | list[str] | tuple[str, ...] | None = None,
     max_samples: int | None = None,
 ) -> tuple[list[RenameSample], list[str]]:
     notes: list[str] = []
     filtered = list(entries)
 
-    if sample_id:
-        filtered = [entry for entry in filtered if entry.sample_id == sample_id]
-        notes.append(f'sample_id filter applied: {sample_id}')
+    requested_sample_ids: list[str] = []
+    if isinstance(sample_id, str):
+        requested_sample_ids = [sample_id] if sample_id else []
+    elif sample_id:
+        requested_sample_ids = [item for item in sample_id if item]
+
+    if requested_sample_ids:
+        requested_sample_id_set = set(requested_sample_ids)
+        filtered = [entry for entry in filtered if entry.sample_id in requested_sample_id_set]
+        notes.append('sample_id filter applied: ' + ', '.join(requested_sample_ids))
 
     if mode == 'check':
         filtered = [entry for entry in filtered if entry.check]

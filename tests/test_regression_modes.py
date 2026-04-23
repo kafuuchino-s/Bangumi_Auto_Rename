@@ -40,6 +40,25 @@ def test_filter_manifest_entries_check_mode_uses_core_filter():
     assert check_notes == ['check filter applied']
 
 
+def test_cli_parser_supports_repeatable_sample_id():
+    args = build_parser().parse_args(['--sample-id', 'sample_001', '--sample-id', 'sample_002'])
+
+    assert args.sample_id == ['sample_001', 'sample_002']
+
+
+def test_filter_manifest_entries_keeps_manifest_order_for_multiple_sample_ids():
+    entries = [_make_entry('sample_002'), _make_entry('sample_001'), _make_entry('sample_003')]
+
+    filtered, notes = filter_manifest_entries(
+        entries,
+        mode='full',
+        sample_id=['sample_003', 'sample_001'],
+    )
+
+    assert [entry.sample_id for entry in filtered] == ['sample_001', 'sample_003']
+    assert notes == ['sample_id filter applied: sample_003, sample_001', 'full selection applied']
+
+
 def test_expand_protected_samples_adds_matching_protector_and_preserves_order():
     sample_0117 = RenameSample(
         sample_id='sample_0117',
@@ -241,6 +260,127 @@ def test_run_rename_regression_auto_adds_protected_samples(tmp_path: Path, monke
     assert result['requested_sample_ids'] == ['sample_0117']
     assert result['auto_added_sample_ids'] == ['sample_0091']
     assert result['selected_sample_ids'] == ['sample_0117', 'sample_0091']
+
+
+def test_run_rename_regression_supports_multiple_requested_sample_ids(tmp_path: Path, monkeypatch):
+    first = RenameSample(sample_id='sample_001', sample_json='tests/sample_pool/raw/sample_001.json')
+    second = RenameSample(sample_id='sample_002', sample_json='tests/sample_pool/raw/sample_002.json')
+
+    monkeypatch.setattr('src.regression.runner.load_manifest', lambda path: ('42', [first, second]))
+    monkeypatch.setattr('src.regression.runner._resolve_runtime_signature', lambda: ({}, {}))
+
+    captured_entries = []
+
+    def fake_run_rename_lane(**kwargs):
+        captured_entries.extend(entry.sample_id for entry in kwargs['entries'])
+        return (
+            RunSummary(
+                selected_count=2,
+                completed_count=2,
+                passed_count=2,
+                product_failure_count=0,
+                infra_failure_count=0,
+                flaky_count=0,
+                baseline_missing_count=0,
+                manual_review_count=0,
+                sample_results=[
+                    {'sample_id': 'sample_001', 'status': 'passed'},
+                    {'sample_id': 'sample_002', 'status': 'passed'},
+                ],
+            ),
+            [],
+            [],
+            [],
+            [],
+        )
+
+    monkeypatch.setattr('src.regression.runner.run_rename_lane', fake_run_rename_lane)
+
+    result = run_rename_regression(
+        mode='full',
+        manifest=tmp_path / 'manifest.json',
+        baseline_root=tmp_path / 'baseline',
+        artifacts_root=tmp_path / 'artifacts',
+        sample_id=['sample_002', 'sample_001'],
+    )
+
+    assert captured_entries == ['sample_001', 'sample_002']
+    assert result['requested_sample_ids'] == ['sample_002', 'sample_001']
+    assert result['selected_sample_ids'] == ['sample_001', 'sample_002']
+    assert result['auto_added_sample_ids'] == []
+
+
+def test_run_rename_regression_auto_detected_changed_paths_filters_noise(tmp_path: Path, monkeypatch):
+    requested = RenameSample(
+        sample_id='sample_0006',
+        sample_json='tests/sample_pool/raw/sample_0006.json',
+    )
+    protector = RenameSample(
+        sample_id='sample_0091',
+        sample_json='tests/sample_pool/raw/sample_0091.json',
+        protects=['tv_strict_mapping', 'compare_normalization'],
+    )
+
+    monkeypatch.setattr(
+        'src.regression.runner.load_manifest',
+        lambda path: ('42', [requested, protector]),
+    )
+    monkeypatch.setattr('src.regression.runner._resolve_runtime_signature', lambda: ({}, {}))
+    monkeypatch.setattr(
+        'src.regression.runner._discover_changed_paths',
+        lambda: [
+            '.vscode/settings.json',
+            'src/rename/ai_processor.py',
+            'src/regression/runner.py',
+            '.sisyphus/tmp/file.txt',
+            'tmp_prompt.txt',
+        ],
+    )
+
+    captured_entries = []
+
+    def fake_run_rename_lane(**kwargs):
+        captured_entries.extend(entry.sample_id for entry in kwargs['entries'])
+        return (
+            RunSummary(
+                selected_count=2,
+                completed_count=2,
+                passed_count=2,
+                product_failure_count=0,
+                infra_failure_count=0,
+                flaky_count=0,
+                baseline_missing_count=0,
+                manual_review_count=0,
+                sample_results=[
+                    {'sample_id': 'sample_0006', 'status': 'passed'},
+                    {'sample_id': 'sample_0091', 'status': 'passed'},
+                ],
+            ),
+            [],
+            [],
+            [],
+            [],
+        )
+
+    monkeypatch.setattr('src.regression.runner.run_rename_lane', fake_run_rename_lane)
+
+    result = run_rename_regression(
+        mode='full',
+        manifest=tmp_path / 'manifest.json',
+        baseline_root=tmp_path / 'baseline',
+        artifacts_root=tmp_path / 'artifacts',
+        sample_id='sample_0006',
+    )
+
+    assert captured_entries == ['sample_0006', 'sample_0091']
+    assert result['changed_paths'] == ['src/rename/ai_processor.py', 'src/regression/runner.py']
+    assert result['inferred_risk_tags'] == [
+        'tv_strict_mapping',
+        'episode_dedupe',
+        'season_numbering',
+        'compare_normalization',
+    ]
+    assert result['auto_added_sample_ids'] == ['sample_0091']
 
 
 def test_run_rename_regression_can_disable_protected_sample_expansion(tmp_path: Path, monkeypatch):

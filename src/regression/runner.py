@@ -15,6 +15,7 @@ from .manifest import (
     expand_protected_samples,
     filter_manifest_entries,
     infer_risk_tags_from_changed_paths,
+    is_changed_path_relevant,
     load_manifest,
 )
 from .models import CANONICAL_MODE_CHOICES, RunContext, RunReport
@@ -83,13 +84,34 @@ def _discover_changed_paths() -> list[str]:
     return changed_paths
 
 
+def _normalize_changed_paths(paths: list[str] | None) -> list[str]:
+    normalized_paths: list[str] = []
+    seen: set[str] = set()
+    for path in paths or []:
+        normalized = path.replace('\\', '/').strip()
+        if not normalized or normalized in seen:
+            continue
+        seen.add(normalized)
+        normalized_paths.append(normalized)
+    return normalized_paths
+
+
+def _resolve_changed_paths(changed_paths: list[str] | None = None) -> list[str]:
+    normalized_paths = _normalize_changed_paths(
+        changed_paths if changed_paths is not None else _discover_changed_paths()
+    )
+    if changed_paths is not None:
+        return normalized_paths
+    return [path for path in normalized_paths if is_changed_path_relevant(path)]
+
+
 def run_rename_regression(
     *,
     mode: str,
     manifest: Path | None = None,
     baseline_root: Path | None = None,
     artifacts_root: Path | None = None,
-    sample_id: str | None = None,
+    sample_id: str | list[str] | tuple[str, ...] | None = None,
     max_samples: int | None = None,
     expand_protected_samples_enabled: bool = True,
     changed_paths: list[str] | None = None,
@@ -116,10 +138,15 @@ def run_rename_regression(
         sample_id=sample_id,
         max_samples=max_samples,
     )
-    requested_sample_ids = [entry.sample_id for entry in requested_entries]
+    if isinstance(sample_id, str):
+        requested_sample_ids = [sample_id] if sample_id else []
+    elif sample_id:
+        requested_sample_ids = [item for item in sample_id if item]
+    else:
+        requested_sample_ids = [entry.sample_id for entry in requested_entries]
     scope_expansion: list[dict[str, Any]] = []
     auto_added_sample_ids: list[str] = []
-    resolved_changed_paths = [path.replace('\\', '/') for path in (changed_paths or _discover_changed_paths()) if path]
+    resolved_changed_paths = _resolve_changed_paths(changed_paths)
     inferred_risk_tags, changed_path_inference = infer_risk_tags_from_changed_paths(
         resolved_changed_paths
     )

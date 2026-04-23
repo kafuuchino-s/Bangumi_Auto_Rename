@@ -23,7 +23,12 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument('--manifest', type=Path, default=DEFAULT_MANIFEST_PATH)
     parser.add_argument('--baseline-root', type=Path, default=DEFAULT_BASELINE_ROOT)
     parser.add_argument('--artifacts-root', type=Path, default=DEFAULT_ARTIFACTS_ROOT)
-    parser.add_argument('--sample-id', type=str, default=None)
+    parser.add_argument(
+        '--sample-id',
+        action='append',
+        default=None,
+        help='Restrict to one or more sample IDs. Repeatable.',
+    )
     parser.add_argument('--max-samples', type=int, default=None)
     parser.add_argument(
         '--changed-path',
