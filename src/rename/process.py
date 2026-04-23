@@ -27,6 +27,7 @@ from .cleaner import (
     divide_by_year,
     extract_part,
     extract_video_format,
+    is_promotional_content,
     remove_episode,
     remove_season,
     remove_tag,
@@ -4298,6 +4299,8 @@ class Rename:
 
         has_tv_hint = self._has_tv_hint(path.name)
         has_movie_hint = self._has_movie_hint(path.name)
+        structured_tv_episode_signal = self._has_structured_tv_episode_signal(path)
+        has_tv_hint = has_tv_hint or structured_tv_episode_signal
         forced_by_flag = is_movie is not None
 
         search_tv_chain = True
@@ -4414,6 +4417,9 @@ class Rename:
         elif movie_info and not tv_info:
             final_is_movie = True
         else:
+            final_is_movie = False
+
+        if structured_tv_episode_signal and tv_info:
             final_is_movie = False
 
         # 规则仅做冲突保护
@@ -5258,23 +5264,102 @@ class Rename:
         if collection_result.is_collection:
             return []
 
-        if len(collection_result.file_mapping) != 1:
-            return []
+        if len(collection_result.file_mapping) == 1:
+            mapping = collection_result.file_mapping[0]
+            if self._is_confidence_acceptable(mapping.confidence):
+                rel_path = mapping.file_path.replace('\\', '/').lstrip('/')
+                candidates = {
+                    str(p.relative_to(base_path)).replace('\\', '/'): p
+                    for p in video_files
+                }
+                matched = candidates.get(rel_path)
+                if matched:
+                    return [matched]
 
-        mapping = collection_result.file_mapping[0]
-        if not self._is_confidence_acceptable(mapping.confidence):
-            return []
+        return self._fallback_single_movie_files_from_collection_result(
+            video_files,
+            base_path,
+        )
 
-        rel_path = mapping.file_path.replace('\\', '/').lstrip('/')
-        candidates = {
-            str(p.relative_to(base_path)).replace('\\', '/'): p
-            for p in video_files
-        }
-        matched = candidates.get(rel_path)
-        if not matched:
-            return []
+    @staticmethod
+    def _is_movie_collection_extra_file(path: Path, base_path: Path) -> bool:
+        relative_text = str(path.relative_to(base_path)).replace('\\', '/').lower()
+        file_name = path.name
+        if is_promotional_content(file_name):
+            return True
 
-        return [matched]
+        text = f'{relative_text} {file_name.lower()}'
+        token_patterns = (
+            r'(^|[^a-z0-9])extras?([^a-z0-9]|$)',
+            r'(^|[^a-z0-9])bonus([^a-z0-9]|$)',
+            r'(^|[^a-z0-9])sps?([^a-z0-9]|$)',
+            r'(^|[^a-z0-9])menu([^a-z0-9]|$)',
+            r'(^|[^a-z0-9])preview([^a-z0-9]|$)',
+            r'(^|[^a-z0-9])trailer([^a-z0-9]|$)',
+            r'(^|[^a-z0-9])teaser([^a-z0-9]|$)',
+            r'(^|[^a-z0-9])cm([^a-z0-9]|$)',
+            r'(^|[^a-z0-9])pv([^a-z0-9]|$)',
+            r'tv spot',
+            r'(^|[^a-z0-9])commentary([^a-z0-9]|$)',
+            r'(^|[^a-z0-9])event([^a-z0-9]|$)',
+            r'(^|[^a-z0-9])interview([^a-z0-9]|$)',
+            r'(^|[^a-z0-9])making([^a-z0-9]|$)',
+            r'(^|[^a-z0-9])digest([^a-z0-9]|$)',
+            r'(^|[^a-z0-9])logo([^a-z0-9]|$)',
+            r'特典',
+            r'映像特典',
+        )
+        return any(re.search(pattern, text, re.IGNORECASE) for pattern in token_patterns)
+
+    @classmethod
+    def _has_structured_tv_episode_signal(cls, base_path: Path) -> bool:
+        if not base_path.exists() or not base_path.is_dir():
+            return False
+
+        episode_numbers: set[int] = set()
+        patterns = (
+            r'\bS\d{1,2}E(\d{1,3})\b',
+            r'\[(\d{1,3})\]',
+            r'\bE0*(\d{1,3})\b',
+            r'第\s*0*(\d{1,3})\s*[话話集]\b',
+        )
+
+        for path in base_path.rglob('*'):
+            if not path.is_file() or path.suffix.lower() not in VIDEO_SUFFIX:
+                continue
+            if cls._is_movie_collection_extra_file(path, base_path):
+                continue
+
+            stem = path.stem
+            for pattern in patterns:
+                match = re.search(pattern, stem, re.IGNORECASE)
+                if not match:
+                    continue
+                try:
+                    episode_number = int(match.group(1))
+                except (TypeError, ValueError):
+                    continue
+                if episode_number > 0:
+                    episode_numbers.add(episode_number)
+                    break
+
+            if len(episode_numbers) >= 3:
+                return True
+
+        return False
+
+    def _fallback_single_movie_files_from_collection_result(
+        self,
+        video_files: list[Path],
+        base_path: Path,
+    ) -> list[Path]:
+        main_candidates = [
+            path for path in video_files
+            if not self._is_movie_collection_extra_file(path, base_path)
+        ]
+        if len(main_candidates) != 1:
+            return []
+        return main_candidates
 
     def _validate_movie_collection_result(
         self,

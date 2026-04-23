@@ -737,9 +737,9 @@ def test_check_task_type_auto_mode_prefers_movie_chain_for_movie_hint():
             ai_client=ai_client,
         )
 
-    assert isinstance(result, tuple)
-    assert result[0] == "强袭魔女 剧场版"
-    assert result[3] is True
+    assert isinstance(result, dict)
+    assert result["selected_name"] == "强袭魔女 剧场版"
+    assert result["is_movie"] is True
     search_tv.assert_not_called()
     assert len(search_movie.call_args_list) == 1
     assert search_movie.call_args_list[0].args[1] == "Strike Witches The Movie"
@@ -788,6 +788,66 @@ def test_check_task_type_explicit_tv_override_keeps_tv_space():
     assert len(search_tv.call_args_list) == 1
     assert search_tv.call_args_list[0].args[1] == "Strike Witches The Movie"
     search_movie.assert_not_called()
+
+
+def test_check_task_type_prefers_structured_tv_signal_over_movie_type(tmp_path: Path):
+    """多集 TV arc 目录即使标题像电影，也应优先按 TV 处理。"""
+    rename = Rename()
+    ai_client = AIClient()
+    base_dir = tmp_path / "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Mugen Ressha Hen [Ma10p_1080p]"
+    base_dir.mkdir()
+    for ep in (27, 28, 29):
+        (base_dir / f"[VCB-Studio] Kimetsu no Yaiba [{ep}].mkv").write_bytes(b"")
+    (base_dir / "SPs").mkdir()
+    (base_dir / "SPs" / "01 PV.mkv").write_bytes(b"")
+
+    title_metadata = TitleExtractionResult(
+        title="Kimetsu no Yaiba Mugen Ressha Hen",
+        fallback_title="Kimetsu no Yaiba",
+        type="movie",
+    )
+    tv_info = {"id": 101, "name": "鬼灭之刃", "genres": [{"name": "Animation"}]}
+    movie_info = {"id": 202, "title": "鬼灭之刃 剧场版 无限列车篇", "genres": [{"name": "Animation"}]}
+
+    with patch.object(AIClient, "is_available", return_value=True), patch.object(
+        AIClient,
+        "extract_title_metadata",
+        return_value=title_metadata,
+    ), patch.object(
+        rename,
+        "_search_tv_with_ai_selection",
+        return_value=("鬼灭之刃", tv_info, "High", ""),
+    ) as search_tv, patch.object(
+        rename,
+        "_search_movie_with_ai_selection",
+        return_value=("鬼灭之刃 剧场版 无限列车篇", movie_info, "High", ""),
+    ) as search_movie:
+        result = rename.check_task_type(
+            rtpath_name="Kimetsu no Yaiba Mugen Ressha Hen",
+            year=0,
+            path=base_dir,
+            ai_client=ai_client,
+        )
+
+    assert isinstance(result, dict)
+    assert result["selected_name"] == "鬼灭之刃"
+    assert result["is_movie"] is False
+    assert search_tv.call_count >= 1
+    assert search_movie.call_count == 0
+
+
+def test_has_structured_tv_episode_signal_ignores_movie_extras(tmp_path: Path):
+    """单电影目录加特典视频，不应被误判为结构化 TV 信号。"""
+    rename = Rename()
+    base_dir = tmp_path / "[BeanSub&FZSD&VCB-Studio] Gekijouban Kimetsu no Yaiba [Ma10p_1080p]"
+    base_dir.mkdir()
+    (base_dir / "main.mkv").write_bytes(b"")
+    (base_dir / "SPs").mkdir()
+    (base_dir / "SPs" / "PV.mkv").write_bytes(b"")
+    (base_dir / "bonus_cm.mkv").write_bytes(b"")
+    (base_dir / "Trailer.mkv").write_bytes(b"")
+
+    assert rename._has_structured_tv_episode_signal(base_dir) is False
 
 
 
@@ -1548,6 +1608,149 @@ def test_process_movie_dir_single_movie_fallback_resolves_tmdb_from_collection_m
         assert task_payload["tmdb_id"] == 635302
         assert task_payload["tmdb_name"] == "鬼灭之刃剧场版：无限列车篇"
         assert task_payload["tmdb_year"] == "2020"
+    finally:
+        shutil.rmtree(temp_dir, ignore_errors=True)
+
+
+def test_single_movie_collection_fallback_handles_empty_ai_mapping():
+    rename = Rename()
+    temp_dir = Path(tempfile.mkdtemp())
+    try:
+        movie_dir = temp_dir / "sample_0091_vcb_studio_kimetsu_no_yaiba"
+        movie_dir.mkdir()
+        main_file = movie_dir / "[VCB-Studio] Kimetsu no Yaiba the Movie - Mugen Train.mkv"
+        extra_dir = movie_dir / "SPs"
+        extra_dir.mkdir()
+        extra_files = [
+            extra_dir / "01 PV.mkv",
+            extra_dir / "02 CM.mkv",
+            extra_dir / "03 Trailer.mkv",
+            extra_dir / "04 Menu.mkv",
+        ]
+        main_file.touch()
+        for extra_file in extra_files:
+            extra_file.touch()
+
+        collection_result = MovieCollectionResult(
+            is_collection=False,
+            collection_name="鬼灭之刃 无限列车篇",
+            confidence="High",
+            reason="AI 未返回可用映射",
+            file_mapping=[],
+            unmatched_files=[str(p.relative_to(movie_dir)).replace('\\', '/') for p in extra_files],
+            conflict_details=[],
+            extra_notes=None,
+        )
+
+        fallback_files = rename._extract_single_movie_files_from_collection_result(
+            collection_result,
+            [main_file, *extra_files],
+            movie_dir,
+        )
+        assert fallback_files == [main_file]
+
+        generic_info = {
+            "id": 1613899,
+            "title": "鬼灭之刃 无限列车篇",
+            "release_date": None,
+            "genres": [{"id": 16, "name": "Animation"}],
+        }
+        resolved_movie_info = {
+            "id": 635302,
+            "title": "鬼灭之刃剧场版：无限列车篇",
+            "release_date": "2020-10-16",
+            "poster_path": "/poster.jpg",
+            "genres": [{"id": 16, "name": "Animation"}],
+        }
+
+        with patch.object(
+            Rename,
+            "check_task_type",
+            return_value={
+                "selected_name": "鬼灭之刃 无限列车篇",
+                "selected_info": generic_info,
+                "is_anime": True,
+                "is_movie": True,
+                "selected_confidence": "High",
+                "ai_type": "movie",
+                "tv_candidate": {
+                    "name": "",
+                    "info": {},
+                    "confidence": None,
+                    "available": False,
+                    "reason": "tmdb_not_found",
+                },
+                "movie_candidate": {
+                    "name": "鬼灭之刃 无限列车篇",
+                    "info": generic_info,
+                    "confidence": "High",
+                    "available": True,
+                    "reason": "",
+                },
+                "tv_subset_claim": None,
+                "movie_subset_claim": None,
+                "mixed_parent_plan": {
+                    "planning_mode": "single_route",
+                    "selected_route_type": "movie",
+                    "selected_route": "movie",
+                    "mixed_subset_failure_reason": None,
+                    "mixed_subset_failure_detail": "",
+                    "tv_claimed_file_count": 0,
+                    "movie_claimed_file_count": 0,
+                    "overlap_relative_paths": [],
+                    "unclaimed_relative_paths": [],
+                    "mixed_single_route_fallback_blocked": False,
+                    "mixed_subset_blockers": [],
+                },
+                "should_try_both": False,
+            },
+        ), patch.object(AIClient, "is_available", return_value=True), patch.object(
+            AIClient,
+            "analyze_movie_collection",
+            return_value=collection_result,
+        ), patch(
+            "src.rename.process.VideoAnalyzer.analyze_video_files",
+            return_value=[
+                {"path": main_file.name, "duration": 117.0},
+                *[{"path": extra_file.name, "duration": 2.0} for extra_file in extra_files],
+            ],
+        ), patch(
+            "src.rename.process.Trans"
+        ) as trans_cls, patch.object(
+            rename.search,
+            "search_movies_by_title",
+            return_value=[
+                {
+                    "id": 635302,
+                    "title": "Demon Slayer -Kimetsu no Yaiba- The Movie: Mugen Train",
+                    "_match_score": 130,
+                },
+                {
+                    "id": 1613899,
+                    "title": "Kimetsu.no.Yaiba",
+                    "_match_score": 95,
+                },
+            ],
+        ), patch.object(
+            rename.search,
+            "get_movie_info_by_id",
+            return_value=resolved_movie_info,
+        ), patch.object(
+            Rename,
+            "_write_task_data",
+        ) as write_task_data:
+            trans_cls.return_value.trans_file.return_value = None
+            result = rename.process(movie_dir)
+
+        assert result is True
+        assert trans_cls.call_count == 1
+        written_mapping = trans_cls.call_args_list[0].args[0]
+        assert list(written_mapping.keys()) == [main_file]
+        assert all(extra_file not in written_mapping for extra_file in extra_files)
+        assert write_task_data.call_count == 1
+        task_payload = write_task_data.call_args_list[0][0][0]
+        assert task_payload["name"] == "鬼灭之刃 无限列车篇"
+        assert task_payload["tmdb_id"] == 1613899
     finally:
         shutil.rmtree(temp_dir, ignore_errors=True)
 
@@ -2569,3 +2772,156 @@ def test_validate_tv_result_remaps_global_episode_before_duplicate_episode_dedup
         shutil.rmtree(temp_dir, ignore_errors=True)
 
 
+def test_extract_global_episode_number_ignores_audio_channel_numbers_in_explicit_season_files():
+    processor = AIProcessor()
+
+    assert (
+        processor._extract_global_episode_number(
+            'Love.Death.&.Robots.S04E01.1080p.NF.WEB-DL.DDP5.1.Atmos.H.264-ARiC.mkv'
+        )
+        is None
+    )
+    assert (
+        processor._extract_global_episode_number(
+            'The.Disastrous.Life.of.Saiki.K.S01E24.2016.1080p.BluRay.x265.10bit.FLAC.2.0-ADE.mkv'
+        )
+        is None
+    )
+    assert processor._extract_global_episode_number('Yuukaku [34].mkv') == 34
+
+
+def test_extract_explicit_episode_number_prefers_sxxeyy_over_audio_channel_numbers():
+    processor = AIProcessor()
+
+    assert (
+        processor._extract_explicit_episode_number(
+            'Love.Death.&.Robots.S04E01.1080p.NF.WEB-DL.DDP5.1.Atmos.H.264-ARiC.mkv'
+        )
+        == 1
+    )
+    assert (
+        processor._extract_explicit_episode_number(
+            'The.Disastrous.Life.of.Saiki.K.S01E24.2016.1080p.BluRay.x265.10bit.FLAC.2.0-ADE.mkv'
+        )
+        == 24
+    )
+
+
+def test_validate_tv_result_preserves_explicit_season_pack_with_ddp51_markers():
+    processor = AIProcessor()
+    temp_dir = Path(tempfile.mkdtemp())
+    try:
+        base_path = temp_dir / 'LoveDeathRobots'
+        base_path.mkdir(parents=True)
+        files = [
+            base_path / 'Love.Death.&.Robots.S04E01.1080p.NF.WEB-DL.DDP5.1.Atmos.H.264-ARiC.mkv',
+            base_path / 'Love.Death.&.Robots.S04E02.1080p.NF.WEB-DL.DDP5.1.Atmos.H.264-ARiC.mkv',
+            base_path / 'Love.Death.&.Robots.S04E03.1080p.NF.WEB-DL.DDP5.1.Atmos.H.264-ARiC.mkv',
+        ]
+        for file_path in files:
+            file_path.touch()
+
+        anime_info = {
+            'name': 'Love, Death & Robots',
+            'seasons': [
+                {'season_number': 4, 'episode_count': 3, 'episodes': []},
+            ],
+        }
+        ai_result = AIAnalysisResult(
+            confidence='High',
+            reason='test',
+            season_mapping=[],
+            file_mapping=[
+                EpisodeMapping(
+                    file_path=file_path.name,
+                    tmdb_season=4,
+                    tmdb_episode=index,
+                    episode_type='regular',
+                    confidence='High',
+                )
+                for index, file_path in enumerate(files, 1)
+            ],
+        )
+
+        ok, reason, detail = processor.validate_tv_result(
+            ai_result,
+            anime_info,
+            base_path,
+            files,
+        )
+
+        assert ok is True
+        assert reason is None
+        assert detail == ''
+        remapped = sorted(
+            (mapping.file_path, mapping.tmdb_season, mapping.tmdb_episode)
+            for mapping in ai_result.file_mapping
+        )
+        assert remapped == [
+            (files[0].name, 4, 1),
+            (files[1].name, 4, 2),
+            (files[2].name, 4, 3),
+        ]
+        assert not any('全局编号重映射' in item for item in ai_result.conflict_details)
+    finally:
+        shutil.rmtree(temp_dir, ignore_errors=True)
+
+
+def test_validate_tv_result_preserves_explicit_season_pack_with_flac20_markers():
+    processor = AIProcessor()
+    temp_dir = Path(tempfile.mkdtemp())
+    try:
+        base_path = temp_dir / 'SaikiK'
+        base_path.mkdir(parents=True)
+        files = [
+            base_path / 'The.Disastrous.Life.of.Saiki.K.S01E01.2016.1080p.BluRay.x265.10bit.FLAC.2.0-ADE.mkv',
+            base_path / 'The.Disastrous.Life.of.Saiki.K.S01E02.2016.1080p.BluRay.x265.10bit.FLAC.2.0-ADE.mkv',
+            base_path / 'The.Disastrous.Life.of.Saiki.K.S01E03.2016.1080p.BluRay.x265.10bit.FLAC.2.0-ADE.mkv',
+        ]
+        for file_path in files:
+            file_path.touch()
+
+        anime_info = {
+            'name': '齐木楠雄的灾难',
+            'seasons': [
+                {'season_number': 1, 'episode_count': 3, 'episodes': []},
+            ],
+        }
+        ai_result = AIAnalysisResult(
+            confidence='High',
+            reason='test',
+            season_mapping=[],
+            file_mapping=[
+                EpisodeMapping(
+                    file_path=file_path.name,
+                    tmdb_season=1,
+                    tmdb_episode=index,
+                    episode_type='regular',
+                    confidence='High',
+                )
+                for index, file_path in enumerate(files, 1)
+            ],
+        )
+
+        ok, reason, detail = processor.validate_tv_result(
+            ai_result,
+            anime_info,
+            base_path,
+            files,
+        )
+
+        assert ok is True
+        assert reason is None
+        assert detail == ''
+        remapped = sorted(
+            (mapping.file_path, mapping.tmdb_season, mapping.tmdb_episode)
+            for mapping in ai_result.file_mapping
+        )
+        assert remapped == [
+            (files[0].name, 1, 1),
+            (files[1].name, 1, 2),
+            (files[2].name, 1, 3),
+        ]
+        assert not any('全局编号重映射' in item for item in ai_result.conflict_details)
+    finally:
+        shutil.rmtree(temp_dir, ignore_errors=True)

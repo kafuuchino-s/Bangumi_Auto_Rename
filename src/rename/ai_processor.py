@@ -515,11 +515,17 @@ class AIProcessor:
 
         return lookup
 
+    def _has_explicit_season_episode_token(self, file_path: str) -> bool:
+        file_name = Path(file_path or '').stem
+        return bool(re.search(r'\bS\d{1,2}E\d{1,4}\b', file_name, flags=re.IGNORECASE))
+
     def _extract_global_episode_number(self, file_path: str) -> int | None:
         file_name = Path(file_path or '').stem
+        if self._has_explicit_season_episode_token(file_name):
+            return None
         patterns = [
             r'\[(\d{1,4})\]',
-            r'(?<![A-Za-z0-9])(\d{1,3})(?![A-Za-z0-9])',
+            r'(?<![A-Za-z0-9.])(\d{1,3})(?![A-Za-z0-9.])',
         ]
         for pattern in patterns:
             match = re.search(pattern, file_name, flags=re.IGNORECASE)
@@ -535,10 +541,11 @@ class AIProcessor:
     def _extract_explicit_episode_number(self, file_path: str) -> int | None:
         file_name = Path(file_path or '').stem
         patterns = [
+            r'\bS\d{1,2}E(\d{1,4})\b',
             r'\[(\d{1,4})\]',
             r'\bEP(?:ISODE)?\s*0*(\d{1,4})\b',
             r'\b第\s*0*(\d{1,4})\s*[话話集]\b',
-            r'(?<!\d)(\d{1,4})(?!\d)',
+            r'(?<![\d.])(\d{1,4})(?![\d.])',
         ]
         for pattern in patterns:
             match = re.search(pattern, file_name, flags=re.IGNORECASE)
@@ -620,12 +627,14 @@ class AIProcessor:
             key = (mapping.tmdb_season, mapping.tmdb_episode)
             file_path = mapping.file_path or ''
             file_is_auxiliary = self._is_auxiliary_special_filename(Path(file_path).name)
+            file_has_explicit_season_episode = self._has_explicit_season_episode_token(file_path)
             global_episode_number = self._extract_global_episode_number(file_path)
             remapped_key = (
                 global_episode_lookup.get(global_episode_number)
                 if (
                     mapping.tmdb_season > 0
                     and not file_is_auxiliary
+                    and not file_has_explicit_season_episode
                     and global_episode_number is not None
                 )
                 else None
@@ -655,6 +664,7 @@ class AIProcessor:
                 global_episode_lookup.get(global_episode_number)
                 if mapping.tmdb_season > 0
                 and not file_is_auxiliary
+                and not file_has_explicit_season_episode
                 and global_episode_number is not None
                 and global_episode_number == mapping.tmdb_episode
                 else None
@@ -690,12 +700,14 @@ class AIProcessor:
             key = (mapping.tmdb_season, mapping.tmdb_episode)
             file_path = mapping.file_path or ''
             file_is_auxiliary = self._is_auxiliary_special_filename(Path(file_path).name)
+            file_has_explicit_season_episode = self._has_explicit_season_episode_token(file_path)
             global_episode_number = self._extract_global_episode_number(file_path)
             remapped_key = (
                 global_episode_lookup.get(global_episode_number)
                 if (
                     mapping.tmdb_season > 0
                     and not file_is_auxiliary
+                    and not file_has_explicit_season_episode
                     and global_episode_number is not None
                 )
                 else None
