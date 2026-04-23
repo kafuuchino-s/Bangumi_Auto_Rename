@@ -133,7 +133,7 @@
 
 1. **问题主因不是 baseline 文件本身，而是业务执行结果曾经真实漂移。**
 2. 之前已确认的漂移根因已经修复，并提交到：`dd38788`。
-3. 修复后，针对 `0117 + 0123 + 0091` 的 targeted regression 与一次 full `check` 已经拿到连续通过证据。
+3. 以本文档为维护入口后的当前计划轮次（10 轮 targeted + 2 轮 full `check`）已执行完成，并保持连续通过。
 4. 这说明：
    - “之前看起来像 baseline 不稳定”的主因已被明显收敛；
    - 但 baseline 机制层面的长期治理还没单独建设。
@@ -182,6 +182,91 @@
 
 这些历史失败形态是本轮 soak 重点复核对象。
 
+### 8.4 2026-04-24 第一批 soak 结果
+
+本计划启动后的第一批执行结果：
+
+- targeted soak：5 轮
+  - `20260423T204320Z-51b65d90`
+  - `20260423T204713Z-e3fa1c38`
+  - `20260423T205047Z-2b1ac83e`
+  - `20260423T205406Z-91611c23`
+  - `20260423T205711Z-14f6b9bb`
+- full `check`：1 轮
+  - `20260423T210011Z-d146946a`
+
+这一批结果的共同结论：
+
+1. 5 轮 targeted 全部通过：
+   - `selected_count = 3`
+   - `passed_count = 3`
+   - `product_failure_count = 0`
+   - `flaky_count = 0`
+   - `sample_0091_status = passed`
+   - `task_files = 4`
+   - `record_files = 4`
+
+2. 1 轮 full `check` 通过：
+   - `selected_count = 6`
+   - `passed_count = 6`
+   - `product_failure_count = 0`
+   - `flaky_count = 0`
+   - `sample_0091_status = passed`
+   - `task_files = 4`
+   - `record_files = 4`
+
+3. 这一批 run 的 `run_context` 显示：
+   - targeted 仍为 `0117 + 0123 + 自动扩圈的 0091`
+   - full `check` 仍为 5 个 `check=true` 样本 + 自动扩圈的 `0091`
+   - 由于相关修复已经提交，`changed_paths` 为空，当前属于“已提交代码后的稳定性 soak”
+
+4. 当前解释：
+   - 第一批 soak 没有重新触发历史两类 `0091` 漂移
+   - 但整个计划尚未结束，仍需完成剩余 5 轮 targeted 和至少 1 轮 full `check`
+
+### 8.5 2026-04-24 第二批 soak 结果
+
+本计划第二批执行结果：
+
+- targeted soak：5 轮
+  - `20260423T211013Z-87242b7e`
+  - `20260423T211305Z-f2841434`
+  - `20260423T211533Z-0f24ee4a`
+  - `20260423T211853Z-b7a0e3eb`
+  - `20260423T212211Z-cb4a3b0c`
+- full `check`：1 轮
+  - `20260423T212545Z-a61e23e1`
+
+这一批结果的共同结论：
+
+1. 5 轮 targeted 全部通过：
+   - `selected_count = 3`
+   - `passed_count = 3`
+   - `product_failure_count = 0`
+   - `flaky_count = 0`
+   - `sample_0091_status = passed`
+   - `task_files = 4`
+   - `record_files = 4`
+
+2. 1 轮 full `check` 通过：
+   - `selected_count = 6`
+   - `passed_count = 6`
+   - `product_failure_count = 0`
+   - `flaky_count = 0`
+   - `sample_0091_status = passed`
+   - `task_files = 4`
+   - `record_files = 4`
+
+3. 与第一批一致：
+   - `changed_paths` 仍为空
+   - 当前 soak 继续属于“相关修复已提交后”的稳定性观察
+   - 历史两类 `0091` 漂移仍未复现
+
+4. 截至本批结束，当前计划中承诺的：
+   - `10` 轮 targeted soak
+   - `2` 轮 full `check`
+   已全部完成，且未观察到新的 `product_failed` / `flaky` / `baseline_missing`
+
 ## 9. 失败分类规则
 
 后续 soak 中若再次失败，优先按下面口径分类：
@@ -214,12 +299,13 @@
 
 当前建议的下一轮计划：
 
-1. 再做一轮更长的 targeted soak
-   - 目标：`0117 + 0123 + 0091`
-   - 建议轮次：10 轮
+1. 当前计划轮次已经完成
+   - targeted：累计 10 轮完成
+   - full `check`：累计 2 轮完成
 
-2. 再做 2~3 轮 full `check`
-   - 目标：确认当前 `check=true` 集整体是否稳定
+2. 如果需要继续增强把握，再决定是否进入下一轮更长 soak
+   - targeted：再追加 10 轮
+   - full `check`：再追加 2~3 轮
 
 3. 每轮记录以下字段
    - `run_id`
@@ -249,5 +335,6 @@
 当前优先级：
 
 1. 用本文档持续维护 baseline 主线，不再依赖临时记忆。
-2. 后续先补更长轮次 soak，再决定是否需要补机制。
-3. 若后续 soak 继续稳定，再考虑是否把 `sample_0091` 的维护口径从“重点观察”调整为更稳定状态。
+2. 当前计划中的 `10` 轮 targeted + `2` 轮 full `check` 已完成，阶段性结果为稳定。
+3. 下一步不是立即改代码，而是根据是否还需要更强置信度，决定是否追加更长轮次 soak。
+4. 若后续继续稳定，再考虑是否把 `sample_0091` 的维护口径从“重点观察”调整为更稳定状态。
