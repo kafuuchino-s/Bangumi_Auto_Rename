@@ -29,6 +29,9 @@ class RenameSample:
     sample_json: str
     check: bool = False
     anchor: bool = False
+    tags: list[str] = field(default_factory=list)
+    protects: list[str] = field(default_factory=list)
+    always_with: list[str] = field(default_factory=list)
 
     def to_dict(self) -> dict[str, Any]:
         return _json_safe(asdict(self))
@@ -41,6 +44,12 @@ class ManifestSnapshot:
     selected_count: int
     selected_sample_ids: list[str]
     samples: list[dict[str, Any]]
+    requested_sample_ids: list[str] = field(default_factory=list)
+    auto_added_sample_ids: list[str] = field(default_factory=list)
+    changed_paths: list[str] = field(default_factory=list)
+    inferred_risk_tags: list[str] = field(default_factory=list)
+    changed_path_inference: list[dict[str, Any]] = field(default_factory=list)
+    scope_expansion: list[dict[str, Any]] = field(default_factory=list)
     selection_notes: list[str] = field(default_factory=list)
 
     def to_dict(self) -> dict[str, Any]:
@@ -59,6 +68,12 @@ class RunContext:
     ai_model_info: dict[str, Any] = field(default_factory=dict)
     provider_version_info: dict[str, Any] = field(default_factory=dict)
     selected_sample_ids: list[str] = field(default_factory=list)
+    requested_sample_ids: list[str] = field(default_factory=list)
+    auto_added_sample_ids: list[str] = field(default_factory=list)
+    changed_paths: list[str] = field(default_factory=list)
+    inferred_risk_tags: list[str] = field(default_factory=list)
+    changed_path_inference: list[dict[str, Any]] = field(default_factory=list)
+    scope_expansion: list[dict[str, Any]] = field(default_factory=list)
 
     def to_dict(self) -> dict[str, Any]:
         return _json_safe(asdict(self))

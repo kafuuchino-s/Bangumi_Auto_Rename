@@ -25,6 +25,17 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument('--artifacts-root', type=Path, default=DEFAULT_ARTIFACTS_ROOT)
     parser.add_argument('--sample-id', type=str, default=None)
     parser.add_argument('--max-samples', type=int, default=None)
+    parser.add_argument(
+        '--changed-path',
+        action='append',
+        default=None,
+        help='Explicit changed path to use for protected-sample inference. Repeatable.',
+    )
+    parser.add_argument(
+        '--no-expand-protected-samples',
+        action='store_true',
+        help='Disable automatic protected-sample scope expansion for debugging.',
+    )
     return parser
 
 
@@ -38,6 +49,8 @@ def main() -> int:
         artifacts_root=args.artifacts_root,
         sample_id=args.sample_id,
         max_samples=args.max_samples,
+        expand_protected_samples_enabled=not args.no_expand_protected_samples,
+        changed_paths=args.changed_path,
     )
     print(json.dumps(result, ensure_ascii=False, indent=2))
     return int(result['exit_code'])

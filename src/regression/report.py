@@ -49,6 +49,68 @@ def build_report_markdown(report: RunReport) -> str:
         ]
     )
 
+    requested_sample_ids = run_context.get('requested_sample_ids') or []
+    auto_added_sample_ids = run_context.get('auto_added_sample_ids') or []
+    changed_paths = run_context.get('changed_paths') or []
+    inferred_risk_tags = run_context.get('inferred_risk_tags') or []
+    changed_path_inference = run_context.get('changed_path_inference') or []
+    scope_expansion = run_context.get('scope_expansion') or []
+
+    if changed_paths:
+        lines.append('#### Changed Paths')
+        lines.extend(f'- `{path}`' for path in changed_paths)
+        lines.append('')
+
+    if inferred_risk_tags:
+        lines.append('#### Inferred Risk Tags')
+        lines.extend(f'- `{tag}`' for tag in inferred_risk_tags)
+        lines.append('')
+
+    if changed_path_inference:
+        lines.append('#### Changed-path Inference')
+        for inference in changed_path_inference:
+            path = inference.get('path')
+            matched_tags = inference.get('matched_tags') or []
+            matched_rules = inference.get('matched_rules') or []
+            lines.append(
+                f"- `{path}` -> tags={matched_tags} rules={matched_rules}"
+            )
+        lines.append('')
+
+    if requested_sample_ids:
+        lines.append('#### Requested Sample IDs')
+        lines.extend(f'- `{sample_id}`' for sample_id in requested_sample_ids)
+        lines.append('')
+
+    if auto_added_sample_ids:
+        lines.append('#### Auto-added Protected Sample IDs')
+        lines.extend(f'- `{sample_id}`' for sample_id in auto_added_sample_ids)
+        lines.append('')
+
+    if scope_expansion:
+        lines.append('#### Scope Expansion')
+        for expansion in scope_expansion:
+            requested = expansion.get('requested_sample_id')
+            added = expansion.get('added_sample_id')
+            reason = expansion.get('reason')
+            matched_tags = expansion.get('matched_tags') or []
+            changed_paths_suffix = expansion.get('changed_paths') or []
+            suffix_parts: list[str] = []
+            if matched_tags:
+                suffix_parts.append(f'matched_tags={matched_tags}')
+            if changed_paths_suffix:
+                suffix_parts.append(f'changed_paths={changed_paths_suffix}')
+            suffix = f" ({', '.join(suffix_parts)})" if suffix_parts else ''
+            if requested:
+                lines.append(
+                    f"- `{requested}` -> `{added}` via `{reason}`{suffix}"
+                )
+            else:
+                lines.append(
+                    f"- `{added}` auto-added via `{reason}`{suffix}"
+                )
+        lines.append('')
+
     sample_results = summary.get('sample_results') or []
     if sample_results:
         lines.append('#### Sample Statuses')

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import subprocess
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -8,7 +9,14 @@ from uuid import uuid4
 
 from .baseline import load_baseline_record
 from .lanes.rename import run_rename_lane
-from .manifest import DEFAULT_MANIFEST_PATH, build_snapshot, filter_manifest_entries, load_manifest
+from .manifest import (
+    DEFAULT_MANIFEST_PATH,
+    build_snapshot,
+    expand_protected_samples,
+    filter_manifest_entries,
+    infer_risk_tags_from_changed_paths,
+    load_manifest,
+)
 from .models import CANONICAL_MODE_CHOICES, RunContext, RunReport
 from .report import write_report_json, write_report_markdown
 from ..config.config_manager import cm
@@ -44,6 +52,37 @@ def _write_json(path: Path, payload: dict[str, Any]) -> None:
         file.write('\n')
 
 
+def _discover_changed_paths() -> list[str]:
+    commands = [
+        ['git', 'diff', '--name-only', '--diff-filter=ACMRD', 'HEAD'],
+        ['git', 'ls-files', '--others', '--exclude-standard'],
+    ]
+    changed_paths: list[str] = []
+    seen: set[str] = set()
+
+    for command in commands:
+        try:
+            result = subprocess.run(
+                command,
+                cwd=PROJECT_ROOT,
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+        except OSError:
+            continue
+        if result.returncode != 0:
+            continue
+        for line in result.stdout.splitlines():
+            normalized = line.strip().replace('\\', '/')
+            if not normalized or normalized in seen:
+                continue
+            seen.add(normalized)
+            changed_paths.append(normalized)
+
+    return changed_paths
+
+
 def run_rename_regression(
     *,
     mode: str,
@@ -52,6 +91,8 @@ def run_rename_regression(
     artifacts_root: Path | None = None,
     sample_id: str | None = None,
     max_samples: int | None = None,
+    expand_protected_samples_enabled: bool = True,
+    changed_paths: list[str] | None = None,
 ) -> dict[str, Any]:
     if mode not in CANONICAL_MODE_CHOICES:
         raise ValueError(f'Unsupported mode: {mode}')
@@ -69,16 +110,52 @@ def run_rename_regression(
         path.mkdir(parents=True, exist_ok=True)
 
     manifest_version, manifest_entries = load_manifest(manifest_path)
-    selected_entries, selection_notes = filter_manifest_entries(
+    requested_entries, selection_notes = filter_manifest_entries(
         manifest_entries,
         mode=canonical_mode,
         sample_id=sample_id,
         max_samples=max_samples,
     )
+    requested_sample_ids = [entry.sample_id for entry in requested_entries]
+    scope_expansion: list[dict[str, Any]] = []
+    auto_added_sample_ids: list[str] = []
+    resolved_changed_paths = [path.replace('\\', '/') for path in (changed_paths or _discover_changed_paths()) if path]
+    inferred_risk_tags, changed_path_inference = infer_risk_tags_from_changed_paths(
+        resolved_changed_paths
+    )
+    if resolved_changed_paths:
+        selection_notes.append(
+            'changed paths detected: ' + ', '.join(resolved_changed_paths)
+        )
+    if inferred_risk_tags:
+        selection_notes.append(
+            'changed-path inferred tags: ' + ', '.join(inferred_risk_tags)
+        )
+    if expand_protected_samples_enabled:
+        selected_entries, scope_expansion, auto_added_sample_ids = expand_protected_samples(
+            manifest_entries,
+            requested_entries,
+            inferred_risk_tags=inferred_risk_tags,
+            changed_paths=resolved_changed_paths,
+        )
+        if auto_added_sample_ids:
+            selection_notes.append(
+                'protected sample expansion applied: ' + ', '.join(auto_added_sample_ids)
+            )
+    else:
+        selected_entries = requested_entries
+        selection_notes.append('protected sample expansion disabled')
+
     snapshot = build_snapshot(
         manifest_version=manifest_version,
         mode=canonical_mode,
         entries=selected_entries,
+        requested_sample_ids=requested_sample_ids,
+        auto_added_sample_ids=auto_added_sample_ids,
+        changed_paths=resolved_changed_paths,
+        inferred_risk_tags=inferred_risk_tags,
+        changed_path_inference=changed_path_inference,
+        scope_expansion=scope_expansion,
         selection_notes=selection_notes,
     )
     snapshot_path = run_dir / 'manifest_snapshot.json'
@@ -96,6 +173,12 @@ def run_rename_regression(
         ai_model_info=ai_model_info,
         provider_version_info=provider_version_info,
         selected_sample_ids=[entry.sample_id for entry in selected_entries],
+        requested_sample_ids=requested_sample_ids,
+        auto_added_sample_ids=auto_added_sample_ids,
+        changed_paths=resolved_changed_paths,
+        inferred_risk_tags=inferred_risk_tags,
+        changed_path_inference=changed_path_inference,
+        scope_expansion=scope_expansion,
     )
     run_context_path = run_dir / 'run_context.json'
     _write_json(run_context_path, run_context.to_dict())
@@ -147,6 +230,10 @@ def run_rename_regression(
         'run_id': run_id,
         'selected_count': selected_count,
         'selected_sample_ids': run_context.selected_sample_ids,
+        'requested_sample_ids': run_context.requested_sample_ids,
+        'auto_added_sample_ids': run_context.auto_added_sample_ids,
+        'changed_paths': run_context.changed_paths,
+        'inferred_risk_tags': run_context.inferred_risk_tags,
         'manifest_snapshot_path': str(snapshot_path),
         'run_context_path': str(run_context_path),
         'report_json_path': str(report_json_path),
