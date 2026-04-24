@@ -171,7 +171,11 @@ Bangumi_Auto_Rename.onefile-build
 config.json
 data
 
+# Sample-pool and regression generated artifacts
+/tests/sample_pool/generated/
+
 # Local Claude/runtime artifacts
 /.claude/
+/.sisyphus/
 /log
 /nul
