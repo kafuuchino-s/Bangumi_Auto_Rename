@@ -39,7 +39,9 @@ FAILURE_MESSAGES = {
     "ai_timeout": "[AI] AI分析超时或失败",
     "ai_low_confidence": "[AI] AI置信度不足",
     "ai_empty_mapping": "[AI] 未生成可执行映射",
+    "ai_partial_mapping": "[AI] AI仅生成部分映射",
     "ai_invalid_mapping": "[AI] AI返回映射存在冲突或越界",
+    "target_collision": "[映射] 多个源文件映射到同一目标",
     "mixed_subset_invalid": "[混合计划] TV/Movie 子集无效，拒绝双子集混合执行",
     "mixed_subset_overlap": "[混合计划] TV/Movie 文件集合存在重叠，拒绝双子集混合执行",
     "tmdb_not_found": "[TMDB] 未搜索到匹配结果",
@@ -99,6 +101,7 @@ class MixedParentPlan(TypedDict):
     mixed_capable_context: bool
     mixed_single_route_fallback_blocked: bool
     mixed_subset_blockers: list[str]
+    partition_recommendation: dict[str, object]
 
 
 class TaskTypePlan(TypedDict):
@@ -400,6 +403,85 @@ class Rename:
             key=lambda item: self._relative_planning_path(path, item).casefold(),
         )
 
+    def _build_video_discovery_debug(self, path: Path) -> dict[str, object]:
+        all_video_files = self._collect_planning_video_files(path)
+        promotional_files = [
+            item for item in all_video_files if is_promotional_content(item.name)
+        ]
+        return {
+            'raw_video_count': len(all_video_files),
+            'promo_video_count': len(promotional_files),
+            'processable_video_count': len(all_video_files) - len(promotional_files),
+            'raw_video_examples': [
+                self._relative_planning_path(path if path.is_dir() else path.parent, item)
+                for item in all_video_files[:5]
+            ],
+            'promo_video_examples': [
+                self._relative_planning_path(path if path.is_dir() else path.parent, item)
+                for item in promotional_files[:5]
+            ],
+        }
+
+    def _is_supplemental_video_file(self, file_path: Path, base_path: Path) -> bool:
+        if is_promotional_content(file_path.name):
+            return True
+
+        try:
+            relative_text = str(
+                file_path.resolve().relative_to(base_path.resolve())
+            ).replace('\\', '/')
+        except ValueError:
+            relative_text = file_path.name
+
+        relative_parts = [part.casefold() for part in Path(relative_text).parts[:-1]]
+        if any(
+            part in {
+                'extras',
+                'extra',
+                'bonus',
+                'sps',
+                'specials',
+                'creditless op-ed',
+                'creditless op',
+                'creditless ed',
+                '映像特典',
+                '特典',
+            }
+            for part in relative_parts
+        ):
+            return True
+
+        text = f'{relative_text} {file_path.name}'.casefold()
+        supplemental_patterns = (
+            r'(^|[^a-z0-9])extras?([^a-z0-9]|$)',
+            r'(^|[^a-z0-9])bonus([^a-z0-9]|$)',
+            r'(^|[^a-z0-9])menu([^a-z0-9]|$)',
+            r'(^|[^a-z0-9])trailer([^a-z0-9]|$)',
+            r'(^|[^a-z0-9])teaser([^a-z0-9]|$)',
+            r'(^|[^a-z0-9])preview([^a-z0-9]|$)',
+            r'(^|[^a-z0-9])commentary([^a-z0-9]|$)',
+            r'(^|[^a-z0-9])interview([^a-z0-9]|$)',
+            r'(^|[^a-z0-9])talk([^a-z0-9]|$)',
+            r'(^|[^a-z0-9])making([^a-z0-9]|$)',
+            r'(^|[^a-z0-9])radio([^a-z0-9]|$)',
+            r'(^|[^a-z0-9])live([^a-z0-9]|$)',
+            r'(^|[^a-z0-9])digest([^a-z0-9]|$)',
+            r'(^|[^a-z0-9])theater[\s._-]*greeting([^a-z0-9]|$)',
+            r'(^|[^a-z0-9])after[\s._-]*movie([^a-z0-9]|$)',
+            r'(^|[^a-z0-9])story[\s._-]*summary([^a-z0-9]|$)',
+            r'(^|[^a-z0-9])info\d*([^a-z0-9]|$)',
+            r'(^|[^a-z0-9])theme[\s._-]*song([^a-z0-9]|$)',
+            r'(^|[^a-z0-9])recitation[\s._-]*drama([^a-z0-9]|$)',
+            r'memorial[\s._-]*note',
+            r'tv[\s._-]*spot',
+            r'映像特典',
+            r'特典',
+            r'メニュー',
+            r'予告',
+            r'番宣',
+        )
+        return any(re.search(pattern, text, re.IGNORECASE) for pattern in supplemental_patterns)
+
     def _build_planning_file_refs(self, path: Path) -> list[PlanningFileRef]:
         planning_files: list[PlanningFileRef] = []
         for file_path in self._collect_planning_video_files(path):
@@ -651,14 +733,22 @@ class Rename:
         route_eval['video_files'] = video_files
         route_eval['total_video_count'] = len(video_files)
         if not video_files:
+            route_eval['video_discovery'] = self._build_video_discovery_debug(path)
             route_eval['failure_reason'] = 'ai_empty_mapping'
             route_eval['detail'] = '未发现可处理的视频文件'
             return route_eval
 
+        preferred_season = self.search.extract_preferred_season_number(path.name, tv_name)
         explicit_fallback_ai_result = self._build_explicit_tv_episode_fallback_result(
             path,
             tv_info,
             video_files,
+        )
+        plain_episode_fallback_ai_result = self._build_plain_tv_episode_fallback_result(
+            path,
+            tv_info,
+            video_files,
+            preferred_season=preferred_season,
         )
 
         tv_info_typed = cast(AnimeInfoDict, cast(object, tv_info))
@@ -677,6 +767,21 @@ class Rename:
                 file_analysis=file_analysis_typed,
             )
             if not ai_result:
+                if plain_episode_fallback_ai_result is not None:
+                    logger.info(
+                        '[处理任务] TV AI 无响应，改用连续普通集数 deterministic fallback'
+                    )
+                    ai_result = plain_episode_fallback_ai_result
+                else:
+                    route_eval['failure_reason'] = 'ai_timeout'
+                    route_eval['detail'] = 'AI 未返回 TV 映射结果'
+                    self._store_validated_route_eval(path, 'tv', tv_info, route_eval)
+                    return route_eval
+
+        if ai_result is None:
+            if plain_episode_fallback_ai_result is not None:
+                ai_result = plain_episode_fallback_ai_result
+            else:
                 route_eval['failure_reason'] = 'ai_timeout'
                 route_eval['detail'] = 'AI 未返回 TV 映射结果'
                 self._store_validated_route_eval(path, 'tv', tv_info, route_eval)
@@ -685,12 +790,28 @@ class Rename:
         route_eval['ai_result'] = ai_result
         route_eval['confidence'] = ai_result.confidence
 
+        if preferred_season and plain_episode_fallback_ai_result is not None:
+            logger.info(
+                '[处理任务] 检测到明确季提示，使用连续普通集数 deterministic fallback '
+                f'(season={preferred_season})'
+            )
+            ai_result = plain_episode_fallback_ai_result
+            route_eval['ai_result'] = ai_result
+            route_eval['confidence'] = ai_result.confidence
+
         if not self._is_confidence_acceptable(ai_result.confidence):
             if explicit_fallback_ai_result is not None:
                 logger.info(
                     '[处理任务] TV 映射低置信度，改用显式季集 deterministic fallback'
                 )
                 ai_result = explicit_fallback_ai_result
+                route_eval['ai_result'] = ai_result
+                route_eval['confidence'] = ai_result.confidence
+            elif plain_episode_fallback_ai_result is not None:
+                logger.info(
+                    '[处理任务] TV 映射低置信度，改用连续普通集数 deterministic fallback'
+                )
+                ai_result = plain_episode_fallback_ai_result
                 route_eval['ai_result'] = ai_result
                 route_eval['confidence'] = ai_result.confidence
             else:
@@ -776,6 +897,43 @@ class Rename:
             mapped_video_paths,
             key=lambda item: self._relative_planning_path(planning_base_path, item),
         )
+        mapped_video_path_set = {
+            self._relative_planning_path(planning_base_path, source_path)
+            for source_path in mapped_video_paths
+        }
+        unmapped_video_paths = [
+            source_path
+            for source_path in video_files
+            if self._relative_planning_path(planning_base_path, source_path)
+            not in mapped_video_path_set
+        ]
+        potential_main_unmapped_video_paths = [
+            source_path
+            for source_path in unmapped_video_paths
+            if not self._is_supplemental_video_file(source_path, planning_base_path)
+        ]
+        ignored_supplemental_video_paths = [
+            source_path
+            for source_path in unmapped_video_paths
+            if source_path not in potential_main_unmapped_video_paths
+        ]
+        if mapped_video_paths and potential_main_unmapped_video_paths:
+            route_eval['failure_reason'] = 'ai_partial_mapping'
+            route_eval['detail'] = (
+                f'TV 映射只覆盖 {len(mapped_video_paths)}/{len(video_files)} 个视频，'
+                f'仍有 {len(potential_main_unmapped_video_paths)} 个正片候选视频未映射'
+            )
+            route_eval['unmapped_potential_main_files'] = [
+                self._relative_planning_path(planning_base_path, source_path)
+                for source_path in potential_main_unmapped_video_paths[:20]
+            ]
+            route_eval['ignored_supplemental_relative_paths'] = [
+                self._relative_planning_path(planning_base_path, source_path)
+                for source_path in ignored_supplemental_video_paths[:20]
+            ]
+            if injected_ai_result is None:
+                self._store_validated_route_eval(path, 'tv', tv_info, route_eval)
+            return route_eval
         claimed_relative_paths = [
             self._relative_planning_path(planning_base_path, source_path)
             for source_path in mapped_video_paths
@@ -790,6 +948,10 @@ class Rename:
                 'mapped_count': len(mapped_video_paths),
                 'mapped_ratio': len(mapped_video_paths) / len(video_files),
                 'claimed_relative_paths': claimed_relative_paths,
+                'ignored_supplemental_relative_paths': [
+                    self._relative_planning_path(planning_base_path, source_path)
+                    for source_path in ignored_supplemental_video_paths
+                ],
                 'claim_reasons': {
                     relative_path: mapping_claim_reasons.get(
                         relative_path,
@@ -886,6 +1048,115 @@ class Rename:
             extra_notes='Applied explicit SxxEyy deterministic fallback after low-confidence TV mapping.',
         )
 
+    def _build_plain_tv_episode_fallback_result(
+        self,
+        base_path: Path,
+        tv_info: TmdbInfo,
+        video_files: list[Path],
+        *,
+        preferred_season: int | None = None,
+    ) -> AIAnalysisResult | None:
+        if len(video_files) < 2:
+            return None
+
+        try:
+            resolved_base_path = base_path.resolve()
+        except OSError:
+            resolved_base_path = base_path
+
+        main_video_files = [
+            file_path
+            for file_path in video_files
+            if not self._is_supplemental_video_file(file_path, resolved_base_path)
+        ]
+        if len(main_video_files) < 2:
+            return None
+
+        unsafe_tokens = re.compile(
+            r'(?i)(?:\bS\d{1,2}E\d{1,3}\b|\bOVA\b|\bOAD\b|\bSP\d*\b|\bSPECIAL\b|\bFINAL\s*ACT\b|#\d+\s*DC\b)'
+        )
+        plain_episode_pattern = re.compile(
+            r'(?<!\d)(?:\[|\(|\s|-|_|#|第)?(?P<episode>\d{1,3})(?:v\d+)?(?:\]|\)|\s|-|_|\.|话|話|集|$)(?!\d)',
+            re.IGNORECASE,
+        )
+
+        extracted: list[tuple[Path, int]] = []
+        seen_episodes: set[int] = set()
+        for file_path in sorted(main_video_files, key=lambda item: item.name.casefold()):
+            name = file_path.name
+            if unsafe_tokens.search(name):
+                return None
+            matches = [
+                int(match.group('episode'))
+                for match in plain_episode_pattern.finditer(name)
+                if 1 <= int(match.group('episode')) <= len(main_video_files)
+            ]
+            if len(matches) != 1:
+                return None
+            episode_num = matches[0]
+            if episode_num in seen_episodes:
+                return None
+            seen_episodes.add(episode_num)
+            extracted.append((file_path, episode_num))
+
+        episode_numbers = sorted(episode for _, episode in extracted)
+        if episode_numbers != list(range(1, len(episode_numbers) + 1)):
+            return None
+
+        season_info_candidates = [
+            cast(dict[str, object], season)
+            for season in tv_info.get('seasons', [])
+            if isinstance(season, dict) and season.get('season_number') not in (0, None)
+        ]
+        if preferred_season is not None:
+            season_info_candidates = [
+                season
+                for season in season_info_candidates
+                if season.get('season_number') == preferred_season
+            ]
+        if len(season_info_candidates) != 1:
+            return None
+        matched_season_info = season_info_candidates[0]
+        season_num_raw = matched_season_info.get('season_number')
+        if not isinstance(season_num_raw, int):
+            return None
+        season_num = season_num_raw
+
+        season_episode_count_raw = matched_season_info.get('episode_count', 0)
+        season_episodes = matched_season_info.get('episodes', [])
+        season_episode_count = (
+            len(season_episodes)
+            if isinstance(season_episodes, list) and season_episodes
+            else season_episode_count_raw if isinstance(season_episode_count_raw, int) else 0
+        )
+        if season_episode_count <= 0 or len(extracted) > season_episode_count:
+            return None
+
+        mappings: list[EpisodeMapping] = []
+        for file_path, episode_num in sorted(extracted, key=lambda item: item[1]):
+            try:
+                relative_path = file_path.resolve().relative_to(resolved_base_path).as_posix()
+            except (OSError, ValueError):
+                relative_path = file_path.name
+            mappings.append(
+                EpisodeMapping(
+                    file_path=relative_path,
+                    tmdb_season=season_num,
+                    tmdb_episode=episode_num,
+                    episode_type='regular',
+                    confidence='High',
+                )
+            )
+
+        return AIAnalysisResult(
+            confidence='High',
+            reason='连续普通集数文件名 deterministic fallback',
+            file_mapping=mappings,
+            unmatched_files=[],
+            conflict_details=[],
+            extra_notes='Applied plain episode deterministic fallback after weak or missing AI TV mapping.',
+        )
+
     def _evaluate_validated_movie_route(
         self,
         path: Path,
@@ -922,6 +1193,7 @@ class Rename:
         route_eval['video_files'] = video_files
         route_eval['total_video_count'] = len(video_files)
         if not video_files:
+            route_eval['video_discovery'] = self._build_video_discovery_debug(path)
             route_eval['failure_reason'] = 'ai_empty_mapping'
             route_eval['detail'] = '未发现可处理的视频文件'
             return route_eval
@@ -2333,6 +2605,38 @@ class Rename:
         mixed_single_route_fallback_blocked = (
             mixed_capable_context and not is_mixed_subset_valid
         )
+        partition_recommendation = {
+            'status': 'not_needed' if is_mixed_subset_valid else 'recommended',
+            'action': (
+                'execute_mixed_parent'
+                if is_mixed_subset_valid
+                else 'split_bundle_before_execution'
+            ),
+            'fail_closed': not is_mixed_subset_valid,
+            'reason_codes': blockers,
+            'unsafe_output_policy': 'fail_closed',
+            'partition_units': [
+                {
+                    'partition_type': 'tv_series',
+                    'route_type': 'tv',
+                    'source_file_count': tv_subset_claim['claimed_file_count'],
+                    'sample_relative_paths': tv_claimed_relative_paths[:8],
+                },
+                {
+                    'partition_type': 'movie_asset',
+                    'route_type': 'movie',
+                    'source_file_count': movie_subset_claim['claimed_file_count'],
+                    'sample_relative_paths': movie_claimed_relative_paths[:8],
+                },
+            ],
+            'unclaimed_relative_paths': unclaimed_relative_paths[:20],
+            'overlap_relative_paths': overlap_relative_paths[:20],
+            'next_action': (
+                'continue_mixed_execution'
+                if is_mixed_subset_valid
+                else 'partition_bundle_before_exact_promotion'
+            ),
+        }
 
         return {
             'plan_kind': 'mixed_execution_parent',
@@ -2354,7 +2658,25 @@ class Rename:
             'mixed_capable_context': mixed_capable_context,
             'mixed_single_route_fallback_blocked': mixed_single_route_fallback_blocked,
             'mixed_subset_blockers': blockers,
+            'partition_recommendation': partition_recommendation,
         }
+
+    @staticmethod
+    def _dual_route_override_allows_single_route_fallback(
+        route_override: bool | None,
+        mixed_parent_plan: MixedParentPlan,
+    ) -> bool:
+        """Only bypass mixed-parent fail-closed when one validated side has no claim."""
+        if route_override is None:
+            return False
+        if mixed_parent_plan['overlap_relative_paths']:
+            return False
+
+        tv_claim_count = mixed_parent_plan['tv_claimed_file_count']
+        movie_claim_count = mixed_parent_plan['movie_claimed_file_count']
+        if route_override is False:
+            return tv_claim_count > 0 and movie_claim_count == 0
+        return movie_claim_count > 0 and tv_claim_count == 0
 
     def _has_mixed_bundle_cues(self, path: Path) -> bool:
         if not path.is_dir():
@@ -2949,12 +3271,43 @@ class Rename:
                 video_mapping[mapped_source] = target_path
 
         if dry_run:
+            collision_detail = self._detect_target_collision(mapping)
+            if collision_detail:
+                return self.error_reply(
+                    task_uuid,
+                    self._failure_message('target_collision', collision_detail),
+                    source_path,
+                    is_anime,
+                    is_movie,
+                    name,
+                    season_id,
+                    failure_reason='target_collision',
+                    ai_attempted=True,
+                    ai_used=ai_used,
+                    ai_confidence=ai_confidence,
+                )
             return self._build_execution_preview(
                 task_uuid,
                 'movie' if is_movie else 'tv',
                 source_path,
                 mapping,
                 ai_confidence,
+            )
+
+        collision_detail = self._detect_target_collision(video_mapping)
+        if collision_detail:
+            return self.error_reply(
+                task_uuid,
+                self._failure_message('target_collision', collision_detail),
+                source_path,
+                is_anime,
+                is_movie,
+                name,
+                season_id,
+                failure_reason='target_collision',
+                ai_attempted=True,
+                ai_used=ai_used,
+                ai_confidence=ai_confidence,
             )
 
         trans_result = Trans(video_mapping, task_uuid).trans_file()
@@ -3679,6 +4032,21 @@ class Rename:
         type_ai_confidence = task_plan['selected_confidence']
         mixed_parent_plan = task_plan['mixed_parent_plan']
 
+        route_override = self._evaluate_dual_route_decision(path, task_plan)
+        if route_override is not None:
+            is_movie = route_override
+            mixed_parent_plan['selected_route_type'] = 'movie' if is_movie else 'tv'
+            selected = task_plan['movie_candidate'] if is_movie else task_plan['tv_candidate']
+            selected_name = _as_str(selected.get('name'))
+            selected_info = _as_tmdb_info(selected.get('info'))
+            selected_confidence = cast(str | None, selected.get('confidence'))
+            if selected_name:
+                name = selected_name
+            if selected_info:
+                info = selected_info
+            if selected_confidence:
+                type_ai_confidence = selected_confidence
+
         if mixed_parent_plan['planning_mode'] == 'mixed_parent':
             logger.info(
                 '[处理任务] 已生成 mixed parent 预执行计划: '
@@ -3699,29 +4067,37 @@ class Rename:
                 f"blockers={', '.join(mixed_parent_plan['mixed_subset_blockers'])}"
             )
             if mixed_parent_plan['mixed_single_route_fallback_blocked']:
-                return self.error_reply(
-                    _uuid,
-                    self._failure_message(
-                        mixed_parent_plan['mixed_subset_failure_reason']
-                        or 'mixed_subset_invalid',
-                        mixed_parent_plan['mixed_subset_failure_detail'],
-                    ),
-                    path,
-                    is_anime,
-                    is_movie,
-                    name,
-                    0 if is_movie else 1,
-                    failure_reason=(
-                        mixed_parent_plan['mixed_subset_failure_reason']
-                        or 'mixed_subset_invalid'
-                    ),
-                    ai_attempted=True,
-                    ai_used=True,
-                    ai_confidence=type_ai_confidence,
-                    extra_task_data={
-                        'pipeline_mode': 'ai_strict',
-                        'mixed_parent_plan': mixed_parent_plan,
-                    },
+                if not self._dual_route_override_allows_single_route_fallback(
+                    route_override,
+                    mixed_parent_plan,
+                ):
+                    return self.error_reply(
+                        _uuid,
+                        self._failure_message(
+                            mixed_parent_plan['mixed_subset_failure_reason']
+                            or 'mixed_subset_invalid',
+                            mixed_parent_plan['mixed_subset_failure_detail'],
+                        ),
+                        path,
+                        is_anime,
+                        is_movie,
+                        name,
+                        0 if is_movie else 1,
+                        failure_reason=(
+                            mixed_parent_plan['mixed_subset_failure_reason']
+                            or 'mixed_subset_invalid'
+                        ),
+                        ai_attempted=True,
+                        ai_used=True,
+                        ai_confidence=type_ai_confidence,
+                        extra_task_data={
+                            'pipeline_mode': 'ai_strict',
+                            'mixed_parent_plan': mixed_parent_plan,
+                        },
+                    )
+                logger.info(
+                    '[处理任务] mixed 父计划不可安全拆分，'
+                    f"按双路决策回退到 {mixed_parent_plan['selected_route_type']} 单链路"
                 )
 
         if mixed_parent_plan['planning_mode'] == 'mixed_parent':
@@ -3744,21 +4120,6 @@ class Rename:
         release_group = ""
         resource_term = ""
 
-        route_override = self._evaluate_dual_route_decision(path, task_plan)
-        if route_override is not None:
-            is_movie = route_override
-            mixed_parent_plan['selected_route_type'] = 'movie' if is_movie else 'tv'
-            selected = task_plan['movie_candidate'] if is_movie else task_plan['tv_candidate']
-            selected_name = _as_str(selected.get('name'))
-            selected_info = _as_tmdb_info(selected.get('info'))
-            selected_confidence = cast(str | None, selected.get('confidence'))
-            if selected_name:
-                name = selected_name
-            if selected_info:
-                info = selected_info
-            if selected_confidence:
-                task_ai_confidence = selected_confidence
-
         if is_movie:
             work_root = self.ANIME_MOVIE_PATH if is_anime else self.MOVIE_PATH
 
@@ -3773,6 +4134,7 @@ class Rename:
                 video_files = [path]
 
             if not video_files:
+                video_discovery = self._build_video_discovery_debug(path)
                 return self.error_reply(
                     _uuid,
                     self._failure_message("ai_empty_mapping", "未发现可处理的视频文件"),
@@ -3785,6 +4147,7 @@ class Rename:
                     ai_attempted=True,
                     ai_used=False,
                     ai_confidence=task_ai_confidence,
+                    extra_task_data={'video_discovery': video_discovery},
                 )
 
             if path.is_dir() and len(video_files) > 1:
@@ -4076,6 +4439,7 @@ class Rename:
             release_group = self._extract_release_group(primary_source_name)
             resource_term = self._extract_resource_term(primary_source_name)
             if not video_files:
+                video_discovery = self._build_video_discovery_debug(path)
                 return self.error_reply(
                     _uuid,
                     self._failure_message("ai_empty_mapping", "未发现可处理的视频文件"),
@@ -4088,6 +4452,7 @@ class Rename:
                     ai_attempted=True,
                     ai_used=False,
                     ai_confidence=task_ai_confidence,
+                    extra_task_data={'video_discovery': video_discovery},
                 )
 
             tv_failure_reason = _as_str(tv_route_eval.get('failure_reason'))
@@ -4113,6 +4478,14 @@ class Rename:
 
             task_ai_confidence = _as_str(tv_route_eval.get('confidence')) or ai_result.confidence
             if not tv_route_eval.get('valid'):
+                extra_task_data = {
+                    key: tv_route_eval[key]
+                    for key in (
+                        'unmapped_potential_main_files',
+                        'ignored_supplemental_relative_paths',
+                    )
+                    if key in tv_route_eval
+                }
                 return self.error_reply(
                     _uuid,
                     self._failure_message(
@@ -4128,6 +4501,7 @@ class Rename:
                     ai_attempted=True,
                     ai_used=True,
                     ai_confidence=task_ai_confidence,
+                    extra_task_data=extra_task_data or None,
                 )
 
             self.mapping = cast(dict[Path, Path], tv_route_eval.get('mapping', {}))
@@ -4161,6 +4535,23 @@ class Rename:
                 subtitle_mapping[source_path] = target_path
             else:
                 video_mapping[source_path] = target_path
+
+        collision_detail = self._detect_target_collision(video_mapping)
+        if collision_detail:
+            self.mapping = {}
+            return self.error_reply(
+                _uuid,
+                self._failure_message('target_collision', collision_detail),
+                path,
+                is_anime,
+                is_movie,
+                name,
+                season_id,
+                failure_reason='target_collision',
+                ai_attempted=True,
+                ai_used=ai_used,
+                ai_confidence=task_ai_confidence,
+            )
 
         trans_result = Trans(video_mapping, _uuid).trans_file()
         self.mapping = {}
@@ -4297,8 +4688,9 @@ class Rename:
         movie_confidence: str | None = None
         movie_reason = "tmdb_not_found"
 
-        has_tv_hint = self._has_tv_hint(path.name)
-        has_movie_hint = self._has_movie_hint(path.name)
+        hint_context_name = ai_input_name or raw_title or rtpath_name or path.name
+        has_tv_hint = self._has_tv_hint(hint_context_name)
+        has_movie_hint = self._has_movie_hint(hint_context_name)
         structured_tv_episode_signal = self._has_structured_tv_episode_signal(path)
         has_tv_hint = has_tv_hint or structured_tv_episode_signal
         forced_by_flag = is_movie is not None
@@ -4420,6 +4812,9 @@ class Rename:
             final_is_movie = False
 
         if structured_tv_episode_signal and tv_info:
+            final_is_movie = False
+
+        if tv_info and movie_info and (has_tv_hint or structured_tv_episode_signal) and not has_movie_hint:
             final_is_movie = False
 
         # 规则仅做冲突保护
@@ -4558,6 +4953,37 @@ class Rename:
 
         return None, None
 
+    def _select_exact_episode_count_tv_candidate(
+        self,
+        ranked_candidates: list[TmdbInfo],
+        *,
+        local_video_count: int | None,
+        candidate_episode_counts: dict[int, set[int]],
+    ) -> tuple[TmdbInfo | None, str | None]:
+        if not local_video_count or local_video_count < 2:
+            return None, None
+
+        exact_candidates: list[TmdbInfo] = []
+        for candidate in ranked_candidates:
+            tv_id = _as_int(candidate.get('id'))
+            if tv_id is None:
+                continue
+            if local_video_count in candidate_episode_counts.get(tv_id, set()):
+                exact_candidates.append(candidate)
+
+        if len(exact_candidates) != 1:
+            return None, None
+
+        selected = exact_candidates[0]
+        selected_score = _float_score(selected.get('_match_score', 0))
+        best_score = max(
+            (_float_score(candidate.get('_match_score', 0)) for candidate in ranked_candidates),
+            default=0.0,
+        )
+        if selected_score < 60 or best_score - selected_score > 20:
+            return None, None
+        return selected, 'High'
+
     def _search_tv_with_ai_selection(
         self,
         folder_name: str,
@@ -4599,6 +5025,7 @@ class Rename:
             if not tv_info:
                 return None
 
+            tv_info = cast(TmdbInfo, self.search.fill_season_info(tv_info))
             tv_info_cache[tv_id] = cast(TmdbInfo, tv_info)
             seasons = [
                 season
@@ -4652,9 +5079,26 @@ class Rename:
                     enriched_candidate['seasons'] = tv_info.get('seasons', [])
                 enriched_candidates.append(enriched_candidate)
             ranked_candidates = enriched_candidates
+        elif local_video_count and len(ranked_candidates) == 1:
+            enriched_candidate = dict(ranked_candidates[0])
+            tv_info = collect_candidate_details(enriched_candidate)
+            if tv_info:
+                enriched_candidate['seasons'] = tv_info.get('seasons', [])
+                ranked_candidates = [enriched_candidate]
+
+        exact_count_selected, exact_count_confidence = (
+            self._select_exact_episode_count_tv_candidate(
+                ranked_candidates,
+                local_video_count=local_video_count,
+                candidate_episode_counts=candidate_episode_counts,
+            )
+        )
         deterministic_selected = None
         deterministic_confidence = None
         should_force_ai_selection = False
+        if exact_count_selected is not None:
+            deterministic_selected = exact_count_selected
+            deterministic_confidence = exact_count_confidence
         if local_video_count and len(ranked_candidates) > 1:
             exact_count_candidate_ids = {
                 tv_id
@@ -4666,7 +5110,7 @@ class Rename:
                 if first_id not in exact_count_candidate_ids:
                     should_force_ai_selection = True
 
-        if preferred_season and len(ranked_candidates) > 1:
+        if not deterministic_selected and preferred_season and len(ranked_candidates) > 1:
             first = ranked_candidates[0]
             second = ranked_candidates[1]
             first_id = _as_int(first.get('id'))
@@ -4691,17 +5135,22 @@ class Rename:
                 deterministic_selected = first
                 deterministic_confidence = 'High'
 
+        single_ranked_tv_candidate_rejected = False
         if not deterministic_selected and not should_force_ai_selection:
             deterministic_selected, deterministic_confidence = (
                 self.search._select_ranked_tv_candidate(ranked_candidates)
+            )
+            single_ranked_tv_candidate_rejected = (
+                len(ranked_candidates) == 1
+                and deterministic_selected is None
+                and deterministic_confidence == 'Low'
             )
 
         if deterministic_selected:
             selected = deterministic_selected
             selection_confidence = deterministic_confidence
-        elif len(ranked_candidates) == 1:
-            selected = ranked_candidates[0]
-            selection_confidence = 'High'
+        elif single_ranked_tv_candidate_rejected:
+            return '', None, deterministic_confidence, 'ai_low_confidence'
         else:
             selected, selection_confidence = self._ai_select_tv(
                 ai_client,
@@ -4775,11 +5224,16 @@ class Rename:
         if not candidates:
             return '', None, None, 'tmdb_not_found'
 
+        single_ranked_movie_candidate_rejected = (
+            len(candidates) == 1
+            and deterministic_selected is None
+            and deterministic_confidence == 'Low'
+        )
+
         if deterministic_selected:
             pass
-        elif len(candidates) == 1:
-            selected = candidates[0]
-            selection_confidence = 'High'
+        elif single_ranked_movie_candidate_rejected:
+            return '', None, deterministic_confidence, 'ai_low_confidence'
         else:
             selected, selection_confidence = self._ai_select_movie(
                 ai_client,
@@ -5030,9 +5484,6 @@ class Rename:
             if deterministic_selected:
                 selected = deterministic_selected
                 selected_confidence = deterministic_confidence
-            elif len(candidates) == 1:
-                selected = candidates[0]
-                selected_confidence = mapping.confidence
             else:
                 selected, selected_confidence = self._ai_select_movie(
                     ai_client,
@@ -5144,9 +5595,6 @@ class Rename:
             return None, None
 
         selected, selected_confidence = self._select_ranked_movie_candidate(candidates)
-        if not selected and len(candidates) == 1:
-            selected = candidates[0]
-            selected_confidence = 'High'
         if not selected:
             return None, None
 
@@ -5214,7 +5662,8 @@ class Rename:
         ai_type = task_plan.get('ai_type')
         selected_is_movie = task_plan['is_movie']
         video_count = mixed_parent_plan['total_video_count']
-        has_tv_hint = self._has_tv_hint(path.name)
+        structured_tv_episode_signal = self._has_structured_tv_episode_signal(path)
+        has_tv_hint = self._has_tv_hint(path.name) or structured_tv_episode_signal
         has_movie_hint = self._has_movie_hint(path.name)
 
         tv_confidence = cast(str | None, tv_candidate.get('confidence'))
@@ -5226,6 +5675,21 @@ class Rename:
         if not movie_ok and tv_ok:
             return False
         if not tv_ok and movie_ok:
+            return True
+
+        tv_claim_count = mixed_parent_plan['tv_claimed_file_count']
+        movie_claim_count = mixed_parent_plan['movie_claimed_file_count']
+        if tv_ok and tv_claim_count > 0 and movie_claim_count == 0:
+            logger.info(
+                '[处理任务] 双路决策覆盖: Movie 候选没有可执行子集，'
+                f'使用 TV strict 子集 (tv_claims={tv_claim_count})'
+            )
+            return False
+        if movie_ok and movie_claim_count > 0 and tv_claim_count == 0 and not has_tv_hint:
+            logger.info(
+                '[处理任务] 双路决策覆盖: TV 候选没有可执行子集，'
+                f'使用 Movie 子集 (movie_claims={movie_claim_count})'
+            )
             return True
 
         if has_mixed_cues and tv_ok and (has_tv_hint or video_count >= 20):
@@ -5494,7 +5958,11 @@ class Rename:
             return None, None
 
         if len(candidates) == 1:
-            return candidates[0], 'High'
+            candidate = candidates[0]
+            score = candidate.get('_match_score')
+            if isinstance(score, (int, float)) and float(score) >= 70.0:
+                return candidate, 'High'
+            return None, 'Low'
 
         first = candidates[0]
         second = candidates[1]
@@ -5724,6 +6192,19 @@ class Rename:
             confidence = 'Medium'
 
         return {'index': index, 'confidence': confidence}
+
+    def _detect_target_collision(self, mapping: dict[Path, Path]) -> str | None:
+        seen: dict[str, Path] = {}
+        for source_path, target_path in mapping.items():
+            key = str(target_path).casefold()
+            existing_source = seen.get(key)
+            if existing_source is not None and existing_source != source_path:
+                return (
+                    f'{existing_source.name} 与 {source_path.name} '
+                    f'同时映射到 {target_path.name}'
+                )
+            seen[key] = source_path
+        return None
 
     def _failure_message(self, reason: str, detail: str | None = None) -> str:
         base = FAILURE_MESSAGES.get(reason, FAILURE_MESSAGES['ai_timeout'])

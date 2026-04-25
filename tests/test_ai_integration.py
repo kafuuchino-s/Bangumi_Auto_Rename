@@ -610,8 +610,8 @@ def test_check_task_type_uses_fallback_title_when_primary_misses():
             ai_client=ai_client,
         )
 
-    assert isinstance(result, tuple)
-    assert result[0] == "生徒会的一存"
+    assert isinstance(result, dict)
+    assert result["selected_name"] == "生徒会的一存"
     assert search_tv.call_args_list[0].args[1] == "生徒会の一存 Lv.2"
     assert search_tv.call_args_list[1].args[1] == "生徒会の一存"
     assert len(search_tv.call_args_list) == 2
@@ -652,8 +652,8 @@ def test_check_task_type_does_not_search_fallback_after_primary_hit():
             ai_client=ai_client,
         )
 
-    assert isinstance(result, tuple)
-    assert result[0] == "生徒会的一存 Lv.2"
+    assert isinstance(result, dict)
+    assert result["selected_name"] == "生徒会的一存 Lv.2"
     assert len(search_tv.call_args_list) == 1
     assert search_tv.call_args_list[0].args[1] == "生徒会の一存 Lv.2"
 
@@ -696,7 +696,8 @@ def test_check_task_type_deduplicates_fallback_and_clean_title_queries():
             ai_client=ai_client,
         )
 
-    assert isinstance(result, tuple)
+    assert isinstance(result, dict)
+    assert result["selected_name"] == "生徒会的一存"
     searched_queries = [call.args[1] for call in search_tv.call_args_list]
     assert searched_queries == ["生徒会の一存 Lv.2", "生徒会の一存"]
 
@@ -782,9 +783,9 @@ def test_check_task_type_explicit_tv_override_keeps_tv_space():
             ai_client=ai_client,
         )
 
-    assert isinstance(result, tuple)
-    assert result[0] == "强袭魔女"
-    assert result[3] is False
+    assert isinstance(result, dict)
+    assert result["selected_name"] == "强袭魔女"
+    assert result["is_movie"] is False
     assert len(search_tv.call_args_list) == 1
     assert search_tv.call_args_list[0].args[1] == "Strike Witches The Movie"
     search_movie.assert_not_called()
@@ -1042,8 +1043,8 @@ def test_check_task_type_prefers_raw_season_aware_title_before_fallback():
             raw_title="Mob Psycho 100 II",
         )
 
-    assert isinstance(result, tuple)
-    assert result[0] == "Mob Psycho 100 II"
+    assert isinstance(result, dict)
+    assert result["selected_name"] == "Mob Psycho 100 II"
     searched_queries = [call.args[1] for call in search_tv.call_args_list]
     assert searched_queries == ["Mob Psycho 100 II"]
 
@@ -1159,8 +1160,8 @@ def test_check_task_type_uses_inherited_manual_title_for_ai_extraction():
             ai_input_name="Space Battleship Yamato 2199",
         )
 
-    assert isinstance(result, tuple)
-    assert result[0] == "宇宙战舰大和号2199"
+    assert isinstance(result, dict)
+    assert result["selected_name"] == "宇宙战舰大和号2199"
     extract_title_metadata.assert_called_once_with("Space Battleship Yamato 2199")
 
 
@@ -1204,9 +1205,346 @@ def test_check_task_type_passes_inherited_title_to_tv_search_context():
             ai_input_name="Space Battleship Yamato 2199",
         )
 
-    assert isinstance(result, tuple)
+    assert isinstance(result, dict)
     assert search_tv.call_args_list[0].args[0] == "Space Battleship Yamato 2199"
 
+
+
+def test_validate_tv_route_rejects_partial_non_promotional_video_mapping(tmp_path: Path, monkeypatch):
+    """TV 严格路径不能把大包中的少数集数当作整体成功。"""
+    source = tmp_path / "Wake up, Girls! ZOO - TV + SP"
+    source.mkdir()
+    mapped_file = source / "Wake up Girls ZOO - 01.mkv"
+    unmapped_file = source / "Wake up Girls ZOO - 03.mkv"
+    promo_file = source / "NCOP.mkv"
+    for file_path in [mapped_file, unmapped_file, promo_file]:
+        file_path.write_bytes(b"")
+
+    rename = Rename()
+    tv_info = {
+        "id": 74191,
+        "name": "Wake Up, Girls!",
+        "seasons": [
+            {
+                "season_number": 0,
+                "episodes": [{"episode_number": 1, "name": "Wake Up, Girl ZOO!"}],
+            }
+        ],
+    }
+    ai_result = AIAnalysisResult(
+        confidence="High",
+        file_mapping=[
+            EpisodeMapping(
+                file_path=mapped_file.name,
+                tmdb_season=0,
+                tmdb_episode=1,
+            )
+        ],
+        unmatched_files=[unmapped_file.name],
+        conflict_details=[],
+        reason="partial mapping should fail closed",
+    )
+
+    monkeypatch.setattr(rename.ai_processor, "_collect_all_local_files", lambda path: [mapped_file, unmapped_file, promo_file])
+
+    route_eval = rename._evaluate_validated_tv_route(
+        source,
+        tv_info,
+        "Wake Up, Girls!",
+        injected_ai_result=ai_result,
+    )
+
+    assert route_eval["valid"] is False
+    assert route_eval["failure_reason"] == "ai_partial_mapping"
+    assert "1/2" in route_eval["detail"]
+
+
+def test_validate_tv_route_allows_unmapped_supplemental_videos(tmp_path: Path, monkeypatch):
+    source = tmp_path / "Series With Extras"
+    source.mkdir()
+    mapped_file = source / "Series - 01.mkv"
+    extra_file = source / "NCOP.mkv"
+    bonus_file = source / "Radio Talk.mkv"
+    for file_path in [mapped_file, extra_file, bonus_file]:
+        file_path.write_bytes(b"")
+
+    rename = Rename()
+    tv_info = {
+        "id": 1,
+        "name": "Series",
+        "seasons": [
+            {
+                "season_number": 1,
+                "episodes": [{"episode_number": 1, "name": "Episode 1"}],
+            }
+        ],
+    }
+    ai_result = AIAnalysisResult(
+        confidence="High",
+        file_mapping=[
+            EpisodeMapping(file_path=mapped_file.name, tmdb_season=1, tmdb_episode=1)
+        ],
+        unmatched_files=[extra_file.name, bonus_file.name],
+        conflict_details=[],
+        reason="extras should not block strict mapping",
+    )
+
+    monkeypatch.setattr(rename.ai_processor, "_collect_all_local_files", lambda path: [mapped_file, extra_file, bonus_file])
+
+    route_eval = rename._evaluate_validated_tv_route(
+        source,
+        tv_info,
+        "Series",
+        injected_ai_result=ai_result,
+    )
+
+    assert route_eval["valid"] is True
+    assert route_eval["mapped_count"] == 1
+    assert sorted(route_eval["ignored_supplemental_relative_paths"]) == [
+        "Radio Talk.mkv",
+    ]
+
+
+def test_validate_tv_route_uses_plain_episode_fallback_when_ai_missing(tmp_path: Path, monkeypatch):
+    source = tmp_path / "Plain Episode Pack"
+    source.mkdir()
+    video_files = []
+    for episode in range(1, 4):
+        file_path = source / f"Plain Episode Pack - {episode:02d}.mkv"
+        file_path.write_bytes(b"")
+        video_files.append(file_path)
+
+    rename = Rename()
+    tv_info = {
+        "id": 1,
+        "name": "Plain Episode Pack",
+        "first_air_date": "2024-01-01",
+        "seasons": [
+            {
+                "season_number": 1,
+                "episode_count": 12,
+                "episodes": [
+                    {"episode_number": episode, "name": f"Episode {episode}"}
+                    for episode in range(1, 13)
+                ],
+            }
+        ],
+    }
+
+    monkeypatch.setattr(rename.ai_processor.video_analyzer, "analyze_video_files", lambda path, files: [])
+    monkeypatch.setattr(rename.ai_processor, "analyze_anime_files", lambda *args, **kwargs: None)
+    monkeypatch.setattr(rename.ai_processor, "_collect_video_files", lambda path: video_files)
+    monkeypatch.setattr(rename.ai_processor, "_collect_all_local_files", lambda path: video_files)
+
+    route_eval = rename._evaluate_validated_tv_route(source, tv_info, "Plain Episode Pack")
+
+    assert route_eval["valid"] is True
+    assert route_eval["mapped_count"] == 3
+    assert route_eval["confidence"] == "High"
+    assert route_eval["claim_reasons"] == {
+        "Plain Episode Pack - 01.mkv": "validated_tv_mapping:S01E01",
+        "Plain Episode Pack - 02.mkv": "validated_tv_mapping:S01E02",
+        "Plain Episode Pack - 03.mkv": "validated_tv_mapping:S01E03",
+    }
+
+
+def test_plain_episode_fallback_rejects_special_markers(tmp_path: Path):
+    source = tmp_path / "Special Episode Pack"
+    source.mkdir()
+    files = []
+    for name in ["Series - 01.mkv", "Series - OAD.mkv"]:
+        file_path = source / name
+        file_path.write_bytes(b"")
+        files.append(file_path)
+
+    rename = Rename()
+    tv_info = {
+        "id": 1,
+        "name": "Series",
+        "seasons": [{"season_number": 1, "episode_count": 12}],
+    }
+
+    assert rename._build_plain_tv_episode_fallback_result(source, tv_info, files) is None
+
+
+def test_plain_episode_fallback_uses_preferred_season(tmp_path: Path):
+    source = tmp_path / "Series II"
+    source.mkdir()
+    files = []
+    for episode in range(1, 4):
+        file_path = source / f"Series II - {episode:02d}.mkv"
+        file_path.write_bytes(b"")
+        files.append(file_path)
+
+    rename = Rename()
+    tv_info = {
+        "id": 1,
+        "name": "Series",
+        "seasons": [
+            {"season_number": 1, "episode_count": 12},
+            {"season_number": 2, "episode_count": 12},
+        ],
+    }
+
+    result = rename._build_plain_tv_episode_fallback_result(
+        source,
+        tv_info,
+        files,
+        preferred_season=2,
+    )
+
+    assert result is not None
+    assert {mapping.tmdb_season for mapping in result.file_mapping} == {2}
+
+
+def test_extract_preferred_season_number_recognizes_common_roman_and_names():
+    rename = Rename()
+
+    assert rename.search.extract_preferred_season_number("OVERLORD II") == 2
+    assert rename.search.extract_preferred_season_number("OVERLORD III") == 3
+    assert rename.search.extract_preferred_season_number("Minami-ke Okawari") == 2
+    assert rename.search.extract_preferred_season_number("Minami-ke Okaeri") == 3
+
+
+def test_select_exact_episode_count_tv_candidate_requires_unique_match():
+    rename = Rename()
+    candidates = [
+        {"id": 1, "name": "Wrong Similar Show", "_match_score": 84.0},
+        {"id": 2, "name": "Exact Episode Show", "_match_score": 72.0},
+    ]
+
+    selected, confidence = rename._select_exact_episode_count_tv_candidate(
+        candidates,
+        local_video_count=13,
+        candidate_episode_counts={1: {12}, 2: {13}},
+    )
+
+    assert selected == candidates[1]
+    assert confidence == "High"
+
+    ambiguous_selected, ambiguous_confidence = rename._select_exact_episode_count_tv_candidate(
+        candidates,
+        local_video_count=13,
+        candidate_episode_counts={1: {13}, 2: {13}},
+    )
+    assert ambiguous_selected is None
+    assert ambiguous_confidence is None
+
+
+def test_select_exact_episode_count_tv_candidate_rejects_large_score_gap():
+    rename = Rename()
+    candidates = [
+        {"id": 1, "name": "Much Better Text Match", "_match_score": 120.0},
+        {"id": 2, "name": "Exact Count But Weak", "_match_score": 70.0},
+    ]
+
+    selected, confidence = rename._select_exact_episode_count_tv_candidate(
+        candidates,
+        local_video_count=13,
+        candidate_episode_counts={1: {12}, 2: {13}},
+    )
+
+    assert selected is None
+    assert confidence is None
+
+
+def test_search_tv_single_low_score_candidate_can_use_exact_episode_count(monkeypatch):
+    rename = Rename()
+    candidate = {
+        "id": 42,
+        "name": "The Devil Is a Part-Timer!",
+        "_match_score": 64.0,
+        "_matched_query": "Hataraku Maou-sama!",
+    }
+    tv_info = {
+        "id": 42,
+        "name": "The Devil Is a Part-Timer!",
+        "seasons": [{"season_number": 1, "episode_count": 0}],
+    }
+    filled_tv_info = {
+        "id": 42,
+        "name": "The Devil Is a Part-Timer!",
+        "seasons": [{"season_number": 1, "episode_count": 13}],
+    }
+
+    monkeypatch.setattr(rename.search, "search_tv_by_query", lambda query, year, limit=5: [candidate])
+    monkeypatch.setattr(
+        rename.search,
+        "rank_tv_candidates",
+        lambda source_title, query, candidates, year=None: [dict(candidate)],
+    )
+    monkeypatch.setattr(rename.search, "extract_preferred_season_number", lambda *args: None)
+    monkeypatch.setattr(rename.search, "get_tv_info_by_id", lambda tv_id: dict(tv_info))
+    monkeypatch.setattr(rename.search, "fill_season_info", lambda info: dict(filled_tv_info))
+
+    class FailingAIClient:
+        def select_tv_candidate(self, *args, **kwargs):  # noqa: ANN002, ANN003
+            return None
+
+    name, info, confidence, reason = rename._search_tv_with_ai_selection(
+        "[VCB-Studio] Hataraku Maou-sama! [Ma10p_1080p]",
+        "Hataraku Maou-sama!",
+        0,
+        FailingAIClient(),  # type: ignore[arg-type]
+        local_video_count=13,
+    )
+
+    assert name == "The Devil Is a Part-Timer!"
+    assert info == filled_tv_info
+    assert confidence == "High"
+    assert reason == ""
+
+
+def test_supplemental_video_classifier_accepts_extras_directory(tmp_path: Path):
+    base = tmp_path / "Series"
+    extras = base / "Extras"
+    extras.mkdir(parents=True)
+    extra_file = extras / "Cast Event 01.mkv"
+    creditless_file = base / "Creditless OP-ED" / "Series OP 01.mkv"
+    info_file = base / "Series Info01.mkv"
+    top_level_episode_like = base / "Series #12DC.mkv"
+    creditless_file.parent.mkdir(parents=True)
+    extra_file.write_bytes(b"")
+    creditless_file.write_bytes(b"")
+    info_file.write_bytes(b"")
+    top_level_episode_like.write_bytes(b"")
+
+    rename = Rename()
+    assert rename._is_supplemental_video_file(extra_file, base) is True
+    assert rename._is_supplemental_video_file(creditless_file, base) is True
+    assert rename._is_supplemental_video_file(info_file, base) is True
+    assert rename._is_supplemental_video_file(top_level_episode_like, base) is False
+
+
+def test_commit_route_mapping_rejects_duplicate_video_targets_in_dry_run(tmp_path: Path):
+    source = tmp_path / "movie-set"
+    source.mkdir()
+    first = source / "part1.mkv"
+    second = source / "part2.mkv"
+    target = tmp_path / "library" / "Movie (2020)" / "Movie (2020).mkv"
+    for file_path in [first, second]:
+        file_path.write_bytes(b"")
+
+    result = Rename()._commit_route_mapping(
+        task_uuid="task-duplicate-target",
+        source_path=source,
+        is_anime=False,
+        is_movie=True,
+        name="Movie",
+        first_year="2020",
+        season_id=0,
+        info={"id": 1, "title": "Movie"},
+        work_path=target.parent,
+        mapping={first: target, second: target},
+        ai_used=True,
+        ai_confidence="High",
+        release_group="",
+        resource_term="",
+        dry_run=True,
+    )
+
+    assert isinstance(result, str)
+    assert "多个源文件映射到同一目标" in result
 
 
 def test_search_tv_with_ai_selection_passes_local_video_count_to_ai_selection():

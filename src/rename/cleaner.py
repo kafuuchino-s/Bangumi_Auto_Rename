@@ -187,6 +187,25 @@ TV_TITLE_SPLIT_PATTERNS = (
     r'^(.+?)\s*[~～〜]\s*(.+)$',
 )
 
+TV_TITLE_DISAMBIGUATION_PATTERNS = (
+    r'\bS\d{1,2}\b',
+    r'\bSeason\s*\d{1,2}\b',
+    r'\b第\s*[0-9零〇一二三四五六七八九十百]+\s*[季部]\b',
+    r'\b(?:Capitolo|Chapter)\s+Version\b',
+    r'\b(?:Capitolo|Chapter|Edition|Version|Special)\b$',
+    r'\b(?:TV|SP)\b(?:\s*[+&/]+\s*\b(?:TV|SP)\b)+\s*$',
+    r'\b(?:NF|AMZN|WEB[-\s]?DL|Blu[-\s]?ray|BDRip|1080p|2160p|720p)\b.*$',
+    r'\b(?:19|20)\d{2}\b.*$',
+)
+
+TV_OFFICIAL_ALIAS_QUERIES = {
+    'hataraku maou-sama': ('The Devil Is a Part-Timer!', 'Hataraku Maousama'),
+    'hataraku maou sama': ('The Devil Is a Part-Timer!', 'Hataraku Maousama'),
+    'inari konkon koi iroha': ('Inari Kon Kon', 'Inari, Konkon, ABCs of Love'),
+    'inari, konkon, koi iroha': ('Inari Kon Kon', 'Inari, Konkon, ABCs of Love'),
+    'choujigen game neptune the animation': ('Hyperdimension Neptunia',),
+}
+
 
 def _normalize_tv_query_text(value: str) -> str:
     value = value.strip()
@@ -196,6 +215,12 @@ def _normalize_tv_query_text(value: str) -> str:
     value = re.sub(r'[：:·•|｜]+', ' ', value)
     value = re.sub(r'\s+', ' ', value)
     return value.strip(' -_:.')
+
+
+def _tv_alias_lookup_key(value: str) -> str:
+    key = _normalize_tv_query_text(value).casefold()
+    key = re.sub(r'[^a-z0-9]+', ' ', key)
+    return re.sub(r'\s+', ' ', key).strip()
 
 
 
@@ -228,9 +253,24 @@ def build_tv_search_queries(title: str) -> List[str]:
             append_query(suffix)
             append_query(f"{prefix} {suffix}")
 
+    def append_disambiguation_variants(value: str) -> None:
+        current = value
+        for pattern in TV_TITLE_DISAMBIGUATION_PATTERNS:
+            stripped = re.sub(pattern, ' ', current, flags=re.IGNORECASE)
+            stripped = re.sub(r'\s+', ' ', stripped).strip(' -_:.')
+            append_query(stripped)
+            append_title_variants(stripped)
+            current = stripped
+
+    def append_official_alias_variants(value: str) -> None:
+        for alias in TV_OFFICIAL_ALIAS_QUERIES.get(_tv_alias_lookup_key(value), ()):
+            append_query(alias)
+
     raw_title = title.strip()
     append_query(raw_title)
     append_title_variants(raw_title)
+    append_disambiguation_variants(raw_title)
+    append_official_alias_variants(raw_title)
 
     cleaned_title = raw_title
     for pattern in TV_QUERY_NOISE_PATTERNS:
@@ -240,6 +280,8 @@ def build_tv_search_queries(title: str) -> List[str]:
     cleaned_title = re.sub(r'\s+', ' ', cleaned_title).strip()
     append_query(cleaned_title)
     append_title_variants(cleaned_title)
+    append_disambiguation_variants(cleaned_title)
+    append_official_alias_variants(cleaned_title)
 
     return queries
 
@@ -256,14 +298,28 @@ def is_promotional_content(filename: str) -> bool:
     Returns:
         True 如果是宣传内容，否则 False
     """
+    normalized_filename = re.sub(r'[\[\]\(\)\s\._\-]+', ' ', filename).strip()
+    compact_filename = re.sub(r'[\[\]\(\)\s\._\-]+', '', filename).casefold()
+
     for tag in PROMO_TAGS:
         # 使用边界匹配，避免误判
         # 匹配格式如: [NCOP], (PV01), [CM 01], NCOP.mkv 等
-        pattern = rf'[\[\(\s\._]{re.escape(tag)}\d*[\]\)\s\._]'
+        pattern = rf'[\[\(\s\._\-]{re.escape(tag)}\d*[\]\)\s\._\-]'
         if re.search(pattern, filename, re.IGNORECASE):
             return True
         # 也检查文件名开头的情况
         if filename.upper().startswith(tag.upper()):
+            return True
+
+        normalized_tag = re.sub(r'[\[\]\(\)\s\._\-]+', ' ', tag).strip()
+        compact_tag = re.sub(r'[\[\]\(\)\s\._\-]+', '', tag).casefold()
+        if normalized_tag and re.search(
+            rf'(?<!\w){re.escape(normalized_tag)}\d*(?!\w)',
+            normalized_filename,
+            re.IGNORECASE,
+        ):
+            return True
+        if len(compact_tag) >= 4 and compact_tag in compact_filename:
             return True
     return False
 

@@ -277,11 +277,21 @@ class Search:
             '続編': 's2',
             'second': 's2',
             '2nd': 's2',
+            'ii': 's2',
+            'third': 's3',
+            '3rd': 's3',
+            'iii': 's3',
+            'fourth': 's4',
+            '4th': 's4',
+            'iv': 's4',
+            'fifth': 's5',
+            '5th': 's5',
+            'v': 's5',
             'okawari': 's2',
             'okaeri': 's3',
         }
         for keyword, token in keyword_map.items():
-            if keyword in normalized:
+            if re.search(rf'(?<![a-z0-9]){re.escape(keyword)}(?![a-z0-9])', normalized):
                 tokens.add(token)
 
         return tokens
@@ -503,7 +513,10 @@ class Search:
             return None, None
 
         if len(candidates) == 1:
-            return candidates[0], 'High'
+            candidate = candidates[0]
+            if self._is_ranked_tv_candidate_plausible(candidate):
+                return candidate, 'High'
+            return None, 'Low'
 
         first = candidates[0]
         second = candidates[1]
@@ -518,6 +531,29 @@ class Search:
             return first, 'Medium'
 
         return None, None
+
+    @staticmethod
+    def _is_ranked_tv_candidate_plausible(candidate: Dict[str, Any]) -> bool:
+        score = candidate.get('_match_score')
+        if not isinstance(score, (int, float)):
+            return False
+
+        numeric_score = float(score)
+        if numeric_score >= 70.0:
+            return True
+
+        # TMDB 对罗马音/英译标题有时只能返回一个接近候选，分数会略低于
+        # 通用阈值（例如 Choujigen Game Neptune -> Hyperdimension Neptunia）。
+        # 只允许真实查询命中的单候选继续进入后续 strict TV 映射；没有
+        # `_matched_query` 的低分候选仍然 fail-closed。
+        return numeric_score >= 66.0 and bool(candidate.get('_matched_query'))
+
+    @staticmethod
+    def _is_ranked_movie_candidate_plausible(candidate: Dict[str, Any]) -> bool:
+        score = candidate.get('_match_score')
+        if isinstance(score, (int, float)):
+            return float(score) >= 70.0
+        return False
 
     def _search_tvs_with_queries(
         self,

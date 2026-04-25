@@ -20,6 +20,20 @@ PROMO_TAGS = [
     'Logo',           # 标志动画
     'Spot',           # 电视广告
     'Web Preview',    # 网络预告
+    'Creditless OP',  # 无字幕 OP
+    'Creditless ED',  # 无字幕 ED
+    'Non-Credit OP',  # 无字幕 OP
+    'Non-Credit ED',  # 无字幕 ED
+    'ノンクレジットOP',  # 日文：无字幕 OP
+    'ノンクレジットED',  # 日文：无字幕 ED
+    'ノンテロップOP',  # 日文：无字幕 OP
+    'ノンテロップED',  # 日文：无字幕 ED
+    'ノクレジットOP',  # 常见错写/字幕组写法
+    'ノクレジットED',  # 常见错写/字幕组写法
+    'メニュー',         # 日文：菜单
+    '予告',             # 预告
+    '番宣',             # 宣传
+    '劇場マナーCM',     # 剧场礼仪广告
 ]
 # 特典文件夹名称（用于收集 Season 0 文件）
 SPECIAL_FOLDER_NAMES = [
