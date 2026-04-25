@@ -4,7 +4,7 @@
 
 ## 1. 当前目标
 
-rename 回归做的是一条真实执行链：
+rename 回归做的是一条真实执行链，也是 sample-pool 的权威验证入口：
 
 - 读取 `tests/sample_pool/manifest/manifest.json`
 - 根据 sample JSON 重建最小源目录树
@@ -13,6 +13,18 @@ rename 回归做的是一条真实执行链：
 - 与 baseline 对比
 - 输出 `report.json` / `report.md`
 
+样本池建立过程中不再维护独立 candidate/observer 流程。raw 样本进入验证资产的路径只能是：
+
+```text
+raw sample JSON
+  -> src.regression.lanes.rename._execute_sample
+  -> Rename.process(...)
+  -> task / record / output tree
+  -> baseline / observation review
+```
+
+因此，修 sample-pool 回归时就是在修真实重命名主流程；反过来，主流程行为变化也必须通过这条 lane 观察样本影响。
+
 ## 2. 关键位置
 
 - CLI：`src/regression/cli.py`
@@ -20,6 +32,16 @@ rename 回归做的是一条真实执行链：
 - manifest：`src/regression/manifest.py`
 - 执行实现：`src/regression/lanes/rename.py`
 - compare：`src/regression/compare/rename.py`
+
+lane 契约：
+
+- `runner_kind = rename_lane_main_flow`
+- `runtime_entrypoint = src.regression.lanes.rename._execute_sample -> src.rename.process.Rename.process`
+- `uses_runtime_rename_process = true`
+- `uses_shadow_candidate_logic = false`
+- `authoritative_for_sample_pool = true`
+
+`tools/run_sample_pool_main_flow_preview.py` 只是这条 lane 的薄包装，用于批量观察 raw sample；它不拥有独立判断逻辑。
 
 数据位置：
 
@@ -126,9 +148,20 @@ rename 回归做的是一条真实执行链：
 - `infra_failed`：执行异常
 - `flaky`：首轮失败、重跑通过
 
-## 9. 当前原则
+## 9. 样本池建立规则
+
+1. 新 raw 样本先进入 `tests/sample_pool/raw/`。
+2. 用 `tools/generate_sample_pool_main_flow_manifest.py` 生成 manifest。
+3. 用 `tools/run_sample_pool_main_flow_preview.py` 或 `src.regression.cli --mode full` 调用真实 rename lane。
+4. 人工 review observation / task / record / output tree。
+5. 若结果代表当前主流程正确行为，则用 `update-baseline` 固化 baseline。
+6. 稳定且有保护价值的样本再设为 `check=true`。
+7. 若结果暴露主流程问题，优先修 `src/rename/*`，再重跑同一 lane。
+
+## 10. 当前原则
 
 - 只维护 rename 回归
 - 不保留兼容模式或历史别名
 - 不保留无用框架包袱
 - 不把不稳定样本硬塞进 `check`
+- 不维护独立于 `Rename.process` 的样本池判断流程

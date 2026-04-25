@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import shutil
 import traceback
 import uuid
 from contextlib import contextmanager
@@ -16,10 +17,137 @@ from ...rename.process import Rename, _temporary_debug_task_record_paths
 
 
 LIBRARY_KINDS = ('anime', 'bangumi', 'movie', 'anime_movie')
+RENAME_LANE_CONTRACT_VERSION = 1
+RENAME_LANE_RUNNER_KIND = 'rename_lane_main_flow'
+RENAME_LANE_RUNTIME_ENTRYPOINT = 'src.regression.lanes.rename._execute_sample -> src.rename.process.Rename.process'
+VIDEO_SUFFIXES = {'.mkv', '.mp4', '.avi', '.mov', '.wmv', '.flv', '.webm', '.m4v', '.ts'}
 
 
 def _utc_now() -> str:
     return datetime.now(timezone.utc).isoformat()
+
+
+def build_rename_lane_contract() -> dict[str, Any]:
+    return {
+        'schema_version': RENAME_LANE_CONTRACT_VERSION,
+        'runner_kind': RENAME_LANE_RUNNER_KIND,
+        'runtime_entrypoint': RENAME_LANE_RUNTIME_ENTRYPOINT,
+        'raw_sample_materialization': 'tests/sample_pool/raw JSON -> sandbox source tree',
+        'uses_runtime_rename_process': True,
+        'uses_shadow_candidate_logic': False,
+        'filesystem_sandboxed': True,
+        'authoritative_for_sample_pool': True,
+        'baseline_required_for_gate': True,
+    }
+
+
+def summarize_rename_payload(payload: dict[str, Any]) -> dict[str, Any]:
+    routes = [item for item in payload.get('routes') or [] if isinstance(item, dict)]
+    mapping = [item for item in payload.get('mapping') or [] if isinstance(item, dict)]
+    task_artifacts = [item for item in payload.get('task_artifacts') or [] if isinstance(item, dict)]
+    return {
+        'final_type': payload.get('final_type'),
+        'route_count': len(routes),
+        'routes': routes,
+        'mapping_count': len(mapping),
+        'target_count': len({str(item.get('target_rel') or '') for item in mapping}),
+        'task_artifact_count': len(task_artifacts),
+        'failure_reasons': sorted(
+            {
+                str(item.get('failure_reason') or '')
+                for item in task_artifacts
+                if str(item.get('failure_reason') or '')
+            }
+        ),
+        'pipeline_modes': sorted(
+            {
+                str(item.get('pipeline_mode') or '')
+                for item in task_artifacts
+                if str(item.get('pipeline_mode') or '')
+            }
+        ),
+    }
+
+
+def _find_duplicate_mapping_targets(mapping: list[dict[str, Any]]) -> list[dict[str, str]]:
+    seen: dict[str, dict[str, Any]] = {}
+    duplicates: list[dict[str, str]] = []
+    for item in mapping:
+        target_rel = str(item.get('target_rel') or '').strip()
+        if not target_rel:
+            continue
+        key = target_rel.casefold()
+        previous = seen.get(key)
+        if previous is None:
+            seen[key] = item
+            continue
+        duplicates.append(
+            {
+                'target_rel': target_rel,
+                'first_source_rel': str(previous.get('source_rel') or ''),
+                'second_source_rel': str(item.get('source_rel') or ''),
+            }
+        )
+    return duplicates
+
+
+def _clear_directory(path: Path) -> None:
+    if not path.exists():
+        return
+    for item in path.iterdir():
+        if item.is_dir():
+            shutil.rmtree(item)
+        else:
+            item.unlink()
+
+
+def _clear_sample_side_effects(
+    *,
+    library_root: Path,
+    record_output_path: Path,
+) -> None:
+    _clear_directory(record_output_path)
+    _clear_directory(library_root)
+
+
+def build_rename_lane_observation(
+    *,
+    entry: RenameSample,
+    execution_result: dict[str, Any],
+    manifest_version: str,
+) -> dict[str, Any]:
+    payload = execution_result.get('payload') if isinstance(execution_result.get('payload'), dict) else {}
+    artifacts = execution_result.get('artifacts') if isinstance(execution_result.get('artifacts'), dict) else {}
+    contract = build_rename_lane_contract()
+    return {
+        'artifact_type': 'rename_lane_main_flow_observation',
+        'schema_version': RENAME_LANE_CONTRACT_VERSION,
+        'runner_kind': RENAME_LANE_RUNNER_KIND,
+        'lane_contract': contract,
+        'main_flow_verified': True,
+        'main_flow_observer': True,
+        'observation_is_truth': False,
+        'generated_at': _utc_now(),
+        'manifest_version': manifest_version,
+        'sample_id': entry.sample_id,
+        'sample_json': entry.sample_json,
+        'anchor': entry.anchor,
+        'check': entry.check,
+        'tags': entry.tags,
+        'protects': entry.protects,
+        'runtime_entrypoint': contract['runtime_entrypoint'],
+        'uses_runtime_rename_process': contract['uses_runtime_rename_process'],
+        'uses_shadow_candidate_logic': contract['uses_shadow_candidate_logic'],
+        'bangumi_context_expected': True,
+        'strict_validation_expected': True,
+        'filesystem_sandboxed': contract['filesystem_sandboxed'],
+        'process_status': str(execution_result.get('status') or 'unknown'),
+        'infra_failure': bool(execution_result.get('infra_failure')),
+        'message': execution_result.get('message') or '',
+        'summary': summarize_rename_payload(payload),
+        'payload': payload,
+        'artifacts': dict(artifacts),
+    }
 
 
 def _normalize_rel(path: Path, root: Path) -> str:
@@ -61,6 +189,21 @@ def _collect_library_files(library_root: Path, sample_root: Path) -> list[dict[s
             }
         )
     return results
+
+
+def _collect_source_video_discovery(source_root: Path) -> dict[str, Any]:
+    video_files = sorted(
+        [
+            item
+            for item in source_root.rglob('*')
+            if item.is_file() and item.suffix.casefold() in VIDEO_SUFFIXES
+        ],
+        key=lambda item: _normalize_rel(item, source_root).casefold(),
+    )
+    return {
+        'source_video_count': len(video_files),
+        'source_video_examples': [_normalize_rel(item, source_root) for item in video_files[:20]],
+    }
 
 
 def _normalize_mixed_execution_task(
@@ -171,6 +314,13 @@ def _normalize_task_artifact(
     mixed_execution = task_data.get('mixed_execution')
     if isinstance(mixed_execution, dict):
         normalized['mixed_execution'] = _normalize_mixed_execution_task(mixed_execution, sample_root)
+    video_discovery = task_data.get('video_discovery')
+    if isinstance(video_discovery, dict):
+        normalized['video_discovery'] = video_discovery
+    for key in ('unmapped_potential_main_files', 'ignored_supplemental_relative_paths'):
+        value = task_data.get(key)
+        if isinstance(value, list):
+            normalized[key] = value
     return normalized
 
 
@@ -298,6 +448,19 @@ def _collect_task_record_artifacts(
 
 def _classify_process_failure(message: str) -> tuple[str, bool]:
     lowered = message.casefold()
+    product_failure_markers = (
+        '未搜索到匹配结果',
+        '无结果',
+        'tmdb无结果',
+        'tmdb no result',
+        '未能完成全部电影映射',
+        'no matching result',
+        'not found',
+        'no match',
+    )
+    if any(marker in lowered for marker in product_failure_markers):
+        return 'product_failed', False
+
     infra_keywords = (
         'timeout',
         'network',
@@ -408,16 +571,31 @@ def _execute_sample(entry: RenameSample, sample_root: Path) -> dict[str, Any]:
 
         if isinstance(process_result, str):
             status, infra_failure = _classify_process_failure(process_result)
+            task_files, record_files, routes, mapping, task_artifacts, record_artifacts = _collect_task_record_artifacts(
+                task_output_path=task_output_path,
+                record_output_path=record_output_path,
+                source_root=source_root,
+                sample_root=sample_root,
+            )
             return {
                 'status': status,
                 'infra_failure': infra_failure,
                 'message': process_result,
-                'payload': {},
+                'payload': {
+                    'final_type': 'unknown',
+                    'routes': routes,
+                    'mapping': mapping,
+                    'library_files': _collect_library_files(library_root, sample_root),
+                    'task_artifacts': task_artifacts,
+                    'record_artifacts': record_artifacts,
+                },
                 'artifacts': {
                     'sample_root': str(sample_root),
                     'source_root': str(source_root),
                     'task_dir': str(task_output_path),
                     'record_dir': str(record_output_path),
+                    'task_files': [str(item) for item in task_files],
+                    'record_files': [str(item) for item in record_files],
                 },
             }
 
@@ -428,11 +606,34 @@ def _execute_sample(entry: RenameSample, sample_root: Path) -> dict[str, Any]:
             sample_root=sample_root,
         )
         if not task_files or not record_files:
+            payload = {
+                'final_type': 'unknown',
+                'routes': [],
+                'mapping': [],
+                'library_files': _collect_library_files(library_root, sample_root),
+                'task_artifacts': [
+                    {
+                        'artifact_name': 'synthetic_missing_runtime_artifacts',
+                        'source_rel': '.',
+                        'route_type': 'unknown',
+                        'pipeline_mode': 'rename_lane',
+                        'tmdb_id': None,
+                        'tmdb_name': None,
+                        'season_id': None,
+                        'target_root_rel': '',
+                        'is_mixed_parent': False,
+                        'failure_reason': 'missing_runtime_artifacts',
+                        'process_message': 'rename process completed without task/record artifacts',
+                        'video_discovery': _collect_source_video_discovery(source_root),
+                    }
+                ],
+                'record_artifacts': [],
+            }
             return {
-                'status': 'infra_failed',
-                'infra_failure': True,
+                'status': 'product_failed',
+                'infra_failure': False,
                 'message': 'rename process completed without task/record artifacts',
-                'payload': {},
+                'payload': payload,
                 'artifacts': {
                     'sample_root': str(sample_root),
                     'source_root': str(source_root),
@@ -457,6 +658,129 @@ def _execute_sample(entry: RenameSample, sample_root: Path) -> dict[str, Any]:
             'task_artifacts': task_artifacts,
             'record_artifacts': record_artifacts,
         }
+        child_failure_reasons = sorted(
+            {
+                str(item.get('failure_reason') or '')
+                for item in task_artifacts
+                if str(item.get('failure_reason') or '')
+            }
+        )
+        if child_failure_reasons:
+            _clear_sample_side_effects(
+                library_root=library_root,
+                record_output_path=record_output_path,
+            )
+            task_files, record_files, routes, mapping, task_artifacts, record_artifacts = _collect_task_record_artifacts(
+                task_output_path=task_output_path,
+                record_output_path=record_output_path,
+                source_root=source_root,
+                sample_root=sample_root,
+            )
+            payload.update(
+                {
+                    'routes': routes,
+                    'mapping': mapping,
+                    'library_files': _collect_library_files(library_root, sample_root),
+                    'task_artifacts': task_artifacts,
+                    'record_artifacts': record_artifacts,
+                }
+            )
+            return {
+                'status': 'product_failed',
+                'infra_failure': False,
+                'message': (
+                    '[子任务] 部分子任务失败: '
+                    f"{', '.join(child_failure_reasons)}"
+                ),
+                'payload': payload,
+                'artifacts': {
+                    'sample_root': str(sample_root),
+                    'source_root': str(source_root),
+                    'task_dir': str(task_output_path),
+                    'record_dir': str(record_output_path),
+                    'task_files': [str(item) for item in task_files],
+                    'record_files': [str(item) for item in record_files],
+                },
+            }
+        zero_mapping_routes = [
+            route
+            for route in routes
+            if int(route.get('mapping_count') or 0) == 0
+        ]
+        if zero_mapping_routes:
+            _clear_sample_side_effects(
+                library_root=library_root,
+                record_output_path=record_output_path,
+            )
+            task_files, record_files, routes, mapping, task_artifacts, record_artifacts = _collect_task_record_artifacts(
+                task_output_path=task_output_path,
+                record_output_path=record_output_path,
+                source_root=source_root,
+                sample_root=sample_root,
+            )
+            payload.update(
+                {
+                    'routes': routes,
+                    'mapping': mapping,
+                    'library_files': _collect_library_files(library_root, sample_root),
+                    'task_artifacts': task_artifacts,
+                    'record_artifacts': record_artifacts,
+                }
+            )
+            return {
+                'status': 'product_failed',
+                'infra_failure': False,
+                'message': '[子任务] 存在未产生映射的子任务',
+                'payload': payload,
+                'artifacts': {
+                    'sample_root': str(sample_root),
+                    'source_root': str(source_root),
+                    'task_dir': str(task_output_path),
+                    'record_dir': str(record_output_path),
+                    'task_files': [str(item) for item in task_files],
+                    'record_files': [str(item) for item in record_files],
+                },
+            }
+        duplicate_targets = _find_duplicate_mapping_targets(mapping)
+        if duplicate_targets:
+            payload['duplicate_targets'] = duplicate_targets
+            _clear_sample_side_effects(
+                library_root=library_root,
+                record_output_path=record_output_path,
+            )
+            task_files, record_files, routes, mapping, task_artifacts, record_artifacts = _collect_task_record_artifacts(
+                task_output_path=task_output_path,
+                record_output_path=record_output_path,
+                source_root=source_root,
+                sample_root=sample_root,
+            )
+            payload.update(
+                {
+                    'routes': routes,
+                    'mapping': mapping,
+                    'library_files': _collect_library_files(library_root, sample_root),
+                    'task_artifacts': task_artifacts,
+                    'record_artifacts': record_artifacts,
+                }
+            )
+            payload['duplicate_targets'] = duplicate_targets
+            return {
+                'status': 'product_failed',
+                'infra_failure': False,
+                'message': (
+                    '[映射] 多个源文件映射到同一目标: '
+                    f"{duplicate_targets[0]['target_rel']}"
+                ),
+                'payload': payload,
+                'artifacts': {
+                    'sample_root': str(sample_root),
+                    'source_root': str(source_root),
+                    'task_dir': str(task_output_path),
+                    'record_dir': str(record_output_path),
+                    'task_files': [str(item) for item in task_files],
+                    'record_files': [str(item) for item in record_files],
+                },
+            }
         return {
             'status': 'executed',
             'infra_failure': False,

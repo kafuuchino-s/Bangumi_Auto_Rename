@@ -1,12 +1,21 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 import pytest
 
 from src.regression.cli import build_parser
 from src.regression.compare.rename import compare_rename_result
-from src.regression.lanes.rename import run_rename_lane
+from src.regression.lanes.rename import (
+    _classify_process_failure,
+    _execute_sample,
+    _find_duplicate_mapping_targets,
+    _normalize_task_artifact,
+    build_rename_lane_contract,
+    build_rename_lane_observation,
+    run_rename_lane,
+)
 from src.regression.report import build_report_markdown
 from src.regression.models import BaselineRecord, RunSummary
 from src.regression.manifest import (
@@ -201,6 +210,224 @@ def test_run_rename_regression_check_mode_sets_gate_failed_on_product_failure(
     assert result['selected_count'] == 1
     assert result['gate_failed'] is True
     assert result['exit_code'] == 2
+
+
+def test_tmdb_not_found_is_product_failure_not_infra_failure():
+    status, infra_failure = _classify_process_failure('[TMDB] 未搜索到匹配结果')
+
+    assert status == 'product_failed'
+    assert infra_failure is False
+
+
+def test_tmdb_no_result_detail_is_product_failure_not_infra_failure():
+    status, infra_failure = _classify_process_failure(
+        "未能完成全部电影映射: TMDB无结果:Wake Up, Girls! 青春之影"
+    )
+
+    assert status == 'product_failed'
+    assert infra_failure is False
+
+
+def test_rename_lane_contract_is_authoritative_main_flow_contract():
+    contract = build_rename_lane_contract()
+
+    assert contract['runner_kind'] == 'rename_lane_main_flow'
+    assert contract['uses_runtime_rename_process'] is True
+    assert contract['uses_shadow_candidate_logic'] is False
+    assert contract['authoritative_for_sample_pool'] is True
+    assert 'Rename.process' in contract['runtime_entrypoint']
+
+
+def test_rename_lane_observation_uses_contract_and_payload_summary():
+    observation = build_rename_lane_observation(
+        entry=RenameSample(
+            sample_id='sample_contract',
+            sample_json='tests/sample_pool/raw/tv/sample_contract.json',
+            check=False,
+            anchor=True,
+            tags=['tv_strict_mapping'],
+        ),
+        execution_result={
+            'status': 'executed',
+            'infra_failure': False,
+            'message': '',
+            'payload': {
+                'final_type': 'tv',
+                'routes': [{'route_type': 'tv', 'tmdb_id': 1}],
+                'mapping': [{'source_rel': 'a.mkv', 'target_rel': 'Show/S01E01.mkv'}],
+                'task_artifacts': [{'pipeline_mode': 'ai_strict', 'failure_reason': None}],
+                'record_artifacts': [],
+                'library_files': [],
+            },
+            'artifacts': {'sample_root': 'sandbox/sample_contract'},
+        },
+        manifest_version='test-manifest',
+    )
+
+    assert observation['artifact_type'] == 'rename_lane_main_flow_observation'
+    assert observation['runner_kind'] == 'rename_lane_main_flow'
+    assert observation['lane_contract']['authoritative_for_sample_pool'] is True
+    assert observation['summary']['final_type'] == 'tv'
+    assert observation['summary']['route_count'] == 1
+    assert observation['summary']['mapping_count'] == 1
+    assert observation['summary']['pipeline_modes'] == ['ai_strict']
+
+
+def test_duplicate_mapping_targets_are_detected():
+    duplicates = _find_duplicate_mapping_targets(
+        [
+            {'source_rel': 'A/part1.mkv', 'target_rel': 'Movie/Movie.mkv'},
+            {'source_rel': 'B/part2.mkv', 'target_rel': 'movie/movie.mkv'},
+        ]
+    )
+
+    assert duplicates == [
+        {
+            'target_rel': 'movie/movie.mkv',
+            'first_source_rel': 'A/part1.mkv',
+            'second_source_rel': 'B/part2.mkv',
+        }
+    ]
+
+
+def test_normalize_task_artifact_preserves_video_discovery(tmp_path: Path):
+    source_root = tmp_path / 'source'
+    sample_root = tmp_path / 'sample'
+    source_root.mkdir()
+    sample_root.mkdir()
+    task_path = tmp_path / 'task.json'
+    task_data = {
+        'path': str(source_root),
+        'uuid': 'task-video-debug',
+        'failure_reason': 'ai_empty_mapping',
+        'video_discovery': {
+            'raw_video_count': 3,
+            'promo_video_count': 3,
+            'processable_video_count': 0,
+        },
+        'unmapped_potential_main_files': ['Episode 13.mkv'],
+        'ignored_supplemental_relative_paths': ['NCOP.mkv'],
+    }
+
+    artifact = _normalize_task_artifact(
+        task_path=task_path,
+        task_data=task_data,
+        source_root=source_root,
+        sample_root=sample_root,
+    )
+
+    assert artifact['video_discovery']['raw_video_count'] == 3
+    assert artifact['video_discovery']['processable_video_count'] == 0
+    assert artifact['unmapped_potential_main_files'] == ['Episode 13.mkv']
+    assert artifact['ignored_supplemental_relative_paths'] == ['NCOP.mkv']
+
+
+def test_rename_lane_missing_task_record_artifacts_is_product_failure(tmp_path: Path, monkeypatch):
+    sample_json = tmp_path / 'sample_no_artifact.json'
+    sample_json.write_text(
+        '{"root_name":"No Artifact","files":[{"path":"No.Artifact.S01E01.mkv"}]}',
+        encoding='utf-8',
+    )
+    entry = RenameSample(sample_id='sample_no_artifact', sample_json=str(sample_json), check=True)
+
+    def fake_process(self, *args, **kwargs):  # noqa: ANN001, ARG001
+        return True
+
+    monkeypatch.setattr('src.regression.lanes.rename.Rename.process', fake_process)
+
+    sample_results_dir = tmp_path / 'results'
+    sample_results_dir.mkdir()
+
+    summary, _flaky_samples, infra_failures, observation_failures, quarantine_candidates = run_rename_lane(
+        entries=[entry],
+        baseline_root=tmp_path / 'baseline',
+        sample_results_dir=sample_results_dir,
+        sandbox_root=tmp_path / 'sandbox',
+        mode='check',
+    )
+
+    assert summary.product_failure_count == 1
+    assert summary.infra_failure_count == 0
+    assert infra_failures == []
+    assert observation_failures == []
+    assert quarantine_candidates == ['sample_no_artifact']
+
+
+def test_execute_sample_missing_artifacts_has_synthetic_failure_reason(tmp_path: Path, monkeypatch):
+    sample_json = tmp_path / 'sample_no_artifact.json'
+    sample_json.write_text(
+        '{"root_name":"No Artifact","files":[{"path":"No.Artifact.S01E01.mkv"}]}',
+        encoding='utf-8',
+    )
+    entry = RenameSample(sample_id='sample_no_artifact', sample_json=str(sample_json), check=True)
+
+    def fake_process(self, *args, **kwargs):  # noqa: ANN001, ARG001
+        return True
+
+    monkeypatch.setattr('src.regression.lanes.rename.Rename.process', fake_process)
+
+    result = _execute_sample(entry, tmp_path / 'sandbox')
+
+    assert result['status'] == 'product_failed'
+    artifact = result['payload']['task_artifacts'][0]
+    assert artifact['artifact_name'] == 'synthetic_missing_runtime_artifacts'
+    assert artifact['failure_reason'] == 'missing_runtime_artifacts'
+    assert artifact['process_message'] == 'rename process completed without task/record artifacts'
+    assert artifact['video_discovery']['source_video_count'] == 1
+
+
+def test_rename_lane_child_failure_artifact_is_product_failure(tmp_path: Path, monkeypatch):
+    sample_json = tmp_path / 'sample_child_failure.json'
+    sample_json.write_text(
+        '{"root_name":"Child Failure","files":[{"relative_path":"Child Failure/Child.Failure.S01E01.mkv"}]}',
+        encoding='utf-8',
+    )
+    entry = RenameSample(sample_id='sample_child_failure', sample_json=str(sample_json), check=True)
+    sample_root = tmp_path / 'sandbox'
+    task_dir = sample_root / 'data' / 'task'
+    record_dir = sample_root / 'data' / 'record'
+    library_file = sample_root / 'library' / 'anime' / 'Show (2024)' / 'Season 01' / 'Show - S01E01.mkv'
+    task_dir.mkdir(parents=True)
+    record_dir.mkdir(parents=True)
+    library_file.parent.mkdir(parents=True)
+
+    task_payload = {
+        'source_path': str(sample_root / 'source' / 'Child Failure'),
+        'is_anime': True,
+        'is_movie': False,
+        'tmdb_id': None,
+        'tmdb_name': None,
+        'season_id': None,
+        'target_root': '',
+        'failure_reason': 'ai_timeout',
+    }
+
+    def fake_process(self, *args, **kwargs):  # noqa: ANN001, ARG001
+        (task_dir / 'child.json').write_text(json.dumps(task_payload), encoding='utf-8')
+        (record_dir / 'child.json').write_text(
+            json.dumps(
+                {
+                    'mapping': [
+                        {
+                            'source_rel': 'Child.Failure.S01E01.mkv',
+                            'target_rel': 'Show (2024)/Season 01/Show - S01E01.mkv',
+                        }
+                    ]
+                }
+            ),
+            encoding='utf-8',
+        )
+        library_file.write_bytes(b'')
+        return True
+
+    monkeypatch.setattr('src.regression.lanes.rename.Rename.process', fake_process)
+    result = _execute_sample(entry, sample_root)
+
+    assert result['status'] == 'product_failed'
+    assert result['infra_failure'] is False
+    assert 'ai_timeout' in result['message']
+    assert result['payload']['record_artifacts'] == []
+    assert result['payload']['library_files'] == []
 
 
 def test_run_rename_regression_auto_adds_protected_samples(tmp_path: Path, monkeypatch):
