@@ -1,0 +1,210 @@
+from src.rename.case_agent.assignment_expander import expand_mapping_draft
+from src.rename.case_agent.models import (
+    BangumiItemCard,
+    CaseContract,
+    CaseDossier,
+    CaseHeader,
+    MappingDraft,
+    MappingDraftRow,
+    LocalFileCard,
+    LocalSpanCard,
+    BangumiSpanCard,
+)
+from src.rename.case_agent.verifier import verify_mapping_draft_accounting
+
+
+def make_dossier() -> CaseDossier:
+    main_refs = [f'LF{i}' for i in range(1, 11)]
+    supplemental_refs = ['LF11', 'LF12']
+    target_refs = [f'BE{i}' for i in range(1, 11)]
+    return CaseDossier(
+        header=CaseHeader(case_id='CASE-ACC'),
+        local_files=[LocalFileCard(ref=ref, is_main=True) for ref in main_refs] + [LocalFileCard(ref=ref, is_main=False) for ref in supplemental_refs],
+        contract=CaseContract(main_file_refs=main_refs, supplemental_file_refs=supplemental_refs, allowed_file_refs=[*main_refs, *supplemental_refs], visible_target_refs=target_refs),
+        local_span_cards=[LocalSpanCard(ref='LS1', file_refs=main_refs, file_ref_count=10, file_ref_range=main_refs, file_ref_samples=main_refs[:3])],
+        bangumi_items=[BangumiItemCard(ref=ref, subject_ref='S1') for ref in target_refs],
+        bangumi_span_cards=[BangumiSpanCard(ref='BS1', subject_ref='S1', group_ref='G1', target_refs=target_refs, target_ref_count=10, target_ref_range=target_refs, target_ref_samples=target_refs[:3], detail_equivalent=True)],
+        detailed_card_refs=target_refs,
+        assignable_target_refs=target_refs,
+        seen_detail_refs=target_refs,
+    )
+
+
+def draft_with_rows(rows):
+    return MappingDraft(draft_ref='MD1', rows=rows, version=1)
+
+
+def test_accounted_for_ready_and_expand_only_mapped_rows():
+    dossier = make_dossier()
+    rows = [
+        MappingDraftRow(row_ref='R1', local_ref='LS1', local_ref_kind='span', disposition='map_to_bangumi', selected_target_ref='BS1', selected_target_kind='span', mapping_mode='span_by_index', support_refs=['LS1', 'BS1'])
+    ] + [
+        MappingDraftRow(row_ref='R11', local_ref='LF11', disposition='non_bangumi_or_supplemental', reason_kind='sample', support_refs=['LS1']),
+        MappingDraftRow(row_ref='R12', local_ref='LF12', disposition='non_bangumi_or_supplemental', reason_kind='sample', support_refs=['LS1']),
+    ]
+    draft = draft_with_rows(rows)
+    result = verify_mapping_draft_accounting(dossier, draft)
+    assert result.passed is True
+    expanded, issues = expand_mapping_draft(dossier, draft)
+    assert not issues
+    assert len(expanded) == 10
+
+
+def test_needs_more_evidence_not_ready_and_not_accepted():
+    dossier = make_dossier()
+    rows = [
+        MappingDraftRow(row_ref='R1', local_ref='LS1', local_ref_kind='span', disposition='map_to_bangumi', selected_target_ref='BS1', selected_target_kind='span', mapping_mode='span_by_index', support_refs=['LS1', 'BS1'])
+    ] + [
+        MappingDraftRow(row_ref='R11', local_ref='LF11', disposition='needs_more_evidence', reason_kind='missing_target_span', support_refs=['LS1']),
+        MappingDraftRow(row_ref='R12', local_ref='LF12', disposition='needs_more_evidence', reason_kind='missing_target_span', support_refs=['LS1']),
+    ]
+    result = verify_mapping_draft_accounting(dossier, draft_with_rows(rows))
+    assert result.passed is False
+    assert any(issue.issue_code in {'not_ready', 'fail_closed', 'coverage_error'} for issue in result.issues)
+
+
+def test_supplemental_with_target_ref_invalid():
+    dossier = make_dossier()
+    draft = draft_with_rows([
+        MappingDraftRow(row_ref='R11', local_ref='LF11', disposition='non_bangumi_or_supplemental', selected_target_ref='BE1', reason_kind='sample', support_refs=['LS1']),
+    ])
+    assert any(issue.issue_code == 'invalid_target' for issue in verify_mapping_draft_accounting(dossier, draft).issues)
+
+
+def test_supplemental_without_support_invalid():
+    dossier = make_dossier()
+    draft = draft_with_rows([
+        MappingDraftRow(row_ref='R11', local_ref='LF11', disposition='non_bangumi_or_supplemental', reason_kind='sample'),
+    ])
+    assert any(issue.issue_code == 'missing_support_refs' for issue in verify_mapping_draft_accounting(dossier, draft).issues)
+
+
+def test_duplicate_mapped_target_blocked():
+    dossier = make_dossier()
+    draft = draft_with_rows([
+        MappingDraftRow(row_ref='R1', local_ref='LF1', disposition='map_to_bangumi', selected_target_ref='BE1', selected_target_kind='span', mapping_mode='span_by_index', support_refs=['LS1']),
+        MappingDraftRow(row_ref='R2', local_ref='LF2', disposition='map_to_bangumi', selected_target_ref='BE1', selected_target_kind='span', mapping_mode='span_by_index', support_refs=['LS1']),
+    ])
+    duplicate = next(issue for issue in verify_mapping_draft_accounting(dossier, draft).issues if issue.issue_code == 'duplicate_target')
+    assert duplicate.related_refs[:3] == ['R1', 'R2', 'BE1']
+
+
+def test_explicit_singleton_be_mapping_expands():
+    dossier = make_dossier()
+    dossier.local_span_cards.append(LocalSpanCard(ref='LS_SINGLE', file_refs=['LF1'], file_ref_count=1))
+    draft = draft_with_rows([
+        MappingDraftRow(row_ref='R1', local_ref='LS_SINGLE', local_ref_kind='span', disposition='map_to_bangumi', selected_target_ref='BE1', selected_target_kind='item', mapping_mode='explicit', support_refs=['LS_SINGLE', 'BE1']),
+    ])
+    expanded, issues = expand_mapping_draft(dossier, draft)
+    assert not issues
+    assert len(expanded) == 1
+    assert expanded[0].file_ref == 'LF1'
+    assert expanded[0].target_ref == 'BE1'
+
+
+def test_explicit_singleton_be_mapping_rejects_hidden_ref():
+    dossier = make_dossier()
+    dossier.local_span_cards.append(LocalSpanCard(ref='LS_SINGLE', file_refs=['LF1'], file_ref_count=1))
+    draft = draft_with_rows([
+        MappingDraftRow(row_ref='R1', local_ref='LS_SINGLE', local_ref_kind='span', disposition='map_to_bangumi', selected_target_ref='BE999', selected_target_kind='item', mapping_mode='explicit', support_refs=['LS_SINGLE', 'BE999']),
+    ])
+    assert any(issue.issue_code == 'invalid_target' for issue in verify_mapping_draft_accounting(dossier, draft).issues)
+
+
+def test_mapped_row_without_expandable_target_is_not_ready():
+    dossier = make_dossier()
+    draft = draft_with_rows([
+        MappingDraftRow(row_ref='R1', local_ref='LS1', local_ref_kind='span', disposition='map_to_bangumi', status='proposed'),
+    ])
+
+    result = verify_mapping_draft_accounting(dossier, draft)
+
+    assert result.passed is False
+    assert any(issue.issue_code == 'invalid_mapping_mode' for issue in result.issues)
+
+
+def test_supplemental_rows_expand_to_unaligned_accounting_assignments():
+    dossier = make_dossier()
+    dossier.contract.main_file_refs = ['LF11', 'LF12']
+    dossier.contract.supplemental_file_refs = []
+    dossier.local_files = [
+        LocalFileCard(ref='LF11', path='Show NCOP.mkv', is_main=True, file_kind='video'),
+        LocalFileCard(ref='LF12', path='Show NCED.mkv', is_main=True, file_kind='video'),
+    ]
+    draft = draft_with_rows([
+        MappingDraftRow(row_ref='R11', local_ref='LF11', disposition='non_bangumi_or_supplemental', reason_kind='creditless_op_ed', support_refs=['LF11']),
+        MappingDraftRow(row_ref='R12', local_ref='LF12', disposition='non_bangumi_or_supplemental', reason_kind='creditless_op_ed', support_refs=['LF12']),
+    ])
+
+    expanded, issues = expand_mapping_draft(dossier, draft)
+
+    assert issues == []
+    assert [item.file_ref for item in expanded] == ['LF11', 'LF12']
+    assert [item.target_ref for item in expanded] == ['UNALIGNED', 'UNALIGNED']
+
+
+def test_multi_file_regular_span_cannot_be_accepted_as_generic_supplemental():
+    dossier = make_dossier()
+    dossier.local_files = [
+        LocalFileCard(ref=f'LF{i}', path=f'Show #{i:02d}.mkv', is_main=True, file_kind='video')
+        for i in range(1, 11)
+    ]
+    dossier.local_span_cards = [
+        LocalSpanCard(
+            ref='LS_REGULAR',
+            span_scope='token_segment',
+            file_refs=[f'LF{i}' for i in range(1, 11)],
+            file_ref_count=10,
+            file_ref_samples=['LF1', 'LF2', 'LF10'],
+            ordering_basis='episode_token_order',
+            episode_token_start=1,
+            episode_token_end=10,
+            episode_token_count=10,
+        )
+    ]
+    draft = draft_with_rows([
+        MappingDraftRow(row_ref='R1', local_ref='LS_REGULAR', local_ref_kind='span', disposition='non_bangumi_or_supplemental', reason_kind='other_supplemental', support_refs=['LS_REGULAR']),
+    ])
+
+    result = verify_mapping_draft_accounting(dossier, draft)
+
+    assert result.passed is False
+    assert any(issue.issue_code == 'regular_main_span_cannot_be_supplemental' for issue in result.issues)
+
+
+def test_singleton_visible_extra_can_be_accepted_as_supplemental():
+    dossier = make_dossier()
+    dossier.contract.main_file_refs = ['LF1']
+    dossier.local_files = [LocalFileCard(ref='LF1', path='Show Non Telop OP.mkv', is_main=True, file_kind='video')]
+    dossier.local_span_cards = [
+        LocalSpanCard(ref='LS_OP', span_scope='residual', file_refs=['LF1'], file_ref_count=1, file_ref_samples=['LF1'], title_cues=['Non Telop OP'])
+    ]
+    draft = draft_with_rows([
+        MappingDraftRow(row_ref='R1', local_ref='LS_OP', local_ref_kind='span', disposition='non_bangumi_or_supplemental', reason_kind='creditless_op_ed', support_refs=['LS_OP']),
+    ])
+
+    result = verify_mapping_draft_accounting(dossier, draft)
+
+    assert result.passed is True
+
+
+def test_duplicate_span_ref_not_blocked_before_expansion():
+    dossier = make_dossier()
+    dossier.local_span_cards.append(LocalSpanCard(ref='LS2', file_refs=[], file_ref_count=0))
+    draft = draft_with_rows([
+        MappingDraftRow(row_ref='R1', local_ref='LS1', local_ref_kind='span', disposition='map_to_bangumi', selected_target_ref='BS1', selected_target_kind='span', mapping_mode='span_by_index', support_refs=['LS1', 'BS1']),
+        MappingDraftRow(row_ref='R2', local_ref='LS2', local_ref_kind='span', disposition='map_to_bangumi', selected_target_ref='BS1', selected_target_kind='span', mapping_mode='span_by_index', support_refs=['LS2', 'BS1']),
+    ])
+    issues = verify_mapping_draft_accounting(dossier, draft).issues
+    assert not any(issue.ref == 'R2' and issue.issue_code == 'duplicate_target' for issue in issues)
+
+
+def test_span_mapped_and_supplemental_residual_accounted_for_count_matches_main():
+    dossier = make_dossier()
+    rows = [
+        MappingDraftRow(row_ref='R1', local_ref='LS1', local_ref_kind='span', disposition='map_to_bangumi', selected_target_ref='BS1', selected_target_kind='span', mapping_mode='span_by_index', support_refs=['LS1', 'BS1']),
+        MappingDraftRow(row_ref='R2', local_ref='LF11', disposition='non_bangumi_or_supplemental', reason_kind='sample', support_refs=['LS1']),
+    ]
+    result = verify_mapping_draft_accounting(dossier, draft_with_rows(rows))
+    assert result.passed is True
+    assert result.issues == []

@@ -9,6 +9,7 @@ from typing import Any, Hashable, TypeVar
 import requests
 
 from ..logger import logger
+from ..utils.metadata_cache import MetadataCacheMiss, get_or_fetch
 from .models import BangumiEpisode, BangumiSubject, BangumiSubjectRelation
 
 _CacheKey = TypeVar('_CacheKey', bound=Hashable)
@@ -41,7 +42,7 @@ class BangumiClient:
     BASE_URL = "https://api.bgm.tv"
     USER_AGENT = "Bangumi-Auto-Rename/1.0"
     TIMEOUT = 8
-    MAX_SEARCH_RESULTS = 8
+    MAX_SEARCH_RESULTS = 20
     ANIME_SUBJECT_TYPE = 2
     MAX_RETRIES = 2
     RETRYABLE_STATUS_CODES = {429, 500, 502, 503, 504}
@@ -204,6 +205,36 @@ class BangumiClient:
         json: dict[str, Any] | None = None,
     ) -> Any:
         url = f"{self.BASE_URL}{path}"
+
+        def fetch() -> Any:
+            return self._request_json_uncached(
+                method=method,
+                path=path,
+                params=params,
+                json=json,
+            )
+
+        try:
+            return get_or_fetch(
+                provider='bangumi',
+                endpoint=path.strip('/') or 'root',
+                params={'method': method.upper(), **(params or {})},
+                body=json,
+                fetcher=fetch,
+            )
+        except MetadataCacheMiss:
+            logger.warning(f"[Bangumi] 元数据缓存未命中: {path}")
+            return None
+
+    def _request_json_uncached(
+        self,
+        method: str,
+        path: str,
+        *,
+        params: dict[str, Any] | None = None,
+        json: dict[str, Any] | None = None,
+    ) -> Any:
+        url = f"{self.BASE_URL}{path}"
         attempts = self.MAX_RETRIES + 1
         for attempt in range(1, attempts + 1):
             try:
@@ -254,6 +285,8 @@ class BangumiClient:
             rating = rating_value if isinstance(rating_value, dict) else {}
             tags_value = payload.get("tags")
             tags = tags_value if isinstance(tags_value, list) else []
+            infobox_value = payload.get("infobox")
+            infobox = infobox_value if isinstance(infobox_value, list) else []
             return BangumiSubject(
                 id=int(payload.get("id") or 0),
                 type=int(payload.get("type") or self.ANIME_SUBJECT_TYPE),
@@ -269,6 +302,7 @@ class BangumiClient:
                 rank=_to_int(payload.get("rank")),
                 tags=[str(item.get("name") or "") for item in tags if item.get("name")],
                 meta_tags=[str(item) for item in (payload.get("meta_tags") or []) if item],
+                infobox=[item for item in infobox if isinstance(item, dict)],
             )
         except Exception:
             return None

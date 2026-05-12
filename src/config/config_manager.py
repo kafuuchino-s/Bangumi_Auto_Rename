@@ -1,8 +1,10 @@
 import json
 import os
+import tempfile
 import platform
 import threading
 from contextlib import contextmanager
+from pathlib import Path
 from urllib.parse import urlparse
 from typing import Any, Dict
 
@@ -34,6 +36,13 @@ CONFIG_DEFAULT = {
     ],  # OpenAI自动路由顺序
     "openai_format_stats": {},  # OpenAI格式测试统计
     "ai_auto_save": False,  # 是否自动保存AI分析结果
+    "ai_response_cache_enabled": False,  # 回归/调试用：缓存 AI 请求响应，生产默认关闭
+    "rename_local_bangumi_case_agent_primary_enabled": True,
+    "rename_local_bangumi_case_agent_max_rounds": 3,
+    "rename_local_bangumi_case_agent_max_evidence_batches": 8,
+    "rename_local_bangumi_case_agent_max_issue_response_rounds": 1,
+    "rename_local_bangumi_case_agent_max_requests_per_batch": 8,
+    "rename_local_bangumi_case_agent_snapshot_debug": False,
     "log_level": "INFO",  # 日志等级
     "queue_max_workers": 1,  # 队列并行处理数
     # 字幕同步（ffsubsync）配置
@@ -100,6 +109,13 @@ CN_MAP = {
     "openai_format_stats": "🧪 OpenAI格式测试统计",
     "ai_temperature": "🔥 OpenAI温度",
     "ai_auto_save": "💾 自动保存AI分析",
+    "ai_response_cache_enabled": "🧪 AI响应缓存（回归调试）",
+    "rename_local_bangumi_case_agent_primary_enabled": "🧭 启用 Local→Bangumi Case Agent primary",
+    "rename_local_bangumi_case_agent_max_rounds": "🧭 Case Agent 最大判断轮数",
+    "rename_local_bangumi_case_agent_max_evidence_batches": "🧭 Case Agent 最大证据批次",
+    "rename_local_bangumi_case_agent_max_issue_response_rounds": "🧭 Case Agent 最大修正轮数",
+    "rename_local_bangumi_case_agent_max_requests_per_batch": "🧭 Case Agent 每批最大证据请求",
+    "rename_local_bangumi_case_agent_snapshot_debug": "🧭 Case Agent snapshot 调试详情",
     "log_level": "📝 日志等级",
     "queue_max_workers": "🔢 队列并行数（建议1-5）",
     "subtitle_sync_enabled": "🎯 启用字幕自动对齐(ffsubsync)",
@@ -168,18 +184,26 @@ class ConfigManager:
             runtime_overrides.update(backup)
 
     def write_config(self):
+        if self._readonly_mode:
+            return
         with self._io_lock:
-            # 使用缓存文件避免强行关闭造成文件损坏
-            temp_file_path = CONFIG_PATH.parent / f'{CONFIG_PATH.name}.bak'
-
-            if temp_file_path.exists():
-                temp_file_path.unlink()
-
-            with open(temp_file_path, 'w', encoding='UTF-8') as file:
-                json.dump(self.config, file, indent=4, ensure_ascii=False)
-
-            CONFIG_PATH.unlink()
-            temp_file_path.rename(CONFIG_PATH)
+            CONFIG_PATH.parent.mkdir(parents=True, exist_ok=True)
+            fd, temp_name = tempfile.mkstemp(
+                prefix=f'.{CONFIG_PATH.name}.',
+                suffix='.tmp',
+                dir=str(CONFIG_PATH.parent),
+            )
+            temp_file_path = Path(temp_name)
+            try:
+                with os.fdopen(fd, 'w', encoding='UTF-8') as file:
+                    json.dump(self.config, file, indent=4, ensure_ascii=False)
+                    file.write('\n')
+                    file.flush()
+                    os.fsync(file.fileno())
+                os.replace(temp_file_path, CONFIG_PATH)
+            finally:
+                if temp_file_path.exists():
+                    temp_file_path.unlink()
 
     def update_config(self):
         with self._io_lock:

@@ -49,6 +49,7 @@ coverage.xml
 *.py,cover
 .hypothesis/
 .pytest_cache/
+.pytest-tmp*/
 cover/
 
 # Translations
@@ -171,11 +172,22 @@ Bangumi_Auto_Rename.onefile-build
 config.json
 data
 
-# Sample-pool and regression generated artifacts
+# Local media scratch roots
+/Movie/
+/TV/
+
+# Local sample-pool generated artifacts. Keep tests/sample_pool/raw tracked.
 /tests/sample_pool/generated/
+/tests/sample_pool/manifest/
+/tests/sample_pool/anchors/
 
 # Local Claude/runtime artifacts
 /.claude/
 /.sisyphus/
 /log
 /nul
+
+# Local generated investigation notes
+/ARCHITECTURE.md
+/STRUCTURE.md
+/interview/

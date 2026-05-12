@@ -1,5 +1,8 @@
 import json
+import hashlib
+import os
 import re
+import tempfile
 import time
 from collections import OrderedDict
 from collections.abc import Mapping, Sequence
@@ -17,6 +20,8 @@ from .prompt_support import (
 )
 from .models import (
     AIAnalysisResult,
+    AIProposalCriticResult,
+    LocalPackageAnalysis,
     MovieCollectionResult,
     MovieSearchQueriesResult,
     SubtitleCandidateDecision,
@@ -29,6 +34,7 @@ from ..utils.path import AI_ANALYSIS_PATH
 from ..config.config_manager import cm
 from ..rename.cleaner import remove_episode, remove_season
 from ..rename.utils import PROMO_TAGS, SPECIAL_FOLDER_NAMES
+from ..rename.case_agent.local_package_projection import build_local_package_projection
 from .base_client import BaseAIClient
 
 
@@ -38,6 +44,157 @@ class AIClient:
     _TITLE_EXTRACTION_CACHE_MAX_SIZE = 128
     _title_cache_lock = Lock()
     _title_metadata_cache: "OrderedDict[str, TitleExtractionResult]" = OrderedDict()
+
+    @staticmethod
+    def _ai_response_cache_mode() -> str:
+        mode = str(os.environ.get('BAR_AI_RESPONSE_CACHE_MODE') or 'read-write').strip().lower()
+        if mode in {'read-write', 'cache-only', 'refresh', 'off'}:
+            return mode
+        return 'read-write'
+
+    @staticmethod
+    def _ai_response_cache_dir() -> Path:
+        configured = str(os.environ.get('BAR_AI_RESPONSE_CACHE_DIR') or '').strip()
+        return Path(configured) if configured else AI_ANALYSIS_PATH / 'response_cache'
+
+    @staticmethod
+    def _ai_response_cache_event_dir() -> Optional[Path]:
+        configured = str(os.environ.get('BAR_AI_RESPONSE_CACHE_EVENT_DIR') or '').strip()
+        return Path(configured) if configured else None
+
+    @classmethod
+    def _ai_response_cache_enabled(cls) -> bool:
+        if cls._ai_response_cache_mode() == 'off':
+            return False
+        return bool(cm.get_config('ai_response_cache_enabled'))
+
+    @staticmethod
+    def _stable_json(value: object) -> str:
+        return json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(',', ':'), default=str)
+
+    @staticmethod
+    def _estimate_json_bytes(value: object) -> int:
+        return len(json.dumps(value, ensure_ascii=False, default=str).encode('utf-8'))
+
+    @classmethod
+    def _lpa_oversized_threshold_bytes(cls) -> int:
+        raw = str(os.environ.get('BAR_LPA_OVERSIZED_THRESHOLD_BYTES') or '').strip()
+        if raw:
+            try:
+                return max(1, int(raw))
+            except ValueError:
+                pass
+        try:
+            configured = int(cm.get_config('lpa_oversized_threshold_bytes') or 0)
+            if configured > 0:
+                return configured
+        except Exception:
+            pass
+        return 120 * 1024
+
+    @classmethod
+    def _is_lpa_oversized(cls, input_projection_bytes: int, request_body_bytes_estimate: int) -> bool:
+        threshold = cls._lpa_oversized_threshold_bytes()
+        return input_projection_bytes > threshold or request_body_bytes_estimate > threshold
+
+    @classmethod
+    def _ai_response_cache_key(
+        cls,
+        *,
+        request_params: Mapping[str, object],
+        configured_interface: str,
+        validation_key: str,
+        schema: Optional[type[BaseModel]],
+    ) -> str:
+        cache_payload = {
+            'schema_version': 1,
+            'request_params': {key: value for key, value in request_params.items() if key != 'stream'},
+            'configured_interface': configured_interface,
+            'validation_key': validation_key,
+            'schema_name': schema.__name__ if schema else None,
+        }
+        return hashlib.sha256(cls._stable_json(cache_payload).encode('utf-8')).hexdigest()
+
+    @classmethod
+    def _read_ai_response_cache(cls, cache_key: str) -> Optional[str]:
+        if not cache_key:
+            return None
+        path = cls._ai_response_cache_dir() / f'{cache_key}.json'
+        try:
+            with path.open('r', encoding='utf-8') as file:
+                payload = json.load(file)
+        except FileNotFoundError:
+            return None
+        except Exception as exc:
+            logger.warning(f'[AI缓存] 读取响应缓存失败，忽略: {path} ({exc})')
+            return None
+        content = payload.get('content') if isinstance(payload, dict) else None
+        return content if isinstance(content, str) else None
+
+    @classmethod
+    def _record_ai_response_cache_event(
+        cls,
+        *,
+        event: str,
+        cache_key: str,
+        validation_key: str,
+        schema: Optional[type[BaseModel]],
+    ) -> None:
+        event_dir = cls._ai_response_cache_event_dir()
+        if event_dir is None:
+            return
+        try:
+            event_dir.mkdir(parents=True, exist_ok=True)
+            payload = {
+                'schema_version': 1,
+                'event': event,
+                'cache_key': cache_key,
+                'validation_key': validation_key,
+                'schema_name': schema.__name__ if schema else None,
+                'pid': os.getpid(),
+                'created_at': datetime.now().isoformat(timespec='seconds'),
+            }
+            event_path = event_dir / f'{time.time_ns()}_{os.getpid()}_{event}_{cache_key[:12]}.json'
+            event_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+        except Exception as exc:
+            logger.warning(f'[AI缓存] 写入响应缓存事件失败，忽略: {exc}')
+
+    @classmethod
+    def _write_ai_response_cache(
+        cls,
+        *,
+        cache_key: str,
+        content: str,
+        actual_interface: str,
+    ) -> None:
+        if not cache_key or not content:
+            return
+        cache_dir = cls._ai_response_cache_dir()
+        cache_dir.mkdir(parents=True, exist_ok=True)
+        target = cache_dir / f'{cache_key}.json'
+        payload = {
+            'schema_version': 1,
+            'cached_at': datetime.now().isoformat(timespec='seconds'),
+            'actual_interface': actual_interface,
+            'content': content,
+        }
+        fd, temp_name = tempfile.mkstemp(prefix=f'.{cache_key}.', suffix='.tmp', dir=str(cache_dir))
+        temp_path = Path(temp_name)
+        try:
+            with os.fdopen(fd, 'w', encoding='utf-8') as file:
+                json.dump(payload, file, ensure_ascii=False, indent=2)
+                file.write('\n')
+                file.flush()
+                os.fsync(file.fileno())
+            os.replace(temp_path, target)
+        except Exception as exc:
+            logger.warning(f'[AI缓存] 写入响应缓存失败，忽略: {target} ({exc})')
+        finally:
+            if temp_path.exists():
+                try:
+                    temp_path.unlink()
+                except Exception:
+                    pass
 
     @classmethod
     def _title_cache_get(
@@ -151,6 +308,11 @@ class AIClient:
 
         def ensure_required_fields(obj: object) -> None:
             if isinstance(obj, dict):
+                if "$ref" in obj:
+                    ref_value = obj["$ref"]
+                    obj.clear()
+                    obj["$ref"] = ref_value
+                    return
                 properties = cast(dict[str, object] | None, obj.get("properties"))
                 if isinstance(properties, dict):
                     obj["required"] = list(properties.keys())
@@ -199,6 +361,10 @@ class AIClient:
             "interface_fallback": interface_fallback,
             "interface_fallback_reason": interface_fallback_reason,
         }
+
+    def get_last_ai_call_audit(self) -> dict[str, object] | None:
+        audit = getattr(self, "_last_ai_call_audit", None)
+        return dict(audit) if isinstance(audit, dict) else None
 
     def is_available(self) -> bool:
         """检查AI客户端是否可用"""
@@ -328,6 +494,162 @@ class AIClient:
         if not result:
             return None
         return (result.title, result.type)
+
+    def analyze_local_package(
+        self,
+        package_name: str,
+        local_evidence_summary: Mapping[str, object] | None = None,
+    ) -> LocalPackageAnalysis | None:
+        """分析本地包级标题与可执行切片规则，不决定最终媒体类型或映射。"""
+        if not self.is_available():
+            return None
+
+        payload = {
+            "package_name": str(package_name or "").strip(),
+            "local_evidence_summary": local_evidence_summary or {},
+        }
+        projection_kind = str((local_evidence_summary or {}).get('projection_kind') or 'compact_local_package_projection')
+        local_evidence_projection = (local_evidence_summary or {}).get('lpa_projection') or local_evidence_summary or {}
+        prompt = (
+            "你是本地媒体包分析器。你的任务不是判断最终 TV/Movie 类型，也不是输出 TMDB 映射；"
+            "只输出用于召回的包级 search_titles，以及固定层可执行的本地 extraction_rules。\n\n"
+            "核心边界：\n"
+            "- You are seeing compact local package projection, not full file list.\n"
+            "- Use raw representative samples and directory/title cues.\n"
+            "- directory_structure 和 files[].relative_path 都是 search_titles 的证据来源；\n"
+            "- 一级/二级子目录本身就是实际作品标题、续作标题、剧场版、OVA、SP 等子作品标题时，"
+            "应提升为 search_titles；\n"
+            "- Season 1/Season 2/Disc/Vol/Bonus/Scans/CD/Subtitles/Menu/NCOP/NCED 这类技术目录不要当作品标题；\n"
+            "- 不要搜 \"Season 1\" 这类字面词；\n"
+            "- Do not infer file→target mapping.\n"
+            "- Do not treat release group as primary title unless evidence supports it.\n"
+            "- If evidence insufficient, output conservative/unknown/low-confidence search_titles rather than overfitting.\n"
+            "- Keep search_titles concise; preserve AI-provided candidates, no mechanical dedupe in fixed layer.\n"
+            "- extraction_rules 只能描述如何从 root/path/file 文本中切出本地事实，不能描述 file -> TMDB 映射；\n"
+            "- 不输出 type，不决定最终媒体类型，不发明候选 ID。\n\n"
+            "建议输出字段可包含 input_sufficiency, evidence_gaps, sample_refs_used, title_cue_confidence_reason；"
+            "其中 sample_refs_used 只写实际参考的少量样本引用。\n\n"
+            "输入 JSON：\n"
+            f"{json.dumps(payload, ensure_ascii=False, default=str)}\n\n"
+            "请返回严格 JSON，字段为 search_titles, recall_intent, extraction_rules, input_sufficiency, evidence_gaps, sample_refs_used, title_cue_confidence_reason。"
+        )
+        system_prompt = "你是严格的 LocalPackageAnalysis AI，只输出可验证的本地分析 JSON。"
+        try:
+            payload_bytes = self._estimate_json_bytes(payload)
+            rendered_prompt_bytes = len(prompt.encode("utf-8"))
+            request_body_estimate = rendered_prompt_bytes + payload_bytes
+            oversized_input = self._is_lpa_oversized(payload_bytes, request_body_estimate)
+            result = self._call_openai_simple(
+                system_prompt,
+                prompt,
+                validation_key="search_titles",
+                schema=LocalPackageAnalysis,
+                max_retries=1,
+            )
+            if not result:
+                self._last_ai_call_audit = {
+                    "call_name": "LocalPackageAnalysis",
+                    "schema_name": "LocalPackageAnalysis",
+                    "validation_key": "search_titles",
+                    "projection_kind": projection_kind,
+                    "input_projection_bytes": payload_bytes,
+                    "rendered_prompt_bytes": rendered_prompt_bytes,
+                    "request_body_bytes_estimate": request_body_estimate,
+                    "output_bytes_estimate": 0,
+                    "search_titles_count": 0,
+                    "title_cues_count": 0,
+                    "release_group_cues_count": 0,
+                    "sample_counts": {
+                        "local_evidence_summary_keys": len(local_evidence_summary or {}),
+                    },
+                    "path_ref_occurrence": {
+                        "path": len(re.findall(r'(?i)path', json.dumps(local_evidence_projection, ensure_ascii=False, default=str))),
+                        "ref": len(re.findall(r'(?i)ref', json.dumps(local_evidence_projection, ensure_ascii=False, default=str))),
+                    },
+                    "lpa_projection_truncated": bool((local_evidence_summary or {}).get('lpa_projection_truncated')),
+                    "oversized_input": oversized_input,
+                    "cache_mode": self._ai_response_cache_mode() if self._ai_response_cache_enabled() else "unknown",
+                    "cache_key": getattr(self, "_last_ai_response_cache_key", "unknown") or "unknown",
+                    "cache_event": getattr(self, "_last_ai_response_cache_event", "unknown") or "unknown",
+                    "configured_interface": self.get_provider_runtime_info().get("configured_interface", "unknown") or "unknown",
+                    "actual_interface": self.get_provider_runtime_info().get("actual_interface", "unknown") or "unknown",
+                    "streaming": getattr(self._get_openai_adapter(), "last_api_interface_fallback", None),
+                    "elapsed_ms": "unavailable",
+                    "error_kind": "provider_no_output",
+                    "message": "provider returned empty result",
+                }
+                return None
+            parsed = LocalPackageAnalysis.model_validate_json(result)
+            runtime = self.get_provider_runtime_info()
+            self._last_ai_call_audit = {
+                "call_name": "LocalPackageAnalysis",
+                "schema_name": "LocalPackageAnalysis",
+                "validation_key": "search_titles",
+                "projection_kind": projection_kind,
+                "input_projection_bytes": payload_bytes,
+                "rendered_prompt_bytes": rendered_prompt_bytes,
+                "request_body_bytes_estimate": request_body_estimate,
+                "output_bytes_estimate": len(result.encode("utf-8")),
+                "search_titles_count": len(parsed.search_titles),
+                "title_cues_count": len(parsed.search_titles),
+                "release_group_cues_count": 0,
+                "sample_counts": {
+                    "local_evidence_summary_keys": len(local_evidence_summary or {}),
+                },
+                "path_ref_occurrence": {
+                    "path": len(re.findall(r'(?i)path', json.dumps(local_evidence_projection, ensure_ascii=False, default=str))),
+                    "ref": len(re.findall(r'(?i)ref', json.dumps(local_evidence_projection, ensure_ascii=False, default=str))),
+                },
+                "lpa_projection_truncated": bool((local_evidence_summary or {}).get('lpa_projection_truncated')),
+                "oversized_input": oversized_input,
+                "cache_mode": self._ai_response_cache_mode() if self._ai_response_cache_enabled() else "unknown",
+                "cache_key": getattr(self, "_last_ai_response_cache_key", "unknown") or "unknown",
+                "cache_event": getattr(self, "_last_ai_response_cache_event", "unknown") or "unknown",
+                "configured_interface": runtime.get("configured_interface", "unknown") or "unknown",
+                "actual_interface": runtime.get("actual_interface", "unknown") or "unknown",
+                "streaming": True,
+                "elapsed_ms": "unavailable",
+                "error_kind": None,
+                "message": None,
+            }
+            return parsed
+        except (ValidationError, json.JSONDecodeError, ValueError) as exc:
+            logger.warning(f"[AI] LocalPackageAnalysis 解析失败: {exc}")
+            self._last_ai_call_audit = {
+                "call_name": "LocalPackageAnalysis",
+                "schema_name": "LocalPackageAnalysis",
+                "validation_key": "search_titles",
+                "projection_kind": projection_kind,
+                "input_projection_bytes": len(json.dumps(payload, ensure_ascii=False, default=str).encode("utf-8")),
+                "rendered_prompt_bytes": len(prompt.encode("utf-8")),
+                "request_body_bytes_estimate": request_body_estimate,
+                "output_bytes_estimate": len(str(result).encode("utf-8")) if isinstance(result, str) else 0,
+                "search_titles_count": "unavailable",
+                "title_cues_count": "unavailable",
+                "release_group_cues_count": "unavailable",
+                "sample_counts": {
+                    "local_evidence_summary_keys": len(local_evidence_summary or {}),
+                },
+                "path_ref_occurrence": {
+                    "path": len(re.findall(r'(?i)path', json.dumps(local_evidence_projection, ensure_ascii=False, default=str))),
+                    "ref": len(re.findall(r'(?i)ref', json.dumps(local_evidence_projection, ensure_ascii=False, default=str))),
+                },
+                "lpa_projection_truncated": bool((local_evidence_summary or {}).get('lpa_projection_truncated')),
+                "oversized_input": self._is_lpa_oversized(
+                    len(json.dumps(payload, ensure_ascii=False, default=str).encode("utf-8")),
+                    request_body_estimate,
+                ),
+                "cache_mode": self._ai_response_cache_mode() if self._ai_response_cache_enabled() else "unknown",
+                "cache_key": getattr(self, "_last_ai_response_cache_key", "unknown") or "unknown",
+                "cache_event": getattr(self, "_last_ai_response_cache_event", "unknown") or "unknown",
+                "configured_interface": self.get_provider_runtime_info().get("configured_interface", "unknown") or "unknown",
+                "actual_interface": self.get_provider_runtime_info().get("actual_interface", "unknown") or "unknown",
+                "streaming": True,
+                "elapsed_ms": "unavailable",
+                "error_kind": type(exc).__name__,
+                "message": str(exc),
+            }
+            return None
 
     def generate_movie_search_queries(
         self,
@@ -500,6 +822,38 @@ class AIClient:
             logger.warning(f"[AI字幕搜索词] 生成失败: {e}")
             return None
 
+    def critique_rename_proposal(self, **context: object) -> Optional[AIProposalCriticResult]:
+        """对重命名 proposal 做结构化 SemanticReview。"""
+        if not self.is_available():
+            return None
+
+        system_prompt = (
+            "你是媒体重命名流水线的 SemanticReview 审查员。"
+            "固定层已经检查 TMDB legal graph、重复目标、覆盖与写入安全；"
+            "你只判断语义证据是否足以支持 proposal，不要提出固定层 remap 指令。"
+            "findings 仅用于诊断解释，最终 gate 只看 top-level semantic_status。"
+        )
+        prompt = (
+            "请审查以下 rename proposal 上下文。\n"
+            "如果语义证据足够且没有明显候选/版本/特别篇混淆，semantic_status=pass；"
+            "如果证据不足或疑似错误，按 suspicious/ambiguous/invalid 返回。\n\n"
+            f"上下文 JSON:\n{json.dumps(context, ensure_ascii=False, default=str)}"
+        )
+        try:
+            result = self._call_openai_simple(
+                system_prompt,
+                prompt,
+                validation_key="semantic_status",
+                schema=AIProposalCriticResult,
+                streaming=False,
+            )
+            if not result:
+                return None
+            return AIProposalCriticResult.model_validate_json(result)
+        except Exception as exc:
+            logger.warning(f"[AI语义审查] 调用失败: {exc}")
+            return None
+
     def _call_openai_simple(
         self,
         system_prompt: str,
@@ -569,6 +923,41 @@ class AIClient:
                 if not callable(resolve_api_interface):
                     return None
                 interface = str(resolve_api_interface(cm.get_config("openai_api_interface")))
+
+                response_cache_enabled = self._ai_response_cache_enabled()
+                response_cache_mode = self._ai_response_cache_mode()
+                response_cache_key = ''
+                if response_cache_enabled:
+                    response_cache_key = self._ai_response_cache_key(
+                        request_params=request_params,
+                        configured_interface=interface,
+                        validation_key=validation_key,
+                        schema=schema,
+                    )
+                    setattr(self, "_last_ai_response_cache_key", response_cache_key)
+                    if response_cache_mode != 'refresh':
+                        cached_content = self._read_ai_response_cache(response_cache_key)
+                        if cached_content is not None:
+                            setattr(self, "_last_ai_response_cache_event", "hit")
+                            self._record_ai_response_cache_event(
+                                event='hit',
+                                cache_key=response_cache_key,
+                                validation_key=validation_key,
+                                schema=schema,
+                            )
+                            logger.info(f'[AI缓存] 命中响应缓存: {response_cache_key}')
+                            return cached_content
+                        setattr(self, "_last_ai_response_cache_event", "miss")
+                        self._record_ai_response_cache_event(
+                            event='miss',
+                            cache_key=response_cache_key,
+                            validation_key=validation_key,
+                            schema=schema,
+                        )
+                    if response_cache_mode == 'cache-only':
+                        setattr(self, "_last_ai_response_cache_event", "cache-only-miss")
+                        logger.warning(f'[AI缓存] cache-only 未命中: {response_cache_key}')
+                        return None
 
                 content: str | None = None
                 actual_interface = interface
@@ -653,12 +1042,38 @@ class AIClient:
                 if content:
                     # 检查返回内容是否是完整的JSON（有开闭括号）
                     if f'"{validation_key}"' in content and '}' in content:
+                        if response_cache_enabled and response_cache_mode in {'read-write', 'refresh'}:
+                            self._write_ai_response_cache(
+                                cache_key=response_cache_key,
+                                content=content,
+                                actual_interface=actual_interface,
+                            )
+                            setattr(self, "_last_ai_response_cache_event", "write")
+                            self._record_ai_response_cache_event(
+                                event='write',
+                                cache_key=response_cache_key,
+                                validation_key=validation_key,
+                                schema=schema,
+                            )
                         return content
                     elif attempt < max_retries:
                         logger.warning(
                             f"[AI] 响应格式不完整，重试第{attempt + 1}次"
                         )
                         continue
+                    if response_cache_enabled and response_cache_mode in {'read-write', 'refresh'}:
+                        self._write_ai_response_cache(
+                            cache_key=response_cache_key,
+                            content=content,
+                            actual_interface=actual_interface,
+                        )
+                        setattr(self, "_last_ai_response_cache_event", "write")
+                        self._record_ai_response_cache_event(
+                            event='write',
+                            cache_key=response_cache_key,
+                            validation_key=validation_key,
+                            schema=schema,
+                        )
                     return content
 
                 return None
