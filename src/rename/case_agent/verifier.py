@@ -20,9 +20,6 @@ def _sanitize_fail_closed_aux_refs(output: CaseJudgeOutput, dossier: CaseDossier
     issues: list[VerifierIssue] = []
     changed = False
 
-    def _is_auxiliary_ref(ref: str) -> bool:
-        return ref.startswith('REQ_')
-
     def _note_sanitized() -> None:
         issues.append(VerifierIssue(ref='fail_closed', issue_code='auxiliary_ref_sanitized', severity='info', message='auxiliary refs sanitized for fail_closed'))
 
@@ -41,11 +38,8 @@ def _sanitize_fail_closed_aux_refs(output: CaseJudgeOutput, dossier: CaseDossier
             if not ref or ref in allowed:
                 kept.append(ref)
                 continue
-            if _is_auxiliary_ref(ref):
-                changed = True
-                _note_sanitized()
-                continue
-            kept.append(ref)
+            changed = True
+            _note_sanitized()
         return kept
 
     updates = {
@@ -374,6 +368,7 @@ def verify_judge_output(dossier: CaseDossier, output: CaseJudgeOutput) -> CaseVe
             if ref.startswith(('BE', 'BS', 'BR')) or _tmdb_like(ref):
                 issues.append(_issue(ref, 'unknown_ref', 'unknown visible ref'))
 
+    output = _sanitize_fail_closed_aux_refs(output, dossier)[0] if output.action == 'fail_closed' else output
     for reason in output.fail_closed_reasons:
         if any(ref not in allowed_related_refs for ref in reason.related_refs):
             issues.append(_issue(reason.ref, 'unknown_ref', 'fail_closed related_refs must be visible dossier refs or output refs'))

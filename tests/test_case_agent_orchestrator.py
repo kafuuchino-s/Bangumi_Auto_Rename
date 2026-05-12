@@ -4,6 +4,7 @@ import sys
 
 from dataclasses import replace
 
+from src.bangumi.models import BangumiEpisode, BangumiSubject
 from src.rename.case_agent.models import (
     AssignmentIntent,
     CaseBudget,
@@ -231,7 +232,7 @@ def test_orchestrator_does_not_emit_unresolvable_target_span_ids():
     assert not any('REQ_TARGET_SPAN_' in err and 'unknown' in err.lower() for err in result.errors)
 
 
-def test_request_evidence_unknown_menu_id_is_invalid():
+def test_request_evidence_unknown_menu_id_fail_closes_with_audit():
     workspace = CaseEvidenceWorkspace.from_cards(
         header=CaseHeader(case_id='CASE-MENU-2'),
         budget=CaseBudget(max_judge_rounds=5, max_evidence_batches=2, max_issue_response_rounds=1),
@@ -243,9 +244,10 @@ def test_request_evidence_unknown_menu_id_is_invalid():
 
     result = run_local_bangumi_case_agent(workspace, client, FakeBangumiClient())
 
-    assert result.ok is False
-    assert result.status == 'invalid'
-    assert 'unknown_menu_request_id' in result.errors or result.summary == 'unknown_menu_request_id'
+    assert result.ok is True
+    assert result.status == 'fail_closed'
+    assert result.summary == 'no_new_evidence'
+    assert 'unknown_menu_request_id' in result.errors
 
 
 def test_stale_menu_id_after_prior_planner_evidence_continues_investigation():
@@ -653,7 +655,7 @@ def test_contradictory_fail_closed_with_detail_span_routes_to_editor(monkeypatch
     ])
     from src.rename.case_agent.models import MappingDraftEditorOutput, MappingDraftPatch
 
-    def _call_editor(ai_client, dossier, draft, *, round_kind='draft_edit'):
+    def _call_editor(ai_client, dossier, draft, *, round_kind='draft_edit', max_provider_retries=0):
         return type('EditorResult', (), {'ok': True, 'output': MappingDraftEditorOutput(patches=[
             MappingDraftPatch(op='map_to_bangumi', local_ref='LS1', target_span_ref='BES1', mapping_mode='span_by_index', support_refs=['LS1', 'BES1'], reason='visible span match')
         ], findings=[Finding(ref='F1', finding_kind='pass', description='span match')]), 'error': '', 'raw_response': '{}'})()
@@ -841,16 +843,17 @@ def test_policy_retry_fail_closed_with_no_legal_anchor_is_ok():
     assert any(isinstance(a, dict) and a.get('premature_guard_decision', {}).get('allowed') is True for a in getattr(result.final_workspace, 'judge_request_audits', []))
 
 
-def test_policy_retry_fail_closed_with_anchors_available_and_insufficient_evidence_without_request_is_invalid():
+def test_policy_retry_fail_closed_with_anchors_available_and_insufficient_evidence_without_request_fail_closes():
     workspace = CaseEvidenceWorkspace.from_cards(header=CaseHeader(case_id='CASE-PR-4'), budget=CaseBudget(max_judge_rounds=5, max_evidence_batches=2, max_issue_response_rounds=1), contract=CaseContract(main_file_refs=['LF1'], allowed_file_refs=['LF1'], visible_target_refs=['BE1']), local_files=[LocalFileCard(ref='LF1')], bangumi_items=[BangumiItemCard(ref='BE1')])
     object.__setattr__(workspace, 'diagnostics', ['policy_retry_pending'])
     client = FakeAIClient([CaseJudgeOutput(action='fail_closed', fail_closed_reasons=[{'ref': 'R1', 'reason_kind': 'insufficient_evidence', 'description': 'detail sparse', 'related_refs': []}])])
 
     result = run_local_bangumi_case_agent(workspace, client, FakeBangumiClient())
 
-    assert result.ok is False
-    assert result.status == 'invalid'
-    assert 'policy_retry_refused_recommended_request' in result.summary or 'policy_retry_refused_recommended_request' in result.errors
+    assert result.ok is True
+    assert result.status == 'fail_closed'
+    assert result.summary == 'no_new_evidence'
+    assert 'policy_retry_refused_recommended_request' in result.errors
     assert any(isinstance(a, dict) and a.get('premature_guard_decision', {}).get('allowed') is False and a.get('premature_guard_decision', {}).get('reason') == 'anchors_available_but_no_request' for a in getattr(result.final_workspace, 'judge_request_audits', []))
 
 
@@ -914,8 +917,9 @@ def test_submit_verdict_invalid_target_without_issue_budget_does_not_pass():
     workspace = CaseEvidenceWorkspace.from_cards(header=CaseHeader(case_id='CASE-INV-2'), budget=CaseBudget(max_judge_rounds=5, max_evidence_batches=2, max_issue_response_rounds=0), contract=CaseContract(main_file_refs=['LF1'], allowed_file_refs=['LF1'], visible_target_refs=[f'BE{i}' for i in range(1, 15)]), local_files=[LocalFileCard(ref='LF1')], bangumi_items=[BangumiItemCard(ref=f'BE{i}') for i in range(1, 15)])
     client = FakeAIClient([CaseJudgeOutput(action='submit_verdict', findings=[Finding(ref='F1', finding_kind='pass', description='ok')], assignment_intents=[AssignmentIntent(ref='A1', file_ref='LF1', target_ref='BE5', support_finding_refs=['F1'], support_card_refs=['LF1', 'BE5'], reason='bad')])])
     result = run_local_bangumi_case_agent(workspace, client, FakeBangumiClient())
-    assert result.ok is False
-    assert result.status in {'invalid', 'fail_closed'}
+    assert result.ok is True
+    assert result.status == 'fail_closed'
+    assert result.summary == 'semantic_target_conflict'
 
 
 def test_final_round_request_evidence_is_not_allowed():
@@ -924,12 +928,13 @@ def test_final_round_request_evidence_is_not_allowed():
 
     result = run_local_bangumi_case_agent(workspace, client, FakeBangumiClient())
 
-    assert result.ok is False
-    assert result.status in {'invalid', 'error'}
-    assert 'evidence_budget_exhausted' in result.summary or any('evidence_budget_exhausted' in err for err in result.errors)
+    assert result.ok is True
+    assert result.status == 'fail_closed'
+    assert result.summary == 'budget_exhausted'
+    assert 'budget_exhausted' in result.errors
 
 
-def test_policy_retry_sparse_detail_with_anchors_available_is_invalid_premature():
+def test_policy_retry_sparse_detail_with_anchors_available_fail_closes_with_audit():
     workspace = CaseEvidenceWorkspace.from_cards(header=CaseHeader(case_id='CASE-1'), budget=CaseBudget(max_judge_rounds=5, max_evidence_batches=2, max_issue_response_rounds=1), contract=CaseContract(main_file_refs=['LF1'], allowed_file_refs=['LF1'], visible_target_refs=[f'BE{i}' for i in range(1, 25)]), local_files=[LocalFileCard(ref='LF1')], bangumi_items=[BangumiItemCard(ref=f'BE{i}', subject_ref='BS1', sort=i, ep=i) for i in range(1, 25)])
     object.__setattr__(workspace, 'diagnostics', ['policy_retry_pending'])
     object.__setattr__(workspace, 'seen_detail_refs', ['BE1'])
@@ -940,9 +945,10 @@ def test_policy_retry_sparse_detail_with_anchors_available_is_invalid_premature(
 
     result = run_local_bangumi_case_agent(workspace, client, FakeBangumiClient())
 
-    assert result.ok is False
-    assert result.status == 'invalid'
-    assert 'premature_fail_closed_requires_evidence_request' in result.summary or 'premature_fail_closed_requires_evidence_request' in result.errors
+    assert result.ok is True
+    assert result.status == 'fail_closed'
+    assert result.summary == 'no_new_evidence'
+    assert 'policy_retry_refused_recommended_request' in result.errors
 
 
 def test_initial_large_sparse_detail_with_anchors_available_triggers_policy_retry_then_request_evidence():
@@ -973,9 +979,10 @@ def test_last_round_request_evidence_becomes_evidence_budget_exhausted():
 
     result = run_local_bangumi_case_agent(workspace, client, FakeBangumiClient())
 
-    assert result.ok is False
-    assert result.status in {'invalid', 'error'}
-    assert result.summary == 'evidence_budget_exhausted' or any('evidence_budget_exhausted' in err for err in result.errors)
+    assert result.ok is True
+    assert result.status == 'fail_closed'
+    assert result.summary == 'budget_exhausted'
+    assert 'budget_exhausted' in result.errors
 
 
 def test_final_round_incomplete_submit_becomes_issue_response_or_fail_closed():
@@ -1011,7 +1018,8 @@ def test_final_round_request_evidence_becomes_evidence_budget_exhausted():
 
     result = run_local_bangumi_case_agent(workspace, client, FakeBangumiClient())
 
-    assert result.summary == 'evidence_budget_exhausted'
+    assert result.summary == 'budget_exhausted'
+    assert result.status == 'fail_closed'
     assert 'round limit reached' not in result.errors
 
 
@@ -1213,16 +1221,17 @@ def test_initial_premature_fail_closed_runs_policy_retry_then_request_evidence()
     assert [a.get('round_kind') for a in getattr(result.final_workspace, 'judge_request_audits', []) if isinstance(a, dict) and a.get('round_kind') in {'initial', 'policy_retry', 'evidence_rejudge'}] == ['initial', 'policy_retry', 'evidence_rejudge']
 
 
-def test_retry_then_premature_fail_closed_becomes_invalid():
+def test_retry_then_premature_fail_closed_becomes_fail_closed():
     workspace = CaseEvidenceWorkspace.from_cards(header=CaseHeader(case_id='CASE-1'), budget=CaseBudget(max_judge_rounds=5, max_evidence_batches=2, max_issue_response_rounds=1), contract=CaseContract(main_file_refs=[f'LF{i}' for i in range(1, 51)], allowed_file_refs=[f'LF{i}' for i in range(1, 51)], visible_target_refs=[f'BE{i}' for i in range(1, 51)]), local_files=[LocalFileCard(ref=f'LF{i}', is_main=True) for i in range(1, 51)], bangumi_items=[BangumiItemCard(ref=f'BE{i}', subject_ref='BS1', sort=i, ep=i) for i in range(1, 51)])
     client = FakeAIClient([
         CaseJudgeOutput(action='fail_closed', fail_closed_reasons=[{'ref': 'R1', 'reason_kind': 'insufficient_evidence', 'description': 'stop', 'related_refs': []}]),
         CaseJudgeOutput(action='fail_closed', fail_closed_reasons=[{'ref': 'R2', 'reason_kind': 'insufficient_evidence', 'description': 'still stop', 'related_refs': []}]),
     ])
     result = run_local_bangumi_case_agent(workspace, client, FakeBangumiClient())
-    assert result.ok is False
-    assert result.status == 'invalid'
-    assert any('premature_fail_closed_requires_evidence_request' in err for err in result.errors)
+    assert result.ok is True
+    assert result.status == 'fail_closed'
+    assert result.summary == 'no_new_evidence'
+    assert any('policy_retry_refused_recommended_request' in err for err in result.errors)
 
 
 def test_large_initial_fail_closed_not_blocked_when_detail_sufficient():
@@ -1391,6 +1400,12 @@ def test_corrected_verdict_with_unaligned_becomes_fail_closed():
 
     assert result.ok is True
     assert result.status == 'fail_closed'
+    assert result.summary == 'semantic_target_conflict'
+    assert result.final_action == 'fail_closed'
+    assert result.final_output is not None
+    assert result.final_output.action == 'fail_closed'
+    assert not result.final_output.assignment_intents
+    assert result.final_verifier_result is not None and result.final_verifier_result.passed is True
 
 
 def test_issue_response_explanation_only_is_invalid():
@@ -1415,9 +1430,33 @@ def test_snapshot_preserves_structured_final_output_assignment_count():
             return CaseJudgeOutput(action='submit_verdict', findings=[Finding(ref='F1', finding_kind='pass', description='ok')], assignment_intents=[AssignmentIntent(ref='A1', file_ref='LF1', target_ref='BE1', support_finding_refs=['F1'], support_card_refs=['LF1', 'BE1'], reason='r')])
 
     class DummyBangumi:
-        pass
+        def get_subject(self, subject_id):
+            return BangumiSubject(id=subject_id, type=2, name='Test Subject', name_cn='Test Subject', total_episodes=1, eps=1)
 
-    result = run_local_bangumi_case_agent_mapping(local_evidence=LocalEvidence(), bangumi_contexts=[], ai_client=DummyAI(), source_path='tests/sample', bangumi_client=DummyBangumi())
+        def get_episodes(self, subject_id):
+            return [BangumiEpisode(id=1, subject_id=subject_id, type=0, sort=1, ep=1, name='ep1', name_cn='ep1')]
+
+        def get_related_subjects(self, subject_id):
+            return []
+
+    bangumi_contexts = [
+        {
+            'ref': 'BS1',
+            'subject_id': 1,
+            'title': 'Test Subject',
+        },
+        {
+            'ref': 'BE1',
+            'item_ref': 'BE1',
+            'entity_ref': 'BS1',
+            'kind': 'episode',
+            'sort': 1,
+            'ep': 1,
+            'title': 'ep1',
+        },
+    ]
+
+    result = run_local_bangumi_case_agent_mapping(local_evidence=LocalEvidence(), bangumi_contexts=bangumi_contexts, ai_client=DummyAI(), source_path='tests/sample', bangumi_client=DummyBangumi())
     assert result['snapshot']['final_output_assignment_count'] == 1
 
 

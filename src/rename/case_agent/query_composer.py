@@ -349,7 +349,11 @@ def _parse_query_composer_response(response: object) -> tuple[QueryComposerOutpu
         return None, raw_response, str(exc)
 
 
-def call_query_composer(ai_client: object, dossier: CaseDossier, *, max_repair_rounds: int = 1) -> QueryComposerCallResult:
+def _provider_retry_delay(attempt_index: int) -> None:
+    time.sleep(min(0.2, 0.05 * max(1, attempt_index)))
+
+
+def call_query_composer(ai_client: object, dossier: CaseDossier, *, max_repair_rounds: int = 1, max_provider_retries: int = 2) -> QueryComposerCallResult:
     prompt = render_query_composer_prompt(dossier)
     started = time.time()
     audit: dict[str, object] = {
@@ -372,12 +376,51 @@ def call_query_composer(ai_client: object, dossier: CaseDossier, *, max_repair_r
             elapsed_ms=0,
             request_audit={**audit, 'actual_interface': 'fallback', 'fallback_used': True, 'composed_query_count': 0},
         )
-    try:
-        response = _call_ai_with_schema(ai_client, prompt)
+    retry_audits: list[dict[str, object]] = []
+    attempts = max(1, int(max_provider_retries or 0) + 1)
+    for attempt in range(1, attempts + 1):
+        try:
+            response = _call_ai_with_schema(ai_client, prompt)
+        except Exception as exc:
+            return QueryComposerCallResult(
+                ok=False,
+                output=None,
+                prompt=prompt,
+                query_cards=[],
+                error=f'query composer call failed: {exc}',
+                elapsed_ms=int((time.time() - started) * 1000),
+                request_audit={**audit, 'error_kind': 'call_failed', 'error_message': str(exc), 'provider_retry_count': attempt - 1, 'provider_retry_audits': retry_audits},
+            )
         output, raw_response, parse_error = _parse_query_composer_response(response)
         if output is None:
             error_kind = 'provider_no_response' if parse_error == 'provider returned None' else 'schema_parse_error'
             error_message = 'provider returned None' if parse_error == 'provider returned None' else parse_error
+            if error_kind == 'provider_no_response':
+                retry_audits.append({'attempt': attempt, 'error_kind': error_kind, 'error_message': error_message})
+                if attempt < attempts:
+                    _provider_retry_delay(attempt)
+                    continue
+                fallback_output = QueryComposerOutput(queries=[], summary='query composer provider no response; fallback to existing query hints')
+                return QueryComposerCallResult(
+                    ok=True,
+                    output=fallback_output,
+                    prompt=prompt,
+                    query_cards=[],
+                    error='',
+                    raw_response=response,
+                    elapsed_ms=int((time.time() - started) * 1000),
+                    request_audit={
+                        **audit,
+                        'actual_interface': 'fallback',
+                        'fallback_used': True,
+                        'fallback_reason': 'provider_no_response',
+                        'error_kind': 'provider_no_response',
+                        'error_message': error_message,
+                        'provider_retry_count': attempt - 1,
+                        'provider_retry_audits': retry_audits,
+                        'composed_query_count': 0,
+                    },
+                )
             return QueryComposerCallResult(
                 ok=False,
                 output=None,
@@ -386,7 +429,7 @@ def call_query_composer(ai_client: object, dossier: CaseDossier, *, max_repair_r
                 error=f'query composer {error_kind}: {error_message}',
                 raw_response=response,
                 elapsed_ms=int((time.time() - started) * 1000),
-                request_audit={**audit, 'error_kind': error_kind, 'error_message': error_message},
+                request_audit={**audit, 'error_kind': error_kind, 'error_message': error_message, 'provider_retry_count': attempt - 1, 'provider_retry_audits': retry_audits},
             )
         query_cards, dropped = _materialize_query_cards(output, dossier)
         repair_audits: list[dict[str, object]] = []
@@ -423,6 +466,8 @@ def call_query_composer(ai_client: object, dossier: CaseDossier, *, max_repair_r
                         'dropped_query_count': len(repair_dropped),
                         'dropped_query_reasons': repair_dropped[:8],
                         'repair_audits': repair_audits,
+                        'provider_retry_count': attempt - 1,
+                        'provider_retry_audits': retry_audits,
                     },
                 )
             dropped = repair_dropped or dropped
@@ -443,15 +488,17 @@ def call_query_composer(ai_client: object, dossier: CaseDossier, *, max_repair_r
                 'dropped_query_count': len(dropped),
                 'dropped_query_reasons': dropped[:8],
                 'repair_audits': repair_audits,
+                'provider_retry_count': attempt - 1,
+                'provider_retry_audits': retry_audits,
             },
         )
-    except Exception as exc:
-        return QueryComposerCallResult(
-            ok=False,
-            output=None,
-            prompt=prompt,
-            query_cards=[],
-            error=f'query composer call failed: {exc}',
-            elapsed_ms=int((time.time() - started) * 1000),
-            request_audit={**audit, 'error_kind': 'call_failed', 'error_message': str(exc)},
-        )
+    fallback_output = QueryComposerOutput(queries=[], summary='query composer provider no response; fallback to existing query hints')
+    return QueryComposerCallResult(
+        ok=True,
+        output=fallback_output,
+        prompt=prompt,
+        query_cards=[],
+        raw_response=None,
+        elapsed_ms=int((time.time() - started) * 1000),
+        request_audit={**audit, 'actual_interface': 'fallback', 'fallback_used': True, 'fallback_reason': 'provider_no_response', 'error_kind': 'provider_no_response', 'error_message': 'provider returned None', 'provider_retry_count': max(0, attempts - 1), 'provider_retry_audits': retry_audits, 'composed_query_count': 0},
+    )

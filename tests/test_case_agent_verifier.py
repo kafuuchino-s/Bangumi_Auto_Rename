@@ -176,13 +176,16 @@ def test_unaligned_support_requires_file_ref_but_not_unaligned():
     assert not any('UNALIGNED support card' in issue.message for issue in issues)
 
 
-def test_fail_closed_reason_invented_related_ref_rejected():
+def test_fail_closed_reason_invented_related_ref_is_sanitized():
     dossier = make_dossier()
     output = CaseJudgeOutput(
         action='fail_closed',
         fail_closed_reasons=[FailClosedReason(ref='FR1', reason_kind='insufficient_evidence', description='x', related_refs=['FAKE1'])],
     )
-    assert any(issue.issue_code == 'unknown_ref' for issue in verify_judge_output(dossier, output).issues)
+    result = verify_judge_output(dossier, output)
+    assert result.passed is True
+    assert any(issue.issue_code == 'auxiliary_ref_sanitized' for issue in result.issues)
+    assert not any(issue.issue_code == 'unknown_ref' for issue in result.issues)
 
 
 def test_duplicate_non_unaligned_target_rejected_only_for_real_targets():
@@ -273,31 +276,33 @@ def test_fail_closed_auxiliary_unknown_self_ref_is_sanitized_and_passes():
     assert result.passed is True
 
 
-def test_fail_closed_reason_related_unknown_ref_blocked():
+def test_fail_closed_reason_related_unknown_ref_is_sanitized_and_does_not_block():
     dossier = make_dossier()
     output = CaseJudgeOutput(
         action='fail_closed',
         fail_closed_reasons=[FailClosedReason(ref='FR1', reason_kind='insufficient_evidence', description='stop', related_refs=['BE999'])],
     )
     result = verify_judge_output(dossier, output)
-    assert any(issue.issue_code == 'unknown_ref' for issue in result.issues)
+    assert result.passed is True
+    assert any(issue.issue_code == 'auxiliary_ref_sanitized' for issue in result.issues)
+    assert not any(issue.issue_code == 'unknown_ref' for issue in result.issues)
 
 
-def test_fail_closed_auxiliary_request_ref_is_sanitized_but_real_unknown_refs_still_block():
+def test_fail_closed_auxiliary_request_and_internal_refs_are_sanitized():
     dossier = make_dossier()
     output = CaseJudgeOutput(
         action='fail_closed',
         fail_closed_reasons=[
-            FailClosedReason(ref='FR1', reason_kind='insufficient_evidence', description='stop', related_refs=['BE1', 'REQ_TARGET_SPAN_']),
+            FailClosedReason(ref='FR1', reason_kind='insufficient_evidence', description='stop', related_refs=['BE1', 'REQ_TARGET_SPAN_', 'MDR2']),
             FailClosedReason(ref='FR2', reason_kind='insufficient_evidence', description='bad target', related_refs=['BE999']),
         ],
     )
 
     result = verify_judge_output(dossier, output)
 
+    assert result.passed is True
     assert any(issue.issue_code == 'auxiliary_ref_sanitized' for issue in result.issues)
-    assert any(issue.issue_code == 'unknown_ref' and issue.ref == 'FR2' for issue in result.issues)
-    assert not any(issue.issue_code == 'unknown_ref' and issue.ref == 'FR1' for issue in result.issues)
+    assert not any(issue.issue_code == 'unknown_ref' for issue in result.issues)
 
 
 def test_fail_closed_reason_may_reference_prior_evidence_batch_refs():

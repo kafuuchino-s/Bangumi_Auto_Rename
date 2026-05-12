@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from src.rename.case_agent.case_planner import build_child_workspace, verify_case_planning_output
+from src.rename.case_agent.case_planner import build_child_workspace, call_case_planner, verify_case_planning_output
 from src.rename.case_agent.models import (
     AssignmentIntent,
     BangumiItemCard,
@@ -36,6 +36,18 @@ class _AIClient:
         if not self.judge_outputs:
             raise RuntimeError('no more judge outputs')
         return self.judge_outputs.pop(0)
+
+
+class _RetryPlannerClient:
+    def __init__(self, outputs):
+        self.outputs = list(outputs)
+        self.prompts: list[str] = []
+
+    def call_case_planner(self, prompt: str, schema):
+        self.prompts.append(prompt)
+        if len(self.outputs) > 1:
+            return self.outputs.pop(0)
+        return self.outputs[0]
 
 
 def _workspace() -> CaseEvidenceWorkspace:
@@ -96,6 +108,32 @@ def test_case_planning_output_schema_is_strict():
         assert False, 'expected strict schema rejection'
     except Exception as exc:
         assert 'extra_forbidden' in str(exc)
+
+
+def test_case_planner_retries_provider_no_response_then_succeeds():
+    client = _RetryPlannerClient([None, None, CasePlanningOutput(action='process_as_one_case', summary='ok')])
+
+    result = call_case_planner(client, _workspace().to_dossier(round_context='case_planning'), max_provider_retries=2)
+
+    assert result.ok is True
+    assert result.output is not None and result.output.action == 'process_as_one_case'
+    assert len(client.prompts) == 3
+    assert result.request_audit is not None
+    assert result.request_audit['provider_retry_count'] == 2
+    assert len(result.request_audit['provider_retry_audits']) == 2
+
+
+def test_case_planner_provider_no_response_after_retries_is_stable_error():
+    client = _RetryPlannerClient([None, None, None])
+
+    result = call_case_planner(client, _workspace().to_dossier(round_context='case_planning'), max_provider_retries=2)
+
+    assert result.ok is False
+    assert result.output is None
+    assert 'no response' in result.error
+    assert result.request_audit is not None
+    assert result.request_audit['error_kind'] == 'provider_no_response'
+    assert result.request_audit['provider_retry_count'] == 2
 
 
 def test_split_verifier_accepts_exact_once_partition():

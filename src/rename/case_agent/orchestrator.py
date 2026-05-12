@@ -159,6 +159,124 @@ def run_local_bangumi_case_agent(
     def _result(*args, **kwargs) -> CaseAgentRunResult:
         return _with_planning_output(CaseAgentRunResult(*args, **kwargs))
 
+    def _budget_exhausted_fail_closed(
+        current_workspace: CaseEvidenceWorkspace,
+        action: str,
+        output: CaseJudgeOutput | None,
+        verifier_result: CaseVerifierResult | None,
+        *,
+        reason: str = 'budget_exhausted',
+    ) -> CaseAgentRunResult:
+        accounting, _accounting_verifier_result = _mapping_draft_accounting_result(current_workspace)
+        description_parts = [
+            reason,
+            f'evidence_batches={len(evidence_batches)}',
+            f'used_evidence_batches={int(getattr(current_workspace.budget, "used_evidence_batches", 0) or 0)}',
+            f'max_evidence_batches={int(getattr(current_workspace.budget, "max_evidence_batches", 0) or 0)}',
+        ]
+        if accounting is not None:
+            description_parts.extend([
+                f'unresolved_count={int(getattr(accounting, "unresolved_count", 0) or 0)}',
+                f'needs_more_evidence_file_count={int(getattr(accounting, "needs_more_evidence_file_count", 0) or 0)}',
+                f'unaligned_file_count={int(getattr(accounting, "unaligned_file_count", 0) or 0)}',
+            ])
+        fail_output = CaseJudgeOutput(
+            action='fail_closed',
+            fail_closed_reasons=[
+                FailClosedReason(
+                    ref='FR1',
+                    reason_kind='insufficient_evidence',
+                    description='; '.join(description_parts),
+                    related_refs=_open_rows_without_candidates(getattr(current_workspace, 'mapping_draft', None))[:8],
+                )
+            ],
+            summary='budget exhausted before accepted mapping',
+        )
+        fail_verifier = verify_judge_output(current_workspace.to_dossier(round_context='budget_exhausted_fail_closed'), fail_output)
+        audited_workspace = _workspace_with_judge_audit(current_workspace, {
+            'note': 'budget_exhausted_fail_closed',
+            'reason': reason,
+            'evidence_batch_count': len(evidence_batches),
+            'verifier_passed': bool(getattr(fail_verifier, 'passed', False)),
+        })
+        return _result(True, audited_workspace.header.case_id, 'fail_closed', 'fail_closed', fail_output, fail_verifier or verifier_result, audited_workspace, judge_outputs, evidence_batches, 'budget_exhausted', [*errors, 'budget_exhausted'])
+
+    def _no_new_evidence_fail_closed(
+        current_workspace: CaseEvidenceWorkspace,
+        *,
+        reason: str = 'no_new_evidence',
+        description: str = 'no new executable evidence remained before accepted mapping',
+    ) -> CaseAgentRunResult:
+        accounting, _accounting_verifier_result = _mapping_draft_accounting_result(current_workspace)
+        description_parts = [
+            reason,
+            description,
+            f'evidence_batches={len(evidence_batches)}',
+            f'used_evidence_batches={int(getattr(current_workspace.budget, "used_evidence_batches", 0) or 0)}',
+        ]
+        if accounting is not None:
+            description_parts.extend([
+                f'unresolved_count={int(getattr(accounting, "unresolved_count", 0) or 0)}',
+                f'needs_more_evidence_file_count={int(getattr(accounting, "needs_more_evidence_file_count", 0) or 0)}',
+                f'unaligned_file_count={int(getattr(accounting, "unaligned_file_count", 0) or 0)}',
+            ])
+        fail_output = CaseJudgeOutput(
+            action='fail_closed',
+            fail_closed_reasons=[
+                FailClosedReason(
+                    ref='FR1',
+                    reason_kind='insufficient_evidence',
+                    description='; '.join(description_parts),
+                    related_refs=[],
+                )
+            ],
+            summary='no new evidence before accepted mapping',
+        )
+        fail_verifier = verify_judge_output(current_workspace.to_dossier(round_context='no_new_evidence_fail_closed'), fail_output)
+        audited_workspace = _workspace_with_judge_audit(current_workspace, {
+            'note': 'no_new_evidence_fail_closed',
+            'reason': reason,
+            'evidence_batch_count': len(evidence_batches),
+            'verifier_passed': bool(getattr(fail_verifier, 'passed', False)),
+        })
+        return _result(True, audited_workspace.header.case_id, 'fail_closed', 'fail_closed', fail_output, fail_verifier, audited_workspace, judge_outputs, evidence_batches, 'no_new_evidence', [*errors, reason])
+
+    def _semantic_target_conflict_fail_closed(
+        current_workspace: CaseEvidenceWorkspace,
+        verifier_result: CaseVerifierResult,
+        *,
+        reason: str = 'verifier_rejected_unexecutable_verdict',
+    ) -> CaseAgentRunResult:
+        issues = list(getattr(verifier_result, 'issues', []) or [])
+        fail_output = CaseJudgeOutput(
+            action='fail_closed',
+            fail_closed_reasons=[
+                FailClosedReason(
+                    ref=f'FR{index}',
+                    reason_kind='contradiction',
+                    description=f'{str(getattr(issue, "issue_code", "") or "verifier_issue")}: {str(getattr(issue, "message", "") or reason)}',
+                    related_refs=list(getattr(issue, 'related_refs', []) or [])[:8],
+                )
+                for index, issue in enumerate(issues[:8], start=1)
+            ] or [
+                FailClosedReason(
+                    ref='FR1',
+                    reason_kind='contradiction',
+                    description=reason,
+                    related_refs=[],
+                )
+            ],
+            summary='semantic target conflict',
+        )
+        fail_verifier = verify_judge_output(current_workspace.to_dossier(round_context='semantic_target_conflict_fail_closed'), fail_output)
+        audited_workspace = _workspace_with_judge_audit(current_workspace, {
+            'note': 'semantic_target_conflict_fail_closed',
+            'reason': reason,
+            'source_verifier_issue_count': len(issues),
+            'verifier_passed': bool(getattr(fail_verifier, 'passed', False)),
+        })
+        return _result(True, audited_workspace.header.case_id, 'fail_closed', 'fail_closed', fail_output, fail_verifier, audited_workspace, judge_outputs, evidence_batches, 'semantic_target_conflict', [*errors, reason])
+
     if _planning_depth == 0:
         planning_phase = _run_case_planning_phase(
             workspace,
@@ -235,7 +353,7 @@ def run_local_bangumi_case_agent(
                     'mapping_draft_accounting': accounting.model_dump(mode='json') if hasattr(accounting, 'model_dump') else accounting,
                     'verifier_passed': bool(getattr(accounting_verifier_result, 'passed', False)) if accounting_verifier_result is not None else False,
                 })
-                return _result(True, workspace.header.case_id, 'fail_closed', 'fail_closed', fail_output, verifier_result, workspace, judge_outputs, evidence_batches, 'mapping_draft_accounting_unresolved', [f'unresolved_count={int(getattr(accounting, "unresolved_count", 0) or 0)}'])
+                return _result(True, workspace.header.case_id, 'fail_closed', 'fail_closed', fail_output, verifier_result, workspace, judge_outputs, evidence_batches, 'no_new_evidence', [f'unresolved_count={int(getattr(accounting, "unresolved_count", 0) or 0)}'])
         if decision.action != 'execute_evidence' or decision.planner_output is None:
             break
         planner_output = decision.planner_output
@@ -300,13 +418,8 @@ def run_local_bangumi_case_agent(
         is_final_round = bool(round_limit) and getattr(workspace.header, 'round_index', 0) >= max(0, round_limit - 1)
         if is_final_round and output.action == 'request_evidence':
             if workspace.previous_evidence_results or evidence_batches:
-                normalized_output = output.model_copy(update={'action': 'fail_closed', 'evidence_requests': [], 'summary': 'normalized from request_evidence on final opportunity'})
-                normalized_output = normalized_output.model_copy(update={'fail_closed_reasons': [FailClosedReason(ref='FR1', reason_kind='insufficient_evidence', description='insufficient_evidence_after_bounded_investigation: final opportunity exhausted', related_refs=[])]})
-                workspace = _workspace_with_judge_output_capture(workspace, normalized_output)
-                final_verifier_result = verify_judge_output(dossier, normalized_output)
-                return _result(True, workspace.header.case_id, 'fail_closed', 'fail_closed', normalized_output, final_verifier_result, workspace, judge_outputs, evidence_batches, 'no_usable_evidence_after_request', [*errors, 'no_usable_evidence_after_request'])
-            final_verifier_result = None
-            return _result(False, workspace.header.case_id, 'invalid', final_action, output.model_copy(update={'evidence_requests': []}), final_verifier_result, workspace, judge_outputs, evidence_batches, 'evidence_budget_exhausted', [*errors, 'evidence_budget_exhausted'])
+                return _no_new_evidence_fail_closed(workspace, reason='no_usable_evidence_after_request', description='final evidence request opportunity exhausted after prior investigation')
+            return _budget_exhausted_fail_closed(workspace, final_action, output.model_copy(update={'evidence_requests': []}), final_verifier_result, reason='final_round_request_evidence_without_prior_evidence')
 
         if round_kind == 'issue_response' and output.action == 'request_evidence':
             return _result(False, workspace.header.case_id, 'invalid', final_action, final_output, final_verifier_result, workspace, judge_outputs, evidence_batches, 'issue_response round cannot request evidence', [*errors, 'issue_response round cannot request evidence'])
@@ -318,15 +431,9 @@ def run_local_bangumi_case_agent(
             final_opportunity = bool(round_limit and getattr(workspace.header, 'round_index', 0) >= max(0, round_limit - 1))
             has_prior_evidence = bool(workspace.previous_evidence_results or evidence_batches)
             if normalize_fail_closed(final_request_evidence=True, prior_evidence=has_prior_evidence, exhausted=budget_exhausted, final_opportunity=final_opportunity):
-                normalized_output = output.model_copy(update={'action': 'fail_closed', 'evidence_requests': [], 'summary': 'normalized from request_evidence after bounded investigation'})
-                normalized_output = normalized_output.model_copy(update={'fail_closed_reasons': [FailClosedReason(ref='FR1', reason_kind='insufficient_evidence', description='insufficient_evidence_after_bounded_investigation: evidence budget exhausted after prior batches', related_refs=[])]})
-                workspace = _workspace_with_judge_output_capture(workspace, normalized_output)
-                final_output = normalized_output
-                final_action = 'fail_closed'
-                final_verifier_result = verify_judge_output(dossier, normalized_output)
-                return _result(True, workspace.header.case_id, 'fail_closed', final_action, final_output, final_verifier_result, workspace, judge_outputs, evidence_batches, 'no_usable_evidence_after_request', [*errors, 'no_usable_evidence_after_request'])
+                return _no_new_evidence_fail_closed(workspace, reason='no_usable_evidence_after_request', description='evidence budget exhausted after prior batches')
             if budget_exhausted:
-                return _result(False, workspace.header.case_id, 'invalid', final_action, final_output, final_verifier_result, workspace, judge_outputs, evidence_batches, 'evidence budget exhausted', [*errors, 'evidence budget exhausted'])
+                return _budget_exhausted_fail_closed(workspace, final_action, final_output, final_verifier_result, reason='evidence_budget_exhausted_before_request')
             raw_requests = list(output.evidence_requests or [])
             menu_request_ids = list(output.evidence_menu_request_ids or [])
             legacy_raw_request_count = len(raw_requests)
@@ -390,6 +497,14 @@ def run_local_bangumi_case_agent(
                     }
                 })
                 object.__setattr__(workspace, 'judge_request_audits', audits)
+                workspace = _workspace_with_judge_audit(workspace, {
+                    'note': 'unknown_menu_request_id_observed',
+                    'selected_menu_request_ids': selected_menu_request_ids,
+                    'unknown_menu_request_ids': unknown_menu_request_ids,
+                    'resolved_menu_request_count': resolved_menu_request_count,
+                    'has_prior_evidence': has_prior_evidence,
+                    'planner_batch_executed': planner_batch_executed,
+                })
                 if planner_batch_executed or has_prior_evidence:
                     workspace = _workspace_with_judge_audit(workspace, {
                         'note': 'stale_or_unknown_menu_request_ignored_after_planner',
@@ -404,7 +519,20 @@ def run_local_bangumi_case_agent(
                             if draft_result is not None:
                                 return _with_planning_output(draft_result)
                         continue
-                return _result(False, workspace.header.case_id, 'invalid', final_action, final_output, final_verifier_result, workspace, judge_outputs, evidence_batches, 'unknown_menu_request_id', [*errors, 'unknown_menu_request_id'])
+                fail_output = CaseJudgeOutput(
+                    action='fail_closed',
+                    fail_closed_reasons=[
+                        FailClosedReason(
+                            ref='FR1',
+                            reason_kind='insufficient_evidence',
+                            description='unknown_menu_request_id: requested menu ids were not executable in the refreshed evidence menu',
+                            related_refs=[],
+                        )
+                    ],
+                    summary='unknown menu request id blocked evidence execution',
+                )
+                fail_verifier = verify_judge_output(workspace.to_dossier(round_context='unknown_menu_request_fail_closed'), fail_output)
+                return _result(True, workspace.header.case_id, 'fail_closed', 'fail_closed', fail_output, fail_verifier, workspace, judge_outputs, evidence_batches, 'no_new_evidence', [*errors, 'unknown_menu_request_id'])
             normalized_requests, normalization_audits = normalize_evidence_requests(workspace, deduped_requests)
             workspace = _workspace_with_request_normalization_audits(workspace, normalization_audits)
             new_workspace, batch_result = broker.execute_batch(workspace, normalized_requests)
@@ -437,7 +565,7 @@ def run_local_bangumi_case_agent(
                 if no_usable_evidence:
                     reason = 'no_usable_evidence_after_request'
                     if round_kind == 'policy_retry' or workspace.previous_evidence_results:
-                        return _result(True, workspace.header.case_id, 'fail_closed', final_action, final_output, final_verifier_result, workspace, judge_outputs, evidence_batches, reason, [*errors, reason])
+                        return _no_new_evidence_fail_closed(workspace, reason=reason, description='evidence request returned no usable Bangumi/local target proof')
                     return _result(False, workspace.header.case_id, 'invalid', final_action, final_output, final_verifier_result, workspace, judge_outputs, evidence_batches, reason, [*errors, reason])
                 reason = 'evidence_batch_all_rejected' if rejected_count else 'evidence_batch_rejected'
                 return _result(False, workspace.header.case_id, 'invalid', final_action, final_output, final_verifier_result, workspace, judge_outputs, evidence_batches, reason, [*errors, reason])
@@ -445,7 +573,7 @@ def run_local_bangumi_case_agent(
                 workspace = _workspace_with_judge_output_capture(workspace, output)
                 workspace = workspace.with_seen_detail_refs([ref for rr in batch_result.request_results for ref in (getattr(rr, 'response_refs', []) or [])])
                 if workspace.budget.max_evidence_batches and workspace.budget.used_evidence_batches >= workspace.budget.max_evidence_batches:
-                    return _result(True, workspace.header.case_id, 'fail_closed', final_action, final_output, final_verifier_result, workspace, judge_outputs, evidence_batches, 'fail closed', errors)
+                    return _result(True, workspace.header.case_id, 'fail_closed', final_action, final_output, final_verifier_result, workspace, judge_outputs, evidence_batches, 'no_new_evidence', errors)
                 continue
             continue
 
@@ -462,7 +590,7 @@ def run_local_bangumi_case_agent(
                 if 'insufficient_evidence' in reason_kinds and recommended_requests and has_request_types and _fail_closed_has_legal_anchor(bounded, workspace) and 'no legal anchor' not in descriptions and 'request types unavailable' not in descriptions and 'budget exhausted' not in descriptions and 'cannot request evidence' not in descriptions:
                     guard = _structured_premature_guard_decision(workspace=workspace, dossier=dossier, output=output, round_kind=round_kind, triggered=True, allowed=False, reason='anchors_available_but_no_request', fail_closed_reason_kinds=list(reason_kinds))
                     workspace = _workspace_with_guard_decision(workspace, guard)
-                    return _result(False, workspace.header.case_id, 'invalid', final_action, final_output, final_verifier_result, workspace, judge_outputs, evidence_batches, 'policy_retry_refused_recommended_request', [*errors, 'policy_retry_refused_recommended_request', 'premature_fail_closed_requires_evidence_request'])
+                    return _no_new_evidence_fail_closed(workspace, reason='policy_retry_refused_recommended_request', description='policy retry still failed to produce executable evidence or accepted mapping')
             premature_reason = _premature_fail_closed_guard(workspace, dossier, output, round_kind=round_kind)
             if premature_reason == 'policy_retry_required':
                 if not policy_retry_used:
@@ -484,7 +612,13 @@ def run_local_bangumi_case_agent(
                     policy_retry_used = True
                     workspace = _workspace_with_policy_retry_round(workspace)
                     continue
-                return _result(False, workspace.header.case_id, 'invalid', final_action, final_output, final_verifier_result, workspace, judge_outputs, evidence_batches, summary, [*errors, 'output_budget_exceeded'])
+                fail_output = CaseJudgeOutput(
+                    action='fail_closed',
+                    fail_closed_reasons=[FailClosedReason(ref='FR1', reason_kind='insufficient_evidence', description=f'output_budget_exceeded: {oversized_reason}', related_refs=[])],
+                    summary='output budget exceeded before accepted mapping',
+                )
+                fail_verifier = verify_judge_output(dossier, fail_output)
+                return _result(True, workspace.header.case_id, 'fail_closed', 'fail_closed', fail_output, fail_verifier, workspace, judge_outputs, evidence_batches, 'no_new_evidence', [*errors, 'output_budget_exceeded'])
 
             final_output = effective_output
 
@@ -505,7 +639,7 @@ def run_local_bangumi_case_agent(
                 if 'contradictory_fail_closed_retry_used' not in (getattr(workspace, 'diagnostics', []) or []):
                     workspace = _workspace_preserving_state(workspace, diagnostics=[*workspace.diagnostics, 'contradictory_fail_closed_retry_used'])
                     continue
-                return _result(False, workspace.header.case_id, 'invalid', final_action, final_output, final_verifier_result, workspace, judge_outputs, evidence_batches, contradiction_reason, [*errors, contradiction_reason])
+                return _result(True, workspace.header.case_id, 'fail_closed', final_action, final_output, final_verifier_result, workspace, judge_outputs, evidence_batches, 'semantic_target_conflict', [*errors, contradiction_reason])
 
             verifier_result = verify_judge_output(dossier, effective_output)
             final_verifier_result = verifier_result
@@ -513,10 +647,10 @@ def run_local_bangumi_case_agent(
             if verifier_result.passed:
                 if effective_action == 'submit_verdict':
                     if any(intent.target_ref == 'UNALIGNED' for intent in effective_output.assignment_intents):
-                        return _result(True, workspace.header.case_id, 'fail_closed', final_action, final_output, final_verifier_result, workspace, judge_outputs, evidence_batches, 'fail closed', errors)
+                        return _result(True, workspace.header.case_id, 'fail_closed', final_action, final_output, final_verifier_result, workspace, judge_outputs, evidence_batches, 'no_new_evidence', errors)
                     return _result(True, workspace.header.case_id, 'accepted', final_action, final_output, final_verifier_result, workspace, judge_outputs, evidence_batches, 'accepted', errors)
                 if effective_action == 'fail_closed':
-                    return _result(True, workspace.header.case_id, 'fail_closed', final_action, final_output, final_verifier_result, workspace, judge_outputs, evidence_batches, 'fail closed', errors)
+                    return _result(True, workspace.header.case_id, 'fail_closed', final_action, final_output, final_verifier_result, workspace, judge_outputs, evidence_batches, 'no_new_evidence', errors)
             if effective_action == 'submit_verdict':
                 has_invalid_target = any(str(getattr(issue, 'issue_code', '')).endswith('invalid_target') for issue in verifier_result.issues)
                 has_duplicate_target = any(str(getattr(issue, 'issue_code', '')).endswith('duplicate_target') for issue in verifier_result.issues)
@@ -524,18 +658,18 @@ def run_local_bangumi_case_agent(
                 has_unaligned_not_accepted = any(str(getattr(issue, 'issue_code', '')).endswith('unaligned_not_accepted') for issue in verifier_result.issues)
                 if has_unaligned_not_accepted:
                     reason = 'verdict_contains_unaligned_target'
-                    return _result(True, workspace.header.case_id, 'fail_closed', final_action, final_output, final_verifier_result, workspace, judge_outputs, evidence_batches, reason, [*errors, reason])
+                    return _semantic_target_conflict_fail_closed(workspace, verifier_result, reason=reason)
                 if has_invalid_target or has_duplicate_target or has_coverage_gap:
                     if round_kind == 'evidence_rejudge' and workspace.previous_evidence_results:
                         reason = 'verifier_rejected_unexecutable_verdict'
                         workspace = _workspace_with_verifier_issues(workspace, verifier_result)
-                        return _result(True, workspace.header.case_id, 'fail_closed', final_action, final_output, final_verifier_result, workspace, judge_outputs, evidence_batches, reason, [*errors, reason])
+                        return _semantic_target_conflict_fail_closed(workspace, verifier_result, reason=reason)
                     if workspace.budget.max_issue_response_rounds and issue_response_used < workspace.budget.max_issue_response_rounds:
                         issue_response_used += 1
                         workspace = _workspace_with_verifier_issues(workspace, verifier_result)
                         continue
                     reason = 'verifier_rejected_unexecutable_verdict'
-                    return _result(False, workspace.header.case_id, 'fail_closed', final_action, final_output, final_verifier_result, workspace, judge_outputs, evidence_batches, reason, [*errors, reason])
+                    return _semantic_target_conflict_fail_closed(workspace, verifier_result, reason=reason)
                 if round_kind == 'issue_response':
                     return _result(False, workspace.header.case_id, 'invalid', final_action, final_output, final_verifier_result, workspace, judge_outputs, evidence_batches, 'issue_response still failed verifier', [*errors, 'issue_response still failed verifier'])
                 if is_final_round:
@@ -544,10 +678,10 @@ def run_local_bangumi_case_agent(
                         workspace = _workspace_with_verifier_issues(workspace, verifier_result)
                         continue
                     summary = _verifier_gap_summary(verifier_result)
-                    return _result(False, workspace.header.case_id, 'fail_closed', final_action, final_output, final_verifier_result, workspace, judge_outputs, evidence_batches, summary or 'coverage_gap_unresolved', [*errors, summary or 'coverage_gap_unresolved'])
+                    return _result(True, workspace.header.case_id, 'fail_closed', final_action, final_output, final_verifier_result, workspace, judge_outputs, evidence_batches, 'no_new_evidence', [*errors, summary or 'coverage_gap_unresolved'])
                 if workspace.budget.max_issue_response_rounds and issue_response_used >= workspace.budget.max_issue_response_rounds:
                     summary = _verifier_gap_summary(verifier_result)
-                    return _result(False, workspace.header.case_id, 'fail_closed', final_action, final_output, final_verifier_result, workspace, judge_outputs, evidence_batches, summary or 'issue response budget exhausted', [*errors, summary or 'issue response budget exhausted'])
+                    return _result(True, workspace.header.case_id, 'fail_closed', final_action, final_output, final_verifier_result, workspace, judge_outputs, evidence_batches, 'no_new_evidence', [*errors, summary or 'issue response budget exhausted'])
                 issue_response_used += 1
                 workspace = _workspace_with_verifier_issues(workspace, verifier_result)
                 continue
@@ -748,15 +882,28 @@ def _execute_planner_evidence_request(
         'raw_evidence_request_count': len(output.evidence_requests or []),
     })
     if unknown_menu_request_ids:
+        fail_output = CaseJudgeOutput(
+            action='fail_closed',
+            fail_closed_reasons=[
+                FailClosedReason(
+                    ref='FR1',
+                    reason_kind='insufficient_evidence',
+                    description='unknown_case_planning_menu_request_id: planner selected menu ids that are not executable in the current evidence menu',
+                    related_refs=[],
+                )
+            ],
+            summary='case planning evidence menu request was not executable',
+        )
+        verifier_result = verify_judge_output(workspace.to_dossier(round_context='case_planning_unknown_menu_request'), fail_output)
         return workspace, [], CaseAgentRunResult(
-            ok=False,
+            ok=True,
             case_id=workspace.header.case_id,
-            status='invalid',
-            final_action='case_planning',
-            final_output=None,
-            final_verifier_result=None,
+            status='fail_closed',
+            final_action='fail_closed',
+            final_output=fail_output,
+            final_verifier_result=verifier_result,
             final_workspace=workspace,
-            summary='unknown case planning menu request id',
+            summary='no_new_evidence',
             errors=['unknown_case_planning_menu_request_id'],
             planning_output=output,
         )
@@ -902,8 +1049,17 @@ def _run_split_child_cases(
         )
         child_results.append(child_result)
 
-    if any(result.status == 'error' for result in child_results):
-        first = next(result for result in child_results if result.status == 'error')
+    provider_error_children = [
+        result for result in child_results
+        if result.status == 'error'
+        and any('error_kind=provider_no_response' in str(err) for err in list(result.errors or []))
+    ]
+    hard_error_children = [
+        result for result in child_results
+        if result.status == 'error' and result not in provider_error_children
+    ]
+    if hard_error_children:
+        first = hard_error_children[0]
         return CaseAgentRunResult(
             ok=False,
             case_id=workspace.header.case_id,
@@ -919,8 +1075,13 @@ def _run_split_child_cases(
             child_results=child_results,
         )
 
-    if any(result.status == 'invalid' for result in child_results):
-        first = next(result for result in child_results if result.status == 'invalid')
+    hard_invalid_children = [
+        result for result in child_results
+        if result.status == 'invalid'
+        and result.summary not in {'budget_exhausted', 'no_new_evidence'}
+    ]
+    if hard_invalid_children:
+        first = hard_invalid_children[0]
         return CaseAgentRunResult(
             ok=False,
             case_id=workspace.header.case_id,
@@ -936,13 +1097,28 @@ def _run_split_child_cases(
             child_results=child_results,
         )
 
-    if any(result.status == 'fail_closed' for result in child_results):
+    if any(result.status in {'fail_closed', 'invalid'} for result in child_results) or provider_error_children:
         reasons = []
         for index, child in enumerate(child_results, start=1):
-            if child.status != 'fail_closed':
+            if child.status not in {'fail_closed', 'invalid', 'error'}:
                 continue
-            reasons.append(FailClosedReason(ref=f'FR{index}', reason_kind='insufficient_evidence', description=f'child case {child.case_id} failed closed: {child.summary}', related_refs=[]))
-        fail_output = CaseJudgeOutput(action='fail_closed', fail_closed_reasons=reasons or [FailClosedReason(ref='FR1', reason_kind='insufficient_evidence', description='one or more split child cases failed closed', related_refs=[])], summary='split child case failed closed')
+            child_accounting = compute_mapping_draft_accounting(getattr(child.final_workspace, 'mapping_draft', None), child.final_workspace) if getattr(child.final_workspace, 'mapping_draft', None) is not None else None
+            description_parts = [
+                f'child_case_unresolved: child={child.case_id}',
+                f'status={child.status}',
+                f'summary={child.summary}',
+            ]
+            if child_accounting is not None:
+                description_parts.extend([
+                    f'unresolved_count={int(getattr(child_accounting, "unresolved_count", 0) or 0)}',
+                    f'needs_more_evidence_file_count={int(getattr(child_accounting, "needs_more_evidence_file_count", 0) or 0)}',
+                    f'unaligned_file_count={int(getattr(child_accounting, "unaligned_file_count", 0) or 0)}',
+                ])
+            child_error_kinds = [str(err) for err in list(child.errors or []) if str(err).startswith('error_kind=')]
+            if child_error_kinds:
+                description_parts.extend(child_error_kinds)
+            reasons.append(FailClosedReason(ref=f'FR{index}', reason_kind='insufficient_evidence', description='; '.join(description_parts), related_refs=[]))
+        fail_output = CaseJudgeOutput(action='fail_closed', fail_closed_reasons=reasons or [FailClosedReason(ref='FR1', reason_kind='insufficient_evidence', description='child_case_unresolved: one or more split child cases failed closed', related_refs=[])], summary='child_case_unresolved')
         verifier_result = verify_judge_output(workspace.to_dossier(round_context='case_planning'), fail_output)
         return CaseAgentRunResult(
             ok=True,
@@ -953,7 +1129,7 @@ def _run_split_child_cases(
             final_verifier_result=verifier_result,
             final_workspace=workspace,
             evidence_batches=[batch for result in child_results for batch in result.evidence_batches],
-            summary='split child case failed closed',
+            summary='child_case_unresolved',
             errors=[err for result in child_results for err in result.errors],
             planning_output=output,
             child_results=child_results,
@@ -1063,11 +1239,29 @@ def _verifier_gap_summary(verifier_result: CaseVerifierResult) -> str:
 
 def _finish_on_round_limit(workspace: CaseEvidenceWorkspace, final_action: str, final_output: CaseJudgeOutput | None, final_verifier_result: CaseVerifierResult | None, judge_outputs: list[CaseJudgeOutput], evidence_batches: list[EvidenceBatchResult], errors: list[str]) -> CaseAgentRunResult:
     if final_output is not None and final_action == 'request_evidence':
-        return CaseAgentRunResult(False, workspace.header.case_id, 'invalid', final_action, final_output.model_copy(update={'evidence_requests': []}), final_verifier_result, workspace, judge_outputs, evidence_batches, 'evidence_budget_exhausted', [*errors, 'evidence_budget_exhausted'])
+        accounting = compute_mapping_draft_accounting(getattr(workspace, 'mapping_draft', None), workspace) if getattr(workspace, 'mapping_draft', None) is not None else None
+        description = [
+            'budget_exhausted',
+            f'evidence_batches={len(evidence_batches)}',
+            f'used_evidence_batches={int(getattr(workspace.budget, "used_evidence_batches", 0) or 0)}',
+            f'max_evidence_batches={int(getattr(workspace.budget, "max_evidence_batches", 0) or 0)}',
+        ]
+        if accounting is not None:
+            description.extend([
+                f'unresolved_count={int(getattr(accounting, "unresolved_count", 0) or 0)}',
+                f'needs_more_evidence_file_count={int(getattr(accounting, "needs_more_evidence_file_count", 0) or 0)}',
+            ])
+        fail_output = CaseJudgeOutput(
+            action='fail_closed',
+            fail_closed_reasons=[FailClosedReason(ref='FR1', reason_kind='insufficient_evidence', description='; '.join(description), related_refs=[])],
+            summary='budget exhausted before accepted mapping',
+        )
+        verifier_result = verify_judge_output(workspace.to_dossier(round_context='round_limit_budget_exhausted'), fail_output)
+        return CaseAgentRunResult(True, workspace.header.case_id, 'fail_closed', 'fail_closed', fail_output, verifier_result, workspace, judge_outputs, evidence_batches, 'budget_exhausted', [*errors, 'budget_exhausted'])
     if final_output is not None and final_action == 'submit_verdict' and final_verifier_result is not None:
         summary = _verifier_gap_summary(final_verifier_result)
         return CaseAgentRunResult(False, workspace.header.case_id, 'fail_closed', final_action, final_output, final_verifier_result, workspace, judge_outputs, evidence_batches, summary, [*errors, summary])
-    return CaseAgentRunResult(False, workspace.header.case_id, 'invalid', final_action, final_output, final_verifier_result, workspace, judge_outputs, evidence_batches, 'coverage_gap_unresolved', [*errors, 'coverage_gap_unresolved'])
+    return CaseAgentRunResult(True, workspace.header.case_id, 'fail_closed', final_action, final_output, final_verifier_result, workspace, judge_outputs, evidence_batches, 'coverage_gap_unresolved', [*errors, 'coverage_gap_unresolved'])
 
 
 def _detail_equivalent_span_refs(workspace: CaseEvidenceWorkspace) -> list[str]:
@@ -1516,7 +1710,8 @@ def _try_mapping_draft_editor_acceptance(workspace: CaseEvidenceWorkspace, ai_cl
         reason = 'mapping_draft_incomplete_local_coverage'
         return CaseAgentRunResult(False, workspace.header.case_id, 'invalid', 'submit_verdict', None, None, workspace, judge_outputs, evidence_batches, reason, [reason])
 
-    editor_result = call_mapping_draft_editor(ai_client, dossier, draft, round_kind='mapping_draft_edit')
+    editor_result = call_mapping_draft_editor(ai_client, dossier, draft, round_kind='mapping_draft_edit', max_provider_retries=0)
+    workspace = _workspace_with_judge_audit(workspace, getattr(editor_result, 'request_audit', None))
     workspace = _workspace_with_judge_audit(workspace, {
         'note': 'mapping_draft_editor_called',
         'ok': editor_result.ok,
@@ -1628,14 +1823,13 @@ def _try_mapping_draft_editor_acceptance(workspace: CaseEvidenceWorkspace, ai_cl
         verifier_result = CaseVerifierResult(passed=False, issues=patch_issues, summary='mapping draft comparison conflict')
         fail_output = CaseJudgeOutput(
             action='fail_closed',
-            findings=list(output.findings or []),
-            candidate_comparisons=list(output.candidate_comparisons or []),
+            findings=[],
+            candidate_comparisons=[],
             fail_closed_reasons=[FailClosedReason(ref='FR1', reason_kind='contradiction', description='mapping draft comparison conflicts with selected patch', related_refs=[])],
-            self_checks=list(output.self_checks or []),
             summary='mapping draft comparison conflict',
         )
         verifier_result = verify_judge_output(dossier, fail_output)
-        return CaseAgentRunResult(True, workspace.header.case_id, 'fail_closed', 'fail_closed', fail_output, verifier_result, workspace, judge_outputs, evidence_batches, 'mapping_draft_comparison_conflict', ['mapping_draft_comparison_conflict'])
+        return CaseAgentRunResult(True, workspace.header.case_id, 'fail_closed', 'fail_closed', fail_output, verifier_result, workspace, judge_outputs, evidence_batches, 'semantic_target_conflict', ['mapping_draft_comparison_conflict'])
     updated_draft, patch_issues = apply_mapping_patches(draft, editor_patches, dossier)
     workspace = _workspace_with_mapping_draft(workspace, updated_draft, patches=editor_patches, candidate_comparisons=list(output.candidate_comparisons or []), note='mapping_draft_editor_patches_applied')
     if patch_issues:
@@ -1712,14 +1906,13 @@ def _try_mapping_draft_editor_acceptance(workspace: CaseEvidenceWorkspace, ai_cl
         verifier_result = CaseVerifierResult(passed=False, issues=patch_issues, summary='mapping draft patch rejected')
         fail_output = CaseJudgeOutput(
             action='fail_closed',
-            findings=list(output.findings or []),
-            candidate_comparisons=list(output.candidate_comparisons or []),
-            fail_closed_reasons=[FailClosedReason(ref='FR1', reason_kind='insufficient_evidence', description='mapping draft patch rejected by mechanical validator', related_refs=[issue.ref for issue in patch_issues if getattr(issue, 'ref', '')])],
-            self_checks=list(output.self_checks or []),
+            findings=[],
+            candidate_comparisons=[],
+            fail_closed_reasons=[FailClosedReason(ref='FR1', reason_kind='insufficient_evidence', description='mapping draft patch rejected by mechanical validator: ' + ','.join(_dedupe_preserve_order([str(getattr(issue, 'issue_code', '') or '') for issue in patch_issues])), related_refs=[])],
             summary='mapping draft patch rejected',
         )
         verifier_result = verify_judge_output(dossier, fail_output)
-        return CaseAgentRunResult(True, workspace.header.case_id, 'fail_closed', 'fail_closed', fail_output, verifier_result, workspace, judge_outputs, evidence_batches, 'mapping_draft_patch_rejected', ['mapping_draft_patch_rejected'])
+        return CaseAgentRunResult(True, workspace.header.case_id, 'fail_closed', 'fail_closed', fail_output, verifier_result, workspace, judge_outputs, evidence_batches, 'no_new_evidence', ['mapping_draft_patch_rejected'])
 
     return _finish_mapping_draft_after_patches(
         workspace,
@@ -1770,7 +1963,6 @@ def _finish_mapping_draft_after_patches(workspace: CaseEvidenceWorkspace, dossie
                             related_refs=pending_special[:8],
                         )
                     ],
-                    self_checks=list(output.self_checks or []),
                     summary='special evidence pending after duplicate target conflict',
                 )
                 verifier_result = verify_judge_output(dossier, fail_output)
@@ -1813,11 +2005,10 @@ def _finish_mapping_draft_after_patches(workspace: CaseEvidenceWorkspace, dossie
                     )
                     for issue in accounting_issues
                 ],
-                self_checks=list(output.self_checks or []),
                 summary='mapping draft target conflict',
             )
             verifier_result = verify_judge_output(dossier, fail_output)
-            return CaseAgentRunResult(True, workspace.header.case_id, 'fail_closed', 'fail_closed', fail_output, verifier_result, workspace, judge_outputs, evidence_batches, 'mapping_draft_target_conflict', ['mapping_draft_target_conflict'])
+            return CaseAgentRunResult(True, workspace.header.case_id, 'fail_closed', 'fail_closed', fail_output, verifier_result, workspace, judge_outputs, evidence_batches, 'semantic_target_conflict', ['mapping_draft_target_conflict'])
         invalid = any(code in invalid_codes for code in accounting_issue_codes)
         if invalid:
             verifier_result = accounting_verifier_result
@@ -1826,7 +2017,6 @@ def _finish_mapping_draft_after_patches(workspace: CaseEvidenceWorkspace, dossie
                 findings=list(output.findings or []),
                 candidate_comparisons=list(output.candidate_comparisons or []),
                 fail_closed_reasons=[FailClosedReason(ref=issue.ref or 'FR1', reason_kind='insufficient_evidence' if getattr(issue, 'issue_code', '') != 'duplicate_target' else 'unknown', description=getattr(issue, 'message', '') or 'mapping draft accounting conflict', related_refs=[issue.ref] if getattr(issue, 'ref', '') else []) for issue in accounting_issues],
-                self_checks=list(output.self_checks or []),
                 summary='mapping draft accounting invalid',
             )
             return CaseAgentRunResult(False, workspace.header.case_id, 'invalid', 'fail_closed', fail_output, verifier_result, workspace, judge_outputs, evidence_batches, 'mapping_draft_accounting_invalid', ['mapping_draft_accounting_invalid'])
@@ -1878,14 +2068,13 @@ def _finish_mapping_draft_after_patches(workspace: CaseEvidenceWorkspace, dossie
                     reasons.append(FailClosedReason(ref='FR3', reason_kind='insufficient_evidence', description=f'unaligned_file_count={int(getattr(accounting, "unaligned_file_count", 0) or 0)}', related_refs=[]))
             fail_output = CaseJudgeOutput(
                 action='fail_closed',
-                findings=list(output.findings or []),
-                candidate_comparisons=list(output.candidate_comparisons or []),
+                findings=[],
+                candidate_comparisons=[],
                 fail_closed_reasons=reasons,
-                self_checks=list(output.self_checks or []),
                 summary='mapping draft accounting unresolved',
             )
             verifier_result = verify_judge_output(dossier, fail_output)
-            return CaseAgentRunResult(True, workspace.header.case_id, 'fail_closed', 'fail_closed', fail_output, verifier_result, workspace, judge_outputs, evidence_batches, 'mapping_draft_accounting_unresolved', [*([f'unresolved_count={getattr(accounting, "unresolved_count", 0)}'] if int(getattr(accounting, 'unresolved_count', 0) or 0) > 0 else []), *([f'needs_more_evidence_file_count={getattr(accounting, "needs_more_evidence_file_count", 0)}'] if int(getattr(accounting, 'needs_more_evidence_file_count', 0) or 0) > 0 else []), *([f'unaligned_file_count={getattr(accounting, "unaligned_file_count", 0)}'] if int(getattr(accounting, 'unaligned_file_count', 0) or 0) > 0 else [])])
+            return CaseAgentRunResult(True, workspace.header.case_id, 'fail_closed', 'fail_closed', fail_output, verifier_result, workspace, judge_outputs, evidence_batches, 'no_new_evidence', [*([f'unresolved_count={getattr(accounting, "unresolved_count", 0)}'] if int(getattr(accounting, 'unresolved_count', 0) or 0) > 0 else []), *([f'needs_more_evidence_file_count={getattr(accounting, "needs_more_evidence_file_count", 0)}'] if int(getattr(accounting, 'needs_more_evidence_file_count', 0) or 0) > 0 else []), *([f'unaligned_file_count={getattr(accounting, "unaligned_file_count", 0)}'] if int(getattr(accounting, 'unaligned_file_count', 0) or 0) > 0 else [])])
 
     final_comparison_issues = _final_special_singleton_comparison_issues(dossier, updated_draft, output)
     if final_comparison_issues:
@@ -1924,8 +2113,8 @@ def _finish_mapping_draft_after_patches(workspace: CaseEvidenceWorkspace, dossie
             return structural_result
         fail_output = CaseJudgeOutput(
             action='fail_closed',
-            findings=list(output.findings or []),
-            candidate_comparisons=list(output.candidate_comparisons or []),
+            findings=[],
+            candidate_comparisons=[],
             fail_closed_reasons=[
                 FailClosedReason(
                     ref=issue.ref or 'FR1',
@@ -1935,11 +2124,10 @@ def _finish_mapping_draft_after_patches(workspace: CaseEvidenceWorkspace, dossie
                 )
                 for issue in final_comparison_issues
             ],
-            self_checks=list(output.self_checks or []),
             summary='mapping draft special singleton comparison conflict',
         )
         verifier_result = verify_judge_output(dossier, fail_output)
-        return CaseAgentRunResult(True, workspace.header.case_id, 'fail_closed', 'fail_closed', fail_output, verifier_result, workspace, judge_outputs, evidence_batches, 'mapping_draft_special_comparison_conflict', ['mapping_draft_special_comparison_conflict'])
+        return CaseAgentRunResult(True, workspace.header.case_id, 'fail_closed', 'fail_closed', fail_output, verifier_result, workspace, judge_outputs, evidence_batches, 'semantic_target_conflict', ['mapping_draft_special_comparison_conflict'])
 
     expanded, expand_issues = expand_mapping_draft(dossier, updated_draft)
     if expand_issues:
@@ -1980,8 +2168,8 @@ def _finish_mapping_draft_after_patches(workspace: CaseEvidenceWorkspace, dossie
         verifier_result = CaseVerifierResult(passed=False, issues=expand_issues, summary='mapping draft expansion failed')
         fail_output = CaseJudgeOutput(
             action='fail_closed',
-            findings=list(output.findings or []),
-            candidate_comparisons=list(output.candidate_comparisons or []),
+            findings=[],
+            candidate_comparisons=[],
             fail_closed_reasons=[
                 FailClosedReason(
                     ref='FR1',
@@ -1990,20 +2178,18 @@ def _finish_mapping_draft_after_patches(workspace: CaseEvidenceWorkspace, dossie
                     related_refs=_dedupe_preserve_order([ref for issue in expand_issues for ref in list(getattr(issue, 'related_refs', []) or []) if ref])[:8],
                 )
             ],
-            self_checks=list(output.self_checks or []),
             summary='mapping draft expansion failed',
         )
         verifier_result = verify_judge_output(dossier, fail_output)
-        return CaseAgentRunResult(True, workspace.header.case_id, 'fail_closed', 'fail_closed', fail_output, verifier_result, workspace, judge_outputs, evidence_batches, 'mapping_draft_expansion_failed', ['mapping_draft_expansion_failed'])
+        return CaseAgentRunResult(True, workspace.header.case_id, 'fail_closed', 'fail_closed', fail_output, verifier_result, workspace, judge_outputs, evidence_batches, 'semantic_target_conflict', ['mapping_draft_expansion_failed'])
 
     if not expanded:
         if output.fail_closed_reasons:
             fail_output = CaseJudgeOutput(
                 action='fail_closed',
-                findings=list(output.findings or []),
-                candidate_comparisons=list(output.candidate_comparisons or []),
+                findings=[],
+                candidate_comparisons=[],
                 fail_closed_reasons=list(output.fail_closed_reasons or []),
-                self_checks=list(output.self_checks or []),
                 summary='mapping draft editor unresolved',
             )
             verifier_result = verify_judge_output(dossier, fail_output)

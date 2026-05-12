@@ -103,7 +103,7 @@ def test_mapping_draft_allows_complete_coverage(monkeypatch):
             self.error = 'no-op'
             self.raw_response = ''
 
-    def _call_editor(ai_client, dossier, draft, *, round_kind='draft_edit'):
+    def _call_editor(ai_client, dossier, draft, *, round_kind='draft_edit', max_provider_retries=0):
         called['round_kind'] = round_kind
         called['draft_rows'] = len(draft.rows)
         return _EditorOutput()

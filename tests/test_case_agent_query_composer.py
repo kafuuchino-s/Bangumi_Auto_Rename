@@ -46,6 +46,28 @@ def test_query_composer_materializes_agent_composed_qc_cards():
     assert result.request_audit['composed_query_count'] == 1
 
 
+def test_query_composer_provider_no_response_falls_back_to_empty_query_shell():
+    workspace = CaseEvidenceWorkspace.from_cards(
+        header=CaseHeader(case_id='CASE-QC-NO-RESPONSE'),
+        budget=CaseBudget(),
+        contract=CaseContract(main_file_refs=['LF1'], allowed_file_refs=['LF1']),
+        local_files=[LocalFileCard(ref='LF1', path='Show 01.mkv', is_main=True)],
+        query_cards=[QueryCard(ref='SQ1', query_text='Show', query_kind='subject_search', query_origin='local_raw', source_refs=['LF1'])],
+    )
+    client = FakeQueryComposerClient([None, None, None])
+
+    result = call_query_composer(client, workspace.to_dossier(round_context='query_composer'), max_provider_retries=2)
+
+    assert result.ok is True
+    assert result.output is not None
+    assert result.query_cards == []
+    assert result.request_audit is not None
+    assert result.request_audit['fallback_used'] is True
+    assert result.request_audit['fallback_reason'] == 'provider_no_response'
+    assert result.request_audit['provider_retry_count'] == 2
+    assert len(client.prompts) == 3
+
+
 def test_query_composer_rejects_hidden_source_refs():
     workspace = CaseEvidenceWorkspace.from_cards(
         header=CaseHeader(case_id='CASE-QC-2'),

@@ -85,7 +85,11 @@ def _call_ai_with_schema(ai_client: object, prompt: str) -> object:
     raise AttributeError('ai_client does not provide a case planner transport')
 
 
-def call_case_planner(ai_client: object, dossier: CaseDossier) -> CasePlanningCallResult:
+def _provider_retry_delay(attempt_index: int) -> None:
+    time.sleep(min(0.2, 0.05 * max(1, attempt_index)))
+
+
+def call_case_planner(ai_client: object, dossier: CaseDossier, *, max_provider_retries: int = 2) -> CasePlanningCallResult:
     prompt = render_case_planner_prompt(dossier)
     started = time.time()
     audit: dict[str, object] = {
@@ -107,10 +111,28 @@ def call_case_planner(ai_client: object, dossier: CaseDossier) -> CasePlanningCa
             elapsed_ms=0,
             request_audit={**audit, 'actual_interface': 'fallback', 'fallback_used': True},
         )
-    try:
-        response = _call_ai_with_schema(ai_client, prompt)
+    retry_audits: list[dict[str, object]] = []
+    attempts = max(1, int(max_provider_retries or 0) + 1)
+    last_response: object | None = None
+    for attempt in range(1, attempts + 1):
+        try:
+            response = _call_ai_with_schema(ai_client, prompt)
+        except Exception as exc:
+            return CasePlanningCallResult(
+                ok=False,
+                output=None,
+                prompt=prompt,
+                error=f'case planner call failed: {exc}',
+                elapsed_ms=int((time.time() - started) * 1000),
+                request_audit={**audit, 'error_kind': 'call_failed', 'error_message': str(exc), 'provider_retry_count': attempt - 1, 'provider_retry_audits': retry_audits},
+            )
+        last_response = response
         raw_response = _extract_response_content(response)
         if raw_response is None:
+            retry_audits.append({'attempt': attempt, 'error_kind': 'provider_no_response', 'error_message': 'provider returned None'})
+            if attempt < attempts:
+                _provider_retry_delay(attempt)
+                continue
             return CasePlanningCallResult(
                 ok=False,
                 output=None,
@@ -118,7 +140,7 @@ def call_case_planner(ai_client: object, dossier: CaseDossier) -> CasePlanningCa
                 error='case planner no response: provider returned None',
                 raw_response=response,
                 elapsed_ms=int((time.time() - started) * 1000),
-                request_audit={**audit, 'error_kind': 'provider_no_response', 'error_message': 'provider returned None'},
+                request_audit={**audit, 'error_kind': 'provider_no_response', 'error_message': 'provider returned None', 'provider_retry_count': attempt - 1, 'provider_retry_audits': retry_audits},
             )
         if isinstance(raw_response, CasePlanningOutput):
             output = raw_response
@@ -133,7 +155,7 @@ def call_case_planner(ai_client: object, dossier: CaseDossier) -> CasePlanningCa
                     error=f'case planner schema parse error: {exc}',
                     raw_response=response,
                     elapsed_ms=int((time.time() - started) * 1000),
-                    request_audit={**audit, 'error_kind': 'schema_parse_error', 'error_message': str(exc)},
+                    request_audit={**audit, 'error_kind': 'schema_parse_error', 'error_message': str(exc), 'provider_retry_count': attempt - 1, 'provider_retry_audits': retry_audits},
                 )
         return CasePlanningCallResult(
             ok=True,
@@ -148,17 +170,19 @@ def call_case_planner(ai_client: object, dossier: CaseDossier) -> CasePlanningCa
                 'split_case_count': len(output.split_cases),
                 'evidence_request_count': len(output.evidence_requests),
                 'evidence_menu_request_count': len(output.evidence_menu_request_ids),
+                'provider_retry_count': attempt - 1,
+                'provider_retry_audits': retry_audits,
             },
         )
-    except Exception as exc:
-        return CasePlanningCallResult(
-            ok=False,
-            output=None,
-            prompt=prompt,
-            error=f'case planner call failed: {exc}',
-            elapsed_ms=int((time.time() - started) * 1000),
-            request_audit={**audit, 'error_kind': 'call_failed', 'error_message': str(exc)},
-        )
+    return CasePlanningCallResult(
+        ok=False,
+        output=None,
+        prompt=prompt,
+        error='case planner no response: provider returned None',
+        raw_response=last_response,
+        elapsed_ms=int((time.time() - started) * 1000),
+        request_audit={**audit, 'error_kind': 'provider_no_response', 'error_message': 'provider returned None', 'provider_retry_count': max(0, attempts - 1), 'provider_retry_audits': retry_audits},
+    )
 
 
 def verify_case_planning_output(dossier: CaseDossier, output: CasePlanningOutput) -> CaseVerifierResult:

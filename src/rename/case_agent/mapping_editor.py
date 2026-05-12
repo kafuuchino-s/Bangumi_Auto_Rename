@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import re
+import time
 from dataclasses import dataclass
 from importlib import resources
 from typing import Any
@@ -20,6 +21,7 @@ class MappingDraftEditorCallResult:
     prompt: str
     error: str
     raw_response: object | None = None
+    request_audit: dict[str, object] | None = None
 
 
 def _jsonable(value: object) -> object:
@@ -503,17 +505,45 @@ def _call_ai_with_schema(ai_client: object, prompt: str, schema: type[MappingDra
     raise AttributeError('ai_client does not provide a schema-aware mapping draft editor call method')
 
 
-def call_mapping_draft_editor(ai_client: object, dossier: CaseDossier, draft: MappingDraft, *, round_kind: str = 'draft_edit') -> MappingDraftEditorCallResult:
+def _provider_retry_delay(attempt_index: int) -> None:
+    time.sleep(min(0.2, 0.05 * max(1, attempt_index)))
+
+
+def call_mapping_draft_editor(ai_client: object, dossier: CaseDossier, draft: MappingDraft, *, round_kind: str = 'draft_edit', max_provider_retries: int = 2) -> MappingDraftEditorCallResult:
     prompt = render_mapping_draft_editor_prompt(dossier, draft, round_kind=round_kind)
-    try:
-        response = _call_ai_with_schema(ai_client, prompt, MappingDraftEditorOutput)
+    retry_audits: list[dict[str, object]] = []
+    attempts = max(1, int(max_provider_retries or 0) + 1)
+    for attempt in range(1, attempts + 1):
+        try:
+            response = _call_ai_with_schema(ai_client, prompt, MappingDraftEditorOutput)
+        except Exception as exc:
+            return MappingDraftEditorCallResult(
+                ok=False,
+                output=None,
+                prompt=prompt,
+                error=f'mapping draft editor call failed: {exc}',
+                raw_response=None,
+                request_audit={'round_kind': round_kind, 'call_name': 'call_mapping_draft_editor', 'error_kind': 'call_failed', 'error_message': str(exc), 'provider_retry_count': attempt - 1, 'provider_retry_audits': retry_audits},
+            )
         raw_response = getattr(response, 'content', response)
+        if raw_response is None:
+            retry_audits.append({'attempt': attempt, 'error_kind': 'provider_no_response', 'error_message': 'provider returned None'})
+            if attempt < attempts:
+                _provider_retry_delay(attempt)
+                continue
+            return MappingDraftEditorCallResult(
+                ok=False,
+                output=None,
+                prompt=prompt,
+                error='mapping draft editor no response: provider returned None',
+                raw_response=response,
+                request_audit={'round_kind': round_kind, 'call_name': 'call_mapping_draft_editor', 'error_kind': 'provider_no_response', 'error_message': 'provider returned None', 'provider_retry_count': attempt - 1, 'provider_retry_audits': retry_audits},
+            )
         if isinstance(raw_response, MappingDraftEditorOutput):
-            return MappingDraftEditorCallResult(ok=True, output=raw_response, prompt=prompt, error='', raw_response=response)
+            return MappingDraftEditorCallResult(ok=True, output=raw_response, prompt=prompt, error='', raw_response=response, request_audit={'round_kind': round_kind, 'call_name': 'call_mapping_draft_editor', 'provider_retry_count': attempt - 1, 'provider_retry_audits': retry_audits})
         try:
             output = MappingDraftEditorOutput.model_validate_json(raw_response) if isinstance(raw_response, str) else MappingDraftEditorOutput.model_validate(raw_response)
         except ValidationError as exc:
-            return MappingDraftEditorCallResult(ok=False, output=None, prompt=prompt, error=f'mapping draft editor schema parse error: {exc}', raw_response=response)
-        return MappingDraftEditorCallResult(ok=True, output=output, prompt=prompt, error='', raw_response=response)
-    except Exception as exc:
-        return MappingDraftEditorCallResult(ok=False, output=None, prompt=prompt, error=f'mapping draft editor call failed: {exc}', raw_response=None)
+            return MappingDraftEditorCallResult(ok=False, output=None, prompt=prompt, error=f'mapping draft editor schema parse error: {exc}', raw_response=response, request_audit={'round_kind': round_kind, 'call_name': 'call_mapping_draft_editor', 'error_kind': 'schema_parse_error', 'error_message': str(exc), 'provider_retry_count': attempt - 1, 'provider_retry_audits': retry_audits})
+        return MappingDraftEditorCallResult(ok=True, output=output, prompt=prompt, error='', raw_response=response, request_audit={'round_kind': round_kind, 'call_name': 'call_mapping_draft_editor', 'provider_retry_count': attempt - 1, 'provider_retry_audits': retry_audits})
+    return MappingDraftEditorCallResult(ok=False, output=None, prompt=prompt, error='mapping draft editor no response: provider returned None', raw_response=None, request_audit={'round_kind': round_kind, 'call_name': 'call_mapping_draft_editor', 'error_kind': 'provider_no_response', 'error_message': 'provider returned None', 'provider_retry_count': max(0, attempts - 1), 'provider_retry_audits': retry_audits})

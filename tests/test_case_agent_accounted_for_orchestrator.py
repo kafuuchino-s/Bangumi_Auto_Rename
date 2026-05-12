@@ -134,7 +134,7 @@ def test_editor_patches_mapped_plus_needs_more_evidence_fail_closed(monkeypatch)
 
     assert result is not None and result.status == 'fail_closed'
     assert result.status == 'fail_closed'
-    assert result.summary == 'mapping_draft_accounting_unresolved'
+    assert result.summary == 'no_new_evidence'
     assert result.final_output is not None and result.final_output.action == 'fail_closed'
     assert any('unresolved_count=' in err for err in result.errors)
     assert result.final_output.fail_closed_reasons[0].ref == 'R1'
@@ -172,9 +172,40 @@ def test_invalid_patch_fail_closes_with_verified_final_output(monkeypatch):
     result = _try_mapping_draft_editor_acceptance(workspace, FakeAIClient(editor_output), [], [])
 
     assert result is not None and result.status == 'fail_closed'
-    assert result.summary == 'mapping_draft_patch_rejected'
+    assert result.summary == 'no_new_evidence'
     assert result.final_verifier_result is not None and result.final_verifier_result.passed is True
     assert any(a.get('note') == 'mapping_draft_patch_issues' for a in result.final_workspace.judge_request_audits if isinstance(a, dict))
+
+
+def test_invalid_patch_fail_closed_output_is_slim_even_with_large_editor_context(monkeypatch):
+    workspace = CaseEvidenceWorkspace.from_cards(
+        header=CaseHeader(case_id='CASE-PATCH-SLIM'),
+        budget=CaseBudget(max_judge_rounds=2, max_evidence_batches=0, max_issue_response_rounds=0),
+        contract=CaseContract(main_file_refs=['LF1', 'LF2'], allowed_file_refs=['LF1', 'LF2'], visible_target_refs=['BE1']),
+        local_files=[LocalFileCard(ref='LF1', is_main=True), LocalFileCard(ref='LF2', is_main=True)],
+        bangumi_items=[BangumiItemCard(ref='BE1')],
+        local_span_cards=[LocalSpanCard(ref='LS1', span_scope='directory', file_ref_count=2, file_refs=['LF1', 'LF2'])],
+        bangumi_span_cards=[BangumiSpanCard(ref='BS1', detail_equivalent=True, target_refs=['BE1'], target_ref_count=1)],
+    ).with_mapping_draft(MappingDraft(draft_ref='MD1', rows=[
+        MappingDraftRow(row_ref='R1', local_ref='LS1', local_ref_kind='span', status='open'),
+    ], version=1))
+    editor_output = type('EditorResult', (), {'ok': True, 'output': MappingDraftEditorOutput(
+        patches=[MappingDraftPatch(op='map_to_bangumi', local_ref='LS1', target_span_ref='BES_MISSING', mapping_mode='span_by_index', reason='bad')],
+        findings=[Finding(ref='F_BIG', finding_kind='warning', description='too many refs', evidence_refs=[f'LF{i}' for i in range(1, 30)])],
+        candidate_comparisons=[
+            CandidateComparison(ref=f'C{i}', left_ref='BE1', right_ref=f'BE{i}', winner_ref='BE1', reason='large rejected comparison')
+            for i in range(1, 30)
+        ],
+    ), 'error': '', 'raw_response': '{}'})()
+
+    result = _try_mapping_draft_editor_acceptance(workspace, FakeAIClient(editor_output), [], [])
+
+    assert result is not None and result.status == 'fail_closed'
+    assert result.summary == 'no_new_evidence'
+    assert result.final_output is not None
+    assert result.final_output.findings == []
+    assert result.final_output.candidate_comparisons == []
+    assert result.final_verifier_result is not None and result.final_verifier_result.passed is True
 
 
 def test_structural_repair_adds_support_finding_when_editor_omits_findings(monkeypatch):
@@ -211,7 +242,7 @@ def test_soft_patch_issue_salvages_open_row_to_accounting_unresolved(monkeypatch
     result = _try_mapping_draft_editor_acceptance(workspace, FakeAIClient(editor_output), [], [])
 
     assert result is not None and result.status == 'fail_closed'
-    assert result.summary == 'mapping_draft_accounting_unresolved'
+    assert result.summary == 'no_new_evidence'
     assert result.final_workspace.mapping_draft is not None
     rows = {row.local_ref: row for row in result.final_workspace.mapping_draft.rows}
     assert rows['LS1'].disposition == 'map_to_bangumi'
@@ -360,7 +391,7 @@ def test_duplicate_target_fail_closes_without_unique_repair(monkeypatch):
     result = _try_mapping_draft_editor_acceptance(workspace, FakeAIClient(editor_output), [], [])
 
     assert result is not None and result.status == 'fail_closed'
-    assert result.summary == 'mapping_draft_target_conflict'
+    assert result.summary == 'semantic_target_conflict'
 
 
 def test_duplicate_special_targets_are_routed_back_to_editor_once(monkeypatch):
