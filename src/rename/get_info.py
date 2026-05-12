@@ -4,18 +4,20 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from copy import deepcopy
 from difflib import SequenceMatcher
 from threading import Lock
-from time import sleep
+from time import perf_counter, sleep
 from typing import Any, Dict, List, Optional, Set, Tuple, TypeAlias, cast
 
 import tmdbsimple as tmdb
 
 from ..logger import logger
 from ..config.config_manager import cm
+from ..utils.metadata_cache import MetadataCacheMiss, get_or_fetch
 from .cleaner import (
     build_movie_search_queries,
     build_tv_search_queries,
     is_chinese_percentage_sufficient,
 )
+from .metadata_resolver import collect_movie_metadata_alias_titles, collect_tv_metadata_alias_titles
 
 TMDBDict: TypeAlias = dict[str, Any]
 TMDBList: TypeAlias = list[TMDBDict]
@@ -29,6 +31,9 @@ class Search:
         OrderedDict()
     )
     _movie_search_cache: "OrderedDict[Tuple[Any, ...], Optional[List[Dict[str, Any]]]]" = (
+        OrderedDict()
+    )
+    _multi_search_cache: "OrderedDict[Tuple[Any, ...], Optional[List[Dict[str, Any]]]]" = (
         OrderedDict()
     )
     _tv_info_cache: "OrderedDict[Tuple[int, str], Optional[Dict[str, Any]]]" = (
@@ -81,6 +86,92 @@ class Search:
         return tuple(cls._normalize_cache_text(query) for query in (queries or []))
 
     @staticmethod
+    def _count_multi_search_media_results(results: Optional[List[Dict[str, Any]]]) -> int:
+        if not isinstance(results, list):
+            return 0
+        return sum(
+            1
+            for item in results
+            if isinstance(item, dict)
+            and str(item.get('media_type') or '').casefold() in {'tv', 'movie'}
+        )
+
+    @staticmethod
+    def _log_tmdb_request_timing(
+        *,
+        endpoint: str,
+        elapsed_ms: float,
+        cache_mode: str,
+        query: Optional[str] = None,
+        item_id: Optional[int] = None,
+        language: Optional[str] = None,
+        year: Optional[int] = None,
+    ) -> None:
+        parts = [
+            '[耗时]',
+            'stage=tmdb_request',
+            f'endpoint={endpoint}',
+        ]
+        if query is not None:
+            parts.append(f'query={query}')
+        if item_id is not None:
+            parts.append(f'id={item_id}')
+        if language is not None:
+            parts.append(f'lang={language}')
+        if year is not None:
+            parts.append(f'year={year}')
+        parts.append(f'elapsed_ms={elapsed_ms:.1f}')
+        parts.append(f'cache_mode={cache_mode}')
+        logger.info(' '.join(parts))
+
+    def _tmdb_request_with_timing(
+        self,
+        *,
+        endpoint: str,
+        params: Dict[str, Any],
+        query: Optional[str] = None,
+        item_id: Optional[int] = None,
+        language: Optional[str] = None,
+        year: Optional[int] = None,
+        fetcher,
+    ) -> Any:
+        started = perf_counter()
+        cache_mode = 'error'
+        fetch_called = False
+
+        def timed_fetch() -> Any:
+            nonlocal fetch_called
+            fetch_called = True
+            return fetcher()
+
+        try:
+            result = get_or_fetch(
+                provider='tmdb',
+                endpoint=endpoint,
+                params=params,
+                fetcher=timed_fetch,
+            )
+            cache_mode = 'miss' if fetch_called else 'hit'
+            return result
+        except MetadataCacheMiss:
+            cache_mode = 'metadata_cache_miss'
+            raise
+        except Exception:
+            cache_mode = 'error'
+            raise
+        finally:
+            elapsed_ms = (perf_counter() - started) * 1000
+            self._log_tmdb_request_timing(
+                endpoint=endpoint,
+                elapsed_ms=elapsed_ms,
+                cache_mode=cache_mode,
+                query=query,
+                item_id=item_id,
+                language=language,
+                year=year,
+            )
+
+    @staticmethod
     def _has_detailed_episodes(season: Dict[str, Any]) -> bool:
         if season.get('_episodes_loaded') is True:
             return True
@@ -122,6 +213,211 @@ class Search:
             return ['en-US', 'ja-JP', 'zh-CN']
         return ['zh-CN', 'ja-JP', 'en-US']
 
+    def _tmdb_search_movie(self, *, query: str, language: str, year: Optional[int]) -> TMDBList:
+        def fetch() -> TMDBList:
+            search = tmdb.Search()
+            search.movie(query=query, language=language, year=year if year else None)
+            return cast(TMDBList, search.__dict__.get('results') or [])
+
+        return cast(
+            TMDBList,
+            self._tmdb_request_with_timing(
+                endpoint='search/movie',
+                params={'query': query, 'language': language, 'year': year if year else None},
+                query=query,
+                language=language,
+                year=year,
+                fetcher=fetch,
+            )
+            or [],
+        )
+
+    def _tmdb_search_tv(self, *, query: str, language: str, year: Optional[int]) -> TMDBList:
+        def fetch() -> TMDBList:
+            search = tmdb.Search()
+            search.tv(
+                query=query,
+                language=language,
+                first_air_date_year=year if year and year != 0 else None,
+            )
+            return cast(TMDBList, search.__dict__.get('results') or [])
+
+        return cast(
+            TMDBList,
+            self._tmdb_request_with_timing(
+                endpoint='search/tv',
+                params={
+                    'query': query,
+                    'language': language,
+                    'first_air_date_year': year if year and year != 0 else None,
+                },
+                query=query,
+                language=language,
+                year=year,
+                fetcher=fetch,
+            )
+            or [],
+        )
+
+    def _tmdb_search_multi(self, *, query: str, language: str) -> TMDBList:
+        def fetch() -> TMDBList:
+            search = tmdb.Search()
+            search.multi(query=query, language=language)
+            return cast(TMDBList, search.__dict__.get('results') or [])
+
+        return cast(
+            TMDBList,
+            self._tmdb_request_with_timing(
+                endpoint='search/multi',
+                params={'query': query, 'language': language},
+                query=query,
+                language=language,
+                fetcher=fetch,
+            )
+            or [],
+        )
+
+    def _tmdb_movie_info(self, movie_id: int, *, language: Optional[str] = 'zh-CN') -> TMDBDict:
+        def fetch() -> TMDBDict:
+            movie = tmdb.Movies(movie_id)
+            if language:
+                movie.info(language=language)
+            else:
+                movie.info()
+            return dict(movie.__dict__)
+
+        return cast(
+            TMDBDict,
+            self._tmdb_request_with_timing(
+                endpoint='movie/details',
+                params={'movie_id': movie_id, 'language': language},
+                item_id=movie_id,
+                language=language,
+                fetcher=fetch,
+            )
+            or {},
+        )
+
+    def _tmdb_movie_alternative_titles(self, movie_id: int) -> TMDBDict:
+        def fetch() -> TMDBDict:
+            movie = tmdb.Movies(movie_id)
+            return cast(TMDBDict, movie.alternative_titles() or {})
+
+        return cast(
+            TMDBDict,
+            get_or_fetch(
+                provider='tmdb',
+                endpoint='movie/alternative_titles',
+                params={'movie_id': movie_id},
+                fetcher=fetch,
+            )
+            or {},
+        )
+
+    def _tmdb_movie_translations(self, movie_id: int) -> TMDBDict:
+        def fetch() -> TMDBDict:
+            movie = tmdb.Movies(movie_id)
+            return cast(TMDBDict, movie.translations() or {})
+
+        return cast(
+            TMDBDict,
+            get_or_fetch(
+                provider='tmdb',
+                endpoint='movie/translations',
+                params={'movie_id': movie_id},
+                fetcher=fetch,
+            )
+            or {},
+        )
+
+    def _tmdb_tv_info(self, tv_id: int, *, language: Optional[str] = 'zh-CN') -> TMDBDict:
+        def fetch() -> TMDBDict:
+            tv = tmdb.TV(tv_id)
+            if language:
+                tv.info(language=language)
+            else:
+                tv.info()
+            return dict(tv.__dict__)
+
+        return cast(
+            TMDBDict,
+            self._tmdb_request_with_timing(
+                endpoint='tv/details',
+                params={'tv_id': tv_id, 'language': language},
+                item_id=tv_id,
+                language=language,
+                fetcher=fetch,
+            )
+            or {},
+        )
+
+    def _tmdb_tv_alternative_titles(self, tv_id: int) -> TMDBDict:
+        def fetch() -> TMDBDict:
+            tv = tmdb.TV(tv_id)
+            return cast(TMDBDict, tv.alternative_titles() or {})
+
+        return cast(
+            TMDBDict,
+            get_or_fetch(
+                provider='tmdb',
+                endpoint='tv/alternative_titles',
+                params={'tv_id': tv_id},
+                fetcher=fetch,
+            )
+            or {},
+        )
+
+    def _tmdb_tv_translations(self, tv_id: int) -> TMDBDict:
+        def fetch() -> TMDBDict:
+            tv = tmdb.TV(tv_id)
+            return cast(TMDBDict, tv.translations() or {})
+
+        return cast(
+            TMDBDict,
+            get_or_fetch(
+                provider='tmdb',
+                endpoint='tv/translations',
+                params={'tv_id': tv_id},
+                fetcher=fetch,
+            )
+            or {},
+        )
+
+    def _tmdb_season_info(self, tv_id: int, season_number: int, *, language: str = 'zh-CN') -> TMDBDict:
+        def fetch() -> TMDBDict:
+            season = tmdb.TV_Seasons(tv_id, season_number)
+            return cast(TMDBDict, season.info(language=language) or {})
+
+        return cast(
+            TMDBDict,
+            self._tmdb_request_with_timing(
+                endpoint='tv/season',
+                params={'tv_id': tv_id, 'season_number': season_number, 'language': language},
+                item_id=tv_id,
+                language=language,
+                fetcher=fetch,
+            )
+            or {},
+        )
+
+    def _tmdb_collection_info(self, collection_id: int, *, language: str = 'zh-CN') -> TMDBDict:
+        def fetch() -> TMDBDict:
+            collection = tmdb.Collections(collection_id)
+            collection.info(language=language)
+            return dict(collection.__dict__)
+
+        return cast(
+            TMDBDict,
+            self._tmdb_request_with_timing(
+                endpoint='collection/details',
+                params={'collection_id': collection_id, 'language': language},
+                item_id=collection_id,
+                language=language,
+                fetcher=fetch,
+            )
+            or {},
+        )
+
     def _search_movie_multi_language(
         self,
         query: str,
@@ -135,13 +431,7 @@ class Search:
 
         ranked_candidates: Dict[int, Dict[str, Any]] = {}
         for index, language in enumerate(languages):
-            search = tmdb.Search()
-            search.movie(
-                query=query,
-                language=language,
-                year=year if year else None,
-            )
-            results = search.__dict__['results']
+            results = self._tmdb_search_movie(query=query, language=language, year=year)
             if not results:
                 continue
 
@@ -200,13 +490,7 @@ class Search:
 
         ranked_candidates: Dict[int, Dict[str, Any]] = {}
         for index, language in enumerate(languages):
-            search = tmdb.Search()
-            search.tv(
-                query=query,
-                language=language,
-                first_air_date_year=year if year and year != 0 else None,
-            )
-            results = search.__dict__['results']
+            results = self._tmdb_search_tv(query=query, language=language, year=year)
             if not results:
                 continue
 
@@ -260,6 +544,7 @@ class Search:
             (r'\b(?:season|s)\s*0*([2-9])\b', 's{}'),
             (r'\b([2-9])(st|nd|rd|th)\s+season\b', 's{}'),
             (r'第\s*([二三四五六七八九2-9])\s*季', 's{}'),
+            (r'([2-9])\s*期', 's{}'),
         ]
         cn_map = {'二': 2, '三': 3, '四': 4, '五': 5, '六': 6, '七': 7, '八': 8, '九': 9}
         for pattern, template in patterns:
@@ -272,7 +557,6 @@ class Search:
                 tokens.add(template.format(season_num))
 
         keyword_map = {
-            'zoku shou': 's2',
             '续篇': 's2',
             '続編': 's2',
             'second': 's2',
@@ -287,8 +571,6 @@ class Search:
             'fifth': 's5',
             '5th': 's5',
             'v': 's5',
-            'okawari': 's2',
-            'okaeri': 's3',
         }
         for keyword, token in keyword_map.items():
             if re.search(rf'(?<![a-z0-9]){re.escape(keyword)}(?![a-z0-9])', normalized):
@@ -384,6 +666,13 @@ class Search:
             candidate.get('name', ''),
             candidate.get('original_name', ''),
         ]
+        metadata_alias_titles = candidate.get('_metadata_alias_titles')
+        if isinstance(metadata_alias_titles, list):
+            candidate_titles.extend(
+                title
+                for title in metadata_alias_titles
+                if isinstance(title, str) and title.strip()
+            )
         normalized_queries = [
             self._normalize_tv_score_text(source_title),
             self._normalize_tv_score_text(query),
@@ -619,14 +908,21 @@ class Search:
             筛选后的季度信息字典，失败返回None
         """
         cache_key = (tv_id, season_number, 'zh-CN')
+        started = perf_counter()
         cached_value, cache_hit = self._cache_get(self._season_info_cache, cache_key)
         if cache_hit:
+            self._log_tmdb_request_timing(
+                endpoint='tv/season',
+                elapsed_ms=(perf_counter() - started) * 1000,
+                cache_mode='local_hit',
+                item_id=tv_id,
+                language='zh-CN',
+            )
             return cached_value
 
         for i in range(3):
             try:
-                season = tmdb.TV_Seasons(tv_id, season_number)
-                season_info = season.info(language="zh-CN")
+                season_info = self._tmdb_season_info(tv_id, season_number, language="zh-CN")
 
                 if not season_info:
                     logger.warning(f"[季度信息] 未获取到Season {season_number}的信息")
@@ -664,9 +960,19 @@ class Search:
                     f'[季度信息] 获取Season {season_number}信息成功，包含{len(filtered_season["episodes"])}集'
                 )
                 self._cache_set(self._season_info_cache, cache_key, filtered_season)
+                self._log_tmdb_request_timing(
+                    endpoint='tv/season',
+                    elapsed_ms=(perf_counter() - started) * 1000,
+                    cache_mode='local_miss',
+                    item_id=tv_id,
+                    language='zh-CN',
+                )
                 return filtered_season
 
             except Exception as e:
+                if isinstance(e, MetadataCacheMiss):
+                    logger.warning(f"[季度信息] 元数据缓存未命中: Season {season_number}")
+                    return None
                 logger.warning(
                     f"[季度信息] 获取Season {season_number}信息失败，重试第{i + 1}次: {str(e)}"
                 )
@@ -799,6 +1105,28 @@ class Search:
         )
         return tv_info
 
+    def enrich_tv_alias_metadata(self, tv_info: Dict[str, Any]) -> Dict[str, Any]:
+        if not tv_info or not isinstance(tv_info.get('id'), int):
+            return tv_info
+        tv_id = cast(int, tv_info['id'])
+        alias_cache_key = (tv_id, 'aliases')
+        cached_aliases, alias_hit = self._cache_get(self._hydrated_tv_cache, alias_cache_key)
+        if alias_hit:
+            tv_info['_metadata_alias_titles'] = cached_aliases
+            return tv_info
+
+        alternative_titles = self._tmdb_tv_alternative_titles(tv_id)
+        translations = self._tmdb_tv_translations(tv_id)
+        unique_titles = collect_tv_metadata_alias_titles(
+            tv_info,
+            alternative_titles=alternative_titles,
+            translations=translations,
+        )
+
+        self._cache_set(self._hydrated_tv_cache, alias_cache_key, unique_titles)
+        tv_info['_metadata_alias_titles'] = unique_titles
+        return tv_info
+
     def get_movie_info(
         self,
         query: str,
@@ -813,10 +1141,12 @@ class Search:
                 if results:
                     target = results[0]
                     name = target['title']
-                    movie = tmdb.Movies(target['id'])
-                    movie.info()
-                    logger.debug(str(movie.__dict__))
-                    return name, movie.__dict__
+                    movie_info = self._tmdb_movie_info(target['id'], language=None)
+                    logger.debug(str(movie_info))
+                    return name, movie_info
+                return '', None
+            except MetadataCacheMiss:
+                logger.warning(f'[电影搜索] 元数据缓存未命中: {query}')
                 return '', None
             except:  # noqa:E722, B001
                 sleep(5)
@@ -853,11 +1183,13 @@ class Search:
                 if results:
                     target = results[0]
                     name = target['name']
-                    tv = tmdb.TV(target['id'])
-                    tv.info()
-                    logger.debug(str(tv.__dict__))
+                    tv_info = self._tmdb_tv_info(target['id'], language=None)
+                    logger.debug(str(tv_info))
                     logger.info(f'[电视剧搜索] 候选查询命中: {queries[:4]}, year={year}')
-                    return name, tv.__dict__
+                    return name, tv_info
+                return '', None
+            except MetadataCacheMiss:
+                logger.warning(f'[电视剧搜索] 元数据缓存未命中: {query}')
                 return '', None
             except:  # noqa:E722, B001
                 sleep(5)
@@ -885,10 +1217,12 @@ class Search:
                     collection_id = collection['id']
                     collection_name = collection['name']
                     # 获取合集详细信息
-                    col = tmdb.Collections(collection_id)
-                    col.info(language='zh-CN')
+                    collection_info = self._tmdb_collection_info(collection_id, language='zh-CN')
                     logger.info(f'[合集搜索] 找到合集: {collection_name}')
-                    return collection_name, col.__dict__
+                    return collection_name, collection_info
+                return '', None
+            except MetadataCacheMiss:
+                logger.warning(f'[合集搜索] 元数据缓存未命中: {query}')
                 return '', None
             except:  # noqa:E722, B001
                 sleep(5)
@@ -906,17 +1240,33 @@ class Search:
             电影信息字典或 None
         """
         cache_key = (movie_id, 'zh-CN')
+        started = perf_counter()
         cached_value, cache_hit = self._cache_get(self._movie_info_cache, cache_key)
         if cache_hit:
+            self._log_tmdb_request_timing(
+                endpoint='movie/details',
+                elapsed_ms=(perf_counter() - started) * 1000,
+                cache_mode='local_hit',
+                item_id=movie_id,
+                language='zh-CN',
+            )
             return cached_value
 
         for i in range(3):
             try:
-                movie_obj = tmdb.Movies(movie_id)
-                movie_obj.info(language='zh-CN')
-                movie_info = dict(movie_obj.__dict__)
+                movie_info = self._tmdb_movie_info(movie_id, language='zh-CN')
                 self._cache_set(self._movie_info_cache, cache_key, movie_info)
+                self._log_tmdb_request_timing(
+                    endpoint='movie/details',
+                    elapsed_ms=(perf_counter() - started) * 1000,
+                    cache_mode='local_miss',
+                    item_id=movie_id,
+                    language='zh-CN',
+                )
                 return movie_info
+            except MetadataCacheMiss:
+                logger.warning(f'[电影信息] 元数据缓存未命中: {movie_id}')
+                return None
             except:  # noqa:E722, B001
                 sleep(5)
                 logger.warning(f'[电影信息] 网络错误, 重试第{i + 1}次中...')
@@ -1123,6 +1473,9 @@ class Search:
 
                 self._cache_set(self._movie_search_cache, cache_key, None)
                 return None
+            except MetadataCacheMiss:
+                logger.warning(f'[电视剧信息] 元数据缓存未命中: {tv_id}')
+                return None
             except:  # noqa:E722, B001
                 sleep(5)
                 logger.warning(f'[电影搜索] 网络错误, 重试第{i + 1}次中...')
@@ -1222,6 +1575,99 @@ class Search:
                 logger.warning(f'[电视剧搜索] 网络错误, 重试第{i + 1}次中...')
         return None
 
+    def search_multi_by_query(
+        self,
+        query: str,
+        limit: int = 20,
+    ) -> Optional[List[Dict[str, Any]]]:
+        """统一搜索 TMDB 候选，返回带 media_type 的 TV/Movie 混合结果。"""
+
+        raw_query = str(query or '')
+        if not raw_query.strip():
+            return None
+
+        cache_key = (self._normalize_cache_text(raw_query), limit)
+        cached_value, cache_hit = self._cache_get(self._multi_search_cache, cache_key)
+        if cache_hit:
+            return cached_value
+
+        languages = self._get_search_languages(raw_query)
+        if not languages:
+            self._cache_set(self._multi_search_cache, cache_key, None)
+            return None
+
+        primary_language, *fallback_languages = languages
+        ranked: dict[tuple[str, int], Dict[str, Any]] = {}
+        primary_results: Optional[List[Dict[str, Any]]] = None
+        try:
+            primary_results = self._tmdb_search_multi(query=raw_query, language=primary_language)
+        except MetadataCacheMiss:
+            logger.warning(f'[TMDB多类型搜索] 元数据缓存未命中: {raw_query}')
+            return None
+        except Exception:
+            primary_results = None
+
+        primary_strength = self._count_multi_search_media_results(primary_results)
+        if primary_strength < 2 and fallback_languages:
+            logger.info(
+                f'[TMDB多类型搜索] primary 结果过弱，启用语言回退: primary={primary_language}, '
+                f'fallback={fallback_languages}, query={raw_query}'
+            )
+            all_results: List[Dict[str, Any]] = []
+            if primary_results:
+                all_results.extend(primary_results)
+            for language in fallback_languages:
+                try:
+                    results = self._tmdb_search_multi(query=raw_query, language=language)
+                except MetadataCacheMiss:
+                    logger.warning(f'[TMDB多类型搜索] 元数据缓存未命中: {raw_query}')
+                    return None
+                except Exception:
+                    continue
+                if results:
+                    all_results.extend(results)
+        else:
+            all_results = primary_results or []
+
+        if not all_results:
+            self._cache_set(self._multi_search_cache, cache_key, None)
+            return None
+
+        for rank, item in enumerate(all_results):
+            if not isinstance(item, dict):
+                continue
+            media_type = str(item.get('media_type') or '').casefold()
+            if media_type not in {'tv', 'movie'}:
+                continue
+            item_id = item.get('id')
+            if not isinstance(item_id, int):
+                continue
+            score = 1000 - rank * 5
+            popularity = item.get('popularity')
+            if isinstance(popularity, (int, float)):
+                score += min(float(popularity), 100.0)
+            candidate = dict(item)
+            candidate['_matched_query'] = raw_query
+            candidate['_match_score'] = round(score, 3)
+            key = (media_type, item_id)
+            current = ranked.get(key)
+            if current is None or score > float(current.get('_match_score') or 0):
+                ranked[key] = candidate
+
+        if not ranked:
+            self._cache_set(self._multi_search_cache, cache_key, None)
+            return None
+        results = sorted(
+            ranked.values(),
+            key=lambda item: (
+                float(item.get('_match_score') or 0),
+                float(item.get('popularity') or 0),
+            ),
+            reverse=True,
+        )[:limit]
+        self._cache_set(self._multi_search_cache, cache_key, results)
+        return results
+
     def get_tv_info_by_id(self, tv_id: int) -> Optional[Dict[str, Any]]:
         """
         根据 TMDB ID 获取电视剧详细信息
@@ -1233,16 +1679,29 @@ class Search:
             电视剧信息字典或 None
         """
         cache_key = (tv_id, 'zh-CN')
+        started = perf_counter()
         cached_value, cache_hit = self._cache_get(self._tv_info_cache, cache_key)
         if cache_hit:
+            self._log_tmdb_request_timing(
+                endpoint='tv/details',
+                elapsed_ms=(perf_counter() - started) * 1000,
+                cache_mode='local_hit',
+                item_id=tv_id,
+                language='zh-CN',
+            )
             return cached_value
 
         for i in range(3):
             try:
-                tv = tmdb.TV(tv_id)
-                tv.info(language='zh-CN')
-                tv_info = dict(tv.__dict__)
+                tv_info = self._tmdb_tv_info(tv_id, language='zh-CN')
                 self._cache_set(self._tv_info_cache, cache_key, tv_info)
+                self._log_tmdb_request_timing(
+                    endpoint='tv/details',
+                    elapsed_ms=(perf_counter() - started) * 1000,
+                    cache_mode='local_miss',
+                    item_id=tv_id,
+                    language='zh-CN',
+                )
                 return tv_info
             except:  # noqa:E722, B001
                 sleep(5)

@@ -3,7 +3,7 @@
 
 验证内容：
 1. 主链路（OpenAIClient.analyze_episode_mapping）
-2. 简单链路（AIClient.extract_title_and_type -> _call_openai_simple）
+2. 简单链路（AIClient 的轻量标题分析接口 -> _call_openai_simple）
 
 验证场景：
 - responses_supported: 配置 responses_api，实际命中 responses_api
@@ -68,11 +68,7 @@ def _build_main_success_content(*_args, **_kwargs) -> str:
 
 def _build_simple_success_content(*_args, **_kwargs) -> str:
     """简单链路可解析 JSON 文本。"""
-    return (
-        '{"title":"Test Anime",'
-        '"fallback_title":"Test",'
-        '"type":"tv"}'
-    )
+    return '{"title":"Test Anime"}'
 
 
 def _raise_responses_unsupported(*_args, **_kwargs):
@@ -121,10 +117,11 @@ def _run_main_chain(ai_client: AIClient) -> Optional[AIAnalysisResult]:
     return ai_client.analyze_episode_mapping(anime_info, local_files)
 
 
-def _run_simple_chain(ai_client: AIClient) -> Optional[tuple[str, Optional[str]]]:
-    return ai_client.extract_title_and_type(
+def _run_simple_chain(ai_client: AIClient) -> Optional[str]:
+    result = ai_client.analyze_title_metadata(
         "[TestGroup] Test Anime S01E01 [WEB-DL 1080p].mkv"
     )
+    return result.title if result else None
 
 
 def _capture_interface_state(ai_client: AIClient) -> Dict[str, object]:
@@ -189,7 +186,7 @@ def _scenario_responses_supported() -> ScenarioResult:
         ):
             simple_result = _run_simple_chain(ai_client)
             assert simple_result is not None
-            assert simple_result == ("Test Anime", "tv")
+            assert simple_result == "Test Anime"
             simple_state = _capture_interface_state(ai_client)
             _assert_state(
                 "simple_chain",
@@ -249,7 +246,7 @@ def _scenario_responses_fallback() -> ScenarioResult:
         ):
             simple_result = _run_simple_chain(ai_client)
             assert simple_result is not None
-            assert simple_result == ("Test Anime", "tv")
+            assert simple_result == "Test Anime"
             simple_state = _capture_interface_state(ai_client)
             _assert_state(
                 "simple_chain",
@@ -303,7 +300,7 @@ def _scenario_chat_only() -> ScenarioResult:
         ):
             simple_result = _run_simple_chain(ai_client)
             assert simple_result is not None
-            assert simple_result == ("Test Anime", "tv")
+            assert simple_result == "Test Anime"
             simple_state = _capture_interface_state(ai_client)
             _assert_state(
                 "simple_chain",

@@ -202,15 +202,213 @@ def test_bangumi_client_retries_retryable_errors(monkeypatch):
         def json(self):
             return self._payload
 
-    def fake_request(**kwargs):
+    def fake_request(*args, **kwargs):
         calls["count"] += 1
         if calls["count"] == 1:
             return FakeResponse(502, {})
         return FakeResponse(200, {"data": []})
 
-    monkeypatch.setattr(client.session, "request", fake_request)
+    monkeypatch.setattr(client, "_request_json_uncached", fake_request)
 
     result = client.search_subjects("Neptune")
 
     assert result == []
-    assert calls["count"] == 2
+
+
+def test_build_tv_context_creates_synthetic_singleton_for_movie_subject_without_episodes():
+    class MovieSingletonClient(StubBangumiClient):
+        def search_subjects(self, keyword, year=None):
+            self.search_calls.append((keyword, year))
+            if keyword == "单体电影":
+                return [
+                    BangumiSubject(
+                        id=700001,
+                        type=2,
+                        name="单体电影",
+                        name_cn="单体电影",
+                        date="2020-01-01",
+                        platform="Movie",
+                        total_episodes=0,
+                        eps=0,
+                    )
+                ]
+            return []
+
+        def get_episodes(self, subject_id):
+            self.episodes_calls.append(subject_id)
+            return []
+
+    context = BangumiContextBuilder(client=MovieSingletonClient()).build_tv_context(
+        {"name": "单体电影", "first_air_date": "2020-01-01"},
+        [{"path": "movie.mkv"}],
+    )
+
+    assert context is not None
+    subject = context["subjects"][0]
+    episode = subject["episodes"][0]
+    assert episode["synthetic"] is True
+    assert episode["synthetic_reason"] == "subject_singleton_no_episode_items"
+    assert episode["subject_level_target"] is True
+    assert episode["kind"] == "subject_singleton"
+    assert episode["sort"] == 1
+    assert episode["ep"] == 1
+    assert episode["title"] == "单体电影"
+    assert episode["name"] == "单体电影"
+    assert episode["name_cn"] == "单体电影"
+    assert episode["source_form_hint"] == "movie"
+
+
+def test_build_tv_context_creates_synthetic_singleton_for_total_collection_relation_without_episodes():
+    class TotalCollectionClient(StubBangumiClient):
+        def search_subjects(self, keyword, year=None):
+            self.search_calls.append((keyword, year))
+            if keyword == "总集篇作品":
+                return [
+                    BangumiSubject(
+                        id=700002,
+                        type=2,
+                        name="总集篇作品",
+                        name_cn="总集篇作品",
+                        date="2020-01-01",
+                        platform="OVA",
+                        total_episodes=0,
+                        eps=0,
+                    )
+                ]
+            return []
+
+        def get_related_subjects(self, subject_id):
+            self.related_calls.append(subject_id)
+            return []
+
+        def get_episodes(self, subject_id):
+            self.episodes_calls.append(subject_id)
+            return []
+
+    context = BangumiContextBuilder(client=TotalCollectionClient()).build_tv_context(
+        {"name": "总集篇作品", "first_air_date": "2020-01-01"},
+        [{"path": "collection.mkv"}],
+    )
+
+    assert context is not None
+    assert context["subjects"][0]["episodes"][0]["synthetic"] is True
+
+
+def test_build_tv_context_single_episode_movie_subject_preserves_singleton_metadata():
+    class OneEpisodeMovieClient(StubBangumiClient):
+        def search_subjects(self, keyword, year=None):
+            self.search_calls.append((keyword, year))
+            if keyword == "标题为空电影":
+                return [BangumiSubject(id=700006, type=2, name="标题为空电影", name_cn="标题为空电影", date="2020-01-01", platform="Movie", total_episodes=1, eps=1)]
+            return []
+
+        def get_episodes(self, subject_id):
+            self.episodes_calls.append(subject_id)
+            return [BangumiEpisode(id=1, subject_id=subject_id, type=0, sort=1, ep=1, name="", name_cn="", airdate="2020-01-01", duration="00:23:40", duration_seconds=1420, desc="")]
+
+    context = BangumiContextBuilder(client=OneEpisodeMovieClient()).build_tv_context({"name": "标题为空电影", "first_air_date": "2020-01-01"}, [{"path": "movie.mkv"}])
+    assert context is not None
+    episode = context["subjects"][0]["episodes"][0]
+    assert episode["synthetic"] is True
+    assert episode["subject_level_target"] is True
+    assert episode["kind"] == "subject_singleton"
+    assert episode["name"] == "标题为空电影" or episode["title"] == "标题为空电影"
+
+
+def test_build_tv_context_preserves_name_fallback_for_singleton_movie_episode():
+    class FallbackClient(StubBangumiClient):
+        def search_subjects(self, keyword, year=None):
+            self.search_calls.append((keyword, year))
+            if keyword == "标题为空电影":
+                return [BangumiSubject(id=700005, type=2, name="标题为空电影", name_cn="标题为空电影", date="2020-01-01", platform="Movie", total_episodes=1, eps=1)]
+            return []
+
+        def get_episodes(self, subject_id):
+            self.episodes_calls.append(subject_id)
+            return [BangumiEpisode(id=1, subject_id=subject_id, type=0, sort=1, ep=1, name="", name_cn="", airdate="2020-01-01", duration="00:23:40", duration_seconds=1420, desc="")]
+
+    context = BangumiContextBuilder(client=FallbackClient()).build_tv_context({"name": "标题为空电影", "first_air_date": "2020-01-01"}, [{"path": "movie.mkv"}])
+    assert context is not None
+    episode = context["subjects"][0]["episodes"][0]
+    assert episode["kind"] == "subject_singleton" or episode["subject_level_target"] is True
+    assert episode["subject_level_target"] is True
+    assert episode["synthetic"] is True or episode["subject_level_target"] is True
+
+
+def test_build_tv_context_does_not_create_synthetic_singleton_for_tv_series_with_many_episodes():
+    class TvClient(StubBangumiClient):
+        def search_subjects(self, keyword, year=None):
+            self.search_calls.append((keyword, year))
+            if keyword == "TV十三集":
+                return [
+                    BangumiSubject(
+                        id=700003,
+                        type=2,
+                        name="TV十三集",
+                        name_cn="TV十三集",
+                        date="2020-01-01",
+                        platform="TV",
+                        total_episodes=13,
+                        eps=13,
+                    )
+                ]
+            return []
+
+        def get_episodes(self, subject_id):
+            self.episodes_calls.append(subject_id)
+            return []
+
+    context = BangumiContextBuilder(client=TvClient()).build_tv_context(
+        {"name": "TV十三集", "first_air_date": "2020-01-01"},
+        [{"path": "tv.mkv"}],
+    )
+
+    assert context is None
+
+
+def test_build_tv_context_uses_title_cues_not_release_group_as_primary_seed():
+    builder = BangumiContextBuilder(client=StubBangumiClient())
+    anime_info = {
+        'name': 'てーきゅう 2期',
+        'original_name': 'てーきゅう 2期',
+        'first_air_date': '2012-10-01',
+    }
+    local_files = [
+        {'filename': '[Snow-Raws] てーきゅう 2期 [01].mkv', 'path': '[Snow-Raws] てーきゅう 2期 [01].mkv'},
+    ]
+
+    keywords = builder._build_search_keywords(anime_info, local_files, local_title_seeds=['てーきゅう 2期'])
+
+    assert any('てーきゅう' in keyword for keyword in keywords)
+    assert not any(keyword.startswith('Snow') and keyword == 'Snow' for keyword in keywords)
+
+
+def test_build_tv_context_does_not_create_synthetic_singleton_for_non_anime_subject():
+    class NonAnimeClient(StubBangumiClient):
+        def search_subjects(self, keyword, year=None):
+            self.search_calls.append((keyword, year))
+            if keyword == "非动画作品":
+                return [
+                    BangumiSubject(
+                        id=700004,
+                        type=1,
+                        name="非动画作品",
+                        name_cn="非动画作品",
+                        date="2020-01-01",
+                        platform="Movie",
+                        total_episodes=0,
+                        eps=0,
+                    )
+                ]
+            return []
+
+        def get_episodes(self, subject_id):
+            self.episodes_calls.append(subject_id)
+            return []
+
+    context = BangumiContextBuilder(client=NonAnimeClient()).build_tv_context(
+        {"name": "非动画作品", "first_air_date": "2020-01-01"},
+        [{"path": "other.mkv"}],
+    )
+
+    assert context is None

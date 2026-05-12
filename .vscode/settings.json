@@ -1,5 +1,4 @@
 {
-    "python.languageServer": "None",
     "editor.formatOnSave": true,
     "[python]": {
         "editor.defaultFormatter": "ms-python.black-formatter",
@@ -12,6 +11,7 @@
         "--profile",
         "black"
     ],
-    "basedpyright.analysis.typeCheckingMode": "basic",
-    "python.analysis.typeCheckingMode": "off",
+    "basedpyright.analysis.diagnosticMode": "workspace",
+    "python.defaultInterpreterPath": "${workspaceFolder}\\.venv\\Scripts\\python.exe",
+    "python.terminal.activateEnvironment": true
 }

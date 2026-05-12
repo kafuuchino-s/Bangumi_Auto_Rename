@@ -51,6 +51,14 @@ class FilenameBuilder:
     """
 
     @staticmethod
+    def sanitize_path_component(value: str) -> str:
+        """清理 Windows/POSIX 路径组件中的非法字符，保留标题语义。"""
+
+        cleaned = re.sub(r'[<>:"/\\|?*]', ' ', value or '')
+        cleaned = re.sub(r'\s+', ' ', cleaned).strip().rstrip(' .')
+        return cleaned or 'Unknown'
+
+    @staticmethod
     def build_title_with_year(title: str, year: Optional[str] = None) -> str:
         """
         构建带年份的标题
@@ -62,9 +70,10 @@ class FilenameBuilder:
         Returns:
             "{title} ({year})" 或 "{title}"
         """
+        safe_title = FilenameBuilder.sanitize_path_component(title)
         if year:
-            return f"{title} ({year})"
-        return title
+            return f"{safe_title} ({year})"
+        return safe_title
 
     @staticmethod
     def build_season_folder(season: int) -> str:
@@ -119,7 +128,7 @@ class FilenameBuilder:
         if release_group:
             parts.append(release_group)
 
-        return " - ".join(parts) + meta.file_ext
+        return FilenameBuilder.sanitize_path_component(" - ".join(parts)) + meta.file_ext
 
     @staticmethod
     def build_episode_filename(meta: EpisodeMetadata) -> str:
@@ -144,13 +153,13 @@ class FilenameBuilder:
         detail = meta.resource_term
         release_group = (meta.release_group or "").strip()
 
-        parts = [meta.title, season_episode]
+        parts = [FilenameBuilder.sanitize_path_component(meta.title), season_episode]
         if detail:
             parts.append(detail)
         if release_group:
             parts.append(release_group)
 
-        return " - ".join(parts) + meta.file_ext
+        return FilenameBuilder.sanitize_path_component(" - ".join(parts)) + meta.file_ext
 
     @staticmethod
     def build_tv_work_path(

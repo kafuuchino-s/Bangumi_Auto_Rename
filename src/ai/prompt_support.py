@@ -197,6 +197,13 @@ def _should_expand_tmdb_episode_details(
     local_files: Sequence[Mapping[str, object]],
     prompt_seasons: Sequence[Mapping[str, object]],
 ) -> bool:
+    for season in prompt_seasons[:2]:
+        episodes = _coerce_mapping_sequence(season.get("episodes", []))
+        episode_count_value = season.get("episode_count", 0)
+        episode_count = len(episodes) if episodes else episode_count_value if isinstance(episode_count_value, int) else 0
+        if 0 < episode_count <= 50:
+            return True
+
     if len(prompt_seasons) > 1:
         return True
 
@@ -237,17 +244,26 @@ def _build_tmdb_prompt_section(
     prompt_seasons = _select_prompt_seasons(anime_info, local_files)
     expand_episode_details = _should_expand_tmdb_episode_details(local_files, prompt_seasons)
 
-    lines = ["TMDB 季度摘要："]
+    lines = [
+        "TMDB 全剧合法输出空间（同一 TV series 内不限制单季；最终只能逐字选择这里存在的 legal_node_id）："
+    ]
     for season in seasons:
         season_num = season.get("season_number", 0)
         season_name = season.get("name", f"Season {season_num}")
         episode_count = season.get("episode_count", 0)
-        lines.append(f"- Season {season_num}: {season_name} (共 {episode_count} 集)")
+        episodes = _coerce_mapping_sequence(season.get("episodes", []))
+        count = len(episodes) if episodes else episode_count if isinstance(episode_count, int) else 0
+        if count > 0:
+            lines.append(
+                f"- Season {season_num}: {season_name} (共 {count} 集), legal_node_id=tmdb:S{season_num:02d}E01..tmdb:S{season_num:02d}E{count:02d}"
+            )
+        else:
+            lines.append(f"- Season {season_num}: {season_name}")
 
     lines.append("")
     if expand_episode_details:
-        lines.append("TMDB 候选季度关键集目：")
-        for season in prompt_seasons[:2]:
+        lines.append("TMDB 全剧关键集目（S00/special 标题优先完整展开；普通季度按规模展开或给范围）：")
+        for season in seasons:
             season_num = season.get("season_number", 0)
             season_name = season.get("name", f"Season {season_num}")
             episodes = _coerce_mapping_sequence(season.get("episodes", []))
@@ -255,31 +271,52 @@ def _build_tmdb_prompt_section(
             episode_count = len(episodes) if episodes else episode_count_value if isinstance(episode_count_value, int) else 0
             lines.append(f"【Season {season_num}】{season_name} (共 {episode_count} 集)")
             if episodes:
-                selected_episodes = episodes[:8]
+                should_expand_season = (
+                    season_num == 0
+                    or len(episodes) <= 50
+                    or season in prompt_seasons
+                )
+                selected_episodes = episodes if should_expand_season else episodes[:8]
                 for ep in selected_episodes:
                     ep_num_value = ep.get("episode_number", 0)
                     ep_num = ep_num_value if isinstance(ep_num_value, int) else 0
                     ep_name = ep.get("name", "")
-                    lines.append(f"  S{season_num:02d}E{ep_num:02d}: {ep_name}")
+                    node_id = f"tmdb:S{season_num:02d}E{ep_num:02d}"
+                    lines.append(f"  {node_id}: {ep_name}")
                 if len(episodes) > len(selected_episodes):
-                    lines.append(f"  ... 其余 {len(episodes) - len(selected_episodes)} 集未展开")
+                    lines.append(
+                        f"  ... 其余 {len(episodes) - len(selected_episodes)} 集未展开；"
+                        f"可用 legal_node_id 仍为 tmdb:S{season_num:02d}E01.."
+                        f"tmdb:S{season_num:02d}E{episode_count:02d}"
+                    )
             elif episode_count > 0:
-                lines.append(f"  E01 - E{episode_count:02d}")
+                if episode_count <= 50:
+                    for ep_num in range(1, episode_count + 1):
+                        lines.append(f"  tmdb:S{season_num:02d}E{ep_num:02d}")
+                else:
+                    lines.append(
+                        f"  legal_node_id 范围: tmdb:S{season_num:02d}E01 - "
+                        f"tmdb:S{season_num:02d}E{episode_count:02d}"
+                    )
             lines.append("")
     else:
-        lines.append("TMDB 候选季度范围：")
-        for season in prompt_seasons[:2]:
+        lines.append("TMDB 全剧合法节点范围：")
+        for season in seasons:
             season_num = season.get("season_number", 0)
             season_name = season.get("name", f"Season {season_num}")
             episode_count_value = season.get("episode_count", 0)
             episode_count = episode_count_value if isinstance(episode_count_value, int) else 0
             if episode_count > 0:
-                lines.append(f"- Season {season_num} {season_name}: E01-E{episode_count:02d}")
+                lines.append(
+                    f"- Season {season_num} {season_name}: "
+                    f"legal_node_id=tmdb:S{season_num:02d}E01.."
+                    f"tmdb:S{season_num:02d}E{episode_count:02d}"
+                )
             else:
                 lines.append(f"- Season {season_num} {season_name}")
 
     if len(prompt_seasons) < len(seasons):
-        lines.append("提示: 以上只展开高相关季度；最终仍只能映射到全部 TMDB 真实存在的 SxxExx。")
+        lines.append("提示: 本地文件可能混入 S00、OVA/OAD/SP、前后季或全局编号；不要把映射限制在高相关季度，必须在整部 TV series 的合法节点内选择。")
     return "\n".join(lines).strip() + "\n"
 
 
@@ -306,7 +343,7 @@ def _build_bangumi_prompt_section(
         lines.append(f"搜索词: {', '.join(str(item) for item in keywords[:6])}")
 
     expand_episode_details = _should_expand_bangumi_episode_details(local_files)
-    subject_limit = 2 if expand_episode_details else 1
+    subject_limit = 4 if expand_episode_details else 2
 
     for subject_item in subjects[:subject_limit]:
         subject = subject_item.get("subject", {})
@@ -330,7 +367,7 @@ def _build_bangumi_prompt_section(
 
         if expand_episode_details:
             lines.append("  episodes:")
-            for episode in episodes[:12]:
+            for episode in episodes[:60]:
                 episode_type = episode.get("type")
                 episode_line = (
                     "    - "
@@ -341,8 +378,8 @@ def _build_bangumi_prompt_section(
                     f"title={episode.get('name_cn') or episode.get('name') or ''}"
                 )
                 lines.append(episode_line)
-            if len(episodes) > 12:
-                lines.append(f"    ... 其余 {len(episodes) - 12} 条未展开")
+            if len(episodes) > 60:
+                lines.append(f"    ... 其余 {len(episodes) - 60} 条未展开")
         else:
             lines.append(f"  episodes: 共 {len(episodes)} 条（默认不展开明细）")
 
@@ -409,16 +446,20 @@ def build_common_prompt(
 
 {files_info}
 
-请根据以下规则进行映射：
+请根据以下规则进行映射。注意：本任务的方向是 **从 TMDB legal node 选择承载文件**，
+不是从文件名反向生成 TMDB 集号。
 
 1. **输出字段要求**：
-   - 每个 `file_mapping` 项必须包含：`source_index`, `tmdb_season`, `tmdb_episode`, `episode_type`, `confidence`
-   - `file_path` 为可选；若填写，必须与 `source_index` 指向同一输入文件
+   - 每个 `file_mapping` 项表示“某个 TMDB legal node 由哪个本地文件承载”，必须包含：`legal_node_id`, `source_index`, `episode_type`, `confidence`
+   - `legal_node_id` 是映射主语，必须逐字复制上方 TMDB 列表里的实际节点，格式固定为 `tmdb:SxxEyy`；不要输出 `Season 1`、`S01E01`、`tv:0:...` 或任何自己生成的 ID
+   - 不要填写或推导 `tmdb_season` / `tmdb_episode`；系统会从 `legal_node_id` 派生最终 TMDB 季集
+   - `source_index` 是承载该 TMDB 节点的本地文件编号；`file_path` 为可选，若填写必须与 `source_index` 指向同一输入文件
 
 2. **匹配优先级**（按顺序尝试）：
-   - 文件名中的集数与 TMDB 集数号直接匹配
-   - 文件名中的标题与 TMDB 集标题相似度匹配
-   - 文件名中的日期与 TMDB 播出日期匹配
+   - 先阅读 TMDB seasons / episodes / specials，确定有哪些可输出的 legal nodes
+   - 对每个需要落地的 TMDB legal node，再从本地文件中选择最合适的承载文件
+   - 本地编号、Bangumi 全局编号、文件名标题和日期都只是帮助选择承载文件的证据；不能用它们创造新的 TMDB episode number
+   - 如果没有足够证据为某个 TMDB 节点选择承载文件，就不要输出该节点；如果某个文件找不到合法 TMDB 节点，就放入 `unmatched_files`
 
 2. **Season 0 特典规则**：
    - OVA、OAD、SP、Special 等标签 → Season 0
@@ -432,6 +473,9 @@ def build_common_prompt(
    - 本地目录可能将多季合并，需要根据集数范围判断
    - 本地目录可能使用总集号（如 E14 可能是 S2E01）
    - 不同季度可能仅用名称区分（如 \"Okawari\"、\"Okaeri\" 等后缀）
+   - `Vol.1 / Vol.2 / Disc / BD` 通常只是实体卷/包装单位，不表示该子目录内的 TMDB episode 从 E01 重新开始；如果文件名本身有连续正片编号（如 03、04、05、06），应把这些编号作为选择承载 TMDB 节点的证据，而不是每个 Vol 都选择 `tmdb:S01E01` 起步
+   - 如果根目录正片文件使用连续全局编号，且数量/目录篇章能对应某个非 Season 0 的 TMDB season，必须优先把这些正片映射到该 regular season 的 E01..E{{N}}；不要因为存在 SPs/Extras 子目录就把正片映射到 Season 0
+   - 当同一目录同时有根目录正片和 `SPs/OVA/Extras/NCOP/NCED` 等特典子目录时，先覆盖根目录正片；Season 0 只用于有明确 special 标题/语义的特典文件
 
 4. **只输出匹配到的文件**，未匹配到 TMDB 的文件不要输出
 
@@ -462,9 +506,12 @@ def build_common_prompt(
    - 如果 confidence 为 High/Medium，`file_mapping` 必须尽量覆盖可匹配文件
 
 7. **TMDB 合法性约束**：
-   - 只能使用上面 TMDB 列表中真实存在的 `SxxExx`
+   - 最终映射只能引用上面 TMDB 列表中真实存在的 `legal_node_id`
+   - 不要自由生成 TMDB episode number；只能先选 TMDB legal_node_id，再选择承载它的本地文件
+   - 本地编号或 Bangumi `sort/ep` 可能是系列全局编号；TMDB `episode_number` 是当前 TMDB season 内编号
+   - 例如本地 `[45]~[55]` / Bangumi 全局 45~55 如果语义上对应某个 TMDB 11 集季度，应从该季度上方列出的 11 个 actual legal_node_id 中依次选择 E01..E11，不得输出 E45..E55
    - 不要因为文件名带 `SP / OVA / Part` 就自行发明新的 Season 0 / special 编号
-    - 对拿不准或 TMDB 中不存在的文件，宁可放入 `unmatched_files`
+   - 对拿不准或 TMDB 中不存在的文件，宁可放入 `unmatched_files`
 
 8. **Bangumi 使用约束**：
    - Bangumi 只作为辅助证据，不是最终编号体系

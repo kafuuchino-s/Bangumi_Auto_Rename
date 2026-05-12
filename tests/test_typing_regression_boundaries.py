@@ -8,9 +8,6 @@ from src.utils import utils
 def test_process_enqueues_subtasks_with_structural_directory_name_inheritance(
     monkeypatch, tmp_path
 ):
-    monkeypatch.setattr("src.rename.process.Search", lambda: object())
-    monkeypatch.setattr("src.rename.process.AIProcessor", lambda: object())
-
     def fake_get_config(key):
         if key in {
             "bangumi_path",

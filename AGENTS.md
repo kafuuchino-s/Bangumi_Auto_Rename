@@ -17,7 +17,7 @@ Bangumi_Auto_Rename/
 │   ├── notification/       # Emby / Telegram 批次收尾通知
 │   ├── pages/              # NiceGUI 页面组件与对话框
 │   ├── queue/              # 懒启动 worker、批次统计、收尾触发
-│   ├── rename/             # 主重命名与 TMDB/AI 严格映射链路
+│   ├── rename/             # 主重命名、Local→Bangumi Case Agent 与兼容映射链路
 │   ├── subtitle/           # 字幕导入、自动抓取、调轴、provider 适配
 │   ├── logger.py           # 全局 structlog 配置
 │   ├── main_page.py        # UI 主页装配
@@ -40,7 +40,8 @@ Bangumi_Auto_Rename/
 | Webhook 入站 | `src/web.py` | 做 skip_tags、宿主机→Docker 路径转换、URL 路径修复、队列去重 |
 | UI 主页/入口按钮 | `src/main_page.py` | 连接添加任务、字幕导入、配置页、表格刷新 |
 | 队列与批次收尾 | `src/queue/task_queue.py` | worker 懒启动；成功任务后可触发自动抓字幕；队列 drain 后统一通知 |
-| 主重命名流程 | `src/rename/process.py` | AI-first 分类、TMDB 查询、目录拆子任务、迁移落盘 |
+| 主重命名流程 | `src/rename/process.py` | AI-first 分类、Case Agent primary 路由、目录拆子任务、迁移落盘 |
+| Local→Bangumi Case Agent | `src/rename/case_agent/` | 当前 Local→Bangumi 主线；负责 evidence request、MappingDraft、Verifier、audit |
 | TV 严格映射/后置校验 | `src/rename/ai_processor.py` | 映射路径校验、重复/越界剔除、Season 0/special 过滤、关联字幕跟随 |
 | AI 提供商与结构化输出 | `src/ai/client.py` | facade；OpenAI 运行时入口、缓存、schema 构建 |
 | Bangumi 辅助上下文 | `src/bangumi/context_builder.py` | 只给 TV prompt 提供桥接证据，不直接决定最终季集 |
@@ -60,7 +61,8 @@ Bangumi_Auto_Rename/
 | `TaskQueueManager.enqueue` | queue API | `src/queue/task_queue.py` | 入队、懒启动 worker |
 | `TaskQueueManager._start_workers` | queue lifecycle | `src/queue/task_queue.py` | drain 后触发 Emby/Telegram 汇总 |
 | `Rename.process` | pipeline entry | `src/rename/process.py` | 目录拆分与主重命名入口 |
-| `Rename._process` | pipeline core | `src/rename/process.py` | AI-first 分类、TMDB 定位、失败落盘 |
+| `Rename._process` | pipeline core | `src/rename/process.py` | AI-first 分类、Case Agent/TMDB 入口分流、失败落盘 |
+| `run_local_bangumi_case_agent` | Case Agent entry | `src/rename/case_agent/` | Local→Bangumi evidence-driven 判定入口 |
 | `AIProcessor.analyze_anime_files` | TV mapping entry | `src/rename/ai_processor.py` | Bangumi + TMDB + 本地文件分析后做 AI 映射 |
 | `SubtitleProcessor.process` | subtitle import entry | `src/subtitle/processor.py` | 压缩包到目标字幕文件的主流程 |
 | `SubtitleAutoFetcher.process_task` | auto-fetch entry | `src/subtitle/auto_fetch.py` | 成功任务后抓缺失字幕 |
@@ -73,6 +75,12 @@ Bangumi_Auto_Rename/
 - 注释与 UI 文案以中文为主。
 - Windows 是一等运行环境；路径修复、宿主机→Docker 映射、`pywin32` 假设都是真实约束。
 - `tests/` 以平铺文件为主，回归方式是“定向脚本 + 特定测试模块”，不是 repo 内声明好的单一 pytest 套餐。
+- 分析 rename lane / sample-pool 失败时，必须使用主流程同款证据（raw sample、LocalEvidence/local_sample、TMDB legal graph、Bangumi bridge、alignment hints、AI snapshots、validator issues）来推理；主流程没看到的信息不能作为修复依据。
+- 固定层只能做确定性、可验证的事情（事实抽取、合法性、coverage、duplicate、preflight）；候选 ownership、相似作品取舍、special/extra 语义成立这类不确定判断必须交给 AI，通过 Case Agent 的 evidence request、MappingDraft、Verifier issue/audit guidance 引导，不能由固定层用 `strong` hint 或 hard conflict 伪装成裁决。
+- 所有给 AI 看的短 ref（`F*`/`G*`/`C*`/season/node/evidence refs）都必须和同一 payload 内的可读 semantic card 绑定出现；AI 输出仍只写短 ref，固定层只用 ref canonicalize/validate，不能让 AI 靠裸 ref 自行查表理解语义。
+- 将样本经验写回主流程时，先抽象成条件树（触发条件、成立证据、不成立证据、fail-closed 边界），再检查是否和 no-sharing、re-edit guard、special pool、regular explicit SxxEyy guard 等全局边界冲突；必要时加入正反例区分特定情况。经验只能教 Case Agent 判断和调证，固定层仍只验证 legality、coverage、duplicate 和 preflight，不能自动写语义映射。
+- 实现、重构、验证、测试等工作若能安全拆分且避免文件冲突，优先使用多个并行 fixer；编排者负责产品语义边界、合并验证、focused/full/audit 验收，fixer 不直接决定样本该过还是 fail-closed。
+- Full146 触发策略：单样本修复只跑 focused + protection；攒够 3-5 个 bucket 修复后再跑 full；或触碰高风险全局 gate（validator、preflight、execution、全局 prompt 边界）时才立即 full。
 
 ## ANTI-PATTERNS (THIS PROJECT)
 - 不要把当前链路理解成“AI 失败就自动回退旧规则”。默认 `ai_force_strict=true`，失败应按失败任务记录。
@@ -81,6 +89,8 @@ Bangumi_Auto_Rename/
 - 不要假设 `data/` 是临时垃圾目录；这里保存 config、task、record、AI 分析、字幕抓取产物，脚本与流程会复用它。
 - 不要把队列收尾理解成“每个任务立刻通知”；当前设计是批次结束后统一 Emby/Telegram 汇总。
 - 不要忽略 `src/web.py` 的路径修复与 skip_tags 逻辑；外部路径未必能直接用。
+- 不要为 sample-pool 个例写样本专属 alias、硬编码 title 或固定 file -> legal_node 正映射；若人能用主流程同款证据判断正确，应把通用经验写回 Case Agent prompt、evidence request policy、MappingDraft/Verifier guidance 或 audit 反馈。
+- 不要让固定层把局部、脆弱、语义性的 overlap/bridge 判断升级成 hard blocker；不确定 evidence 应作为 AI 参考或 diagnostic，而不是覆盖 AI 的全局 proposal。
 - 若文档与代码冲突，以当前代码和 `CLAUDE.md` 为准。
 
 ## UNIQUE STYLES

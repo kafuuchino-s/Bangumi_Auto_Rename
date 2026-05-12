@@ -1,12 +1,38 @@
 import os
 import logging
+import time
 from logging.handlers import TimedRotatingFileHandler
 
 import structlog
 
 from .utils.path import log_path
 
-file_handler = TimedRotatingFileHandler(
+
+class FailSoftTimedRotatingFileHandler(TimedRotatingFileHandler):
+    """Timed rotating file handler that tolerates Windows multi-process rollover races.
+
+    `TimedRotatingFileHandler` renames the active log file at midnight. On Windows a
+    concurrent preview worker may still hold `BAR.log`, causing `os.rename` to raise
+    `PermissionError` and print noisy "Logging error" tracebacks. Logging must never
+    break or pollute long sample-pool runs, so rollover lock failures are skipped for
+    this process and retried at the next interval.
+    """
+
+    def doRollover(self) -> None:  # noqa: N802 - stdlib override name
+        try:
+            super().doRollover()
+        except PermissionError:
+            if self.stream is None and not self.delay:
+                self.stream = self._open()
+
+            current_time = int(time.time())
+            next_rollover = self.computeRollover(current_time)
+            while next_rollover <= current_time:
+                next_rollover += self.interval
+            self.rolloverAt = next_rollover
+
+
+file_handler = FailSoftTimedRotatingFileHandler(
     filename=log_path,
     when="midnight",
     interval=1,
