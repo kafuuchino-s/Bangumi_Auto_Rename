@@ -4,6 +4,7 @@ from src.rename.case_agent.broker_episodes import execute_episode_detail, execut
 from src.rename.case_agent.broker_registry import EvidenceCardRegistry
 from src.rename.case_agent.models import BangumiItemCard, BangumiSubjectCard, CaseBudget, CaseHeader
 from src.rename.case_agent.workspace import CaseEvidenceWorkspace
+from src.rename.case_agent.span_builder import build_bangumi_span_cards
 
 
 class FakeBangumiClient:
@@ -75,6 +76,28 @@ def test_special_scope_generates_special_br_be():
     assert len(provenance) == 1
 
 
+def test_special_scope_generates_detail_equivalent_special_span():
+    workspace = _workspace()
+    registry = EvidenceCardRegistry.from_workspace(workspace)
+    budget = BudgetLedger(workspace.budget)
+    client = FakeBangumiClient({
+        1: [
+            _episode(1, 21, type_=1, sort=1, ep=0, name='SP1'),
+            _episode(1, 22, type_=1, sort=2, ep=0, name='SP2'),
+        ]
+    })
+    from src.rename.case_agent.models import EvidenceRequest
+    request = EvidenceRequest(request_ref='REQ_SPECIAL_EPISODE_LIST_BS1', request_type='episode_list', subject_refs=['BS1'], episode_scope='special', max_episode_cards=10)
+
+    _, items, _, result, _ = execute_episode_list(request, workspace, registry, budget, client)
+
+    assert [item.item_kind for item in items] == ['special', 'special']
+    assert result.bangumi_span_cards
+    assert result.bangumi_span_cards[0].item_kind == 'special'
+    assert result.bangumi_span_cards[0].detail_equivalent is True
+    assert result.bangumi_span_cards[0].target_refs == [item.ref for item in items]
+
+
 def test_special_scope_creates_synthetic_subject_level_target_when_no_episode_items():
     workspace = _workspace(subjects=[BangumiSubjectCard(ref='BS1', subject_id=1, platform='Movie', source_form_hint='movie', eps=1, total_episodes=1, name='Movie Name')])
     registry = EvidenceCardRegistry.from_workspace(workspace)
@@ -94,6 +117,37 @@ def test_special_scope_creates_synthetic_subject_level_target_when_no_episode_it
     assert items[0].item_kind == 'movie'
     assert items[0].source_form_hint == 'movie'
     assert len(provenance) == 1
+
+
+def test_movie_subject_regular_singleton_episode_inherits_movie_target_shape():
+    workspace = _workspace(subjects=[BangumiSubjectCard(ref='BS1', subject_id=1, platform='Movie', source_form_hint='movie', eps=1, total_episodes=1, name='Movie Name')])
+    registry = EvidenceCardRegistry.from_workspace(workspace)
+    budget = BudgetLedger(workspace.budget)
+    client = FakeBangumiClient({1: [_episode(1, 11, type_=0, sort=1, ep=1, name='Movie Name')]})
+    from src.rename.case_agent.models import EvidenceRequest
+    request = EvidenceRequest(request_ref='REQ_MOVIE', request_type='episode_list', subject_refs=['BS1'], episode_scope='all_if_small', max_episode_cards=10)
+
+    groups, items, provenance, result, _ = execute_episode_list(request, workspace, registry, budget, client)
+
+    assert result.accepted is True
+    assert len(groups) == 1
+    assert groups[0].group_kind == 'special_group'
+    assert len(items) == 1
+    assert items[0].item_kind == 'movie'
+    assert items[0].source_form_hint == 'movie'
+    assert items[0].relation_to_main == ''
+    assert result.response_refs == [items[0].ref]
+    assert len(provenance) == 1
+
+
+def test_bangumi_span_builder_treats_movie_items_as_special_like_span():
+    spans = build_bangumi_span_cards(
+        bangumi_items=[BangumiItemCard(ref='BE1', item_kind='movie', subject_ref='BS1', title='Movie')]
+    )
+
+    assert len(spans) == 1
+    assert spans[0].item_kind == 'special'
+    assert spans[0].special_count == 1
 
 
 def test_all_if_small_over_max_returns_rejected_empty():

@@ -13,6 +13,7 @@ Your job is not to map files directly. Your job is to judge the case using the d
 - Do **not** try to judge the whole case from one full dossier dump. Start with the bounded overview, and request more evidence when the overview is insufficient.
 - `salience_overview` is a factual map for scanning case hot spots, not a decision surface.
 - Do not use salience to declare strong candidates, exclude candidates, or invent mappings.
+- Read `notebook_compact.case_briefing` and `notebook_compact.investigation_notebook` as explicit case memory. Use it to understand work units, rejected candidates, target ownership, and unresolved questions before declaring a semantic blocker.
 
 ## Span reasoning
 
@@ -58,8 +59,8 @@ Choose exactly one action:
 When `ROUND_KIND` is `issue_response`, the judge is seeing verifier issues from the previous output. It must submit corrected `action=submit_verdict` when possible, or `action=fail_closed` when not safe. Populate `issue_responses` to explain how issues were addressed. Do not use `action=issue_response` as a terminal explanation-only response.
 If `issue_response` cannot produce a corrected executable verdict, keep the explanation in `issue_responses` and switch to `fail_closed`; do not leave the case in an explanation-only state.
 
-When `ROUND_KIND` is the final judge opportunity, do **not** request more evidence. Choose only `submit_verdict` or `fail_closed`, and make the output self-contained.
-If the final round still has coverage gaps or missing support that cannot be repaired safely, switch to `fail_closed` with explicit reasons; do not keep asking for evidence, and do not leave the case in an explanation-only state.
+When `ROUND_KIND` is the safety-cap final judge opportunity, do **not** request more evidence. Choose only `submit_verdict` or `fail_closed`, and make the output self-contained. The safety cap is a loop guard, not a normal fixed-step investigation plan.
+If the safety-cap final round still has coverage gaps or missing support that cannot be repaired safely, switch to `fail_closed` with explicit reasons; do not keep asking for evidence, and do not leave the case in an explanation-only state.
 
 ## Reasoning style
 
@@ -145,7 +146,7 @@ Allowed evidence request types:
 - Prefer a bounded evidence request first: `target_window` for a subject/sort slice, `target_detail` for key boundary/sample target refs, or `local_file_detail` for boundary/representative main files.
 - For `large_case`, `target_surface_large`, or `context_budget_risk`, request neutral local evidence before failing closed whenever available detail request types and budget allow it.
 - Only use `fail_closed` on the initial round when evidence cannot plausibly help: no budget, no legal anchor, or the missing detail cannot be requested.
-- On the final round, if the case is still not safe to resolve, prefer `fail_closed` with explicit reasons over another evidence request.
+- On the safety-cap final round, if the case is still not safe to resolve, prefer `fail_closed` with explicit reasons over another evidence request.
 - Non-semantic request templates you may use include `target_window` and `local_file_detail`; keep them generic and do not invent sample-specific requests.
 - Use `target_span` when you need span proof for a large continuous package and cannot safely conclude alignment from the compact span cards.
 - `LS_PACKAGE` is overview-only; when requesting `target_span`, ask for child spans instead of `LS_PACKAGE`.

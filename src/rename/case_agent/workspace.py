@@ -10,6 +10,7 @@ from .models import (
     BangumiRelationCard,
     BangumiSubjectCard,
     CaseBudget,
+    CaseBriefingOutput,
     CaseContract,
     CaseDossier,
     CaseHeader,
@@ -17,6 +18,7 @@ from .models import (
     EvidencePlan,
     EvidenceBatchResult,
     EvidenceRequestResult,
+    InvestigationNotebook,
     LocalClusterCard,
     LocalFileCard,
     LocalSpanCard,
@@ -56,6 +58,8 @@ class CaseEvidenceWorkspace:
     mapping_draft_patches: list[MappingDraftPatch] = field(default_factory=list)
     mapping_draft_candidate_comparisons: list[CandidateComparison] = field(default_factory=list)
     plan_state: EvidencePlan = field(default_factory=EvidencePlan)
+    case_briefing: CaseBriefingOutput | None = None
+    investigation_notebook: InvestigationNotebook = field(default_factory=InvestigationNotebook)
 
     @classmethod
     def from_cards(
@@ -78,6 +82,8 @@ class CaseEvidenceWorkspace:
         mapping_draft: MappingDraft | None = None,
         mapping_draft_patches: Sequence[MappingDraftPatch] = (),
         mapping_draft_candidate_comparisons: Sequence[CandidateComparison] = (),
+        case_briefing: CaseBriefingOutput | None = None,
+        investigation_notebook: InvestigationNotebook | None = None,
         previous_hypotheses: Sequence = (),
         previous_evidence_results: Sequence[EvidenceBatchResult] = (),
         verifier_issues: Sequence[VerifierIssue] = (),
@@ -114,6 +120,8 @@ class CaseEvidenceWorkspace:
             mapping_draft_patches=list(mapping_draft_patches),
             mapping_draft_candidate_comparisons=list(mapping_draft_candidate_comparisons),
             plan_state=plan_state or EvidencePlan(),
+            case_briefing=case_briefing,
+            investigation_notebook=investigation_notebook or InvestigationNotebook(),
         )
 
     def visible_refs(self) -> VisibleRefCatalog:
@@ -145,6 +153,8 @@ class CaseEvidenceWorkspace:
             *catalog.bangumi_item_refs,
             *catalog.query_refs,
             *catalog.target_refs,
+            *[card.ref for card in self.local_span_cards],
+            *[str(getattr(card, 'ref', '') or '') for card in self.bangumi_span_cards],
             *[card.ref for card in self.provenance_cards],
         }
 
@@ -197,6 +207,8 @@ class CaseEvidenceWorkspace:
             mapping_draft=self.mapping_draft,
             mapping_draft_patches=self.mapping_draft_patches,
             mapping_draft_candidate_comparisons=self.mapping_draft_candidate_comparisons,
+            case_briefing=self.case_briefing,
+            investigation_notebook=self.investigation_notebook,
             previous_hypotheses=self.previous_hypotheses,
             previous_evidence_results=[*self.previous_evidence_results, *[rr for rr in evidence_results if isinstance(rr, EvidenceBatchResult)]],
             verifier_issues=self.verifier_issues,
@@ -250,9 +262,12 @@ class CaseEvidenceWorkspace:
             mapping_draft=self.mapping_draft,
             mapping_draft_patches=self.mapping_draft_patches,
             mapping_draft_candidate_comparisons=self.mapping_draft_candidate_comparisons,
+            case_briefing=self.case_briefing,
+            investigation_notebook=self.investigation_notebook,
             previous_hypotheses=self.previous_hypotheses,
             previous_evidence_results=[*self.previous_evidence_results, *[rr for rr in evidence_results if isinstance(rr, EvidenceBatchResult)]],
             verifier_issues=self.verifier_issues,
+            diagnostics=self.diagnostics,
             plan_state=self.plan_state,
         )
         object.__setattr__(updated, 'seen_detail_refs', list(self.seen_detail_refs))
@@ -277,6 +292,8 @@ class CaseEvidenceWorkspace:
             mapping_draft=draft,
             mapping_draft_patches=self.mapping_draft_patches,
             mapping_draft_candidate_comparisons=self.mapping_draft_candidate_comparisons,
+            case_briefing=self.case_briefing,
+            investigation_notebook=self.investigation_notebook,
             previous_hypotheses=self.previous_hypotheses,
             previous_evidence_results=self.previous_evidence_results,
             verifier_issues=self.verifier_issues,
@@ -322,6 +339,8 @@ class CaseEvidenceWorkspace:
             mapping_draft=self.mapping_draft,
             mapping_draft_patches=self.mapping_draft_patches,
             mapping_draft_candidate_comparisons=self.mapping_draft_candidate_comparisons,
+            case_briefing=self.case_briefing,
+            investigation_notebook=self.investigation_notebook,
             previous_hypotheses=self.previous_hypotheses,
             previous_evidence_results=self.previous_evidence_results,
             verifier_issues=self.verifier_issues,
@@ -347,7 +366,7 @@ class CaseEvidenceWorkspace:
         for batch in self.previous_evidence_results:
             for rr in getattr(batch, 'request_results', []) or []:
                 bangumi_span_cards.extend(list(getattr(rr, 'bangumi_span_cards', []) or []))
-        return CaseDossier(
+        dossier = CaseDossier(
             header=self.header,
             budget=self.budget,
             contract=active_contract,
@@ -374,7 +393,10 @@ class CaseEvidenceWorkspace:
             bangumi_span_cards=bangumi_span_cards or build_bangumi_span_cards(bangumi_items=list(self.bangumi_items)),
             plan_state=self.plan_state,
             round_context=round_context,
+            case_briefing=self.case_briefing,
+            investigation_notebook=self.investigation_notebook,
         )
+        return dossier
 
     def with_seen_detail_refs(self, refs: Sequence[str]) -> 'CaseEvidenceWorkspace':
         merged = list(dict.fromkeys([*self.seen_detail_refs, *refs]))
@@ -395,6 +417,8 @@ class CaseEvidenceWorkspace:
             mapping_draft=self.mapping_draft,
             mapping_draft_patches=self.mapping_draft_patches,
             mapping_draft_candidate_comparisons=self.mapping_draft_candidate_comparisons,
+            case_briefing=self.case_briefing,
+            investigation_notebook=self.investigation_notebook,
             previous_hypotheses=self.previous_hypotheses,
             previous_evidence_results=self.previous_evidence_results,
             verifier_issues=self.verifier_issues,
@@ -411,6 +435,8 @@ class CaseEvidenceWorkspace:
             mapping[card.ref] = 'local_file'
         for card in self.local_clusters:
             mapping[card.ref] = 'local_cluster'
+        for card in self.local_span_cards:
+            mapping[card.ref] = 'local_span'
         for card in self.bangumi_subjects:
             mapping[card.ref] = 'bangumi_subject'
         for card in self.bangumi_relations:
@@ -419,6 +445,10 @@ class CaseEvidenceWorkspace:
             mapping[card.ref] = 'bangumi_group'
         for card in self.bangumi_items:
             mapping[card.ref] = 'bangumi_item'
+        for card in self.bangumi_span_cards:
+            ref = str(getattr(card, 'ref', '') or '')
+            if ref:
+                mapping[ref] = 'bangumi_span'
         for card in self.query_cards:
             mapping[card.ref] = 'query'
         for card in self.provenance_cards:

@@ -4,6 +4,7 @@ from collections import Counter
 from typing import Any
 
 from .models import BangumiSpanCard, CaseDossier, LocalSpanCard, MappingDraft, MappingDraftCoverageSummary, MappingDraftPatch, MappingDraftRow, VerifierIssue
+from .special_investigation import is_special_eligible_span
 from .supplemental_policy import ALLOWED_SUPPLEMENTAL_REASON_KINDS, supplemental_row_policy_issues
 
 
@@ -13,6 +14,18 @@ _NEEDS_EVIDENCE_REASON_KINDS = {
 }
 _UNALIGNED_REASON_KINDS = {
     'no_legal_target', 'ambiguous_ownership', 'special_regular_conflict', 'coverage_gap_unresolved', 'insufficient_evidence',
+}
+_PROMPT_SCAFFOLD_REF_LABELS = {
+    'candidate_comparisons',
+    'current_draft',
+    'draft_rows',
+    'evidence_gaps',
+    'findings',
+    'mapping_draft',
+    'support_refs',
+    'verifier_issue',
+    'verifier_issues',
+    'visible_refs',
 }
 
 
@@ -41,17 +54,40 @@ def _visible_refs(dossier: CaseDossier) -> set[str]:
     return {ref for ref in refs if ref}
 
 
+def _local_file_count_for_ref(dossier: CaseDossier, local_ref: str) -> int:
+    local_files = {
+        str(getattr(card, 'ref', '') or '')
+        for card in getattr(dossier, 'local_files', []) or []
+        if str(getattr(card, 'ref', '') or '')
+    }
+    if local_ref in local_files:
+        return 1
+    span = next((card for card in getattr(dossier, 'local_span_cards', []) or [] if str(getattr(card, 'ref', '') or '') == local_ref), None)
+    if span is None:
+        return 0
+    refs = list(getattr(span, 'file_refs', []) or [])
+    return int(getattr(span, 'file_ref_count', 0) or len(refs))
+
+
 def build_initial_mapping_draft(dossier: CaseDossier) -> MappingDraft:
     bangumi_span_cards = [card for card in getattr(dossier, 'bangumi_span_cards', []) or [] if bool(getattr(card, 'detail_equivalent', False))]
-    detail_target_refs = _dedupe_preserve_order([card.ref for card in bangumi_span_cards])
+    regular_detail_target_refs = _dedupe_preserve_order([
+        card.ref for card in bangumi_span_cards
+        if str(getattr(card, 'item_kind', '') or '') != 'special'
+    ])
+    special_detail_target_refs = _dedupe_preserve_order([
+        card.ref for card in bangumi_span_cards
+        if str(getattr(card, 'item_kind', '') or '') == 'special'
+    ])
     child_local_spans = [card for card in list(getattr(dossier, 'local_span_cards', []) or []) if str(getattr(card, 'span_scope', '') or '') != 'package']
     rows: list[MappingDraftRow] = []
     for card in child_local_spans:
+        candidate_target_refs = special_detail_target_refs if is_special_eligible_span(card, dossier) else regular_detail_target_refs
         rows.append(MappingDraftRow(
             row_ref=f'MDR{len(rows) + 1}',
             local_ref=card.ref,
             local_ref_kind='span',
-            candidate_target_refs=list(detail_target_refs),
+            candidate_target_refs=list(candidate_target_refs),
         ))
     if not rows:
         package_span = next((card for card in list(getattr(dossier, 'local_span_cards', []) or []) if str(getattr(card, 'span_scope', '') or '') == 'package'), None)
@@ -60,7 +96,7 @@ def build_initial_mapping_draft(dossier: CaseDossier) -> MappingDraft:
                 row_ref='MDR1',
                 local_ref=package_span.ref,
                 local_ref_kind='span',
-                candidate_target_refs=list(detail_target_refs),
+                candidate_target_refs=list(regular_detail_target_refs),
             ))
     return MappingDraft(rows=rows, version=1)
 
@@ -171,6 +207,20 @@ def _visible_bangumi_item_refs(dossier: CaseDossier) -> set[str]:
     return {ref for ref in refs if ref and ref.startswith('BE') and not ref.startswith('BES')}
 
 
+def _detail_span_for_item_ref(dossier: CaseDossier, target_ref: str, *, expected_count: int = 0) -> str:
+    for span in getattr(dossier, 'bangumi_span_cards', []) or []:
+        if not bool(getattr(span, 'detail_equivalent', False)):
+            continue
+        target_refs = list(getattr(span, 'target_refs', []) or [])
+        if target_ref not in target_refs:
+            continue
+        span_count = int(getattr(span, 'target_ref_count', 0) or len(target_refs))
+        if expected_count and span_count != expected_count:
+            continue
+        return str(getattr(span, 'ref', '') or '')
+    return ''
+
+
 def _row_by_local_ref(draft: MappingDraft, local_ref: str) -> MappingDraftRow | None:
     for row in draft.rows:
         if row.local_ref == local_ref:
@@ -183,6 +233,17 @@ def _row_ref_to_local_ref(draft: MappingDraft, ref: str) -> str:
         if ref == row.row_ref:
             return row.local_ref
     return ref
+
+
+def _clean_ref_token(value: str) -> str:
+    # Mechanical cleanup only: refs are short tokens, so trim transport/prompt
+    # punctuation without trying to infer a different ref.
+    return str(value or '').strip().strip('`"\'，,;；')
+
+
+def _clean_ref_list(values: list[str]) -> list[str]:
+    refs = [_clean_ref_token(str(value or '')) for value in list(values or [])]
+    return _dedupe_preserve_order([ref for ref in refs if ref.casefold() not in _PROMPT_SCAFFOLD_REF_LABELS])
 
 
 def normalize_mapping_patch_op(patch: MappingDraftPatch) -> MappingDraftPatch:
@@ -202,6 +263,12 @@ def _mapping_patch_effective_op(patch: MappingDraftPatch) -> str:
 
 def _canonicalize_patch_for_dossier(patch: MappingDraftPatch, dossier: CaseDossier, draft: MappingDraft | None = None) -> MappingDraftPatch:
     normalized = normalize_mapping_patch_op(patch)
+    normalized = normalized.model_copy(update={
+        'local_ref': _clean_ref_token(normalized.local_ref),
+        'target_ref': _clean_ref_token(normalized.target_ref),
+        'target_span_ref': _clean_ref_token(normalized.target_span_ref),
+        'support_refs': _clean_ref_list(list(normalized.support_refs or [])),
+    })
     effective_draft = draft or getattr(dossier, 'mapping_draft', None)
     if effective_draft is not None:
         normalized = normalized.model_copy(update={
@@ -223,6 +290,15 @@ def _canonicalize_patch_for_dossier(patch: MappingDraftPatch, dossier: CaseDossi
         })
     if normalized.op == 'map_to_bangumi' and normalized.target_ref in bangumi_item_refs and not normalized.target_span_ref:
         normalized = normalized.model_copy(update={'mapping_mode': 'explicit'})
+        local_count = _local_file_count_for_ref(dossier, normalized.local_ref)
+        if local_count > 1:
+            span_ref = _detail_span_for_item_ref(dossier, normalized.target_ref, expected_count=local_count)
+            if span_ref:
+                normalized = normalized.model_copy(update={
+                    'target_ref': '',
+                    'target_span_ref': span_ref,
+                    'mapping_mode': 'span_by_index',
+                })
     if normalized.op == 'map_to_bangumi' and normalized.target_span_ref in bangumi_item_refs and normalized.target_span_ref not in bangumi_span_refs and not normalized.target_ref:
         normalized = normalized.model_copy(update={
             'target_ref': normalized.target_span_ref,
@@ -274,6 +350,8 @@ def validate_mapping_patch(patch: MappingDraftPatch, dossier: CaseDossier, draft
             issues.append(_issue(patch.local_ref, 'unknown_target_ref', 'target_ref must exist for explicit mapping'))
         if patch.target_ref and patch.mapping_mode == 'explicit' and patch.target_ref not in bangumi_item_refs:
             issues.append(_issue(patch.local_ref, 'unknown_target_ref', 'explicit target_ref must be a visible Bangumi item ref'))
+        if patch.mapping_mode == 'explicit' and patch.target_ref and _local_file_count_for_ref(dossier, patch.local_ref) != 1:
+            issues.append(_issue(patch.local_ref, 'invalid_explicit_multi_file_mapping', 'explicit BE item mapping requires exactly one local file; use a detail-equivalent Bangumi span for multi-file rows'))
         if patch.mapping_mode not in ('explicit', 'span_by_index'):
             issues.append(_issue(patch.local_ref, 'invalid_mapping_mode', 'mapping_mode must be explicit or span_by_index'))
     elif patch.op == 'mark_non_bangumi_or_supplemental':
@@ -343,6 +421,12 @@ def apply_mapping_patches(draft: MappingDraft, patches: list[MappingDraftPatch],
             row.disposition = 'needs_more_evidence'
             row.status = 'unresolved'
             row.mapping_mode = 'unresolved'
+            row.support_refs = list(patch.support_refs or [])
+            row.requested_request_types = list(patch.requested_request_types or [])
+            row.query_hints = list(patch.query_hints or [])
+            row.subject_refs = list(patch.subject_refs or [])
+            row.item_refs = list(patch.item_refs or [])
+            row.local_refs = list(patch.local_refs or [])
             row.reason_kind = patch.reason_kind or row.reason_kind
             row.reason = patch.reason or row.reason
         elif patch.op == 'mark_unaligned_fail_closed':

@@ -10,6 +10,7 @@ from .models import (
     BangumiRelationCard,
     BangumiSubjectCard,
     CaseBudget,
+    CaseBriefingOutput,
     CaseContract,
     CaseDossier,
     BoundedCaseDossier,
@@ -20,11 +21,13 @@ from .models import (
     ProvenanceCard,
     QueryCard,
     EvidenceBatchResult,
+    InvestigationNotebook,
     VerifierIssue,
     VisibleRefCatalog,
 )
 from .span_builder import build_bangumi_span_cards, compact_span_card
 from .salience import build_salience_overview
+from .notebook import compact_case_briefing, compact_investigation_notebook
 
 
 def _dedupe_preserve_order(values: Iterable[str]) -> list[str]:
@@ -178,6 +181,8 @@ def build_case_dossier(
     previous_hypotheses=None,
     evidence_results=None,
     verifier_issues=None,
+    case_briefing: CaseBriefingOutput | None = None,
+    investigation_notebook: InvestigationNotebook | None = None,
 ) -> CaseDossier:
     query_cards_final = query_cards or build_query_cards_from_local_cards(local_files, local_clusters)
     contract_final = contract or build_default_contract(local_files, bangumi_items)
@@ -214,6 +219,8 @@ def build_case_dossier(
         verifier_issues=[] if verifier_issues is None else verifier_issues,
         local_span_cards=[],
         bangumi_span_cards=bangumi_span_cards,
+        case_briefing=case_briefing,
+        investigation_notebook=investigation_notebook or InvestigationNotebook(),
     )
 
 
@@ -344,6 +351,8 @@ def build_bounded_case_dossier(dossier: CaseDossier, *, title_cue_limit: int = 5
         previous_hypotheses=list(_get_value(dossier, 'previous_hypotheses')),
         previous_evidence_results=previous_evidence_results,
         verifier_issues=list(_get_value(dossier, 'verifier_issues')),
+        case_briefing=_get_value(dossier, 'case_briefing', None),
+        investigation_notebook=_get_value(dossier, 'investigation_notebook', InvestigationNotebook()),
     ))
     return BoundedCaseDossier(
         counts=counts,
@@ -369,6 +378,8 @@ def build_bounded_case_dossier(dossier: CaseDossier, *, title_cue_limit: int = 5
         header=header,
         budget=budget,
         local_span_cards=[card.model_dump(mode='json') for card in local_span_cards],
+        case_briefing=compact_case_briefing(_get_value(dossier, 'case_briefing', None)),
+        investigation_notebook=compact_investigation_notebook(_get_value(dossier, 'investigation_notebook', InvestigationNotebook())),
     )
 
 

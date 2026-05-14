@@ -83,13 +83,18 @@ def _output_budget_audit(output: CaseJudgeOutput) -> dict[str, object]:
     }
 
 
-def call_case_judge(ai_client: object, dossier: CaseDossier, *, round_kind: str = 'judge') -> CaseJudgeCallResult:
+def _provider_retry_delay(attempt_index: int) -> None:
+    time.sleep(min(0.2, 0.05 * max(1, attempt_index)))
+
+
+def call_case_judge(ai_client: object, dossier: CaseDossier, *, round_kind: str = 'judge', max_provider_retries: int = 2) -> CaseJudgeCallResult:
     prompt = render_local_bangumi_judge_prompt(dossier, round_kind=round_kind)
     started = time.time()
     projection_kind = 'initial_projection' if round_kind == 'initial' else ('evidence_rejudge_projection' if round_kind == 'evidence_rejudge' else 'issue_response_projection')
     final_round = bool(getattr(dossier.header, 'max_rounds', 0)) and getattr(dossier.header, 'round_index', 0) >= max(0, getattr(dossier.header, 'max_rounds', 0) - 1)
     audit = {
         'round_kind': round_kind,
+        'call_name': 'call_case_judge',
         'context_kind': projection_kind,
         'action_expected': 'request_evidence' if round_kind == 'initial' and not final_round else ('submit_verdict_or_fail_closed_only' if final_round else ('submit_verdict_or_fail_closed' if round_kind == 'issue_response' else 'submit_verdict_or_fail_closed_or_request_evidence')),
         'input_projection_bytes': len(prompt.encode('utf-8')),
@@ -132,17 +137,28 @@ def call_case_judge(ai_client: object, dossier: CaseDossier, *, round_kind: str 
             'fail_closed_reason_kinds': [],
         }
     if final_round:
-        audit['policy_issue_summary'] = 'final_round_budget_guard: choose submit_verdict_or_fail_closed_only; request_evidence is forbidden'
+        audit['policy_issue_summary'] = 'safety_cap_final_round_guard: choose submit_verdict_or_fail_closed_only; request_evidence is forbidden'
     elif round_kind == 'policy_retry':
         audit['policy_issue_summary'] = 'large_case/detail_cards_insufficient/budget_or_request_types_available: choose request_evidence or explain no legal anchor'
-    try:
-        response = _call_ai_with_schema(ai_client, prompt, CaseJudgeOutput)
+    retry_audits: list[dict[str, object]] = []
+    attempts = max(1, int(max_provider_retries or 0) + 1)
+    last_response: object | None = None
+    for attempt in range(1, attempts + 1):
+        try:
+            response = _call_ai_with_schema(ai_client, prompt, CaseJudgeOutput)
+        except Exception as exc:
+            return CaseJudgeCallResult(ok=False, output=None, prompt=prompt, error=f'case judge call failed: {exc}', raw_response=None, elapsed_ms=int((time.time()-started)*1000), request_audit={**audit, 'error_kind': 'call_failed', 'error_message': str(exc), 'provider_retry_count': attempt - 1, 'provider_retry_audits': retry_audits})
+        last_response = response
         raw_response = _extract_response_content(response)
         if raw_response is None:
-            return CaseJudgeCallResult(ok=False, output=None, prompt=prompt, error='case judge no response: provider returned None', raw_response=response, elapsed_ms=int((time.time()-started)*1000), request_audit={**audit, 'error_kind': 'provider_no_response', 'error_message': 'provider returned None'})
+            retry_audits.append({'attempt': attempt, 'error_kind': 'provider_no_response', 'error_message': 'provider returned None'})
+            if attempt < attempts:
+                _provider_retry_delay(attempt)
+                continue
+            return CaseJudgeCallResult(ok=False, output=None, prompt=prompt, error='case judge no response: provider returned None', raw_response=response, elapsed_ms=int((time.time()-started)*1000), request_audit={**audit, 'error_kind': 'provider_no_response', 'error_message': 'provider returned None', 'provider_retry_count': attempt - 1, 'provider_retry_audits': retry_audits})
         if isinstance(raw_response, CaseJudgeOutput):
             audit = {**audit, **_output_budget_audit(raw_response)}
-            return CaseJudgeCallResult(ok=True, output=raw_response, prompt=prompt, error='', raw_response=response, elapsed_ms=int((time.time()-started)*1000), request_audit={**audit})
+            return CaseJudgeCallResult(ok=True, output=raw_response, prompt=prompt, error='', raw_response=response, elapsed_ms=int((time.time()-started)*1000), request_audit={**audit, 'provider_retry_count': attempt - 1, 'provider_retry_audits': retry_audits})
 
         try:
             if isinstance(raw_response, str):
@@ -150,11 +166,10 @@ def call_case_judge(ai_client: object, dossier: CaseDossier, *, round_kind: str 
             else:
                 output = CaseJudgeOutput.model_validate(raw_response)
         except ValidationError as exc:
-            return CaseJudgeCallResult(ok=False, output=None, prompt=prompt, error=f'case judge schema parse error: {exc}', raw_response=response, elapsed_ms=int((time.time()-started)*1000), request_audit={**audit, 'error_kind': 'schema_parse_error', 'error_message': str(exc)})
+            return CaseJudgeCallResult(ok=False, output=None, prompt=prompt, error=f'case judge schema parse error: {exc}', raw_response=response, elapsed_ms=int((time.time()-started)*1000), request_audit={**audit, 'error_kind': 'schema_parse_error', 'error_message': str(exc), 'provider_retry_count': attempt - 1, 'provider_retry_audits': retry_audits})
         except Exception as exc:
-            return CaseJudgeCallResult(ok=False, output=None, prompt=prompt, error=f'case judge parse error: {exc}', raw_response=response, elapsed_ms=int((time.time()-started)*1000), request_audit={**audit, 'error_kind': 'parse_error', 'error_message': str(exc)})
+            return CaseJudgeCallResult(ok=False, output=None, prompt=prompt, error=f'case judge parse error: {exc}', raw_response=response, elapsed_ms=int((time.time()-started)*1000), request_audit={**audit, 'error_kind': 'parse_error', 'error_message': str(exc), 'provider_retry_count': attempt - 1, 'provider_retry_audits': retry_audits})
 
         audit = {**audit, **_output_budget_audit(output)}
-        return CaseJudgeCallResult(ok=True, output=output, prompt=prompt, error='', raw_response=response, elapsed_ms=int((time.time()-started)*1000), request_audit={**audit})
-    except Exception as exc:
-        return CaseJudgeCallResult(ok=False, output=None, prompt=prompt, error=f'case judge call failed: {exc}', raw_response=None, elapsed_ms=int((time.time()-started)*1000), request_audit={**audit, 'error_kind': 'call_failed', 'error_message': str(exc)})
+        return CaseJudgeCallResult(ok=True, output=output, prompt=prompt, error='', raw_response=response, elapsed_ms=int((time.time()-started)*1000), request_audit={**audit, 'provider_retry_count': attempt - 1, 'provider_retry_audits': retry_audits})
+    return CaseJudgeCallResult(ok=False, output=None, prompt=prompt, error='case judge no response: provider returned None', raw_response=last_response, elapsed_ms=int((time.time()-started)*1000), request_audit={**audit, 'error_kind': 'provider_no_response', 'error_message': 'provider returned None', 'provider_retry_count': max(0, attempts - 1), 'provider_retry_audits': retry_audits})

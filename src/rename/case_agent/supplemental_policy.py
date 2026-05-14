@@ -6,6 +6,7 @@ from .models import CaseDossier, LocalFileCard, LocalSpanCard, MappingDraftRow, 
 
 
 ALLOWED_SUPPLEMENTAL_REASON_KINDS = {
+    'bangumi_target_absent',
     'bonus_video',
     'pv_cm',
     'creditless_op_ed',
@@ -32,6 +33,8 @@ _MULTI_FILE_SUPPLEMENTAL_REASON_KINDS = {
 
 _SMALL_MULTI_FILE_REASON_KINDS = {'bonus_video', 'non_episode_video', 'making_of'}
 _SMALL_MULTI_FILE_LIMIT = 4
+_BROAD_TARGET_ABSENT_LIMIT = 24
+_BANGUMI_TARGET_ABSENT_REASON_KIND = 'bangumi_target_absent'
 
 
 def _issue(ref: str, issue_code: str, message: str, *, related_refs: list[str] | None = None) -> VerifierIssue:
@@ -255,6 +258,94 @@ def _is_regular_numbered_like_span(span: LocalSpanCard | None, file_count: int) 
     return False
 
 
+def _visible_assignable_candidate_refs(dossier: CaseDossier, row: MappingDraftRow) -> list[str]:
+    detail_span_refs = {
+        str(getattr(card, 'ref', '') or '')
+        for card in list(getattr(dossier, 'bangumi_span_cards', []) or [])
+        if str(getattr(card, 'ref', '') or '') and bool(getattr(card, 'detail_equivalent', False))
+    }
+    item_refs = {
+        str(getattr(card, 'ref', '') or '')
+        for card in list(getattr(dossier, 'bangumi_items', []) or [])
+        if str(getattr(card, 'ref', '') or '')
+    }
+    visible_refs = getattr(dossier, 'visible_refs', None)
+    item_refs.update(str(ref or '') for ref in list(getattr(visible_refs, 'bangumi_item_refs', []) or []) if str(ref or ''))
+    item_refs.update(str(ref or '') for ref in list(getattr(visible_refs, 'target_refs', []) or []) if str(ref or ''))
+    item_refs.update(str(ref or '') for ref in list(getattr(dossier, 'assignable_target_refs', []) or []) if str(ref or ''))
+    item_refs.update(str(ref or '') for ref in list(getattr(dossier, 'detailed_card_refs', []) or []) if str(ref or ''))
+    item_refs.update(str(ref or '') for ref in list(getattr(dossier, 'seen_detail_refs', []) or []) if str(ref or ''))
+    candidates = []
+    for ref in list(getattr(row, 'candidate_target_refs', []) or []):
+        ref = str(ref or '')
+        if not ref:
+            continue
+        if ref in detail_span_refs or (ref.startswith('BE') and ref in item_refs):
+            candidates.append(ref)
+    return _dedupe_preserve_order(candidates)
+
+
+def _text_supports_target_absent_shape(text: str) -> bool:
+    lowered = ' '.join(str(text or '').casefold().split())
+    if not lowered:
+        return False
+    markers = (
+        'ova',
+        'oav',
+        'oad',
+        'sp',
+        'special',
+        'tokubetsu',
+        'extra',
+        'bonus',
+        'non episode',
+        'non-episode',
+        'recap',
+        'digest',
+        'side story',
+        'side-story',
+        '番外',
+        '特别',
+        '特別',
+        '映像特典',
+        '特典映像',
+    )
+    return any(marker in lowered for marker in markers)
+
+
+def _bangumi_target_absent_policy_issues(
+    dossier: CaseDossier,
+    row: MappingDraftRow,
+    *,
+    row_ref: str,
+    local_ref: str,
+    covered_main_refs: list[str],
+    span: LocalSpanCard | None,
+    file_count: int,
+    local_text: str,
+    regular_like: bool,
+) -> list[VerifierIssue]:
+    support_refs = set(str(ref or '') for ref in list(getattr(row, 'support_refs', []) or []) if str(ref or ''))
+    if local_ref not in support_refs and not (support_refs & set(covered_main_refs)):
+        return [_issue(
+            row_ref,
+            'missing_support_refs',
+            'bangumi_target_absent requires support_refs containing the local row or covered file refs',
+            related_refs=[local_ref, *covered_main_refs[:8]],
+        )]
+    candidate_refs = _visible_assignable_candidate_refs(dossier, row)
+    if candidate_refs:
+        return [_issue(
+            row_ref,
+            'bangumi_target_absent_has_visible_candidate',
+            'bangumi_target_absent cannot be used while visible assignable candidate refs remain on the row',
+            related_refs=[local_ref, *candidate_refs[:8]],
+        )]
+    # Shape/regular-vs-special is semantic and belongs to MappingDraftEditor.
+    # The fixed layer only verifies support refs and visible-candidate misuse.
+    return []
+
+
 def _each_file_supports_category(dossier: CaseDossier, file_refs: list[str], reason_kind: str) -> bool:
     return all(
         supplemental_category_supported_by_text(reason_kind, local_ref_text_for_supplemental_issue(dossier, ref))
@@ -283,6 +374,19 @@ def supplemental_row_policy_issues(dossier: CaseDossier, row: MappingDraftRow) -
     ])
     category_supported = supplemental_category_supported_by_text(reason_kind, local_text)
     regular_like = _is_regular_numbered_like_span(span, file_count)
+
+    if reason_kind == _BANGUMI_TARGET_ABSENT_REASON_KIND:
+        return _bangumi_target_absent_policy_issues(
+            dossier,
+            row,
+            row_ref=row_ref,
+            local_ref=local_ref,
+            covered_main_refs=covered_main_refs,
+            span=span,
+            file_count=file_count,
+            local_text=local_text,
+            regular_like=regular_like,
+        )
 
     if reason_kind == 'other_supplemental' and file_count > 1:
         return [_issue(

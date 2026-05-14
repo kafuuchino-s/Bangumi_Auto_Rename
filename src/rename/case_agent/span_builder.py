@@ -56,6 +56,11 @@ def build_bangumi_span_cards(*, bangumi_items: list[BangumiItemCard] | None = No
     target_refs = [item.ref for item in items if item.ref]
     if not target_refs:
         return []
+    normalized_item_kinds = [
+        'special' if (item.item_kind or 'unknown') == 'movie' else ('regular' if (item.item_kind or 'unknown') == 'episode' else (item.item_kind or 'unknown'))
+        for item in items
+    ]
+    span_item_kind = 'mixed' if len(set(normalized_item_kinds)) > 1 else normalized_item_kinds[0]
     return [
         BangumiSpanCard(
             ref='BES1',
@@ -69,10 +74,10 @@ def build_bangumi_span_cards(*, bangumi_items: list[BangumiItemCard] | None = No
             sort_end=max((item.sort for item in items), default=None),
             ep_start=min((item.ep for item in items), default=None),
             ep_end=max((item.ep for item in items), default=None),
-            item_kind='mixed' if len({item.item_kind for item in items}) > 1 else ('regular' if (items[0].item_kind or 'unknown') == 'episode' else (items[0].item_kind or 'unknown')),
+            item_kind=span_item_kind,
             gap_count=0,
             duplicate_count=sum(count - 1 for count in Counter(target_refs).values() if count > 1),
-            special_count=sum(1 for item in items if item.item_kind == 'special'),
+            special_count=sum(1 for item in items if item.item_kind in {'special', 'movie'}),
             title_samples=_collect_sample([item.title or item.name or item.name_cn for item in items]),
         )
     ]

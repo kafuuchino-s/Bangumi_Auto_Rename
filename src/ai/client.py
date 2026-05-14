@@ -1087,6 +1087,49 @@ class AIClient:
                 return None
         return None
 
+    def call_responses_tool_agent(
+        self,
+        *,
+        instructions: str,
+        input_items: list[dict[str, object]] | str,
+        tools: list[dict[str, object]],
+        max_output_tokens: int = 4096,
+        parallel_tool_calls: bool = False,
+        tool_choice: str = "required",
+    ) -> Optional[dict[str, object]]:
+        """Call OpenAI Responses with native function tools."""
+        try:
+            client = self._get_openai_adapter()
+            if client is None or not getattr(client, "client", None):
+                return None
+
+            client_model = getattr(client, "model", None)
+            client_temperature = getattr(client, "temperature", None)
+            if not isinstance(client_model, str) or not client_model:
+                return None
+            if not isinstance(client_temperature, (int, float)):
+                return None
+
+            call_via_responses_api = getattr(client, "call_via_responses_api", None)
+            if not callable(call_via_responses_api):
+                return None
+
+            request_params: dict[str, object] = {
+                "model": client_model,
+                "temperature": float(client_temperature),
+                "max_output_tokens": int(max_output_tokens),
+                "instructions": instructions,
+                "responses_input": input_items,
+                "tools": tools,
+                "tool_choice": tool_choice,
+                "parallel_tool_calls": bool(parallel_tool_calls),
+            }
+            response = call_via_responses_api(request_params)
+            return response if isinstance(response, dict) else None
+        except Exception as exc:
+            logger.warning(f"[AI] Responses tool agent call failed: {exc}")
+            return None
+
     def analyze_episode_mapping(
         self,
         anime_info: Mapping[str, object],

@@ -10,6 +10,7 @@ from pydantic import ValidationError
 
 from .dossier import build_bounded_case_dossier
 from .models import CaseDossier, QueryCard, QueryComposerOutput
+from .notebook import compact_case_briefing, compact_investigation_notebook
 
 
 @dataclass
@@ -97,9 +98,38 @@ def _compact_local_span_card(card: object) -> dict[str, object]:
     }
 
 
+def _empty_subject_searches(dossier: CaseDossier) -> list[dict[str, object]]:
+    query_by_ref = {
+        str(getattr(card, 'ref', '') or ''): card
+        for card in list(getattr(dossier, 'query_cards', []) or [])
+        if str(getattr(card, 'ref', '') or '')
+    }
+    searches: list[dict[str, object]] = []
+    for batch in list(getattr(dossier, 'previous_evidence_results', []) or []):
+        for result in list(getattr(batch, 'request_results', []) or getattr(batch, 'results', []) or []):
+            if str(getattr(result, 'request_type', '') or '') != 'subject_search':
+                continue
+            request_ref = str(getattr(result, 'request_ref', '') or '')
+            query_ref = request_ref.replace('REQ_SUBJECT_SEARCH_', '', 1) if request_ref.startswith('REQ_SUBJECT_SEARCH_') else ''
+            query_card = query_by_ref.get(query_ref)
+            response_refs = [str(ref or '') for ref in list(getattr(result, 'response_refs', []) or []) if str(ref or '')]
+            if response_refs:
+                continue
+            searches.append({
+                'request_ref': request_ref,
+                'query_ref': query_ref,
+                'query_text': str(getattr(query_card, 'query_text', '') or ''),
+                'source_refs': list(getattr(query_card, 'source_refs', []) or [])[:8] if query_card is not None else [],
+                'accepted': bool(getattr(result, 'accepted', False)),
+                'notes': list(getattr(result, 'notes', []) or [])[:6],
+            })
+    return searches
+
+
 def render_query_composer_prompt(
     dossier: CaseDossier,
     *,
+    investigation_reason: str = '',
     repair_issues: list[str] | None = None,
     previous_output: object | None = None,
 ) -> str:
@@ -118,10 +148,18 @@ def render_query_composer_prompt(
         'local_files': [_compact_local_file_card(card) for card in list(dossier.local_files or [])[:40]],
         'local_clusters': [_compact_local_cluster_card(card) for card in list(dossier.local_clusters or [])[:24]],
         'local_span_cards': [_compact_local_span_card(card) for card in list(dossier.local_span_cards or [])[:24]],
+        'case_briefing': compact_case_briefing(getattr(dossier, 'case_briefing', None)),
+        'investigation_notebook': compact_investigation_notebook(getattr(dossier, 'investigation_notebook', None)),
         'raw_query_material': [_compact_query_card(card) for card in list(dossier.query_cards or []) if str(getattr(card, 'ref', '') or '').startswith('SQ')][:48],
         'visible_query_refs': list(dossier.visible_refs.query_refs),
         'existing_composed_queries': [_compact_query_card(card) for card in list(dossier.query_cards or []) if str(getattr(card, 'query_origin', '') or '') == 'agent_composed'],
     }
+    if investigation_reason:
+        payload['investigation_context'] = {
+            'reason': investigation_reason,
+            'empty_subject_searches': _empty_subject_searches(dossier),
+            'rule': 'Use the failed searches as evidence that the current title spelling did not recall a subject. Return only new, non-duplicate, title-preserving work-title variants, especially alternate Japanese or Chinese title forms when inferable from visible romanized text. Do not append OVA/OAD/SP/year/season/release-scope terms.',
+        }
     if repair_issues:
         payload['repair_context'] = {
             'mode': 'repair_previous_invalid_output',
@@ -196,7 +234,7 @@ _TRAILING_SCOPE_RE = re.compile(
     r'(?i)(?:[\s._-]+(?:OAD|OAV|OVA|ONA|SP|S\d+|Season\s*\d+|\u7B2C\s*\d+\s*\u5B63)\s*\d*)\s*$'
 )
 _TECHNICAL_TEXT_RE = re.compile(
-    r'(?i)(?:BDRip|Blu-?ray|WEB-?DL|HEVC|AVC|x26[45]|H\.?26[45]|1080p|720p|2160p|FLAC|AAC|Hi10P|Ma10p|YUV|CRC|\u5B57\u5E55|Sub)'
+    r'(?i)(?:\b(?:BDRip|Blu-?ray|WEB-?DL|HEVC|AVC|x26[45]|H\.?26[45]|1080p|720p|2160p|FLAC|AAC|Hi10P|Ma10p|YUV|CRC|Sub)\b|\u5B57\u5E55)'
 )
 _CJK_TEXT_RE = re.compile(r'[\u3040-\u30ff\u3400-\u9fff]')
 
@@ -353,8 +391,8 @@ def _provider_retry_delay(attempt_index: int) -> None:
     time.sleep(min(0.2, 0.05 * max(1, attempt_index)))
 
 
-def call_query_composer(ai_client: object, dossier: CaseDossier, *, max_repair_rounds: int = 1, max_provider_retries: int = 2) -> QueryComposerCallResult:
-    prompt = render_query_composer_prompt(dossier)
+def call_query_composer(ai_client: object, dossier: CaseDossier, *, investigation_reason: str = '', max_repair_rounds: int = 1, max_provider_retries: int = 2) -> QueryComposerCallResult:
+    prompt = render_query_composer_prompt(dossier, investigation_reason=investigation_reason)
     started = time.time()
     audit: dict[str, object] = {
         'round_kind': 'query_composer',
@@ -434,7 +472,7 @@ def call_query_composer(ai_client: object, dossier: CaseDossier, *, max_repair_r
         query_cards, dropped = _materialize_query_cards(output, dossier)
         repair_audits: list[dict[str, object]] = []
         if not query_cards and dropped and max_repair_rounds > 0:
-            repair_prompt = render_query_composer_prompt(dossier, repair_issues=dropped[:8], previous_output=output)
+            repair_prompt = render_query_composer_prompt(dossier, investigation_reason=investigation_reason, repair_issues=dropped[:8], previous_output=output)
             repair_response = _call_ai_with_schema(ai_client, repair_prompt)
             repair_output, repair_raw_response, repair_parse_error = _parse_query_composer_response(repair_response)
             repair_cards, repair_dropped = _materialize_query_cards(repair_output or QueryComposerOutput(), dossier)

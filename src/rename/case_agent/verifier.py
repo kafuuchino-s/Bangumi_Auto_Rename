@@ -40,7 +40,11 @@ def _sanitize_fail_closed_aux_refs(output: CaseJudgeOutput, dossier: CaseDossier
                 continue
             changed = True
             _note_sanitized()
-        return kept
+        compact = _compact_fail_closed_related_refs(kept)
+        if compact != kept:
+            changed = True
+            _note_sanitized()
+        return compact
 
     updates = {
         'findings': [item.model_copy(update={'evidence_refs': _filter_refs(list(getattr(item, 'evidence_refs', []) or []))}) for item in output.findings],
@@ -54,6 +58,23 @@ def _sanitize_fail_closed_aux_refs(output: CaseJudgeOutput, dossier: CaseDossier
     }
     updated = output.model_copy(update=updates) if changed else output
     return updated, issues
+
+
+def _compact_fail_closed_related_refs(values: list[str], *, max_refs: int = 4) -> list[str]:
+    local_refs: list[str] = []
+    target_refs: list[str] = []
+    other_refs: list[str] = []
+    for ref in list(dict.fromkeys(ref for ref in values if ref)):
+        if ref.startswith(('LF', 'LS', 'LC')):
+            local_refs.append(ref)
+        elif ref.startswith(('BE', 'BES', 'BS', 'BR')):
+            target_refs.append(ref)
+        else:
+            other_refs.append(ref)
+    compact = [*local_refs[:2], *target_refs[:1], *other_refs[:1]]
+    if len(compact) < max_refs:
+        compact.extend(ref for ref in [*local_refs[3:], *target_refs[2:], *other_refs[1:]] if ref not in compact)
+    return compact[:max_refs]
 
 
 def _issue(ref: str, issue_code: str, message: str, *, related_refs: list[str] | None = None) -> VerifierIssue:
@@ -386,6 +407,8 @@ def verify_mapping_draft_accounting(dossier: CaseDossier, draft: MappingDraft) -
     seen_target_row_refs: dict[str, str] = {}
     bangumi_span_refs = {card.ref for card in getattr(dossier, 'bangumi_span_cards', []) or [] if getattr(card, 'ref', '')}
     bangumi_item_refs = {card.ref for card in getattr(dossier, 'bangumi_items', []) or [] if getattr(card, 'ref', '')}
+    local_file_refs = {card.ref for card in getattr(dossier, 'local_files', []) or [] if getattr(card, 'ref', '')}
+    local_spans = {card.ref: card for card in getattr(dossier, 'local_span_cards', []) or [] if getattr(card, 'ref', '')}
     visible_item_refs = set(getattr(getattr(dossier, 'visible_refs', None), 'bangumi_item_refs', []) or []) | set(getattr(getattr(dossier, 'visible_refs', None), 'target_refs', []) or []) | set(getattr(dossier, 'assignable_target_refs', []) or []) | set(getattr(dossier, 'detailed_card_refs', []) or []) | set(getattr(dossier, 'seen_detail_refs', []) or [])
     for row in draft.rows:
         if row.disposition == 'map_to_bangumi':
@@ -396,6 +419,13 @@ def verify_mapping_draft_accounting(dossier: CaseDossier, draft: MappingDraft) -
             if row.mapping_mode == 'explicit' and not explicit_item_target:
                 issues.append(_issue(row.row_ref, 'invalid_target', 'explicit mapped rows require a visible Bangumi item target'))
             if row.mapping_mode == 'explicit':
+                if row.local_ref in local_file_refs:
+                    local_count = 1
+                else:
+                    span = local_spans.get(row.local_ref)
+                    local_count = int(getattr(span, 'file_ref_count', 0) or len(getattr(span, 'file_refs', []) or [])) if span is not None else 0
+                if local_count != 1:
+                    issues.append(_issue(row.row_ref, 'invalid_explicit_multi_file_mapping', 'explicit mapped rows require exactly one local file'))
                 support_refs = set(row.support_refs or [])
                 if not row.support_refs or row.local_ref not in support_refs or row.selected_target_ref not in support_refs:
                     issues.append(_issue(row.row_ref, 'missing_support_refs', 'explicit mapped rows require support_refs containing local_ref and selected_target_ref'))

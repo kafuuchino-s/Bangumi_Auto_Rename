@@ -1,6 +1,6 @@
 from dataclasses import replace
 
-from src.rename.case_agent.models import BangumiItemCard, BangumiSpanCard, BangumiSubjectCard, CaseBudget, CaseContract, CaseHeader, LocalFileCard, LocalSpanCard, MappingDraft, MappingDraftRow
+from src.rename.case_agent.models import BangumiItemCard, BangumiSpanCard, BangumiSubjectCard, CaseBudget, CaseContract, CaseHeader, EvidencePlan, LocalFileCard, LocalSpanCard, MappingDraft, MappingDraftRow, QueryCard
 from src.rename.case_agent.planner import build_deterministic_evidence_plan
 from src.rename.case_agent.workspace import CaseEvidenceWorkspace
 
@@ -49,6 +49,64 @@ def test_planner_collects_episode_list_before_span_proof():
     assert out.plan.plan_kind == 'episode_recall'
     assert out.plan.selected_menu_request_ids == ['REQ_EPISODE_LIST_BS1']
     assert out.plan.selected_span_request_count == 0
+
+
+def test_planner_skips_completed_empty_subject_search_ids():
+    ws = CaseEvidenceWorkspace.from_cards(
+        header=CaseHeader(case_id='CASE-P-QUERY-RETRY'),
+        budget=CaseBudget(max_evidence_batches=3, max_requests_per_batch=8, max_api_calls_per_case=3, max_subject_searches=3),
+        contract=CaseContract(main_file_refs=['LF1'], allowed_file_refs=['LF1']),
+        local_files=[LocalFileCard(ref='LF1', path='Show OVA.mkv', is_main=True)],
+        query_cards=[
+            QueryCard(ref='QC1', query_text='Show', query_kind='subject_search', query_origin='agent_composed', source_refs=['LF1']),
+            QueryCard(ref='QC2', query_text='ショー', query_kind='subject_search', query_origin='agent_composed', source_refs=['LF1']),
+        ],
+        plan_state=EvidencePlan(completed_menu_request_ids=['REQ_SUBJECT_SEARCH_QC1']),
+    )
+
+    out = build_deterministic_evidence_plan(ws)
+
+    assert out is not None and out.plan is not None
+    assert out.plan.plan_kind == 'subject_recall'
+    assert out.plan.selected_menu_request_ids == ['REQ_SUBJECT_SEARCH_QC2']
+
+
+def test_planner_stops_when_all_subject_search_ids_are_completed():
+    ws = CaseEvidenceWorkspace.from_cards(
+        header=CaseHeader(case_id='CASE-P-QUERY-DONE'),
+        budget=CaseBudget(max_evidence_batches=3, max_requests_per_batch=8, max_api_calls_per_case=3, max_subject_searches=3),
+        contract=CaseContract(main_file_refs=['LF1'], allowed_file_refs=['LF1']),
+        local_files=[LocalFileCard(ref='LF1', path='Show OVA.mkv', is_main=True)],
+        query_cards=[
+            QueryCard(ref='QC1', query_text='Show', query_kind='subject_search', query_origin='agent_composed', source_refs=['LF1']),
+        ],
+        plan_state=EvidencePlan(completed_menu_request_ids=['REQ_SUBJECT_SEARCH_QC1']),
+    )
+
+    assert build_deterministic_evidence_plan(ws) is None
+
+
+def test_planner_executes_pending_subject_search_during_weak_recall_retry():
+    ws = CaseEvidenceWorkspace.from_cards(
+        header=CaseHeader(case_id='CASE-P-WEAK-QUERY'),
+        budget=CaseBudget(max_evidence_batches=3, max_requests_per_batch=8, max_api_calls_per_case=5, max_subject_searches=5),
+        contract=CaseContract(main_file_refs=['LF1'], allowed_file_refs=['LF1']),
+        local_files=[LocalFileCard(ref='LF1', path='Show 01.mkv', is_main=True)],
+        bangumi_subjects=[BangumiSubjectCard(ref='BS1', subject_id=101, subject_type='anime')],
+        bangumi_items=[BangumiItemCard(ref='BE1', subject_ref='BS1', sort=1, ep=1)],
+        query_cards=[
+            QueryCard(ref='QC1', query_text='Show Movie', query_kind='subject_search', query_origin='agent_composed', source_refs=['LF1']),
+            QueryCard(ref='QC2', query_text='Show', query_kind='subject_search', query_origin='agent_composed', source_refs=['LF1']),
+        ],
+        plan_state=EvidencePlan(completed_menu_request_ids=['REQ_SUBJECT_SEARCH_QC1']),
+        diagnostics=['weak_subject_recall_retry_pending'],
+    )
+
+    out = build_deterministic_evidence_plan(ws)
+
+    assert out is not None and out.plan is not None
+    assert out.plan.plan_kind == 'subject_recall'
+    assert out.plan.selected_menu_request_ids == ['REQ_SUBJECT_SEARCH_QC2']
 
 
 def test_planner_does_not_select_package():

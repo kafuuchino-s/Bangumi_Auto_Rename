@@ -188,6 +188,116 @@ def test_singleton_visible_extra_can_be_accepted_as_supplemental():
     assert result.passed is True
 
 
+def test_singleton_without_bangumi_target_can_be_accepted_as_target_absent():
+    dossier = make_dossier()
+    dossier.contract.main_file_refs = ['LF1']
+    dossier.local_files = [LocalFileCard(ref='LF1', path='Show OAD.mkv', is_main=True, file_kind='video')]
+    dossier.local_span_cards = [
+        LocalSpanCard(ref='LS_OAD', span_scope='residual', file_refs=['LF1'], file_ref_count=1, file_ref_samples=['LF1'], title_cues=['OAD'])
+    ]
+    dossier.bangumi_items = []
+    dossier.bangumi_span_cards = []
+    dossier.assignable_target_refs = []
+    dossier.detailed_card_refs = []
+    dossier.seen_detail_refs = []
+    draft = draft_with_rows([
+        MappingDraftRow(row_ref='R1', local_ref='LS_OAD', local_ref_kind='span', disposition='non_bangumi_or_supplemental', reason_kind='bangumi_target_absent', support_refs=['LS_OAD']),
+    ])
+
+    result = verify_mapping_draft_accounting(dossier, draft)
+
+    assert result.passed is True
+
+
+def test_non_regular_sp_extra_span_can_be_accepted_as_target_absent():
+    dossier = make_dossier()
+    main_refs = [f'LF{i}' for i in range(1, 7)]
+    dossier.contract.main_file_refs = main_refs
+    dossier.contract.allowed_file_refs = list(main_refs)
+    dossier.local_files = [
+        LocalFileCard(ref=ref, path=f'SPs/Show SP{index:02d}.mkv', is_main=True, file_kind='video')
+        for index, ref in enumerate(main_refs, start=1)
+    ]
+    dossier.local_span_cards = [
+        LocalSpanCard(
+            ref='LS_SP_EXTRA',
+            span_scope='residual',
+            file_refs=main_refs,
+            file_ref_count=len(main_refs),
+            file_ref_samples=['LF1', 'LF2', 'LF6'],
+            ordering_basis='unknown',
+            title_cues=['SPs'],
+        )
+    ]
+    dossier.bangumi_items = []
+    dossier.bangumi_span_cards = []
+    dossier.assignable_target_refs = []
+    dossier.detailed_card_refs = []
+    dossier.seen_detail_refs = []
+    draft = draft_with_rows([
+        MappingDraftRow(row_ref='R1', local_ref='LS_SP_EXTRA', local_ref_kind='span', disposition='non_bangumi_or_supplemental', reason_kind='bangumi_target_absent', support_refs=['LS_SP_EXTRA']),
+    ])
+
+    result = verify_mapping_draft_accounting(dossier, draft)
+
+    assert result.passed is True
+
+
+def test_target_absent_rejected_when_visible_candidate_remains():
+    dossier = make_dossier()
+    dossier.contract.main_file_refs = ['LF1']
+    dossier.local_files = [LocalFileCard(ref='LF1', path='Show OAD.mkv', is_main=True, file_kind='video')]
+    dossier.local_span_cards = [
+        LocalSpanCard(ref='LS_OAD', span_scope='residual', file_refs=['LF1'], file_ref_count=1, file_ref_samples=['LF1'], title_cues=['OAD'])
+    ]
+    dossier.bangumi_items = [BangumiItemCard(ref='BE_SPECIAL', subject_ref='S1', item_kind='special')]
+    dossier.assignable_target_refs = ['BE_SPECIAL']
+    dossier.detailed_card_refs = ['BE_SPECIAL']
+    dossier.seen_detail_refs = ['BE_SPECIAL']
+    draft = draft_with_rows([
+        MappingDraftRow(row_ref='R1', local_ref='LS_OAD', local_ref_kind='span', candidate_target_refs=['BE_SPECIAL'], disposition='non_bangumi_or_supplemental', reason_kind='bangumi_target_absent', support_refs=['LS_OAD']),
+    ])
+
+    result = verify_mapping_draft_accounting(dossier, draft)
+
+    assert result.passed is False
+    assert any(issue.issue_code == 'bangumi_target_absent_has_visible_candidate' for issue in result.issues)
+
+
+def test_regular_numbered_span_target_absent_is_editor_semantics_not_shape_rejected():
+    dossier = make_dossier()
+    dossier.local_files = [
+        LocalFileCard(ref=f'LF{i}', path=f'Show #{i:02d}.mkv', is_main=True, file_kind='video')
+        for i in range(1, 6)
+    ]
+    dossier.contract.main_file_refs = [f'LF{i}' for i in range(1, 6)]
+    dossier.local_span_cards = [
+        LocalSpanCard(
+            ref='LS_REGULAR',
+            span_scope='token_segment',
+            file_refs=[f'LF{i}' for i in range(1, 6)],
+            file_ref_count=5,
+            ordering_basis='episode_token_order',
+            episode_token_start=1,
+            episode_token_end=5,
+            episode_token_count=5,
+        )
+    ]
+    dossier.bangumi_items = []
+    dossier.bangumi_span_cards = []
+    dossier.assignable_target_refs = []
+    dossier.detailed_card_refs = []
+    dossier.seen_detail_refs = []
+    draft = draft_with_rows([
+        MappingDraftRow(row_ref='R1', local_ref='LS_REGULAR', local_ref_kind='span', disposition='non_bangumi_or_supplemental', reason_kind='bangumi_target_absent', support_refs=['LS_REGULAR']),
+    ])
+
+    result = verify_mapping_draft_accounting(dossier, draft)
+
+    assert result.passed is True
+    assert result.issues == []
+
+
 def test_duplicate_span_ref_not_blocked_before_expansion():
     dossier = make_dossier()
     dossier.local_span_cards.append(LocalSpanCard(ref='LS2', file_refs=[], file_ref_count=0))

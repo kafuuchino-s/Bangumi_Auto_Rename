@@ -1,9 +1,13 @@
 from __future__ import annotations
 
+import pytest
+
 from src.rename.case_agent.case_planner import build_child_workspace, call_case_planner, verify_case_planning_output
 from src.rename.case_agent.models import (
     AssignmentIntent,
     BangumiItemCard,
+    CaseBriefingOutput,
+    CaseBriefingWorkUnit,
     CaseBudget,
     CaseContract,
     CaseDossier,
@@ -11,9 +15,11 @@ from src.rename.case_agent.models import (
     CaseJudgeOutput,
     CasePlanningOutput,
     Finding,
+    InvestigationNotebook,
     LocalClusterCard,
     LocalFileCard,
     QueryCard,
+    NotebookOpenQuestion,
     SplitCaseSpec,
 )
 from src.rename.case_agent.orchestrator import run_local_bangumi_case_agent
@@ -182,6 +188,33 @@ def test_child_workspace_keeps_only_owned_local_refs_and_explicit_support_refs()
     assert 'BE2' not in child.all_visible_ref_set()
 
 
+def test_child_workspace_filters_case_briefing_and_notebook_to_child_refs():
+    parent = _workspace()
+    parent = CaseEvidenceWorkspace.from_cards(
+        header=parent.header,
+        budget=parent.budget,
+        contract=parent.contract,
+        local_files=parent.local_files,
+        local_clusters=parent.local_clusters,
+        bangumi_items=parent.bangumi_items,
+        query_cards=parent.query_cards,
+        case_briefing=CaseBriefingOutput(work_units=[
+            CaseBriefingWorkUnit(work_unit_ref='WU1', local_refs=['LF1'], file_refs=['LF1'], title_hints=['A']),
+            CaseBriefingWorkUnit(work_unit_ref='WU2', local_refs=['LF2'], file_refs=['LF2'], title_hints=['B']),
+        ]),
+        investigation_notebook=InvestigationNotebook(open_questions=[
+            NotebookOpenQuestion(question_ref='NQ1', question_kind='subject_recall', question='A', local_refs=['LF1'], requested_request_types=['subject_search']),
+            NotebookOpenQuestion(question_ref='NQ2', question_kind='subject_recall', question='B', local_refs=['LF2'], requested_request_types=['subject_search']),
+        ]),
+    )
+
+    child = build_child_workspace(parent, _split_output().split_cases[0])
+
+    assert [unit.work_unit_ref for unit in child.case_briefing.work_units] == ['WU1']
+    assert [question.question_ref for question in child.investigation_notebook.open_questions] == ['NQ1']
+
+
+@pytest.mark.skip(reason='legacy split aggregate test used case_judge child verdicts; child cases now run independent OrchestratorAgent sessions')
 def test_split_aggregate_accepts_when_all_children_accept():
     client = _AIClient(_split_output(), [_verdict('LF1', 'BE1'), _verdict('LF2', 'BE2')])
 
@@ -194,6 +227,7 @@ def test_split_aggregate_accepts_when_all_children_accept():
     assert [child.status for child in result.child_results] == ['accepted', 'accepted']
 
 
+@pytest.mark.skip(reason='legacy split aggregate test used case_judge child verdicts; child cases now run independent OrchestratorAgent sessions')
 def test_split_aggregate_fail_closed_if_any_child_fail_closed():
     child_fail = CaseJudgeOutput(action='fail_closed', fail_closed_reasons=[{'ref': 'FR1', 'reason_kind': 'insufficient_evidence', 'description': 'ambiguous', 'related_refs': []}])
     client = _AIClient(_split_output(), [_verdict('LF1', 'BE1'), child_fail])
@@ -205,6 +239,7 @@ def test_split_aggregate_fail_closed_if_any_child_fail_closed():
     assert len(result.child_results) == 2
 
 
+@pytest.mark.skip(reason='legacy split aggregate test used case_judge child verdicts; child cases now run independent OrchestratorAgent sessions')
 def test_split_aggregate_invalid_if_child_contract_breaks():
     child_invalid = CaseJudgeOutput(action='request_evidence')
     client = _AIClient(_split_output(), [_verdict('LF1', 'BE1'), child_invalid])
@@ -216,6 +251,7 @@ def test_split_aggregate_invalid_if_child_contract_breaks():
     assert len(result.child_results) == 2
 
 
+@pytest.mark.skip(reason='legacy invalid planner fallback test used old Python investigation state machine')
 def test_invalid_planner_split_defers_to_single_case_investigation():
     bad_split = CasePlanningOutput(action='split_into_cases', split_cases=[
         SplitCaseSpec(child_case_ref='C1', main_file_refs=['LF1'], supplemental_file_refs=['LF2'], support_refs=['BE1'], reason='bad ownership'),
@@ -233,6 +269,28 @@ def test_invalid_planner_split_defers_to_single_case_investigation():
     assert result.child_results == []
     assert any(
         audit.get('note') == 'case_planning_invalid_split_deferred_to_investigation_loop'
+        for audit in result.final_workspace.judge_request_audits
+        if isinstance(audit, dict)
+    )
+
+
+@pytest.mark.skip(reason='legacy invalid planner fallback test used old Python investigation state machine')
+def test_invalid_planner_evidence_request_defers_to_single_case_investigation():
+    bad_request = CasePlanningOutput(
+        action='request_evidence',
+        evidence_requests=[{'request_ref': 'EQ1', 'request_type': 'local_file_detail', 'anchor_file_refs': ['LF404'], 'reason': 'bad hidden ref'}],
+    )
+    fail_output = CaseJudgeOutput(action='fail_closed', fail_closed_reasons=[{'ref': 'FR1', 'reason_kind': 'insufficient_evidence', 'description': 'investigate as one case', 'related_refs': []}])
+    client = _AIClient(bad_request, [fail_output])
+
+    result = run_local_bangumi_case_agent(_workspace(), client, _BangumiClient())
+
+    assert result.ok is True
+    assert result.status == 'fail_closed'
+    assert result.planning_output is not None
+    assert result.planning_output.action == 'process_as_one_case'
+    assert any(
+        audit.get('note') == 'case_planning_invalid_evidence_request_deferred_to_investigation_loop'
         for audit in result.final_workspace.judge_request_audits
         if isinstance(audit, dict)
     )

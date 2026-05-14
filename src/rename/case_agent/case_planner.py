@@ -10,6 +10,7 @@ from typing import Any
 from pydantic import ValidationError
 
 from .dossier import build_bounded_case_dossier
+from .notebook import compact_case_briefing, compact_investigation_notebook, filter_case_briefing_for_child, filter_investigation_notebook_for_child
 from .models import (
     BangumiGroupCard,
     BangumiItemCard,
@@ -45,6 +46,8 @@ def render_case_planner_prompt(dossier: CaseDossier) -> str:
     template = resources.files(__package__).joinpath('prompts/local_bangumi_case_planner.md').read_text(encoding='utf-8')
     bounded = build_bounded_case_dossier(dossier)
     payload = bounded.model_dump(mode='json') if hasattr(bounded, 'model_dump') else bounded
+    payload['case_briefing'] = compact_case_briefing(getattr(dossier, 'case_briefing', None))
+    payload['investigation_notebook'] = compact_investigation_notebook(getattr(dossier, 'investigation_notebook', None))
     return template.replace('{{DOSSIER_JSON}}', json.dumps(payload, ensure_ascii=False, indent=2))
 
 
@@ -250,6 +253,16 @@ def build_child_workspace(parent: CaseEvidenceWorkspace, spec: SplitCaseSpec) ->
         if card.ref in support_refs or _span_mentions_any(card, local_file_ref_set)
     ]
     local_span_cards = [card for card in local_span_cards if card.file_refs or card.file_ref_samples or card.ref in support_refs]
+    allowed_child_refs = {
+        *child_local_refs,
+        *local_cluster_refs,
+        *included_bangumi_refs,
+        *{card.ref for card in query_cards if getattr(card, 'ref', '')},
+        *{card.ref for card in provenance_cards if getattr(card, 'ref', '')},
+        *{card.ref for card in local_span_cards if getattr(card, 'ref', '')},
+    }
+    child_briefing = filter_case_briefing_for_child(getattr(parent, 'case_briefing', None), allowed_refs=allowed_child_refs)
+    child_notebook = filter_investigation_notebook_for_child(getattr(parent, 'investigation_notebook', None), allowed_refs=allowed_child_refs)
 
     header = parent.header.model_copy(update={'case_id': f'{parent.header.case_id}:{spec.child_case_ref}', 'round_index': 0, 'issue_response_used': 0})
     contract = parent.contract.model_copy(update={
@@ -272,6 +285,8 @@ def build_child_workspace(parent: CaseEvidenceWorkspace, spec: SplitCaseSpec) ->
         bangumi_items=bangumi_items,
         query_cards=query_cards,
         provenance_cards=provenance_cards,
+        case_briefing=child_briefing,
+        investigation_notebook=child_notebook,
         diagnostics=[*parent.diagnostics, 'derived_from_case_planning_split'],
     )
     object.__setattr__(child, 'seen_detail_refs', [ref for ref in parent.seen_detail_refs if ref in child.all_visible_ref_set()])

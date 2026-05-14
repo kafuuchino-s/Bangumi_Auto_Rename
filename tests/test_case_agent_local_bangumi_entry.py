@@ -105,10 +105,22 @@ def test_local_bangumi_workspace_enforces_investigation_batch_floor(monkeypatch)
     assert workspace.budget.max_evidence_batches == 8
 
 
+def test_local_bangumi_workspace_enforces_round_safety_cap_floor(monkeypatch):
+    monkeypatch.setattr(
+        'src.rename.case_agent.local_bangumi_entry.cm.get_config',
+        lambda key: 3 if key == 'rename_local_bangumi_case_agent_max_rounds' else None,
+    )
+
+    workspace = _build_workspace(local_evidence=_local_evidence(), bangumi_contexts=[])
+
+    assert workspace.header.max_rounds == 24
+    assert workspace.budget.max_judge_rounds == 24
+
+
 def test_local_bangumi_entry_accepted(monkeypatch):
     seen = {}
 
-    def fake_run(workspace, ai_client, bangumi_client, max_rounds=None):
+    def fake_run(workspace, ai_client, bangumi_client, max_rounds=None, **kwargs):
         seen['bangumi_client'] = bangumi_client
         return SimpleNamespace(
             ok=True,
@@ -224,7 +236,7 @@ def test_local_bangumi_entry_accepted(monkeypatch):
 
 
 def test_local_bangumi_entry_accepted_keeps_main_file_counts_visible_with_compact_snapshot(monkeypatch):
-    def fake_run(workspace, ai_client, bangumi_client, max_rounds=None):
+    def fake_run(workspace, ai_client, bangumi_client, max_rounds=None, **kwargs):
         return SimpleNamespace(
             ok=True,
             status='accepted',
@@ -252,7 +264,7 @@ def test_local_bangumi_entry_accepted_keeps_main_file_counts_visible_with_compac
 
 
 def test_local_bangumi_entry_accounting_snapshot_counts(monkeypatch):
-    def fake_run(workspace, ai_client, bangumi_client, max_rounds=None):
+    def fake_run(workspace, ai_client, bangumi_client, max_rounds=None, **kwargs):
         workspace = workspace.with_mapping_draft(None)
         object.__setattr__(workspace, 'visible_refs', _visible_refs())
         return SimpleNamespace(
@@ -279,7 +291,7 @@ def test_local_bangumi_entry_accounting_snapshot_counts(monkeypatch):
 
 
 def test_local_bangumi_entry_snapshot_filters_non_judge_audits(monkeypatch):
-    def fake_run(workspace, ai_client, bangumi_client, max_rounds=None):
+    def fake_run(workspace, ai_client, bangumi_client, max_rounds=None, **kwargs):
         return SimpleNamespace(
             ok=True,
             status='accepted',
@@ -327,7 +339,7 @@ def test_local_bangumi_entry_snapshot_filters_non_judge_audits(monkeypatch):
 
 
 def test_no_zero_top_level_when_nested_draft_exists(monkeypatch):
-    def fake_run(workspace, ai_client, bangumi_client, max_rounds=None):
+    def fake_run(workspace, ai_client, bangumi_client, max_rounds=None, **kwargs):
         draft = workspace.mapping_draft
         return SimpleNamespace(
             ok=True,
@@ -351,7 +363,7 @@ def test_no_zero_top_level_when_nested_draft_exists(monkeypatch):
 
 
 def test_local_bangumi_entry_accepted_keeps_main_file_counts_visible_with_compact_snapshot(monkeypatch):
-    def fake_run(workspace, ai_client, bangumi_client, max_rounds=None):
+    def fake_run(workspace, ai_client, bangumi_client, max_rounds=None, **kwargs):
         return SimpleNamespace(
             ok=True,
             status='accepted',
@@ -380,7 +392,7 @@ def test_local_bangumi_entry_accepted_keeps_main_file_counts_visible_with_compac
 
 def test_local_bangumi_entry_exports_all_case_judge_audits(monkeypatch):
     from src.rename.case_agent.models import AssignmentIntent, CaseJudgeOutput, EvidenceRequest, Finding
-    def fake_run(workspace, ai_client, bangumi_client, max_rounds=None):
+    def fake_run(workspace, ai_client, bangumi_client, max_rounds=None, **kwargs):
         object.__setattr__(workspace, 'judge_request_audits', [
             {'round_kind': 'initial', 'input_projection_bytes': 1, 'output_bytes_estimate': 2, 'cache_mode': 'planned', 'configured_interface': 'responses_api', 'actual_interface': 'responses_api', 'streaming': False, 'elapsed_ms': 1},
             {'round_kind': 'evidence_rejudge', 'input_projection_bytes': 1, 'output_bytes_estimate': 2, 'cache_mode': 'planned', 'configured_interface': 'responses_api', 'actual_interface': 'responses_api', 'streaming': False, 'elapsed_ms': 1},
@@ -398,7 +410,7 @@ def test_local_bangumi_entry_exports_all_case_judge_audits(monkeypatch):
 
 
 def test_local_bangumi_entry_marks_local_package_analysis_skipped(monkeypatch):
-    def fake_run(workspace, ai_client, bangumi_client, max_rounds=None):
+    def fake_run(workspace, ai_client, bangumi_client, max_rounds=None, **kwargs):
         return SimpleNamespace(
             ok=True,
             status='accepted',
@@ -428,7 +440,7 @@ def test_local_bangumi_entry_marks_local_package_analysis_skipped(monkeypatch):
 
 
 def test_local_bangumi_entry_fail_closed(monkeypatch):
-    def fake_run(workspace, ai_client, bangumi_client, max_rounds=None):
+    def fake_run(workspace, ai_client, bangumi_client, max_rounds=None, **kwargs):
         return SimpleNamespace(
             ok=True,
             status='fail_closed',
@@ -454,7 +466,7 @@ def test_local_bangumi_entry_uses_injected_bangumi_client(monkeypatch):
     injected = object()
     seen = {}
 
-    def fake_run(workspace, ai_client, bangumi_client, max_rounds=None):
+    def fake_run(workspace, ai_client, bangumi_client, max_rounds=None, **kwargs):
         seen['bangumi_client'] = bangumi_client
         return SimpleNamespace(
             ok=True,
@@ -477,7 +489,7 @@ def test_local_bangumi_entry_uses_injected_bangumi_client(monkeypatch):
 
 
 def test_local_bangumi_entry_error(monkeypatch):
-    def fake_run(workspace, ai_client, bangumi_client, max_rounds=None):
+    def fake_run(workspace, ai_client, bangumi_client, max_rounds=None, **kwargs):
         return SimpleNamespace(
             ok=False,
             status='error',

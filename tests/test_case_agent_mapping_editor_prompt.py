@@ -1,11 +1,15 @@
 from __future__ import annotations
 
-from src.rename.case_agent.mapping_editor import render_mapping_draft_editor_prompt
+import json
+
+from src.rename.case_agent.mapping_editor import call_mapping_draft_editor, render_mapping_draft_editor_prompt
 from src.rename.case_agent.models import (
     BangumiItemCard,
     BangumiRelationCard,
     BangumiSubjectCard,
     BangumiSpanCard,
+    CaseBriefingOutput,
+    CaseBriefingWorkUnit,
     CaseBudget,
     CaseHeader,
     CaseDossier,
@@ -13,8 +17,10 @@ from src.rename.case_agent.models import (
     MappingDraftEditorOutput,
     MappingDraftPatch,
     MappingDraftRow,
+    InvestigationNotebook,
     LocalSpanCard,
     LocalFileCard,
+    NotebookOpenQuestion,
 )
 
 
@@ -24,6 +30,24 @@ def _make_dossier() -> CaseDossier:
     local_span_cards = [LocalSpanCard(ref='LS1', span_scope='package', parent_key='p1', season_cue='S1', file_refs=['F1', 'F2'], file_ref_count=2, file_ref_samples=['F1', 'F2'])]
     bangumi_span_cards = [BangumiSpanCard(ref='BES1', subject_ref='BS1', group_ref='BG1', target_refs=['BE1', 'BE2'], target_ref_count=2, target_ref_samples=['BE1', 'BE2'], detail_equivalent=True)]
     return CaseDossier(header=header, budget=budget, local_span_cards=local_span_cards, bangumi_span_cards=bangumi_span_cards)
+
+
+class _SimpleMappingEditorClient:
+    def __init__(self):
+        self.calls: list[dict[str, object]] = []
+
+    def _call_openai_simple(self, system_prompt: str, prompt: str, **kwargs):
+        self.calls.append(dict(kwargs))
+        return json.dumps(
+            {
+                'patches': [],
+                'candidate_comparisons': [],
+                'notebook_updates': [],
+                'findings': [],
+                'fail_closed_reasons': [],
+                'self_checks': [],
+            }
+        )
 
 
 def test_mapping_draft_editor_prompt_mentions_required_intents() -> None:
@@ -40,6 +64,16 @@ def test_mapping_draft_editor_prompt_mentions_required_intents() -> None:
     assert 'needs_more_evidence' in prompt
     assert 'mark_unaligned_fail_closed' in prompt
     assert 'accounted for' in prompt or 'accounted-for' in prompt
+
+
+def test_mapping_draft_editor_simple_transport_uses_real_schema_validation_key() -> None:
+    client = _SimpleMappingEditorClient()
+    draft = MappingDraft(rows=[MappingDraftRow(row_ref='R1', local_ref='LS1', local_ref_kind='span')])
+
+    result = call_mapping_draft_editor(client, _make_dossier(), draft, max_provider_retries=0)
+
+    assert result.ok is True
+    assert client.calls[0]['validation_key'] == 'patches'
 
 
 def test_mapping_draft_editor_prompt_compacts_visible_refs() -> None:
@@ -135,6 +169,8 @@ def test_mapping_draft_editor_prompt_accounts_for_contract_and_limits() -> None:
     assert 'pv_cm' in prompt
     assert 'travel/location' in prompt
     assert 'reason_kind=making_of' in prompt
+    assert 'bangumi_target_absent' in prompt
+    assert 'does not delete the file' in prompt or 'does not map it to Bangumi' in prompt
     assert 'mark_non_bangumi_or_supplemental' in prompt
     assert 'sort=0' in prompt
 
@@ -149,6 +185,28 @@ def test_mapping_draft_editor_models_are_serializable() -> None:
 
     assert roundtrip.patches[0].op == 'propose_span_mapping'
     assert roundtrip.patches[0].target_span_ref == 'BES1'
+
+
+def test_mapping_draft_editor_prompt_exposes_case_briefing_and_notebook() -> None:
+    dossier = _make_dossier().model_copy(update={
+        'case_briefing': CaseBriefingOutput(
+            package_shape='tv_plus_extras',
+            work_units=[CaseBriefingWorkUnit(work_unit_ref='WU1', label='main TV unit', local_refs=['LS1'], span_refs=['LS1'])],
+            summary='human briefing summary',
+        ),
+        'investigation_notebook': InvestigationNotebook(
+            open_questions=[NotebookOpenQuestion(question_ref='NQ1', question_kind='related_special', question='check specials', local_refs=['LS1'], requested_request_types=['related_expansion'])]
+        ),
+    })
+    draft = MappingDraft(rows=[MappingDraftRow(row_ref='R1', local_ref='LS1', local_ref_kind='span', candidate_target_refs=['BES1'])])
+
+    prompt = render_mapping_draft_editor_prompt(dossier, draft)
+
+    assert 'case_briefing' in prompt
+    assert 'investigation_notebook' in prompt
+    assert 'human briefing summary' in prompt
+    assert 'NQ1' in prompt
+    assert 'notebook_updates' in prompt
 
 
 def test_mapping_draft_editor_prompt_includes_special_singleton_context_without_subtitle_or_size_requirements() -> None:

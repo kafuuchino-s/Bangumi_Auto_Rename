@@ -9,8 +9,10 @@ from typing import Any
 
 from pydantic import ValidationError
 
+from .evidence_menu import build_executable_evidence_menu
 from .mapping_draft import compact_mapping_draft
 from .models import CaseDossier, MappingDraft, MappingDraftEditorOutput
+from .notebook import compact_case_briefing, compact_investigation_notebook
 from .special_investigation import is_special_eligible_span, is_special_like_item
 
 
@@ -437,6 +439,11 @@ def _compact_mapping_draft(draft: MappingDraft) -> dict[str, object]:
             'mapping_mode': row.mapping_mode,
             'candidate_target_refs': _sample(list(row.candidate_target_refs or []), limit=12),
             'support_refs': _sample(list(row.support_refs or []), limit=8),
+            'requested_request_types': list(getattr(row, 'requested_request_types', []) or []),
+            'query_hints': _sample(list(getattr(row, 'query_hints', []) or []), limit=8),
+            'subject_refs': _sample(list(getattr(row, 'subject_refs', []) or []), limit=8),
+            'item_refs': _sample(list(getattr(row, 'item_refs', []) or []), limit=8),
+            'local_refs': _sample(list(getattr(row, 'local_refs', []) or []), limit=8),
             'reason_kind': row.reason_kind,
             'reason': row.reason,
         }
@@ -459,12 +466,14 @@ def _compact_verifier_issue(issue: object) -> dict[str, object]:
 def render_mapping_draft_editor_prompt(dossier: CaseDossier, draft: MappingDraft, *, round_kind: str = 'draft_edit') -> str:
     template = resources.files(__package__).joinpath('prompts/mapping_draft_editor.md').read_text(encoding='utf-8')
     notebook = getattr(dossier, 'notebook', None)
+    typed_notebook = compact_investigation_notebook(getattr(dossier, 'investigation_notebook', None))
     local_span_cards = _draft_local_span_cards(dossier, draft)
     bangumi_span_cards = _draft_bangumi_span_cards(dossier, draft)
     bangumi_item_cards = _draft_bangumi_item_cards(dossier, draft)
     bangumi_subject_cards = _draft_subject_cards(dossier, bangumi_span_cards, bangumi_item_cards)
     bangumi_relation_cards = _draft_relation_cards(dossier, bangumi_subject_cards)
     subjects_by_ref = {str(getattr(card, 'ref', '') or ''): card for card in bangumi_subject_cards}
+    evidence_menu = build_executable_evidence_menu(dossier)
     payload: dict[str, Any] = {
         'round_kind': round_kind,
         'dossier': {
@@ -480,8 +489,14 @@ def render_mapping_draft_editor_prompt(dossier: CaseDossier, draft: MappingDraft
             'required_singleton_comparison_rows': _required_singleton_comparison_rows(dossier, draft),
             'singleton_target_conflict_sets': _singleton_target_conflict_sets(dossier, draft),
             'mapping_draft': _compact_mapping_draft(draft),
+            'evidence_menu': {
+                'prompt_summaries': list((evidence_menu.get('prompt_summaries') or []))[:24],
+                'audit': evidence_menu.get('audit') or {},
+            },
             'verifier_issues': [_compact_verifier_issue(issue) for issue in list(getattr(dossier, 'verifier_issues', []) or [])[:20]],
             'notebook_summary': notebook if isinstance(notebook, dict) else {},
+            'case_briefing': compact_case_briefing(getattr(dossier, 'case_briefing', None)),
+            'investigation_notebook': typed_notebook,
         },
     }
     return template.replace('{{ROUND_KIND}}', round_kind).replace('{{DOSSIER_JSON}}', json.dumps(_jsonable(payload), ensure_ascii=False, indent=2))
@@ -498,7 +513,7 @@ def _call_ai_with_schema(ai_client: object, prompt: str, schema: type[MappingDra
         return getattr(ai_client, '_call_openai_simple')(
             'You are a Mapping Draft Editor. Return strict JSON only.',
             prompt,
-            validation_key='mapping_draft_editor',
+            validation_key='patches',
             schema=schema,
             streaming=False,
         )

@@ -24,9 +24,11 @@ Return strict JSON matching `QueryComposerOutput`.
 ## Query Guidance
 
 - Prefer concise title-like queries that a human would type into Bangumi search.
+- Prefer title hypotheses from `case_briefing.title_hypotheses` and open search questions from `investigation_notebook` before raw filename strings.
 - Produce multiple plausible queries only for title variants or romanized/Japanese/Chinese title forms.
 - If a raw cue looks like `Romanized title [Japanese title]`, output separate queries for the romanized title and the Japanese title, not one combined query.
 - If the only clean title cue is romanized and Bangumi search is likely to prefer Japanese/Chinese spelling, add direct title-preserving Japanese or Chinese query variants when you can infer them.
+- If `investigation_context.reason` says an empty subject recall needs an alternate query, treat the listed empty searches as failed spellings. Produce only new title-equivalent variants that a human would try next, such as the Japanese/Chinese official title form implied by visible romanization. Do not retry the same spelling, and do not add OVA/OAD/SP/year/season words as a workaround.
 - Use `source_refs` to cite the visible local/query/cluster/span refs that support each query.
 - Do not cite hidden refs.
 - Do not output duplicates.

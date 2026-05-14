@@ -5,7 +5,7 @@ from typing import Any
 from .models import EvidenceRequest
 from .surface_ledger import build_surface_ledger
 from .models import CaseDossier
-from .special_investigation import special_eligible_open_row_refs
+from .special_investigation import is_special_eligible_span, special_eligible_open_row_refs
 from .workspace import CaseEvidenceWorkspace
 
 
@@ -23,6 +23,34 @@ def _bounded_refs(source: object, dossier: CaseDossier, attr: str, max_width: in
     if not values:
         values = list(getattr(dossier.visible_refs, attr, []) or [])
     return _window(list(dict.fromkeys(values)), max_width)
+
+
+def _row_subject_refs(mapping_rows: list[object], *, local_ref: str = '', max_width: int = 8) -> list[str]:
+    refs: list[str] = []
+    for row in list(mapping_rows or []):
+        if local_ref and str(getattr(row, 'local_ref', '') or '') != local_ref:
+            continue
+        refs.extend(str(ref or '') for ref in list(getattr(row, 'subject_refs', []) or []) if str(ref or ''))
+    return list(dict.fromkeys(refs))[:max_width]
+
+
+def _prioritized_subject_refs(
+    source: object,
+    dossier: CaseDossier,
+    mapping_rows: list[object],
+    *,
+    local_ref: str = '',
+    max_width: int = 8,
+) -> list[str]:
+    explicit_refs = _row_subject_refs(mapping_rows, local_ref=local_ref, max_width=max_width)
+    visible_refs = _bounded_refs(source, dossier, 'bangumi_subject_refs', max_width)
+    if not visible_refs:
+        visible_refs = list(dict.fromkeys(
+            str(getattr(item, 'subject_ref', '') or '')
+            for item in list(getattr(dossier, 'bangumi_items', []) or [])
+            if str(getattr(item, 'subject_ref', '') or '')
+        ))[:max_width]
+    return list(dict.fromkeys([*explicit_refs, *visible_refs]))[:max_width]
 
 
 def _request_summary(request: EvidenceRequest) -> dict[str, Any]:
@@ -110,6 +138,13 @@ def _has_executable_target_span_window(local_span) -> bool:
     )
 
 
+def _can_request_regular_target_span(local_span, dossier: CaseDossier) -> bool:
+    return bool(
+        _has_executable_target_span_window(local_span)
+        and not is_special_eligible_span(local_span, dossier)
+    )
+
+
 def _is_budget_available(source: object, max_attr: str, used_attr: str) -> bool:
     budget = getattr(source, 'budget', None)
     max_value = int(getattr(budget, max_attr, 0) or 0)
@@ -117,14 +152,41 @@ def _is_budget_available(source: object, max_attr: str, used_attr: str) -> bool:
     return max_value == 0 or used_value < max_value
 
 
+def _completed_or_failed_request_refs(source: object, dossier: CaseDossier) -> set[str]:
+    refs = set()
+    plan_state = getattr(source, 'plan_state', None) or getattr(dossier, 'plan_state', None)
+    refs.update(str(ref or '') for ref in list(getattr(plan_state, 'completed_menu_request_ids', []) or []))
+    refs.update(str(ref or '') for ref in list(getattr(plan_state, 'failed_menu_request_ids', []) or []))
+    for holder in (source, dossier):
+        for batch in list(getattr(holder, 'previous_evidence_results', []) or []):
+            for result in list(getattr(batch, 'request_results', []) or getattr(batch, 'results', []) or []):
+                request_ref = str(getattr(result, 'request_ref', '') or '')
+                if request_ref:
+                    refs.add(request_ref)
+    return {ref for ref in refs if ref}
+
+
+def _open_row_requests_subject_search(mapping_rows: list[object]) -> bool:
+    for row in list(mapping_rows or []):
+        disposition = str(getattr(row, 'disposition', '') or '')
+        status = str(getattr(row, 'status', '') or '')
+        if disposition in {'map_to_bangumi', 'non_bangumi_or_supplemental'} or status == 'verified':
+            continue
+        if 'subject_search' in [str(value or '') for value in list(getattr(row, 'requested_request_types', []) or [])]:
+            return True
+    return False
+
+
 def _agent_composed_subject_search_queries(source: object, dossier: CaseDossier, *, max_width: int) -> list[object]:
     query_cards = list(getattr(source, 'query_cards', []) or []) or list(getattr(dossier, 'query_cards', []) or [])
+    completed_or_failed = _completed_or_failed_request_refs(source, dossier)
     candidates = [
         card for card in query_cards
         if str(getattr(card, 'query_kind', '') or '') == 'subject_search'
         and str(getattr(card, 'query_origin', '') or '') == 'agent_composed'
         and str(getattr(card, 'ref', '') or '').startswith('QC')
         and str(getattr(card, 'query_text', '') or '').strip()
+        and f'REQ_SUBJECT_SEARCH_{str(getattr(card, "ref", "") or "")}' not in completed_or_failed
     ]
     return candidates[:max_width]
 
@@ -224,7 +286,7 @@ def build_executable_evidence_menu(source: CaseEvidenceWorkspace | CaseDossier, 
     non_package_spans = [card for card in local_span_cards if str(getattr(card, 'span_scope', '') or '') != 'package']
     mapping_rows = list(getattr(getattr(source, 'mapping_draft', None), 'rows', []) or []) or list(getattr(getattr(dossier, 'mapping_draft', None), 'rows', []) or [])
     row_by_local_ref = {str(getattr(row, 'local_ref', '') or ''): row for row in mapping_rows if str(getattr(row, 'local_ref', '') or '')}
-    subject_refs = _bounded_refs(source, dossier, 'bangumi_subject_refs', 4)
+    subject_refs = _prioritized_subject_refs(source, dossier, mapping_rows, max_width=8)
     group_refs = _bounded_refs(source, dossier, 'bangumi_group_refs', 4)
     special_row_refs = special_eligible_open_row_refs(getattr(source, 'mapping_draft', None) or getattr(dossier, 'mapping_draft', None), dossier)
     special_subject_refs = list(dict.fromkeys(
@@ -270,14 +332,22 @@ def build_executable_evidence_menu(source: CaseEvidenceWorkspace | CaseDossier, 
         row = row_by_local_ref.get(str(getattr(local_span, 'ref', '') or ''))
         if row is not None and _has_detail_equivalent_candidates(row):
             span_rows_with_candidates += 1
-            if _has_executable_target_span_window(local_span):
-                req = _build_target_span_request(local_span, subject_refs=subject_refs, group_refs=group_refs)
+            if _can_request_regular_target_span(local_span, dossier):
+                req = _build_target_span_request(
+                    local_span,
+                    subject_refs=_prioritized_subject_refs(source, dossier, mapping_rows, local_ref=str(getattr(local_span, 'ref', '') or ''), max_width=8),
+                    group_refs=group_refs,
+                )
                 registry.setdefault(req.request_ref, req)
             continue
         span_rows_without_candidates += 1
-        if not _has_executable_target_span_window(local_span):
+        if not _can_request_regular_target_span(local_span, dossier):
             continue
-        req = _build_target_span_request(local_span, subject_refs=subject_refs, group_refs=group_refs)
+        req = _build_target_span_request(
+            local_span,
+            subject_refs=_prioritized_subject_refs(source, dossier, mapping_rows, local_ref=str(getattr(local_span, 'ref', '') or ''), max_width=8),
+            group_refs=group_refs,
+        )
         if req.request_ref not in registry:
             span_request_ids.append(req.request_ref)
             summaries.append(_request_summary(req))
@@ -312,13 +382,16 @@ def build_recommended_neutral_requests(source: CaseEvidenceWorkspace | CaseDossi
     bounded = source if hasattr(source, 'target_overview') else dossier
     ledger = build_surface_ledger(dossier)
     visible_local = list(getattr(dossier.visible_refs, 'local_file_refs', []) or [])
-    subject_refs = list(getattr(dossier.visible_refs, 'bangumi_subject_refs', []) or [])
+    mapping_rows = list(getattr(getattr(source, 'mapping_draft', None), 'rows', []) or []) or list(getattr(getattr(dossier, 'mapping_draft', None), 'rows', []) or [])
+    subject_refs = _prioritized_subject_refs(source, dossier, mapping_rows, max_width=max(4, max_width))
     seen_targets = [ref for ref in list((ledger.get('seen_detail') or {}).get('sample_refs') or []) if ref.startswith('BE')]
     assignable_targets = [ref for ref in list((ledger.get('assignable') or {}).get('sample_refs') or []) if ref.startswith('BE')]
     target_window = _window(list(dict.fromkeys([*seen_targets, *assignable_targets, *dossier.visible_refs.target_refs[:max_width]])), max_width)
     requests: list[dict[str, Any]] = []
+    allow_subject_recall_with_surface = 'weak_subject_recall_retry_pending' in list(getattr(source, 'diagnostics', []) or [])
+    allow_subject_recall_for_open_rows = _open_row_requests_subject_search(mapping_rows)
     if (
-        not subject_refs
+        (not subject_refs or allow_subject_recall_with_surface or allow_subject_recall_for_open_rows)
         and _is_budget_available(source, 'max_api_calls_per_case', 'used_api_calls')
         and _is_budget_available(source, 'max_subject_searches', 'used_subject_searches')
     ):
@@ -350,16 +423,20 @@ def build_recommended_neutral_requests(source: CaseEvidenceWorkspace | CaseDossi
         eligible_local_spans = [
             card for card in request_span_cards
             if int(getattr(card, 'file_ref_count', 0) or 0) >= 2
-            and _has_executable_target_span_window(card)
+            and _can_request_regular_target_span(card, dossier)
         ]
         for local_span in eligible_local_spans:
-            subject_refs = _window(list(getattr(dossier.visible_refs, 'bangumi_subject_refs', []) or []), max_width)
-            if not subject_refs:
-                subject_refs = _window([card.subject_ref for card in getattr(dossier, 'bangumi_items', []) if getattr(card, 'subject_ref', '')], max_width)
-            if not subject_refs:
+            span_subject_refs = _prioritized_subject_refs(
+                source,
+                dossier,
+                mapping_rows,
+                local_ref=str(getattr(local_span, 'ref', '') or ''),
+                max_width=max(4, max_width),
+            )
+            if not span_subject_refs:
                 continue
             group_refs = _window(list(getattr(dossier.visible_refs, 'bangumi_group_refs', []) or []), max_width)
-            requests.append(_build_target_span_request(local_span, subject_refs=subject_refs, group_refs=group_refs).model_dump(mode='json'))
+            requests.append(_build_target_span_request(local_span, subject_refs=span_subject_refs, group_refs=group_refs).model_dump(mode='json'))
     return {
         'recommended_neutral_requests': requests,
         'summary': {

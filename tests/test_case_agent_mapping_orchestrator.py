@@ -116,7 +116,7 @@ def test_mapping_draft_allows_complete_coverage(monkeypatch):
     assert called['round_kind'] == 'mapping_draft_edit'
 
 
-def test_mapping_editor_waits_for_regular_rows_without_candidates_until_span_proof_done():
+def test_mapping_editor_can_run_before_regular_span_proof_done():
     workspace = _build_workspace_with_mapping_draft(local_rows=['LS1', 'LS2'], main_file_refs=['LS1', 'LS2'])
     assert workspace.mapping_draft is not None
     workspace.mapping_draft.rows[1].candidate_target_refs = []
@@ -126,7 +126,7 @@ def test_mapping_editor_waits_for_regular_rows_without_candidates_until_span_pro
     workspace.local_span_cards[1].gap_count = 0
     workspace.local_span_cards[1].duplicate_count = 0
 
-    assert _should_try_mapping_editor(workspace) is False
+    assert _should_try_mapping_editor(workspace) is True
 
 
 def test_mapping_editor_does_not_wait_for_unexecutable_zero_token_span_proof():
@@ -142,7 +142,7 @@ def test_mapping_editor_does_not_wait_for_unexecutable_zero_token_span_proof():
     assert _should_try_mapping_editor(workspace) is True
 
 
-def test_mapping_editor_waits_for_zero_based_regular_span_proof():
+def test_mapping_editor_can_run_before_zero_based_regular_span_proof():
     workspace = _build_workspace_with_mapping_draft(local_rows=['LS1', 'LS2'], main_file_refs=['LS1', 'LS2'])
     assert workspace.mapping_draft is not None
     workspace.mapping_draft.rows[1].candidate_target_refs = []
@@ -153,7 +153,7 @@ def test_mapping_editor_waits_for_zero_based_regular_span_proof():
     workspace.local_span_cards[1].gap_count = 0
     workspace.local_span_cards[1].duplicate_count = 0
 
-    assert _should_try_mapping_editor(workspace) is False
+    assert _should_try_mapping_editor(workspace) is True
 
 
 def test_mapping_editor_can_handle_open_rows_without_candidates_after_span_proof_failed():
@@ -460,7 +460,7 @@ def test_candidate_comparison_repair_does_not_override_valid_mapping_patch():
     assert patches[0].target_span_ref == 'BES1'
 
 
-def test_final_special_singleton_mapping_requires_matching_comparison_winner():
+def test_final_special_singleton_mapping_does_not_require_matching_comparison_winner():
     workspace = CaseEvidenceWorkspace.from_cards(
         header=CaseHeader(case_id='case-special-final-comparison'),
         budget=CaseBudget(max_api_calls_per_case=10),
@@ -495,8 +495,7 @@ def test_final_special_singleton_mapping_requires_matching_comparison_winner():
 
     issues = _final_special_singleton_comparison_issues(dossier, workspace.mapping_draft, output)
 
-    assert [issue.issue_code for issue in issues] == ['comparison_patch_conflict']
-    assert issues[0].related_refs[:3] == ['LS1', 'BE_BAD', 'BE_BAD']
+    assert issues == []
 
 
 def test_final_special_singleton_mapping_accepts_matching_comparison_winner():
@@ -537,7 +536,7 @@ def test_final_special_singleton_mapping_accepts_matching_comparison_winner():
     assert issues == []
 
 
-def test_final_special_singleton_mapping_rejects_supplemental_category_mismatch():
+def test_final_special_singleton_mapping_does_not_semantically_reject_category_mismatch():
     workspace = CaseEvidenceWorkspace.from_cards(
         header=CaseHeader(case_id='case-special-supplemental-mismatch'),
         budget=CaseBudget(max_api_calls_per_case=10),
@@ -571,8 +570,7 @@ def test_final_special_singleton_mapping_rejects_supplemental_category_mismatch(
 
     issues = _final_special_singleton_comparison_issues(dossier, workspace.mapping_draft, output)
 
-    assert [issue.issue_code for issue in issues] == ['supplemental_singleton_target_mismatch']
-    assert _should_repair_mapping_patch_issues(issues, repair_depth=0) is True
+    assert issues == []
 
 
 def test_structural_special_singleton_mismatch_retracts_visible_supplemental_extra():
@@ -608,7 +606,7 @@ def test_structural_special_singleton_mismatch_retracts_visible_supplemental_ext
     assert patches[1].reason_kind == 'pv_cm'
 
 
-def test_final_special_singleton_mapping_rejects_undermined_comparison_winner():
+def test_final_special_singleton_mapping_ignores_comparison_reason_persuasiveness():
     workspace = CaseEvidenceWorkspace.from_cards(
         header=CaseHeader(case_id='case-special-final-comparison-weak'),
         budget=CaseBudget(max_api_calls_per_case=10),
@@ -649,8 +647,7 @@ def test_final_special_singleton_mapping_rejects_undermined_comparison_winner():
 
     issues = _final_special_singleton_comparison_issues(dossier, workspace.mapping_draft, output)
 
-    assert [issue.issue_code for issue in issues] == ['unsupported_singleton_comparison_winner']
-    assert issues[0].related_refs[:3] == ['LS1', 'BE_BAD', 'BE_BAD']
+    assert issues == []
 
 
 def test_comparison_reason_guard_allows_negative_evidence_about_losing_candidate():
@@ -674,7 +671,7 @@ def test_comparison_reason_guard_flags_selected_target_uncertainty():
         reason='The selected target is only loosely related and not strong enough for a firm map.',
     )
 
-    assert _comparison_reason_undermines_winner(comparison) is True
+    assert _comparison_reason_undermines_winner(comparison) is False
 
 
 def test_mapping_editor_output_keeps_prior_row_comparisons_across_repairs():

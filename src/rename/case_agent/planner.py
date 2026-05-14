@@ -20,12 +20,14 @@ def build_deterministic_evidence_plan(workspace: CaseEvidenceWorkspace) -> Evide
         or list(getattr(workspace, 'bangumi_items', []) or [])
         or list(getattr(workspace, 'bangumi_span_cards', []) or [])
     )
-    if not has_target_surface:
-        subject_search_ids = [
-            str(item.get('request_id') or '')
-            for item in list(menu.get('prompt_summaries') or [])
-            if str(item.get('request_type') or '') == 'subject_search'
-        ]
+    subject_search_ids = [
+        str(item.get('request_id') or '')
+        for item in list(menu.get('prompt_summaries') or [])
+        if str(item.get('request_type') or '') == 'subject_search'
+        and str(item.get('request_id') or '') not in completed_or_failed_ids
+    ]
+    weak_recall_retry_pending = 'weak_subject_recall_retry_pending' in list(getattr(workspace, 'diagnostics', []) or [])
+    if not has_target_surface or weak_recall_retry_pending:
         selected_ids = [request_id for request_id in subject_search_ids if request_id]
         selected_ids = selected_ids[:max_requests] if max_requests > 0 else list(selected_ids)
         if not selected_ids:
@@ -100,7 +102,8 @@ def build_deterministic_evidence_plan(workspace: CaseEvidenceWorkspace) -> Evide
         if str(item.get('request_id') or '').startswith(('REQ_SPECIAL_',))
         and str(item.get('request_id') or '') not in completed_or_failed_ids
     ]
-    if special_row_refs and special_request_ids:
+    special_already_attempted = any(str(request_id).startswith('REQ_SPECIAL_') for request_id in completed_or_failed_ids)
+    if special_row_refs and special_request_ids and not special_already_attempted:
         max_slots = max_requests if max_requests > 0 else len(special_request_ids)
         selected_ids = [request_id for request_id in special_request_ids if request_id][:max_slots]
         if selected_ids:
@@ -123,7 +126,6 @@ def build_deterministic_evidence_plan(workspace: CaseEvidenceWorkspace) -> Evide
                 steps=[EvidencePlanStep(selected_menu_request_ids=selected_ids)],
             )
             return EvidencePlannerOutput(selected_evidence=True, plan=plan)
-
     planned_ids = [
         str(item.get('request_id') or '')
         for item in list(menu.get('prompt_summaries') or [])
@@ -152,5 +154,29 @@ def build_deterministic_evidence_plan(workspace: CaseEvidenceWorkspace) -> Evide
             steps=[EvidencePlanStep(selected_menu_request_ids=selected_ids)],
         )
         return EvidencePlannerOutput(selected_evidence=True, plan=plan)
+
+    if special_row_refs and special_request_ids:
+        max_slots = max_requests if max_requests > 0 else len(special_request_ids)
+        selected_ids = [request_id for request_id in special_request_ids if request_id][:max_slots]
+        if selected_ids:
+            plan = EvidencePlan(
+                plan_id=f"PLAN_SPECIAL_{workspace.header.case_id or 'CASE'}_{workspace.header.round_index + 1}",
+                plan_kind='special_recall',
+                selected_menu_request_ids=selected_ids,
+                completed_menu_request_ids=[],
+                failed_menu_request_ids=[],
+                ready_span_refs=[],
+                planned_span_request_count=int(menu_audit.get('planned_span_request_count') or 0),
+                selected_span_request_count=0,
+                completed_span_request_count=int(menu_audit.get('completed_span_request_count') or 0),
+                span_rows_with_candidates=int(menu_audit.get('span_rows_with_candidates') or 0),
+                span_rows_without_candidates=int(menu_audit.get('span_rows_without_candidates') or 0),
+                plan_status='in_progress',
+                goal='collect special/movie/related subject targets for singleton unresolved local rows',
+                stop_conditions=['budget exhausted', 'selected special evidence requests executed', 'no pending special requests'],
+                risk_flags=['deterministic', 'special_investigation_candidate', 'no_semantic_mapping'],
+                steps=[EvidencePlanStep(selected_menu_request_ids=selected_ids)],
+            )
+            return EvidencePlannerOutput(selected_evidence=True, plan=plan)
 
     return None

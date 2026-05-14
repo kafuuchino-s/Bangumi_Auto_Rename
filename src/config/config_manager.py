@@ -38,10 +38,12 @@ CONFIG_DEFAULT = {
     "ai_auto_save": False,  # 是否自动保存AI分析结果
     "ai_response_cache_enabled": False,  # 回归/调试用：缓存 AI 请求响应，生产默认关闭
     "rename_local_bangumi_case_agent_primary_enabled": True,
-    "rename_local_bangumi_case_agent_max_rounds": 3,
+    "rename_local_bangumi_case_agent_max_rounds": 24,
     "rename_local_bangumi_case_agent_max_evidence_batches": 8,
     "rename_local_bangumi_case_agent_max_issue_response_rounds": 1,
     "rename_local_bangumi_case_agent_max_requests_per_batch": 8,
+    "rename_local_bangumi_orchestrator_agent_context_soft_token_limit": 180000,
+    "rename_local_bangumi_orchestrator_agent_context_hard_token_limit": 300000,
     "rename_local_bangumi_case_agent_snapshot_debug": False,
     "log_level": "INFO",  # 日志等级
     "queue_max_workers": 1,  # 队列并行处理数
@@ -115,6 +117,8 @@ CN_MAP = {
     "rename_local_bangumi_case_agent_max_evidence_batches": "🧭 Case Agent 最大证据批次",
     "rename_local_bangumi_case_agent_max_issue_response_rounds": "🧭 Case Agent 最大修正轮数",
     "rename_local_bangumi_case_agent_max_requests_per_batch": "🧭 Case Agent 每批最大证据请求",
+    "rename_local_bangumi_orchestrator_agent_context_soft_token_limit": "🧭 Orchestrator Agent compact 软阈值",
+    "rename_local_bangumi_orchestrator_agent_context_hard_token_limit": "🧭 Orchestrator Agent compact 硬阈值",
     "rename_local_bangumi_case_agent_snapshot_debug": "🧭 Case Agent snapshot 调试详情",
     "log_level": "📝 日志等级",
     "queue_max_workers": "🔢 队列并行数（建议1-5）",

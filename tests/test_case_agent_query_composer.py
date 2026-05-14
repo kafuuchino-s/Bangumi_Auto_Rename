@@ -1,4 +1,4 @@
-from src.rename.case_agent.models import CaseBudget, CaseContract, CaseHeader, LocalFileCard, QueryCandidate, QueryCard, QueryComposerOutput
+from src.rename.case_agent.models import CaseBudget, CaseContract, CaseHeader, EvidenceBatchResult, EvidenceRequestResult, LocalFileCard, QueryCandidate, QueryCard, QueryComposerOutput
 from src.rename.case_agent.query_composer import call_query_composer, render_query_composer_prompt
 from src.rename.case_agent.workspace import CaseEvidenceWorkspace
 
@@ -198,6 +198,62 @@ def test_query_composer_accepts_title_preserving_alternate_language_hypotheses()
     assert [card.query_text for card in result.query_cards] == ['Japanese title']
     assert result.query_cards[0].ignored_terms == []
     assert result.request_audit is not None
+    assert any(
+        str(reason).startswith('query_text_has_scope_or_year_suffix:')
+        for reason in result.request_audit['dropped_query_reasons']
+    )
+
+
+def test_query_composer_empty_recall_retry_exposes_failed_queries():
+    workspace = CaseEvidenceWorkspace.from_cards(
+        header=CaseHeader(case_id='CASE-QC-EMPTY-RECALL'),
+        budget=CaseBudget(),
+        contract=CaseContract(main_file_refs=['LF1'], allowed_file_refs=['LF1']),
+        local_files=[LocalFileCard(ref='LF1', path='Yuyushiki OVA.mkv', is_main=True)],
+        query_cards=[
+            QueryCard(ref='SQ1', query_text='Yuyushiki OVA', query_kind='subject_search', query_origin='local_raw', source_refs=['LF1']),
+            QueryCard(ref='QC1', query_text='Yuyushiki', query_kind='subject_search', query_origin='agent_composed', source_refs=['LF1', 'SQ1']),
+        ],
+        previous_evidence_results=[
+            EvidenceBatchResult(
+                batch_ref='EB1',
+                request_results=[
+                    EvidenceRequestResult(request_ref='REQ_SUBJECT_SEARCH_QC1', request_type='subject_search', accepted=True, response_refs=[]),
+                ],
+                results=[
+                    EvidenceRequestResult(request_ref='REQ_SUBJECT_SEARCH_QC1', request_type='subject_search', accepted=True, response_refs=[]),
+                ],
+            )
+        ],
+    )
+    client = FakeQueryComposerClient(QueryComposerOutput(queries=[
+        QueryCandidate(
+            query_text='ゆゆ式',
+            source_refs=['LF1', 'SQ1', 'QC1'],
+            included_terms=['ゆゆ式'],
+            ignored_terms=['OVA'],
+            reason='title-preserving Japanese title variant after empty romanized recall',
+            confidence='medium',
+        ),
+        QueryCandidate(
+            query_text='Yuyushiki OVA',
+            source_refs=['LF1', 'SQ1'],
+            reason='scope term should still be rejected',
+            confidence='low',
+        ),
+    ]))
+
+    result = call_query_composer(
+        client,
+        workspace.to_dossier(round_context='query_composer'),
+        investigation_reason='empty_subject_recall_requires_alternate_query',
+    )
+
+    assert result.ok is True
+    assert [card.query_text for card in result.query_cards] == ['ゆゆ式']
+    assert 'investigation_context' in client.prompts[0]
+    assert 'REQ_SUBJECT_SEARCH_QC1' in client.prompts[0]
+    assert 'Yuyushiki' in client.prompts[0]
     assert any(
         str(reason).startswith('query_text_has_scope_or_year_suffix:')
         for reason in result.request_audit['dropped_query_reasons']

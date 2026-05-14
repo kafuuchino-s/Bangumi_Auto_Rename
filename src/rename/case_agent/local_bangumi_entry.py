@@ -274,6 +274,26 @@ def _config_int_at_least(key: str, default: int, minimum: int) -> int:
     return max(minimum, _config_int(key, default))
 
 
+def _case_agent_round_safety_cap() -> int:
+    # This is a loop guard, not a fixed investigation plan. Keep old low local
+    # configs from forcing premature fail_closed results.
+    return _config_int_at_least('rename_local_bangumi_case_agent_max_rounds', 24, 24)
+
+
+def _orchestrator_context_limits() -> tuple[int, int]:
+    soft = _config_int_at_least(
+        'rename_local_bangumi_orchestrator_agent_context_soft_token_limit',
+        180000,
+        8192,
+    )
+    hard = _config_int_at_least(
+        'rename_local_bangumi_orchestrator_agent_context_hard_token_limit',
+        300000,
+        soft + 1024,
+    )
+    return soft, hard
+
+
 def _episode_structure_from_context(value: object) -> dict[str, Any]:
     if not isinstance(value, dict):
         if hasattr(value, 'model_dump'):
@@ -478,7 +498,8 @@ def _build_workspace(*, local_evidence, bangumi_contexts: list[dict[str, object]
     query_cards = build_query_cards(local_files, local_clusters, bangumi_subjects)
     provenance_cards = [ProvenanceCard(ref='PV1', source_operation='local_bangumi_case_agent_entry', raw_response_count=len(bangumi_items), parent_refs=[card.ref for card in local_files[:2]])]
     contract = CaseContract(summary='Local->Bangumi case agent mapping workspace', expected_outcome='unknown', main_file_refs=derived_main_file_refs, supplemental_file_refs=list(views.ref_map.supplemental_file_refs or []), allowed_file_refs=list(views.ref_map.file_refs or [card.ref for card in local_files]), visible_target_refs=[card.ref for card in bangumi_items], coverage_rule='main files must be covered exactly once or fail closed', duplicate_rule='bangumi item refs must not be duplicated', support_rule='only visible bangumi cards may be referenced')
-    header = CaseHeader(case_id=f'local-bangumi-{getattr(local_evidence, "source_path", "") or "mapping"}', max_rounds=_config_int('rename_local_bangumi_case_agent_max_rounds', 3), status='open')
+    round_safety_cap = _case_agent_round_safety_cap()
+    header = CaseHeader(case_id=f'local-bangumi-{getattr(local_evidence, "source_path", "") or "mapping"}', max_rounds=round_safety_cap, status='open')
     budget = CaseBudget(max_judge_rounds=header.max_rounds, max_evidence_batches=_config_int_at_least('rename_local_bangumi_case_agent_max_evidence_batches', 8, 8), max_issue_response_rounds=_config_int('rename_local_bangumi_case_agent_max_issue_response_rounds', 1), max_requests_per_batch=_config_int('rename_local_bangumi_case_agent_max_requests_per_batch', 8))
     local_span_cards = _build_raw_local_span_shells(local_files, contract)
     workspace = CaseEvidenceWorkspace.from_cards(header=header, budget=budget, contract=contract, local_files=local_files, local_clusters=local_clusters, local_span_cards=local_span_cards, bangumi_subjects=bangumi_subjects, bangumi_groups=bangumi_groups, bangumi_items=bangumi_items, query_cards=query_cards, provenance_cards=provenance_cards)
@@ -548,12 +569,31 @@ def run_local_bangumi_case_agent_mapping(*, local_evidence, bangumi_contexts: li
         bangumi_contexts=bangumi_contexts,
     )
     effective_bangumi_client = bangumi_client if bangumi_client is not None else BangumiClient()
-    result: CaseAgentRunResult = run_local_bangumi_case_agent(workspace, ai_client, effective_bangumi_client)
+    orchestrator_soft_limit, orchestrator_hard_limit = _orchestrator_context_limits()
+    result: CaseAgentRunResult = run_local_bangumi_case_agent(
+        workspace,
+        ai_client,
+        effective_bangumi_client,
+        orchestrator_context_soft_token_limit=orchestrator_soft_limit,
+        orchestrator_context_hard_token_limit=orchestrator_hard_limit,
+    )
+    child_results = list(getattr(result, 'child_results', []) or [])
+    child_request_audits: list[dict[str, Any]] = []
+    for child in child_results:
+        child_workspace = getattr(child, 'final_workspace', None)
+        child_case_id = str(getattr(child, 'case_id', '') or '')
+        for audit in list(getattr(child_workspace, 'judge_request_audits', []) or []):
+            if not isinstance(audit, dict):
+                continue
+            child_audit = dict(audit)
+            child_audit.setdefault('child_case_id', child_case_id)
+            child_request_audits.append(child_audit)
     bounded = build_bounded_case_dossier(result.final_workspace)
     final_output = getattr(result, 'final_output', None)
     final_verifier_result = getattr(result, 'final_verifier_result', None)
     evidence_response_refs = [ref for batch in result.evidence_batches for req in (getattr(batch, 'request_results', []) or []) for ref in (getattr(req, 'response_refs', []) or []) if ref]
-    request_audits = list(getattr(result.final_workspace, 'judge_request_audits', []) or [])
+    parent_request_audits = list(getattr(result.final_workspace, 'judge_request_audits', []) or [])
+    request_audits = [*parent_request_audits, *child_request_audits]
     deterministic_projection_audits = [
         audit
         for audit in request_audits
@@ -582,7 +622,7 @@ def run_local_bangumi_case_agent_mapping(*, local_evidence, bangumi_contexts: li
         normalized_legacy_request_count += int(audit.get('normalized_legacy_request_count') or 0)
     seen_detail_refs = list(dict.fromkeys([*(getattr(result.final_workspace, 'seen_detail_refs', []) or []), *evidence_response_refs]))
     initial_projection = _initial_projection_for_snapshot(bounded)
-    request_audits = list(getattr(result.final_workspace, 'judge_request_audits', []) or [])
+    request_audits = [*parent_request_audits, *child_request_audits]
     local_package_analysis_audit = {
         'call_name': 'LocalPackageAnalysis',
         'skipped': True,
@@ -634,11 +674,92 @@ def run_local_bangumi_case_agent_mapping(*, local_evidence, bangumi_contexts: li
     mapping_draft_metrics = _count_mapping_draft_metrics(result, final_output, final_verifier_result)
     accounting = compute_mapping_draft_accounting(getattr(result.final_workspace, 'mapping_draft', None), result.final_workspace) if getattr(result.final_workspace, 'mapping_draft', None) is not None else None
     expanded_assignment_count = mapping_draft_metrics['expanded_assignment_count']
-    actual_target_span_request_count = len([req for batch in result.evidence_batches for req in (getattr(batch, 'request_results', []) or []) if str(getattr(req, 'request_type', '') or '').endswith('span') or str(getattr(req, 'request_type', '') or '').endswith('window')])
-    recommended_target_span_request_count = len([req for batch in result.evidence_batches for req in (getattr(batch, 'request_results', []) or []) if str(getattr(req, 'request_type', '') or '').endswith('span') or str(getattr(req, 'request_type', '') or '').endswith('window')])
-    accepted_target_span_request_count = actual_target_span_request_count if result.status in {'accepted', 'fail_closed'} else 0
+    target_span_requests = [req for batch in result.evidence_batches for req in (getattr(batch, 'request_results', []) or []) if str(getattr(req, 'request_type', '') or '').endswith('span') or str(getattr(req, 'request_type', '') or '').endswith('window')]
+    actual_target_span_request_count = len(target_span_requests)
+    recommended_target_span_request_count = len(target_span_requests)
+    accepted_target_span_request_count = len([req for req in target_span_requests if bool(getattr(req, 'accepted', False))])
+    rejected_target_span_request_count = len([req for req in target_span_requests if not bool(getattr(req, 'accepted', False))])
+    rejected_target_span_reason_samples = list(dict.fromkeys([
+        '; '.join(str(note or '') for note in list(getattr(req, 'notes', []) or []) if str(note or ''))[:160]
+        for req in target_span_requests
+        if not bool(getattr(req, 'accepted', False))
+    ]))[:8]
+    subject_search_attempted_count = len([req for batch in result.evidence_batches for req in (getattr(batch, 'request_results', []) or []) if str(getattr(req, 'request_type', '') or '') == 'subject_search'])
+    episode_list_attempted_count = len([req for batch in result.evidence_batches for req in (getattr(batch, 'request_results', []) or []) if str(getattr(req, 'request_type', '') or '') == 'episode_list'])
+    deferred_evidence_intent_count = sum(int(audit.get('deferred_evidence_intent_count') or 0) for audit in request_audits if isinstance(audit, dict))
+    target_span_blocked_by_missing_items_count = sum(int(audit.get('target_span_blocked_by_missing_items_count') or 0) for audit in request_audits if isinstance(audit, dict))
+    case_briefing = getattr(result.final_workspace, 'case_briefing', None)
+    investigation_notebook = getattr(result.final_workspace, 'investigation_notebook', None)
+    briefing_agent_applied = any(isinstance(audit, dict) and str(audit.get('note') or '') == 'case_briefing_agent_applied' for audit in request_audits)
+    notebook_open_questions = [
+        item for item in list(getattr(investigation_notebook, 'open_questions', []) or [])
+        if str(getattr(item, 'status', '') or '') == 'open'
+    ] if investigation_notebook is not None else []
+    human_next_action_blocked_count = sum(
+        int(audit.get('human_next_action_blocked_no_new_evidence_count') or 0)
+        for audit in request_audits
+        if isinstance(audit, dict)
+    )
+    child_briefing_count = sum(
+        1
+        for child in list(getattr(result, 'child_results', []) or [])
+        if getattr(getattr(child, 'final_workspace', None), 'case_briefing', None) is not None
+    )
     planning_output = getattr(result, 'planning_output', None)
-    child_results = list(getattr(result, 'child_results', []) or [])
+    orchestrator_call_audits = [
+        audit for audit in request_audits
+        if isinstance(audit, dict) and str(audit.get('note') or '') == 'orchestrator_agent_called'
+    ]
+    orchestrator_session_summary = next(
+        (
+            audit for audit in reversed(request_audits)
+            if isinstance(audit, dict) and str(audit.get('note') or '') == 'orchestrator_agent_session_summary'
+        ),
+        None,
+    )
+    orchestrator_tool_sequence = [
+        str(audit.get('tool_name') or '')
+        for audit in orchestrator_call_audits
+        if str(audit.get('tool_name') or '')
+    ]
+    if isinstance(orchestrator_session_summary, dict) and isinstance(orchestrator_session_summary.get('orchestrator_tool_sequence'), list):
+        orchestrator_tool_sequence = [
+            str(tool_name)
+            for tool_name in list(orchestrator_session_summary.get('orchestrator_tool_sequence') or [])
+            if str(tool_name)
+        ]
+    orchestrator_tool_call_counts: dict[str, int] = {}
+    for tool_name in orchestrator_tool_sequence:
+        orchestrator_tool_call_counts[tool_name] = orchestrator_tool_call_counts.get(tool_name, 0) + 1
+    if isinstance(orchestrator_session_summary, dict) and isinstance(orchestrator_session_summary.get('orchestrator_tool_call_counts'), dict):
+        orchestrator_tool_call_counts = {
+            str(key): int(value or 0)
+            for key, value in dict(orchestrator_session_summary.get('orchestrator_tool_call_counts') or {}).items()
+        }
+    orchestrator_tool_rejection_count = sum(
+        1
+        for audit in request_audits
+        if isinstance(audit, dict)
+        and str(audit.get('note') or '') == 'orchestrator_tool_selected'
+        and not bool(audit.get('accepted'))
+    )
+    if isinstance(orchestrator_session_summary, dict) and orchestrator_session_summary.get('tool_rejection_count') is not None:
+        orchestrator_tool_rejection_count = int(orchestrator_session_summary.get('tool_rejection_count') or 0)
+    orchestrator_compact_count = sum(
+        1
+        for audit in orchestrator_call_audits
+        if bool(audit.get('compacted'))
+    )
+    if isinstance(orchestrator_session_summary, dict) and orchestrator_session_summary.get('compact_count') is not None:
+        orchestrator_compact_count = int(orchestrator_session_summary.get('compact_count') or 0)
+    orchestrator_turn_count = len(orchestrator_call_audits)
+    if isinstance(orchestrator_session_summary, dict) and orchestrator_session_summary.get('orchestrator_turn_count') is not None:
+        orchestrator_turn_count = int(orchestrator_session_summary.get('orchestrator_turn_count') or 0)
+    context_soft_limit_hit_count = sum(1 for audit in orchestrator_call_audits if int(audit.get('context_soft_limit_hit_count') or 0) > 0)
+    context_hard_limit_hit_count = sum(1 for audit in orchestrator_call_audits if int(audit.get('context_hard_limit_hit_count') or 0) > 0)
+    if isinstance(orchestrator_session_summary, dict):
+        context_soft_limit_hit_count = int(orchestrator_session_summary.get('context_soft_limit_hit_count') or context_soft_limit_hit_count)
+        context_hard_limit_hit_count = int(orchestrator_session_summary.get('context_hard_limit_hit_count') or context_hard_limit_hit_count)
     split_child_assignment_count = sum(
         len(getattr(getattr(child, 'final_output', None), 'assignment_intents', []) or [])
         for child in child_results
@@ -702,7 +823,26 @@ def run_local_bangumi_case_agent_mapping(*, local_evidence, bangumi_contexts: li
         'recommended_target_span_request_count': recommended_target_span_request_count,
         'actual_target_span_request_count': actual_target_span_request_count,
         'accepted_target_span_request_count': accepted_target_span_request_count,
+        'rejected_target_span_request_count': rejected_target_span_request_count,
+        'rejected_target_span_reason_samples': rejected_target_span_reason_samples,
         'target_span_request_count': actual_target_span_request_count,
+        'subject_search_attempted_count': subject_search_attempted_count,
+        'episode_list_attempted_count': episode_list_attempted_count,
+        'deferred_evidence_intent_count': deferred_evidence_intent_count,
+        'target_span_blocked_by_missing_items_count': target_span_blocked_by_missing_items_count,
+        'briefing_work_unit_count': len(list(getattr(case_briefing, 'work_units', []) or [])) if case_briefing is not None else 0,
+        'briefing_memory_lost': bool(briefing_agent_applied and case_briefing is None),
+        'notebook_update_count': len(list(getattr(investigation_notebook, 'update_log', []) or [])) if investigation_notebook is not None else 0,
+        'open_question_count': len(notebook_open_questions),
+        'human_next_action_blocked_no_new_evidence_count': human_next_action_blocked_count,
+        'child_briefing_count': child_briefing_count,
+        'orchestrator_turn_count': orchestrator_turn_count,
+        'orchestrator_tool_call_counts': orchestrator_tool_call_counts,
+        'orchestrator_tool_sequence': orchestrator_tool_sequence,
+        'tool_rejection_count': orchestrator_tool_rejection_count,
+        'compact_count': orchestrator_compact_count,
+        'context_soft_limit_hit_count': context_soft_limit_hit_count,
+        'context_hard_limit_hit_count': context_hard_limit_hit_count,
         'final_output_assignment_count': len(getattr(final_output, 'assignment_intents', []) or []),
         'final_output_main_file_count': len(result.final_workspace.contract.main_file_refs),
         'final_output_main_file_range': f"{result.final_workspace.contract.main_file_refs[0]}..{result.final_workspace.contract.main_file_refs[-1]}" if result.final_workspace.contract.main_file_refs else '',

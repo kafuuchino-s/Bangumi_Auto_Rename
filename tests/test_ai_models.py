@@ -134,6 +134,36 @@ def test_ai_response_cache_off_keeps_live_calls(monkeypatch, tmp_path):
     assert not list(tmp_path.glob('*.json'))
 
 
+def test_ai_client_responses_tool_agent_passes_input_and_tools():
+    calls = []
+
+    class FakeAdapter:
+        model = 'fake-model'
+        temperature = 0.0
+        client = object()
+
+        def call_via_responses_api(self, request_params):
+            calls.append(request_params)
+            return {'id': 'resp_1', 'tool_calls': []}
+
+    client = AIClient()
+    client._client = FakeAdapter()
+
+    result = client.call_responses_tool_agent(
+        instructions='system',
+        input_items=[{'role': 'user', 'content': 'state'}],
+        tools=[{'type': 'function', 'function': {'name': 'do_it', 'parameters': {'type': 'object', 'properties': {}}}}],
+        parallel_tool_calls=False,
+    )
+
+    assert result == {'id': 'resp_1', 'tool_calls': []}
+    assert 'conversation' not in calls[0]
+    assert calls[0]['responses_input'][0]['content'] == 'state'
+    assert calls[0]['tools'][0]['function']['name'] == 'do_it'
+    assert calls[0]['tool_choice'] == 'required'
+    assert calls[0]['parallel_tool_calls'] is False
+
+
 def test_openai_strict_schema_strips_defaults_and_marks_required_fields():
     schema = AIClient._build_openai_strict_schema(AIProposalCriticResult)
 

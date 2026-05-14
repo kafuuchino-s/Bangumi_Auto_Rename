@@ -454,6 +454,20 @@ class OpenAIClient(BaseAIClient):
 
         tool_calls_payload: List[Dict[str, str]] = []
         content_parts: List[str] = []
+        response_id = getattr(response, "id", "")
+        usage_payload: dict[str, object] = {}
+        raw_usage = getattr(response, "usage", None)
+        if raw_usage is not None:
+            for key in (
+                "input_tokens",
+                "output_tokens",
+                "total_tokens",
+                "prompt_tokens",
+                "completion_tokens",
+            ):
+                value = getattr(raw_usage, key, None)
+                if isinstance(value, int):
+                    usage_payload[key] = value
 
         response_output = getattr(response, "output", None)
         output_items = response_output if isinstance(response_output, list) else []
@@ -465,7 +479,12 @@ class OpenAIClient(BaseAIClient):
                 arguments = getattr(item, "arguments", "")
                 if name and arguments is not None:
                     tool_calls_payload.append(
-                        {"name": str(name), "arguments": str(arguments)}
+                        {
+                            "id": str(getattr(item, "id", "") or ""),
+                            "call_id": str(getattr(item, "call_id", "") or getattr(item, "id", "") or ""),
+                            "name": str(name),
+                            "arguments": str(arguments),
+                        }
                     )
                 continue
 
@@ -484,7 +503,12 @@ class OpenAIClient(BaseAIClient):
                 content_parts.append(str(output_text))
 
         content = "\n".join(part for part in content_parts if part)
-        return {"content": content, "tool_calls": tool_calls_payload}
+        return {
+            "id": str(response_id or ""),
+            "content": content,
+            "tool_calls": tool_calls_payload,
+            "usage": usage_payload,
+        }
 
     def _convert_chat_request_to_responses(
         self, request_params: Mapping[str, object]
@@ -507,8 +531,16 @@ class OpenAIClient(BaseAIClient):
             elif role == "user":
                 user_parts.append(content)
 
+        raw_responses_input = request_params.get("responses_input")
+        if isinstance(raw_responses_input, list):
+            input_payload: object = raw_responses_input
+        elif isinstance(raw_responses_input, str):
+            input_payload = raw_responses_input
+        else:
+            input_payload = "\n\n".join(user_parts)
+
         responses_params: dict[str, object] = {
-            "input": "\n\n".join(user_parts),
+            "input": input_payload,
         }
         model = request_params.get("model")
         if isinstance(model, str) and model:
@@ -520,11 +552,21 @@ class OpenAIClient(BaseAIClient):
         max_tokens = request_params.get("max_tokens")
         if max_tokens is None:
             max_tokens = request_params.get("max_completion_tokens")
+        if max_tokens is None:
+            max_tokens = request_params.get("max_output_tokens")
         if isinstance(max_tokens, int):
             responses_params["max_output_tokens"] = max_tokens
 
+        explicit_instructions = request_params.get("instructions")
+        if isinstance(explicit_instructions, str) and explicit_instructions:
+            instructions = f"{instructions}\n\n{explicit_instructions}" if instructions else explicit_instructions
+
         if instructions:
             responses_params["instructions"] = instructions
+
+        parallel_tool_calls = request_params.get("parallel_tool_calls")
+        if isinstance(parallel_tool_calls, bool):
+            responses_params["parallel_tool_calls"] = parallel_tool_calls
 
         tools = request_params.get("tools")
         if isinstance(tools, list) and tools:

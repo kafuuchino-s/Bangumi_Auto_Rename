@@ -6,6 +6,8 @@ from .broker_related import execute_related_expansion
 from .broker_search import execute_subject_search
 from .broker_subject import execute_subject_lookup
 from .models import BangumiItemCard, BangumiSpanCard, EvidenceBatchResult, EvidenceRequest, EvidenceRequestResult
+from .notebook import close_notebook_agenda_for_evidence_results
+from .special_investigation import is_special_eligible_span
 from .workspace import CaseEvidenceWorkspace
 
 
@@ -72,6 +74,12 @@ def _build_target_span_result(request, cards: list[BangumiSpanCard], notes: list
 
 def _target_span_candidate_cards(workspace: CaseEvidenceWorkspace, request: EvidenceRequest) -> list[BangumiSpanCard]:
     request_ref = str(getattr(request, 'request_ref', '') or '')
+    local_span_ref = str(getattr(request, 'local_span_ref', '') or '')
+    if local_span_ref:
+        dossier = workspace.to_dossier(round_context='target_span_broker')
+        local_span = next((span for span in list(getattr(dossier, 'local_span_cards', []) or []) if str(getattr(span, 'ref', '') or '') == local_span_ref), None)
+        if is_special_eligible_span(local_span, dossier):
+            return []
     explicit_window = bool(
         getattr(request, 'sort_start', 0)
         or getattr(request, 'sort_end', 0)
@@ -117,6 +125,15 @@ def _target_span_candidate_cards(workspace: CaseEvidenceWorkspace, request: Evid
     return matched[:PROMPT_DETAIL_CARD_CAP]
 
 
+def _is_special_eligible_target_span_request(workspace: CaseEvidenceWorkspace, request: EvidenceRequest) -> bool:
+    local_span_ref = str(getattr(request, 'local_span_ref', '') or '')
+    if not local_span_ref:
+        return False
+    dossier = workspace.to_dossier(round_context='target_span_broker')
+    local_span = next((span for span in list(getattr(dossier, 'local_span_cards', []) or []) if str(getattr(span, 'ref', '') or '') == local_span_ref), None)
+    return is_special_eligible_span(local_span, dossier)
+
+
 def _windowed_item_span_candidates(workspace: CaseEvidenceWorkspace, request: EvidenceRequest) -> list[BangumiSpanCard]:
     expected_count = int(getattr(request, 'expected_count', 0) or 0)
     if expected_count <= 0:
@@ -131,23 +148,10 @@ def _windowed_item_span_candidates(workspace: CaseEvidenceWorkspace, request: Ev
             and int(getattr(request, 'sort_end', 0) or 0) > int(getattr(request, 'sort_start', 0) or 0)
         )
     )
-    has_single_full_subject_anchor = False
-    if not requested_refs and not has_sort_window and getattr(request, 'subject_refs', None):
-        subject_refs = list(dict.fromkeys(str(ref) for ref in (getattr(request, 'subject_refs', []) or []) if ref))
-        if len(subject_refs) == 1:
-            subject_items = [
-                item for item in list(getattr(workspace, 'bangumi_items', []) or [])
-                if item.subject_ref == subject_refs[0]
-                and str(getattr(item, 'item_kind', '') or 'unknown') not in {'movie'}
-                and getattr(item, 'ref', '')
-            ]
-            has_single_full_subject_anchor = len(subject_items) == expected_count
-    if not requested_refs and not has_sort_window and not has_single_full_subject_anchor:
-        return []
     items = [
         item for item in list(getattr(workspace, 'bangumi_items', []) or [])
         if (not request.subject_refs or item.subject_ref in request.subject_refs)
-        and str(getattr(item, 'item_kind', '') or 'unknown') not in {'movie'}
+        and str(getattr(item, 'item_kind', '') or 'unknown') in {'episode', 'unknown'}
         and getattr(item, 'ref', '')
     ]
     if requested_refs:
@@ -166,32 +170,47 @@ def _windowed_item_span_candidates(workspace: CaseEvidenceWorkspace, request: Ev
     cards: list[BangumiSpanCard] = []
     for subject_ref, subject_items in by_subject.items():
         ordered = sorted(subject_items, key=lambda item: (item.sort or 0, item.ep or 0, item.ref))
-        window = ordered if (requested_refs or has_sort_window or has_single_full_subject_anchor) else ordered[:expected_count]
-        if len(window) < expected_count:
-            continue
-        if len(window) > expected_count:
-            continue
-        refs = [item.ref for item in window]
-        cards.append(BangumiSpanCard(
-            ref=f"BES_{request.local_span_ref or 'SPAN'}_{len(cards) + 1}",
-            subject_ref=subject_ref,
-            group_ref='',
-            target_refs=refs,
-            target_ref_count=len(refs),
-            target_ref_range=[refs[0], refs[-1]],
-            target_ref_samples=_span_samples(refs),
-            sort_start=min((item.sort for item in window), default=None),
-            sort_end=max((item.sort for item in window), default=None),
-            ep_start=min((item.ep for item in window), default=None),
-            ep_end=max((item.ep for item in window), default=None),
-            item_kind='regular',
-            gap_count=0,
-            duplicate_count=0,
-            special_count=0,
-            title_samples=_span_samples([item.title or item.name or item.name_cn for item in window if (item.title or item.name or item.name_cn)]),
-            detail_equivalent=True,
-            source_request_ref=request.request_ref,
-        ))
+        if requested_refs:
+            windows = [ordered]
+        elif has_sort_window:
+            matching = [
+                item for item in ordered
+                if item.sort >= int(getattr(request, 'sort_start', 0) or 0)
+                and item.sort <= int(getattr(request, 'sort_end', 0) or 0)
+            ]
+            windows = [matching]
+        elif len(ordered) == expected_count:
+            windows = [ordered]
+        elif len(ordered) > expected_count:
+            windows = []
+        else:
+            windows = []
+        for window in windows:
+            if len(window) < expected_count:
+                continue
+            if len(window) > expected_count:
+                continue
+            refs = [item.ref for item in window]
+            cards.append(BangumiSpanCard(
+                ref=f"BES_{request.local_span_ref or 'SPAN'}_{len(cards) + 1}",
+                subject_ref=subject_ref,
+                group_ref='',
+                target_refs=refs,
+                target_ref_count=len(refs),
+                target_ref_range=[refs[0], refs[-1]],
+                target_ref_samples=_span_samples(refs),
+                sort_start=min((item.sort for item in window), default=None),
+                sort_end=max((item.sort for item in window), default=None),
+                ep_start=min((item.ep for item in window), default=None),
+                ep_end=max((item.ep for item in window), default=None),
+                item_kind='regular',
+                gap_count=0,
+                duplicate_count=0,
+                special_count=0,
+                title_samples=_span_samples([item.title or item.name or item.name_cn for item in window if (item.title or item.name or item.name_cn)]),
+                detail_equivalent=True,
+                source_request_ref=request.request_ref,
+            ))
     return cards[:PROMPT_DETAIL_CARD_CAP]
 
 
@@ -271,6 +290,7 @@ class EvidenceBroker:
         ready_span_refs = list(dict.fromkeys([*(getattr(plan_state, 'ready_span_refs', []) or []), *[card.ref for rr in request_results for card in (getattr(rr, 'bangumi_span_cards', []) or []) if bool(getattr(card, 'detail_equivalent', False))]]))
         plan_status = 'completed' if selected_ids and len(completed_ids) == len(selected_ids) and not failed_ids else ('blocked' if failed_ids and not completed_ids else ('in_progress' if selected_ids else getattr(plan_state, 'plan_status', 'idle')))
         completed_span_request_count = len([rid for rid in completed_ids if rid.startswith('REQ_TARGET_SPAN_')])
+        updated_notebook = close_notebook_agenda_for_evidence_results(getattr(current_ws, 'investigation_notebook', None), request_results)
         current_ws = CaseEvidenceWorkspace.from_cards(
             header=updated_header,
             budget=updated_budget,
@@ -291,9 +311,12 @@ class EvidenceBroker:
             previous_hypotheses=current_ws.previous_hypotheses,
             previous_evidence_results=current_ws.previous_evidence_results,
             verifier_issues=current_ws.verifier_issues,
+            diagnostics=current_ws.diagnostics,
             mapping_draft=current_ws.mapping_draft,
             mapping_draft_patches=current_ws.mapping_draft_patches,
             mapping_draft_candidate_comparisons=getattr(current_ws, 'mapping_draft_candidate_comparisons', []),
+            case_briefing=getattr(current_ws, 'case_briefing', None),
+            investigation_notebook=updated_notebook,
             plan_state=plan_state.model_copy(update={
                 'selected_menu_request_ids': list(dict.fromkeys([*(getattr(plan_state, 'selected_menu_request_ids', []) or []), *selected_ids])),
                 'completed_menu_request_ids': list(dict.fromkeys([*(getattr(plan_state, 'completed_menu_request_ids', []) or []), *completed_ids])),
@@ -396,6 +419,10 @@ class EvidenceBroker:
         if request.request_type == 'target_span':
             if request.local_span_ref == 'LS_PACKAGE':
                 rr = EvidenceRequestResult(request_ref=request.request_ref, request_type=request.request_type, accepted=False, notes=['package_span_requires_child_span_requests'])
+                return workspace.with_replaced_cards(evidence_results=[rr]), rr, ledger
+            if _is_special_eligible_target_span_request(workspace, request):
+                notes = [f'special-like local span uses special/movie evidence path, not regular target_span: {request.local_span_ref or ""}']
+                rr = _build_target_span_result(request, [], notes)
                 return workspace.with_replaced_cards(evidence_results=[rr]), rr, ledger
             spans = _target_span_candidate_cards(workspace, request)
             if not spans:

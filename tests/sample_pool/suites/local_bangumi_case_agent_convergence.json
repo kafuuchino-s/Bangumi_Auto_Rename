@@ -1,0 +1,289 @@
+{
+  "suite_id": "local_bangumi_case_agent_convergence",
+  "description": "Representative Local to Bangumi Case Agent convergence suite distilled from full146. This is an iteration gate, not an oracle.",
+  "raw_root": "tests/sample_pool/raw",
+  "baseline_best_run": "tests/sample_pool/generated/local_bangumi_mapping_full_after_comparison_rewrite_20260513",
+  "latest_reference_run": "tests/sample_pool/generated/local_bangumi_mapping_full_quality_convergence3_20260513",
+  "samples": [
+    {
+      "sample_path": "movie/sample_0001_92_impatient_eilas_miyafuji_strike_witches_501_butai_hasshin_shimasu_movie_1080p_05fe5870_mkv.json",
+      "bucket": "protection_accepted_movie_singleton",
+      "expected_policy": "must_remain_accepted_contract_ok",
+      "why": "Simple accepted movie singleton protects explicit BE mapping and accepted accounting.",
+      "baseline_best_status": "accepted",
+      "latest_status": "accepted"
+    },
+    {
+      "sample_path": "movie/sample_0005_ank_raws_劇場版_wake_up_girls_七人_bdrip_x264_flac_dts_hdma_5_1ch_hi10p.json",
+      "bucket": "protection_accepted_movie_singleton",
+      "expected_policy": "must_remain_accepted_contract_ok",
+      "why": "Accepted related movie singleton protects non-TV local title evidence.",
+      "baseline_best_status": "accepted",
+      "latest_status": "accepted"
+    },
+    {
+      "sample_path": "movie/sample_0006_bdrip_psycho_pass_providence_2023_7_acg.json",
+      "bucket": "protection_accepted_movie_singleton",
+      "expected_policy": "must_remain_accepted_contract_ok",
+      "why": "Accepted modern movie singleton protects subject lookup and explicit mapping.",
+      "baseline_best_status": "accepted",
+      "latest_status": "accepted"
+    },
+    {
+      "sample_path": "tv/sample_0006_ai_raws_gatchaman_crowds_insight_tv_s2_00_12_sp_fin_bdrip_mkv.json",
+      "bucket": "protection_accepted_tv_with_sp",
+      "expected_policy": "must_remain_accepted_contract_ok",
+      "why": "Accepted TV plus SP package protects regular span plus extra accounting.",
+      "baseline_best_status": "accepted",
+      "latest_status": "accepted"
+    },
+    {
+      "sample_path": "tv/sample_0027_caso_mushishi.json",
+      "bucket": "protection_accepted_regular_tv",
+      "expected_policy": "must_remain_accepted_contract_ok",
+      "why": "Accepted regular TV span protects ordinary episode mapping.",
+      "baseline_best_status": "accepted",
+      "latest_status": "accepted"
+    },
+    {
+      "sample_path": "tv/sample_0028_caso_yuyushiki_bdrip.json",
+      "bucket": "protection_accepted_split_ova",
+      "expected_policy": "must_remain_accepted_contract_ok",
+      "why": "Accepted split case with OVA/SP protects child aggregation and singleton special handling.",
+      "baseline_best_status": "accepted",
+      "latest_status": "accepted"
+    },
+    {
+      "sample_path": "tv/sample_0106_vcb_studio_senki_zesshou_symphogear_axz_ma10p_1080p.json",
+      "bucket": "protection_accepted_with_exclusions",
+      "expected_policy": "must_remain_accepted_contract_ok",
+      "why": "Accepted with mapped and excluded rows protects supplemental accounting.",
+      "baseline_best_status": "accepted",
+      "latest_status": "accepted"
+    },
+    {
+      "sample_path": "tv/sample_0108_vcb_studio_senki_zesshou_symphogear_xv_ma10p_1080p.json",
+      "bucket": "protection_accepted_with_exclusions",
+      "expected_policy": "must_remain_accepted_contract_ok",
+      "why": "Accepted with many exclusions protects OP/ED/extra accounting boundaries.",
+      "baseline_best_status": "accepted",
+      "latest_status": "accepted"
+    },
+    {
+      "sample_path": "tv/sample_0128_爱_死亡和机器人s01_love_death_and_robots_2019_1080p_web_dl_x265_ac3_cxcy_frds.json",
+      "bucket": "protection_accepted_non_anime_series",
+      "expected_policy": "must_remain_accepted_contract_ok",
+      "why": "Accepted anthology-like package protects broad title recall and regular mapping.",
+      "baseline_best_status": "accepted",
+      "latest_status": "accepted"
+    },
+    {
+      "sample_path": "movie/sample_0003_ank_raws_wake_up_girls_続_劇場版_bdrip_1920x1080_hevc_yuv420p10_flac_dts_hdma.json",
+      "bucket": "regression_movie_related_singletons",
+      "expected_policy": "recover_accepted_or_specific_fail_closed",
+      "why": "Regressed from accepted to no_new_evidence; checks related movie subject recall.",
+      "baseline_best_status": "accepted",
+      "latest_status": "fail_closed"
+    },
+    {
+      "sample_path": "tv/sample_0003_ai_raws_barakamon.json",
+      "bucket": "regression_semantic_target_conflict",
+      "expected_policy": "recover_accepted_or_specific_fail_closed",
+      "why": "Regressed from accepted to semantic_target_conflict; protects regular TV conflict repair.",
+      "baseline_best_status": "accepted",
+      "latest_status": "fail_closed"
+    },
+    {
+      "sample_path": "tv/sample_0004_ai_raws_kimetsu_no_yaiba_s5_hashira_geiko_hen.json",
+      "bucket": "regression_no_new_evidence",
+      "expected_policy": "recover_accepted_or_specific_fail_closed",
+      "why": "Regressed from accepted to no_new_evidence; checks title/query recall for current season.",
+      "baseline_best_status": "accepted",
+      "latest_status": "fail_closed"
+    },
+    {
+      "sample_path": "tv/sample_0024_bdrip_luminous_witches_s01_7_acg.json",
+      "bucket": "regression_query_title_noise",
+      "expected_policy": "recover_accepted_or_specific_fail_closed",
+      "why": "Regressed from accepted; protects release noise handling without fixed semantic gating.",
+      "baseline_best_status": "accepted",
+      "latest_status": "fail_closed"
+    },
+    {
+      "sample_path": "tv/sample_0026_bikko_yozakura_quartet_tsuki_ni_naku_amzn_web_dl_1920x1080_avc_ddp.json",
+      "bucket": "regression_short_ova_series",
+      "expected_policy": "recover_accepted_or_specific_fail_closed",
+      "why": "Regressed from accepted; protects short OVA/special resource investigation.",
+      "baseline_best_status": "accepted",
+      "latest_status": "fail_closed"
+    },
+    {
+      "sample_path": "tv/sample_0035_ktxp_mushishi_zoku_shou_bdrip.json",
+      "bucket": "regression_special_singletons",
+      "expected_policy": "recover_accepted_or_specific_fail_closed",
+      "why": "Regressed from accepted with partial mapping; checks special/movie related expansion and target_absent accounting.",
+      "baseline_best_status": "accepted",
+      "latest_status": "fail_closed"
+    },
+    {
+      "sample_path": "tv/sample_0052_moozzi2_wake_up_girls_shin_shou_bd_box_tv_sp.json",
+      "bucket": "regression_tv_sp_package",
+      "expected_policy": "recover_accepted_or_specific_fail_closed",
+      "why": "Regressed from accepted; protects TV+SP package handling.",
+      "baseline_best_status": "accepted",
+      "latest_status": "fail_closed"
+    },
+    {
+      "sample_path": "tv/sample_0068_snow_raws.json",
+      "bucket": "regression_large_regular_package",
+      "expected_policy": "recover_accepted_or_specific_fail_closed",
+      "why": "Regressed from accepted; protects large package evidence loop behavior.",
+      "baseline_best_status": "accepted",
+      "latest_status": "fail_closed"
+    },
+    {
+      "sample_path": "tv/sample_0089_vcb_studio_hataraku_maou_sama_ma10p_1080p.json",
+      "bucket": "regression_split_vs_one_case",
+      "expected_policy": "recover_accepted_or_specific_fail_closed",
+      "why": "Regressed from accepted split result to no_new_evidence; checks planner/editor interaction.",
+      "baseline_best_status": "accepted",
+      "latest_status": "fail_closed"
+    },
+    {
+      "sample_path": "tv/sample_0098_vcb_studio_parasyte_the_maxim_hi10p_1080p.json",
+      "bucket": "regression_regular_tv",
+      "expected_policy": "recover_accepted_or_specific_fail_closed",
+      "why": "Regressed from accepted; protects ordinary TV span recall and mapping.",
+      "baseline_best_status": "accepted",
+      "latest_status": "fail_closed"
+    },
+    {
+      "sample_path": "tv/sample_0115_vcb_studio_yamada_kun_to_7_nin_no_majo_ma10p_1080p.json",
+      "bucket": "regression_local_structure_title_digit",
+      "expected_policy": "recover_accepted_or_specific_fail_closed",
+      "why": "Regressed from accepted; protects LocalStructureAgent title-internal numeral handling.",
+      "baseline_best_status": "accepted",
+      "latest_status": "fail_closed"
+    },
+    {
+      "sample_path": "tv/sample_0125_yozakura_quartet.json",
+      "bucket": "regression_multi_resource_series",
+      "expected_policy": "recover_accepted_or_specific_fail_closed",
+      "why": "Regressed from accepted; protects related series/package evidence refinement.",
+      "baseline_best_status": "accepted",
+      "latest_status": "fail_closed"
+    },
+    {
+      "sample_path": "movie/sample_0002_ai_raws_劇場版_空_境界_the_garden_of_sinners_movie_01_09_sp_fin_bdrip_mkv.json",
+      "bucket": "longstanding_movie_collection",
+      "expected_policy": "accepted_or_specific_child_fail_closed",
+      "why": "Longstanding movie collection failure exercises split reconsideration and multi-movie mapping.",
+      "baseline_best_status": "fail_closed",
+      "latest_status": "fail_closed"
+    },
+    {
+      "sample_path": "movie/sample_0011_vcb_studio_psycho_pass_sinners_of_the_system_ma10p_1080p.json",
+      "bucket": "longstanding_split_movie_bundle",
+      "expected_policy": "accepted_or_specific_child_fail_closed",
+      "why": "Child-case unresolved movie bundle checks split child diagnostics.",
+      "baseline_best_status": "fail_closed",
+      "latest_status": "fail_closed"
+    },
+    {
+      "sample_path": "tv/sample_0042_moozzi2_aria_series_blu_ray_box_animation_natural_origination_avvenire_arietta.json",
+      "bucket": "longstanding_franchise_box",
+      "expected_policy": "accepted_or_specific_fail_closed",
+      "why": "Large franchise box checks related subject expansion and package decomposition.",
+      "baseline_best_status": "fail_closed",
+      "latest_status": "fail_closed"
+    },
+    {
+      "sample_path": "tv/sample_0093_vcb_studio_minami_ke.json",
+      "bucket": "longstanding_multi_season_box",
+      "expected_policy": "accepted_or_specific_fail_closed",
+      "why": "Multi-season package checks subject selection and split boundaries.",
+      "baseline_best_status": "fail_closed",
+      "latest_status": "fail_closed"
+    },
+    {
+      "sample_path": "tv/sample_0096_vcb_studio_overlord.json",
+      "bucket": "longstanding_large_split_box",
+      "expected_policy": "accepted_or_specific_child_fail_closed",
+      "why": "Very large split package checks child workspace and aggregate fail_closed reasons.",
+      "baseline_best_status": "fail_closed",
+      "latest_status": "fail_closed"
+    },
+    {
+      "sample_path": "tv/sample_0101_vcb_studio_psycho_pass.json",
+      "bucket": "longstanding_franchise_tv_box",
+      "expected_policy": "accepted_or_specific_fail_closed",
+      "why": "Large franchise TV package checks evidence planning and related season boundaries.",
+      "baseline_best_status": "fail_closed",
+      "latest_status": "fail_closed"
+    },
+    {
+      "sample_path": "tv/sample_0102_vcb_studio_psycho_pass_3.json",
+      "bucket": "longstanding_split_tv_specials",
+      "expected_policy": "accepted_or_specific_child_fail_closed",
+      "why": "Split unresolved package checks child aggregation and special handling.",
+      "baseline_best_status": "fail_closed",
+      "latest_status": "fail_closed"
+    },
+    {
+      "sample_path": "tv/sample_0114_vcb_studio_world_trigger.json",
+      "bucket": "longstanding_large_regular_package",
+      "expected_policy": "accepted_or_specific_fail_closed",
+      "why": "Very large package with 121 main files checks long evidence loop and editor availability.",
+      "baseline_best_status": "fail_closed",
+      "latest_status": "fail_closed"
+    },
+    {
+      "sample_path": "tv/sample_0126_sample.json",
+      "bucket": "longstanding_large_split_sample",
+      "expected_policy": "accepted_or_specific_child_fail_closed",
+      "why": "Large sample-like package checks split diagnostics and supplemental boundaries.",
+      "baseline_best_status": "fail_closed",
+      "latest_status": "fail_closed"
+    },
+    {
+      "sample_path": "movie/sample_0009_vcb_studio_aria_the_benedizione_ma10p_1080p.json",
+      "bucket": "semantic_conflict_movie_special",
+      "expected_policy": "accepted_or_specific_semantic_conflict",
+      "why": "Mapped all files but failed semantic conflict; checks comparison verifier boundaries.",
+      "baseline_best_status": "fail_closed",
+      "latest_status": "fail_closed"
+    },
+    {
+      "sample_path": "tv/sample_0045_moozzi2_gundam_build_fighters_special_build_disc_ova_sp.json",
+      "bucket": "semantic_conflict_ova_sp",
+      "expected_policy": "accepted_or_specific_semantic_conflict",
+      "why": "OVA/SP build disc checks special singleton ownership and duplicate target repair.",
+      "baseline_best_status": "fail_closed",
+      "latest_status": "fail_closed"
+    },
+    {
+      "sample_path": "tv/sample_0082_vcb_studio_aria_the_avvenire_capitolo_version_ma10p_1080p.json",
+      "bucket": "semantic_conflict_all_mapped",
+      "expected_policy": "accepted_or_specific_semantic_conflict",
+      "why": "All files mapped but conflict remains; protects verifier-as-legality boundary.",
+      "baseline_best_status": "fail_closed",
+      "latest_status": "fail_closed"
+    },
+    {
+      "sample_path": "tv/sample_0103_vcb_studio_puella_magi_madoka_magica.json",
+      "bucket": "semantic_conflict_franchise_box",
+      "expected_policy": "accepted_or_specific_semantic_conflict",
+      "why": "Franchise box conflict checks related subject comparison and target ownership.",
+      "baseline_best_status": "fail_closed",
+      "latest_status": "fail_closed"
+    },
+    {
+      "sample_path": "tv/sample_0122_the_disastrous_life_of_saiki_k_s00_2018_1080p_nf_web_dl_x264_ddp_2_0_animef_adweb.json",
+      "bucket": "semantic_conflict_special_season_zero",
+      "expected_policy": "accepted_or_specific_semantic_conflict",
+      "why": "Season-zero special-like package checks Bangumi target absent and special target handling.",
+      "baseline_best_status": "fail_closed",
+      "latest_status": "fail_closed"
+    }
+  ]
+}

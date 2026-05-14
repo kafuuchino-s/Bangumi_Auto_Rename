@@ -675,9 +675,8 @@ multidict==6.6.3 ; python_version >= "3.9" and python_version < "4.0" \
 nicegui==2.20.0 ; python_version >= "3.9" and python_version < "4.0" \
     --hash=sha256:b238df9c3e9f915d6f74b005e5a66f40f0a7a0598bf9f8fcc5b03326b1b704f7 \
     --hash=sha256:db550537e2664e916080bc381bf29d0659570e42cdceb224b94a418e4db85c8c
-openai==1.93.0 ; python_version >= "3.9" and python_version < "4.0" \
-    --hash=sha256:3d746fe5498f0dd72e0d9ab706f26c91c0f646bf7459e5629af8ba7c9dbdf090 \
-    --hash=sha256:988f31ade95e1ff0585af11cc5a64510225e4f5cd392698c675d0a9265b8e337
+openai==2.36.0 ; python_version >= "3.9" and python_version < "4.0" \
+    --hash=sha256:143f6194b548dbc2c921af1f1b03b9f14c85fed8a75b5b516f5bcc11a2a50c63
 orjson==3.10.18 ; python_version >= "3.9" and python_version < "4.0" and platform_machine != "i386" and platform_machine != "i686" \
     --hash=sha256:0315317601149c244cb3ecef246ef5861a64824ccbcb8018d32c66a60a84ffbc \
     --hash=sha256:187aefa562300a9d382b4b4eb9694806e5848b0cedf52037bb5c228c61bb66d4 \

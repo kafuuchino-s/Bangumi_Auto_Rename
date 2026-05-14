@@ -1,5 +1,5 @@
 from src.rename.case_agent.evidence_menu import build_executable_evidence_menu, build_recommended_neutral_requests
-from src.rename.case_agent.models import CaseBudget, CaseContract, CaseHeader, LocalFileCard, BangumiItemCard, BangumiSubjectCard, LocalSpanCard, MappingDraft, MappingDraftRow, QueryCard
+from src.rename.case_agent.models import CaseBudget, CaseContract, CaseHeader, EvidencePlan, LocalFileCard, BangumiItemCard, BangumiSubjectCard, LocalSpanCard, MappingDraft, MappingDraftRow, QueryCard
 from src.rename.case_agent.workspace import CaseEvidenceWorkspace
 
 
@@ -15,6 +15,53 @@ def test_evidence_menu_avoids_semantic_winner_and_limits_window():
     text = str(menu).lower()
     assert 'semantic score' not in text
     assert all(len(req.get('item_refs', req.get('anchor_file_refs', []))) <= 1 for req in menu['recommended_neutral_requests'])
+
+
+def test_evidence_menu_allows_subject_search_retry_with_existing_surface():
+    ws = CaseEvidenceWorkspace.from_cards(
+        header=CaseHeader(case_id='c1-weak-recall'),
+        budget=CaseBudget(max_api_calls_per_case=5, max_subject_searches=5),
+        local_files=[LocalFileCard(ref='LF1', path='Show 01.mkv', is_main=True)],
+        bangumi_subjects=[BangumiSubjectCard(ref='BS1')],
+        bangumi_items=[BangumiItemCard(ref='BE1', subject_ref='BS1', sort=1, ep=1)],
+        query_cards=[
+            QueryCard(ref='QC1', query_text='Show', query_kind='subject_search', query_origin='agent_composed', source_refs=['LF1']),
+        ],
+        diagnostics=['weak_subject_recall_retry_pending'],
+    )
+
+    menu = build_executable_evidence_menu(ws)
+
+    assert 'REQ_SUBJECT_SEARCH_QC1' in [item['request_id'] for item in menu['prompt_summaries']]
+
+
+def test_evidence_menu_executes_pending_agent_query_when_open_row_requests_subject_search():
+    ws = CaseEvidenceWorkspace.from_cards(
+        header=CaseHeader(case_id='c1-open-row-subject-search'),
+        budget=CaseBudget(max_api_calls_per_case=10, max_subject_searches=10),
+        local_files=[LocalFileCard(ref='LF1', path='Show SP01.mkv', is_main=True)],
+        bangumi_subjects=[BangumiSubjectCard(ref='BS_WRONG')],
+        query_cards=[
+            QueryCard(ref='QC1', query_text='Show episode list', query_kind='subject_search', query_origin='agent_composed', source_refs=['LF1']),
+            QueryCard(ref='QC2', query_text='Show', query_kind='subject_search', query_origin='agent_composed', source_refs=['LF1']),
+        ],
+        mapping_draft=MappingDraft(rows=[
+            MappingDraftRow(
+                row_ref='MDR1',
+                local_ref='LS1',
+                local_ref_kind='span',
+                requested_request_types=['subject_search'],
+                query_hints=['Show'],
+            )
+        ]),
+        plan_state=EvidencePlan(completed_menu_request_ids=['REQ_SUBJECT_SEARCH_QC1']),
+    )
+
+    menu = build_executable_evidence_menu(ws)
+    request_ids = [item['request_id'] for item in menu['prompt_summaries']]
+
+    assert 'REQ_SUBJECT_SEARCH_QC1' not in request_ids
+    assert 'REQ_SUBJECT_SEARCH_QC2' in request_ids
 
 
 def test_large_local_span_recommends_target_span():
@@ -38,6 +85,45 @@ def test_large_local_span_recommends_target_span():
     assert all(req['item_kind'] == 'regular' for req in reqs)
     assert {req['sort_start'] for req in reqs} == {1, 13}
     assert {req['sort_end'] for req in reqs} == {12, 24}
+
+
+def test_evidence_menu_prioritizes_agent_chosen_row_subject_beyond_visible_window():
+    subjects = [BangumiSubjectCard(ref=f'BS{i}') for i in range(1, 6)]
+    ws = CaseEvidenceWorkspace.from_cards(
+        header=CaseHeader(case_id='c2-agent-subject'),
+        budget=CaseBudget(),
+        contract=CaseContract(main_file_refs=[f'LF{i}' for i in range(1, 13)], allowed_file_refs=[f'LF{i}' for i in range(1, 13)]),
+        local_files=[LocalFileCard(ref=f'LF{i}', path=f'Show {i:02d}.mkv', is_main=True) for i in range(1, 13)],
+        bangumi_subjects=subjects,
+        local_span_cards=[
+            LocalSpanCard(
+                ref='LS1',
+                span_scope='directory',
+                file_refs=[f'LF{i}' for i in range(1, 13)],
+                file_ref_count=12,
+                episode_token_start=1,
+                episode_token_end=12,
+                episode_token_count=12,
+            )
+        ],
+    )
+    object.__setattr__(ws, 'mapping_draft', MappingDraft(rows=[
+        MappingDraftRow(
+            local_ref='LS1',
+            local_ref_kind='span',
+            candidate_target_refs=[],
+            subject_refs=['BS5'],
+            requested_request_types=['episode_list', 'target_span'],
+        )
+    ]))
+
+    menu = build_executable_evidence_menu(ws)
+    target_span_request = menu['payload_registry']['REQ_TARGET_SPAN_LS1']
+    request_ids = [item['request_id'] for item in menu['prompt_summaries']]
+
+    assert target_span_request.subject_refs[0] == 'BS5'
+    assert 'BS5' in target_span_request.subject_refs
+    assert 'REQ_EPISODE_LIST_BS5' in request_ids
 
 
 def test_zero_based_local_span_recommends_target_span():
@@ -123,6 +209,44 @@ def test_executable_menu_does_not_emit_special_recall_for_regular_numbered_span(
     menu = build_executable_evidence_menu(ws)
 
     assert not any(item['request_id'].startswith('REQ_SPECIAL_') for item in menu['prompt_summaries'])
+
+
+def test_special_like_numbered_span_uses_special_recall_not_regular_target_span():
+    ws = CaseEvidenceWorkspace.from_cards(
+        header=CaseHeader(case_id='c3sp'),
+        budget=CaseBudget(),
+        contract=CaseContract(main_file_refs=[f'LF{i}' for i in range(1, 7)], allowed_file_refs=[f'LF{i}' for i in range(1, 7)]),
+        local_files=[
+            LocalFileCard(ref=f'LF{i}', path=f'Yuyushiki SP{i:02d}.mkv', is_main=True, file_kind='video')
+            for i in range(1, 7)
+        ],
+        bangumi_subjects=[BangumiSubjectCard(ref='BS1', subject_id=1)],
+        bangumi_items=[BangumiItemCard(ref=f'BE{i}', sort=i, ep=i, subject_ref='BS1') for i in range(1, 13)],
+        local_span_cards=[
+            LocalSpanCard(
+                ref='LS_SP',
+                span_scope='token_segment',
+                file_refs=[f'LF{i}' for i in range(1, 7)],
+                file_ref_count=6,
+                file_ref_samples=[f'LF{i}' for i in range(1, 4)],
+                episode_token_start=1,
+                episode_token_end=6,
+                episode_token_count=6,
+                title_cues=['SP'],
+            )
+        ],
+    )
+    object.__setattr__(ws, 'mapping_draft', MappingDraft(rows=[MappingDraftRow(local_ref='LS_SP', local_ref_kind='span', candidate_target_refs=[])]))
+
+    neutral = build_recommended_neutral_requests(ws)
+    menu = build_executable_evidence_menu(ws)
+
+    assert not any(req['request_type'] == 'target_span' and req.get('local_span_ref') == 'LS_SP' for req in neutral['recommended_neutral_requests'])
+    assert not any(item['request_id'] == 'REQ_TARGET_SPAN_LS_SP' for item in menu['prompt_summaries'])
+    special_ids = [item['request_id'] for item in menu['prompt_summaries'] if item['request_id'].startswith('REQ_SPECIAL_')]
+    assert 'REQ_SPECIAL_EPISODE_LIST_BS1' in special_ids
+    assert menu['audit']['planned_span_request_count'] == 0
+    assert menu['audit']['special_candidate_row_count'] == 1
 
 
 def test_special_recall_menu_includes_related_subjects_beyond_first_window():

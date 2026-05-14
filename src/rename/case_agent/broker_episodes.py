@@ -6,7 +6,7 @@ from src.bangumi.models import BangumiEpisode
 
 from .broker_budget import BudgetLedger
 from .broker_registry import EvidenceCardRegistry, build_provenance_card
-from .models import BangumiGroupCard, BangumiItemCard, EvidenceRequest, EvidenceRequestResult, ProvenanceCard
+from .models import BangumiGroupCard, BangumiItemCard, BangumiSpanCard, EvidenceRequest, EvidenceRequestResult, ProvenanceCard
 from .source_form import is_subject_level_singleton_source, subject_card_source_form_hint
 from .workspace import CaseEvidenceWorkspace
 
@@ -59,7 +59,9 @@ def execute_episode_list(
         source_operation='episode_list',
     )
     result_refs = [card.ref for card in items]
-    return groups, items, provenance, EvidenceRequestResult(request_ref=request.request_ref, accepted=True, response_refs=result_refs), next_budget
+    visible_selected_items = _selected_visible_items(workspace, selected, subject_ref)
+    span_cards = _build_episode_list_span_cards(request, subject_ref, [*visible_selected_items, *items])
+    return groups, items, provenance, EvidenceRequestResult(request_ref=request.request_ref, accepted=True, response_refs=list(dict.fromkeys([*[card.ref for card in visible_selected_items], *result_refs])), bangumi_span_cards=span_cards), next_budget
 
 
 def execute_episode_detail(
@@ -135,6 +137,8 @@ def _materialize_new_items(
     items: list[BangumiItemCard] = []
     provenance: list[ProvenanceCard] = []
     new_count = 0
+    subject_card = next((card for card in workspace.bangumi_subjects if card.ref == subject_ref), None)
+    subject_singleton_source = is_subject_level_singleton_source(subject_card) if subject_card is not None else False
     for ep in episodes:
         synthetic_key = ''
         if bool(getattr(ep, 'synthetic', False)) or bool(getattr(ep, 'subject_level_target', False)):
@@ -142,13 +146,13 @@ def _materialize_new_items(
         item_ref, is_new = registry.allocate_item_ref(ep.id, synthetic_key=synthetic_key)
         if not is_new:
             continue
-        group_kind = 'special_group' if ep.type != 0 else 'season_group'
+        group_kind = 'special_group' if ep.type != 0 or subject_singleton_source else 'season_group'
         group_ref, group_new = registry.allocate_group_ref(subject_ref, group_kind)
         if group_new:
             groups.append(BangumiGroupCard(ref=group_ref, group_kind=group_kind, subject_refs=[subject_ref], item_refs=[item_ref]))
         prov_ref = registry.allocate_provenance_ref()
         provenance.append(build_provenance_card(prov_ref, workspace.header.round_index, request.request_ref, source_operation, api_subject_id=subject_id, api_episode_id=ep.id, parent_refs=[subject_ref]))
-        items.append(_build_episode_card(item_ref, subject_ref, ep, prov_ref))
+        items.append(_build_episode_card(item_ref, subject_ref, ep, prov_ref, subject_card=subject_card))
         new_count += 1
     return groups, items, provenance, budget.add_episode_cards(new_count)
 
@@ -165,17 +169,33 @@ def _enrich_existing_items(
     for ep in episodes:
         item_ref, _ = registry.allocate_item_ref(ep.id)
         prov_ref = registry.allocate_provenance_ref()
+        subject_ref = _subject_ref_from_workspace_item(workspace, item_ref)
+        subject_card = next((card for card in workspace.bangumi_subjects if card.ref == subject_ref), None)
         provenance.append(build_provenance_card(prov_ref, workspace.header.round_index, request.request_ref, 'episode_detail', api_subject_id=ep.subject_id, api_episode_id=ep.id, parent_refs=[item_ref]))
-        items.append(_build_episode_card(item_ref, _subject_ref_from_workspace_item(workspace, item_ref), ep, prov_ref))
+        items.append(_build_episode_card(item_ref, subject_ref, ep, prov_ref, subject_card=subject_card))
     return items, provenance, budget
 
 
-def _build_episode_card(ref: str, subject_ref: str, episode: BangumiEpisode, provenance_ref: str) -> BangumiItemCard:
+def _build_episode_card(ref: str, subject_ref: str, episode: BangumiEpisode, provenance_ref: str, *, subject_card: object | None = None) -> BangumiItemCard:
     subject_level_target = bool(getattr(episode, 'subject_level_target', False))
-    source_form_hint = getattr(episode, 'source_form_hint', '') or 'unknown'
+    source_form_hint = getattr(episode, 'source_form_hint', '') or ''
+    if not source_form_hint or source_form_hint == 'unknown':
+        source_form_hint = subject_card_source_form_hint(subject_card) if subject_card is not None else 'unknown'
+    source_form_hint = source_form_hint or 'unknown'
+    subject_singleton_source = is_subject_level_singleton_source(subject_card) if subject_card is not None else False
+    if subject_level_target and source_form_hint == 'movie':
+        item_kind = 'movie'
+    elif getattr(episode, 'type', 0) != 0 or subject_level_target:
+        item_kind = 'special'
+    elif subject_singleton_source and source_form_hint == 'movie':
+        item_kind = 'movie'
+    elif subject_singleton_source and source_form_hint in {'ova', 'special'}:
+        item_kind = 'special'
+    else:
+        item_kind = 'episode'
     return BangumiItemCard(
         ref=ref,
-        item_kind='movie' if subject_level_target and source_form_hint == 'movie' else ('special' if getattr(episode, 'type', 0) != 0 or subject_level_target else 'episode'),
+        item_kind=item_kind,
         episode_id=getattr(episode, 'id', 0) or 0,
         kind=str(getattr(episode, 'kind', '') or ''),
         type=str(getattr(episode, 'type', '')),
@@ -192,10 +212,64 @@ def _build_episode_card(ref: str, subject_ref: str, episode: BangumiEpisode, pro
         synthetic=bool(getattr(episode, 'synthetic', False)),
         subject_level_target='true' if subject_level_target else 'false',
         source_form_hint=source_form_hint,
-        relation_to_main=getattr(episode, 'relation_to_main', '') or getattr(episode, 'relation', '') or '',
+        relation_to_main=getattr(episode, 'relation_to_main', '') or getattr(episode, 'relation', '') or getattr(subject_card, 'relation_to_main', '') or '',
         provenance_ref=provenance_ref,
         episode_number=getattr(episode, 'ep', 0) or 0,
     )
+
+
+def _build_episode_list_span_cards(request: EvidenceRequest, subject_ref: str, items: list[BangumiItemCard]) -> list[BangumiSpanCard]:
+    items = list({str(getattr(item, 'ref', '') or ''): item for item in items if str(getattr(item, 'ref', '') or '')}.values())
+    items = sorted(items, key=lambda item: (int(getattr(item, 'sort', 0) or 0), int(getattr(item, 'ep', 0) or 0), str(getattr(item, 'ref', '') or '')))
+    if len(items) <= 1:
+        return []
+    item_kind = 'special' if all(str(getattr(item, 'item_kind', '') or '') in {'special', 'movie'} for item in items) else 'regular'
+    if item_kind != 'special' and str(getattr(request, 'episode_scope', '') or '') != 'regular':
+        return []
+    refs = [item.ref for item in items if item.ref]
+    if len(refs) != len(items):
+        return []
+    return [
+        BangumiSpanCard(
+            ref=f'BES_{request.request_ref}_{1}',
+            subject_ref=subject_ref,
+            group_ref='',
+            target_refs=refs,
+            target_ref_count=len(refs),
+            target_ref_range=[refs[0], refs[-1]],
+            target_ref_samples=_sample_refs(refs),
+            sort_start=min((item.sort for item in items), default=None),
+            sort_end=max((item.sort for item in items), default=None),
+            ep_start=min((item.ep for item in items), default=None),
+            ep_end=max((item.ep for item in items), default=None),
+            item_kind=item_kind,
+            gap_count=0,
+            duplicate_count=0,
+            special_count=sum(1 for item in items if str(getattr(item, 'item_kind', '') or '') in {'special', 'movie'}),
+            title_samples=_sample_refs([item.title or item.name or item.name_cn for item in items if (item.title or item.name or item.name_cn)]),
+            detail_equivalent=True,
+            source_request_ref=request.request_ref,
+        )
+    ]
+
+
+def _sample_refs(values: list[str], *, limit: int = 10) -> list[str]:
+    values = [value for value in values if value]
+    if len(values) <= limit:
+        return list(values)
+    half = max(1, limit // 2)
+    return list(dict.fromkeys([*values[:half], *values[-half:]]))
+
+
+def _selected_visible_items(workspace: CaseEvidenceWorkspace, selected: list[BangumiEpisode], subject_ref: str) -> list[BangumiItemCard]:
+    selected_episode_ids = {int(getattr(ep, 'id', 0) or 0) for ep in selected if int(getattr(ep, 'id', 0) or 0) > 0}
+    if not selected_episode_ids:
+        return []
+    return [
+        item for item in list(getattr(workspace, 'bangumi_items', []) or [])
+        if str(getattr(item, 'subject_ref', '') or '') == subject_ref
+        and int(getattr(item, 'episode_id', 0) or 0) in selected_episode_ids
+    ]
 
 
 def _build_subject_level_singleton_episode(workspace: CaseEvidenceWorkspace, subject_ref: str, subject_id: int) -> BangumiEpisode | None:

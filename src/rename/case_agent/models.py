@@ -288,6 +288,164 @@ class LocalStructureOutput(BaseModel):
     model_config: ClassVar[ConfigDict] = ConfigDict(extra='forbid')
 
 
+class CaseBriefingWorkUnit(BaseModel):
+    work_unit_ref: str = ''
+    label: str = ''
+    unit_kind: str = ''
+    local_refs: list[str] = Field(default_factory=list)
+    file_refs: list[str] = Field(default_factory=list)
+    span_refs: list[str] = Field(default_factory=list)
+    title_hints: list[str] = Field(default_factory=list)
+    source_form_hints: list[str] = Field(default_factory=list)
+    status: Literal['open', 'mapped', 'excluded', 'unresolved', 'unknown'] = 'open'
+    reason: str = ''
+
+    model_config: ClassVar[ConfigDict] = ConfigDict(extra='forbid')
+
+
+class CaseBriefingTitleHypothesis(BaseModel):
+    title: str = ''
+    language: str = ''
+    hypothesis_kind: str = ''
+    source_refs: list[str] = Field(default_factory=list)
+    ignored_noise_terms: list[str] = Field(default_factory=list)
+    confidence: Literal['high', 'medium', 'low', 'unknown'] = 'unknown'
+    reason: str = ''
+
+    model_config: ClassVar[ConfigDict] = ConfigDict(extra='forbid')
+
+
+class CaseBriefingEvidenceQuestion(BaseModel):
+    question_ref: str = ''
+    question_kind: str = ''
+    question: str = ''
+    local_refs: list[str] = Field(default_factory=list)
+    query_hints: list[str] = Field(default_factory=list)
+    requested_request_types: list[EvidenceRequestType] = Field(default_factory=list)
+    reason: str = ''
+
+    model_config: ClassVar[ConfigDict] = ConfigDict(extra='forbid')
+
+
+class CaseBriefingOutput(BaseModel):
+    package_shape: str = ''
+    work_units: list[CaseBriefingWorkUnit] = Field(default_factory=list)
+    title_hypotheses: list[CaseBriefingTitleHypothesis] = Field(default_factory=list)
+    split_hints: list[str] = Field(default_factory=list)
+    evidence_questions: list[CaseBriefingEvidenceQuestion] = Field(default_factory=list)
+    summary: str = ''
+
+    model_config: ClassVar[ConfigDict] = ConfigDict(extra='forbid')
+
+
+class NotebookUpdate(BaseModel):
+    update_kind: str = ''
+    notebook_refs: list[str] = Field(default_factory=list)
+    local_refs: list[str] = Field(default_factory=list)
+    target_refs: list[str] = Field(default_factory=list)
+    query_refs: list[str] = Field(default_factory=list)
+    subject_refs: list[str] = Field(default_factory=list)
+    item_refs: list[str] = Field(default_factory=list)
+    requested_request_types: list[EvidenceRequestType] = Field(default_factory=list)
+    query_hints: list[str] = Field(default_factory=list)
+    claim: str = ''
+    confidence: Literal['high', 'medium', 'low', 'unknown'] = 'unknown'
+    reason: str = ''
+
+    model_config: ClassVar[ConfigDict] = ConfigDict(extra='forbid')
+
+
+class NotebookHypothesis(BaseModel):
+    ref: str = ''
+    claim: str = ''
+    local_refs: list[str] = Field(default_factory=list)
+    target_refs: list[str] = Field(default_factory=list)
+    query_refs: list[str] = Field(default_factory=list)
+    status: Literal['active', 'rejected', 'confirmed', 'unknown'] = 'active'
+    confidence: Literal['high', 'medium', 'low', 'unknown'] = 'unknown'
+    reason: str = ''
+
+    model_config: ClassVar[ConfigDict] = ConfigDict(extra='forbid')
+
+
+class NotebookWorkUnitState(BaseModel):
+    work_unit_ref: str = ''
+    local_refs: list[str] = Field(default_factory=list)
+    target_refs: list[str] = Field(default_factory=list)
+    status: Literal['open', 'mapped', 'excluded', 'needs_evidence', 'blocked', 'unknown'] = 'open'
+    claim: str = ''
+    unresolved_reason: str = ''
+    support_refs: list[str] = Field(default_factory=list)
+
+    model_config: ClassVar[ConfigDict] = ConfigDict(extra='forbid')
+
+
+class NotebookTargetOwnership(BaseModel):
+    target_ref: str = ''
+    owner_local_ref: str = ''
+    owner_work_unit_ref: str = ''
+    status: Literal['claimed', 'confirmed', 'rejected', 'conflict', 'unknown'] = 'claimed'
+    support_refs: list[str] = Field(default_factory=list)
+    reason: str = ''
+
+    model_config: ClassVar[ConfigDict] = ConfigDict(extra='forbid')
+
+
+class NotebookRejectedCandidate(BaseModel):
+    ref: str = ''
+    candidate_ref: str = ''
+    local_refs: list[str] = Field(default_factory=list)
+    target_refs: list[str] = Field(default_factory=list)
+    support_refs: list[str] = Field(default_factory=list)
+    reason: str = ''
+
+    model_config: ClassVar[ConfigDict] = ConfigDict(extra='forbid')
+
+
+class NotebookOpenQuestion(BaseModel):
+    question_ref: str = ''
+    question_kind: str = ''
+    question: str = ''
+    local_refs: list[str] = Field(default_factory=list)
+    target_refs: list[str] = Field(default_factory=list)
+    query_refs: list[str] = Field(default_factory=list)
+    subject_refs: list[str] = Field(default_factory=list)
+    item_refs: list[str] = Field(default_factory=list)
+    query_hints: list[str] = Field(default_factory=list)
+    requested_request_types: list[EvidenceRequestType] = Field(default_factory=list)
+    status: Literal['open', 'answered', 'blocked', 'closed', 'unknown'] = 'open'
+    reason: str = ''
+
+    model_config: ClassVar[ConfigDict] = ConfigDict(extra='forbid')
+
+
+class NotebookNextAction(BaseModel):
+    action_ref: str = ''
+    action_type: str = ''
+    requested_request_types: list[EvidenceRequestType] = Field(default_factory=list)
+    query_hints: list[str] = Field(default_factory=list)
+    local_refs: list[str] = Field(default_factory=list)
+    subject_refs: list[str] = Field(default_factory=list)
+    item_refs: list[str] = Field(default_factory=list)
+    target_refs: list[str] = Field(default_factory=list)
+    status: Literal['open', 'done', 'blocked', 'closed', 'unknown'] = 'open'
+    reason: str = ''
+
+    model_config: ClassVar[ConfigDict] = ConfigDict(extra='forbid')
+
+
+class InvestigationNotebook(BaseModel):
+    active_hypotheses: list[NotebookHypothesis] = Field(default_factory=list)
+    work_unit_states: list[NotebookWorkUnitState] = Field(default_factory=list)
+    target_ownership: list[NotebookTargetOwnership] = Field(default_factory=list)
+    rejected_candidates: list[NotebookRejectedCandidate] = Field(default_factory=list)
+    open_questions: list[NotebookOpenQuestion] = Field(default_factory=list)
+    next_actions: list[NotebookNextAction] = Field(default_factory=list)
+    update_log: list[NotebookUpdate] = Field(default_factory=list)
+
+    model_config: ClassVar[ConfigDict] = ConfigDict(extra='forbid')
+
+
 class CaseContract(BaseModel):
     summary: str = ''
     expected_outcome: Literal['unknown', 'pass', 'fail_closed', 'needs_issue_response'] = 'unknown'
@@ -439,6 +597,11 @@ class MappingDraftRow(BaseModel):
     selected_target_kind: Literal['item', 'span', 'none'] = 'none'
     mapping_mode: Literal['explicit', 'span_by_index', 'unresolved'] = 'unresolved'
     support_refs: list[str] = Field(default_factory=list)
+    requested_request_types: list[EvidenceRequestType] = Field(default_factory=list)
+    query_hints: list[str] = Field(default_factory=list)
+    subject_refs: list[str] = Field(default_factory=list)
+    item_refs: list[str] = Field(default_factory=list)
+    local_refs: list[str] = Field(default_factory=list)
     status: Literal['open', 'proposed', 'verified', 'rejected', 'unresolved'] = 'open'
     disposition: Literal[
         'open',
@@ -489,6 +652,42 @@ class MappingDraftAccounting(BaseModel):
     model_config: ClassVar[ConfigDict] = ConfigDict(extra='forbid')
 
 
+MappingIntentDecision = Literal[
+    'map_regular_span',
+    'map_explicit_item',
+    'reject_candidate',
+    'mark_non_bangumi_or_supplemental',
+    'needs_more_evidence',
+    'mark_unaligned_fail_closed',
+]
+
+
+class MappingIntent(BaseModel):
+    intent_ref: str = ''
+    decision: MappingIntentDecision = 'needs_more_evidence'
+    row_ref: str = ''
+    local_ref: str = ''
+    chosen_subject_ref: str = ''
+    chosen_item_ref: str = ''
+    chosen_span_ref: str = ''
+    episode_scope: Literal['regular', 'special', 'movie', 'unknown'] = 'unknown'
+    episode_start: int | None = None
+    episode_end: int | None = None
+    mapping_mode: Literal['explicit', 'span_by_index', 'unresolved'] = 'unresolved'
+    support_refs: list[str] = Field(default_factory=list)
+    reason_kind: str = ''
+    requested_request_types: list[EvidenceRequestType] = Field(default_factory=list)
+    query_hints: list[str] = Field(default_factory=list)
+    subject_refs: list[str] = Field(default_factory=list)
+    item_refs: list[str] = Field(default_factory=list)
+    local_refs: list[str] = Field(default_factory=list)
+    notebook_refs: list[str] = Field(default_factory=list)
+    confidence: Literal['high', 'medium', 'low', 'unknown'] = 'unknown'
+    reason: str = ''
+
+    model_config: ClassVar[ConfigDict] = ConfigDict(extra='forbid')
+
+
 class MappingDraftPatch(BaseModel):
     op: Literal[
         'add_candidate',
@@ -510,6 +709,11 @@ class MappingDraftPatch(BaseModel):
     reason_kind: str = ''
     needed_evidence_type: str = ''
     menu_request_ids: list[str] = Field(default_factory=list)
+    requested_request_types: list[EvidenceRequestType] = Field(default_factory=list)
+    query_hints: list[str] = Field(default_factory=list)
+    subject_refs: list[str] = Field(default_factory=list)
+    item_refs: list[str] = Field(default_factory=list)
+    local_refs: list[str] = Field(default_factory=list)
     reason: str = ''
 
     model_config: ClassVar[ConfigDict] = ConfigDict(extra='forbid')
@@ -680,6 +884,7 @@ class SelfCheck(BaseModel):
 class MappingDraftEditorOutput(BaseModel):
     patches: list[MappingDraftPatch] = Field(default_factory=list)
     candidate_comparisons: list[CandidateComparison] = Field(default_factory=list)
+    notebook_updates: list[NotebookUpdate] = Field(default_factory=list)
     findings: list[Finding] = Field(default_factory=list)
     fail_closed_reasons: list[FailClosedReason] = Field(default_factory=list)
     self_checks: list[SelfCheck] = Field(default_factory=list)
@@ -758,6 +963,35 @@ class CaseVerifierResult(BaseModel):
     model_config: ClassVar[ConfigDict] = ConfigDict(extra='forbid')
 
 
+class BlockedMappingIntent(BaseModel):
+    intent_ref: str = ''
+    local_ref: str = ''
+    row_ref: str = ''
+    decision: MappingIntentDecision = 'needs_more_evidence'
+    issue_codes: list[str] = Field(default_factory=list)
+    requested_request_types: list[EvidenceRequestType] = Field(default_factory=list)
+    query_hints: list[str] = Field(default_factory=list)
+    candidate_target_refs: list[str] = Field(default_factory=list)
+    subject_refs: list[str] = Field(default_factory=list)
+    item_refs: list[str] = Field(default_factory=list)
+    support_refs: list[str] = Field(default_factory=list)
+    reason: str = ''
+    recommended_next_observation: str = ''
+
+    model_config: ClassVar[ConfigDict] = ConfigDict(extra='forbid')
+
+
+class MappingIntentCompilerResult(BaseModel):
+    compiled_patches: list[MappingDraftPatch] = Field(default_factory=list)
+    blocked_intents: list[BlockedMappingIntent] = Field(default_factory=list)
+    generated_span_cards: list[BangumiSpanCard] = Field(default_factory=list)
+    patch_issue_codes: list[str] = Field(default_factory=list)
+    requested_evidence: list[EvidenceRequestType] = Field(default_factory=list)
+    recommended_next_observation: str = ''
+
+    model_config: ClassVar[ConfigDict] = ConfigDict(extra='forbid')
+
+
 class CaseAuditManifest(BaseModel):
     case_id: str = ''
     audit_round: int = 0
@@ -792,6 +1026,15 @@ class CaseDossier(BaseModel):
     plan_state: EvidencePlan = Field(default_factory=EvidencePlan)
     mapping_draft: MappingDraft | None = None
     mapping_draft_patches: list[MappingDraftPatch] = Field(default_factory=list)
+    mapping_draft_candidate_comparisons: list[CandidateComparison] = Field(default_factory=list)
+    case_briefing: CaseBriefingOutput | None = None
+    investigation_notebook: InvestigationNotebook = Field(default_factory=InvestigationNotebook)
+
+    @property
+    def notebook(self):
+        from .notebook import build_notebook
+
+        return build_notebook(self)
 
 
 class BoundedCaseDossier(BaseModel):
@@ -820,6 +1063,8 @@ class BoundedCaseDossier(BaseModel):
     contract: CaseContract = Field(default_factory=CaseContract)
     header: CaseHeader = Field(default_factory=CaseHeader)
     budget: CaseBudget = Field(default_factory=CaseBudget)
+    case_briefing: dict[str, object] = Field(default_factory=dict)
+    investigation_notebook: dict[str, object] = Field(default_factory=dict)
 
     model_config: ClassVar[ConfigDict] = ConfigDict(extra='forbid')
 

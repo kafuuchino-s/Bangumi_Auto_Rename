@@ -3,6 +3,8 @@ from __future__ import annotations
 from .models import BangumiItemCard, CaseDossier, LocalSpanCard, MappingDraft
 from .source_form import SINGLETON_SOURCE_FORM_HINTS
 
+import re
+
 
 SPECIAL_ASSIGNABLE_ITEM_KINDS = {'special', 'movie'}
 
@@ -30,30 +32,109 @@ def special_like_item_refs(dossier: CaseDossier) -> list[str]:
     return list(dict.fromkeys(refs))
 
 
+def _span_file_refs(span: LocalSpanCard) -> list[str]:
+    refs = list(getattr(span, 'file_refs', []) or [])
+    if not refs and int(getattr(span, 'file_ref_count', 0) or 0) == 1:
+        refs = list(getattr(span, 'file_ref_samples', []) or [])[:1]
+    return [str(ref or '') for ref in refs if str(ref or '')]
+
+
+def _span_local_text(span: LocalSpanCard, dossier: CaseDossier) -> str:
+    files_by_ref = {
+        str(getattr(card, 'ref', '') or ''): card
+        for card in list(getattr(dossier, 'local_files', []) or [])
+        if str(getattr(card, 'ref', '') or '')
+    }
+    parts = [
+        str(getattr(span, 'span_scope', '') or ''),
+        str(getattr(span, 'parent_key', '') or ''),
+        str(getattr(span, 'season_cue', '') or ''),
+        *[str(value or '') for value in list(getattr(span, 'title_cues', []) or [])],
+        *[str(value or '') for value in list(getattr(span, 'confidence_facts', []) or [])],
+    ]
+    for ref in _span_file_refs(span):
+        card = files_by_ref.get(ref)
+        if card is None:
+            continue
+        parts.extend([
+            str(getattr(card, 'path', '') or ''),
+            str(getattr(card, 'basename', '') or ''),
+            str(getattr(card, 'label', '') or ''),
+            str(getattr(card, 'parent_display', '') or ''),
+        ])
+    return ' '.join(part for part in parts if part)
+
+
+def is_special_release_marker_text(text: str) -> bool:
+    lowered = str(text or '').casefold()
+    if not lowered:
+        return False
+    if any(marker in lowered for marker in ('tokubetsu', 'special', 'ova', 'oav', 'oad', 'ona', '番外', '特别', '特別')):
+        return True
+    return bool(re.search(r'(?<![a-z0-9])sp[\s._-]*\d{0,3}(?![a-z0-9])', lowered))
+
+
+def _briefing_marks_singleton_special(span: LocalSpanCard, dossier: CaseDossier) -> bool:
+    briefing = getattr(dossier, 'case_briefing', None)
+    if briefing is None:
+        return False
+    span_ref = str(getattr(span, 'ref', '') or '')
+    file_refs = set(_span_file_refs(span))
+    markers = ('movie', 'special', 'ova', 'oav', 'oad', 'extra')
+    for unit in list(getattr(briefing, 'work_units', []) or []):
+        refs = {
+            *[str(ref or '') for ref in list(getattr(unit, 'local_refs', []) or [])],
+            *[str(ref or '') for ref in list(getattr(unit, 'file_refs', []) or [])],
+            *[str(ref or '') for ref in list(getattr(unit, 'span_refs', []) or [])],
+        }
+        if span_ref not in refs and not (file_refs & refs):
+            continue
+        text = ' '.join([
+            str(getattr(unit, 'unit_kind', '') or ''),
+            str(getattr(unit, 'label', '') or ''),
+            str(getattr(unit, 'reason', '') or ''),
+            *[str(value or '') for value in list(getattr(unit, 'source_form_hints', []) or [])],
+            *[str(value or '') for value in list(getattr(unit, 'title_hints', []) or [])],
+        ]).casefold()
+        if any(marker in text for marker in markers) or re.search(r'(?<![a-z0-9])sp(?![a-z0-9])', text):
+            return True
+    return False
+
+
 def is_special_eligible_span(span: LocalSpanCard | None, dossier: CaseDossier) -> bool:
     if span is None:
         return False
-    if str(getattr(span, 'span_scope', '') or '') not in {'residual', 'unpartitioned'}:
+    span_scope = str(getattr(span, 'span_scope', '') or '')
+    if span_scope not in {'directory', 'token_segment', 'residual', 'unpartitioned'}:
         return False
-    file_refs = list(getattr(span, 'file_refs', []) or [])
-    if not file_refs and int(getattr(span, 'file_ref_count', 0) or 0) == 1:
-        file_refs = list(getattr(span, 'file_ref_samples', []) or [])[:1]
-    if int(getattr(span, 'file_ref_count', 0) or len(file_refs)) != 1 or len(file_refs) != 1:
-        return False
-    if int(getattr(span, 'episode_token_count', 0) or 0) != 0:
-        return False
-    if getattr(span, 'episode_token_start', None) is not None or getattr(span, 'episode_token_end', None) is not None:
+    file_refs = _span_file_refs(span)
+    file_count = int(getattr(span, 'file_ref_count', 0) or len(file_refs))
+    if file_count <= 0 or file_count != len(file_refs):
         return False
     main_refs = set(getattr(getattr(dossier, 'contract', None), 'main_file_refs', []) or [])
-    file_ref = file_refs[0]
-    if main_refs and file_ref not in main_refs:
+    if main_refs and any(ref not in main_refs for ref in file_refs):
         return False
-    file_card = next((card for card in list(getattr(dossier, 'local_files', []) or []) if getattr(card, 'ref', '') == file_ref), None)
-    if file_card is None:
+    file_cards = [
+        card for ref in file_refs
+        for card in list(getattr(dossier, 'local_files', []) or [])
+        if getattr(card, 'ref', '') == ref
+    ]
+    if len(file_cards) != len(file_refs):
         return False
-    if not bool(getattr(file_card, 'is_main', False)):
+    if any(not bool(getattr(card, 'is_main', False)) for card in file_cards):
         return False
-    return str(getattr(file_card, 'file_kind', '') or 'unknown') != 'subtitle'
+    if any(str(getattr(card, 'file_kind', '') or 'unknown') == 'subtitle' for card in file_cards):
+        return False
+
+    if file_count == 1 and span_scope in {'residual', 'unpartitioned'}:
+        if int(getattr(span, 'episode_token_count', 0) or 0) == 0 and getattr(span, 'episode_token_start', None) is None and getattr(span, 'episode_token_end', None) is None:
+            return True
+
+    if file_count <= 12 and is_special_release_marker_text(_span_local_text(span, dossier)):
+        return True
+    if file_count == 1 and _briefing_marks_singleton_special(span, dossier):
+        return True
+    return False
 
 
 def special_eligible_open_row_refs(draft: MappingDraft | None, dossier: CaseDossier) -> list[str]:

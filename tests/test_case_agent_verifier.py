@@ -288,6 +288,31 @@ def test_fail_closed_reason_related_unknown_ref_is_sanitized_and_does_not_block(
     assert not any(issue.issue_code == 'unknown_ref' for issue in result.issues)
 
 
+def test_fail_closed_related_refs_are_compacted_before_budget_check():
+    dossier = make_dossier()
+    dossier.visible_refs.local_file_refs = [f'LF{i}' for i in range(1, 80)]
+    dossier.visible_refs.target_refs = [f'BE{i}' for i in range(1, 80)]
+    dossier.detailed_card_refs = [f'BE{i}' for i in range(1, 80)]
+    dossier.assignable_target_refs = [f'BE{i}' for i in range(1, 80)]
+    dossier.seen_detail_refs = [f'BE{i}' for i in range(1, 80)]
+    reasons = [
+        FailClosedReason(
+            ref=f'FR{i}',
+            reason_kind='insufficient_evidence',
+            description='large unresolved row',
+            related_refs=[f'LF{j}' for j in range(i, i + 8)] + [f'BE{j}' for j in range(i, i + 8)],
+        )
+        for i in range(1, 12)
+    ]
+    output = CaseJudgeOutput(action='fail_closed', fail_closed_reasons=reasons)
+
+    result = verify_judge_output(dossier, output)
+
+    assert result.passed is True
+    assert any(issue.issue_code == 'auxiliary_ref_sanitized' for issue in result.issues)
+    assert not any(issue.issue_code == 'output_budget_exceeded' for issue in result.issues)
+
+
 def test_fail_closed_auxiliary_request_and_internal_refs_are_sanitized():
     dossier = make_dossier()
     output = CaseJudgeOutput(
