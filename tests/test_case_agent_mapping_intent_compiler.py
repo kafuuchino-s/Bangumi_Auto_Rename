@@ -136,6 +136,83 @@ def test_visible_span_intent_compiles_to_span_patch():
     assert result.compiled_patches[0].mapping_mode == 'span_by_index'
 
 
+def test_visible_span_intent_with_wrong_target_count_is_blocked_before_bad_patch():
+    workspace = _workspace(
+        file_count=12,
+        subjects=[BangumiSubjectCard(ref='BS1', title='Title')],
+        spans=[
+            BangumiSpanCard(
+                ref='BES1',
+                subject_ref='BS1',
+                target_refs=['BE1', 'BE2'],
+                target_ref_count=2,
+                sort_start=1,
+                sort_end=2,
+                ep_start=1,
+                ep_end=2,
+                detail_equivalent=True,
+            )
+        ],
+    )
+    result = MappingIntentCompiler().compile(
+        workspace.to_dossier(round_context='test'),
+        _draft(),
+        [
+            MappingIntent(
+                decision='map_regular_span',
+                local_ref='LS1',
+                chosen_subject_ref='BS1',
+                chosen_span_ref='BES1',
+                support_refs=['LS1', 'BS1', 'BES1'],
+            )
+        ],
+    )
+
+    assert result.compiled_patches == []
+    assert result.blocked_intents[0].issue_codes == ['count_mismatch']
+    assert result.blocked_intents[0].observation['local_file_count'] == 12
+    assert result.blocked_intents[0].observation['selected_span_target_ref_count'] == 2
+
+
+def test_non_detail_span_intent_requests_target_span_instead_of_bad_patch():
+    workspace = _workspace(
+        file_count=12,
+        subjects=[BangumiSubjectCard(ref='BS1', title='Title')],
+        spans=[
+            BangumiSpanCard(
+                ref='BES1',
+                subject_ref='BS1',
+                target_refs=[f'BE{i}' for i in range(1, 13)],
+                target_ref_count=12,
+                sort_start=1,
+                sort_end=12,
+                ep_start=1,
+                ep_end=12,
+                detail_equivalent=False,
+            )
+        ],
+    )
+    result = MappingIntentCompiler().compile(
+        workspace.to_dossier(round_context='test'),
+        _draft(),
+        [
+            MappingIntent(
+                decision='map_regular_span',
+                local_ref='LS1',
+                chosen_subject_ref='BS1',
+                chosen_span_ref='BES1',
+                episode_start=1,
+                episode_end=12,
+                support_refs=['LS1', 'BS1', 'BES1'],
+            )
+        ],
+    )
+
+    assert result.compiled_patches == []
+    assert result.blocked_intents[0].issue_codes == ['target_span_not_detail_equivalent']
+    assert result.blocked_intents[0].requested_request_types == ['target_span']
+
+
 def test_ambiguous_visible_span_candidates_require_agent_choice():
     workspace = _workspace(
         file_count=12,
@@ -187,6 +264,86 @@ def test_regular_span_intent_with_explicit_visible_items_generates_span_card():
     assert len(result.generated_span_cards) == 1
     assert result.generated_span_cards[0].target_refs == ['BE1', 'BE2', 'BE3']
     assert result.generated_span_cards[0].detail_equivalent is True
+    assert len(result.compiled_patches) == 1
+    assert result.compiled_patches[0].target_span_ref == result.generated_span_cards[0].ref
+
+
+def test_regular_span_intent_with_explicit_items_overrides_non_detail_span_ref():
+    items = [
+        BangumiItemCard(ref=f'BE{i}', subject_ref='BS1', item_kind='episode', ep=i, sort=i)
+        for i in range(1, 4)
+    ]
+    workspace = _workspace(
+        file_count=3,
+        subjects=[BangumiSubjectCard(ref='BS1', title='Title')],
+        items=items,
+        spans=[
+            BangumiSpanCard(
+                ref='BES1',
+                subject_ref='BS1',
+                target_refs=['BE1', 'BE2', 'BE3'],
+                target_ref_count=3,
+                sort_start=1,
+                sort_end=3,
+                ep_start=1,
+                ep_end=3,
+                detail_equivalent=False,
+            )
+        ],
+    )
+    result = MappingIntentCompiler().compile(
+        workspace.to_dossier(round_context='test'),
+        _draft(),
+        [
+            MappingIntent(
+                decision='map_regular_span',
+                local_ref='LS1',
+                chosen_subject_ref='BS1',
+                chosen_span_ref='BES1',
+                episode_start=1,
+                episode_end=3,
+                item_refs=['BE1', 'BE2', 'BE3'],
+                support_refs=['LS1', 'BS1', 'BES1', 'BE1', 'BE2', 'BE3'],
+            )
+        ],
+    )
+
+    assert result.blocked_intents == []
+    assert len(result.generated_span_cards) == 1
+    assert result.generated_span_cards[0].target_refs == ['BE1', 'BE2', 'BE3']
+    assert len(result.compiled_patches) == 1
+    assert result.compiled_patches[0].target_span_ref == result.generated_span_cards[0].ref
+
+
+def test_regular_span_intent_with_subject_and_episode_range_materializes_visible_items():
+    items = [
+        BangumiItemCard(ref=f'BE{i}', subject_ref='BS1', item_kind='episode', ep=i, sort=i)
+        for i in range(1, 4)
+    ]
+    workspace = _workspace(
+        file_count=3,
+        subjects=[BangumiSubjectCard(ref='BS1', title='Title')],
+        items=items,
+    )
+    result = MappingIntentCompiler().compile(
+        workspace.to_dossier(round_context='test'),
+        _draft(),
+        [
+            MappingIntent(
+                decision='map_regular_span',
+                local_ref='LS1',
+                chosen_subject_ref='BS1',
+                episode_start=1,
+                episode_end=3,
+                support_refs=['LS1', 'BS1'],
+                reason='agent chose this subject and episode range',
+            )
+        ],
+    )
+
+    assert result.blocked_intents == []
+    assert len(result.generated_span_cards) == 1
+    assert result.generated_span_cards[0].target_refs == ['BE1', 'BE2', 'BE3']
     assert len(result.compiled_patches) == 1
     assert result.compiled_patches[0].target_span_ref == result.generated_span_cards[0].ref
 
@@ -253,6 +410,37 @@ def test_reject_candidate_then_target_absent_compiles_to_accepted_exclusion():
     assert updated.rows[0].candidate_target_refs == []
     assert updated.rows[0].disposition == 'non_bangumi_or_supplemental'
     assert updated.rows[0].reason_kind == 'bangumi_target_absent'
+
+
+def test_reject_candidate_accepts_visible_refs_from_item_refs():
+    workspace = _workspace(
+        file_count=1,
+        items=[
+            BangumiItemCard(ref='BE1', subject_ref='BS1', item_kind='special', ep=0, sort=1),
+            BangumiItemCard(ref='BE2', subject_ref='BS1', item_kind='special', ep=0, sort=2),
+        ],
+    )
+    draft = _draft()
+    draft.rows[0].candidate_target_refs = ['BE1', 'BE2']
+    result = MappingIntentCompiler().compile(
+        workspace.to_dossier(round_context='test'),
+        draft,
+        [
+            MappingIntent(
+                decision='reject_candidate',
+                local_ref='LS1',
+                item_refs=['BE1', 'BE2'],
+                support_refs=['LS1', 'BE1', 'BE2'],
+                reason='agent rejects both visible candidates as semantically wrong',
+            )
+        ],
+    )
+
+    assert result.blocked_intents == []
+    assert [patch.op for patch in result.compiled_patches] == ['reject_candidate', 'reject_candidate']
+    updated, issues = apply_mapping_patches(draft, result.compiled_patches, workspace.to_dossier(round_context='apply'))
+    assert issues == []
+    assert updated.rows[0].candidate_target_refs == []
 
 
 def test_reject_candidate_requires_current_row_candidate():

@@ -252,8 +252,38 @@ def _refs_overlap(left: Iterable[str], right: set[str]) -> bool:
     return bool({ref for ref in _dedupe(left) if ref} & right)
 
 
-def _close_related_agenda(active: InvestigationNotebook, update: NotebookUpdate, *, status: str = 'answered') -> None:
-    refs = _update_refs(update)
+def _local_ref_expansion(source) -> dict[str, set[str]]:
+    if source is None:
+        return {}
+    try:
+        dossier = _coerce_dossier(source)
+    except Exception:
+        return {}
+    expansion: dict[str, set[str]] = {}
+    for span in list(getattr(dossier, 'local_span_cards', []) or []):
+        span_ref = str(getattr(span, 'ref', '') or '')
+        members = _dedupe([span_ref, *[str(ref or '') for ref in list(getattr(span, 'file_refs', []) or [])]])
+        if not members:
+            continue
+        member_set = set(members)
+        for ref in members:
+            expansion.setdefault(ref, set()).update(member_set)
+    return expansion
+
+
+def _expand_local_related_refs(values: Iterable[str], source) -> set[str]:
+    refs = set(_dedupe(values))
+    if not refs:
+        return set()
+    expansion = _local_ref_expansion(source)
+    expanded = set(refs)
+    for ref in list(refs):
+        expanded.update(expansion.get(ref, set()))
+    return expanded
+
+
+def _close_related_agenda(active: InvestigationNotebook, update: NotebookUpdate, *, status: str = 'answered', source=None) -> None:
+    refs = _expand_local_related_refs(_update_refs(update), source)
     notebook_refs = set(list(update.notebook_refs or []))
     if not refs and not notebook_refs:
         return
@@ -269,7 +299,8 @@ def _close_related_agenda(active: InvestigationNotebook, update: NotebookUpdate,
             *list(getattr(question, 'subject_refs', []) or []),
             *list(getattr(question, 'item_refs', []) or []),
         ]
-        if question_ref in notebook_refs or _refs_overlap(related_refs, refs):
+        expanded_related_refs = _expand_local_related_refs(related_refs, source)
+        if question_ref in notebook_refs or _refs_overlap(expanded_related_refs, refs):
             questions.append(question.model_copy(update={'status': closed_question_status}))
         else:
             questions.append(question)
@@ -283,7 +314,8 @@ def _close_related_agenda(active: InvestigationNotebook, update: NotebookUpdate,
             *list(getattr(action, 'subject_refs', []) or []),
             *list(getattr(action, 'item_refs', []) or []),
         ]
-        if action_ref in notebook_refs or _refs_overlap(related_refs, refs):
+        expanded_related_refs = _expand_local_related_refs(related_refs, source)
+        if action_ref in notebook_refs or _refs_overlap(expanded_related_refs, refs):
             actions.append(action.model_copy(update={'status': closed_action_status if closed_action_status in {'done', 'blocked', 'closed'} else 'done'}))
         else:
             actions.append(action)
@@ -437,7 +469,7 @@ def apply_notebook_updates(
                 active.work_unit_states = [replacement if item is state else item for item in active.work_unit_states]
                 for ref in replacement.local_refs:
                     work_by_local[ref] = replacement
-            _close_related_agenda(active, update, status='closed')
+            _close_related_agenda(active, update, status='closed', source=source)
         else:
             active.active_hypotheses.append(
                 NotebookHypothesis(
@@ -453,9 +485,63 @@ def apply_notebook_updates(
             )
             next_h_index += 1
         if kind in {'target_ownership', 'ownership', 'mapped', 'target_claim'}:
-            _close_related_agenda(active, update, status='answered')
+            _close_related_agenda(active, update, status='answered', source=source)
         active.update_log.append(update)
     return active, []
+
+
+def close_notebook_agenda_for_mapping_patches(
+    notebook: InvestigationNotebook | None,
+    patches: list[object],
+    source,
+) -> tuple[InvestigationNotebook, list[VerifierIssue]]:
+    updates: list[NotebookUpdate] = []
+    for patch in list(patches or []):
+        op = str(getattr(patch, 'op', '') or '')
+        local_refs = _dedupe([
+            str(getattr(patch, 'local_ref', '') or ''),
+            *[str(ref or '') for ref in list(getattr(patch, 'local_refs', []) or [])],
+        ])
+        if not local_refs:
+            continue
+        target_refs = _dedupe([
+            str(getattr(patch, 'target_ref', '') or ''),
+            str(getattr(patch, 'target_span_ref', '') or ''),
+        ])
+        support_refs = _dedupe([str(ref or '') for ref in list(getattr(patch, 'support_refs', []) or [])])
+        if op == 'map_to_bangumi':
+            updates.append(NotebookUpdate(
+                update_kind='mapped',
+                local_refs=local_refs,
+                target_refs=target_refs,
+                subject_refs=[str(ref or '') for ref in list(getattr(patch, 'subject_refs', []) or []) if str(ref or '')],
+                item_refs=[str(ref or '') for ref in list(getattr(patch, 'item_refs', []) or []) if str(ref or '')],
+                claim='compiled mapping intent handled this local work unit',
+                confidence='high',
+                reason=str(getattr(patch, 'reason', '') or 'mapping patch applied'),
+            ))
+        elif op == 'mark_non_bangumi_or_supplemental':
+            reason_kind = str(getattr(patch, 'reason_kind', '') or '')
+            updates.append(NotebookUpdate(
+                update_kind='target_absent' if reason_kind == 'bangumi_target_absent' else 'supplemental',
+                local_refs=local_refs,
+                target_refs=target_refs,
+                claim=f'compiled non-Bangumi/supplemental intent handled this local work unit: {reason_kind}',
+                confidence='high',
+                reason=str(getattr(patch, 'reason', '') or reason_kind or 'supplemental patch applied'),
+            ))
+        elif op == 'mark_unaligned_fail_closed':
+            updates.append(NotebookUpdate(
+                update_kind='work_unit_state',
+                local_refs=local_refs,
+                target_refs=target_refs,
+                claim='compiled fail-closed intent reached a terminal blocker for this local work unit',
+                confidence='high',
+                reason=str(getattr(patch, 'reason', '') or str(getattr(patch, 'reason_kind', '') or 'fail_closed patch applied')),
+            ))
+    if not updates:
+        return notebook.model_copy(deep=True) if notebook is not None else InvestigationNotebook(), []
+    return apply_notebook_updates(notebook, updates, source)
 
 
 def compact_case_briefing(briefing: CaseBriefingOutput | None) -> dict[str, Any]:

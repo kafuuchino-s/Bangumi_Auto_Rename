@@ -291,10 +291,18 @@ class EvidenceBroker:
         plan_status = 'completed' if selected_ids and len(completed_ids) == len(selected_ids) and not failed_ids else ('blocked' if failed_ids and not completed_ids else ('in_progress' if selected_ids else getattr(plan_state, 'plan_status', 'idle')))
         completed_span_request_count = len([rid for rid in completed_ids if rid.startswith('REQ_TARGET_SPAN_')])
         updated_notebook = close_notebook_agenda_for_evidence_results(getattr(current_ws, 'investigation_notebook', None), request_results)
+        visible_target_refs = list(dict.fromkeys([
+            *list(getattr(current_ws.contract, 'visible_target_refs', []) or []),
+            *[
+                str(getattr(card, 'ref', '') or '')
+                for card in list(getattr(current_ws, 'bangumi_items', []) or [])
+                if str(getattr(card, 'ref', '') or '')
+            ],
+        ]))
         current_ws = CaseEvidenceWorkspace.from_cards(
             header=updated_header,
             budget=updated_budget,
-            contract=current_ws.contract,
+            contract=current_ws.contract.model_copy(update={'visible_target_refs': visible_target_refs}),
             local_files=current_ws.local_files,
             local_clusters=current_ws.local_clusters,
             local_span_cards=current_ws.local_span_cards,

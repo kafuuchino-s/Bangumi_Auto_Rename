@@ -19,21 +19,6 @@ ALLOWED_SUPPLEMENTAL_REASON_KINDS = {
     'other_supplemental',
 }
 
-_MULTI_FILE_SUPPLEMENTAL_REASON_KINDS = {
-    'bonus_video',
-    'pv_cm',
-    'creditless_op_ed',
-    'trailer',
-    'sample',
-    'duplicate_packaging',
-    'non_episode_video',
-    'making_of',
-    'menu_or_navigation',
-}
-
-_SMALL_MULTI_FILE_REASON_KINDS = {'bonus_video', 'non_episode_video', 'making_of'}
-_SMALL_MULTI_FILE_LIMIT = 4
-_BROAD_TARGET_ABSENT_LIMIT = 24
 _BANGUMI_TARGET_ABSENT_REASON_KIND = 'bangumi_target_absent'
 
 
@@ -242,22 +227,6 @@ def supplemental_reason_from_local_ref(dossier: CaseDossier, local_ref: str) -> 
     return classify_supplemental_reason(local_ref_text_for_supplemental_issue(dossier, local_ref))
 
 
-def _span_for_row(dossier: CaseDossier, row: MappingDraftRow) -> LocalSpanCard | None:
-    return _spans_by_ref(dossier).get(str(getattr(row, 'local_ref', '') or ''))
-
-
-def _is_regular_numbered_like_span(span: LocalSpanCard | None, file_count: int) -> bool:
-    if span is None or file_count < 2:
-        return False
-    episode_token_count = int(getattr(span, 'episode_token_count', 0) or 0)
-    ordering_basis = str(getattr(span, 'ordering_basis', '') or '')
-    if ordering_basis == 'episode_token_order' and episode_token_count >= 2:
-        return True
-    if episode_token_count >= 2 and episode_token_count == file_count:
-        return True
-    return False
-
-
 def _visible_assignable_candidate_refs(dossier: CaseDossier, row: MappingDraftRow) -> list[str]:
     detail_span_refs = {
         str(getattr(card, 'ref', '') or '')
@@ -285,34 +254,6 @@ def _visible_assignable_candidate_refs(dossier: CaseDossier, row: MappingDraftRo
     return _dedupe_preserve_order(candidates)
 
 
-def _text_supports_target_absent_shape(text: str) -> bool:
-    lowered = ' '.join(str(text or '').casefold().split())
-    if not lowered:
-        return False
-    markers = (
-        'ova',
-        'oav',
-        'oad',
-        'sp',
-        'special',
-        'tokubetsu',
-        'extra',
-        'bonus',
-        'non episode',
-        'non-episode',
-        'recap',
-        'digest',
-        'side story',
-        'side-story',
-        '番外',
-        '特别',
-        '特別',
-        '映像特典',
-        '特典映像',
-    )
-    return any(marker in lowered for marker in markers)
-
-
 def _bangumi_target_absent_policy_issues(
     dossier: CaseDossier,
     row: MappingDraftRow,
@@ -320,10 +261,6 @@ def _bangumi_target_absent_policy_issues(
     row_ref: str,
     local_ref: str,
     covered_main_refs: list[str],
-    span: LocalSpanCard | None,
-    file_count: int,
-    local_text: str,
-    regular_like: bool,
 ) -> list[VerifierIssue]:
     support_refs = set(str(ref or '') for ref in list(getattr(row, 'support_refs', []) or []) if str(ref or ''))
     if local_ref not in support_refs and not (support_refs & set(covered_main_refs)):
@@ -333,24 +270,9 @@ def _bangumi_target_absent_policy_issues(
             'bangumi_target_absent requires support_refs containing the local row or covered file refs',
             related_refs=[local_ref, *covered_main_refs[:8]],
         )]
-    candidate_refs = _visible_assignable_candidate_refs(dossier, row)
-    if candidate_refs:
-        return [_issue(
-            row_ref,
-            'bangumi_target_absent_has_visible_candidate',
-            'bangumi_target_absent cannot be used while visible assignable candidate refs remain on the row',
-            related_refs=[local_ref, *candidate_refs[:8]],
-        )]
-    # Shape/regular-vs-special is semantic and belongs to MappingDraftEditor.
-    # The fixed layer only verifies support refs and visible-candidate misuse.
+    # Whether visible candidates semantically correspond to this row belongs to
+    # the Case Agent. The fixed layer only verifies refs and support/accounting.
     return []
-
-
-def _each_file_supports_category(dossier: CaseDossier, file_refs: list[str], reason_kind: str) -> bool:
-    return all(
-        supplemental_category_supported_by_text(reason_kind, local_ref_text_for_supplemental_issue(dossier, ref))
-        for ref in file_refs
-    )
 
 
 def supplemental_row_policy_issues(dossier: CaseDossier, row: MappingDraftRow) -> list[VerifierIssue]:
@@ -364,17 +286,6 @@ def supplemental_row_policy_issues(dossier: CaseDossier, row: MappingDraftRow) -
     if not covered_main_refs:
         return []
 
-    span = _span_for_row(dossier, row)
-    file_count = len(covered_main_refs)
-    local_text = ' '.join([
-        str(getattr(row, 'reason_kind', '') or ''),
-        str(getattr(row, 'reason', '') or ''),
-        ' '.join(str(ref or '') for ref in list(getattr(row, 'support_refs', []) or [])),
-        local_ref_text_for_supplemental_issue(dossier, local_ref),
-    ])
-    category_supported = supplemental_category_supported_by_text(reason_kind, local_text)
-    regular_like = _is_regular_numbered_like_span(span, file_count)
-
     if reason_kind == _BANGUMI_TARGET_ABSENT_REASON_KIND:
         return _bangumi_target_absent_policy_issues(
             dossier,
@@ -382,58 +293,18 @@ def supplemental_row_policy_issues(dossier: CaseDossier, row: MappingDraftRow) -
             row_ref=row_ref,
             local_ref=local_ref,
             covered_main_refs=covered_main_refs,
-            span=span,
-            file_count=file_count,
-            local_text=local_text,
-            regular_like=regular_like,
         )
 
-    if reason_kind == 'other_supplemental' and file_count > 1:
+    support_refs = set(str(ref or '') for ref in list(getattr(row, 'support_refs', []) or []) if str(ref or ''))
+    if not support_refs or (local_ref not in support_refs and not any(ref in support_refs for ref in covered_main_refs)):
         return [_issue(
             row_ref,
-            'regular_main_span_cannot_be_supplemental',
-            'multi-file main rows cannot be accepted as generic supplemental/non-Bangumi accounting',
+            'missing_support_refs',
+            'supplemental rows require support_refs containing the local row or covered file refs',
             related_refs=[local_ref, *covered_main_refs[:8]],
         )]
 
-    if reason_kind != 'other_supplemental' and not category_supported:
-        return [_issue(
-            row_ref,
-            'supplemental_text_unsupported',
-            'supplemental accounting requires visible local text supporting the selected reason_kind',
-            related_refs=[local_ref, *covered_main_refs[:8]],
-        )]
-
-    if reason_kind == 'other_supplemental' and not category_supported:
-        return [_issue(
-            row_ref,
-            'supplemental_text_unsupported',
-            'generic supplemental accounting requires explicit visible extra/bonus/supplemental evidence',
-            related_refs=[local_ref, *covered_main_refs[:8]],
-        )]
-
-    if file_count > 1 and reason_kind not in _MULTI_FILE_SUPPLEMENTAL_REASON_KINDS:
-        return [_issue(
-            row_ref,
-            'regular_main_span_cannot_be_supplemental',
-            'multi-file main rows require a specific supplemental reason_kind, not a generic exclusion',
-            related_refs=[local_ref, *covered_main_refs[:8]],
-        )]
-
-    if file_count > _SMALL_MULTI_FILE_LIMIT and reason_kind in _SMALL_MULTI_FILE_REASON_KINDS:
-        return [_issue(
-            row_ref,
-            'supplemental_span_too_broad',
-            'broad multi-file main spans cannot be accepted as supplemental without a precise per-file extra category',
-            related_refs=[local_ref, *covered_main_refs[:8]],
-        )]
-
-    if file_count > 1 and regular_like and not _each_file_supports_category(dossier, covered_main_refs, reason_kind):
-        return [_issue(
-            row_ref,
-            'regular_main_span_cannot_be_supplemental',
-            'regular numbered main spans cannot be accepted as supplemental unless each covered file visibly carries the supplemental category',
-            related_refs=[local_ref, *covered_main_refs[:8]],
-        )]
-
+    # Whether a row is truly PV/CM/bonus/etc. is semantic and belongs to the
+    # Case Agent. The fixed layer only verifies refs and support/accounting; it
+    # does not infer file role from filenames or visible candidate presence.
     return []

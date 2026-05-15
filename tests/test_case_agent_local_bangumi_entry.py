@@ -102,7 +102,7 @@ def test_local_bangumi_workspace_enforces_investigation_batch_floor(monkeypatch)
 
     workspace = _build_workspace(local_evidence=_local_evidence(), bangumi_contexts=[])
 
-    assert workspace.budget.max_evidence_batches == 8
+    assert workspace.budget.max_evidence_batches == 12
 
 
 def test_local_bangumi_workspace_enforces_round_safety_cap_floor(monkeypatch):
@@ -113,8 +113,8 @@ def test_local_bangumi_workspace_enforces_round_safety_cap_floor(monkeypatch):
 
     workspace = _build_workspace(local_evidence=_local_evidence(), bangumi_contexts=[])
 
-    assert workspace.header.max_rounds == 24
-    assert workspace.budget.max_judge_rounds == 24
+    assert workspace.header.max_rounds == 48
+    assert workspace.budget.max_judge_rounds == 48
 
 
 def test_local_bangumi_entry_accepted(monkeypatch):

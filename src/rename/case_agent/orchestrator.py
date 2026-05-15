@@ -22,6 +22,7 @@ from .orchestrator_agent import (
     MaterializeQueriesToolArgs,
     OrchestratorAgentSession,
     OrchestratorAgentToolCall,
+    ProposeCaseUnderstandingToolArgs,
     ProposeMappingIntentsToolArgs,
     ReconsiderSplitToolArgs,
     UpdateNotebookToolArgs,
@@ -39,15 +40,16 @@ from .prompting import _recommended_neutral_requests
 from .special_investigation import is_special_eligible_span, special_eligible_open_row_refs, special_eligible_row_refs, special_like_item_refs
 from .supplemental_policy import ALLOWED_SUPPLEMENTAL_REASON_KINDS, classify_supplemental_reason, local_ref_text_for_supplemental_issue, main_file_refs_for_mapping_row, supplemental_category_supported_by_text, supplemental_reason_from_local_ref, supplemental_row_policy_issues
 from .surface_ledger import build_surface_ledger
-from .notebook import apply_notebook_updates, build_initial_investigation_notebook, build_notebook, human_next_action_blockers
+from .notebook import apply_notebook_updates, build_initial_investigation_notebook, build_notebook, close_notebook_agenda_for_mapping_patches, human_next_action_blockers, validate_case_briefing_refs
 from .issue_router import route_verifier_issues
-from .models import CaseJudgeOutput, CasePlanningOutput, CaseVerifierResult, EvidenceBatchResult, EvidencePlan, EvidencePlannerOutput, FailClosedReason, Finding, MappingDraftPatch, QueryCard, VerifierIssue
+from .models import CaseBriefingOutput, CaseBriefingWorkUnit, CaseJudgeOutput, CasePlanningOutput, CaseVerifierResult, EvidenceBatchResult, EvidencePlan, EvidencePlannerOutput, FailClosedReason, Finding, LocalSpanCard, MappingDraftPatch, MappingDraftRow, QueryCard, VerifierIssue
 from .models import EvidenceRequest, MappingDraft
 from .verifier import _compact_fail_closed_related_refs, verify_judge_output, verify_mapping_draft_accounting
 from .workspace import CaseEvidenceWorkspace
 
 
 InvestigationAction = Literal[
+    'propose_case_understanding',
     'compose_queries',
     'plan_evidence',
     'execute_evidence',
@@ -259,15 +261,198 @@ def _request_summary_type_by_id(summaries: list[dict[str, object]]) -> dict[str,
     }
 
 
+def _request_summary_source_refs(summary: dict[str, object]) -> list[str]:
+    return [str(ref or '') for ref in list(summary.get('source_refs') or []) if str(ref or '')]
+
+
+def _request_ids_matching_subject_refs(
+    summaries: list[dict[str, object]],
+    *,
+    request_types: set[str],
+    subject_refs: list[str],
+) -> list[str]:
+    subjects = {str(ref or '') for ref in list(subject_refs or []) if str(ref or '')}
+    if not subjects:
+        return []
+    broad: list[str] = []
+    exact: list[str] = []
+    for summary in list(summaries or []):
+        request_id = str(summary.get('request_id') or '')
+        if not request_id or str(summary.get('request_type') or '') not in request_types:
+            continue
+        source_subjects = {
+            ref for ref in _request_summary_source_refs(summary)
+            if ref.startswith('BS')
+        }
+        if not subjects.intersection(source_subjects):
+            continue
+        broad.append(request_id)
+        if source_subjects and source_subjects <= subjects:
+            exact.append(request_id)
+    return exact or broad
+
+
+def _subject_refs_from_evidence_tool_args(args: ExecuteEvidenceToolArgs) -> list[str]:
+    refs = [str(ref or '') for ref in list(getattr(args, 'subject_refs', []) or []) if str(ref or '')]
+    for ref in list(getattr(args, 'item_refs', []) or []):
+        value = str(ref or '')
+        if value.startswith('BS'):
+            refs.append(value)
+    return _dedupe_preserve_order(refs)
+
+
+def _subject_refs_from_intent_patches(patches: list[MappingDraftPatch]) -> list[str]:
+    return _dedupe_preserve_order([
+        str(ref or '')
+        for patch in list(patches or [])
+        for ref in list(getattr(patch, 'subject_refs', []) or [])
+        if str(ref or '')
+    ])
+
+
+def _request_summary_for_request(request: EvidenceRequest) -> dict[str, object]:
+    source_refs: list[str] = []
+    if request.request_type == 'target_span':
+        source_refs = [
+            str(request.local_span_ref or ''),
+            *[str(ref or '') for ref in list(request.subject_refs or [])],
+            *[str(ref or '') for ref in list(request.group_refs or [])],
+        ]
+    else:
+        source_refs = [
+            *[str(ref or '') for ref in list(request.anchor_file_refs or [])],
+            *[str(ref or '') for ref in list(request.subject_refs or [])],
+            *[str(ref or '') for ref in list(request.group_refs or [])],
+            *[str(ref or '') for ref in list(request.item_refs or [])],
+            *[str(ref or '') for ref in list(request.query_refs or [])],
+            str(request.local_span_ref or ''),
+        ]
+    return {
+        'request_id': str(request.request_ref or ''),
+        'request_type': str(request.request_type or ''),
+        'summary': str(request.reason or request.request_type or ''),
+        'source_refs': _dedupe_preserve_order([ref for ref in source_refs if ref])[:8],
+        'expected_result': str(request.expected_decision or 'unknown'),
+        'neutral': True,
+    }
+
+
+def _agent_subject_request_for_id(request_id: str, subject_refs: list[str], request_types: list[str]) -> EvidenceRequest | None:
+    rid = str(request_id or '')
+    subjects = set(_dedupe_preserve_order([str(ref or '') for ref in list(subject_refs or []) if str(ref or '')]))
+    requested = {str(value or '') for value in list(request_types or []) if str(value or '')}
+    if rid.startswith('REQ_SUBJECT_LOOKUP_'):
+        subject_ref = rid.replace('REQ_SUBJECT_LOOKUP_', '', 1)
+        if subject_ref in subjects and (not requested or 'subject_lookup' in requested):
+            return EvidenceRequest(
+                request_ref=rid,
+                request_type='subject_lookup',
+                subject_refs=[subject_ref],
+                reason='agent-selected subject needs subject detail',
+                expected_decision='need_more_evidence',
+            )
+    if rid.startswith('REQ_EPISODE_LIST_'):
+        subject_ref = rid.replace('REQ_EPISODE_LIST_', '', 1)
+        if subject_ref in subjects and (not requested or 'episode_list' in requested):
+            return EvidenceRequest(
+                request_ref=rid,
+                request_type='episode_list',
+                subject_refs=[subject_ref],
+                include_episode_cards=True,
+                max_episode_cards=240,
+                reason='agent-selected subject needs visible episode targets',
+                expected_decision='need_more_evidence',
+            )
+    return None
+
+
+def _augment_menu_with_agent_subject_requests(
+    summaries: list[dict[str, object]],
+    registry: dict[str, EvidenceRequest],
+    *,
+    subject_refs: list[str],
+    request_types: list[str],
+) -> tuple[list[dict[str, object]], dict[str, EvidenceRequest], list[str]]:
+    subjects = _dedupe_preserve_order([str(ref or '') for ref in list(subject_refs or []) if str(ref or '')])
+    requested = {str(value or '') for value in list(request_types or []) if str(value or '')}
+    if not subjects or not requested:
+        return summaries, registry, []
+    updated_summaries = list(summaries)
+    updated_registry = dict(registry)
+    added: list[str] = []
+    for subject_ref in subjects:
+        requests: list[EvidenceRequest] = []
+        if 'subject_lookup' in requested:
+            requests.append(EvidenceRequest(
+                request_ref=f'REQ_SUBJECT_LOOKUP_{subject_ref}',
+                request_type='subject_lookup',
+                subject_refs=[subject_ref],
+                reason='agent-selected subject needs subject detail',
+                expected_decision='need_more_evidence',
+            ))
+        if 'episode_list' in requested:
+            requests.append(EvidenceRequest(
+                request_ref=f'REQ_EPISODE_LIST_{subject_ref}',
+                request_type='episode_list',
+                subject_refs=[subject_ref],
+                include_episode_cards=True,
+                max_episode_cards=240,
+                reason='agent-selected subject needs visible episode targets',
+                expected_decision='need_more_evidence',
+            ))
+        for request in requests:
+            if request.request_ref in updated_registry:
+                continue
+            updated_registry[request.request_ref] = request
+            updated_summaries.append(_request_summary_for_request(request))
+            added.append(request.request_ref)
+    return updated_summaries, updated_registry, added
+
+
+def _latest_blocked_evidence_agenda(workspace: CaseEvidenceWorkspace) -> tuple[list[str], list[str]]:
+    audits = list(getattr(workspace, 'judge_request_audits', []) or [])
+    latest: dict[str, object] | None = None
+    for audit in reversed(audits):
+        if isinstance(audit, dict) and audit.get('note') == 'orchestrator_mapping_intents_result':
+            latest = audit
+            break
+    if not latest:
+        return [], []
+    requested_types = _dedupe_preserve_order([
+        str(value or '')
+        for value in list(latest.get('requested_evidence') or [])
+        if str(value or '')
+    ])
+    blocked_intents = list(latest.get('blocked_intents') or [])
+    subject_refs = _dedupe_preserve_order([
+        str(ref or '')
+        for item in blocked_intents
+        if isinstance(item, dict)
+        for ref in list(item.get('subject_refs') or [])
+        if str(ref or '')
+    ])
+    return requested_types, subject_refs
+
+
 def _evidence_phase_request_ids_for_editor_intent(
     workspace: CaseEvidenceWorkspace,
     summaries: list[dict[str, object]],
     selected_ids: list[str],
     requested_types: list[str],
+    subject_refs: list[str] | None = None,
 ) -> tuple[list[str], dict[str, object]]:
     type_by_id = _request_summary_type_by_id(summaries)
     requested_type_set = {str(value or '') for value in list(requested_types or []) if str(value or '')}
     selected_type_set = {type_by_id.get(request_id, '') for request_id in list(selected_ids or [])}
+    requested_subject_refs = _dedupe_preserve_order([
+        *[str(ref or '') for ref in list(subject_refs or [])],
+        *[
+            ref
+            for request_id in list(selected_ids or [])
+            for ref in _request_summary_source_refs(next((summary for summary in summaries if str(summary.get('request_id') or '') == request_id), {}))
+            if str(ref or '').startswith('BS')
+        ],
+    ])
     needs_subject_surface = bool(
         requested_type_set & _REQUIRES_SUBJECT_EVIDENCE_TYPES
         or selected_type_set & _REQUIRES_SUBJECT_EVIDENCE_TYPES
@@ -309,8 +494,16 @@ def _evidence_phase_request_ids_for_editor_intent(
             for summary in summaries
             if str(summary.get('request_type') or '') in {'subject_lookup', 'episode_list'}
         ]
+        prioritized_episode_ids = _request_ids_matching_subject_refs(
+            summaries,
+            request_types={'subject_lookup', 'episode_list'},
+            subject_refs=requested_subject_refs,
+        )
+        if prioritized_episode_ids:
+            episode_ids = prioritized_episode_ids
         return _dedupe_preserve_order(episode_ids), {
             'evidence_phase': 'episode_recall',
+            'prioritized_subject_refs': requested_subject_refs,
             'deferred_evidence_intent_count': len([request_id for request_id in selected_ids if type_by_id.get(request_id, '') not in {'subject_lookup', 'episode_list'}]),
             'target_span_blocked_by_missing_items_count': len([request_id for request_id in selected_ids if type_by_id.get(request_id, '') == 'target_span']),
             'target_evidence_blocked_by_missing_subjects_count': 0,
@@ -321,6 +514,7 @@ def _evidence_phase_request_ids_for_editor_intent(
         'deferred_evidence_intent_count': 0,
         'target_span_blocked_by_missing_items_count': 0,
         'target_evidence_blocked_by_missing_subjects_count': 0,
+        'prioritized_subject_refs': requested_subject_refs,
     }
 
 
@@ -343,11 +537,31 @@ def _execute_menu_request_ids(
     if not fresh_ids or bangumi_client is None:
         return workspace, None
     resolved_requests, selected_menu_request_ids, unknown_menu_request_ids, resolved_menu_request_count = resolve_evidence_menu_requests(workspace, fresh_ids)
+    dynamic_subject_refs: list[str] = []
+    dynamic_request_types: list[str] = []
+    if planner_output is not None:
+        plan = getattr(planner_output, 'plan', None)
+        dynamic_request_types = [str(value or '') for value in list(getattr(plan, 'risk_flags', []) or []) if str(value or '') in {'subject_lookup', 'episode_list'}]
+        dynamic_subject_refs = [str(value or '') for value in list(getattr(plan, 'stop_conditions', []) or []) if str(value or '').startswith('BS')]
+    if unknown_menu_request_ids and dynamic_subject_refs:
+        recovered_requests: list[EvidenceRequest] = []
+        still_unknown: list[str] = []
+        for request_id in unknown_menu_request_ids:
+            request = _agent_subject_request_for_id(request_id, dynamic_subject_refs, dynamic_request_types)
+            if request is None:
+                still_unknown.append(request_id)
+                continue
+            recovered_requests.append(request)
+        if recovered_requests:
+            resolved_requests = [*resolved_requests, *recovered_requests]
+            selected_menu_request_ids = _dedupe_preserve_order([*selected_menu_request_ids, *[request.request_ref for request in recovered_requests]])
+            unknown_menu_request_ids = still_unknown
     workspace = _workspace_with_judge_audit(workspace, {
         'note': f'{note}_menu_resolution',
         'selected_menu_request_ids': selected_menu_request_ids,
         'unknown_menu_request_ids': unknown_menu_request_ids,
         'resolved_menu_request_count': resolved_menu_request_count,
+        'dynamic_subject_request_refs': [str(getattr(request, 'request_ref', '') or '') for request in resolved_requests if str(getattr(request, 'request_ref', '') or '').startswith(('REQ_SUBJECT_LOOKUP_', 'REQ_EPISODE_LIST_')) and str(getattr(request, 'request_ref', '') or '') in fresh_ids],
         'planner_plan_kind': getattr(getattr(planner_output, 'plan', None), 'plan_kind', ''),
     })
     if not resolved_requests:
@@ -455,6 +669,254 @@ def _workspace_with_case_briefing(workspace: CaseEvidenceWorkspace, ai_client) -
     )
 
 
+def _case_understanding_applied(workspace: CaseEvidenceWorkspace) -> bool:
+    return getattr(workspace, 'case_briefing', None) is not None
+
+
+def _case_understanding_repartition_requested(workspace: CaseEvidenceWorkspace) -> bool:
+    audits = list(getattr(workspace, 'judge_request_audits', []) or [])
+    for audit in reversed(audits):
+        if not isinstance(audit, dict):
+            continue
+        note = str(audit.get('note') or '')
+        if note in {'case_understanding_applied', 'case_understanding_revised'}:
+            break
+        if note in {
+            'orchestrator_reconsider_split_observation',
+            'case_understanding_repartition_requested',
+            'orchestrator_reconsider_split_requested',
+        }:
+            return True
+    notebook = getattr(workspace, 'investigation_notebook', None)
+    if notebook is None:
+        return False
+    for question in list(getattr(notebook, 'open_questions', []) or []):
+        if str(getattr(question, 'question_kind', '') or '') == 'work_unit_repartition':
+            return True
+    for action in list(getattr(notebook, 'next_actions', []) or []):
+        if str(getattr(action, 'action_type', '') or '') == 'work_unit_repartition':
+            return True
+    return False
+
+
+def _sample_refs(values: list[str], *, limit: int = 4) -> list[str]:
+    values = [value for value in values if value]
+    if len(values) <= limit:
+        return list(values)
+    edge = max(1, limit // 2)
+    return _dedupe_preserve_order([*values[:edge], *values[-edge:]])[:limit]
+
+
+def _local_file_refs_for_understanding_ref(workspace: CaseEvidenceWorkspace, ref: str) -> list[str]:
+    ref = str(ref or '')
+    if not ref:
+        return []
+    main_refs = set(list(getattr(getattr(workspace, 'contract', None), 'main_file_refs', []) or []))
+    if ref in main_refs:
+        return [ref]
+    file_refs = {
+        str(getattr(card, 'ref', '') or '')
+        for card in list(getattr(workspace, 'local_files', []) or [])
+        if str(getattr(card, 'ref', '') or '')
+    }
+    if ref in file_refs:
+        return [ref]
+    for span in list(getattr(workspace, 'local_span_cards', []) or []):
+        if str(getattr(span, 'ref', '') or '') == ref:
+            return [
+                file_ref
+                for file_ref in list(getattr(span, 'file_refs', []) or [])
+                if not main_refs or file_ref in main_refs
+            ]
+    return []
+
+
+def _understanding_unit_file_refs(workspace: CaseEvidenceWorkspace, unit: CaseBriefingWorkUnit) -> list[str]:
+    explicit_file_refs: list[str] = []
+    for ref in list(getattr(unit, 'file_refs', []) or []):
+        explicit_file_refs.extend(_local_file_refs_for_understanding_ref(workspace, ref))
+    if explicit_file_refs:
+        return _dedupe_preserve_order(explicit_file_refs)
+
+    refs: list[str] = []
+    for ref in [*list(getattr(unit, 'local_refs', []) or []), *list(getattr(unit, 'span_refs', []) or [])]:
+        refs.extend(_local_file_refs_for_understanding_ref(workspace, ref))
+    return _dedupe_preserve_order(refs)
+
+
+def _span_scope_for_understanding_unit(unit: CaseBriefingWorkUnit) -> str:
+    text = ' '.join([
+        str(getattr(unit, 'unit_kind', '') or ''),
+        str(getattr(unit, 'label', '') or ''),
+        ' '.join(str(value or '') for value in list(getattr(unit, 'source_form_hints', []) or [])),
+    ]).casefold()
+    if 'dir' in text or 'season' in text or 'series' in text:
+        return 'directory'
+    if any(marker in text for marker in ('regular', 'episode', 'main', 'tv')):
+        return 'token_segment'
+    if any(marker in text for marker in ('extra', 'special', 'ova', 'oad', 'sp', 'movie')):
+        return 'residual'
+    return 'unpartitioned'
+
+
+def _compile_case_understanding(
+    workspace: CaseEvidenceWorkspace,
+    args: ProposeCaseUnderstandingToolArgs,
+) -> tuple[CaseEvidenceWorkspace, dict[str, object]]:
+    was_revision = _case_understanding_applied(workspace)
+    raw_units = list(getattr(args, 'work_units', []) or [])
+    main_refs = list(dict.fromkeys(list(getattr(getattr(workspace, 'contract', None), 'main_file_refs', []) or [])))
+    issues: list[VerifierIssue] = []
+    if not raw_units:
+        issues.append(VerifierIssue(ref='case_understanding', issue_code='case_understanding_empty_work_units', severity='blocked', message='propose_case_understanding must provide at least one work unit'))
+
+    expanded_by_unit: list[tuple[CaseBriefingWorkUnit, list[str]]] = []
+    ownership: dict[str, list[str]] = {}
+    for index, unit in enumerate(raw_units, start=1):
+        unit_ref = str(getattr(unit, 'work_unit_ref', '') or f'WU{index}')
+        file_refs = _understanding_unit_file_refs(workspace, unit)
+        if not file_refs:
+            issues.append(VerifierIssue(ref=unit_ref, issue_code='case_understanding_empty_work_unit', severity='blocked', message='work unit did not cite any visible local file coverage refs'))
+        for file_ref in file_refs:
+            if file_ref in main_refs:
+                ownership.setdefault(file_ref, []).append(unit_ref)
+        expanded_by_unit.append((unit, file_refs))
+
+    if main_refs:
+        missing = [ref for ref in main_refs if ref not in ownership]
+        duplicates = [ref for ref, owners in ownership.items() if len(owners) > 1]
+        if missing:
+            issues.append(VerifierIssue(ref='case_understanding', issue_code='case_understanding_missing_main_refs', severity='blocked', message='work units must cover every main file ref exactly once', related_refs=missing[:12]))
+        if duplicates:
+            issues.append(VerifierIssue(ref='case_understanding', issue_code='case_understanding_duplicate_main_refs', severity='blocked', message='main file refs appeared in more than one work unit', related_refs=duplicates[:12]))
+
+    candidate_briefing = CaseBriefingOutput(
+        package_shape=str(getattr(args, 'package_shape', '') or ''),
+        work_units=raw_units,
+        title_hypotheses=list(getattr(args, 'title_hypotheses', []) or []),
+        split_hints=list(getattr(args, 'split_hints', []) or []),
+        evidence_questions=list(getattr(args, 'evidence_questions', []) or []),
+        summary=str(getattr(args, 'summary', '') or getattr(args, 'reason', '') or ''),
+    )
+    issues.extend(validate_case_briefing_refs(candidate_briefing, workspace.to_dossier(round_context='case_understanding_validate')))
+    if issues:
+        issue_codes = _dedupe_preserve_order([str(getattr(issue, 'issue_code', '') or '') for issue in issues])
+        workspace = _workspace_with_judge_audit(workspace, {
+            'note': 'case_understanding_rejected',
+            'issue_codes': issue_codes,
+            'issues': [issue.model_dump(mode='json') for issue in issues[:12]],
+            'reason': str(getattr(args, 'reason', '') or ''),
+        })
+        return workspace, {
+            'status': 'rejected',
+            'reason': 'case_understanding_contract_failed',
+            'issue_codes': issue_codes,
+            'issues': [issue.model_dump(mode='json') for issue in issues[:12]],
+            'recommended_next_observation': 'retry propose_case_understanding with work units that cite visible LF/LS refs and cover every main LF exactly once',
+        }
+
+    package_span = LocalSpanCard(
+        ref='LS_PACKAGE',
+        span_scope='package',
+        file_refs=main_refs,
+        file_ref_count=len(main_refs),
+        file_ref_range=[main_refs[0], main_refs[-1]] if main_refs else [],
+        file_ref_samples=_sample_refs(main_refs),
+        ordering_basis='path_order',
+        title_cues=_dedupe_preserve_order([
+            cue
+            for unit in raw_units
+            for cue in list(getattr(unit, 'title_hints', []) or [])
+        ])[:8],
+        confidence_facts=['case understanding package coverage shell'],
+    )
+    compiled_spans: list[LocalSpanCard] = [package_span]
+    compiled_units: list[CaseBriefingWorkUnit] = []
+    for index, (unit, file_refs) in enumerate(expanded_by_unit, start=1):
+        span_ref = f'LS{index}'
+        compiled_spans.append(LocalSpanCard(
+            ref=span_ref,
+            span_scope=_span_scope_for_understanding_unit(unit),
+            parent_key=str(getattr(unit, 'label', '') or getattr(unit, 'work_unit_ref', '') or ''),
+            file_refs=file_refs,
+            file_ref_count=len(file_refs),
+            file_ref_range=[file_refs[0], file_refs[-1]] if file_refs else [],
+            file_ref_samples=_sample_refs(file_refs),
+            ordering_basis='path_order',
+            title_cues=list(getattr(unit, 'title_hints', []) or [])[:8],
+            confidence_facts=[str(getattr(unit, 'reason', '') or 'case understanding work unit')],
+        ))
+        compiled_units.append(unit.model_copy(update={
+            'work_unit_ref': str(getattr(unit, 'work_unit_ref', '') or f'WU{index}'),
+            'file_refs': file_refs,
+            'span_refs': [span_ref],
+            'local_refs': _dedupe_preserve_order([*list(getattr(unit, 'local_refs', []) or []), span_ref]),
+        }))
+
+    briefing = candidate_briefing.model_copy(update={'work_units': compiled_units})
+    repartition_requested = _case_understanding_repartition_requested(workspace)
+    preserve_existing_case_memory = was_revision and getattr(workspace, 'mapping_draft', None) is not None and not repartition_requested
+    preserved_mapping_draft = workspace.mapping_draft if preserve_existing_case_memory else None
+    preserved_mapping_draft_patches = list(getattr(workspace, 'mapping_draft_patches', []) or []) if preserve_existing_case_memory else []
+    preserved_mapping_draft_comparisons = list(getattr(workspace, 'mapping_draft_candidate_comparisons', []) or []) if preserve_existing_case_memory else []
+    preserved_notebook = getattr(workspace, 'investigation_notebook', None) if preserve_existing_case_memory else None
+    staged = _workspace_preserving_state(
+        workspace,
+        local_span_cards=compiled_spans,
+        case_briefing=briefing,
+        mapping_draft=preserved_mapping_draft,
+        mapping_draft_patches=preserved_mapping_draft_patches,
+        mapping_draft_candidate_comparisons=preserved_mapping_draft_comparisons,
+        investigation_notebook=preserved_notebook,
+    )
+    if not preserve_existing_case_memory:
+        notebook = build_initial_investigation_notebook(briefing, staged.to_dossier(round_context='case_understanding_notebook'))
+        staged = _workspace_preserving_state(staged, investigation_notebook=notebook)
+    elif repartition_requested and preserved_notebook is not None:
+        notebook = preserved_notebook.model_copy(deep=True)
+        notebook.open_questions = [
+            question.model_copy(update={'status': 'answered'})
+            if str(getattr(question, 'status', '') or 'open') == 'open'
+            and str(getattr(question, 'question_kind', '') or '') == 'work_unit_repartition'
+            else question
+            for question in list(getattr(notebook, 'open_questions', []) or [])
+        ]
+        notebook.next_actions = [
+            action.model_copy(update={'status': 'done'})
+            if str(getattr(action, 'status', '') or 'open') == 'open'
+            and str(getattr(action, 'action_type', '') or '') == 'work_unit_repartition'
+            else action
+            for action in list(getattr(notebook, 'next_actions', []) or [])
+        ]
+        staged = _workspace_preserving_state(staged, investigation_notebook=notebook)
+    staged = _workspace_with_initial_mapping_draft(staged)
+    staged = _refresh_mapping_draft_candidates(staged)
+    staged = _workspace_with_tool_accounting_audit(staged, note='case_understanding_mapping_draft_accounting')
+    staged = _workspace_with_judge_audit(staged, {
+        'note': 'case_understanding_revised' if was_revision else 'case_understanding_applied',
+        'work_unit_count': len(compiled_units),
+        'local_span_refs': [span.ref for span in compiled_spans],
+        'title_hypothesis_count': len(list(getattr(briefing, 'title_hypotheses', []) or [])),
+        'open_question_count': len(list(getattr(getattr(staged, 'investigation_notebook', None), 'open_questions', []) or [])),
+        'repartition_requested': repartition_requested,
+        'preserved_mapping_draft': preserve_existing_case_memory,
+        'preserved_notebook': preserve_existing_case_memory,
+        'reason': str(getattr(args, 'reason', '') or ''),
+    })
+    return staged, {
+        'status': 'ok',
+        'workspace_changed': True,
+        'case_understanding_applied': True,
+        'case_understanding_revised': was_revision,
+        'work_unit_count': len(compiled_units),
+        'local_span_refs': [span.ref for span in compiled_spans],
+        'draft_accounting': _mapping_draft_observation(staged).get('draft_accounting'),
+        'open_rows': _mapping_draft_observation(staged).get('open_rows'),
+        'executable_menu_summary': _executable_menu_observation(staged),
+        'recommended_next_observation': 'materialize clean title queries or execute visible evidence; if enough Bangumi target surface is already visible, propose mapping intents',
+    }
+
+
 @dataclass
 class CaseAgentRunResult:
     ok: bool
@@ -504,18 +966,9 @@ def run_local_bangumi_case_agent(
     orchestrator_context_hard_token_limit: int | None = None,
     _planning_depth: int = 0,
 ) -> CaseAgentRunResult:
-    workspace = _workspace_with_local_structure(initial_workspace, ai_client)
-    workspace = _workspace_with_case_briefing(workspace, ai_client)
+    workspace = initial_workspace
     planning_output: CasePlanningOutput | None = None
     planning_evidence_batches: list[EvidenceBatchResult] = []
-
-    def _with_planning_output(result: CaseAgentRunResult) -> CaseAgentRunResult:
-        if planning_output is not None and result.planning_output is None:
-            result.planning_output = planning_output
-        return result
-
-    def _result(*args, **kwargs) -> CaseAgentRunResult:
-        return _with_planning_output(CaseAgentRunResult(*args, **kwargs))
 
     def _budget_exhausted_fail_closed(
         current_workspace: CaseEvidenceWorkspace,
@@ -649,22 +1102,6 @@ def run_local_bangumi_case_agent(
         })
         return _result(True, audited_workspace.header.case_id, 'fail_closed', 'fail_closed', fail_output, fail_verifier, audited_workspace, judge_outputs, evidence_batches, 'semantic_target_conflict', [*errors, reason])
 
-    if _planning_depth == 0:
-        planning_phase = _run_case_planning_phase(
-            workspace,
-            ai_client,
-            bangumi_client,
-            max_rounds=max_rounds,
-            orchestrator_context_soft_token_limit=orchestrator_context_soft_token_limit,
-            orchestrator_context_hard_token_limit=orchestrator_context_hard_token_limit,
-            planning_depth=_planning_depth,
-        )
-        planning_output = planning_phase.planning_output
-        if planning_phase.terminal_result is not None:
-            return _with_planning_output(planning_phase.terminal_result)
-        workspace = planning_phase.workspace
-        planning_evidence_batches = list(planning_phase.evidence_batches)
-    workspace = _workspace_with_initial_mapping_draft(workspace)
     return _run_orchestrator_agent_main_loop(
         workspace,
         ai_client,
@@ -1373,14 +1810,118 @@ def _target_ref_briefs(workspace: CaseEvidenceWorkspace, refs: list[str], *, lim
     return result
 
 
+def _selected_target_ownership(workspace: CaseEvidenceWorkspace) -> dict[str, dict[str, object]]:
+    draft = getattr(workspace, 'mapping_draft', None)
+    if draft is None:
+        return {}
+    span_by_ref = {
+        str(getattr(card, 'ref', '') or ''): card
+        for card in list(getattr(workspace, 'bangumi_span_cards', []) or [])
+        if str(getattr(card, 'ref', '') or '')
+    }
+    ownership: dict[str, dict[str, object]] = {}
+    for row in list(getattr(draft, 'rows', []) or []):
+        if str(getattr(row, 'disposition', '') or '') != 'map_to_bangumi':
+            continue
+        row_ref = str(getattr(row, 'row_ref', '') or '')
+        local_ref = str(getattr(row, 'local_ref', '') or '')
+        selected = str(getattr(row, 'selected_target_ref', '') or '')
+        if not selected:
+            continue
+        if str(getattr(row, 'mapping_mode', '') or '') == 'span_by_index' and selected in span_by_ref:
+            span = span_by_ref[selected]
+            target_refs = [str(ref or '') for ref in list(getattr(span, 'target_refs', []) or []) if str(ref or '')]
+        else:
+            target_refs = [selected]
+        for target_ref in target_refs:
+            ownership.setdefault(target_ref, {
+                'target_ref': target_ref,
+                'owner_row_ref': row_ref,
+                'owner_local_ref': local_ref,
+                'owner_selected_target_ref': selected,
+            })
+    return ownership
+
+
+def _target_ref_ownership_observation(workspace: CaseEvidenceWorkspace, refs: list[str], *, limit: int = 24) -> list[dict[str, object]]:
+    ownership = _selected_target_ownership(workspace)
+    rows: list[dict[str, object]] = []
+    for ref in _dedupe_preserve_order([str(value or '') for value in list(refs or [])])[:limit]:
+        owner = ownership.get(ref)
+        if owner:
+            rows.append(dict(owner))
+        else:
+            rows.append({'target_ref': ref, 'owner_row_ref': '', 'owner_local_ref': '', 'owner_selected_target_ref': ''})
+    return rows
+
+
+def _candidate_target_conflicts_for_row(workspace: CaseEvidenceWorkspace, row) -> list[dict[str, object]]:
+    candidate_refs = [str(ref or '') for ref in list(getattr(row, 'candidate_target_refs', []) or []) if str(ref or '')]
+    if not candidate_refs:
+        return []
+    span_by_ref = {
+        str(getattr(card, 'ref', '') or ''): card
+        for card in list(getattr(workspace, 'bangumi_span_cards', []) or [])
+        if str(getattr(card, 'ref', '') or '')
+    }
+    ownership = _selected_target_ownership(workspace)
+    conflicts: list[dict[str, object]] = []
+    for candidate_ref in candidate_refs:
+        if candidate_ref in span_by_ref:
+            span = span_by_ref[candidate_ref]
+            target_refs = [str(ref or '') for ref in list(getattr(span, 'target_refs', []) or []) if str(ref or '')]
+        else:
+            target_refs = [candidate_ref]
+        occupied = [dict(ownership[ref]) for ref in target_refs if ref in ownership]
+        if occupied:
+            conflicts.append({
+                'candidate_target_ref': candidate_ref,
+                'occupied_target_count': len(occupied),
+                'occupied_target_refs': [str(item.get('target_ref') or '') for item in occupied[:12]],
+                'owner_row_refs': _dedupe_preserve_order([str(item.get('owner_row_ref') or '') for item in occupied])[:8],
+                'owner_local_refs': _dedupe_preserve_order([str(item.get('owner_local_ref') or '') for item in occupied])[:8],
+            })
+    return conflicts
+
+
+def _unowned_candidate_target_refs_for_row(workspace: CaseEvidenceWorkspace, row) -> list[str]:
+    candidate_refs = [str(ref or '') for ref in list(getattr(row, 'candidate_target_refs', []) or []) if str(ref or '')]
+    if not candidate_refs:
+        return []
+    span_by_ref = {
+        str(getattr(card, 'ref', '') or ''): card
+        for card in list(getattr(workspace, 'bangumi_span_cards', []) or [])
+        if str(getattr(card, 'ref', '') or '')
+    }
+    ownership = _selected_target_ownership(workspace)
+    unowned: list[str] = []
+    for candidate_ref in candidate_refs:
+        if candidate_ref in span_by_ref:
+            span = span_by_ref[candidate_ref]
+            target_refs = [str(ref or '') for ref in list(getattr(span, 'target_refs', []) or []) if str(ref or '')]
+        else:
+            target_refs = [candidate_ref]
+        if not any(ref in ownership for ref in target_refs):
+            unowned.append(candidate_ref)
+    return _dedupe_preserve_order(unowned)
+
+
 def _visible_subject_item_sequences_for_row(
     workspace: CaseEvidenceWorkspace,
     row,
     *,
     file_count: int,
     candidate_refs: list[str],
+    extra_subject_refs: list[str] | None = None,
     limit: int = 4,
 ) -> list[dict[str, object]]:
+    has_row_evidence_surface = bool(
+        candidate_refs
+        or list(getattr(row, 'subject_refs', []) or [])
+        or list(extra_subject_refs or [])
+        or list(getattr(row, 'item_refs', []) or [])
+        or list(getattr(row, 'requested_request_types', []) or [])
+    )
     item_by_ref = {
         str(getattr(card, 'ref', '') or ''): card
         for card in list(getattr(workspace, 'bangumi_items', []) or [])
@@ -1393,12 +1934,30 @@ def _visible_subject_item_sequences_for_row(
     }
     subject_refs = _dedupe_preserve_order([
         *[str(ref or '') for ref in list(getattr(row, 'subject_refs', []) or [])],
+        *[str(ref or '') for ref in list(extra_subject_refs or [])],
         *[
             str(getattr(item_by_ref.get(ref), 'subject_ref', '') or '')
             for ref in candidate_refs
             if item_by_ref.get(ref) is not None
         ],
     ])
+    has_target_side_anchor = bool(
+        subject_refs
+        or candidate_refs
+        or list(getattr(row, 'item_refs', []) or [])
+    )
+    all_visible_subject_refs = _dedupe_preserve_order([
+        str(getattr(item, 'subject_ref', '') or '')
+        for item in list(getattr(workspace, 'bangumi_items', []) or [])
+        if str(getattr(item, 'subject_ref', '') or '')
+    ])
+    # This only broadens the evidence surface: when the agent has already
+    # investigated subjects/items, show same-count visible sequences even if a
+    # prior blocked intent pointed at the wrong subject.
+    if has_target_side_anchor:
+        subject_refs = _dedupe_preserve_order([*subject_refs, *all_visible_subject_refs])
+    if not subject_refs and not has_row_evidence_surface:
+        subject_refs = all_visible_subject_refs
     local_span = next(
         (
             card for card in list(getattr(workspace, 'local_span_cards', []) or [])
@@ -1411,6 +1970,7 @@ def _visible_subject_item_sequences_for_row(
     if special_eligible:
         sequence_filters.append(('special', {'special', 'movie'}))
     sequence_filters.append(('regular', {'episode', 'regular', 'unknown', ''}))
+    ownership = _selected_target_ownership(workspace)
     result: list[dict[str, object]] = []
     for subject_ref in subject_refs[:limit]:
         for sequence_kind, allowed_kinds in sequence_filters:
@@ -1427,13 +1987,19 @@ def _visible_subject_item_sequences_for_row(
                 continue
             width = max(1, int(file_count or 0))
             refs = [str(getattr(item, 'ref', '') or '') for item in ordered_items[:width]]
+            occupied_refs = [ref for ref in refs if ref in ownership]
+            item_ref_limit = max(24, min(width, 256))
             result.append({
                 'subject_ref': subject_ref,
                 'subject_title': subject_title_by_ref.get(subject_ref, ''),
                 'sequence_kind': sequence_kind,
-                'item_refs': refs[:24],
+                'item_refs': refs[:item_ref_limit],
                 'item_ref_count': len(refs),
                 'matches_local_file_count': bool(file_count and len(refs) == file_count),
+                'item_refs_truncated': len(refs) > item_ref_limit,
+                'unowned_item_ref_count': len([ref for ref in refs if ref not in ownership]),
+                'occupied_item_refs': occupied_refs[:12],
+                'owner_row_refs': _dedupe_preserve_order([str(ownership[ref].get('owner_row_ref') or '') for ref in occupied_refs])[:8],
                 'sort_start': getattr(ordered_items[0], 'sort', None),
                 'sort_end': getattr(ordered_items[min(len(refs), len(ordered_items)) - 1], 'sort', None) if refs else None,
                 'title_samples': [
@@ -1465,9 +2031,11 @@ def _non_progress_needs_more_evidence_issues(
         row = rows_by_local.get(local_ref)
         if row is None:
             continue
-        candidate_refs = list(getattr(row, 'candidate_target_refs', []) or [])
-        if not candidate_refs:
-            continue
+        candidate_refs = _dedupe_preserve_order([
+            *list(getattr(row, 'candidate_target_refs', []) or []),
+            *[str(ref or '') for ref in list(getattr(normalized, 'item_refs', []) or [])],
+            *[str(ref or '') for ref in list(getattr(normalized, 'subject_refs', []) or [])],
+        ])
         local_brief = _local_ref_brief(workspace, local_ref)
         file_count = int(local_brief.get('file_ref_count') or 0)
         sequences = _visible_subject_item_sequences_for_row(
@@ -1475,21 +2043,33 @@ def _non_progress_needs_more_evidence_issues(
             row,
             file_count=file_count,
             candidate_refs=candidate_refs,
-        )
-        has_matching_visible_sequence = any(
-            bool(sequence.get('matches_local_file_count'))
-            for sequence in sequences
-            if isinstance(sequence, dict)
+            extra_subject_refs=[str(ref or '') for ref in list(getattr(normalized, 'subject_refs', []) or [])],
         )
         has_span_candidate = any(str(ref or '').startswith('BES') for ref in candidate_refs)
-        if not has_matching_visible_sequence and not has_span_candidate:
+        has_actionable_visible_sequence = any(
+            isinstance(sequence, dict)
+            and bool(sequence.get('matches_local_file_count'))
+            and not bool(sequence.get('item_refs_truncated'))
+            and int(sequence.get('unowned_item_ref_count') or 0) > 0
+            for sequence in sequences
+        )
+        if not has_span_candidate and not has_actionable_visible_sequence:
             continue
         issues.append(VerifierIssue(
             ref=str(getattr(row, 'row_ref', '') or local_ref or 'mapping_draft_row'),
             issue_code='non_progress_needs_more_evidence_with_visible_candidates',
             severity='blocked',
-            message='needs_more_evidence would not make progress while this open row already has visible candidate targets or a same-count visible item sequence; map, reject candidates, request a concrete still-executable evidence action, or finish fail_closed with a real blocker',
-            related_refs=_dedupe_preserve_order([local_ref, *candidate_refs[:12]]),
+            message='needs_more_evidence would not make progress while this open row already has visible candidate targets or same-count item sequences; the agent must map with explicit visible BE/BES refs, reject wrong candidates, mark accepted target_absent/supplemental, or finish fail_closed with a real blocker',
+            related_refs=_dedupe_preserve_order([
+                local_ref,
+                *candidate_refs[:12],
+                *[
+                    ref
+                    for sequence in sequences
+                    if isinstance(sequence, dict) and bool(sequence.get('matches_local_file_count'))
+                    for ref in list(sequence.get('item_refs') or [])[:12]
+                ],
+            ]),
         ))
     return issues
 
@@ -1533,11 +2113,11 @@ def _open_rows_observation(workspace: CaseEvidenceWorkspace, *, limit: int = 12)
                 )
         elif candidate_refs:
             if file_count > 1 and any(str(ref or '').startswith('BES') for ref in candidate_refs):
-                recommended = 'for this multi-file row, propose map_regular_span with chosen_span_ref set to the visible BES* candidate, or reject wrong candidates before target_absent/supplemental'
+                recommended = 'for this multi-file row, propose map_regular_span with chosen_span_ref set to the visible BES* candidate, or use target_absent/supplemental if you judge the visible candidates do not correspond'
             elif file_count > 1:
-                recommended = 'for this multi-file row, use visible item_refs to propose map_regular_span or reject wrong candidates before target_absent/supplemental'
+                recommended = 'for this multi-file row, use visible item_refs to propose map_regular_span, or use target_absent/supplemental if you judge the visible candidates do not correspond'
             else:
-                recommended = 'propose_mapping_intents choosing one visible candidate_target_ref, or use reject_candidate for wrong candidates before target_absent/supplemental'
+                recommended = 'propose_mapping_intents choosing one visible candidate_target_ref, reject wrong candidates, or use target_absent/supplemental with a clear reason'
         elif requested_types:
             recommended = 'execute_evidence for the requested_request_types, or revise the semantic intent with a visible BS/BE/BES ref'
         elif file_count == 1:
@@ -1553,6 +2133,8 @@ def _open_rows_observation(workspace: CaseEvidenceWorkspace, *, limit: int = 12)
             'selected_target_ref': str(getattr(row, 'selected_target_ref', '') or ''),
             'candidate_target_refs': candidate_refs[:12],
             'candidate_target_briefs': _target_ref_briefs(workspace, candidate_refs, limit=12),
+            'candidate_target_conflicts': _candidate_target_conflicts_for_row(workspace, row),
+            'unowned_candidate_target_refs': _unowned_candidate_target_refs_for_row(workspace, row)[:12],
             'requested_request_types': requested_types[:8],
             'query_hints': list(getattr(row, 'query_hints', []) or [])[:8],
             'subject_refs': list(getattr(row, 'subject_refs', []) or [])[:8],
@@ -1630,11 +2212,18 @@ def _mapping_draft_observation(workspace: CaseEvidenceWorkspace) -> dict[str, ob
 
 def _executable_menu_observation(workspace: CaseEvidenceWorkspace) -> dict[str, object]:
     menu = build_executable_evidence_menu(workspace, max_requests=24)
-    summaries = list(menu.get('prompt_summaries') or [])
+    completed_or_failed = _completed_or_failed_menu_request_ids(workspace)
+    summaries = [
+        summary for summary in list(menu.get('prompt_summaries') or [])
+        if isinstance(summary, dict)
+        and str(summary.get('request_id') or '')
+        and str(summary.get('request_id') or '') not in completed_or_failed
+    ]
     return {
         'request_count': len(summaries),
         'request_ids': [str(summary.get('request_id') or '') for summary in summaries[:12]],
         'request_types': _dedupe_preserve_order([str(summary.get('request_type') or '') for summary in summaries if str(summary.get('request_type') or '')]),
+        'completed_or_failed_request_count': len(completed_or_failed),
     }
 
 
@@ -1683,6 +2272,9 @@ _QUERY_TECHNICAL_TEXT_RE = re.compile(
 )
 _QUERY_CJK_TEXT_RE = re.compile(r'[\u3040-\u30ff\u3400-\u9fff]')
 _QUERY_CAMEL_TOKEN_RE = re.compile(r'[A-Z]?[a-z]+|[A-Z]+(?=[A-Z]|$)|\d+')
+_QUERY_INSTRUCTION_TEXT_RE = re.compile(
+    r'(?i)\b(?:prefer|avoid|use|search|query|queries|title-preserving|codec|resolution|group\s+tags|failed\s+recall|separately|instead)\b'
+)
 
 
 def _strip_subject_query_scope_suffix(text: str) -> tuple[str, list[str]]:
@@ -1712,6 +2304,8 @@ def _strip_subject_query_scope_suffix(text: str) -> tuple[str, list[str]]:
 def _looks_like_metadata_only_subject_query(text: str) -> bool:
     value = str(text or '').strip()
     if not value:
+        return True
+    if len(value) > 48 and _QUERY_INSTRUCTION_TEXT_RE.search(value):
         return True
     if re.fullmatch(r'(?i)(?:main\s+tv\s+series|regular\s+episodes?|specials?|OAD|OAV|OVA|ONA|SP|S\d+|Season\s*\d+|Movie|(?:19|20)\d{2})(?:\s*\d+\s*(?:-\s*\d+)?)?', value):
         return True
@@ -1998,7 +2592,7 @@ def _run_orchestrator_propose_mapping_intents_tool(
             'span_refs': [str(getattr(card, 'ref', '') or '') for card in generated_span_cards],
             'target_ref_counts': [int(getattr(card, 'target_ref_count', 0) or 0) for card in generated_span_cards],
         })
-    compiled_patches, dropped_non_open_patches = _filter_mapping_patches_to_open_rows(draft, compiled_patches)
+    compiled_patches, dropped_non_open_patches = _filter_mapping_patches_for_agent_revision(draft, compiled_patches)
     if dropped_non_open_patches:
         workspace = _workspace_with_judge_audit(workspace, {
             'note': 'orchestrator_non_open_compiled_intent_patches_ignored',
@@ -2025,7 +2619,6 @@ def _run_orchestrator_propose_mapping_intents_tool(
                 and _patch_draft_local_ref(draft, patch) in blocked_refs
             )
         ]
-
     updated_draft, patch_issues = apply_mapping_patches(draft, compiled_patches, dossier)
     patch_issues = [*non_progress_issues, *patch_issues]
     workspace = _workspace_with_mapping_draft(
@@ -2039,6 +2632,65 @@ def _run_orchestrator_propose_mapping_intents_tool(
     workspace, materialized_query_refs = _workspace_with_editor_query_hints(workspace, compiled_patches)
     workspace = _workspace_with_tool_accounting_audit(workspace)
     accounting_observation = _mapping_draft_observation(workspace)
+    reopened_accounting_issue_codes: list[str] = []
+    reopened_accounting_issue_refs: list[str] = []
+    reopened_accounting_issue_row_count = 0
+    if not bool(accounting_observation.get('accounting_verifier_passed')):
+        _accounting, accounting_verifier = _mapping_draft_accounting_result(workspace)
+        accounting_issues = list(getattr(accounting_verifier, 'issues', []) or []) if accounting_verifier is not None else []
+        repairable_codes = {
+            'duplicate_target',
+            'count_mismatch',
+            'invalid_target',
+            'invalid_mapping_mode',
+            'invalid_span_alignment',
+            'missing_span_ref',
+            'missing_support_refs',
+            'invalid_explicit_multi_file_mapping',
+            'duplicate_local_span',
+            'duplicate_local_ref',
+        }
+        repairable_issues = [
+            issue for issue in accounting_issues
+            if str(getattr(issue, 'issue_code', '') or '') in repairable_codes
+        ]
+        if repairable_issues and not _open_rows_observation(workspace, limit=1):
+            before_open_refs = {
+                str(row.get('row_ref') or '')
+                for row in _open_rows_observation(workspace)
+                if isinstance(row, dict) and str(row.get('row_ref') or '')
+            }
+            workspace = _reopen_mapping_draft_issue_rows(workspace, repairable_issues)
+            after_open_rows = _open_rows_observation(workspace)
+            after_open_refs = {
+                str(row.get('row_ref') or '')
+                for row in after_open_rows
+                if isinstance(row, dict) and str(row.get('row_ref') or '')
+            }
+            reopened_refs = _dedupe_preserve_order(list(after_open_refs - before_open_refs))
+            if reopened_refs:
+                reopened_accounting_issue_codes = _dedupe_preserve_order([
+                    str(getattr(issue, 'issue_code', '') or '')
+                    for issue in repairable_issues
+                ])
+                reopened_accounting_issue_refs = _dedupe_preserve_order([
+                    ref
+                    for issue in repairable_issues
+                    for ref in [
+                        str(getattr(issue, 'ref', '') or ''),
+                        *[str(value or '') for value in list(getattr(issue, 'related_refs', []) or [])],
+                    ]
+                    if ref
+                ])[:24]
+                reopened_accounting_issue_row_count = len(reopened_refs)
+                workspace = _workspace_with_judge_audit(workspace, {
+                    'note': 'orchestrator_accounting_issue_rows_reopened',
+                    'issue_codes': reopened_accounting_issue_codes,
+                    'issue_refs': reopened_accounting_issue_refs,
+                    'reopened_row_refs': reopened_refs,
+                    'reason': 'mapping draft accounting verifier found repairable legality issues; rows reopened for OrchestratorAgent semantic repair',
+                })
+                accounting_observation = _mapping_draft_observation(workspace)
     blocked_intents = list(getattr(compiler_result, 'blocked_intents', []) or [])
     blocked_issue_codes = _dedupe_preserve_order([
         str(code or '')
@@ -2052,11 +2704,20 @@ def _run_orchestrator_propose_mapping_intents_tool(
     ])
     recommended_next = str(getattr(compiler_result, 'recommended_next_observation', '') or '')
     if 'non_progress_needs_more_evidence_with_visible_candidates' in patch_issue_codes:
-        recommended_next = 'do not repeat needs_more_evidence for this row; use map_regular_span with visible item_refs/chosen_span_ref, reject wrong candidates, or finish fail_closed only with a concrete semantic blocker'
+        recommended_next = 'do not repeat needs_more_evidence for this row while visible candidates or same-count item sequences remain. Map the visible sequence if semantically correct, revise/repartition if ownership is wrong, mark_non_bangumi_or_supplemental(reason_kind=bangumi_target_absent) if Bangumi lacks the corresponding target, or finish fail_closed only with a concrete semantic blocker'
     elif patch_issue_codes:
         recommended_next = 'revise semantic intents or execute missing evidence shown in patch issues'
-    if blocked_intents and requested_evidence:
+    executable_summary = _executable_menu_observation(workspace)
+    executable_types = set(str(value or '') for value in list(executable_summary.get('request_types') or []))
+    has_matching_executable_evidence = bool(set(requested_evidence) & executable_types)
+    if blocked_intents and requested_evidence and has_matching_executable_evidence:
         recommended_next = 'execute requested evidence, then propose the same semantic mapping intent again'
+    elif blocked_intents and requested_evidence:
+        recommended_next = (
+            'the compiler requested evidence, but no matching executable evidence request is currently available. '
+            'Revise the semantic intent using visible refs, materialize a clean title query, repartition if the row is too broad, '
+            'or mark target_absent/supplemental if that is your investigated conclusion.'
+        )
     elif blocked_intents:
         recommended_next = 'revise semantic intents using visible refs or finish only if evidence is genuinely exhausted'
     accounting_payload = accounting_observation.get('draft_accounting')
@@ -2076,6 +2737,12 @@ def _run_orchestrator_propose_mapping_intents_tool(
             )
         else:
             recommended_next = 'accounting is still unresolved; do not finish_case yet. Propose mapping intents for open_rows, or execute evidence if an open row still needs target surface.'
+    if reopened_accounting_issue_codes:
+        recommended_next = (
+            'accounting verifier found legality issues and reopened the affected rows. '
+            'Do not finish_case yet. If the open row is too broad or mixes multiple works/resources, call propose_case_understanding '
+            'with a new exact-once file partition; otherwise propose revised mapping intents for open_rows and avoid duplicate/invalid targets.'
+        )
     status = 'ok'
     if blocked_intents and not compiled_patches:
         status = 'blocked_intents'
@@ -2083,6 +2750,8 @@ def _run_orchestrator_propose_mapping_intents_tool(
         status = 'partial'
     elif patch_issues:
         status = 'patch_issues'
+    elif reopened_accounting_issue_codes:
+        status = 'accounting_issues'
     workspace = _workspace_with_judge_audit(workspace, {
         'note': 'orchestrator_mapping_intents_result',
         'status': status,
@@ -2098,10 +2767,15 @@ def _run_orchestrator_propose_mapping_intents_tool(
         ],
         'requested_evidence': requested_evidence,
         'patch_issue_codes': patch_issue_codes,
+        'reopened_accounting_issue_codes': reopened_accounting_issue_codes,
+        'reopened_accounting_issue_refs': reopened_accounting_issue_refs,
+        'reopened_accounting_issue_row_count': reopened_accounting_issue_row_count,
         'draft_accounting': accounting_observation.get('draft_accounting'),
         'open_rows': open_rows_payload,
         'terminal_fail_closed_row_count': len(terminal_fail_rows),
         'finish_gate': _finish_gate_observation(workspace),
+        'executable_menu_summary': executable_summary,
+        'matching_requested_evidence_available': has_matching_executable_evidence,
         'recommended_next_observation': recommended_next,
     })
     return workspace, {
@@ -2121,6 +2795,9 @@ def _run_orchestrator_propose_mapping_intents_tool(
         'blocked_intent_issue_codes': blocked_issue_codes,
         'requested_evidence': requested_evidence,
         'patch_issue_codes': patch_issue_codes,
+        'reopened_accounting_issue_codes': reopened_accounting_issue_codes,
+        'reopened_accounting_issue_refs': reopened_accounting_issue_refs,
+        'reopened_accounting_issue_row_count': reopened_accounting_issue_row_count,
         'patch_issue_refs': _dedupe_preserve_order([str(getattr(issue, 'ref', '') or '') for issue in patch_issues]),
         'materialized_query_refs': materialized_query_refs,
         'draft_accounting': accounting_observation.get('draft_accounting'),
@@ -2128,8 +2805,9 @@ def _run_orchestrator_propose_mapping_intents_tool(
         'terminal_fail_closed_rows': terminal_fail_rows,
         'accounting_verifier_passed': accounting_observation.get('accounting_verifier_passed'),
         'accounting_issue_codes': accounting_observation.get('accounting_issue_codes'),
-        'executable_menu_summary': _executable_menu_observation(workspace),
+        'executable_menu_summary': executable_summary,
         'finish_gate': _finish_gate_observation(workspace),
+        'matching_requested_evidence_available': has_matching_executable_evidence,
         'recommended_next_observation': recommended_next,
     }
 
@@ -2366,7 +3044,7 @@ def _run_orchestrator_reconsider_split_tool(
         ],
         'draft_accounting': _mapping_draft_observation(workspace).get('draft_accounting'),
         'executable_menu_summary': _executable_menu_observation(workspace),
-        'recommended_next_observation': 'use update_notebook to record split hypothesis, then continue evidence/editor; parent/child split execution remains a planner-level boundary',
+        'recommended_next_observation': 'if current work units are too broad or mixed, call propose_case_understanding again with revised work units; otherwise update_notebook or continue evidence/mapping intents',
     }
 
 
@@ -2683,7 +3361,7 @@ def _run_orchestrator_agent_main_loop(
     tool_rejection_limit = 12
     consecutive_tool_rejections = 0
     for _turn in range(max_turns):
-        workspace = _refresh_mapping_draft_candidates(_workspace_with_initial_mapping_draft(workspace))
+        workspace = _prepare_workspace_for_orchestrator_agent_turn(workspace)
         agent_result = call_orchestrator_agent(
             ai_client,
             workspace,
@@ -2762,7 +3440,10 @@ def _run_orchestrator_agent_main_loop(
             continue
         result: CaseAgentRunResult | None = None
         observation: dict[str, object]
-        if decision.action == 'compose_queries':
+        if decision.action == 'propose_case_understanding':
+            args = tool_call.arguments if isinstance(tool_call.arguments, ProposeCaseUnderstandingToolArgs) else ProposeCaseUnderstandingToolArgs()
+            workspace, observation = _compile_case_understanding(workspace, args)
+        elif decision.action == 'compose_queries':
             args = tool_call.arguments if isinstance(tool_call.arguments, MaterializeQueriesToolArgs) else MaterializeQueriesToolArgs()
             workspace, observation = _run_orchestrator_materialize_queries_tool(workspace, args)
         elif decision.action == 'execute_evidence':
@@ -2867,6 +3548,15 @@ def _run_orchestrator_agent_main_loop(
         evidence_batches=evidence_batches,
     )
     return _finalize_orchestrator_result(error_result, workspace, orchestrator_session)
+
+
+def _prepare_workspace_for_orchestrator_agent_turn(workspace: CaseEvidenceWorkspace) -> CaseEvidenceWorkspace:
+    if not _case_understanding_applied(workspace):
+        return workspace
+    finish_gate = _finish_gate_observation(workspace)
+    if bool(finish_gate.get('accepted_finish_allowed')):
+        return workspace
+    return _refresh_mapping_draft_candidates(_workspace_with_initial_mapping_draft(workspace))
 
 
 def _run_case_planning_phase(
@@ -3506,6 +4196,78 @@ def _filter_mapping_patches_to_open_rows(draft: MappingDraft, patches: list[Mapp
     return kept, dropped
 
 
+def _patch_changes_existing_row(draft: MappingDraft, patch: MappingDraftPatch) -> bool:
+    normalized = normalize_mapping_patch_op(patch)
+    local_ref = _patch_draft_local_ref(draft, normalized)
+    row = next(
+        (
+            item for item in list(getattr(draft, 'rows', []) or [])
+            if str(getattr(item, 'local_ref', '') or '') == local_ref
+        ),
+        None,
+    )
+    if row is None:
+        return True
+    op = str(getattr(normalized, 'op', '') or '')
+    if op == 'map_to_bangumi':
+        target_ref = str(getattr(normalized, 'target_span_ref', '') or getattr(normalized, 'target_ref', '') or '')
+        return (
+            str(getattr(row, 'disposition', '') or '') != 'map_to_bangumi'
+            or str(getattr(row, 'selected_target_ref', '') or '') != target_ref
+        )
+    if op == 'mark_non_bangumi_or_supplemental':
+        return (
+            str(getattr(row, 'disposition', '') or '') != 'non_bangumi_or_supplemental'
+            or str(getattr(row, 'reason_kind', '') or '') != str(getattr(normalized, 'reason_kind', '') or '')
+        )
+    if op == 'needs_more_evidence':
+        return (
+            str(getattr(row, 'disposition', '') or '') != 'needs_more_evidence'
+            or list(getattr(row, 'requested_request_types', []) or []) != list(getattr(normalized, 'requested_request_types', []) or [])
+            or str(getattr(row, 'reason_kind', '') or '') != str(getattr(normalized, 'reason_kind', '') or '')
+        )
+    if op == 'mark_unaligned_fail_closed':
+        return (
+            str(getattr(row, 'disposition', '') or '') != 'unaligned_fail_closed'
+            or str(getattr(row, 'reason_kind', '') or '') != str(getattr(normalized, 'reason_kind', '') or '')
+        )
+    if op == 'retract_mapping':
+        return str(getattr(row, 'disposition', '') or '') == 'map_to_bangumi'
+    if op == 'reject_candidate':
+        reject_refs = {
+            ref for ref in [
+                str(getattr(normalized, 'target_ref', '') or ''),
+                str(getattr(normalized, 'target_span_ref', '') or ''),
+                *[str(value or '') for value in list(getattr(normalized, 'support_refs', []) or [])],
+            ]
+            if ref
+        }
+        return bool(reject_refs & {str(ref or '') for ref in list(getattr(row, 'candidate_target_refs', []) or [])})
+    return True
+
+
+def _filter_mapping_patches_for_agent_revision(draft: MappingDraft, patches: list[MappingDraftPatch]) -> tuple[list[MappingDraftPatch], list[MappingDraftPatch]]:
+    open_local_refs = {
+        str(getattr(row, 'local_ref', '') or '')
+        for row in _draft_open_rows(draft)
+        if str(getattr(row, 'local_ref', '') or '')
+    }
+    known_local_refs = {
+        str(getattr(row, 'local_ref', '') or '')
+        for row in list(getattr(draft, 'rows', []) or [])
+        if str(getattr(row, 'local_ref', '') or '')
+    }
+    kept: list[MappingDraftPatch] = []
+    dropped: list[MappingDraftPatch] = []
+    for patch in list(patches or []):
+        local_ref = _patch_draft_local_ref(draft, patch)
+        if local_ref in known_local_refs and local_ref not in open_local_refs and not _patch_changes_existing_row(draft, patch):
+            dropped.append(patch)
+            continue
+        kept.append(patch)
+    return kept, dropped
+
+
 def _mapping_editor_output_with_open_row_patches(draft: MappingDraft, output):
     kept, dropped = _filter_mapping_patches_to_open_rows(draft, list(getattr(output, 'patches', []) or []))
     if not dropped:
@@ -3525,6 +4287,12 @@ def _refresh_mapping_draft_candidates(workspace: CaseEvidenceWorkspace) -> CaseE
     special_item_refs = special_like_item_refs(dossier)
     if not detail_spans and not special_item_refs:
         return workspace
+    span_bound_local_ref = {
+        str(getattr(span, 'ref', '') or ''): str(getattr(span, 'source_request_ref', '') or '').removeprefix('INTENT_')
+        for span in detail_spans
+        if str(getattr(span, 'ref', '') or '').startswith('BES_INTENT_')
+        and str(getattr(span, 'source_request_ref', '') or '').startswith('INTENT_')
+    }
     changed = False
     updated = draft.model_copy(deep=True)
     for row in updated.rows:
@@ -3538,11 +4306,12 @@ def _refresh_mapping_draft_candidates(workspace: CaseEvidenceWorkspace) -> CaseE
             and not is_target_absent_row
         ):
             continue
-        local_span = next((card for card in getattr(dossier, 'local_span_cards', []) or [] if getattr(card, 'ref', '') == row.local_ref), None)
+        row_local_ref = str(getattr(row, 'local_ref', '') or '')
+        local_span = next((card for card in getattr(dossier, 'local_span_cards', []) or [] if getattr(card, 'ref', '') == row_local_ref), None)
         special_eligible = is_special_eligible_span(local_span, dossier)
         linked = [
             span.ref for span in detail_spans
-            if str(getattr(span, 'source_request_ref', '') or '') == f'REQ_TARGET_SPAN_{row.local_ref}'
+            if str(getattr(span, 'source_request_ref', '') or '') == f'REQ_TARGET_SPAN_{row_local_ref}'
             and (not special_eligible or str(getattr(span, 'item_kind', '') or '') == 'special')
         ]
         if not linked:
@@ -3560,14 +4329,20 @@ def _refresh_mapping_draft_candidates(workspace: CaseEvidenceWorkspace) -> CaseE
             if has_exact_window and not special_eligible:
                 linked = [
                     span.ref for span in detail_spans
-                    if int(getattr(span, 'target_ref_count', 0) or len(getattr(span, 'target_refs', []) or [])) == local_count
+                    if not str(getattr(span, 'ref', '') or '').startswith('BES_INTENT_')
+                    and (
+                        not span_bound_local_ref.get(str(getattr(span, 'ref', '') or ''))
+                        or span_bound_local_ref.get(str(getattr(span, 'ref', '') or '')) == row_local_ref
+                    )
+                    and int(getattr(span, 'target_ref_count', 0) or len(getattr(span, 'target_refs', []) or [])) == local_count
                     and getattr(span, 'sort_start', None) == local_start
                     and getattr(span, 'sort_end', None) == local_end
                 ]
             if not linked and local_count == 1 and len(detail_spans) == 1 and not special_eligible:
                 linked = [
                     span.ref for span in detail_spans
-                    if int(getattr(span, 'target_ref_count', 0) or len(getattr(span, 'target_refs', []) or [])) == local_count
+                    if not str(getattr(span, 'ref', '') or '').startswith('BES_INTENT_')
+                    and int(getattr(span, 'target_ref_count', 0) or len(getattr(span, 'target_refs', []) or [])) == local_count
                 ]
             if not linked and local_count == 1 and local_start == 0 and local_end == 0 and not special_eligible:
                 zero_items = [
@@ -3588,9 +4363,18 @@ def _refresh_mapping_draft_candidates(workspace: CaseEvidenceWorkspace) -> CaseE
             special_span_linked = [
                 span.ref for span in detail_spans
                 if str(getattr(span, 'item_kind', '') or '') == 'special'
+                and not str(getattr(span, 'ref', '') or '').startswith('BES_INTENT_')
                 and int(getattr(span, 'target_ref_count', 0) or len(getattr(span, 'target_refs', []) or [])) == local_count
             ]
         before = list(row.candidate_target_refs or [])
+        kept_bound_intent_refs = [
+            ref for ref in before
+            if str(ref or '') not in span_bound_local_ref
+            or span_bound_local_ref.get(str(ref or '')) == row_local_ref
+        ]
+        if kept_bound_intent_refs != before:
+            before = kept_bound_intent_refs
+            changed = True
         if special_eligible:
             regular_span_refs = {
                 str(getattr(span, 'ref', '') or '')
@@ -3634,16 +4418,6 @@ def _reopen_mapping_draft_issue_rows(workspace: CaseEvidenceWorkspace, issues: l
     draft = getattr(workspace, 'mapping_draft', None)
     if draft is None:
         return workspace
-    raw_issue_refs = {
-        str(getattr(issue, 'ref', '') or '')
-        for issue in list(issues or [])
-        if str(getattr(issue, 'ref', '') or '')
-    }
-    for issue in list(issues or []):
-        for related_ref in list(getattr(issue, 'related_refs', []) or []):
-            related_ref = str(related_ref or '')
-            if related_ref:
-                raw_issue_refs.add(related_ref)
     rows = list(getattr(draft, 'rows', []) or [])
     rows_by_ref = {
         key: row
@@ -3651,36 +4425,25 @@ def _reopen_mapping_draft_issue_rows(workspace: CaseEvidenceWorkspace, issues: l
         for key in (str(getattr(row, 'row_ref', '') or ''), str(getattr(row, 'local_ref', '') or ''))
         if key
     }
-    rows_by_selected_target: dict[str, list[object]] = {}
-    for row in rows:
-        target_ref = str(getattr(row, 'selected_target_ref', '') or '')
-        if target_ref:
-            rows_by_selected_target.setdefault(target_ref, []).append(row)
-    issue_refs = set(raw_issue_refs)
-    for ref in list(raw_issue_refs):
-        if ref in rows_by_ref:
-            row = rows_by_ref[ref]
-            target_ref = str(getattr(row, 'selected_target_ref', '') or '')
-            if target_ref:
-                issue_refs.add(target_ref)
-                for target_row in rows_by_selected_target.get(target_ref, []):
-                    issue_refs.add(str(getattr(target_row, 'row_ref', '') or ''))
-                    issue_refs.add(str(getattr(target_row, 'local_ref', '') or ''))
-        for target_row in rows_by_selected_target.get(ref, []):
-            issue_refs.add(str(getattr(target_row, 'row_ref', '') or ''))
-            issue_refs.add(str(getattr(target_row, 'local_ref', '') or ''))
-    if not issue_refs:
-        return workspace
     issue_row_refs: set[str] = set()
-    for issue_ref in issue_refs:
-        row = rows_by_ref.get(issue_ref)
-        row_ref = str(getattr(row, 'row_ref', '') or '') if row is not None else ''
-        if row_ref:
-            issue_row_refs.add(row_ref)
+    for issue in list(issues or []):
+        primary_ref = str(getattr(issue, 'ref', '') or '')
+        primary_row = rows_by_ref.get(primary_ref)
+        primary_row_ref = str(getattr(primary_row, 'row_ref', '') or '') if primary_row is not None else ''
+        if primary_row_ref:
+            issue_row_refs.add(primary_row_ref)
+            continue
+        for related_ref in list(getattr(issue, 'related_refs', []) or []):
+            row = rows_by_ref.get(str(related_ref or ''))
+            row_ref = str(getattr(row, 'row_ref', '') or '') if row is not None else ''
+            if row_ref:
+                issue_row_refs.add(row_ref)
+    if not issue_row_refs:
+        return workspace
     updated = draft.model_copy(deep=True)
     changed = False
     for row in list(getattr(updated, 'rows', []) or []):
-        if str(getattr(row, 'row_ref', '') or '') not in issue_refs and str(getattr(row, 'local_ref', '') or '') not in issue_refs:
+        if str(getattr(row, 'row_ref', '') or '') not in issue_row_refs:
             continue
         row.selected_target_ref = ''
         row.selected_target_kind = 'none'
@@ -3985,6 +4748,12 @@ def _notebook_evidence_plan_from_blockers(
         summaries,
         selected_ids,
         requested_types,
+        subject_refs=[
+            str(ref or '')
+            for blocker in blockers
+            for ref in list(blocker.get('subject_refs') or [])
+            if str(ref or '')
+        ],
     )
     selected_ids, stale_ids = _filter_stale_menu_request_ids(workspace, selected_ids)
     audit = {
@@ -4127,22 +4896,52 @@ def _orchestrator_evidence_plan_from_tool(
     args = tool_call.arguments
     if not isinstance(args, ExecuteEvidenceToolArgs):
         return None, {'accepted': False, 'reason': 'wrong_tool_args'}
+    if (
+        getattr(workspace.budget, 'max_evidence_batches', 0)
+        and workspace.budget.used_evidence_batches >= workspace.budget.max_evidence_batches
+    ):
+        return None, {
+            'accepted': False,
+            'reason': 'evidence_budget_exhausted',
+            **_mapping_draft_observation(workspace),
+            'finish_gate': _finish_gate_observation(workspace),
+            'executable_menu_summary': _executable_menu_observation(workspace),
+            'recommended_next_observation': (
+                'evidence budget is exhausted. Propose_mapping_intents for remaining open_rows using visible evidence, '
+                'or finish fail_closed only after the finish gate allows it.'
+            ),
+        }
     menu = build_executable_evidence_menu(workspace, max_requests=32)
     summaries = list(menu.get('prompt_summaries') or [])
     registry = menu.get('payload_registry') if isinstance(menu.get('payload_registry'), dict) else {}
     selected_ids = [str(value or '') for value in list(args.selected_menu_request_ids or []) if str(value or '')]
     request_types = [str(value or '') for value in list(args.requested_request_types or []) if str(value or '')]
+    agenda_request_types, agenda_subject_refs = _latest_blocked_evidence_agenda(workspace)
+    if not request_types and agenda_request_types:
+        request_types = agenda_request_types
+    explicit_subject_refs = _subject_refs_from_evidence_tool_args(args)
+    if not explicit_subject_refs and agenda_subject_refs:
+        explicit_subject_refs = agenda_subject_refs
+    summaries, registry, augmented_request_ids = _augment_menu_with_agent_subject_requests(
+        summaries,
+        registry,
+        subject_refs=explicit_subject_refs,
+        request_types=request_types,
+    )
     if not selected_ids and request_types:
+        requested_subject_refs = set(explicit_subject_refs)
         for summary in summaries:
             request_id = str(summary.get('request_id') or '')
             request_type = str(summary.get('request_type') or '')
-            if request_id and request_type in request_types:
+            source_refs = set(_request_summary_source_refs(summary))
+            if request_id and request_type in request_types and (not requested_subject_refs or requested_subject_refs & source_refs):
                 selected_ids.append(request_id)
     selected_ids = list(dict.fromkeys(selected_ids))
     unknown_ids = [request_id for request_id in selected_ids if request_id not in registry]
     selected_ids = [request_id for request_id in selected_ids if request_id in registry]
     selected_ids, stale_ids = _filter_stale_menu_request_ids(workspace, selected_ids)
     if not selected_ids:
+        executable_summary = _executable_menu_observation(workspace)
         return None, {
             'accepted': False,
             'reason': 'stale_or_no_executable_menu_request' if stale_ids else 'no_executable_menu_request',
@@ -4150,12 +4949,22 @@ def _orchestrator_evidence_plan_from_tool(
             'unknown_menu_request_ids': unknown_ids,
             'stale_menu_request_ids': stale_ids,
             'available_request_ids': [str(item.get('request_id') or '') for item in summaries[:12]],
+            **_mapping_draft_observation(workspace),
+            'executable_menu_summary': executable_summary,
+            'finish_gate': _finish_gate_observation(workspace),
+            'recommended_next_observation': (
+                'There is no fresh executable evidence request matching the requested types. '
+                'Do not repeat execute_evidence with the same stale request. Use propose_mapping_intents with visible refs, '
+                'materialize_queries for new clean title aliases, repartition with propose_case_understanding if the row is too broad, '
+                'or finish only when finish_gate allows it.'
+            ),
         }
     selected_ids, phase_audit = _evidence_phase_request_ids_for_editor_intent(
         workspace,
         summaries,
         selected_ids,
         request_types,
+        subject_refs=explicit_subject_refs,
     )
     if not selected_ids:
         return None, {
@@ -4164,6 +4973,13 @@ def _orchestrator_evidence_plan_from_tool(
             'requested_request_types': request_types,
             'unknown_menu_request_ids': unknown_ids,
             'stale_menu_request_ids': stale_ids,
+            **_mapping_draft_observation(workspace),
+            'executable_menu_summary': _executable_menu_observation(workspace),
+            'finish_gate': _finish_gate_observation(workspace),
+            'recommended_next_observation': (
+                'Evidence prerequisite routing found no executable next request. '
+                'Use existing visible refs in propose_mapping_intents, materialize a clean subject query, or repartition broad rows.'
+            ),
             **phase_audit,
         }
     max_per_batch = int(getattr(workspace.budget, 'max_requests_per_batch', 0) or 0)
@@ -4178,13 +4994,17 @@ def _orchestrator_evidence_plan_from_tool(
         selected_menu_request_ids=selected_ids,
         plan_status='in_progress',
         goal=str(getattr(args, 'reason', '') or 'orchestrator selected evidence'),
-        risk_flags=['orchestrator_agent_tool_call'],
+        risk_flags=_dedupe_preserve_order(['orchestrator_agent_tool_call', *request_types]),
+        stop_conditions=_dedupe_preserve_order(explicit_subject_refs),
     )
     return EvidencePlannerOutput(selected_evidence=True, plan=plan), {
         'accepted': True,
         'selected_menu_request_ids': selected_ids,
         'unknown_menu_request_ids': unknown_ids,
         'stale_menu_request_ids': stale_ids,
+        'agenda_request_types': agenda_request_types,
+        'agenda_subject_refs': agenda_subject_refs,
+        'augmented_menu_request_ids': augmented_request_ids,
         **phase_audit,
     }
 
@@ -4198,10 +5018,24 @@ def _decision_from_orchestrator_tool_call(
         return workspace, None, {'accepted': False, 'reason': 'hidden_or_unknown_refs', 'ref_issues': ref_issues}
     tool_name = tool_call.tool_name
     finish_gate = _finish_gate_observation(workspace)
-    finish_allowed = bool(finish_gate.get('accepted_finish_allowed')) or bool(
+    open_rows_present = bool(_open_rows_observation(workspace, limit=1))
+    budget_exhausted = bool(
         getattr(workspace.budget, 'max_evidence_batches', 0)
         and workspace.budget.used_evidence_batches >= workspace.budget.max_evidence_batches
-    ) or bool(finish_gate.get('fail_closed_finish_allowed_for_terminal_fail_rows')) or not _open_rows_observation(workspace, limit=1)
+    )
+    budget_finish_ready = bool(
+        budget_exhausted
+        and (
+            not open_rows_present
+            or int(finish_gate.get('semantic_decision_call_count_after_latest_evidence') or 0) > 0
+        )
+    )
+    finish_allowed = (
+        bool(finish_gate.get('accepted_finish_allowed'))
+        or budget_finish_ready
+        or bool(finish_gate.get('fail_closed_finish_allowed_for_terminal_fail_rows'))
+        or not open_rows_present
+    )
     if tool_name == 'finish_case' and not finish_allowed:
         return workspace, None, {
             'accepted': False,
@@ -4210,11 +5044,13 @@ def _decision_from_orchestrator_tool_call(
             **_mapping_draft_observation(workspace),
             'finish_gate': finish_gate,
             'executable_menu_summary': _executable_menu_observation(workspace),
-            'recommended_next_observation': 'finish_case is hidden until accounting is ready, evidence budget is exhausted, or no rows remain to act on; use propose_mapping_intents or execute_evidence now',
+            'recommended_next_observation': 'finish_case is hidden until accounting is ready, or fail_closed finish preconditions are met; use propose_mapping_intents for open_rows or execute_evidence while evidence budget remains',
         }
     reason = str(getattr(tool_call.arguments, 'reason', '') or tool_name)
     if tool_name == 'materialize_queries':
         return workspace, _InvestigationDecision(action='compose_queries', reason=reason), {'accepted': True}
+    if tool_name == 'propose_case_understanding':
+        return workspace, _InvestigationDecision(action='propose_case_understanding', reason=reason), {'accepted': True}
     if tool_name == 'propose_mapping_intents':
         return workspace, _InvestigationDecision(action='propose_mapping_intents', reason=reason), {'accepted': True}
     if tool_name == 'finish_case':
@@ -5719,6 +6555,7 @@ def _editor_evidence_plan_from_patches(workspace: CaseEvidenceWorkspace, patches
         summaries,
         selected_ids,
         requested_request_types,
+        subject_refs=_subject_refs_from_intent_patches(intent_patches),
     )
     stale_ids = _dedupe_preserve_order(stale_ids)
     if stale_ids:
@@ -6888,6 +7725,16 @@ def _workspace_with_mapping_draft(workspace: CaseEvidenceWorkspace, draft: Mappi
         mapping_draft_patches=patches_list,
         mapping_draft_candidate_comparisons=comparison_list,
     )
+    if patches:
+        notebook, notebook_issues = close_notebook_agenda_for_mapping_patches(
+            getattr(updated, 'investigation_notebook', None),
+            list(patches or []),
+            updated.to_dossier(round_context='mapping_draft_notebook_close'),
+        )
+        if notebook_issues:
+            updated = _workspace_with_verifier_issues(updated, CaseVerifierResult(passed=False, issues=notebook_issues, summary='notebook agenda close failed'))
+        else:
+            updated = _workspace_preserving_state(updated, investigation_notebook=notebook)
     if note:
         coverage = compute_local_span_partition_coverage(updated, draft)
         updated = _workspace_with_judge_audit(updated, {

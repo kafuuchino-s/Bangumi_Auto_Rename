@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from typing import Any
 
 from .models import EvidenceRequest
@@ -188,7 +189,14 @@ def _agent_composed_subject_search_queries(source: object, dossier: CaseDossier,
         and str(getattr(card, 'query_text', '') or '').strip()
         and f'REQ_SUBJECT_SEARCH_{str(getattr(card, "ref", "") or "")}' not in completed_or_failed
     ]
-    return candidates[:max_width]
+    def score(card: object) -> tuple[int, int, str]:
+        text = str(getattr(card, 'query_text', '') or '').strip()
+        source_refs = list(getattr(card, 'source_refs', []) or [])
+        cjk_bonus = 0 if re.search(r'[\u3040-\u30ff\u3400-\u9fff]', text) else 1
+        instruction_penalty = 1 if re.search(r'(?i)\b(?:prefer|avoid|use|search|query|codec|resolution|group\s+tags|failed\s+recall)\b', text) else 0
+        return (instruction_penalty, cjk_bonus, str(source_refs[:1]), text.casefold())
+
+    return sorted(candidates, key=score)[:max_width]
 
 
 def _build_subject_search_request(query_card: object) -> EvidenceRequest:

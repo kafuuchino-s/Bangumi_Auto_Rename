@@ -143,7 +143,7 @@ def test_supplemental_rows_expand_to_unaligned_accounting_assignments():
     assert [item.target_ref for item in expanded] == ['UNALIGNED', 'UNALIGNED']
 
 
-def test_multi_file_regular_span_cannot_be_accepted_as_generic_supplemental():
+def test_multi_file_supplemental_is_validated_without_fixed_semantic_shape_gate():
     dossier = make_dossier()
     dossier.local_files = [
         LocalFileCard(ref=f'LF{i}', path=f'Show #{i:02d}.mkv', is_main=True, file_kind='video')
@@ -168,8 +168,8 @@ def test_multi_file_regular_span_cannot_be_accepted_as_generic_supplemental():
 
     result = verify_mapping_draft_accounting(dossier, draft)
 
-    assert result.passed is False
-    assert any(issue.issue_code == 'regular_main_span_cannot_be_supplemental' for issue in result.issues)
+    assert result.passed is True
+    assert not any(issue.issue_code == 'regular_main_span_cannot_be_supplemental' for issue in result.issues)
 
 
 def test_singleton_visible_extra_can_be_accepted_as_supplemental():
@@ -243,7 +243,7 @@ def test_non_regular_sp_extra_span_can_be_accepted_as_target_absent():
     assert result.passed is True
 
 
-def test_target_absent_rejected_when_visible_candidate_remains():
+def test_target_absent_can_override_visible_candidate_when_agent_judges_absent():
     dossier = make_dossier()
     dossier.contract.main_file_refs = ['LF1']
     dossier.local_files = [LocalFileCard(ref='LF1', path='Show OAD.mkv', is_main=True, file_kind='video')]
@@ -260,8 +260,8 @@ def test_target_absent_rejected_when_visible_candidate_remains():
 
     result = verify_mapping_draft_accounting(dossier, draft)
 
-    assert result.passed is False
-    assert any(issue.issue_code == 'bangumi_target_absent_has_visible_candidate' for issue in result.issues)
+    assert result.passed is True
+    assert result.issues == []
 
 
 def test_regular_numbered_span_target_absent_is_editor_semantics_not_shape_rejected():

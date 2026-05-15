@@ -277,7 +277,7 @@ def _config_int_at_least(key: str, default: int, minimum: int) -> int:
 def _case_agent_round_safety_cap() -> int:
     # This is a loop guard, not a fixed investigation plan. Keep old low local
     # configs from forcing premature fail_closed results.
-    return _config_int_at_least('rename_local_bangumi_case_agent_max_rounds', 24, 24)
+    return _config_int_at_least('rename_local_bangumi_case_agent_max_rounds', 48, 48)
 
 
 def _orchestrator_context_limits() -> tuple[int, int]:
@@ -500,7 +500,7 @@ def _build_workspace(*, local_evidence, bangumi_contexts: list[dict[str, object]
     contract = CaseContract(summary='Local->Bangumi case agent mapping workspace', expected_outcome='unknown', main_file_refs=derived_main_file_refs, supplemental_file_refs=list(views.ref_map.supplemental_file_refs or []), allowed_file_refs=list(views.ref_map.file_refs or [card.ref for card in local_files]), visible_target_refs=[card.ref for card in bangumi_items], coverage_rule='main files must be covered exactly once or fail closed', duplicate_rule='bangumi item refs must not be duplicated', support_rule='only visible bangumi cards may be referenced')
     round_safety_cap = _case_agent_round_safety_cap()
     header = CaseHeader(case_id=f'local-bangumi-{getattr(local_evidence, "source_path", "") or "mapping"}', max_rounds=round_safety_cap, status='open')
-    budget = CaseBudget(max_judge_rounds=header.max_rounds, max_evidence_batches=_config_int_at_least('rename_local_bangumi_case_agent_max_evidence_batches', 8, 8), max_issue_response_rounds=_config_int('rename_local_bangumi_case_agent_max_issue_response_rounds', 1), max_requests_per_batch=_config_int('rename_local_bangumi_case_agent_max_requests_per_batch', 8))
+    budget = CaseBudget(max_judge_rounds=header.max_rounds, max_evidence_batches=_config_int_at_least('rename_local_bangumi_case_agent_max_evidence_batches', 12, 12), max_issue_response_rounds=_config_int('rename_local_bangumi_case_agent_max_issue_response_rounds', 1), max_requests_per_batch=_config_int('rename_local_bangumi_case_agent_max_requests_per_batch', 8))
     local_span_cards = _build_raw_local_span_shells(local_files, contract)
     workspace = CaseEvidenceWorkspace.from_cards(header=header, budget=budget, contract=contract, local_files=local_files, local_clusters=local_clusters, local_span_cards=local_span_cards, bangumi_subjects=bangumi_subjects, bangumi_groups=bangumi_groups, bangumi_items=bangumi_items, query_cards=query_cards, provenance_cards=provenance_cards)
     filtered_files = list(getattr(views.ref_map, 'filtered_files', []) or [])
@@ -691,6 +691,7 @@ def run_local_bangumi_case_agent_mapping(*, local_evidence, bangumi_contexts: li
     case_briefing = getattr(result.final_workspace, 'case_briefing', None)
     investigation_notebook = getattr(result.final_workspace, 'investigation_notebook', None)
     briefing_agent_applied = any(isinstance(audit, dict) and str(audit.get('note') or '') == 'case_briefing_agent_applied' for audit in request_audits)
+    case_understanding_applied = any(isinstance(audit, dict) and str(audit.get('note') or '') == 'case_understanding_applied' for audit in request_audits)
     notebook_open_questions = [
         item for item in list(getattr(investigation_notebook, 'open_questions', []) or [])
         if str(getattr(item, 'status', '') or '') == 'open'
@@ -831,7 +832,8 @@ def run_local_bangumi_case_agent_mapping(*, local_evidence, bangumi_contexts: li
         'deferred_evidence_intent_count': deferred_evidence_intent_count,
         'target_span_blocked_by_missing_items_count': target_span_blocked_by_missing_items_count,
         'briefing_work_unit_count': len(list(getattr(case_briefing, 'work_units', []) or [])) if case_briefing is not None else 0,
-        'briefing_memory_lost': bool(briefing_agent_applied and case_briefing is None),
+        'case_understanding_applied': bool(case_understanding_applied),
+        'briefing_memory_lost': bool((briefing_agent_applied or case_understanding_applied) and case_briefing is None),
         'notebook_update_count': len(list(getattr(investigation_notebook, 'update_log', []) or [])) if investigation_notebook is not None else 0,
         'open_question_count': len(notebook_open_questions),
         'human_next_action_blocked_no_new_evidence_count': human_next_action_blocked_count,

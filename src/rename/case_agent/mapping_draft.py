@@ -407,8 +407,6 @@ def apply_mapping_patches(draft: MappingDraft, patches: list[MappingDraftPatch],
             row.reason_kind = patch.reason_kind or row.reason_kind
             row.reason = patch.reason or row.reason
         elif patch.op == 'mark_non_bangumi_or_supplemental':
-            if row.disposition == 'map_to_bangumi':
-                continue
             row.disposition = 'non_bangumi_or_supplemental'
             row.status = 'proposed'
             row.selected_target_ref = ''

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import ClassVar, Literal
+from typing import Any, ClassVar, Literal
 
 from pydantic import AliasChoices, BaseModel, ConfigDict, Field
 
@@ -680,7 +680,10 @@ class MappingIntent(BaseModel):
     query_hints: list[str] = Field(default_factory=list)
     subject_refs: list[str] = Field(default_factory=list)
     item_refs: list[str] = Field(default_factory=list)
+    target_refs: list[str] = Field(default_factory=list)
+    candidate_target_refs: list[str] = Field(default_factory=list)
     local_refs: list[str] = Field(default_factory=list)
+    source_refs: list[str] = Field(default_factory=list)
     notebook_refs: list[str] = Field(default_factory=list)
     confidence: Literal['high', 'medium', 'low', 'unknown'] = 'unknown'
     reason: str = ''
@@ -975,6 +978,7 @@ class BlockedMappingIntent(BaseModel):
     subject_refs: list[str] = Field(default_factory=list)
     item_refs: list[str] = Field(default_factory=list)
     support_refs: list[str] = Field(default_factory=list)
+    observation: dict[str, Any] = Field(default_factory=dict)
     reason: str = ''
     recommended_next_observation: str = ''
 
