@@ -1,7 +1,9 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime, timezone
+from threading import RLock
+from typing import Any
 
 from .models import (
     BangumiGroupCard,
@@ -56,6 +58,7 @@ class EvidenceCardRegistry:
     _group_seq: int = 0
     _item_seq: int = 0
     _provenance_seq: int = 0
+    _lock: Any = field(default_factory=RLock, repr=False, compare=False)
 
     @classmethod
     def from_workspace(cls, workspace: CaseEvidenceWorkspace) -> 'EvidenceCardRegistry':
@@ -102,43 +105,48 @@ class EvidenceCardRegistry:
             raise ValueError(f'ref already visible: {ref}')
 
     def allocate_subject_ref(self, subject_id: int) -> tuple[str, bool]:
-        if subject_id > 0 and subject_id in self.subject_id_to_ref:
-            return self.subject_id_to_ref[subject_id], False
-        ref = self._next_ref('BS', '_subject_seq')
-        if subject_id > 0:
-            self.subject_id_to_ref[subject_id] = ref
-        return ref, True
+        with self._lock:
+            if subject_id > 0 and subject_id in self.subject_id_to_ref:
+                return self.subject_id_to_ref[subject_id], False
+            ref = self._next_ref('BS', '_subject_seq')
+            if subject_id > 0:
+                self.subject_id_to_ref[subject_id] = ref
+            return ref, True
 
     def allocate_relation_ref(self, from_ref: str, to_ref: str, relation: str) -> tuple[str, bool]:
-        key = (from_ref, to_ref, relation)
-        if key in self.relation_key_to_ref:
-            return self.relation_key_to_ref[key], False
-        ref = self._next_ref('BREL', '_relation_seq')
-        self.relation_key_to_ref[key] = ref
-        return ref, True
+        with self._lock:
+            key = (from_ref, to_ref, relation)
+            if key in self.relation_key_to_ref:
+                return self.relation_key_to_ref[key], False
+            ref = self._next_ref('BREL', '_relation_seq')
+            self.relation_key_to_ref[key] = ref
+            return ref, True
 
     def allocate_group_ref(self, entity_ref: str, group_kind: str) -> tuple[str, bool]:
-        key = (entity_ref, group_kind)
-        if key in self.group_key_to_ref:
-            return self.group_key_to_ref[key], False
-        ref = self._next_ref('BR', '_group_seq')
-        self.group_key_to_ref[key] = ref
-        return ref, True
+        with self._lock:
+            key = (entity_ref, group_kind)
+            if key in self.group_key_to_ref:
+                return self.group_key_to_ref[key], False
+            ref = self._next_ref('BR', '_group_seq')
+            self.group_key_to_ref[key] = ref
+            return ref, True
 
     def allocate_item_ref(self, episode_id: int, synthetic_key: str = '') -> tuple[str, bool]:
-        if episode_id > 0 and episode_id in self.episode_id_to_ref:
-            return self.episode_id_to_ref[episode_id], False
-        if synthetic_key and synthetic_key in self.synthetic_item_key_to_ref:
-            return self.synthetic_item_key_to_ref[synthetic_key], False
-        ref = self._next_ref('BE', '_item_seq')
-        if episode_id > 0:
-            self.episode_id_to_ref[episode_id] = ref
-        if synthetic_key:
-            self.synthetic_item_key_to_ref[synthetic_key] = ref
-        return ref, True
+        with self._lock:
+            if episode_id > 0 and episode_id in self.episode_id_to_ref:
+                return self.episode_id_to_ref[episode_id], False
+            if synthetic_key and synthetic_key in self.synthetic_item_key_to_ref:
+                return self.synthetic_item_key_to_ref[synthetic_key], False
+            ref = self._next_ref('BE', '_item_seq')
+            if episode_id > 0:
+                self.episode_id_to_ref[episode_id] = ref
+            if synthetic_key:
+                self.synthetic_item_key_to_ref[synthetic_key] = ref
+            return ref, True
 
     def allocate_provenance_ref(self) -> str:
-        return self._next_ref('PV', '_provenance_seq')
+        with self._lock:
+            return self._next_ref('PV', '_provenance_seq')
 
     def _next_ref(self, prefix: str, seq_attr: str) -> str:
         seq = getattr(self, seq_attr) + 1

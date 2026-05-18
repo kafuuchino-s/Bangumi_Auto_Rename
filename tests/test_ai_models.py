@@ -1,5 +1,6 @@
 from src.ai.client import AIClient
 from src.ai.models import AIProposalCriticResult, SemanticReviewFinding
+from src.ai.openai_client import OpenAIClient
 from src.config.config_manager import cm
 
 def test_ai_proposal_critic_result_requires_findings():
@@ -80,7 +81,7 @@ def test_ai_proposal_critic_result_allows_inconsistent_findings_and_keeps_top_le
     assert result_non_pass.findings[0].status == 'warning'
 
 
-def test_ai_response_cache_replays_matching_simple_call(monkeypatch, tmp_path):
+def test_ai_response_cache_no_longer_writes_local_files(monkeypatch, tmp_path):
     calls = {'count': 0}
 
     class FakeAdapter:
@@ -96,18 +97,17 @@ def test_ai_response_cache_replays_matching_simple_call(monkeypatch, tmp_path):
             return {'content': '{"title":"cached"}'}
 
     monkeypatch.setenv('BAR_AI_RESPONSE_CACHE_DIR', str(tmp_path))
-    monkeypatch.setenv('BAR_AI_RESPONSE_CACHE_MODE', 'read-write')
     client = AIClient()
     client._client = FakeAdapter()
     with cm.temporary_config({'ai_response_cache_enabled': True}):
         assert client._call_openai_simple('system', 'prompt', validation_key='title', streaming=False) == '{"title":"cached"}'
         assert client._call_openai_simple('system', 'prompt', validation_key='title', streaming=False) == '{"title":"cached"}'
 
-    assert calls['count'] == 1
-    assert list(tmp_path.glob('*.json'))
+    assert calls['count'] == 2
+    assert not list(tmp_path.glob('*.json'))
 
 
-def test_ai_response_cache_off_keeps_live_calls(monkeypatch, tmp_path):
+def test_ai_response_cache_mode_does_not_enable_local_file_cache(monkeypatch, tmp_path):
     calls = {'count': 0}
 
     class FakeAdapter:
@@ -126,7 +126,7 @@ def test_ai_response_cache_off_keeps_live_calls(monkeypatch, tmp_path):
     monkeypatch.setenv('BAR_AI_RESPONSE_CACHE_MODE', 'off')
     client = AIClient()
     client._client = FakeAdapter()
-    with cm.temporary_config({'ai_response_cache_enabled': True}):
+    with cm.temporary_config({'ai_response_cache_enabled': False}):
         assert client._call_openai_simple('system', 'prompt', validation_key='title', streaming=False) == '{"title":"live"}'
         assert client._call_openai_simple('system', 'prompt', validation_key='title', streaming=False) == '{"title":"live"}'
 
@@ -134,7 +134,7 @@ def test_ai_response_cache_off_keeps_live_calls(monkeypatch, tmp_path):
     assert not list(tmp_path.glob('*.json'))
 
 
-def test_ai_client_responses_tool_agent_passes_input_and_tools():
+def test_ai_client_responses_tool_agent_passes_input_and_tools(monkeypatch, tmp_path):
     calls = []
 
     class FakeAdapter:
@@ -146,6 +146,8 @@ def test_ai_client_responses_tool_agent_passes_input_and_tools():
             calls.append(request_params)
             return {'id': 'resp_1', 'tool_calls': []}
 
+    monkeypatch.setenv('BAR_AI_RESPONSE_CACHE_DIR', str(tmp_path))
+    monkeypatch.setenv('BAR_AI_RESPONSE_CACHE_MODE', 'refresh')
     client = AIClient()
     client._client = FakeAdapter()
 
@@ -162,6 +164,309 @@ def test_ai_client_responses_tool_agent_passes_input_and_tools():
     assert calls[0]['tools'][0]['function']['name'] == 'do_it'
     assert calls[0]['tool_choice'] == 'required'
     assert calls[0]['parallel_tool_calls'] is False
+
+
+def test_ai_client_responses_tool_agent_passes_function_tool_choice(monkeypatch, tmp_path):
+    calls = []
+
+    class FakeAdapter:
+        model = 'fake-model'
+        temperature = 0.0
+        client = object()
+
+        def call_via_responses_api(self, request_params):
+            calls.append(request_params)
+            return {'id': 'resp_1', 'tool_calls': []}
+
+    monkeypatch.setenv('BAR_AI_RESPONSE_CACHE_DIR', str(tmp_path))
+    client = AIClient()
+    client._client = FakeAdapter()
+    choice = {'type': 'function', 'function': {'name': 'submit'}}
+
+    result = client.call_responses_tool_agent(
+        instructions='system',
+        input_items=[{'role': 'user', 'content': 'state'}],
+        tools=[{'type': 'function', 'function': {'name': 'submit', 'parameters': {'type': 'object', 'properties': {}}}}],
+        tool_choice=choice,
+    )
+
+    assert result == {'id': 'resp_1', 'tool_calls': []}
+    assert calls[0]['tool_choice'] == choice
+
+
+def test_ai_client_responses_tool_agent_passes_conversation_id(monkeypatch, tmp_path):
+    calls = []
+
+    class FakeAdapter:
+        model = 'fake-model'
+        temperature = 0.0
+        client = object()
+
+        def call_via_responses_api(self, request_params):
+            calls.append(request_params)
+            return {'id': 'resp_1', 'tool_calls': []}
+
+    monkeypatch.setenv('BAR_AI_RESPONSE_CACHE_DIR', str(tmp_path))
+    monkeypatch.setenv('BAR_AI_RESPONSE_CACHE_MODE', 'refresh')
+    client = AIClient()
+    client._client = FakeAdapter()
+
+    result = client.call_responses_tool_agent(
+        instructions='system',
+        input_items=[{'role': 'user', 'content': 'state'}],
+        tools=[{'type': 'function', 'function': {'name': 'do_it', 'parameters': {'type': 'object', 'properties': {}}}}],
+        conversation_id='conv_123',
+    )
+
+    assert result == {'id': 'resp_1', 'tool_calls': []}
+    assert calls[0]['conversation'] == 'conv_123'
+
+
+def test_ai_client_responses_tool_agent_passes_sub2api_session_and_cache_keys(monkeypatch, tmp_path):
+    calls = []
+
+    class FakeAdapter:
+        model = 'fake-model'
+        temperature = 0.0
+        client = object()
+
+        def call_via_responses_api(self, request_params):
+            calls.append(request_params)
+            return {'id': 'resp_1', 'tool_calls': []}
+
+    monkeypatch.setenv('BAR_AI_RESPONSE_CACHE_DIR', str(tmp_path))
+    monkeypatch.setenv('BAR_AI_RESPONSE_CACHE_MODE', 'refresh')
+    client = AIClient()
+    client._client = FakeAdapter()
+
+    result = client.call_responses_tool_agent(
+        instructions='system',
+        input_items=[{'role': 'user', 'content': 'state'}],
+        tools=[{'type': 'function', 'function': {'name': 'do_it', 'parameters': {'type': 'object', 'properties': {}}}}],
+        prompt_cache_key='cache_case_1',
+        session_id='session_case_1',
+    )
+
+    assert result == {'id': 'resp_1', 'tool_calls': []}
+    assert calls[0]['prompt_cache_key'] == 'cache_case_1'
+    assert calls[0]['session_id'] == 'session_case_1'
+    assert calls[0]['prompt_cache_retention'] == '24h'
+
+
+def test_responses_tool_agent_does_not_write_local_response_cache(monkeypatch, tmp_path):
+    calls = {'count': 0}
+
+    class FakeAdapter:
+        model = 'fake-model'
+        temperature = 0.0
+        client = object()
+
+        def call_via_responses_api(self, request_params):
+            calls['count'] += 1
+            return {
+                'id': f'resp_{calls["count"]}',
+                'tool_calls': [
+                    {
+                        'call_id': 'call_1',
+                        'name': 'do_it',
+                        'arguments': '{}',
+                    }
+                ],
+            }
+
+    monkeypatch.setenv('BAR_AI_RESPONSE_CACHE_DIR', str(tmp_path))
+    monkeypatch.setenv('BAR_AI_RESPONSE_CACHE_MODE', 'read-write')
+    client = AIClient()
+    client._client = FakeAdapter()
+    kwargs = {
+        'instructions': 'system',
+        'input_items': [{'role': 'user', 'content': 'state'}],
+        'tools': [{'type': 'function', 'function': {'name': 'do_it', 'parameters': {'type': 'object', 'properties': {}}}}],
+        'prompt_cache_key': 'cache_case_1',
+        'session_id': 'session_case_1',
+    }
+
+    with cm.temporary_config({'ai_response_cache_enabled': True}):
+        first = client.call_responses_tool_agent(**kwargs)
+        assert client._last_tool_agent_cache_event == 'not_applicable'
+        second = client.call_responses_tool_agent(**kwargs)
+        assert client._last_tool_agent_cache_event == 'not_applicable'
+
+    assert first != second
+    assert calls['count'] == 2
+    assert not list(tmp_path.glob('*.json'))
+
+
+def test_responses_tool_agent_cache_only_mode_still_calls_provider(monkeypatch, tmp_path):
+    calls = {'count': 0}
+
+    class FakeAdapter:
+        model = 'fake-model'
+        temperature = 0.0
+        client = object()
+
+        def call_via_responses_api(self, request_params):
+            calls['count'] += 1
+            return {'id': 'resp_live', 'tool_calls': []}
+
+    monkeypatch.setenv('BAR_AI_RESPONSE_CACHE_DIR', str(tmp_path))
+    monkeypatch.setenv('BAR_AI_RESPONSE_CACHE_MODE', 'cache-only')
+    client = AIClient()
+    client._client = FakeAdapter()
+
+    with cm.temporary_config({'ai_response_cache_enabled': True}):
+        result = client.call_responses_tool_agent(
+            instructions='system',
+            input_items=[{'role': 'user', 'content': 'state'}],
+            tools=[{'type': 'function', 'function': {'name': 'do_it', 'parameters': {'type': 'object', 'properties': {}}}}],
+        )
+
+    assert result == {'id': 'resp_live', 'tool_calls': []}
+    assert calls['count'] == 1
+    assert client._last_tool_agent_cache_event == 'not_applicable'
+    assert not list(tmp_path.glob('*.json'))
+
+
+def test_responses_tool_agent_retries_transient_provider_errors(monkeypatch, tmp_path):
+    calls = {'count': 0}
+
+    class FakeAdapter:
+        model = 'fake-model'
+        temperature = 0.0
+        client = object()
+
+        def call_via_responses_api(self, request_params):
+            calls['count'] += 1
+            if calls['count'] < 3:
+                raise RuntimeError('503 temporary unavailable')
+            return {'id': 'resp_live', 'tool_calls': []}
+
+    monkeypatch.setattr('src.ai.client.time.sleep', lambda _seconds: None)
+    monkeypatch.setenv('BAR_AI_RESPONSE_CACHE_DIR', str(tmp_path))
+    client = AIClient()
+    client._client = FakeAdapter()
+
+    result = client.call_responses_tool_agent(
+        instructions='system',
+        input_items=[{'role': 'user', 'content': 'state'}],
+        tools=[{'type': 'function', 'function': {'name': 'do_it', 'parameters': {'type': 'object', 'properties': {}}}}],
+        max_retries=2,
+    )
+
+    assert result == {'id': 'resp_live', 'tool_calls': []}
+    assert calls['count'] == 3
+    assert client._last_tool_agent_provider_retry_count == 2
+
+
+def test_openai_client_session_id_sets_sub2api_sticky_headers(monkeypatch):
+    captured = {}
+
+    class FakeResponses:
+        def create(self, **kwargs):
+            captured['kwargs'] = kwargs
+            return type(
+                'Response',
+                (),
+                {
+                    'id': 'resp_1',
+                    'usage': None,
+                    'output': [],
+                    'output_text': '',
+                },
+            )()
+
+    class FakeOpenAI:
+        def __init__(self, *args, **kwargs):
+            captured.setdefault('clients', []).append(kwargs)
+            self.responses = FakeResponses()
+
+    class FakeHTTPClient:
+        def __init__(self, *args, **kwargs):
+            self.headers = dict(kwargs.get('headers') or {})
+            captured['http_client'] = self
+
+    monkeypatch.setattr('src.ai.openai_client.OpenAI', FakeOpenAI)
+    monkeypatch.setattr('src.ai.openai_client.httpx.Client', FakeHTTPClient)
+    monkeypatch.setattr(cm, 'get_config', lambda key: {
+        'ai_api_key': 'sk-test',
+        'ai_base_url': 'https://example.test',
+        'ai_model': 'fake-model',
+        'ai_temperature': 0,
+        'openai_output_format': 'structured_output',
+        'openai_api_interface': 'responses_api',
+        'openai_auto_routing_enabled': True,
+    }.get(key))
+
+    client = OpenAIClient()
+    result = client.call_via_responses_api({
+        'model': 'fake-model',
+        'responses_input': 'hello',
+        'session_id': 'session_case_1',
+        'prompt_cache_key': 'cache_case_1',
+    })
+
+    assert result['id'] == 'resp_1'
+    headers = captured['http_client'].headers
+    assert headers['session_id'] == 'session_case_1'
+    assert headers['conversation_id'] == 'session_case_1'
+    assert captured['kwargs']['prompt_cache_key'] == 'cache_case_1'
+    assert captured['kwargs']['prompt_cache_retention'] == '24h'
+    assert captured['kwargs']['extra_headers'] == {
+        'session_id': 'session_case_1',
+        'conversation_id': 'session_case_1',
+    }
+
+
+def test_openai_client_usage_includes_cached_input_tokens(monkeypatch):
+    captured = {}
+
+    class FakeUsageDetails:
+        cached_tokens = 1234
+
+    class FakeUsage:
+        input_tokens = 2000
+        output_tokens = 100
+        total_tokens = 2100
+        input_tokens_details = FakeUsageDetails()
+
+    class FakeResponses:
+        def create(self, **kwargs):
+            captured['kwargs'] = kwargs
+            return type(
+                'Response',
+                (),
+                {
+                    'id': 'resp_1',
+                    'usage': FakeUsage(),
+                    'output': [],
+                    'output_text': '',
+                },
+            )()
+
+    class FakeOpenAI:
+        def __init__(self, *args, **kwargs):
+            self.responses = FakeResponses()
+
+    monkeypatch.setattr('src.ai.openai_client.OpenAI', FakeOpenAI)
+    monkeypatch.setattr(cm, 'get_config', lambda key: {
+        'ai_api_key': 'sk-test',
+        'ai_base_url': 'https://example.test',
+        'ai_model': 'fake-model',
+        'ai_temperature': 0,
+        'openai_output_format': 'structured_output',
+        'openai_api_interface': 'responses_api',
+        'openai_auto_routing_enabled': True,
+    }.get(key))
+
+    client = OpenAIClient()
+    result = client.call_via_responses_api({
+        'model': 'fake-model',
+        'responses_input': 'hello',
+        'prompt_cache_retention': '24h',
+    })
+
+    assert result['usage']['input_tokens_details']['cached_tokens'] == 1234
+    assert captured['kwargs']['prompt_cache_retention'] == '24h'
 
 
 def test_openai_strict_schema_strips_defaults_and_marks_required_fields():

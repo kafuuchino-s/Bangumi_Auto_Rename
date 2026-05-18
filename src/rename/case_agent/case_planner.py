@@ -222,6 +222,12 @@ def build_child_workspace(parent: CaseEvidenceWorkspace, spec: SplitCaseSpec) ->
     main_refs = set(spec.main_file_refs)
     supplemental_refs = set(spec.supplemental_file_refs)
     support_refs = set(spec.support_refs)
+    parent_local_span_refs = {
+        str(getattr(card, 'ref', '') or '')
+        for card in parent.local_span_cards
+        if str(getattr(card, 'ref', '') or '')
+    }
+    child_support_refs = {ref for ref in support_refs if ref not in parent_local_span_refs}
     child_local_refs = main_refs | supplemental_refs | {ref for ref in support_refs if parent.get_ref_kind(ref) == 'local_file'}
 
     local_files = [
@@ -233,26 +239,21 @@ def build_child_workspace(parent: CaseEvidenceWorkspace, spec: SplitCaseSpec) ->
     local_clusters = [
         _copy_local_cluster(card, local_file_ref_set)
         for card in parent.local_clusters
-        if card.ref in support_refs or any(ref in local_file_ref_set for ref in card.file_refs)
+        if card.ref in child_support_refs or any(ref in local_file_ref_set for ref in card.file_refs)
     ]
     local_cluster_refs = {card.ref for card in local_clusters}
-    bangumi_subjects = [card for card in parent.bangumi_subjects if card.ref in support_refs]
-    bangumi_relations = [card for card in parent.bangumi_relations if card.ref in support_refs]
-    bangumi_groups = [_copy_bangumi_group(card, support_refs) for card in parent.bangumi_groups if card.ref in support_refs]
-    bangumi_items = [card for card in parent.bangumi_items if card.ref in support_refs]
+    bangumi_subjects = [card for card in parent.bangumi_subjects if card.ref in child_support_refs]
+    bangumi_relations = [card for card in parent.bangumi_relations if card.ref in child_support_refs]
+    bangumi_groups = [_copy_bangumi_group(card, child_support_refs) for card in parent.bangumi_groups if card.ref in child_support_refs]
+    bangumi_items = [card for card in parent.bangumi_items if card.ref in child_support_refs]
     included_bangumi_refs = {card.ref for card in bangumi_subjects} | {card.ref for card in bangumi_relations} | {card.ref for card in bangumi_groups} | {card.ref for card in bangumi_items}
     query_cards = [
-        _copy_query_card(card, source_refs=local_file_ref_set | local_cluster_refs | support_refs, result_refs=included_bangumi_refs)
+        _copy_query_card(card, source_refs=local_file_ref_set | local_cluster_refs | child_support_refs, result_refs=included_bangumi_refs)
         for card in parent.query_cards
-        if card.ref in support_refs or any(ref in (local_file_ref_set | local_cluster_refs | support_refs) for ref in card.source_refs)
+        if card.ref in child_support_refs or any(ref in (local_file_ref_set | local_cluster_refs | child_support_refs) for ref in card.source_refs)
     ]
-    provenance_cards = [card for card in parent.provenance_cards if card.ref in support_refs]
-    local_span_cards = [
-        _copy_local_span(card, local_file_ref_set)
-        for card in parent.local_span_cards
-        if card.ref in support_refs or _span_mentions_any(card, local_file_ref_set)
-    ]
-    local_span_cards = [card for card in local_span_cards if card.file_refs or card.file_ref_samples or card.ref in support_refs]
+    provenance_cards = [card for card in parent.provenance_cards if card.ref in child_support_refs]
+    local_span_cards: list[LocalSpanCard] = []
     allowed_child_refs = {
         *child_local_refs,
         *local_cluster_refs,

@@ -4,6 +4,7 @@ from copy import deepcopy
 import re
 from typing import Any, Callable, Dict, List, Optional, cast
 
+import httpx
 from openai import OpenAI
 from pydantic import ValidationError
 
@@ -45,8 +46,22 @@ class OpenAIClient(BaseAIClient):
                 base_url=self.base_url,
                 timeout=120.0,  # 请求超时 120 秒
             )
+            self._session_header_http_client = httpx.Client(
+                headers={"session_id": f"bar-init-{id(self):x}"},
+                timeout=120.0,
+            )
+            self._session_header_openai_client = OpenAI(
+                api_key=self.api_key,
+                base_url=self.base_url,
+                timeout=120.0,
+                http_client=self._session_header_http_client,
+            )
+            self._session_header_value = ""
         else:
             self.client = None
+            self._session_header_http_client = None
+            self._session_header_openai_client = None
+            self._session_header_value = ""
 
     def is_available(self) -> bool:
         """检查OpenAI客户端是否可用"""
@@ -66,6 +81,16 @@ class OpenAIClient(BaseAIClient):
         self, request_params: dict[str, object]
     ) -> dict[str, object]:
         return cast(dict[str, object], self._call_via_responses_api(request_params))
+
+    def create_conversation(self, *, metadata: Mapping[str, object] | None = None) -> str:
+        if not self.client:
+            raise RuntimeError("OpenAI 客户端未初始化")
+        conversations = getattr(cast(OpenAI, self.client), "conversations", None)
+        create_conversation = getattr(conversations, "create", None)
+        if not callable(create_conversation):
+            raise RuntimeError("OpenAI Conversations API unavailable")
+        response = create_conversation(metadata=dict(metadata or {}))
+        return str(getattr(response, "id", "") or "")
 
     def stream_via_chat_completions(
         self,
@@ -446,9 +471,25 @@ class OpenAIClient(BaseAIClient):
             raise RuntimeError("OpenAI 客户端未初始化")
 
         responses_params = self._convert_chat_request_to_responses(request_params)
+        session_id = str(request_params.get("session_id") or "").strip()
+        response_client = cast(OpenAI, self.client)
+        if (
+            session_id
+            and self._session_header_openai_client is not None
+            and self._session_header_http_client is not None
+        ):
+            if session_id != self._session_header_value:
+                self._session_header_http_client.headers["session_id"] = session_id
+                self._session_header_http_client.headers["conversation_id"] = session_id
+                self._session_header_value = session_id
+            response_client = cast(OpenAI, self._session_header_openai_client)
+            responses_params["extra_headers"] = {
+                "session_id": session_id,
+                "conversation_id": session_id,
+            }
         create_response = cast(
             Callable[..., object],
-            cast(OpenAI, self.client).responses.create,
+            response_client.responses.create,
         )
         response = create_response(**responses_params)
 
@@ -468,6 +509,24 @@ class OpenAIClient(BaseAIClient):
                 value = getattr(raw_usage, key, None)
                 if isinstance(value, int):
                     usage_payload[key] = value
+            input_details = getattr(raw_usage, "input_tokens_details", None)
+            prompt_details = getattr(raw_usage, "prompt_tokens_details", None)
+            details_payload: dict[str, object] = {}
+            for details in (input_details, prompt_details):
+                if details is None:
+                    continue
+                if isinstance(details, Mapping):
+                    items = details.items()
+                else:
+                    items = [
+                        (key, getattr(details, key, None))
+                        for key in ("cached_tokens", "cache_read_input_tokens")
+                    ]
+                for key, value in items:
+                    if isinstance(value, int):
+                        details_payload[str(key)] = value
+            if details_payload:
+                usage_payload["input_tokens_details"] = details_payload
 
         response_output = getattr(response, "output", None)
         output_items = response_output if isinstance(response_output, list) else []
@@ -563,6 +622,23 @@ class OpenAIClient(BaseAIClient):
 
         if instructions:
             responses_params["instructions"] = instructions
+
+        conversation = request_params.get("conversation")
+        if isinstance(conversation, str) and conversation:
+            responses_params["conversation"] = conversation
+        elif isinstance(conversation, Mapping):
+            responses_params["conversation"] = dict(conversation)
+
+        prompt_cache_key = request_params.get("prompt_cache_key")
+        if isinstance(prompt_cache_key, str) and prompt_cache_key:
+            responses_params["prompt_cache_key"] = prompt_cache_key
+
+        prompt_cache_retention = request_params.get("prompt_cache_retention")
+        responses_params["prompt_cache_retention"] = (
+            prompt_cache_retention
+            if isinstance(prompt_cache_retention, str) and prompt_cache_retention
+            else "24h"
+        )
 
         parallel_tool_calls = request_params.get("parallel_tool_calls")
         if isinstance(parallel_tool_calls, bool):

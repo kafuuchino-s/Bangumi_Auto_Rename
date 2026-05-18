@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+import threading
+import time
+
 from src.rename.case_agent.evidence_broker import EvidenceBroker
 from src.rename.case_agent.models import (
     BangumiGroupCard,
@@ -43,6 +46,25 @@ class FakeBangumiClient:
         return [type('E', (), {'id': 301, 'subject_id': subject_id, 'type': 0, 'sort': 1, 'ep': 1, 'kind': 'ep', 'title': 'Ep1', 'name': 'Ep1', 'name_cn': '第1话', 'airdate': '2024-01-01', 'duration': '24m', 'duration_seconds': 1440, 'desc': 'desc', 'source_form_hint': ''})()]
 
 
+class SlowLookupBangumiClient(FakeBangumiClient):
+    def __init__(self):
+        super().__init__()
+        self.lock = threading.Lock()
+        self.active = 0
+        self.max_active = 0
+
+    def get_subject(self, subject_id):
+        with self.lock:
+            self.active += 1
+            self.max_active = max(self.max_active, self.active)
+        try:
+            time.sleep(0.15)
+            return super().get_subject(subject_id)
+        finally:
+            with self.lock:
+                self.active -= 1
+
+
 def build_ws(**kwargs):
     header = CaseHeader(case_id='C1', round_index=2, evidence_batches_used=0)
     budget_kwargs = dict(max_evidence_batches=3, max_api_calls_per_case=10, max_new_subject_cards=10, max_new_episode_cards=10)
@@ -73,6 +95,33 @@ def test_mixed_batch_subject_lookup_and_episode_list():
     assert new_ws.previous_evidence_results[0].request_results[1].request_type == 'episode_list'
     assert new_ws.previous_evidence_results[0].request_results[0].response_refs == [] or isinstance(new_ws.previous_evidence_results[0].request_results[0].response_refs, list)
     assert all(hasattr(rr, 'request_type') for rr in new_ws.previous_evidence_results[0].request_results)
+
+
+def test_independent_bangumi_requests_are_prefetched_in_parallel_and_merged_in_order():
+    ws = CaseEvidenceWorkspace.from_cards(
+        header=CaseHeader(case_id='C1', round_index=2, evidence_batches_used=0),
+        budget=CaseBudget(max_evidence_batches=3, max_api_calls_per_case=0),
+        local_files=[LocalFileCard(ref='LF1', path='a/b.mkv', is_main=True)],
+        bangumi_subjects=[
+            BangumiSubjectCard(ref='BS1', subject_id=101, subject_type='anime'),
+            BangumiSubjectCard(ref='BS2', subject_id=102, subject_type='anime'),
+        ],
+    )
+    client = SlowLookupBangumiClient()
+    broker = EvidenceBroker(client, max_workers=2)
+
+    new_ws, result = broker.execute_batch(
+        ws,
+        [
+            EvidenceRequest(request_ref='r1', request_type='subject_lookup', subject_refs=['BS1']),
+            EvidenceRequest(request_ref='r2', request_type='subject_lookup', subject_refs=['BS2']),
+        ],
+    )
+
+    assert client.max_active >= 2
+    assert [rr.request_ref for rr in result.request_results] == ['r1', 'r2']
+    assert [rr.response_refs for rr in result.request_results] == [['BS1'], ['BS2']]
+    assert new_ws.budget.used_api_calls == 2
 
 
 def test_partial_success_invalid_anchor_then_valid():
@@ -241,6 +290,64 @@ def test_target_span_returns_detail_equivalent_span():
     assert rr.bangumi_span_cards[0].detail_equivalent is True
     assert len(rr.bangumi_span_cards[0].target_refs) == 108
     assert 'BES1' in new_ws.previous_evidence_results[0].request_results[0].response_refs
+
+
+def test_target_span_not_rejected_by_fixed_special_like_classification():
+    ws = CaseEvidenceWorkspace.from_cards(
+        header=CaseHeader(case_id='C8B', round_index=2, evidence_batches_used=0),
+        budget=CaseBudget(max_evidence_batches=3, max_api_calls_per_case=10, max_new_subject_cards=10, max_new_episode_cards=10),
+        local_files=[
+            LocalFileCard(ref='LF1', path='SP/SP01.mkv', is_main=True, label='SP01.mkv'),
+            LocalFileCard(ref='LF2', path='SP/SP02.mkv', is_main=True, label='SP02.mkv'),
+        ],
+        local_span_cards=[
+            LocalSpanCard(
+                ref='LS1',
+                span_scope='directory',
+                file_refs=['LF1', 'LF2'],
+                file_ref_samples=['LF1', 'LF2'],
+                file_ref_count=2,
+                title_cues=['SP'],
+                episode_token_start=1,
+                episode_token_end=2,
+                episode_token_count=2,
+            )
+        ],
+        bangumi_subjects=[BangumiSubjectCard(ref='BS1', subject_id=101, subject_type='anime')],
+        bangumi_items=[
+            BangumiItemCard(ref='BE1', episode_id=301, subject_ref='BS1', sort=1, ep=1),
+            BangumiItemCard(ref='BE2', episode_id=302, subject_ref='BS1', sort=2, ep=2),
+        ],
+    )
+    object.__setattr__(ws, 'bangumi_span_cards', [
+        BangumiSpanCard(
+            ref='BES1',
+            subject_ref='BS1',
+            target_refs=['BE1', 'BE2'],
+            target_ref_count=2,
+            item_kind='regular',
+            detail_equivalent=True,
+            source_request_ref='sp',
+        )
+    ])
+    broker = EvidenceBroker(FakeBangumiClient())
+    _, result = broker.execute_batch(
+        ws,
+        [
+            EvidenceRequest(
+                request_ref='sp',
+                request_type='target_span',
+                subject_refs=['BS1'],
+                expected_count=2,
+                local_span_ref='LS1',
+                reason='agent requested regular target span evidence',
+            )
+        ],
+    )
+    rr = result.request_results[0]
+    assert rr.accepted is True
+    assert rr.response_refs == ['BES1']
+    assert not any('special-like local span uses special/movie evidence path' in note for note in rr.notes)
 
 
 def test_target_span_missing_span_rejected_without_exception():

@@ -8,6 +8,8 @@ from src.rename.case_agent.models import (
     CaseBudget,
     CaseContract,
     CaseHeader,
+    EvidenceBatchResult,
+    EvidenceRequestResult,
     LocalFileCard,
     LocalSpanCard,
     MappingDraft,
@@ -213,6 +215,81 @@ def test_non_detail_span_intent_requests_target_span_instead_of_bad_patch():
     assert result.blocked_intents[0].requested_request_types == ['target_span']
 
 
+def test_non_detail_visible_span_with_visible_items_generates_detail_span():
+    items = [
+        BangumiItemCard(ref=f'BE{i}', subject_ref='BS1', item_kind='episode', ep=i, sort=i)
+        for i in range(1, 4)
+    ]
+    workspace = _workspace(
+        file_count=3,
+        subjects=[BangumiSubjectCard(ref='BS1', title='Title')],
+        items=items,
+        spans=[
+            BangumiSpanCard(
+                ref='BES1',
+                subject_ref='BS1',
+                target_refs=['BE1', 'BE2', 'BE3'],
+                target_ref_count=3,
+                sort_start=1,
+                sort_end=3,
+                ep_start=1,
+                ep_end=3,
+                detail_equivalent=False,
+            )
+        ],
+    )
+    result = MappingIntentCompiler().compile(
+        workspace.to_dossier(round_context='test'),
+        _draft(),
+        [
+            MappingIntent(
+                decision='map_regular_span',
+                local_ref='LS1',
+                chosen_subject_ref='BS1',
+                chosen_span_ref='BES1',
+                support_refs=['LS1', 'BS1', 'BES1'],
+                reason='agent chose a visible non-detail span whose BE refs are visible',
+            )
+        ],
+    )
+
+    assert result.blocked_intents == []
+    assert len(result.generated_span_cards) == 1
+    assert result.generated_span_cards[0].target_refs == ['BE1', 'BE2', 'BE3']
+    assert len(result.compiled_patches) == 1
+    assert result.compiled_patches[0].target_span_ref == result.generated_span_cards[0].ref
+
+
+def test_regular_span_intent_accepts_visible_be_refs_from_target_refs_field():
+    workspace = _workspace(
+        file_count=2,
+        subjects=[BangumiSubjectCard(ref='BS1', title='Title')],
+        items=[
+            BangumiItemCard(ref='BE1', subject_ref='BS1', item_kind='episode', ep=1, sort=1),
+            BangumiItemCard(ref='BE2', subject_ref='BS1', item_kind='episode', ep=2, sort=2),
+        ],
+    )
+    result = MappingIntentCompiler().compile(
+        workspace.to_dossier(round_context='test'),
+        _draft(),
+        [
+            MappingIntent(
+                decision='map_regular_span',
+                local_ref='LS1',
+                chosen_subject_ref='BS1',
+                target_refs=['BE1', 'BE2'],
+                support_refs=['LS1', 'BS1', 'BE1', 'BE2'],
+                reason='agent used target_refs for the chosen visible BE sequence',
+            )
+        ],
+    )
+
+    assert result.blocked_intents == []
+    assert len(result.generated_span_cards) == 1
+    assert result.generated_span_cards[0].target_refs == ['BE1', 'BE2']
+    assert len(result.compiled_patches) == 1
+
+
 def test_ambiguous_visible_span_candidates_require_agent_choice():
     workspace = _workspace(
         file_count=12,
@@ -231,8 +308,29 @@ def test_ambiguous_visible_span_candidates_require_agent_choice():
     )
 
     assert result.compiled_patches == []
-    assert result.blocked_intents[0].issue_codes == ['ambiguous_visible_target_candidates']
+    assert result.blocked_intents[0].issue_codes == ['explicit_target_choice_required']
     assert result.blocked_intents[0].candidate_target_refs == ['BES1', 'BES2']
+
+
+def test_single_visible_span_candidate_still_requires_explicit_agent_choice():
+    workspace = _workspace(
+        file_count=12,
+        subjects=[BangumiSubjectCard(ref='BS1', title='Title')],
+        spans=[
+            BangumiSpanCard(ref='BES1', subject_ref='BS1', target_refs=[f'BE{i}' for i in range(1, 13)], target_ref_count=12, sort_start=1, sort_end=12, detail_equivalent=True),
+        ],
+    )
+    draft = _draft()
+    draft.rows[0].candidate_target_refs = ['BES1']
+    result = MappingIntentCompiler().compile(
+        workspace.to_dossier(round_context='test'),
+        draft,
+        [MappingIntent(decision='map_regular_span', local_ref='LS1', chosen_subject_ref='BS1', episode_start=1, episode_end=12, support_refs=['LS1', 'BS1'])],
+    )
+
+    assert result.compiled_patches == []
+    assert result.blocked_intents[0].issue_codes == ['explicit_target_choice_required']
+    assert result.blocked_intents[0].candidate_target_refs == ['BES1']
 
 
 def test_regular_span_intent_with_explicit_visible_items_generates_span_card():
@@ -364,6 +462,74 @@ def test_multi_file_row_is_not_compiled_to_explicit_be_item():
     assert result.blocked_intents[0].issue_codes == ['invalid_explicit_multi_file_mapping']
 
 
+def test_multi_file_explicit_item_with_full_item_refs_compiles_to_generated_span():
+    workspace = _workspace(
+        file_count=2,
+        subjects=[BangumiSubjectCard(ref='BS1', title='Title')],
+        items=[
+            BangumiItemCard(ref='BE1', subject_ref='BS1', item_kind='episode', ep=1, sort=1),
+            BangumiItemCard(ref='BE2', subject_ref='BS1', item_kind='episode', ep=2, sort=2),
+        ],
+    )
+    result = MappingIntentCompiler().compile(
+        workspace.to_dossier(round_context='test'),
+        _draft(),
+        [
+            MappingIntent(
+                decision='map_explicit_item',
+                local_ref='LS1',
+                chosen_subject_ref='BS1',
+                chosen_item_ref='BE1',
+                item_refs=['BE2'],
+                support_refs=['LS1', 'BS1', 'BE1', 'BE2'],
+            )
+        ],
+    )
+
+    assert result.blocked_intents == []
+    assert len(result.generated_span_cards) == 1
+    assert result.generated_span_cards[0].target_refs == ['BE1', 'BE2']
+    assert len(result.compiled_patches) == 1
+    assert result.compiled_patches[0].target_span_ref == result.generated_span_cards[0].ref
+
+
+def test_multi_file_explicit_items_can_span_multiple_subjects_when_agent_chose_items():
+    workspace = _workspace(
+        file_count=2,
+        subjects=[
+            BangumiSubjectCard(ref='BS1', title='Movie Part 2'),
+            BangumiSubjectCard(ref='BS2', title='Movie Part 1'),
+        ],
+        items=[
+            BangumiItemCard(ref='BE1', subject_ref='BS1', item_kind='special', ep=1, sort=1),
+            BangumiItemCard(ref='BE2', subject_ref='BS2', item_kind='special', ep=1, sort=1),
+        ],
+    )
+    result = MappingIntentCompiler().compile(
+        workspace.to_dossier(round_context='test'),
+        _draft(),
+        [
+            MappingIntent(
+                decision='map_regular_span',
+                local_ref='LS1',
+                chosen_subject_ref='BS2',
+                item_refs=['BE2', 'BE1'],
+                support_refs=['LS1', 'BS1', 'BS2', 'BE1', 'BE2'],
+                reason='agent explicitly chose one visible movie item per local file',
+            )
+        ],
+    )
+
+    assert result.blocked_intents == []
+    assert len(result.generated_span_cards) == 1
+    assert result.generated_span_cards[0].target_refs == ['BE2', 'BE1']
+    assert result.generated_span_cards[0].subject_ref == ''
+    assert result.generated_span_cards[0].group_ref == 'mixed_subject_explicit_items'
+    assert len(result.compiled_patches) == 1
+    assert result.compiled_patches[0].target_span_ref == result.generated_span_cards[0].ref
+    assert {'BS1', 'BS2', 'BE1', 'BE2'} <= set(result.compiled_patches[0].support_refs)
+
+
 def test_hidden_support_ref_is_rejected_before_patch_application():
     workspace = _workspace(file_count=1, items=[BangumiItemCard(ref='BE1', subject_ref='BS1', item_kind='episode')])
     result = MappingIntentCompiler().compile(
@@ -398,7 +564,7 @@ def test_reject_candidate_then_target_absent_compiles_to_accepted_exclusion():
                 decision='mark_non_bangumi_or_supplemental',
                 local_ref='LS1',
                 reason_kind='bangumi_target_absent',
-                support_refs=['LS1'],
+                support_refs=['LS1', 'BE1'],
                 reason='after rejecting wrong candidates, Bangumi has no matching target',
             ),
         ],
@@ -410,6 +576,88 @@ def test_reject_candidate_then_target_absent_compiles_to_accepted_exclusion():
     assert updated.rows[0].candidate_target_refs == []
     assert updated.rows[0].disposition == 'non_bangumi_or_supplemental'
     assert updated.rows[0].reason_kind == 'bangumi_target_absent'
+
+
+def test_target_absent_without_target_evidence_is_rejected_by_patch_validation():
+    workspace = _workspace(file_count=1)
+    result = MappingIntentCompiler().compile(
+        workspace.to_dossier(round_context='test'),
+        _draft(),
+        [
+            MappingIntent(
+                decision='mark_non_bangumi_or_supplemental',
+                local_ref='LS1',
+                reason_kind='bangumi_target_absent',
+                support_refs=['LS1'],
+                reason='agent claimed absence before any Bangumi evidence was gathered',
+            )
+        ],
+    )
+
+    assert len(result.compiled_patches) == 1
+    _updated, issues = apply_mapping_patches(_draft(), result.compiled_patches, workspace.to_dossier(round_context='apply'))
+    assert [issue.issue_code for issue in issues] == ['target_absent_missing_target_evidence']
+
+
+def test_target_absent_after_empty_subject_search_is_valid_evidence_backed_exclusion():
+    workspace = CaseEvidenceWorkspace.from_cards(
+        header=CaseHeader(case_id='CASE-INTENT'),
+        budget=CaseBudget(),
+        contract=CaseContract(main_file_refs=['LF1'], allowed_file_refs=['LF1']),
+        local_files=[LocalFileCard(ref='LF1', path='Title 01.mkv', is_main=True, label='Title 01.mkv')],
+        local_span_cards=[LocalSpanCard(ref='LS1', file_refs=['LF1'], file_ref_count=1, file_ref_samples=['LF1'])],
+        previous_evidence_results=[
+            EvidenceBatchResult(
+                batch_ref='EB1',
+                status='accepted',
+                request_results=[
+                    EvidenceRequestResult(
+                        request_ref='REQ_SUBJECT_SEARCH_QC1',
+                        request_type='subject_search',
+                        accepted=True,
+                        response_refs=[],
+                    )
+                ],
+            )
+        ],
+    )
+    result = MappingIntentCompiler().compile(
+        workspace.to_dossier(round_context='test'),
+        _draft(),
+        [
+            MappingIntent(
+                decision='mark_non_bangumi_or_supplemental',
+                local_ref='LS1',
+                reason_kind='bangumi_target_absent',
+                support_refs=['LS1'],
+                reason='subject search returned no usable Bangumi target',
+            )
+        ],
+    )
+
+    _updated, issues = apply_mapping_patches(_draft(), result.compiled_patches, workspace.to_dossier(round_context='apply'))
+    assert issues == []
+
+
+def test_invalid_supplemental_reason_kind_is_blocked_before_patch_application():
+    workspace = _workspace(file_count=1)
+    result = MappingIntentCompiler().compile(
+        workspace.to_dossier(round_context='test'),
+        _draft(),
+        [
+            MappingIntent(
+                decision='mark_non_bangumi_or_supplemental',
+                local_ref='LS1',
+                reason_kind='not_matching_target',
+                support_refs=['LS1'],
+                reason='agent chose a supplemental outcome but used a non-allowlisted reason kind',
+            )
+        ],
+    )
+
+    assert result.compiled_patches == []
+    assert result.blocked_intents[0].issue_codes == ['invalid_reason_kind']
+    assert 'pv_cm' in result.blocked_intents[0].observation['allowed_reason_kinds']
 
 
 def test_reject_candidate_accepts_visible_refs_from_item_refs():

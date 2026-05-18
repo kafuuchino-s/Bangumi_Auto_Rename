@@ -113,8 +113,8 @@ def test_local_bangumi_workspace_enforces_round_safety_cap_floor(monkeypatch):
 
     workspace = _build_workspace(local_evidence=_local_evidence(), bangumi_contexts=[])
 
-    assert workspace.header.max_rounds == 48
-    assert workspace.budget.max_judge_rounds == 48
+    assert workspace.header.max_rounds == 6
+    assert workspace.budget.max_judge_rounds == 6
 
 
 def test_local_bangumi_entry_accepted(monkeypatch):

@@ -1,6 +1,7 @@
 import json
 import os
 import tempfile
+import time
 import platform
 import threading
 from contextlib import contextmanager
@@ -36,7 +37,7 @@ CONFIG_DEFAULT = {
     ],  # OpenAI自动路由顺序
     "openai_format_stats": {},  # OpenAI格式测试统计
     "ai_auto_save": False,  # 是否自动保存AI分析结果
-    "ai_response_cache_enabled": False,  # 回归/调试用：缓存 AI 请求响应，生产默认关闭
+    "ai_response_cache_enabled": True,  # 兼容旧配置页；本地响应缓存已停用，provider input cache 始终尝试
     "rename_local_bangumi_case_agent_primary_enabled": True,
     "rename_local_bangumi_case_agent_max_rounds": 48,
     "rename_local_bangumi_case_agent_max_evidence_batches": 12,
@@ -204,7 +205,19 @@ class ConfigManager:
                     file.write('\n')
                     file.flush()
                     os.fsync(file.fileno())
-                os.replace(temp_file_path, CONFIG_PATH)
+                last_error: PermissionError | None = None
+                for attempt in range(5):
+                    try:
+                        os.replace(temp_file_path, CONFIG_PATH)
+                        last_error = None
+                        break
+                    except PermissionError as exc:
+                        last_error = exc
+                        if attempt >= 4:
+                            raise
+                        time.sleep(0.05 * (attempt + 1))
+                if last_error is not None:
+                    raise last_error
             finally:
                 if temp_file_path.exists():
                     temp_file_path.unlink()
@@ -212,8 +225,20 @@ class ConfigManager:
     def update_config(self):
         with self._io_lock:
             # 打开config.json
-            with open(CONFIG_PATH, 'r', encoding='UTF-8') as f:
-                self.config = json.load(f)
+            last_error: Exception | None = None
+            for attempt in range(5):
+                try:
+                    with open(CONFIG_PATH, 'r', encoding='UTF-8') as f:
+                        self.config = json.load(f)
+                    last_error = None
+                    break
+                except PermissionError as exc:
+                    last_error = exc
+                    if attempt >= 4:
+                        raise
+                    time.sleep(0.05 * (attempt + 1))
+            if last_error is not None:
+                raise last_error
             # 对没有的值，添加默认值
             for key in CONFIG_DEFAULT:
                 if key not in self.config:

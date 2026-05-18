@@ -4,6 +4,8 @@ from src.rename.case_agent.models import (
     CaseContract,
     CaseDossier,
     CaseHeader,
+    EvidenceBatchResult,
+    EvidenceRequestResult,
     MappingDraft,
     MappingDraftRow,
     LocalFileCard,
@@ -11,6 +13,23 @@ from src.rename.case_agent.models import (
     BangumiSpanCard,
 )
 from src.rename.case_agent.verifier import verify_mapping_draft_accounting
+
+
+def target_evidence() -> list[EvidenceBatchResult]:
+    return [
+        EvidenceBatchResult(
+            batch_ref='EB1',
+            status='accepted',
+            request_results=[
+                EvidenceRequestResult(
+                    request_ref='REQ_SUBJECT_SEARCH_QC1',
+                    request_type='subject_search',
+                    accepted=True,
+                    response_refs=[],
+                )
+            ],
+        )
+    ]
 
 
 def make_dossier() -> CaseDossier:
@@ -146,7 +165,7 @@ def test_supplemental_rows_expand_to_unaligned_accounting_assignments():
 def test_multi_file_supplemental_is_validated_without_fixed_semantic_shape_gate():
     dossier = make_dossier()
     dossier.local_files = [
-        LocalFileCard(ref=f'LF{i}', path=f'Show #{i:02d}.mkv', is_main=True, file_kind='video')
+        LocalFileCard(ref=f'LF{i}', path=f'Extras/Show Extra #{i:02d}.mkv', is_main=True, file_kind='video')
         for i in range(1, 11)
     ]
     dossier.local_span_cards = [
@@ -155,13 +174,14 @@ def test_multi_file_supplemental_is_validated_without_fixed_semantic_shape_gate(
             span_scope='token_segment',
             file_refs=[f'LF{i}' for i in range(1, 11)],
             file_ref_count=10,
-            file_ref_samples=['LF1', 'LF2', 'LF10'],
-            ordering_basis='episode_token_order',
-            episode_token_start=1,
-            episode_token_end=10,
-            episode_token_count=10,
-        )
-    ]
+                file_ref_samples=['LF1', 'LF2', 'LF10'],
+                ordering_basis='episode_token_order',
+                episode_token_start=1,
+                episode_token_end=10,
+                episode_token_count=10,
+                title_cues=['Extras'],
+            )
+        ]
     draft = draft_with_rows([
         MappingDraftRow(row_ref='R1', local_ref='LS_REGULAR', local_ref_kind='span', disposition='non_bangumi_or_supplemental', reason_kind='other_supplemental', support_refs=['LS_REGULAR']),
     ])
@@ -170,6 +190,43 @@ def test_multi_file_supplemental_is_validated_without_fixed_semantic_shape_gate(
 
     assert result.passed is True
     assert not any(issue.issue_code == 'regular_main_span_cannot_be_supplemental' for issue in result.issues)
+
+
+def test_supplemental_reason_kind_is_agent_semantics_not_filename_regex_gate():
+    dossier = make_dossier()
+    main_refs = [f'LF{i}' for i in range(1, 5)]
+    dossier.contract.main_file_refs = main_refs
+    dossier.contract.allowed_file_refs = list(main_refs)
+    dossier.local_files = [
+        LocalFileCard(ref=ref, path=f'SPs/Show SP{index:02d} Theater Manners.mkv', is_main=True, file_kind='video')
+        for index, ref in enumerate(main_refs, start=1)
+    ]
+    dossier.local_span_cards = [
+        LocalSpanCard(
+            ref='LS_THEATER_MANNERS',
+            span_scope='residual',
+            file_refs=main_refs,
+            file_ref_count=len(main_refs),
+            file_ref_samples=['LF1', 'LF2', 'LF4'],
+            ordering_basis='unknown',
+            title_cues=['SPs', 'Theater Manners'],
+        )
+    ]
+    draft = draft_with_rows([
+        MappingDraftRow(
+            row_ref='R1',
+            local_ref='LS_THEATER_MANNERS',
+            local_ref_kind='span',
+            disposition='non_bangumi_or_supplemental',
+            reason_kind='bonus_video',
+            support_refs=['LS_THEATER_MANNERS'],
+        ),
+    ])
+
+    result = verify_mapping_draft_accounting(dossier, draft)
+
+    assert result.passed is True
+    assert not any(issue.issue_code == 'supplemental_reason_not_supported_by_local_text' for issue in result.issues)
 
 
 def test_singleton_visible_extra_can_be_accepted_as_supplemental():
@@ -200,6 +257,7 @@ def test_singleton_without_bangumi_target_can_be_accepted_as_target_absent():
     dossier.assignable_target_refs = []
     dossier.detailed_card_refs = []
     dossier.seen_detail_refs = []
+    dossier.previous_evidence_results = target_evidence()
     draft = draft_with_rows([
         MappingDraftRow(row_ref='R1', local_ref='LS_OAD', local_ref_kind='span', disposition='non_bangumi_or_supplemental', reason_kind='bangumi_target_absent', support_refs=['LS_OAD']),
     ])
@@ -234,6 +292,7 @@ def test_non_regular_sp_extra_span_can_be_accepted_as_target_absent():
     dossier.assignable_target_refs = []
     dossier.detailed_card_refs = []
     dossier.seen_detail_refs = []
+    dossier.previous_evidence_results = target_evidence()
     draft = draft_with_rows([
         MappingDraftRow(row_ref='R1', local_ref='LS_SP_EXTRA', local_ref_kind='span', disposition='non_bangumi_or_supplemental', reason_kind='bangumi_target_absent', support_refs=['LS_SP_EXTRA']),
     ])
@@ -288,6 +347,7 @@ def test_regular_numbered_span_target_absent_is_editor_semantics_not_shape_rejec
     dossier.assignable_target_refs = []
     dossier.detailed_card_refs = []
     dossier.seen_detail_refs = []
+    dossier.previous_evidence_results = target_evidence()
     draft = draft_with_rows([
         MappingDraftRow(row_ref='R1', local_ref='LS_REGULAR', local_ref_kind='span', disposition='non_bangumi_or_supplemental', reason_kind='bangumi_target_absent', support_refs=['LS_REGULAR']),
     ])

@@ -20,6 +20,16 @@ ALLOWED_SUPPLEMENTAL_REASON_KINDS = {
 }
 
 _BANGUMI_TARGET_ABSENT_REASON_KIND = 'bangumi_target_absent'
+_TARGET_SIDE_EVIDENCE_REQUEST_TYPES = {
+    'subject_search',
+    'subject_lookup',
+    'related_expansion',
+    'episode_list',
+    'episode_detail',
+    'target_span',
+    'target_window',
+    'target_detail',
+}
 
 
 def _issue(ref: str, issue_code: str, message: str, *, related_refs: list[str] | None = None) -> VerifierIssue:
@@ -254,6 +264,32 @@ def _visible_assignable_candidate_refs(dossier: CaseDossier, row: MappingDraftRo
     return _dedupe_preserve_order(candidates)
 
 
+def _has_prior_target_side_evidence(dossier: CaseDossier) -> bool:
+    for batch in list(getattr(dossier, 'previous_evidence_results', []) or []):
+        for result in list(getattr(batch, 'request_results', []) or getattr(batch, 'results', []) or []):
+            request_type = str(getattr(result, 'request_type', '') or '')
+            if request_type not in _TARGET_SIDE_EVIDENCE_REQUEST_TYPES:
+                continue
+            if bool(getattr(result, 'accepted', False)) or str(getattr(batch, 'status', '') or '') in {'accepted', 'partial'}:
+                return True
+    return False
+
+
+def _support_refs_include_target_surface(dossier: CaseDossier, support_refs: set[str]) -> bool:
+    if not support_refs:
+        return False
+    visible = getattr(dossier, 'visible_refs', None)
+    target_refs = {
+        *[str(ref or '') for ref in list(getattr(visible, 'bangumi_subject_refs', []) or [])],
+        *[str(ref or '') for ref in list(getattr(visible, 'bangumi_relation_refs', []) or [])],
+        *[str(ref or '') for ref in list(getattr(visible, 'bangumi_group_refs', []) or [])],
+        *[str(ref or '') for ref in list(getattr(visible, 'bangumi_item_refs', []) or [])],
+        *[str(ref or '') for ref in list(getattr(visible, 'target_refs', []) or [])],
+        *[str(getattr(card, 'ref', '') or '') for card in list(getattr(dossier, 'bangumi_span_cards', []) or [])],
+    }
+    return bool(support_refs & {ref for ref in target_refs if ref})
+
+
 def _bangumi_target_absent_policy_issues(
     dossier: CaseDossier,
     row: MappingDraftRow,
@@ -268,6 +304,17 @@ def _bangumi_target_absent_policy_issues(
             row_ref,
             'missing_support_refs',
             'bangumi_target_absent requires support_refs containing the local row or covered file refs',
+            related_refs=[local_ref, *covered_main_refs[:8]],
+        )]
+    if (
+        not _has_prior_target_side_evidence(dossier)
+        and not _visible_assignable_candidate_refs(dossier, row)
+        and not _support_refs_include_target_surface(dossier, support_refs)
+    ):
+        return [_issue(
+            row_ref,
+            'target_absent_missing_target_evidence',
+            'bangumi_target_absent requires executed target-side evidence or visible target surface; run subject_search/episode/related/detail evidence or cite visible BS/BE/BES support refs',
             related_refs=[local_ref, *covered_main_refs[:8]],
         )]
     # Whether visible candidates semantically correspond to this row belongs to
@@ -304,7 +351,7 @@ def supplemental_row_policy_issues(dossier: CaseDossier, row: MappingDraftRow) -
             related_refs=[local_ref, *covered_main_refs[:8]],
         )]
 
-    # Whether a row is truly PV/CM/bonus/etc. is semantic and belongs to the
-    # Case Agent. The fixed layer only verifies refs and support/accounting; it
-    # does not infer file role from filenames or visible candidate presence.
+    # Whether the supplemental reason semantically fits the local text belongs
+    # to the Case Agent. The fixed layer only verifies allowlisted shape,
+    # support refs, and accounting.
     return []

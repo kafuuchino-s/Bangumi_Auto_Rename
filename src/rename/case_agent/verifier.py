@@ -300,7 +300,22 @@ def verify_judge_output(dossier: CaseDossier, output: CaseJudgeOutput) -> CaseVe
                 related_refs=[a.file_ref for a in unaligned_assignments[:8]],
             ))
 
-    targets = Counter(a.target_ref for a in effective_assignment_intents if a.target_ref != 'UNALIGNED')
+    def _assignment_target_refs(assignment: AssignmentIntent) -> list[str]:
+        target_refs = [
+            str(ref or '')
+            for ref in list(getattr(assignment, 'target_refs', []) or [])
+            if str(ref or '')
+        ]
+        if target_refs:
+            return list(dict.fromkeys(target_refs))
+        target_ref = str(getattr(assignment, 'target_ref', '') or '')
+        return [target_ref] if target_ref and target_ref != 'UNALIGNED' else []
+
+    targets = Counter(
+        target_ref
+        for assignment in effective_assignment_intents
+        for target_ref in _assignment_target_refs(assignment)
+    )
     assignable_refs = _assignable_target_refs(dossier)
     for target, count in targets.items():
         if count > 1:
@@ -317,10 +332,23 @@ def verify_judge_output(dossier: CaseDossier, output: CaseJudgeOutput) -> CaseVe
     finding_refs = {f.ref for f in output.findings}
     for a in effective_assignment_intents:
         is_expanded_bulk = ':' in a.ref and str(getattr(a, 'reason', '')).startswith('bulk:')
+        assignment_target_refs = _assignment_target_refs(a)
+        if getattr(a, 'target_refs', None):
+            if a.target_ref not in assignment_target_refs:
+                issues.append(_issue(a.ref, 'invalid_target', 'target_ref must be included in target_refs for composite assignments'))
         if not a.support_finding_refs:
             issues.append(_issue(a.ref, 'missing_support', 'support_finding_refs required'))
-        if not a.support_card_refs or a.file_ref not in a.support_card_refs or (a.target_ref != 'UNALIGNED' and a.target_ref not in a.support_card_refs):
-            issues.append(_issue(a.ref, 'missing_support', 'support_card_refs must include file_ref and target_ref'))
+        required_support_refs = [a.file_ref, *assignment_target_refs]
+        if (
+            not a.support_card_refs
+            or any(ref and ref not in a.support_card_refs for ref in required_support_refs)
+        ):
+            message = (
+                'support_card_refs must include file_ref and all target refs'
+                if len(assignment_target_refs) > 1
+                else 'support_card_refs must include file_ref and target_ref'
+            )
+            issues.append(_issue(a.ref, 'missing_support', message))
         if any(ref not in finding_refs for ref in a.support_finding_refs):
             issues.append(_issue(a.ref, 'missing_support', 'support_finding_refs must reference output.findings only'))
         support_card_refs = set(a.support_card_refs)
@@ -332,12 +360,13 @@ def verify_judge_output(dossier: CaseDossier, output: CaseJudgeOutput) -> CaseVe
             issues.append(_issue(a.ref, 'missing_support', 'support_card_refs must not include finding refs'))
         if any(ref in (_visible_cards(dossier) - finding_refs) for ref in a.support_finding_refs):
             issues.append(_issue(a.ref, 'missing_support', 'support_finding_refs must not include visible card refs'))
-        if a.target_ref != 'UNALIGNED' and a.target_ref.startswith('BE') and a.target_ref not in a.support_card_refs:
-            issues.append(_issue(a.ref, 'missing_support', 'BE target requires target_ref in support_card_refs'))
+        if assignment_target_refs and any(ref.startswith('BE') and ref not in a.support_card_refs for ref in assignment_target_refs):
+            issues.append(_issue(a.ref, 'missing_support', 'BE targets require target refs in support_card_refs'))
         if a.target_ref == 'UNALIGNED' and 'UNALIGNED' in a.support_card_refs:
             issues.append(_issue(a.ref, 'missing_support', 'UNALIGNED target does not require UNALIGNED support card'))
-        if a.target_ref != 'UNALIGNED' and a.target_ref not in assignable_refs:
-            issues.append(_issue(a.ref, 'invalid_target', 'assignment target must be in assignable_target_refs'))
+        for target_ref in assignment_target_refs:
+            if target_ref not in assignable_refs:
+                issues.append(_issue(a.ref, 'invalid_target', 'assignment target must be in assignable_target_refs'))
 
     if expanded_assignment_intents:
         expanded_file_counts = Counter(a.file_ref for a in expanded_assignment_intents)

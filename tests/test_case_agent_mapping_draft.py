@@ -1,6 +1,23 @@
 from src.rename.case_agent.mapping_draft import apply_mapping_patches, build_initial_mapping_draft, compact_mapping_draft, summarize_mapping_draft_coverage, validate_mapping_patch
 from src.rename.case_agent.mapping_draft import compute_local_span_partition_coverage
-from src.rename.case_agent.models import BangumiItemCard, BangumiSpanCard, CaseDossier, LocalFileCard, LocalSpanCard, MappingDraft, MappingDraftPatch, MappingDraftRow
+from src.rename.case_agent.models import BangumiItemCard, BangumiSpanCard, CaseDossier, EvidenceBatchResult, EvidenceRequestResult, LocalFileCard, LocalSpanCard, MappingDraft, MappingDraftPatch, MappingDraftRow
+
+
+def _target_evidence() -> list[EvidenceBatchResult]:
+    return [
+        EvidenceBatchResult(
+            batch_ref='EB1',
+            status='accepted',
+            request_results=[
+                EvidenceRequestResult(
+                    request_ref='REQ_SUBJECT_SEARCH_QC1',
+                    request_type='subject_search',
+                    accepted=True,
+                    response_refs=[],
+                )
+            ],
+        )
+    ]
 
 
 def _dossier() -> CaseDossier:
@@ -40,7 +57,7 @@ def test_initial_draft_uses_child_spans_and_detail_targets():
     assert draft.rows[0].candidate_target_refs == ['BS1']
 
 
-def test_initial_draft_keeps_special_like_span_off_regular_span_candidates():
+def test_initial_draft_exposes_regular_and_special_candidates_for_agent_choice():
     local_files = [
         LocalFileCard(ref='F1', path='pkg/Show 01.mkv', is_main=True),
         LocalFileCard(ref='F2', path='pkg/Show 02.mkv', is_main=True),
@@ -61,8 +78,8 @@ def test_initial_draft_keeps_special_like_span_off_regular_span_candidates():
     draft = build_initial_mapping_draft(dossier)
     rows = {row.local_ref: row for row in draft.rows}
 
-    assert rows['LS_REG'].candidate_target_refs == ['BES_REG']
-    assert rows['LS_SP'].candidate_target_refs == ['BES_SP']
+    assert rows['LS_REG'].candidate_target_refs == ['BES_REG', 'BES_SP']
+    assert rows['LS_SP'].candidate_target_refs == ['BES_REG', 'BES_SP']
 
 
 def test_initial_draft_builds_rows_for_all_child_spans():
@@ -331,6 +348,7 @@ def test_bangumi_target_absent_patch_is_allowed_for_singleton():
     dossier.assignable_target_refs = []
     dossier.detailed_card_refs = []
     dossier.seen_detail_refs = []
+    dossier.previous_evidence_results = _target_evidence()
     draft = MappingDraft(rows=[MappingDraftRow(row_ref='MDR1', local_ref='LS_OAD', local_ref_kind='span')])
     patch = MappingDraftPatch(
         op='mark_non_bangumi_or_supplemental',

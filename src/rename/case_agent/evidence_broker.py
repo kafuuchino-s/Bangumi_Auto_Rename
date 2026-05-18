@@ -1,5 +1,10 @@
 from __future__ import annotations
 
+import os
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from dataclasses import dataclass
+from typing import Any, Callable
+
 from .broker_budget import BudgetLedger, BudgetExceeded
 from .broker_episodes import execute_episode_detail, execute_episode_list
 from .broker_related import execute_related_expansion
@@ -7,11 +12,70 @@ from .broker_search import execute_subject_search
 from .broker_subject import execute_subject_lookup
 from .models import BangumiItemCard, BangumiSpanCard, EvidenceBatchResult, EvidenceRequest, EvidenceRequestResult
 from .notebook import close_notebook_agenda_for_evidence_results
-from .special_investigation import is_special_eligible_span
 from .workspace import CaseEvidenceWorkspace
 
 
 PROMPT_DETAIL_CARD_CAP = 16
+_PREFETCHABLE_REQUEST_TYPES = {
+    'subject_lookup',
+    'subject_search',
+    'related_expansion',
+    'episode_list',
+    'episode_detail',
+}
+
+
+@dataclass(frozen=True)
+class _PrefetchJob:
+    cache_key: tuple[str, object]
+    run: Callable[[], list[tuple[str, object, object]]]
+
+
+class _PrefetchedBangumiClient:
+    def __init__(self, fallback: Any) -> None:
+        self._fallback = fallback
+        self.subjects: dict[int, object] = {}
+        self.searches: dict[tuple[str, int | None], object] = {}
+        self.related: dict[int, object] = {}
+        self.episodes: dict[int, object] = {}
+
+    def add(self, method: str, key: object, value: object) -> None:
+        if method == 'get_subject':
+            self.subjects[int(key)] = value
+        elif method == 'search_subjects':
+            text, year = key
+            self.searches[(str(text), year)] = value
+        elif method == 'get_related_subjects':
+            self.related[int(key)] = value
+        elif method == 'get_episodes':
+            self.episodes[int(key)] = value
+
+    def has_data(self) -> bool:
+        return bool(self.subjects or self.searches or self.related or self.episodes)
+
+    def get_subject(self, subject_id: int):
+        key = int(subject_id or 0)
+        if key in self.subjects:
+            return self.subjects[key]
+        return self._fallback.get_subject(subject_id)
+
+    def search_subjects(self, text: str, year_hint: int | None = None):
+        key = (str(text or ''), year_hint)
+        if key in self.searches:
+            return self.searches[key]
+        return self._fallback.search_subjects(text, year_hint)
+
+    def get_related_subjects(self, subject_id: int):
+        key = int(subject_id or 0)
+        if key in self.related:
+            return self.related[key]
+        return self._fallback.get_related_subjects(subject_id)
+
+    def get_episodes(self, subject_id: int):
+        key = int(subject_id or 0)
+        if key in self.episodes:
+            return self.episodes[key]
+        return self._fallback.get_episodes(subject_id)
 
 
 def _ref_samples(refs: list[str], *, limit: int = 5) -> list[str]:
@@ -74,12 +138,6 @@ def _build_target_span_result(request, cards: list[BangumiSpanCard], notes: list
 
 def _target_span_candidate_cards(workspace: CaseEvidenceWorkspace, request: EvidenceRequest) -> list[BangumiSpanCard]:
     request_ref = str(getattr(request, 'request_ref', '') or '')
-    local_span_ref = str(getattr(request, 'local_span_ref', '') or '')
-    if local_span_ref:
-        dossier = workspace.to_dossier(round_context='target_span_broker')
-        local_span = next((span for span in list(getattr(dossier, 'local_span_cards', []) or []) if str(getattr(span, 'ref', '') or '') == local_span_ref), None)
-        if is_special_eligible_span(local_span, dossier):
-            return []
     explicit_window = bool(
         getattr(request, 'sort_start', 0)
         or getattr(request, 'sort_end', 0)
@@ -123,15 +181,6 @@ def _target_span_candidate_cards(workspace: CaseEvidenceWorkspace, request: Evid
         return ordered[:PROMPT_DETAIL_CARD_CAP]
     matched = [span for span in ordered if int(getattr(span, 'target_ref_count', 0) or len(getattr(span, 'target_refs', []) or [])) == int(request.expected_count)]
     return matched[:PROMPT_DETAIL_CARD_CAP]
-
-
-def _is_special_eligible_target_span_request(workspace: CaseEvidenceWorkspace, request: EvidenceRequest) -> bool:
-    local_span_ref = str(getattr(request, 'local_span_ref', '') or '')
-    if not local_span_ref:
-        return False
-    dossier = workspace.to_dossier(round_context='target_span_broker')
-    local_span = next((span for span in list(getattr(dossier, 'local_span_cards', []) or []) if str(getattr(span, 'ref', '') or '') == local_span_ref), None)
-    return is_special_eligible_span(local_span, dossier)
 
 
 def _windowed_item_span_candidates(workspace: CaseEvidenceWorkspace, request: EvidenceRequest) -> list[BangumiSpanCard]:
@@ -228,8 +277,9 @@ def _request_failure_reason(request: EvidenceRequest, notes: list[str]) -> str:
 
 
 class EvidenceBroker:
-    def __init__(self, bangumi_client):
+    def __init__(self, bangumi_client, *, max_workers: int | None = None):
         self.bangumi_client = bangumi_client
+        self.max_workers = _bounded_worker_count(max_workers)
 
     def execute_batch(self, workspace: CaseEvidenceWorkspace, requests: list[EvidenceRequest]) -> tuple[CaseEvidenceWorkspace, EvidenceBatchResult]:
         batch_ref = f"EB{workspace.header.evidence_batches_used + 1}"
@@ -258,16 +308,11 @@ class EvidenceBroker:
         status = 'accepted'
 
         current_ws = workspace
-        for request in requests:
-            validation = self._validate_request(current_ws, request)
-            if validation is not None:
-                request_results.append(validation.model_copy(update={'request_type': request.request_type}))
-                status = 'partial'
-                continue
-            produced_ws, request_result, delta = self._execute_request(current_ws, request, ledger)
-            ledger = delta
-            current_ws = produced_ws
-            request_results.append(request_result.model_copy(update={'request_type': request.request_type}))
+        pending_prefetch_requests: list[EvidenceRequest] = []
+
+        def record_result(request_result: EvidenceRequestResult) -> None:
+            nonlocal status
+            request_results.append(request_result)
             if not request_result.accepted:
                 status = 'partial'
             added_subjects.extend(getattr(request_result, '_added_subjects', []))
@@ -277,6 +322,46 @@ class EvidenceBroker:
             added_provenance.extend(getattr(request_result, '_added_provenance', []))
             enriched_subjects.extend(getattr(request_result, '_enriched_subjects', []))
             enriched_items.extend(getattr(request_result, '_enriched_items', []))
+
+        def execute_one(request: EvidenceRequest, *, prefetched_client: _PrefetchedBangumiClient | None = None) -> None:
+            nonlocal current_ws, ledger
+            validation = self._validate_request(current_ws, request)
+            if validation is not None:
+                record_result(validation.model_copy(update={'request_type': request.request_type}))
+                return
+            produced_ws, request_result, delta = self._execute_request(
+                current_ws,
+                request,
+                ledger,
+                bangumi_client=prefetched_client,
+            )
+            ledger = delta
+            current_ws = produced_ws
+            record_result(request_result.model_copy(update={'request_type': request.request_type}))
+
+        def flush_prefetch_requests() -> None:
+            nonlocal pending_prefetch_requests
+            if not pending_prefetch_requests:
+                return
+            prefetched_client = self._prefetch_for_requests(current_ws, pending_prefetch_requests)
+            for queued_request in pending_prefetch_requests:
+                execute_one(
+                    queued_request,
+                    prefetched_client=prefetched_client if prefetched_client.has_data() else None,
+                )
+            pending_prefetch_requests = []
+
+        for request in requests:
+            if self._can_prefetch_request(current_ws, request):
+                pending_prefetch_requests.append(request)
+                continue
+            flush_prefetch_requests()
+            if self._can_prefetch_request(current_ws, request):
+                pending_prefetch_requests.append(request)
+                continue
+            execute_one(request)
+
+        flush_prefetch_requests()
 
         if status == 'accepted' and any(not r.accepted for r in request_results):
             status = 'partial'
@@ -325,6 +410,7 @@ class EvidenceBroker:
             mapping_draft_candidate_comparisons=getattr(current_ws, 'mapping_draft_candidate_comparisons', []),
             case_briefing=getattr(current_ws, 'case_briefing', None),
             investigation_notebook=updated_notebook,
+            case_resolution_ledger=getattr(current_ws, 'case_resolution_ledger', None),
             plan_state=plan_state.model_copy(update={
                 'selected_menu_request_ids': list(dict.fromkeys([*(getattr(plan_state, 'selected_menu_request_ids', []) or []), *selected_ids])),
                 'completed_menu_request_ids': list(dict.fromkeys([*(getattr(plan_state, 'completed_menu_request_ids', []) or []), *completed_ids])),
@@ -381,25 +467,33 @@ class EvidenceBroker:
             return EvidenceRequestResult(request_ref=request.request_ref, accepted=False, notes=['invalid subject_refs'])
         return None
 
-    def _execute_request(self, workspace: CaseEvidenceWorkspace, request: EvidenceRequest, ledger: BudgetLedger):
+    def _execute_request(
+        self,
+        workspace: CaseEvidenceWorkspace,
+        request: EvidenceRequest,
+        ledger: BudgetLedger,
+        *,
+        bangumi_client: Any | None = None,
+    ):
+        active_client = bangumi_client or self.bangumi_client
         if request.request_type == 'subject_lookup':
-            subjects, provenance, rr, ledger = execute_subject_lookup(request, workspace, None_to_registry(workspace), ledger, self.bangumi_client)
+            subjects, provenance, rr, ledger = execute_subject_lookup(request, workspace, None_to_registry(workspace), ledger, active_client)
             rr._added_subjects = subjects; rr._added_provenance = provenance
             return workspace.with_replaced_cards(subjects=subjects, provenance=provenance, evidence_results=[rr]), rr, ledger
         if request.request_type == 'subject_search':
-            subjects, provenance, rr, ledger = execute_subject_search(request, workspace, None_to_registry(workspace), ledger, self.bangumi_client)
+            subjects, provenance, rr, ledger = execute_subject_search(request, workspace, None_to_registry(workspace), ledger, active_client)
             rr._added_subjects = subjects; rr._added_provenance = provenance
             return workspace.with_added_evidence(subjects=subjects, provenance=provenance, evidence_results=[rr]), rr, ledger
         if request.request_type == 'related_expansion':
-            subjects, relations, provenance, rr, ledger = execute_related_expansion(request, workspace, None_to_registry(workspace), ledger, self.bangumi_client)
+            subjects, relations, provenance, rr, ledger = execute_related_expansion(request, workspace, None_to_registry(workspace), ledger, active_client)
             rr._added_subjects = subjects; rr._added_relations = relations; rr._added_provenance = provenance
             return workspace.with_added_evidence(subjects=subjects, relations=relations, provenance=provenance, evidence_results=[rr]), rr, ledger
         if request.request_type == 'episode_list':
-            groups, items, provenance, rr, ledger = execute_episode_list(request, workspace, None_to_registry(workspace), ledger, self.bangumi_client)
+            groups, items, provenance, rr, ledger = execute_episode_list(request, workspace, None_to_registry(workspace), ledger, active_client)
             rr._added_groups = groups; rr._added_items = items; rr._added_provenance = provenance
             return workspace.with_added_evidence(groups=groups, items=items, provenance=provenance, evidence_results=[rr]), rr, ledger
         if request.request_type == 'episode_detail':
-            items, provenance, rr, ledger = execute_episode_detail(request, workspace, None_to_registry(workspace), ledger, self.bangumi_client)
+            items, provenance, rr, ledger = execute_episode_detail(request, workspace, None_to_registry(workspace), ledger, active_client)
             rr._enriched_items = items
             return workspace.with_replaced_cards(items=items, evidence_results=[rr]).with_seen_detail_refs([card.ref for card in items]), rr, ledger
         if request.request_type == 'local_file_detail':
@@ -428,10 +522,6 @@ class EvidenceBroker:
             if request.local_span_ref == 'LS_PACKAGE':
                 rr = EvidenceRequestResult(request_ref=request.request_ref, request_type=request.request_type, accepted=False, notes=['package_span_requires_child_span_requests'])
                 return workspace.with_replaced_cards(evidence_results=[rr]), rr, ledger
-            if _is_special_eligible_target_span_request(workspace, request):
-                notes = [f'special-like local span uses special/movie evidence path, not regular target_span: {request.local_span_ref or ""}']
-                rr = _build_target_span_result(request, [], notes)
-                return workspace.with_replaced_cards(evidence_results=[rr]), rr, ledger
             spans = _target_span_candidate_cards(workspace, request)
             if not spans:
                 spans = _windowed_item_span_candidates(workspace, request)
@@ -445,7 +535,140 @@ class EvidenceBroker:
             return workspace.with_replaced_cards(evidence_results=[rr]).with_seen_detail_refs(span_detail_refs), rr, ledger
         return workspace, EvidenceRequestResult(request_ref=request.request_ref, request_type=request.request_type, accepted=False, notes=['unknown request_type']), ledger
 
+    def _can_prefetch_request(self, workspace: CaseEvidenceWorkspace, request: EvidenceRequest) -> bool:
+        if self.max_workers <= 1:
+            return False
+        # Preserve bounded budget semantics by using the original sequential
+        # path whenever a hard IO/card/search ceiling is present.
+        if any(
+            getattr(workspace.budget, field, 0)
+            for field in (
+                'max_api_calls_per_case',
+                'max_subject_searches',
+                'max_new_subject_cards',
+                'max_new_episode_cards',
+            )
+        ):
+            return False
+        if request.request_type not in _PREFETCHABLE_REQUEST_TYPES:
+            return False
+        if self._validate_request(workspace, request) is not None:
+            return False
+        return bool(self._prefetch_jobs_for_request(workspace, request))
+
+    def _prefetch_for_requests(self, workspace: CaseEvidenceWorkspace, requests: list[EvidenceRequest]) -> _PrefetchedBangumiClient:
+        prefetched_client = _PrefetchedBangumiClient(self.bangumi_client)
+        jobs: list[_PrefetchJob] = []
+        seen_keys: set[tuple[str, object]] = set()
+        for request in requests:
+            for job in self._prefetch_jobs_for_request(workspace, request):
+                if job.cache_key in seen_keys:
+                    continue
+                seen_keys.add(job.cache_key)
+                jobs.append(job)
+        if not jobs:
+            return prefetched_client
+        worker_count = min(self.max_workers, len(jobs))
+        if worker_count <= 1:
+            for job in jobs:
+                self._store_prefetch_results(prefetched_client, job)
+            return prefetched_client
+        with ThreadPoolExecutor(max_workers=worker_count, thread_name_prefix='bangumi-evidence') as executor:
+            futures = [executor.submit(job.run) for job in jobs]
+            for future in as_completed(futures):
+                try:
+                    for method, key, value in future.result():
+                        prefetched_client.add(method, key, value)
+                except Exception:
+                    continue
+        return prefetched_client
+
+    def _store_prefetch_results(self, prefetched_client: _PrefetchedBangumiClient, job: _PrefetchJob) -> None:
+        try:
+            results = job.run()
+        except Exception:
+            return
+        for method, key, value in results:
+            prefetched_client.add(method, key, value)
+
+    def _prefetch_jobs_for_request(self, workspace: CaseEvidenceWorkspace, request: EvidenceRequest) -> list[_PrefetchJob]:
+        if request.request_type == 'subject_lookup':
+            jobs: list[_PrefetchJob] = []
+            for subject_ref in list(request.subject_refs or []):
+                subject_id = _subject_id_from_workspace(workspace, subject_ref)
+                if subject_id <= 0:
+                    continue
+                jobs.append(_PrefetchJob(
+                    cache_key=('get_subject', subject_id),
+                    run=lambda subject_id=subject_id: [('get_subject', subject_id, self.bangumi_client.get_subject(subject_id))],
+                ))
+            return jobs
+        if request.request_type == 'subject_search':
+            query_ref = (request.query_refs or [''])[0]
+            query_card = _query_card_from_workspace(workspace, query_ref)
+            if query_card is None:
+                return []
+            search_text = str(getattr(query_card, 'query_text', '') or '')
+            year_hint = None
+            if not search_text.strip():
+                return []
+            return [_PrefetchJob(
+                cache_key=('search_subjects', (search_text, year_hint)),
+                run=lambda search_text=search_text, year_hint=year_hint: [('search_subjects', (search_text, year_hint), self.bangumi_client.search_subjects(search_text, year_hint))],
+            )]
+        if request.request_type == 'related_expansion':
+            subject_ref = (request.subject_refs or [''])[0]
+            subject_id = _subject_id_from_workspace(workspace, subject_ref)
+            if subject_id <= 0:
+                return []
+            return [_PrefetchJob(
+                cache_key=('get_related_subjects', subject_id),
+                run=lambda subject_id=subject_id: [('get_related_subjects', subject_id, self.bangumi_client.get_related_subjects(subject_id))],
+            )]
+        if request.request_type in {'episode_list', 'episode_detail'}:
+            subject_ref = (request.subject_refs or [''])[0] or _subject_ref_from_item_refs(workspace, list(request.item_refs or []))
+            subject_id = _subject_id_from_workspace(workspace, subject_ref)
+            if subject_id <= 0:
+                return []
+            return [_PrefetchJob(
+                cache_key=('get_episodes', subject_id),
+                run=lambda subject_id=subject_id: [('get_episodes', subject_id, self.bangumi_client.get_episodes(subject_id))],
+            )]
+        return []
+
 
 def None_to_registry(workspace: CaseEvidenceWorkspace):
     from .broker_registry import EvidenceCardRegistry
     return EvidenceCardRegistry.from_workspace(workspace)
+
+
+def _bounded_worker_count(value: int | None) -> int:
+    if value is None:
+        raw = os.environ.get('BAR_LOCAL_BANGUMI_EVIDENCE_WORKERS', '6')
+        try:
+            value = int(raw)
+        except (TypeError, ValueError):
+            value = 6
+    return max(1, min(8, int(value or 1)))
+
+
+def _subject_id_from_workspace(workspace: CaseEvidenceWorkspace, subject_ref: str) -> int:
+    for card in workspace.bangumi_subjects:
+        if card.ref == subject_ref:
+            return int(getattr(card, 'subject_id', 0) or 0)
+    return 0
+
+
+def _query_card_from_workspace(workspace: CaseEvidenceWorkspace, query_ref: str):
+    for card in workspace.query_cards:
+        if card.ref == query_ref:
+            return card
+    return None
+
+
+def _subject_ref_from_item_refs(workspace: CaseEvidenceWorkspace, item_refs: list[str]) -> str:
+    wanted = set(item_refs)
+    for card in workspace.bangumi_items:
+        if card.ref in wanted:
+            return str(getattr(card, 'subject_ref', '') or '')
+    return ''

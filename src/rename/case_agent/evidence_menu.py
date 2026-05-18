@@ -140,10 +140,15 @@ def _has_executable_target_span_window(local_span) -> bool:
 
 
 def _can_request_regular_target_span(local_span, dossier: CaseDossier) -> bool:
-    return bool(
-        _has_executable_target_span_window(local_span)
-        and not is_special_eligible_span(local_span, dossier)
-    )
+    return bool(_has_executable_target_span_window(local_span))
+
+
+def _with_special_like_span_note(request: EvidenceRequest, local_span, dossier: CaseDossier) -> EvidenceRequest:
+    if not is_special_eligible_span(local_span, dossier):
+        return request
+    return request.model_copy(update={
+        'reason': f'{request.reason}; local row has special-like cues, but regular target_span remains available as evidence',
+    })
 
 
 def _is_budget_available(source: object, max_attr: str, used_attr: str) -> bool:
@@ -346,6 +351,7 @@ def build_executable_evidence_menu(source: CaseEvidenceWorkspace | CaseDossier, 
                     subject_refs=_prioritized_subject_refs(source, dossier, mapping_rows, local_ref=str(getattr(local_span, 'ref', '') or ''), max_width=8),
                     group_refs=group_refs,
                 )
+                req = _with_special_like_span_note(req, local_span, dossier)
                 registry.setdefault(req.request_ref, req)
             continue
         span_rows_without_candidates += 1
@@ -356,6 +362,7 @@ def build_executable_evidence_menu(source: CaseEvidenceWorkspace | CaseDossier, 
             subject_refs=_prioritized_subject_refs(source, dossier, mapping_rows, local_ref=str(getattr(local_span, 'ref', '') or ''), max_width=8),
             group_refs=group_refs,
         )
+        req = _with_special_like_span_note(req, local_span, dossier)
         if req.request_ref not in registry:
             span_request_ids.append(req.request_ref)
             summaries.append(_request_summary(req))
@@ -444,7 +451,8 @@ def build_recommended_neutral_requests(source: CaseEvidenceWorkspace | CaseDossi
             if not span_subject_refs:
                 continue
             group_refs = _window(list(getattr(dossier.visible_refs, 'bangumi_group_refs', []) or []), max_width)
-            requests.append(_build_target_span_request(local_span, subject_refs=span_subject_refs, group_refs=group_refs).model_dump(mode='json'))
+            req = _build_target_span_request(local_span, subject_refs=span_subject_refs, group_refs=group_refs)
+            requests.append(_with_special_like_span_note(req, local_span, dossier).model_dump(mode='json'))
     return {
         'recommended_neutral_requests': requests,
         'summary': {

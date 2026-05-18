@@ -12,6 +12,7 @@ from .models import (
     MappingIntentCompilerResult,
     MappingDraftRow,
 )
+from .supplemental_policy import ALLOWED_SUPPLEMENTAL_REASON_KINDS
 
 
 def _dedupe(values: list[str]) -> list[str]:
@@ -149,6 +150,15 @@ def _item_by_ref(dossier: CaseDossier) -> dict[str, BangumiItemCard]:
     }
 
 
+def _subject_refs_for_item_refs(dossier: CaseDossier, item_refs: list[str]) -> list[str]:
+    item_by_ref = _item_by_ref(dossier)
+    return _dedupe([
+        str(getattr(item_by_ref.get(ref), 'subject_ref', '') or '')
+        for ref in list(item_refs or [])
+        if item_by_ref.get(ref) is not None
+    ])
+
+
 def _span_shape_observation(dossier: CaseDossier, span: BangumiSpanCard, local_count: int) -> dict[str, object]:
     item_by_ref = _item_by_ref(dossier)
     target_refs = _span_target_refs(span)
@@ -216,7 +226,17 @@ def _agent_selected_span_from_items(
     generated_index: int,
     item_refs_override: list[str] | None = None,
 ) -> tuple[BangumiSpanCard | None, BlockedMappingIntent | None]:
-    raw_item_refs = _dedupe([str(ref or '') for ref in list(item_refs_override if item_refs_override is not None else getattr(intent, 'item_refs', []) or [])])
+    raw_item_refs = _dedupe([
+        str(ref or '')
+        for ref in list(
+            item_refs_override
+            if item_refs_override is not None
+            else [
+                *list(getattr(intent, 'item_refs', []) or []),
+                *list(getattr(intent, 'target_refs', []) or []),
+            ]
+        )
+    ])
     if not raw_item_refs:
         return None, None
     item_by_ref = {
@@ -253,29 +273,8 @@ def _agent_selected_span_from_items(
             },
             recommended_next_observation='provide exactly one visible BE item per local file, split/repartition the local row, mark target_absent/supplemental if Bangumi lacks per-file targets, or request target_span evidence',
         )
-    chosen_subject = str(getattr(intent, 'chosen_subject_ref', '') or '')
     items = [item_by_ref[ref] for ref in raw_item_refs]
     subjects = _dedupe([str(getattr(item, 'subject_ref', '') or '') for item in items])
-    if chosen_subject and any(subject != chosen_subject for subject in subjects):
-        return None, _blocked(
-            intent,
-            local_ref=local_ref,
-            row_ref=row_ref,
-            issue_codes=['item_subject_mismatch'],
-            candidate_target_refs=raw_item_refs,
-            reason='selected item_refs do not all belong to chosen_subject_ref',
-            recommended_next_observation='choose item refs from the same visible subject or split the local row',
-        )
-    if len(subjects) > 1:
-        return None, _blocked(
-            intent,
-            local_ref=local_ref,
-            row_ref=row_ref,
-            issue_codes=['mixed_subject_item_refs'],
-            candidate_target_refs=raw_item_refs,
-            reason='selected item_refs span multiple Bangumi subjects',
-            recommended_next_observation='choose a single subject item sequence or split the local row',
-        )
     ref_base = ''.join(ch if ch.isalnum() else '_' for ch in (row_ref or local_ref or 'ROW'))
     span_ref = f'BES_INTENT_{ref_base}_{generated_index}'
     while span_ref in existing_span_refs:
@@ -288,7 +287,8 @@ def _agent_selected_span_from_items(
     span_kind = 'regular' if set(item_kinds) <= {'regular'} else ('mixed' if len(set(item_kinds)) > 1 else item_kinds[0])
     return BangumiSpanCard(
         ref=span_ref,
-        subject_ref=chosen_subject or (subjects[0] if subjects else ''),
+        subject_ref=subjects[0] if len(subjects) == 1 else '',
+        group_ref='mixed_subject_explicit_items' if len(subjects) > 1 else '',
         target_refs=raw_item_refs,
         target_ref_count=len(raw_item_refs),
         target_ref_range=[raw_item_refs[0], raw_item_refs[-1]],
@@ -516,6 +516,39 @@ class MappingIntentCompiler:
                     blocked.append(_blocked(intent, local_ref=local_ref, row_ref=row_ref, issue_codes=['missing_chosen_item_ref'], requested_request_types=_request_types_for_missing_target(dossier, intent, local_count), recommended_next_observation='choose a visible BE item or request episode/related evidence'))
                     continue
                 if local_count != 1:
+                    generated_span, generated_block = _agent_selected_span_from_items(
+                        dossier,
+                        intent,
+                        local_ref=local_ref,
+                        row_ref=row_ref,
+                        local_count=local_count,
+                        existing_span_refs={*all_span_refs, *[card.ref for card in generated_span_cards]},
+                        generated_index=len(generated_span_cards) + 1,
+                        item_refs_override=_dedupe([chosen_item, *[str(ref or '') for ref in list(getattr(intent, 'item_refs', []) or [])]]),
+                    )
+                    if generated_block is not None and getattr(generated_block, 'issue_codes', []) != ['item_ref_count_mismatch']:
+                        blocked.append(generated_block)
+                        continue
+                    if generated_span is not None:
+                        generated_span_cards.append(generated_span)
+                        all_span_refs.add(generated_span.ref)
+                        detail_span_refs.add(generated_span.ref)
+                        compiled.append(MappingDraftPatch(
+                            op='map_to_bangumi',
+                            local_ref=local_ref,
+                            target_span_ref=generated_span.ref,
+                            mapping_mode='span_by_index',
+                            support_refs=_dedupe([
+                                *support_refs,
+                                generated_span.ref,
+                                *generated_span.target_refs,
+                                *_subject_refs_for_item_refs(dossier, generated_span.target_refs),
+                                chosen_subject,
+                            ]),
+                            reason_kind=str(getattr(intent, 'reason_kind', '') or ''),
+                            reason=str(getattr(intent, 'reason', '') or ''),
+                        ))
+                        continue
                     subject_item_refs = _subject_item_ref_observation(dossier, intent)
                     blocked.append(_blocked(intent, local_ref=local_ref, row_ref=row_ref, issue_codes=['invalid_explicit_multi_file_mapping'], requested_request_types=_request_types_for_missing_target(dossier, intent, local_count), recommended_next_observation='multi-file rows need a BES span intent or target_span evidence'))
                     blocked[-1] = blocked[-1].model_copy(update={
@@ -554,6 +587,14 @@ class MappingIntentCompiler:
                 all_matching_span_refs = _matching_visible_span_refs(dossier, intent, local_count)
                 target_span = chosen_span
                 if target_span and target_span not in detail_span_refs:
+                    selected_span = span_by_ref.get(target_span)
+                    selected_span_raw_refs = _span_target_refs(selected_span) if selected_span is not None else []
+                    selected_span_item_refs = [
+                        ref for ref in selected_span_raw_refs
+                        if ref in item_refs
+                    ]
+                    if len(selected_span_item_refs) != len(selected_span_raw_refs):
+                        selected_span_item_refs = []
                     generated_span, generated_block = _agent_selected_span_from_items(
                         dossier,
                         intent,
@@ -562,6 +603,7 @@ class MappingIntentCompiler:
                         local_count=local_count,
                         existing_span_refs={*all_span_refs, *[card.ref for card in generated_span_cards]},
                         generated_index=len(generated_span_cards) + 1,
+                        item_refs_override=selected_span_item_refs or None,
                     )
                     if generated_block is not None:
                         blocked.append(generated_block)
@@ -575,17 +617,19 @@ class MappingIntentCompiler:
                             local_ref=local_ref,
                             target_span_ref=generated_span.ref,
                             mapping_mode='span_by_index',
-                            support_refs=_dedupe([*support_refs, generated_span.ref, *generated_span.target_refs, chosen_subject]),
+                            support_refs=_dedupe([
+                                *support_refs,
+                                generated_span.ref,
+                                *generated_span.target_refs,
+                                *_subject_refs_for_item_refs(dossier, generated_span.target_refs),
+                                chosen_subject,
+                            ]),
                             reason_kind=str(getattr(intent, 'reason_kind', '') or ''),
                             reason=str(getattr(intent, 'reason', '') or ''),
                         ))
                         continue
                     blocked.append(_blocked(intent, local_ref=local_ref, row_ref=row_ref, issue_codes=['target_span_not_detail_equivalent'], requested_request_types=['target_span'], recommended_next_observation='execute target_span for this local row and chosen subject before using this BES span as a mapping target, or provide explicit visible BE item_refs for this row'))
                     continue
-                if not target_span and len(candidate_span_refs) == 1:
-                    target_span = candidate_span_refs[0]
-                if not target_span and not candidate_span_refs and len(all_matching_span_refs) == 1:
-                    target_span = all_matching_span_refs[0]
                 if target_span:
                     span_card = span_by_ref.get(target_span)
                     if span_card is not None:
@@ -631,7 +675,13 @@ class MappingIntentCompiler:
                         local_ref=local_ref,
                         target_span_ref=generated_span.ref,
                         mapping_mode='span_by_index',
-                        support_refs=_dedupe([*support_refs, generated_span.ref, *generated_span.target_refs, chosen_subject]),
+                        support_refs=_dedupe([
+                            *support_refs,
+                            generated_span.ref,
+                            *generated_span.target_refs,
+                            *_subject_refs_for_item_refs(dossier, generated_span.target_refs),
+                            chosen_subject,
+                        ]),
                         reason_kind=str(getattr(intent, 'reason_kind', '') or ''),
                         reason=str(getattr(intent, 'reason', '') or ''),
                     ))
@@ -671,21 +721,27 @@ class MappingIntentCompiler:
                             local_ref=local_ref,
                             target_span_ref=generated_span.ref,
                             mapping_mode='span_by_index',
-                            support_refs=_dedupe([*support_refs, generated_span.ref, *generated_span.target_refs, chosen_subject]),
+                            support_refs=_dedupe([
+                                *support_refs,
+                                generated_span.ref,
+                                *generated_span.target_refs,
+                                *_subject_refs_for_item_refs(dossier, generated_span.target_refs),
+                                chosen_subject,
+                            ]),
                             reason_kind=str(getattr(intent, 'reason_kind', '') or ''),
                             reason=str(getattr(intent, 'reason', '') or ''),
                         ))
                         continue
                 ambiguous_refs = candidate_span_refs or all_matching_span_refs
-                if len(ambiguous_refs) > 1:
+                if ambiguous_refs:
                     blocked.append(_blocked(
                         intent,
                         local_ref=local_ref,
                         row_ref=row_ref,
-                        issue_codes=['ambiguous_visible_target_candidates'],
+                        issue_codes=['explicit_target_choice_required'],
                         candidate_target_refs=ambiguous_refs,
-                        reason='multiple visible BES candidates match the semantic subject/range; the agent must choose one explicitly',
-                        recommended_next_observation='choose one visible candidate_target_ref as chosen_span_ref, or request more evidence if the candidates are semantically indistinguishable',
+                        reason='visible BES candidates match the semantic subject/range, but the agent did not explicitly choose chosen_span_ref or item_refs',
+                        recommended_next_observation='choose one visible candidate_target_ref as chosen_span_ref, provide explicit visible item_refs, or request more evidence if candidates are semantically indistinguishable',
                     ))
                     continue
                 if chosen_item and local_count == 1:
@@ -755,11 +811,43 @@ class MappingIntentCompiler:
                 continue
 
             if decision == 'mark_non_bangumi_or_supplemental':
+                reason_kind = str(getattr(intent, 'reason_kind', '') or '')
+                if reason_kind not in ALLOWED_SUPPLEMENTAL_REASON_KINDS:
+                    blocked.append(_blocked(
+                        intent,
+                        local_ref=local_ref,
+                        row_ref=row_ref,
+                        issue_codes=['invalid_reason_kind'],
+                        observation={
+                            'received_reason_kind': reason_kind,
+                            'allowed_reason_kinds': sorted(ALLOWED_SUPPLEMENTAL_REASON_KINDS),
+                            'valid_shape': 'mark_non_bangumi_or_supplemental with one allowed reason_kind and visible local support_refs',
+                            'decision_family_note': (
+                                'mark_non_bangumi_or_supplemental is an accepted exclusion only. '
+                                'If your intended outcome is unresolved/fail-closed, use mark_unaligned_fail_closed '
+                                'with an allowed fail reason instead of converting it to supplemental.'
+                            ),
+                            'allowed_fail_closed_reason_kinds': [
+                                'ambiguous_ownership',
+                                'coverage_gap_unresolved',
+                                'insufficient_evidence',
+                                'special_regular_conflict',
+                            ],
+                        },
+                        recommended_next_observation=(
+                            'choose the correct decision family. If this row is truly an accepted supplemental/target-absent exclusion, '
+                            'retry mark_non_bangumi_or_supplemental with one allowed supplemental reason_kind exactly: '
+                            + ', '.join(sorted(ALLOWED_SUPPLEMENTAL_REASON_KINDS))
+                            + '. If this row is still unresolved or should fail closed, use mark_unaligned_fail_closed with '
+                            'ambiguous_ownership, coverage_gap_unresolved, insufficient_evidence, or special_regular_conflict.'
+                        ),
+                    ))
+                    continue
                 compiled.append(MappingDraftPatch(
                     op='mark_non_bangumi_or_supplemental',
                     local_ref=local_ref,
                     support_refs=support_refs,
-                    reason_kind=str(getattr(intent, 'reason_kind', '') or ''),
+                    reason_kind=reason_kind,
                     reason=str(getattr(intent, 'reason', '') or ''),
                 ))
                 continue

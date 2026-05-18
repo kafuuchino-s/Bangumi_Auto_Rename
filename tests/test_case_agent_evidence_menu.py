@@ -211,7 +211,7 @@ def test_executable_menu_does_not_emit_special_recall_for_regular_numbered_span(
     assert not any(item['request_id'].startswith('REQ_SPECIAL_') for item in menu['prompt_summaries'])
 
 
-def test_special_like_numbered_span_uses_special_recall_not_regular_target_span():
+def test_special_like_numbered_span_keeps_regular_target_span_visible_with_clue():
     ws = CaseEvidenceWorkspace.from_cards(
         header=CaseHeader(case_id='c3sp'),
         budget=CaseBudget(),
@@ -241,11 +241,16 @@ def test_special_like_numbered_span_uses_special_recall_not_regular_target_span(
     neutral = build_recommended_neutral_requests(ws)
     menu = build_executable_evidence_menu(ws)
 
-    assert not any(req['request_type'] == 'target_span' and req.get('local_span_ref') == 'LS_SP' for req in neutral['recommended_neutral_requests'])
-    assert not any(item['request_id'] == 'REQ_TARGET_SPAN_LS_SP' for item in menu['prompt_summaries'])
+    target_span_requests = [
+        req for req in neutral['recommended_neutral_requests']
+        if req['request_type'] == 'target_span' and req.get('local_span_ref') == 'LS_SP'
+    ]
+    assert target_span_requests
+    assert 'special-like cues' in target_span_requests[0]['reason']
+    assert any(item['request_id'] == 'REQ_TARGET_SPAN_LS_SP' for item in menu['prompt_summaries'])
     special_ids = [item['request_id'] for item in menu['prompt_summaries'] if item['request_id'].startswith('REQ_SPECIAL_')]
     assert 'REQ_SPECIAL_EPISODE_LIST_BS1' in special_ids
-    assert menu['audit']['planned_span_request_count'] == 0
+    assert menu['audit']['selected_span_request_count'] == 1
     assert menu['audit']['special_candidate_row_count'] == 1
 
 

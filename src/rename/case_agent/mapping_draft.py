@@ -4,7 +4,6 @@ from collections import Counter
 from typing import Any
 
 from .models import BangumiSpanCard, CaseDossier, LocalSpanCard, MappingDraft, MappingDraftCoverageSummary, MappingDraftPatch, MappingDraftRow, VerifierIssue
-from .special_investigation import is_special_eligible_span
 from .supplemental_policy import ALLOWED_SUPPLEMENTAL_REASON_KINDS, supplemental_row_policy_issues
 
 
@@ -71,23 +70,18 @@ def _local_file_count_for_ref(dossier: CaseDossier, local_ref: str) -> int:
 
 def build_initial_mapping_draft(dossier: CaseDossier) -> MappingDraft:
     bangumi_span_cards = [card for card in getattr(dossier, 'bangumi_span_cards', []) or [] if bool(getattr(card, 'detail_equivalent', False))]
-    regular_detail_target_refs = _dedupe_preserve_order([
+    all_detail_target_refs = _dedupe_preserve_order([
         card.ref for card in bangumi_span_cards
-        if str(getattr(card, 'item_kind', '') or '') != 'special'
-    ])
-    special_detail_target_refs = _dedupe_preserve_order([
-        card.ref for card in bangumi_span_cards
-        if str(getattr(card, 'item_kind', '') or '') == 'special'
+        if str(getattr(card, 'ref', '') or '')
     ])
     child_local_spans = [card for card in list(getattr(dossier, 'local_span_cards', []) or []) if str(getattr(card, 'span_scope', '') or '') != 'package']
     rows: list[MappingDraftRow] = []
     for card in child_local_spans:
-        candidate_target_refs = special_detail_target_refs if is_special_eligible_span(card, dossier) else regular_detail_target_refs
         rows.append(MappingDraftRow(
             row_ref=f'MDR{len(rows) + 1}',
             local_ref=card.ref,
             local_ref_kind='span',
-            candidate_target_refs=list(candidate_target_refs),
+            candidate_target_refs=list(all_detail_target_refs),
         ))
     if not rows:
         package_span = next((card for card in list(getattr(dossier, 'local_span_cards', []) or []) if str(getattr(card, 'span_scope', '') or '') == 'package'), None)
@@ -96,7 +90,7 @@ def build_initial_mapping_draft(dossier: CaseDossier) -> MappingDraft:
                 row_ref='MDR1',
                 local_ref=package_span.ref,
                 local_ref_kind='span',
-                candidate_target_refs=list(regular_detail_target_refs),
+                candidate_target_refs=list(all_detail_target_refs),
             ))
     return MappingDraft(rows=rows, version=1)
 

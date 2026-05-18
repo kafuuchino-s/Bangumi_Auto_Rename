@@ -39,6 +39,48 @@ def test_main_files_exactly_once_supplemental_absent_passes():
     assert result.passed is True
 
 
+def test_composite_assignment_validates_all_visible_target_refs():
+    dossier = make_dossier()
+    dossier.visible_refs.target_refs = ['BE1', 'BE2', 'BE3']
+    dossier.detailed_card_refs = ['BE1', 'BE2', 'BE3']
+    dossier.assignable_target_refs = ['BE1', 'BE2', 'BE3']
+    dossier.contract.visible_target_refs = ['BE1', 'BE2', 'BE3']
+    output = verdict(
+        AssignmentIntent(
+            ref='A1',
+            file_ref='LF1',
+            target_ref='BE1',
+            target_refs=['BE1', 'BE2', 'BE3'],
+            support_finding_refs=['F1'],
+            support_card_refs=['LF1', 'BE1', 'BE2', 'BE3'],
+            reason='single local feature covers multi-part target surface',
+        )
+    )
+    result = verify_judge_output(dossier, output)
+    assert result.passed is True
+
+
+def test_composite_assignment_requires_support_for_each_target_ref():
+    dossier = make_dossier()
+    dossier.visible_refs.target_refs = ['BE1', 'BE2']
+    dossier.detailed_card_refs = ['BE1', 'BE2']
+    dossier.assignable_target_refs = ['BE1', 'BE2']
+    dossier.contract.visible_target_refs = ['BE1', 'BE2']
+    output = verdict(
+        AssignmentIntent(
+            ref='A1',
+            file_ref='LF1',
+            target_ref='BE1',
+            target_refs=['BE1', 'BE2'],
+            support_finding_refs=['F1'],
+            support_card_refs=['LF1', 'BE1'],
+            reason='missing BE2 support',
+        )
+    )
+    result = verify_judge_output(dossier, output)
+    assert any(issue.message == 'support_card_refs must include file_ref and all target refs' for issue in result.issues)
+
+
 def test_submit_verdict_with_zero_assignments_rejected_when_main_files_exist():
     dossier = make_dossier()
     output = verdict()

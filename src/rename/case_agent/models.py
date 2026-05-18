@@ -491,11 +491,28 @@ class EvidenceRequest(BaseModel):
 class SplitCaseSpec(BaseModel):
     child_case_ref: str = ''
     main_file_refs: list[str] = Field(default_factory=list)
+    main_group_refs: list[str] = Field(default_factory=list)
     supplemental_file_refs: list[str] = Field(default_factory=list)
+    supplemental_group_refs: list[str] = Field(default_factory=list)
     support_refs: list[str] = Field(default_factory=list)
     reason: str = ''
     title_hints: list[str] = Field(default_factory=list)
     query_hints: list[str] = Field(default_factory=list)
+
+    model_config: ClassVar[ConfigDict] = ConfigDict(extra='forbid')
+
+
+class RecordedSplitPlanRow(BaseModel):
+    plan_row_ref: str = ''
+    child_case_ref: str = ''
+    main_file_refs: list[str] = Field(default_factory=list)
+    main_group_refs: list[str] = Field(default_factory=list)
+    supplemental_file_refs: list[str] = Field(default_factory=list)
+    supplemental_group_refs: list[str] = Field(default_factory=list)
+    support_refs: list[str] = Field(default_factory=list)
+    title_hints: list[str] = Field(default_factory=list)
+    query_hints: list[str] = Field(default_factory=list)
+    reason: str = ''
 
     model_config: ClassVar[ConfigDict] = ConfigDict(extra='forbid')
 
@@ -599,6 +616,7 @@ class MappingDraftRow(BaseModel):
     support_refs: list[str] = Field(default_factory=list)
     requested_request_types: list[EvidenceRequestType] = Field(default_factory=list)
     query_hints: list[str] = Field(default_factory=list)
+    query_refs: list[str] = Field(default_factory=list)
     subject_refs: list[str] = Field(default_factory=list)
     item_refs: list[str] = Field(default_factory=list)
     local_refs: list[str] = Field(default_factory=list)
@@ -722,6 +740,88 @@ class MappingDraftPatch(BaseModel):
     model_config: ClassVar[ConfigDict] = ConfigDict(extra='forbid')
 
 
+CaseResolutionLedgerOutcome = Literal[
+    'map_to_bangumi',
+    'target_absent',
+    'supplemental',
+    'needs_evidence',
+    'split_needed',
+    'fail_blocker',
+]
+
+
+class CaseResolutionLedgerRow(BaseModel):
+    ledger_row_ref: str = ''
+    row_ref: str = ''
+    plan_row_refs: list[str] = Field(default_factory=list)
+    local_ref: str = ''
+    local_refs: list[str] = Field(default_factory=list)
+    file_refs: list[str] = Field(default_factory=list)
+    span_refs: list[str] = Field(default_factory=list)
+    role: str = ''
+    outcome: CaseResolutionLedgerOutcome = 'needs_evidence'
+    chosen_subject_ref: str = ''
+    chosen_item_ref: str = ''
+    chosen_span_ref: str = ''
+    episode_scope: Literal['regular', 'special', 'movie', 'unknown'] = 'unknown'
+    episode_start: int | None = None
+    episode_end: int | None = None
+    mapping_mode: Literal['explicit', 'span_by_index', 'unresolved'] = 'unresolved'
+    support_refs: list[str] = Field(default_factory=list)
+    requested_request_types: list[EvidenceRequestType] = Field(default_factory=list)
+    query_hints: list[str] = Field(default_factory=list)
+    subject_refs: list[str] = Field(default_factory=list)
+    item_refs: list[str] = Field(default_factory=list)
+    target_refs: list[str] = Field(default_factory=list)
+    query_refs: list[str] = Field(default_factory=list)
+    source_refs: list[str] = Field(default_factory=list)
+    notebook_refs: list[str] = Field(default_factory=list)
+    reason_kind: str = ''
+    confidence: Literal['high', 'medium', 'low', 'unknown'] = 'unknown'
+    reason: str = ''
+
+    model_config: ClassVar[ConfigDict] = ConfigDict(extra='forbid')
+
+
+class CaseResolutionLedger(BaseModel):
+    ledger_ref: str = 'CRL1'
+    rows: list[CaseResolutionLedgerRow] = Field(default_factory=list)
+    summary: str = ''
+    version: int = 0
+
+    model_config: ClassVar[ConfigDict] = ConfigDict(extra='forbid')
+
+
+class BlockedLedgerRow(BaseModel):
+    ledger_row_ref: str = ''
+    row_ref: str = ''
+    plan_row_refs: list[str] = Field(default_factory=list)
+    local_ref: str = ''
+    outcome: CaseResolutionLedgerOutcome = 'needs_evidence'
+    issue_codes: list[str] = Field(default_factory=list)
+    requested_request_types: list[EvidenceRequestType] = Field(default_factory=list)
+    query_hints: list[str] = Field(default_factory=list)
+    subject_refs: list[str] = Field(default_factory=list)
+    item_refs: list[str] = Field(default_factory=list)
+    target_refs: list[str] = Field(default_factory=list)
+    support_refs: list[str] = Field(default_factory=list)
+    observation: dict[str, Any] = Field(default_factory=dict)
+    reason: str = ''
+    recommended_next_observation: str = ''
+
+    model_config: ClassVar[ConfigDict] = ConfigDict(extra='forbid')
+
+
+class CaseResolutionLedgerCompilerResult(BaseModel):
+    compiled_patches: list[MappingDraftPatch] = Field(default_factory=list)
+    blocked_rows: list[BlockedLedgerRow] = Field(default_factory=list)
+    generated_span_cards: list[Any] = Field(default_factory=list)
+    requested_evidence: list[EvidenceRequestType] = Field(default_factory=list)
+    recommended_next_observation: str = ''
+
+    model_config: ClassVar[ConfigDict] = ConfigDict(extra='forbid')
+
+
 class Contradiction(BaseModel):
     ref: str = ''
     contradiction_kind: Literal['subject_mismatch', 'episode_mismatch', 'relation_mismatch', 'scope_mismatch', 'unknown'] = 'unknown'
@@ -762,6 +862,7 @@ class AssignmentIntent(BaseModel):
     ref: str = ''
     file_ref: str = ''
     target_ref: str = ''
+    target_refs: list[str] = Field(default_factory=list, description='Optional visible BE refs when one local file semantically covers a multi-part Bangumi surface. target_ref is the primary representative and must be included when target_refs is non-empty.')
     support_finding_refs: list[str] = Field(default_factory=list, description='Finding refs from this same output only. Reuse a broad finding ref for many assignments when it supports a contiguous span; do not invent per-assignment finding refs unless those findings are explicitly present in findings.')
     support_card_refs: list[str] = Field(default_factory=list, description='Visible dossier card refs only. For BE targets include both file_ref and target_ref; for UNALIGNED include file_ref and do not include UNALIGNED.')
     confidence: Literal['high', 'medium', 'low'] = 'low'
@@ -1033,6 +1134,8 @@ class CaseDossier(BaseModel):
     mapping_draft_candidate_comparisons: list[CandidateComparison] = Field(default_factory=list)
     case_briefing: CaseBriefingOutput | None = None
     investigation_notebook: InvestigationNotebook = Field(default_factory=InvestigationNotebook)
+    case_resolution_ledger: CaseResolutionLedger | None = None
+    recorded_split_plan_rows: list[RecordedSplitPlanRow] = Field(default_factory=list)
 
     @property
     def notebook(self):
@@ -1069,6 +1172,7 @@ class BoundedCaseDossier(BaseModel):
     budget: CaseBudget = Field(default_factory=CaseBudget)
     case_briefing: dict[str, object] = Field(default_factory=dict)
     investigation_notebook: dict[str, object] = Field(default_factory=dict)
+    case_resolution_ledger: dict[str, object] = Field(default_factory=dict)
 
     model_config: ClassVar[ConfigDict] = ConfigDict(extra='forbid')
 

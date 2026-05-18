@@ -162,7 +162,7 @@ def test_target_span_broker_returns_multiple_subject_candidates_for_explicit_sor
     assert [card.subject_ref for card in rr.bangumi_span_cards] == ['BS1', 'BS2']
 
 
-def test_target_span_broker_rejects_special_like_local_span():
+def test_target_span_broker_does_not_reject_special_like_local_span():
     ws = CaseEvidenceWorkspace.from_cards(
         header=CaseHeader(case_id='c-span-special-like'),
         budget=CaseBudget(max_evidence_batches=3, max_api_calls_per_case=10, max_new_subject_cards=10, max_new_episode_cards=24),
@@ -192,9 +192,9 @@ def test_target_span_broker_rejects_special_like_local_span():
     ])
 
     rr = result.request_results[0]
-    assert rr.accepted is False
-    assert rr.response_refs == []
-    assert any('special-like local span' in note for note in rr.notes)
+    assert rr.accepted is True
+    assert rr.response_refs == ['BES_LS_SP_1']
+    assert not any('special-like local span' in note for note in rr.notes)
 
 
 def test_target_span_broker_materializes_zero_based_sort_window():

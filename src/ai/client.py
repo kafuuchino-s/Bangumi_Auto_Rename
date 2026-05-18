@@ -48,7 +48,7 @@ class AIClient:
     @staticmethod
     def _ai_response_cache_mode() -> str:
         mode = str(os.environ.get('BAR_AI_RESPONSE_CACHE_MODE') or 'read-write').strip().lower()
-        if mode in {'read-write', 'cache-only', 'refresh', 'off'}:
+        if mode in {'read-write', 'cache-only', 'refresh'}:
             return mode
         return 'read-write'
 
@@ -64,9 +64,7 @@ class AIClient:
 
     @classmethod
     def _ai_response_cache_enabled(cls) -> bool:
-        if cls._ai_response_cache_mode() == 'off':
-            return False
-        return bool(cm.get_config('ai_response_cache_enabled'))
+        return False
 
     @staticmethod
     def _stable_json(value: object) -> str:
@@ -1095,7 +1093,11 @@ class AIClient:
         tools: list[dict[str, object]],
         max_output_tokens: int = 4096,
         parallel_tool_calls: bool = False,
-        tool_choice: str = "required",
+        tool_choice: str | Mapping[str, object] = "required",
+        conversation_id: str = "",
+        prompt_cache_key: str = "",
+        session_id: str = "",
+        max_retries: int = 2,
     ) -> Optional[dict[str, object]]:
         """Call OpenAI Responses with native function tools."""
         try:
@@ -1124,11 +1126,57 @@ class AIClient:
                 "tool_choice": tool_choice,
                 "parallel_tool_calls": bool(parallel_tool_calls),
             }
-            response = call_via_responses_api(request_params)
-            return response if isinstance(response, dict) else None
+            if conversation_id:
+                request_params["conversation"] = conversation_id
+            if prompt_cache_key:
+                request_params["prompt_cache_key"] = prompt_cache_key
+            if session_id:
+                request_params["session_id"] = session_id
+            request_params["prompt_cache_retention"] = "24h"
+
+            setattr(self, "_last_tool_agent_cache_mode", "provider_input_cache")
+            setattr(self, "_last_tool_agent_cache_key", str(prompt_cache_key or ""))
+            setattr(self, "_last_tool_agent_cache_event", "not_applicable")
+            retry_limit = max(0, int(max_retries))
+            last_exc: Exception | None = None
+            for attempt in range(retry_limit + 1):
+                try:
+                    response = call_via_responses_api(request_params)
+                    setattr(self, "_last_tool_agent_provider_retry_count", attempt)
+                    if not isinstance(response, dict):
+                        return None
+                    return response
+                except Exception as exc:
+                    last_exc = exc
+                    if attempt < retry_limit:
+                        logger.warning(
+                            f"[AI] Responses tool agent call failed, retrying {attempt + 1}/{retry_limit}: {exc}"
+                        )
+                        time.sleep(min(2.0, 0.5 * (attempt + 1)))
+                        continue
+                    setattr(self, "_last_tool_agent_provider_retry_count", attempt)
+                    logger.warning(f"[AI] Responses tool agent call failed: {exc}")
+                    return None
+            if last_exc is not None:
+                logger.warning(f"[AI] Responses tool agent call failed: {last_exc}")
+            return None
         except Exception as exc:
             logger.warning(f"[AI] Responses tool agent call failed: {exc}")
             return None
+
+    def create_responses_conversation(self, *, metadata: Mapping[str, object] | None = None) -> str:
+        try:
+            client = self._get_openai_adapter()
+            if client is None or not getattr(client, "client", None):
+                return ""
+            create_conversation = getattr(client, "create_conversation", None)
+            if not callable(create_conversation):
+                return ""
+            conversation_id = create_conversation(metadata=metadata or {})
+            return conversation_id if isinstance(conversation_id, str) else ""
+        except Exception as exc:
+            logger.warning(f"[AI] Responses conversation create failed: {exc}")
+            return ""
 
     def analyze_episode_mapping(
         self,
