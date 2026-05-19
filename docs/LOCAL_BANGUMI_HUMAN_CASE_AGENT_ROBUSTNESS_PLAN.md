@@ -538,7 +538,10 @@ Sample gates:
 
 ## Future Plan: Fact Surface, Not Fixed-Layer Candidate Generation
 
-The next robustness direction is documented in
+The executable goal plan for this direction is now
+`docs/LOCAL_BANGUMI_LOCAL_FACT_SURFACE_GOAL_PLAN.md`.
+
+The original discussion is documented in
 `docs/LOCAL_BANGUMI_MANUAL_REPLAY_SAMPLE_0096.md` under
 `2026-05-19 Next Plan: Agent-Owned Evidence Composition For Derivative Shorts`.
 
