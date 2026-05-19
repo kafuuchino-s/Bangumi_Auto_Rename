@@ -3306,7 +3306,6 @@ def call_orchestrator_agent(
         tool_choice='required',
         conversation_id='',
         prompt_cache_key=session.prompt_cache_key,
-        session_id=session.http_session_id,
     )
     if not isinstance(response, dict):
         return OrchestratorAgentCallResult(

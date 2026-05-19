@@ -3,11 +3,13 @@ from __future__ import annotations
 from src.rename.case_agent.human_case_agent import (
     AgentLocator,
     HUMAN_CASE_AGENT_INSTRUCTIONS,
+    InspectToolArgs,
     LocatorRegistry,
     PackageResolution,
     ResolutionWorkUnit,
     SearchToolArgs,
     SubmitToolArgs,
+    _inspect_tool,
     _register_existing_targets,
     _local_target_title_pairing_options,
     _excluded_title_tail_unresolved_after_search_repairs,
@@ -17,11 +19,12 @@ from src.rename.case_agent.human_case_agent import (
     _search_tool,
     _subject_card_from_api,
     _submit_tool,
+    _target_surface_actions_from_repair,
     _visible_source_query_bridge_targets,
     build_human_case_desk,
     human_case_tool_definitions,
 )
-from src.bangumi.models import BangumiSubject
+from src.bangumi.models import BangumiSubject, BangumiSubjectRelation
 from src.rename.case_agent.models import (
     BangumiItemCard,
     BangumiSubjectCard,
@@ -185,6 +188,69 @@ def test_search_merges_source_query_provenance_for_new_subject_seen_twice():
     assert any("Exact Alias" in marker for marker in target.query_markers)
 
 
+def test_inspect_related_filters_non_anime_and_disallowed_relations():
+    class FakeBangumiClient:
+        def get_related_subjects(self, subject_id: int):
+            return [
+                BangumiSubjectRelation(id=401, type=3, relation="\u756a\u5916\u7bc7", name="Opening Song"),
+                BangumiSubjectRelation(id=402, type=2, relation="\u7247\u5934\u66f2", name="Opening Song"),
+                BangumiSubjectRelation(id=403, type=2, relation="\u6e38\u620f", name="Game Entry"),
+                BangumiSubjectRelation(id=404, type=2, relation="\u756a\u5916\u7bc7", name="Side Story"),
+            ]
+
+        def get_subject(self, subject_id: int):
+            if subject_id == 404:
+                return BangumiSubject(
+                    id=404,
+                    type=2,
+                    name="Side Story",
+                    name_cn="Side Story",
+                    eps=1,
+                    total_episodes=1,
+                )
+            return BangumiSubject(id=subject_id, type=3, name="Filtered", name_cn="Filtered")
+
+    workspace = CaseEvidenceWorkspace.from_cards(
+        header=CaseHeader(case_id="CASE-RELATED-FILTER"),
+        budget=CaseBudget(max_judge_rounds=4),
+        contract=CaseContract(visible_target_refs=["BS1"]),
+        bangumi_subjects=[
+            BangumiSubjectCard(
+                ref="BS1",
+                subject_id=400,
+                title="Main Title",
+                name="Main Title",
+                name_cn="Main Title",
+                eps=12,
+                total_episodes=12,
+                search_query_ref="Main Title Side Story",
+            )
+        ],
+    )
+    _desk, registry = build_human_case_desk(workspace)
+    _register_existing_targets(workspace, registry)
+    subject_locator = registry.subject_locator_by_id[400]
+
+    updated, observation = _inspect_tool(
+        workspace,
+        registry,
+        FakeBangumiClient(),
+        InspectToolArgs(locators=[subject_locator], scope=["related"]),
+    )
+
+    related = observation["observations"][0]["related"]
+    assert [item["target"] for item in related] == ["target://bangumi/404-side-story"]
+    assert observation["observations"][0]["related_skipped"] == {
+        "disallowed_relation": 2,
+        "non_anime_type": 1,
+    }
+    assert 404 in registry.subject_locator_by_id
+    assert 401 not in registry.subject_locator_by_id
+    assert 402 not in registry.subject_locator_by_id
+    assert 403 not in registry.subject_locator_by_id
+    assert [card.subject_id for card in updated.bangumi_subjects] == [400, 404]
+
+
 def test_unknown_target_locator_feedback_suggests_visible_query_provenance_candidates():
     workspace = CaseEvidenceWorkspace.from_cards(
         header=CaseHeader(case_id="CASE-TARGET-CANDIDATE-FEEDBACK"),
@@ -286,7 +352,287 @@ def test_related_query_provenance_bridge_targets_are_prioritized_without_auto_ch
     assert rows[0]["target"] == "target://bangumi/2-related-short"
     assert rows[0]["relevance_layer"] == "related_source_query_bridge"
     assert rows[0]["relation_to_query_subject"] == "prequel"
+    assert rows[0]["relation_quality"] == "owner_relevant_related"
+    assert rows[0]["title_bridge_quality"] == "title_or_alias_overlap"
+    assert rows[0]["answers_current_blocker"] is True
     assert "target://bangumi/1-franchise" in [row["target"] for row in rows]
+
+
+def test_disallowed_related_query_bridge_targets_are_filtered():
+    registry = LocatorRegistry()
+    local = AgentLocator(
+        locator="local://franchise-companion/main",
+        kind="local",
+        title="Franchise Companion Short",
+        representative_labels=("Franchise Companion Short.mkv",),
+    )
+    registry.add(local)
+    registry.add(
+        AgentLocator(
+            locator="target://bangumi/1-franchise",
+            kind="target_subject",
+            title="Franchise",
+            subject_id=1,
+            subject_eps=12,
+            query_markers=("Franchise Companion Short",),
+            search_rank=1,
+        )
+    )
+    registry.add(
+        AgentLocator(
+            locator="target://bangumi/2-opening-song",
+            kind="target_subject",
+            title="Opening Song",
+            subject_id=2,
+            subject_eps=4,
+            query_markers=("Franchise Companion Short",),
+            search_rank=1,
+            source_role="related_from_query_subject",
+            relation_to_main="\u7247\u5934\u66f2",
+            relation_path_refs=("BS1",),
+        )
+    )
+
+    rows = _visible_source_query_bridge_targets(
+        registry,
+        local,
+        local,
+        {"franchise", "companion", "short"},
+    )
+
+    assert "target://bangumi/2-opening-song" not in [row["target"] for row in rows]
+    assert "target://bangumi/1-franchise" in [row["target"] for row in rows]
+
+
+def test_weak_related_source_query_bridge_is_diagnostic_not_blocking_repair_action():
+    feedback = {
+        "package": {
+            "issue_counts": {"fail_closed_title_tail_bridge_uninspected": 1},
+            "fail_closed_title_tail_bridge_repairs": [
+                {
+                    "issue": "fail_closed_title_tail_bridge_uninspected",
+                    "local": ["local://franchise-companion/main"],
+                    "visible_source_query_bridge_targets": [
+                        {
+                            "target": "target://bangumi/2-related-short",
+                            "target_subject": "target://bangumi/2-related-short",
+                            "target_title": "Related Short",
+                            "available_action": 'inspect(["target://bangumi/2-related-short"], scope=["details","episodes","related"])',
+                            "relation_quality": "weak_related",
+                            "title_bridge_quality": "source_query_related_only",
+                            "answers_current_blocker": False,
+                        }
+                    ],
+                }
+            ],
+        },
+        "units": [],
+    }
+
+    agenda = _repair_agenda_from_submit_feedback(feedback, repeated=False)
+
+    assert agenda["blocking_target_surface_actions"] == []
+    assert _target_surface_actions_from_repair(agenda) == []
+    assert agenda["diagnostic_target_surface_actions"][0]["relation_quality"] == "weak_related"
+    assert agenda["recovery_no_high_quality_action"] is True
+
+
+def test_allowed_related_without_title_or_shape_support_stays_diagnostic():
+    registry = LocatorRegistry()
+    local = AgentLocator(
+        locator="local://franchise-companion/main",
+        kind="local",
+        title="Franchise Companion Short",
+        representative_labels=("Franchise Companion Short.mkv",),
+        file_refs=("LF1",),
+    )
+    registry.add(local)
+    registry.add(
+        AgentLocator(
+            locator="target://bangumi/2-side-story",
+            kind="target_subject",
+            title="Side Story",
+            subject_id=2,
+            subject_eps=12,
+            query_markers=("Franchise Companion Short",),
+            search_rank=1,
+            source_role="related_from_query_subject",
+            relation_to_main="side_story",
+            relation_quality="owner_relevant_related",
+            relation_path_refs=("BS1",),
+        )
+    )
+
+    rows = _visible_source_query_bridge_targets(
+        registry,
+        local,
+        local,
+        {"franchise", "companion", "short"},
+    )
+    feedback = {
+        "package": {
+            "issue_counts": {"fail_closed_title_tail_bridge_uninspected": 1},
+            "fail_closed_title_tail_bridge_repairs": [
+                {
+                    "issue": "fail_closed_title_tail_bridge_uninspected",
+                    "local": [local.locator],
+                    "visible_source_query_bridge_targets": rows,
+                }
+            ],
+        },
+        "units": [],
+    }
+
+    agenda = _repair_agenda_from_submit_feedback(feedback, repeated=False)
+
+    assert rows[0]["relation_quality"] == "owner_relevant_related"
+    assert rows[0]["title_bridge_quality"] == "source_query_related_only"
+    assert rows[0]["answers_current_blocker"] is False
+    assert agenda["blocking_target_surface_actions"] == []
+    assert agenda["diagnostic_target_surface_actions"]
+
+    repairs = _excluded_title_tail_unresolved_after_search_repairs(
+        registry,
+        [
+            {
+                "unit": "Franchise Companion Short",
+                "local": [local.locator],
+                "outcome": "fail_closed",
+            }
+        ],
+        searched_query_variant_keys={
+            variant.casefold()
+            for query in ("Franchise Companion Short", "Companion Short", "FranchiseCompanionShort")
+            for variant in _search_query_variants(query)
+        },
+        allowed_outcomes={"fail_closed"},
+        issue_code="fail_closed_title_tail_bridge_uninspected",
+        require_uninspected_bridge_target=True,
+    )
+    assert repairs == []
+
+
+def test_allowed_related_with_episode_shape_support_can_be_blocking_action():
+    registry = LocatorRegistry()
+    local = AgentLocator(
+        locator="local://franchise-companion/main",
+        kind="local",
+        title="Franchise Companion Short",
+        representative_labels=("Franchise Companion Short.mkv",),
+        file_refs=("LF1",),
+    )
+    registry.add(local)
+    registry.add(
+        AgentLocator(
+            locator="target://bangumi/2-side-story",
+            kind="target_subject",
+            title="Side Story",
+            subject_id=2,
+            subject_eps=1,
+            query_markers=("Franchise Companion Short",),
+            search_rank=1,
+            source_role="related_from_query_subject",
+            relation_to_main="side_story",
+            relation_quality="owner_relevant_related",
+            relation_path_refs=("BS1",),
+        )
+    )
+    registry.add(
+        AgentLocator(
+            locator="target://bangumi/2-side-story/episode/1",
+            kind="target_episode",
+            title="Episode 1",
+            subject_id=2,
+            item_refs=("BE1",),
+            episode_start=1,
+            episode_end=1,
+        )
+    )
+
+    rows = _visible_source_query_bridge_targets(
+        registry,
+        local,
+        local,
+        {"franchise", "companion", "short"},
+    )
+    feedback = {
+        "package": {
+            "issue_counts": {"fail_closed_title_tail_bridge_uninspected": 1},
+            "fail_closed_title_tail_bridge_repairs": [
+                {
+                    "issue": "fail_closed_title_tail_bridge_uninspected",
+                    "local": [local.locator],
+                    "visible_source_query_bridge_targets": rows,
+                }
+            ],
+        },
+        "units": [],
+    }
+
+    agenda = _repair_agenda_from_submit_feedback(feedback, repeated=False)
+
+    assert rows[0]["episode_shape_support"] is True
+    assert rows[0]["answers_current_blocker"] is True
+    assert agenda["blocking_target_surface_actions"] == [
+        'inspect(["target://bangumi/2-side-story"], scope=["details","episodes","related"])'
+    ]
+
+
+def test_title_tail_unresolved_repair_adds_generic_root_frontier_without_target_choice():
+    registry = LocatorRegistry()
+    local = AgentLocator(
+        locator="local://azure-tail/main",
+        kind="local",
+        title="Azure Chronicle Tail",
+        representative_labels=("Azure Chronicle Tail.mkv",),
+        file_refs=("LF1",),
+    )
+    registry.add(local)
+    registry.add(
+        AgentLocator(
+            locator="target://bangumi/20-azure-chronicle-2",
+            kind="target_subject",
+            title="Azure Chronicle 2",
+            subject_id=20,
+            subject_eps=1,
+            query_markers=("Azure Chronicle Tail",),
+            search_rank=1,
+        )
+    )
+    registry.add(
+        AgentLocator(
+            locator="target://bangumi/20-azure-chronicle-2/episode/1",
+            kind="target_episode",
+            title="Episode 1",
+            subject_id=20,
+            episode_start=1,
+            episode_end=1,
+        )
+    )
+    searched = {
+        variant.casefold()
+        for query in ("Azure Chronicle Tail",)
+        for variant in _search_query_variants(query)
+    }
+
+    repairs = _excluded_title_tail_unresolved_after_search_repairs(
+        registry,
+        [
+            {
+                "unit": "Azure Chronicle Tail",
+                "local": [local.locator],
+                "outcome": "fail_closed",
+            }
+        ],
+        searched_query_variant_keys=searched,
+        allowed_outcomes={"fail_closed"},
+        issue_code="fail_closed_title_tail_bridge_uninspected",
+    )
+
+    assert repairs
+    assert "Azure Chronicle" in repairs[0]["root_owner_search_queries_to_try"]
+    assert "Azure Chronicle" in repairs[0]["search_queries_to_try"]
+    assert repairs[0]["visible_source_query_bridge_targets"][0]["answers_current_blocker"] is True
 
 
 def test_submit_rejection_observation_compacts_to_repair_agenda():

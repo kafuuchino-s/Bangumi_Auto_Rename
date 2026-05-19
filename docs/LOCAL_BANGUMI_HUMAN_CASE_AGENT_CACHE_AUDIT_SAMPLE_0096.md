@@ -106,7 +106,55 @@ Keep the current HTTP Responses structure:
 - `prompt_cache_key` and `prompt_cache_retention=24h`.
 - No `previous_response_id`.
 - No `conversation` for this focused path.
+- No provider-facing `session_id` request field.
+- No sticky `session_id` / `conversation_id` HTTP headers.
+- Local `http_session_id` is audit-only and must not affect provider routing.
+- Local response cache is disabled/no-op; `ai_response_cache_enabled` defaults to `false`.
 
 Do not switch to `previous_response_id` unless the transport is intentionally changed to Responses WebSocket v2 and the new server-state semantics are separately tested. Do not switch to `conversation` as a cache fix without a separate behavior audit; it changes state ownership and replay semantics rather than simply increasing prefix cache hit rate.
 
 If further cost work is needed, the next useful lever is reducing mutable `CASE_STATE` tail size and repeated repair payloads, not adding `previous_response_id` to HTTP Responses.
+
+## 2026-05-19 Risk-Fix Verification
+
+Code-level request structure after the cleanup:
+
+- `AIClient.call_responses_tool_agent(...)` no longer accepts or forwards `session_id`.
+- `OpenAIClient._call_via_responses_api(...)` no longer creates a sticky `httpx` client and no longer sends `extra_headers`.
+- HumanCaseAgent and OrchestratorAgent pass `conversation_id=""`, `prompt_cache_key`, and `prompt_cache_retention=24h`; they do not pass `session_id`.
+- `provider_session_enabled=false` in the focused replay audit.
+
+Validation:
+
+- targeted pytest: `174 passed`
+- wider case-agent pytest: `662 passed, 8 skipped`
+- compile: passed
+- boundary scan: `finding_count=0`
+- focused retry: `tests/sample_pool/generated/local_bangumi_mapping_sample_0096_risk_fix_gate_retry_20260519`
+
+Focused retry result:
+
+- `status=accepted`
+- `accepted_contract_ok=true`
+- `final_verifier_passed=true`
+- `turn_count=5`
+- `provider_cached_input_ratio=0.22283145081697556`
+- `orchestrator_stable_prefix_estimated_tokens=4361`
+- `provider_session_enabled=false`
+- `prompt_cache_key=bar:lbg:human-case-agent:v1`
+
+The accepted retry again showed provider cache variability: turn 3 cached `20096` input tokens, while turns 4 and 5 fell back to `4224`. The request prefix hashes stayed stable, so this continues to point at provider-side cache segmentation/routing/accounting rather than byte drift in local request construction.
+
+## 2026-05-19 Robustness Follow-Up
+
+The later robustness pass did not change the cache/request conclusion. It changed recovery telemetry and repair guidance so stochastic Pleiades failures are classified as explicit recovery/frontier failures instead of `unresolved_submit_repair` or unexplained near-cap drift.
+
+Final verification:
+
+- `sample_0096` fresh batch: `local_bangumi_mapping_sample_0096_robustness_final_gate_1_20260519` through `..._5_20260519`
+- all five runs: `status=fail_closed`, `summary=agent_recovery_failed`, `final_verifier_passed=true`
+- all five runs: `near_turn_limit_unhealthy_count=0`, `weak_related_blocking_action_count=0`, `strict_failure_count=0`
+- protection: `sample_0035` and `sample_0126` robustness protection gates both passed with the same zero near-turn / weak-related / strict counters
+- boundary scan: `finding_count=0` for `src/rename/case_agent` and touched reporting tools
+
+This reinforces the cache audit conclusion: the remaining variability is behavioral/retrieval recovery variance, not evidence that provider-facing session headers, `previous_response_id`, or `conversation` should be reintroduced for this HTTP Responses path.

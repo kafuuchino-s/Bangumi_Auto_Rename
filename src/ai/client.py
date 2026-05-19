@@ -1096,7 +1096,6 @@ class AIClient:
         tool_choice: str | Mapping[str, object] = "required",
         conversation_id: str = "",
         prompt_cache_key: str = "",
-        session_id: str = "",
         max_retries: int = 2,
     ) -> Optional[dict[str, object]]:
         """Call OpenAI Responses with native function tools."""
@@ -1130,8 +1129,6 @@ class AIClient:
                 request_params["conversation"] = conversation_id
             if prompt_cache_key:
                 request_params["prompt_cache_key"] = prompt_cache_key
-            if session_id:
-                request_params["session_id"] = session_id
             request_params["prompt_cache_retention"] = "24h"
 
             setattr(self, "_last_tool_agent_cache_mode", "provider_input_cache")

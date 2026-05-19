@@ -4,7 +4,6 @@ from copy import deepcopy
 import re
 from typing import Any, Callable, Dict, List, Optional, cast
 
-import httpx
 from openai import OpenAI
 from pydantic import ValidationError
 
@@ -46,22 +45,8 @@ class OpenAIClient(BaseAIClient):
                 base_url=self.base_url,
                 timeout=120.0,  # 请求超时 120 秒
             )
-            self._session_header_http_client = httpx.Client(
-                headers={"session_id": f"bar-init-{id(self):x}"},
-                timeout=120.0,
-            )
-            self._session_header_openai_client = OpenAI(
-                api_key=self.api_key,
-                base_url=self.base_url,
-                timeout=120.0,
-                http_client=self._session_header_http_client,
-            )
-            self._session_header_value = ""
         else:
             self.client = None
-            self._session_header_http_client = None
-            self._session_header_openai_client = None
-            self._session_header_value = ""
 
     def is_available(self) -> bool:
         """检查OpenAI客户端是否可用"""
@@ -471,22 +456,7 @@ class OpenAIClient(BaseAIClient):
             raise RuntimeError("OpenAI 客户端未初始化")
 
         responses_params = self._convert_chat_request_to_responses(request_params)
-        session_id = str(request_params.get("session_id") or "").strip()
         response_client = cast(OpenAI, self.client)
-        if (
-            session_id
-            and self._session_header_openai_client is not None
-            and self._session_header_http_client is not None
-        ):
-            if session_id != self._session_header_value:
-                self._session_header_http_client.headers["session_id"] = session_id
-                self._session_header_http_client.headers["conversation_id"] = session_id
-                self._session_header_value = session_id
-            response_client = cast(OpenAI, self._session_header_openai_client)
-            responses_params["extra_headers"] = {
-                "session_id": session_id,
-                "conversation_id": session_id,
-            }
         create_response = cast(
             Callable[..., object],
             response_client.responses.create,

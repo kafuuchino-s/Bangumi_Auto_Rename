@@ -222,7 +222,7 @@ def test_ai_client_responses_tool_agent_passes_conversation_id(monkeypatch, tmp_
     assert calls[0]['conversation'] == 'conv_123'
 
 
-def test_ai_client_responses_tool_agent_passes_sub2api_session_and_cache_keys(monkeypatch, tmp_path):
+def test_ai_client_responses_tool_agent_passes_prompt_cache_key_without_session_headers(monkeypatch, tmp_path):
     calls = []
 
     class FakeAdapter:
@@ -244,12 +244,11 @@ def test_ai_client_responses_tool_agent_passes_sub2api_session_and_cache_keys(mo
         input_items=[{'role': 'user', 'content': 'state'}],
         tools=[{'type': 'function', 'function': {'name': 'do_it', 'parameters': {'type': 'object', 'properties': {}}}}],
         prompt_cache_key='cache_case_1',
-        session_id='session_case_1',
     )
 
     assert result == {'id': 'resp_1', 'tool_calls': []}
     assert calls[0]['prompt_cache_key'] == 'cache_case_1'
-    assert calls[0]['session_id'] == 'session_case_1'
+    assert 'session_id' not in calls[0]
     assert calls[0]['prompt_cache_retention'] == '24h'
 
 
@@ -283,7 +282,6 @@ def test_responses_tool_agent_does_not_write_local_response_cache(monkeypatch, t
         'input_items': [{'role': 'user', 'content': 'state'}],
         'tools': [{'type': 'function', 'function': {'name': 'do_it', 'parameters': {'type': 'object', 'properties': {}}}}],
         'prompt_cache_key': 'cache_case_1',
-        'session_id': 'session_case_1',
     }
 
     with cm.temporary_config({'ai_response_cache_enabled': True}):
@@ -358,7 +356,7 @@ def test_responses_tool_agent_retries_transient_provider_errors(monkeypatch, tmp
     assert client._last_tool_agent_provider_retry_count == 2
 
 
-def test_openai_client_session_id_sets_sub2api_sticky_headers(monkeypatch):
+def test_openai_client_ignores_session_id_and_does_not_set_sticky_headers(monkeypatch):
     captured = {}
 
     class FakeResponses:
@@ -380,13 +378,7 @@ def test_openai_client_session_id_sets_sub2api_sticky_headers(monkeypatch):
             captured.setdefault('clients', []).append(kwargs)
             self.responses = FakeResponses()
 
-    class FakeHTTPClient:
-        def __init__(self, *args, **kwargs):
-            self.headers = dict(kwargs.get('headers') or {})
-            captured['http_client'] = self
-
     monkeypatch.setattr('src.ai.openai_client.OpenAI', FakeOpenAI)
-    monkeypatch.setattr('src.ai.openai_client.httpx.Client', FakeHTTPClient)
     monkeypatch.setattr(cm, 'get_config', lambda key: {
         'ai_api_key': 'sk-test',
         'ai_base_url': 'https://example.test',
@@ -406,15 +398,10 @@ def test_openai_client_session_id_sets_sub2api_sticky_headers(monkeypatch):
     })
 
     assert result['id'] == 'resp_1'
-    headers = captured['http_client'].headers
-    assert headers['session_id'] == 'session_case_1'
-    assert headers['conversation_id'] == 'session_case_1'
     assert captured['kwargs']['prompt_cache_key'] == 'cache_case_1'
     assert captured['kwargs']['prompt_cache_retention'] == '24h'
-    assert captured['kwargs']['extra_headers'] == {
-        'session_id': 'session_case_1',
-        'conversation_id': 'session_case_1',
-    }
+    assert 'extra_headers' not in captured['kwargs']
+    assert all('http_client' not in kwargs for kwargs in captured['clients'])
 
 
 def test_openai_client_usage_includes_cached_input_tokens(monkeypatch):

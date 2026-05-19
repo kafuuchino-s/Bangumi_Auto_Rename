@@ -37,7 +37,7 @@ CONFIG_DEFAULT = {
     ],  # OpenAI自动路由顺序
     "openai_format_stats": {},  # OpenAI格式测试统计
     "ai_auto_save": False,  # 是否自动保存AI分析结果
-    "ai_response_cache_enabled": True,  # 兼容旧配置页；本地响应缓存已停用，provider input cache 始终尝试
+    "ai_response_cache_enabled": False,  # 兼容旧配置页；本地响应缓存已停用，provider input cache 由请求侧审计
     "rename_local_bangumi_case_agent_primary_enabled": True,
     "rename_local_bangumi_case_agent_max_rounds": 48,
     "rename_local_bangumi_case_agent_max_evidence_batches": 12,
@@ -112,7 +112,7 @@ CN_MAP = {
     "openai_format_stats": "🧪 OpenAI格式测试统计",
     "ai_temperature": "🔥 OpenAI温度",
     "ai_auto_save": "💾 自动保存AI分析",
-    "ai_response_cache_enabled": "🧪 AI响应缓存（回归调试）",
+    "ai_response_cache_enabled": "🧪 AI本地响应缓存（已停用）",
     "rename_local_bangumi_case_agent_primary_enabled": "🧭 启用 Local→Bangumi Case Agent primary",
     "rename_local_bangumi_case_agent_max_rounds": "🧭 Case Agent 最大判断轮数",
     "rename_local_bangumi_case_agent_max_evidence_batches": "🧭 Case Agent 最大证据批次",

@@ -108,6 +108,7 @@ def summarize_trace(path: Path) -> dict[str, Any]:
     submit_results: list[dict[str, Any]] = []
     tool_rejections: list[dict[str, Any]] = []
     latest_submit_repair: dict[str, Any] = {}
+    latest_session_summary: dict[str, Any] = {}
 
     for audit in audits:
         note = audit.get("note")
@@ -136,8 +137,12 @@ def summarize_trace(path: Path) -> dict[str, Any]:
                     "reason": audit.get("reason") or audit.get("issue"),
                 }
             )
+        elif note == "orchestrator_agent_session_summary":
+            latest_session_summary = audit
         if isinstance(audit.get("latest_submit_repair"), dict):
             latest_submit_repair = audit["latest_submit_repair"]
+    if not latest_submit_repair and isinstance(latest_session_summary.get("latest_submit_repair"), dict):
+        latest_submit_repair = latest_session_summary["latest_submit_repair"]
 
     readiness = snapshot.get("resolution_readiness_summary")
     if not isinstance(readiness, dict):
@@ -155,6 +160,14 @@ def summarize_trace(path: Path) -> dict[str, Any]:
         "stall_warning_count": _int_value(snapshot, "stall_warning_count"),
         "stall_suspected_count": _int_value(snapshot, "stall_suspected_count"),
         "near_turn_limit_unhealthy_count": _int_value(snapshot, "near_turn_limit_unhealthy_count"),
+        "no_progress_escape_count": _int_value(snapshot, "no_progress_escape_count") or _int_value(latest_session_summary, "no_progress_escape_count"),
+        "recovery_frontier_switch_count": _int_value(snapshot, "recovery_frontier_switch_count") or _int_value(latest_session_summary, "recovery_frontier_switch_count"),
+        "exact_fail_closed_after_frontier_exhausted_count": _int_value(
+            snapshot,
+            "exact_fail_closed_after_frontier_exhausted_count",
+        )
+        or _int_value(latest_session_summary, "exact_fail_closed_after_frontier_exhausted_count"),
+        "weak_related_blocking_action_count": _int_value(snapshot, "weak_related_blocking_action_count") or _int_value(latest_session_summary, "weak_related_blocking_action_count"),
         "human_next_action_blocked_no_new_evidence_count": _int_value(
             snapshot,
             "human_next_action_blocked_no_new_evidence_count",
@@ -196,6 +209,18 @@ def summarize_trace(path: Path) -> dict[str, Any]:
         "agenda_open_count": _int_value(snapshot, "agenda_open_count"),
         "agenda_closed_count": _int_value(snapshot, "agenda_closed_count"),
         "noise_candidate_count": _int_value(snapshot, "noise_candidate_count"),
+        "high_quality_candidate_count_by_turn": snapshot.get("high_quality_candidate_count_by_turn") or latest_session_summary.get("high_quality_candidate_count_by_turn") or [],
+        "diagnostic_candidate_count_by_turn": snapshot.get("diagnostic_candidate_count_by_turn") or latest_session_summary.get("diagnostic_candidate_count_by_turn") or [],
+        "noisy_candidate_count_by_turn": snapshot.get("noisy_candidate_count_by_turn") or latest_session_summary.get("noisy_candidate_count_by_turn") or [],
+        "blocking_action_count_by_turn": snapshot.get("blocking_action_count_by_turn") or latest_session_summary.get("blocking_action_count_by_turn") or [],
+        "no_progress_escape_count": _int_value(snapshot, "no_progress_escape_count") or _int_value(latest_session_summary, "no_progress_escape_count"),
+        "recovery_frontier_switch_count": _int_value(snapshot, "recovery_frontier_switch_count") or _int_value(latest_session_summary, "recovery_frontier_switch_count"),
+        "exact_fail_closed_after_frontier_exhausted_count": _int_value(
+            snapshot,
+            "exact_fail_closed_after_frontier_exhausted_count",
+        )
+        or _int_value(latest_session_summary, "exact_fail_closed_after_frontier_exhausted_count"),
+        "weak_related_blocking_action_count": _int_value(snapshot, "weak_related_blocking_action_count") or _int_value(latest_session_summary, "weak_related_blocking_action_count"),
         "legacy_subagent_call_count": _int_value(snapshot, "legacy_subagent_call_count"),
         "legacy_orchestrator_main_path_used": bool(snapshot.get("legacy_orchestrator_main_path_used")),
         "provider_cached_input_ratio": _float_value(snapshot, "orchestrator_provider_cached_input_ratio"),
@@ -217,6 +242,10 @@ def summarize_trace(path: Path) -> dict[str, Any]:
                 latest_submit_repair.get("visible_target_surface_missing_units")
             ),
             "target_surface_actions": latest_submit_repair.get("target_surface_actions") or [],
+            "blocking_target_surface_actions": latest_submit_repair.get("blocking_target_surface_actions") or [],
+            "diagnostic_target_surface_actions": latest_submit_repair.get("diagnostic_target_surface_actions") or [],
+            "rejected_or_noisy_actions": latest_submit_repair.get("rejected_or_noisy_actions") or [],
+            "repair_frontier": latest_submit_repair.get("repair_frontier") or [],
             "search_queries_to_try": latest_submit_repair.get("search_queries_to_try") or [],
             "repeat_rejection_warning": latest_submit_repair.get("repeat_rejection_warning"),
         },
@@ -247,6 +276,15 @@ def _print_text(summary: dict[str, Any]) -> None:
         f"agenda_open={summary.get('agenda_open_count')} "
         f"agenda_closed={summary.get('agenda_closed_count')} "
         f"noise_candidates={summary.get('noise_candidate_count')}"
+    )
+    print(
+        "recovery_health: "
+        f"high_quality_by_turn={summary.get('high_quality_candidate_count_by_turn')} "
+        f"diagnostic_by_turn={summary.get('diagnostic_candidate_count_by_turn')} "
+        f"noisy_by_turn={summary.get('noisy_candidate_count_by_turn')} "
+        f"blocking_actions_by_turn={summary.get('blocking_action_count_by_turn')} "
+        f"no_progress_escapes={summary.get('no_progress_escape_count')} "
+        f"weak_related_blocking={summary.get('weak_related_blocking_action_count')}"
     )
     if summary.get("tool_rejections"):
         print(f"tool_rejections: {summary['tool_rejections']}")

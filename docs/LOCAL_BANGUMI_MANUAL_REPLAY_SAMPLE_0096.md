@@ -699,3 +699,131 @@ Result:
 - compile: passed
 - focused pytest: `65 passed`
 - boundary scan: `finding_count=0`
+
+## 2026-05-19 Risk-Fix Replay: Cache Session And Numbered SP Guard
+
+Implemented risk fixes after request-structure review:
+
+- Removed provider-facing `session_id` forwarding from HumanCaseAgent and OrchestratorAgent Responses calls.
+- Removed OpenAI adapter sticky `session_id` / `conversation_id` HTTP headers.
+- Kept only a local deterministic `http_session_id` for audit correlation.
+- Changed `ai_response_cache_enabled` default to `false`; local response cache remains disabled/no-op.
+- Promoted `numbered_special_exclusion_needs_target_evidence` from semantic diagnostic to blocking submit repair.
+
+Validation:
+
+```powershell
+.venv\Scripts\python.exe -m pytest tests\test_ai_models.py tests\test_case_agent_human_cognitive_workspace.py tests\test_case_agent_orchestrator_agent.py tests\test_config_local_bangumi_case_agent_defaults.py tests\test_config_manager.py -q
+$files = Get-ChildItem tests -Filter 'test_case_agent_*.py' | ForEach-Object { $_.FullName }
+.venv\Scripts\python.exe -m pytest $files tests\test_local_bangumi_sample_runner.py tests\test_ai_models.py tests\test_config_local_bangumi_case_agent_defaults.py tests\test_config_manager.py -q
+.venv\Scripts\python.exe -m compileall src\ai src\rename\case_agent src\config tools\run_local_bangumi_human_gate.py tools\run_local_bangumi_mapping_sample_pool.py
+.venv\Scripts\python.exe tools\scan_local_bangumi_boundary_risks.py src\rename\case_agent tools\run_local_bangumi_human_gate.py tools\run_local_bangumi_mapping_sample_pool.py tools\summarize_local_bangumi_human_trace.py tools\scaffold_local_bangumi_manual_replay.py tools\scan_local_bangumi_boundary_risks.py --json
+```
+
+Result:
+
+- targeted pytest: `174 passed`
+- wider case-agent pytest: `662 passed, 8 skipped`
+- compile: passed
+- boundary scan: `finding_count=0`
+
+Focused reruns:
+
+```powershell
+.venv\Scripts\python.exe tools\run_local_bangumi_human_gate.py --sample 0096 --max-rounds 12 --sample-timeout-seconds 420 --output-dir tests\sample_pool\generated\local_bangumi_mapping_sample_0096_risk_fix_gate_20260519
+.venv\Scripts\python.exe tools\run_local_bangumi_human_gate.py --sample 0096 --max-rounds 12 --sample-timeout-seconds 420 --output-dir tests\sample_pool\generated\local_bangumi_mapping_sample_0096_risk_fix_gate_retry_20260519
+```
+
+First fresh run:
+
+- `status=fail_closed`
+- `summary=unresolved_submit_repair`
+- final blocker: `OVERLORD Ple Ple Pleiades main: fail_closed_title_tail_bridge_uninspected`
+- cache/request audit was clean: stable `instructions_sha256`, stable `tools_sha256`, stable `case_desk_sha256`, `provider_session_enabled=false`
+
+Retry result:
+
+- `status=accepted`
+- `accepted_contract_ok=true`
+- `final_verifier_passed=true`
+- `turn_count=5`
+- `tool_sequence=search -> inspect -> submit -> submit -> submit`
+- `submit_rejection_count=2`
+- `legacy_subagent_call_count=0`
+- `tool_rejection_count=0`
+- `near_turn_limit_unhealthy_count=0`
+- `semantic_diagnostics=[]`
+
+Spot check:
+
+- `Gekijouban Soushuuhen OVERLORD` part 1 -> `target://bangumi/194036-剧场版总集篇-overlord-不死者之王/episode/1`
+- `Gekijouban Soushuuhen OVERLORD` part 2 -> `target://bangumi/198968-剧场版总集篇-overlord-漆黑的英雄/episode/1`
+- `OVERLORD` -> `target://bangumi/112146-overlord/episodes/1-13`
+- `OVERLORD II` -> `target://bangumi/211027-overlord-第二季/episodes/1-13`
+- `OVERLORD III` -> `target://bangumi/242170-overlord-第三季/episodes/1-13`
+- `OVERLORD Ple Ple Pleiades` -> `target://bangumi/193953-play-play-昴宿星团/episode/1`
+- Numbered SP groups remain supplemental only with inspected same-series support and concrete no-corresponding-SP/OAD reasons.
+
+Conclusion:
+
+- The request/cache fixes did not introduce a transport regression.
+- Numbered SP target-absence is now fail-closed unless target-side evidence/support shape is present.
+- One fresh run still showed stochastic Pleiades noise in the evidence path, but the retry accepted cleanly without provider sessions or response chaining. This remains a runtime robustness observation, not evidence that `previous_response_id`, `conversation`, or sticky headers are needed.
+
+## 2026-05-19 Robustness Final Replay Batch
+
+Implemented the HumanCaseAgent robustness pass from `LOCAL_BANGUMI_HUMAN_CASE_AGENT_ROBUSTNESS_PLAN.md`:
+
+- evidence quality metadata on agent-facing locators and visible bridge candidates;
+- blocking vs diagnostic target-surface action split;
+- repair frontier rows and `RECOVERY_BRIEF` prompt surface;
+- no-progress/recovery counters in trace snapshots and sample-run summaries;
+- generic title-tail/root/continuation recovery guidance without fixed-layer target choice.
+
+Boundary constraints:
+
+- No `OVERLORD`, `Ple Ple Pleiades`, Bangumi id, alias, or file-to-target mapping was added.
+- Fixed layer still only does evidence hygiene, action quality, repair frontier/audit, and mechanical verification.
+- Ownership, special/OVA semantics, target absence, and target selection remain Agent decisions.
+
+Validation:
+
+```powershell
+.venv\Scripts\python.exe -m pytest tests\test_case_agent_human_case_agent.py tests\test_case_agent_human_cognitive_workspace.py tests\test_case_agent_orchestrator_agent.py tests\test_ai_models.py tests\test_config_local_bangumi_case_agent_defaults.py tests\test_config_manager.py -q
+$files = Get-ChildItem tests -Filter 'test_case_agent_*.py' | ForEach-Object { $_.FullName }
+.venv\Scripts\python.exe -m pytest $files tests\test_local_bangumi_sample_runner.py tests\test_ai_models.py tests\test_config_local_bangumi_case_agent_defaults.py tests\test_config_manager.py -q
+.venv\Scripts\python.exe -m compileall src\rename\case_agent tools\run_local_bangumi_human_gate.py tools\run_local_bangumi_mapping_sample_pool.py tools\summarize_local_bangumi_human_trace.py
+.venv\Scripts\python.exe tools\scan_local_bangumi_boundary_risks.py --json
+.venv\Scripts\python.exe tools\scan_local_bangumi_boundary_risks.py tools\run_local_bangumi_mapping_sample_pool.py tools\summarize_local_bangumi_human_trace.py --json
+```
+
+Result:
+
+- focused pytest: `211 passed`
+- broader case-agent pytest: `674 passed, 8 skipped`
+- compile: passed
+- boundary scan on `src/rename/case_agent`: `finding_count=0`
+- boundary scan on touched reporting tools: `finding_count=0`
+
+Fresh `sample_0096` replay batch:
+
+| Run | Status | Summary | Verifier | near-turn | weak-related | no-progress | strict |
+| --- | --- | --- | --- | ---: | ---: | ---: | ---: |
+| `local_bangumi_mapping_sample_0096_robustness_final_gate_1_20260519` | `fail_closed` | `agent_recovery_failed` | `true` | 0 | 0 | 3 | 0 |
+| `local_bangumi_mapping_sample_0096_robustness_final_gate_2_20260519` | `fail_closed` | `agent_recovery_failed` | `true` | 0 | 0 | 0 | 0 |
+| `local_bangumi_mapping_sample_0096_robustness_final_gate_3_20260519` | `fail_closed` | `agent_recovery_failed` | `true` | 0 | 0 | 0 | 0 |
+| `local_bangumi_mapping_sample_0096_robustness_final_gate_4_20260519` | `fail_closed` | `agent_recovery_failed` | `true` | 0 | 0 | 2 | 0 |
+| `local_bangumi_mapping_sample_0096_robustness_final_gate_5_20260519` | `fail_closed` | `agent_recovery_failed` | `true` | 0 | 0 | 4 | 0 |
+
+Protection replays:
+
+| Run | Status | Summary | Verifier | near-turn | weak-related | strict |
+| --- | --- | --- | --- | ---: | ---: | ---: |
+| `local_bangumi_mapping_sample_0035_robustness_protection_20260519` | `fail_closed` | `agent_recovery_failed` | `true` | 0 | 0 | 0 |
+| `local_bangumi_mapping_sample_0126_robustness_protection_20260519` | `fail_closed` | `agent_recovery_failed` | `true` | 0 | 0 | 0 |
+
+Conclusion:
+
+- The stochastic `sample_0096` path no longer reports `unresolved_submit_repair`.
+- Source-query-only weak related evidence did not become a blocking inspect loop.
+- Late-turn failures are now represented as explicit recovery failure/frontier exhaustion telemetry rather than an unexplained near-cap health failure.

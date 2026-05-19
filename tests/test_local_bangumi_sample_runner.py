@@ -134,6 +134,18 @@ def test_strict_row_ok_accepts_agent_fail_closed_submit_summary():
     )
 
 
+def test_strict_row_ok_accepts_recovery_failure_semantics():
+    for summary in ("retrieval_exhausted", "agent_recovery_failed", "semantic_ambiguity", "provider_failure"):
+        assert runner._strict_row_ok(
+            {
+                "ok": True,
+                "status": "fail_closed",
+                "summary": summary,
+                "final_verifier_passed": True,
+            }
+        )
+
+
 def test_run_mapping_sample_timeout_writes_timeout_result(tmp_path: Path, monkeypatch):
     sample = tmp_path / "sample_timeout.json"
     sample.write_text(

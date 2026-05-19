@@ -1573,12 +1573,12 @@ def test_orchestrator_agent_uses_native_tool_call_with_http_history_replay_sessi
     assert result.tool_call.tool_name == 'propose_case_understanding'
     assert result.session.turn_count == 1
     assert client.calls[0]['conversation_id'] == ''
-    assert client.calls[0]['session_id'].startswith('bar_local_bangumi_CASE-ORCH_')
+    assert 'session_id' not in client.calls[0]
     assert client.calls[0]['prompt_cache_key'] == 'bar:lbg:orchestrator:v8'
     assert result.session.provider_conversation_id == ''
     assert result.session.provider_session_enabled is False
     assert result.session.session_mode == 'http_history_replay'
-    assert result.session.http_session_id == client.calls[0]['session_id']
+    assert result.session.http_session_id.startswith('bar_local_bangumi_CASE-ORCH_')
     assert result.session.prompt_cache_key == client.calls[0]['prompt_cache_key']
     assert client.calls[0]['parallel_tool_calls'] is False
     assert client.calls[0]['tool_choice'] == 'required'

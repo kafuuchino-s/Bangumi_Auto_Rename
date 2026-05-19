@@ -83,6 +83,22 @@ ROMAJI_TO_HIRAGANA = {
 }
 ROMAJI_KEYS = sorted(ROMAJI_TO_HIRAGANA, key=len, reverse=True)
 REGULAR_EPISODE_KINDS = {"", "regular", "episode", "0"}
+ALLOWED_RELATED_RELATION_KINDS = {
+    "\u7eed\u96c6",
+    "\u524d\u4f20",
+    "\u756a\u5916\u7bc7",
+    "\u4e0d\u540c\u6f14\u7ece",
+    "\u6f14\u7ece",
+    "\u603b\u96c6\u7bc7",
+    "\u884d\u751f",
+    "sequel",
+    "prequel",
+    "side_story",
+    "adaptation",
+    "parent",
+    "child",
+    "special",
+}
 
 
 HumanToolName = Literal["inspect", "search", "note", "submit"]
@@ -101,7 +117,6 @@ SEMANTIC_SUBMIT_DIAGNOSTIC_CODES = {
     "fail_closed_singleton_with_unassigned_visible_target_items",
     "mapped_packaging_extra_marker_without_specific_target",
     "mapped_target_title_bridge_missing",
-    "numbered_special_exclusion_needs_target_evidence",
     "singleton_target_alias_matches_excluded_local_better",
     "supplemental_main_episodes_without_concrete_extra_reason",
 }
@@ -286,6 +301,15 @@ class AgentLocator:
     representative_labels: tuple[str, ...] = ()
     episode_file_refs: tuple[tuple[int, str], ...] = ()
     episode_file_labels: tuple[tuple[int, str, str], ...] = ()
+    evidence_origin: Literal["direct_search", "direct_existing_surface", "related_expansion", "episode_surface"] = "direct_existing_surface"
+    relation_quality: Literal["direct", "owner_relevant_related", "weak_related", "disallowed_related"] = "direct"
+    title_bridge_quality: Literal[
+        "title_or_alias_overlap",
+        "source_query_direct_overlap",
+        "source_query_related_only",
+        "no_title_bridge",
+    ] = "no_title_bridge"
+    answers_current_blocker: bool = False
     debug_refs: tuple[str, ...] = ()
 
 
@@ -389,6 +413,9 @@ class LocatorRegistry:
             markers=tuple(getattr(subject_card, "markers", ()) or ()),
             query_markers=tuple(getattr(subject_card, "query_markers", ()) or ()),
             search_rank=int(getattr(subject_card, "search_rank", 0) or 0),
+            evidence_origin="episode_surface",
+            relation_quality=getattr(subject_card, "relation_quality", "direct"),
+            title_bridge_quality=getattr(subject_card, "title_bridge_quality", "no_title_bridge"),
             debug_refs=tuple([subject_ref, *item_refs]),
         )
 
@@ -496,6 +523,14 @@ class HumanCaseSession:
     agenda_closed_count: int = 0
     stall_warning_count: int = 0
     no_progress_turn_count: int = 0
+    no_progress_escape_count: int = 0
+    recovery_frontier_switch_count: int = 0
+    exact_fail_closed_after_frontier_exhausted_count: int = 0
+    weak_related_blocking_action_count: int = 0
+    high_quality_candidate_count_by_turn: list[int] = field(default_factory=list)
+    diagnostic_candidate_count_by_turn: list[int] = field(default_factory=list)
+    noisy_candidate_count_by_turn: list[int] = field(default_factory=list)
+    blocking_action_count_by_turn: list[int] = field(default_factory=list)
     last_turn_health: dict[str, object] = field(default_factory=dict)
 
 
@@ -1429,6 +1464,67 @@ def _search_query_ref_parts(value: object) -> list[str]:
     return [part.strip() for part in text.split(" | ") if part.strip()]
 
 
+def _normalize_related_relation_name(value: object) -> str:
+    text = str(value or "").strip()
+    if not text:
+        return ""
+    try:
+        repaired = text.encode("latin1").decode("utf-8")
+    except (UnicodeEncodeError, UnicodeDecodeError):
+        repaired = ""
+    return repaired or text
+
+
+def _is_allowed_related_relation(value: object) -> bool:
+    return _normalize_related_relation_name(value) in ALLOWED_RELATED_RELATION_KINDS
+
+
+def _is_allowed_related_subject(relation: object, related_detail: object | None = None) -> bool:
+    if int(getattr(relation, "type", 0) or 0) != 2:
+        return False
+    if not _is_allowed_related_relation(getattr(relation, "relation", "")):
+        return False
+    if related_detail is not None and int(getattr(related_detail, "type", 2) or 2) != 2:
+        return False
+    return True
+
+
+def _relation_quality_for_subject(subject: BangumiSubjectCard) -> Literal[
+    "direct",
+    "owner_relevant_related",
+    "weak_related",
+    "disallowed_related",
+]:
+    relation_to_main = _normalize_related_relation_name(getattr(subject, "relation_to_main", ""))
+    source_role = str(getattr(subject, "source_role", "") or "").strip()
+    relation_path_refs = list(getattr(subject, "relation_path_refs", []) or [])
+    related = bool(relation_to_main or relation_path_refs or source_role.startswith("related_"))
+    if not related:
+        return "direct"
+    if relation_to_main and not _is_allowed_related_relation(relation_to_main):
+        return "disallowed_related"
+    if relation_to_main and _is_allowed_related_relation(relation_to_main):
+        return "owner_relevant_related"
+    return "weak_related"
+
+
+def _evidence_origin_for_subject(subject: BangumiSubjectCard) -> Literal[
+    "direct_search",
+    "direct_existing_surface",
+    "related_expansion",
+    "episode_surface",
+]:
+    if _relation_quality_for_subject(subject) != "direct":
+        return "related_expansion"
+    if _search_query_ref_parts(getattr(subject, "search_query_ref", "")):
+        return "direct_search"
+    return "direct_existing_surface"
+
+
+def _subject_is_disallowed_related(subject: BangumiSubjectCard) -> bool:
+    return _relation_quality_for_subject(subject) == "disallowed_related"
+
+
 def _search_query_markers(value: object, query_text_by_ref: dict[str, str] | None = None) -> tuple[str, ...]:
     query_text_by_ref = query_text_by_ref or {}
     markers: list[str] = []
@@ -1495,6 +1591,9 @@ def _register_existing_targets(workspace: CaseEvidenceWorkspace, registry: Locat
         subject_id = int(getattr(subject, "subject_id", 0) or 0)
         if not subject_id:
             continue
+        relation_quality = _relation_quality_for_subject(subject)
+        if relation_quality == "disallowed_related":
+            continue
         locator = _subject_locator(subject_id, _subject_title(subject))
         registry.add(
             AgentLocator(
@@ -1511,6 +1610,8 @@ def _register_existing_targets(workspace: CaseEvidenceWorkspace, registry: Locat
                 source_role=str(getattr(subject, "source_role", "") or ""),
                 relation_to_main=str(getattr(subject, "relation_to_main", "") or ""),
                 relation_path_refs=tuple(str(ref) for ref in list(getattr(subject, "relation_path_refs", []) or []) if str(ref)),
+                evidence_origin=_evidence_origin_for_subject(subject),
+                relation_quality=relation_quality,
                 debug_refs=(subject.ref,),
             )
         )
@@ -1542,6 +1643,9 @@ def _register_existing_targets(workspace: CaseEvidenceWorkspace, registry: Locat
                     getattr(item, "name", ""),
                     getattr(item, "name_cn", ""),
                 ),
+                evidence_origin="episode_surface",
+                relation_quality=getattr(registry.locators.get(subject_locator), "relation_quality", "direct"),
+                title_bridge_quality=getattr(registry.locators.get(subject_locator), "title_bridge_quality", "no_title_bridge"),
                 debug_refs=(str(getattr(item, "ref", "") or ""),),
             )
         )
@@ -1602,6 +1706,9 @@ def _workspace_add_targets(
 def _register_subject(registry: LocatorRegistry, subject: BangumiSubjectCard) -> str:
     subject_id = int(subject.subject_id or 0)
     locator = _subject_locator(subject_id, _subject_title(subject))
+    relation_quality = _relation_quality_for_subject(subject)
+    if relation_quality == "disallowed_related":
+        return ""
     registry.add(
         AgentLocator(
             locator=locator,
@@ -1617,6 +1724,8 @@ def _register_subject(registry: LocatorRegistry, subject: BangumiSubjectCard) ->
             source_role=str(getattr(subject, "source_role", "") or ""),
             relation_to_main=str(getattr(subject, "relation_to_main", "") or ""),
             relation_path_refs=tuple(str(ref) for ref in list(getattr(subject, "relation_path_refs", []) or []) if str(ref)),
+            evidence_origin=_evidence_origin_for_subject(subject),
+            relation_quality=relation_quality,
             debug_refs=(subject.ref,),
         )
     )
@@ -1638,6 +1747,9 @@ def _register_episode(registry: LocatorRegistry, subject_locator: str, subject_i
             episode_end=sort,
             contract_role="support_only",
             markers=_target_alias_markers(item.title, item.name, item.name_cn),
+            evidence_origin="episode_surface",
+            relation_quality=getattr(registry.locators.get(subject_locator), "relation_quality", "direct"),
+            title_bridge_quality=getattr(registry.locators.get(subject_locator), "title_bridge_quality", "no_title_bridge"),
             debug_refs=(item.ref,),
         )
     )
@@ -2071,11 +2183,26 @@ def _search_tool(
                 continue
             seen_variant_keys.add(variant_key)
             try:
-                subjects = list(getattr(bangumi_client, "search_subjects")(variant))[:SEARCH_RESULTS_PER_VARIANT]
+                raw_subjects = list(getattr(bangumi_client, "search_subjects")(variant))
+                subjects = raw_subjects[:SEARCH_RESULTS_PER_VARIANT]
             except Exception as exc:
                 variant_payloads.append({"query": variant, "error": f"bangumi_search_failed: {exc}"})
                 continue
-            variant_payloads.append({"query": variant, "result_count": len(subjects)})
+            variant_payloads.append(
+                {
+                    "query": variant,
+                    "result_count": len(subjects),
+                    "truncated_result_count": max(0, len(raw_subjects) - SEARCH_RESULTS_PER_VARIANT),
+                    "raw_results": [
+                        {
+                            "rank": rank,
+                            "id": int(getattr(subject, "id", 0) or 0),
+                            "title": str(getattr(subject, "name_cn", "") or getattr(subject, "name", "") or ""),
+                        }
+                        for rank, subject in enumerate(subjects, start=1)
+                    ],
+                }
+            )
             for rank, subject in enumerate(subjects, start=1):
                 subject_id = int(getattr(subject, "id", 0) or 0)
                 if not subject_id:
@@ -2153,6 +2280,8 @@ def _search_tool(
             if subject_card is None:
                 continue
             locator = _register_subject(registry, subject_card)
+            if not locator:
+                continue
             query_results.append(
                 {
                     "target": locator,
@@ -2166,7 +2295,34 @@ def _search_tool(
                     "match_source": "bangumi_search",
                 }
             )
-        cards.append({"query": query, "query_variants": variant_payloads, "results": query_results})
+        query_tokens = _distinctive_tokens(query) - _TITLE_TAIL_GENERIC_TOKENS
+        direct_title_tail_bridge_seen = any(
+            query_tokens
+            and query_tokens.intersection(
+                _distinctive_tokens(
+                    str(row.get("title") or ""),
+                    str(row.get("name") or ""),
+                    str(row.get("name_cn") or ""),
+                    str(row.get("matched_query") or ""),
+                )
+                - _TITLE_TAIL_GENERIC_TOKENS
+            )
+            for row in query_results
+        )
+        raw_variant_result_count = sum(
+            int(row.get("result_count") or 0)
+            for row in variant_payloads
+            if isinstance(row, dict)
+        )
+        cards.append(
+            {
+                "query": query,
+                "query_variants": variant_payloads,
+                "results": query_results,
+                "deduped_result_count": max(0, raw_variant_result_count - len(query_results)),
+                "direct_title_tail_bridge_seen": direct_title_tail_bridge_seen,
+            }
+        )
     workspace = _workspace_add_targets(workspace, subjects=[*new_subjects, *updated_subjects_by_ref.values()])
     total_result_count = sum(len(list(card.get("results") or [])) for card in cards)
     new_subject_count = len(new_subjects)
@@ -2430,6 +2586,7 @@ def _inspect_target(
                 )
             )
     related_surface: list[dict[str, object]] = []
+    skipped_related_counts: Counter[str] = Counter()
     if "related" in scope:
         try:
             relations = list(getattr(bangumi_client, "get_related_subjects")(subject_id))[:12]
@@ -2440,14 +2597,24 @@ def _inspect_target(
             rid = int(getattr(relation, "id", 0) or 0)
             if not rid or rid in new_subject_ids:
                 continue
+            relation_name = _normalize_related_relation_name(getattr(relation, "relation", ""))
+            if int(getattr(relation, "type", 0) or 0) != 2:
+                skipped_related_counts["non_anime_type"] += 1
+                continue
+            if not _is_allowed_related_relation(relation_name):
+                skipped_related_counts["disallowed_relation"] += 1
+                continue
             ref = _next_ref("BS", [*[card.ref for card in workspace.bangumi_subjects], *[card.ref for card in subjects]])
             try:
                 related_detail = getattr(bangumi_client, "get_subject")(rid)
             except Exception:
                 related_detail = None
+            if related_detail is not None and not _is_allowed_related_subject(relation, related_detail):
+                skipped_related_counts["non_anime_detail"] += 1
+                continue
             if related_detail is not None:
                 subject = _subject_card_from_api(related_detail, ref)
-                subject = subject.model_copy(update={"relation_to_main": str(getattr(relation, "relation", "") or "")})
+                subject = subject.model_copy(update={"relation_to_main": relation_name})
             else:
                 subject = BangumiSubjectCard(
                     ref=ref,
@@ -2456,7 +2623,7 @@ def _inspect_target(
                     title=str(getattr(relation, "name_cn", "") or getattr(relation, "name", "") or ""),
                     name=str(getattr(relation, "name", "") or ""),
                     name_cn=str(getattr(relation, "name_cn", "") or ""),
-                    relation_to_main=str(getattr(relation, "relation", "") or ""),
+                    relation_to_main=relation_name,
                 )
             subject = _subject_with_related_query_provenance(subject, source_subject=subject_card)
             subjects.append(subject)
@@ -2508,6 +2675,8 @@ def _inspect_target(
         result["episodes"] = episode_surface
     if related_surface:
         result["related"] = related_surface
+    if skipped_related_counts:
+        result["related_skipped"] = dict(sorted(skipped_related_counts.items()))
     return workspace, result
 
 
@@ -5027,17 +5196,68 @@ def _immediate_repair_focus(session: HumanCaseSession) -> dict[str, object]:
     return focus
 
 
+def _recovery_brief_for_prompt(session: HumanCaseSession) -> dict[str, object]:
+    latest_repair = _latest_submit_repair_observation(session)
+    if not latest_repair or latest_repair.get("accepted") or not _has_open_submit_repair(latest_repair):
+        return {}
+    frontier_rows = _repair_frontier_rows_from_agenda(
+        latest_repair,
+        repeated=bool(latest_repair.get("repeat_rejection_warning")),
+    )
+    if not frontier_rows:
+        return {}
+    first = frontier_rows[0]
+    reduced_uncertainty: list[str] = []
+    if session.draft_work_units:
+        reduced_uncertainty.append(f"saved_mechanically_ok_work_units={len(session.draft_work_units)}")
+    if session.search_new_subject_count:
+        reduced_uncertainty.append(f"new_subjects_seen={session.search_new_subject_count}")
+    if session.agenda_closed_count:
+        reduced_uncertainty.append(f"closed_repair_items={session.agenda_closed_count}")
+    if not reduced_uncertainty:
+        reduced_uncertainty.append("none recorded yet")
+    did_not_reduce = list(first.get("bad_paths") or [])[:4]
+    if session.no_progress_turn_count >= 2 and "current path is low information gain" not in did_not_reduce:
+        did_not_reduce.append("current path is low information gain")
+    return {
+        "current_blocker": first.get("blocker") or "",
+        "what_has_already_reduced_uncertainty": reduced_uncertainty[:4],
+        "what_did_not_reduce_uncertainty": did_not_reduce[:4],
+        "high_quality_next_frontier": list(first.get("high_quality_next_actions") or [])[:4],
+        "diagnostic_only_evidence": list(first.get("diagnostic_only") or [])[:4],
+        "terminal_boundary": first.get("terminal_boundary") or "",
+        "instruction": (
+            "Do not spend budget on diagnostic-only evidence unless it answers the exact blocker. "
+            "Preserve saved mechanically-ok work units; change only blocked or missing units."
+        ),
+    }
+
+
 def _active_repair_agenda_for_prompt(session: HumanCaseSession) -> list[dict[str, object]]:
     rows: list[dict[str, object]] = []
+    latest_repair = _latest_submit_repair_observation(session)
     visible_options_by_id = {
         str(row.get("agenda_id") or ""): row.get("visible_options") or {}
-        for row in _repair_agenda_rows(_latest_submit_repair_observation(session))
+        for row in _repair_agenda_rows(latest_repair)
         if str(row.get("agenda_id") or "")
     }
+    frontier_rows = _repair_frontier_rows_from_agenda(
+        latest_repair,
+        repeated=bool(latest_repair.get("repeat_rejection_warning")),
+    )
     for item in session.cognitive_workspace.investigation_agenda:
         if item.status != "open" or not str(item.agenda_id or "").startswith("REPAIR-"):
             continue
         visible_options = visible_options_by_id.get(item.agenda_id) or {}
+        matching_frontier = next(
+            (
+                row
+                for row in frontier_rows
+                if str(row.get("blocker") or "") == str(item.blocking_issue or "")
+                and set(str(locator) for locator in list(row.get("local") or [])).intersection(set(item.locators))
+            ),
+            None,
+        )
         rows.append(
             {
                 "agenda_id": item.agenda_id,
@@ -5046,6 +5266,7 @@ def _active_repair_agenda_for_prompt(session: HumanCaseSession) -> list[dict[str
                 "required_next_action": item.next_action,
                 "closure_condition": item.closure_condition,
                 "visible_options": _compact_repair_payload(visible_options, list_limit=4, text_limit=220),
+                "repair_frontier": _compact_repair_payload(matching_frontier or {}, list_limit=4, text_limit=220),
             }
         )
         if len(rows) >= 8:
@@ -5081,6 +5302,175 @@ def _has_open_submit_repair(repair: dict[str, object]) -> bool:
 
 def _repair_has_target_surface_action(repair: dict[str, object]) -> bool:
     return bool(_target_surface_actions_from_repair(repair))
+
+
+def _empty_action_quality_groups() -> dict[str, list[object]]:
+    return {
+        "blocking": [],
+        "diagnostic": [],
+        "noisy": [],
+    }
+
+
+def _append_action_quality_row(
+    groups: dict[str, list[object]],
+    action: object,
+    *,
+    bucket: Literal["blocking", "diagnostic", "noisy"] = "blocking",
+    reason: str = "",
+    metadata: dict[str, object] | None = None,
+    limit: int = 12,
+) -> None:
+    text = str(action or "").strip()
+    if not text.startswith("inspect("):
+        return
+    if bucket == "blocking":
+        rows = groups["blocking"]
+        if text not in rows:
+            rows.append(text)
+        return
+    payload = {
+        "action": text,
+        "reason": reason,
+        **(metadata or {}),
+    }
+    rows = groups["diagnostic" if bucket == "diagnostic" else "noisy"]
+    if any(isinstance(row, dict) and row.get("action") == text for row in rows):
+        return
+    if len(rows) < limit:
+        rows.append(payload)
+
+
+def _bridge_target_action_bucket(target: dict[str, object]) -> tuple[Literal["blocking", "diagnostic", "noisy"], str]:
+    relation_quality = str(target.get("relation_quality") or "")
+    title_bridge_quality = str(target.get("title_bridge_quality") or "")
+    if relation_quality == "disallowed_related":
+        return "noisy", "disallowed_related"
+    if bool(target.get("answers_current_blocker")):
+        return "blocking", "answers_current_blocker"
+    if relation_quality == "weak_related":
+        return "diagnostic", "weak_related_diagnostic_only"
+    if relation_quality == "owner_relevant_related" and title_bridge_quality in {"source_query_related_only", "no_title_bridge"}:
+        return "diagnostic", "owner_relevant_related_without_title_or_shape_support"
+    if title_bridge_quality == "source_query_related_only":
+        return "diagnostic", "source_query_related_only"
+    return "diagnostic", "does_not_answer_current_blocker"
+
+
+def _target_surface_action_quality_groups(repair: dict[str, object]) -> dict[str, list[object]]:
+    groups = _empty_action_quality_groups()
+
+    def append_direct(value: object, *, reason: str = "direct_repair_action") -> None:
+        _append_action_quality_row(groups, value, bucket="blocking", reason=reason)
+
+    raw_blocking = repair.get("blocking_target_surface_actions")
+    if isinstance(raw_blocking, list):
+        for action in raw_blocking:
+            append_direct(action, reason="blocking_target_surface_actions")
+
+    raw_actions = repair.get("target_surface_actions")
+    if isinstance(raw_actions, list):
+        for action in raw_actions:
+            append_direct(action, reason="target_surface_actions")
+
+    raw_diagnostic = repair.get("diagnostic_target_surface_actions")
+    if isinstance(raw_diagnostic, list):
+        for item in raw_diagnostic:
+            if isinstance(item, dict):
+                _append_action_quality_row(
+                    groups,
+                    item.get("action") or item.get("available_action"),
+                    bucket="diagnostic",
+                    reason=str(item.get("reason") or "diagnostic_target_surface_action"),
+                    metadata={key: item.get(key) for key in ("target", "target_subject", "relation_quality", "title_bridge_quality") if key in item},
+                )
+            else:
+                _append_action_quality_row(
+                    groups,
+                    item,
+                    bucket="diagnostic",
+                    reason="diagnostic_target_surface_action",
+                )
+
+    raw_noisy = repair.get("rejected_or_noisy_actions")
+    if isinstance(raw_noisy, list):
+        for item in raw_noisy:
+            if isinstance(item, dict):
+                _append_action_quality_row(
+                    groups,
+                    item.get("action") or item.get("available_action"),
+                    bucket="noisy",
+                    reason=str(item.get("reason") or "rejected_or_noisy_action"),
+                    metadata={key: item.get(key) for key in ("target", "target_subject", "relation_quality", "title_bridge_quality") if key in item},
+                )
+            else:
+                _append_action_quality_row(groups, item, bucket="noisy", reason="rejected_or_noisy_action")
+
+    for key in (
+        "excluded_count_matched_uninspected_subject_repairs",
+        "excluded_singleton_visible_subject_repairs",
+        "fail_closed_count_matched_target_sibling_repairs",
+        "fail_closed_title_tail_bridge_repairs",
+    ):
+        rows = repair.get(key)
+        if not isinstance(rows, list):
+            continue
+        for row in rows:
+            if not isinstance(row, dict):
+                continue
+            append_direct(row.get("available_action"), reason=key)
+            for target in list(row.get("visible_source_query_bridge_targets") or []):
+                if not isinstance(target, dict):
+                    continue
+                bucket, reason = _bridge_target_action_bucket(target)
+                metadata = {
+                    key: target.get(key)
+                    for key in (
+                        "target",
+                        "target_subject",
+                        "target_title",
+                        "evidence_origin",
+                        "relation_quality",
+                        "title_bridge_quality",
+                        "episode_shape_support",
+                        "answers_current_blocker",
+                    )
+                    if key in target
+                }
+                _append_action_quality_row(
+                    groups,
+                    target.get("available_action"),
+                    bucket=bucket,
+                    reason=reason,
+                    metadata=metadata,
+                )
+    numbered_repairs = repair.get("numbered_special_exclusion_repairs")
+    if isinstance(numbered_repairs, list):
+        for row in numbered_repairs:
+            if not isinstance(row, dict):
+                continue
+            for subject in list(row.get("same_count_visible_subjects") or []):
+                if isinstance(subject, dict):
+                    append_direct(subject.get("available_action"), reason="numbered_special_target_side_check")
+    blocking_units = repair.get("blocking_units")
+    if isinstance(blocking_units, list):
+        for unit in blocking_units:
+            if not isinstance(unit, dict):
+                continue
+            repairs = unit.get("target_surface_repairs")
+            if isinstance(repairs, list):
+                for item in repairs:
+                    if isinstance(item, dict):
+                        append_direct(item.get("available_action"), reason="blocking_unit_target_surface_repair")
+            issues = unit.get("issue") or unit.get("issues")
+            issue_rows = issues if isinstance(issues, list) else [issues]
+            for item in issue_rows:
+                if isinstance(item, dict):
+                    append_direct(item.get("available_action"), reason="blocking_unit_issue_available_action")
+    groups["blocking"] = list(groups["blocking"])[:12]
+    groups["diagnostic"] = list(groups["diagnostic"])[:12]
+    groups["noisy"] = list(groups["noisy"])[:12]
+    return groups
 
 
 def _inspect_action_locators(action: str) -> list[str]:
@@ -5188,68 +5578,126 @@ def _repair_search_queries_to_try(repair: dict[str, object] | None = None) -> li
 
 
 def _target_surface_actions_from_repair(repair: dict[str, object]) -> list[str]:
-    actions: list[str] = []
+    return [
+        str(action)
+        for action in _target_surface_action_quality_groups(repair).get("blocking", [])[:4]
+        if str(action or "").startswith("inspect(")
+    ]
 
-    def append_action(value: object) -> None:
-        action = str(value or "").strip()
-        if action.startswith("inspect(") and action not in actions:
-            actions.append(action)
 
-    raw_actions = repair.get("target_surface_actions")
-    if isinstance(raw_actions, list):
-        for action in raw_actions:
-            append_action(action)
-            if len(actions) >= 4:
-                return actions
-    for key in (
-        "excluded_count_matched_uninspected_subject_repairs",
-        "excluded_singleton_visible_subject_repairs",
-        "fail_closed_count_matched_target_sibling_repairs",
-        "fail_closed_title_tail_bridge_repairs",
-    ):
-        rows = repair.get(key)
-        if not isinstance(rows, list):
+def _diagnostic_action_summaries(actions: object, *, limit: int = 6) -> list[str]:
+    rows: list[str] = []
+    for item in list(actions or []):
+        if isinstance(item, dict):
+            action = str(item.get("action") or "").strip()
+            reason = str(item.get("reason") or "").strip()
+            label = f"{reason}: {action}" if reason and action else (action or reason)
+        else:
+            label = str(item or "").strip()
+        if label and label not in rows:
+            rows.append(label)
+        if len(rows) >= limit:
+            break
+    return rows
+
+
+def _repair_frontier_rows_from_agenda(agenda: dict[str, object], *, repeated: bool = False) -> list[dict[str, object]]:
+    action_groups = _target_surface_action_quality_groups(agenda)
+    blocking_actions = [
+        str(action)
+        for action in list(action_groups.get("blocking") or [])
+        if str(action or "").strip()
+    ][:4]
+    diagnostic_actions = _diagnostic_action_summaries(action_groups.get("diagnostic"), limit=4)
+    noisy_actions = _diagnostic_action_summaries(action_groups.get("noisy"), limit=4)
+    search_queries = _repair_search_queries_to_try(agenda)[:6]
+    rows: list[dict[str, object]] = []
+
+    def add_row(
+        *,
+        local: object,
+        blocker: object,
+        open_question: str,
+        row_search_queries: object = None,
+        row_blocking_actions: object = None,
+        row_diagnostics: object = None,
+    ) -> None:
+        local_values = [str(item) for item in list(local or []) if str(item or "").strip()]
+        blocker_text = str(blocker or "submit_repair").strip()
+        high_quality: list[str] = []
+        for query in list(row_search_queries or search_queries):
+            text = str(query or "").strip()
+            if text and f"search: {text}" not in high_quality:
+                high_quality.append(f"search: {text}")
+        for action in list(row_blocking_actions or blocking_actions):
+            text = str(action or "").strip()
+            if text and f"inspect: {text}" not in high_quality:
+                high_quality.append(f"inspect: {text}")
+        diagnostic_only = list(row_diagnostics or diagnostic_actions)[:4]
+        bad_paths = noisy_actions[:4]
+        if repeated:
+            bad_paths.append("repeated_submit_shape")
+        if not high_quality:
+            high_quality.append("submit exact fail_closed for this work unit with the remaining retrieval/evidence gap")
+        rows.append(
+            {
+                "local": local_values[:6],
+                "blocker": blocker_text,
+                "open_question": open_question,
+                "already_tried": ["same submit rejection repeated"] if repeated else [],
+                "bad_paths": bad_paths[:6],
+                "high_quality_next_actions": high_quality[:6],
+                "diagnostic_only": diagnostic_only[:6],
+                "terminal_boundary": (
+                    "If the high-quality frontier is exhausted, submit exact fail_closed for the listed local "
+                    "work unit and name the retrieval/evidence gap."
+                ),
+            }
+        )
+
+    for row in list(agenda.get("blocking_units") or []):
+        if not isinstance(row, dict):
             continue
-        for row in rows:
-            if isinstance(row, dict):
-                append_action(row.get("available_action"))
-                for target in list(row.get("visible_source_query_bridge_targets") or []):
-                    if isinstance(target, dict):
-                        append_action(target.get("available_action"))
-                        if len(actions) >= 4:
-                            return actions
-                if len(actions) >= 4:
-                    return actions
-    numbered_repairs = repair.get("numbered_special_exclusion_repairs")
-    if isinstance(numbered_repairs, list):
-        for row in numbered_repairs:
+        issue = row.get("issue") or row.get("issue_codes") or "submit_repair"
+        add_row(
+            local=row.get("local"),
+            blocker=issue,
+            open_question=str(row.get("required") or row.get("repair_instruction") or _repair_required_next_action(row)),
+            row_search_queries=row.get("search_queries_to_try") or search_queries,
+        )
+        if len(rows) >= 8:
+            return rows
+    for key in (
+        "excluded_title_tail_search_repairs",
+        "excluded_title_tail_unresolved_repairs",
+        "fail_closed_title_tail_bridge_repairs",
+        "visible_target_surface_missing_units",
+        "excluded_singleton_unassigned_target_repairs",
+        "fail_closed_singleton_unassigned_target_repairs",
+    ):
+        for row in list(agenda.get(key) or []):
             if not isinstance(row, dict):
                 continue
-            for subject in list(row.get("same_count_visible_subjects") or []):
-                if isinstance(subject, dict):
-                    append_action(subject.get("available_action"))
-                    if len(actions) >= 4:
-                        return actions
-    blocking_units = repair.get("blocking_units")
-    if isinstance(blocking_units, list):
-        for unit in blocking_units:
-            if not isinstance(unit, dict):
-                continue
-            repairs = unit.get("target_surface_repairs")
-            if isinstance(repairs, list):
-                for item in repairs:
-                    if isinstance(item, dict):
-                        append_action(item.get("available_action"))
-                        if len(actions) >= 4:
-                            return actions
-            issues = unit.get("issue") or unit.get("issues")
-            issue_rows = issues if isinstance(issues, list) else [issues]
-            for item in issue_rows:
-                if isinstance(item, dict):
-                    append_action(item.get("available_action"))
-                    if len(actions) >= 4:
-                        return actions
-    return actions
+            add_row(
+                local=row.get("local"),
+                blocker=row.get("issue") or key,
+                open_question=str(row.get("required") or row.get("repair_instruction") or key),
+                row_search_queries=row.get("search_queries_to_try") or search_queries,
+            )
+            if len(rows) >= 8:
+                return rows
+    for row in list(agenda.get("required_missing_work_units") or []):
+        if not isinstance(row, dict):
+            continue
+        local = row.get("local") or row.get("locator") or row.get("locators")
+        add_row(
+            local=local if isinstance(local, list) else [local],
+            blocker="coverage_missing",
+            open_question="This must-account local locator is not covered exactly once.",
+        )
+        if len(rows) >= 8:
+            return rows
+    return rows
 
 
 def _local_locator_scope_matches(candidate: str, target: str) -> bool:
@@ -5342,6 +5790,8 @@ def _repair_finalization_guard_for_prompt(
     if not (near_cap or stalled):
         return {}
     target_surface_actions = _target_surface_actions_from_repair(latest_repair)
+    diagnostic_actions = latest_repair.get("diagnostic_target_surface_actions") or []
+    noisy_actions = latest_repair.get("rejected_or_noisy_actions") or []
     uninspected_targets = _uninspected_target_surface_action_locators(session, latest_repair)
     search_queries = _repair_search_queries_to_try(latest_repair)
     finalization_locators = _repair_finalization_target_locators(session)
@@ -5367,6 +5817,9 @@ def _repair_finalization_guard_for_prompt(
         "active_repair_agenda": active_repair_agenda[:4],
         "finalization_target_locators": finalization_locators[:8],
         "target_surface_actions": target_surface_actions[:4],
+        "diagnostic_target_surface_actions": diagnostic_actions[:4] if isinstance(diagnostic_actions, list) else [],
+        "rejected_or_noisy_actions": noisy_actions[:4] if isinstance(noisy_actions, list) else [],
+        "recovery_no_high_quality_action": bool(not target_surface_actions and (diagnostic_actions or noisy_actions)),
         "uninspected_target_surface_locators": uninspected_targets[:4],
         "search_queries_to_try": search_queries[:8],
         "allowed_actions": [
@@ -8043,6 +8496,9 @@ def _visible_source_query_bridge_targets(
         for item in registry.locators.values()
         if item.kind == "target_subject" and int(item.subject_id or 0)
     ]:
+        relation_quality = str(getattr(subject, "relation_quality", "") or "direct")
+        if relation_quality == "disallowed_related":
+            continue
         query_tokens = _target_query_distinctive_tokens(subject) - _TITLE_TAIL_GENERIC_TOKENS
         shared_query_tail = sorted(title_tail_tokens.intersection(query_tokens))
         if len(shared_query_tail) < 2:
@@ -8053,7 +8509,43 @@ def _visible_source_query_bridge_targets(
         relation_to_main = str(subject.relation_to_main or "").strip()
         source_role = str(subject.source_role or "").strip()
         related_query_bridge = bool(relation_to_main or relation_path_refs or source_role.startswith("related_"))
+        if related_query_bridge and relation_to_main and not _is_allowed_related_relation(relation_to_main):
+            continue
+        evidence_origin = "related_expansion" if related_query_bridge else str(subject.evidence_origin or "direct_search")
+        if relation_quality == "direct" and related_query_bridge:
+            relation_quality = "owner_relevant_related" if _is_allowed_related_relation(relation_to_main) else "weak_related"
         target_numbers = _target_episode_numbers_for_subject(registry, int(subject.subject_id or 0))
+        local_file_count = len(locator.file_refs) or len(parent_locator.file_refs)
+        episode_shape_support = bool(
+            local_file_count
+            and target_numbers
+            and (
+                len(target_numbers) == local_file_count
+                or (len(target_numbers) == 1 and local_file_count == 1)
+                or int(subject.subject_eps or 0) == local_file_count
+            )
+        )
+        if shared_title:
+            title_bridge_quality = "title_or_alias_overlap"
+        elif related_query_bridge:
+            title_bridge_quality = "source_query_related_only"
+        elif shared_query_tail:
+            title_bridge_quality = "source_query_direct_overlap"
+        else:
+            title_bridge_quality = "no_title_bridge"
+        answers_current_blocker = bool(
+            (
+                relation_quality == "direct"
+                and title_bridge_quality in {"title_or_alias_overlap", "source_query_direct_overlap"}
+            )
+            or (
+                relation_quality == "owner_relevant_related"
+                and (
+                    title_bridge_quality == "title_or_alias_overlap"
+                    or episode_shape_support
+                )
+            )
+        )
         target = subject.locator
         candidate_items: list[str] = []
         if len(target_numbers) == 1:
@@ -8078,6 +8570,11 @@ def _visible_source_query_bridge_targets(
                 "source_role": source_role,
                 "relation_path_refs": list(relation_path_refs[:4]),
                 "relevance_layer": "related_source_query_bridge" if related_query_bridge else "source_query_bridge",
+                "evidence_origin": evidence_origin,
+                "relation_quality": relation_quality,
+                "title_bridge_quality": title_bridge_quality,
+                "episode_shape_support": episode_shape_support,
+                "answers_current_blocker": answers_current_blocker,
                 "candidate_target_episode_locators": candidate_items,
                 "available_action": f'inspect(["{subject.locator}"], scope=["details","episodes","related"])',
                 "mechanical_note": (
@@ -8088,6 +8585,7 @@ def _visible_source_query_bridge_targets(
         )
     rows.sort(
         key=lambda row: (
+            not bool(row.get("answers_current_blocker")),
             len(row.get("shared_title_tokens") or []) < 2,
             row.get("relevance_layer") != "related_source_query_bridge",
             not bool(row.get("shared_title_tokens")),
@@ -8164,6 +8662,30 @@ def _excluded_title_tail_unresolved_after_search_repairs(
                 parent_locator,
                 title_tail_tokens,
             )
+            root_frontier_queries: list[str] = []
+            seen_root_frontier: set[str] = set()
+
+            def add_root_frontier_query(value: object) -> None:
+                query = _clean_search_query_seed(str(value or ""))
+                if not query:
+                    return
+                key = query.casefold()
+                if key in seen_root_frontier or _search_hint_was_executed(query, searched_query_variant_keys):
+                    return
+                seen_root_frontier.add(key)
+                root_frontier_queries.append(query)
+
+            for hint in query_hints:
+                add_root_frontier_query(hint)
+            for target_row in source_query_bridge_targets[:6]:
+                if not isinstance(target_row, dict):
+                    continue
+                title = str(target_row.get("target_title") or "")
+                add_root_frontier_query(_seasonless_title_query(title))
+                if target_row.get("title_bridge_quality") == "title_or_alias_overlap":
+                    add_root_frontier_query(title)
+                for source_query_text in list(target_row.get("target_source_query_texts") or [])[:4]:
+                    add_root_frontier_query(source_query_text)
             if require_uninspected_bridge_target:
                 source_query_bridge_targets = [
                     item
@@ -8171,6 +8693,12 @@ def _excluded_title_tail_unresolved_after_search_repairs(
                     if _target_subject_id_from_locator(str(item.get("target_subject") or item.get("target") or ""))
                     not in inspected_subject_ids
                 ]
+                if issue_code == "fail_closed_title_tail_bridge_uninspected":
+                    source_query_bridge_targets = [
+                        item
+                        for item in source_query_bridge_targets
+                        if bool(item.get("answers_current_blocker"))
+                    ]
                 if not source_query_bridge_targets:
                     continue
             required = (
@@ -8199,6 +8727,8 @@ def _excluded_title_tail_unresolved_after_search_repairs(
                     "representative_labels": list(locator.representative_labels[:4]),
                     "unbridged_title_tail_tokens": unbridged_tokens[:12],
                     "searched_query_hints": query_hints[:8],
+                    "search_queries_to_try": root_frontier_queries[:8],
+                    "root_owner_search_queries_to_try": root_frontier_queries[:8],
                     "visible_target_title_tokens": sorted(visible_target_tokens)[:32],
                     "visible_source_query_bridge_targets": source_query_bridge_targets,
                     "required": required,
@@ -9432,6 +9962,12 @@ required_next_action, and closure_condition. Do not call submit again merely to
 try the same plan. Before another submit, close the agenda item by adding needed
 search/inspect evidence, changing the cited resolution fields, or submitting
 that exact local locator as fail_closed with a concrete evidence blocker.
+When CASE_STATE.case_memory.RECOVERY_BRIEF is present, read it after recent tool
+observations and before choosing the next action. Do not spend budget on
+diagnostic-only evidence unless you can explain how it answers the exact
+blocker. If no high-quality frontier remains, submit exact fail_closed for that
+work unit with the remaining retrieval/evidence gap. Preserve saved
+mechanically-ok work units; change only blocked or missing units.
 Search results only identify candidate subjects. Before submitting any
 mapped_* work unit that uses target episodes or episode_start/episode_end,
 inspect the chosen target subject with scope [details, episodes, related].
@@ -9664,6 +10200,11 @@ def _turn_tail(desk: dict[str, object], session: HumanCaseSession, *, max_turns:
                         "excluded_title_tail_unresolved_repairs",
                         "mechanical_repair_hints",
                         "visible_target_surface_missing_units",
+                        "blocking_target_surface_actions",
+                        "diagnostic_target_surface_actions",
+                        "rejected_or_noisy_actions",
+                        "repair_frontier",
+                        "recovery_no_high_quality_action",
                         "repeat_rejection_warning",
                         "required_next_action",
                     )
@@ -9722,6 +10263,23 @@ def _turn_tail(desk: dict[str, object], session: HumanCaseSession, *, max_turns:
                     "queries": [
                         {
                             "query": item.get("query"),
+                            "query_variants": [
+                                {
+                                    key: variant.get(key)
+                                    for key in (
+                                        "query",
+                                        "skipped",
+                                        "result_count",
+                                        "truncated_result_count",
+                                        "raw_results",
+                                    )
+                                    if key in variant
+                                }
+                                for variant in list(item.get("query_variants") or [])[:6]
+                                if isinstance(variant, dict)
+                            ],
+                            "deduped_result_count": item.get("deduped_result_count"),
+                            "direct_title_tail_bridge_seen": item.get("direct_title_tail_bridge_seen"),
                             "result_tiers": [
                                 {
                                     "layer": tier.get("layer"),
@@ -9782,9 +10340,8 @@ def _turn_tail(desk: dict[str, object], session: HumanCaseSession, *, max_turns:
         and (remaining_turns <= 1 or not target_surface_action_open)
     )
     repair_finalization_guard = _repair_finalization_guard_for_prompt(session, max_turns=max_turns)
-    return {
-        "case_desk": desk,
-        "case_memory": {
+    recovery_brief = _recovery_brief_for_prompt(session)
+    case_memory = {
             "active_repair_agenda": _active_repair_agenda_for_prompt(session),
             "near_cap_repair_finalization_guard": repair_finalization_guard,
             "immediate_repair_focus": _immediate_repair_focus(session),
@@ -9839,7 +10396,12 @@ def _turn_tail(desk: dict[str, object], session: HumanCaseSession, *, max_turns:
                     else "Continue normal inspect/search/submit investigation."
                 ),
             },
-        },
+    }
+    if recovery_brief:
+        case_memory["RECOVERY_BRIEF"] = recovery_brief
+    return {
+        "case_desk": desk,
+        "case_memory": case_memory,
     }
 
 
@@ -9881,7 +10443,6 @@ def _call_human_agent(
         tool_choice=tool_choice,
         conversation_id="",
         prompt_cache_key=session.prompt_cache_key,
-        session_id=session.http_session_id,
     )
     if not isinstance(response, dict):
         return None, session, {"note": "human_case_agent_call_failed", "error_kind": "human_case_agent_no_response"}, "human_case_agent_no_response"
@@ -9958,6 +10519,73 @@ def _call_human_agent(
     return tool_call, updated, audit, ""
 
 
+def _turn_delta_counts_from_output(
+    output: dict[str, object],
+    *,
+    before_saved_work_unit_count: int,
+    after_saved_work_unit_count: int,
+    agenda_item_closed: bool,
+    new_evidence_added: bool,
+    repeated_submit_rejection: bool,
+    consecutive_tool_count: int,
+) -> dict[str, int]:
+    high_quality_candidate_count = 0
+    diagnostic_candidate_count = 0
+    noisy_candidate_count = 0
+
+    if new_evidence_added:
+        high_quality_candidate_count += int(output.get("new_subject_count") or 0)
+        if not high_quality_candidate_count:
+            high_quality_candidate_count = 1
+
+    if isinstance(output.get("queries"), list):
+        for query in list(output.get("queries") or []):
+            if not isinstance(query, dict):
+                continue
+            for result in list(query.get("results") or []):
+                if isinstance(result, dict) and str(result.get("relevance_layer") or "") != "rejected_or_noisy":
+                    high_quality_candidate_count += 1
+            for tier in list(query.get("result_tiers") or []):
+                if not isinstance(tier, dict):
+                    continue
+                layer = str(tier.get("layer") or "")
+                count = sum(1 for item in list(tier.get("results") or []) if isinstance(item, dict))
+                if layer == "rejected_or_noisy":
+                    noisy_candidate_count += count
+                elif layer in {"attention_focus", "title_relevant"}:
+                    high_quality_candidate_count += count
+                else:
+                    diagnostic_candidate_count += count
+
+    blocking_action_count = len(_target_surface_actions_from_repair(output))
+    diagnostic_actions = output.get("diagnostic_target_surface_actions")
+    noisy_actions = output.get("rejected_or_noisy_actions")
+    if isinstance(diagnostic_actions, list):
+        diagnostic_candidate_count += len(diagnostic_actions)
+    if isinstance(noisy_actions, list):
+        noisy_candidate_count += len(noisy_actions)
+
+    return {
+        "new_high_quality_candidate_count": high_quality_candidate_count,
+        "new_blocking_action_count": blocking_action_count,
+        "closed_blocker_count": 1 if agenda_item_closed else 0,
+        "saved_work_unit_delta": max(0, int(after_saved_work_unit_count) - int(before_saved_work_unit_count)),
+        "repeated_action_count": 1 if repeated_submit_rejection or consecutive_tool_count > 1 else 0,
+        "new_noisy_candidate_count": noisy_candidate_count,
+        "diagnostic_candidate_count": diagnostic_candidate_count,
+    }
+
+
+def _weak_related_blocking_action_count(repair: dict[str, object]) -> int:
+    count = 0
+    for action in list(_target_surface_action_quality_groups(repair).get("blocking") or []):
+        action_text = str(action or "")
+        for row in list(repair.get("diagnostic_target_surface_actions") or []) + list(repair.get("rejected_or_noisy_actions") or []):
+            if isinstance(row, dict) and row.get("action") == action_text and row.get("relation_quality") == "weak_related":
+                count += 1
+    return count
+
+
 def _apply_turn_health(
     session: HumanCaseSession,
     output: dict[str, object],
@@ -9966,6 +10594,7 @@ def _apply_turn_health(
     after_workspace: CaseEvidenceWorkspace,
     before_cognitive: CaseCognitiveWorkspace,
     repeated_submit_rejection: bool = False,
+    before_saved_work_unit_count: int | None = None,
 ) -> tuple[HumanCaseSession, dict[str, object]]:
     after_counts = _workspace_counts(after_workspace)
     before_focus = json.dumps(before_cognitive.attention_focus.model_dump(mode="json"), sort_keys=True, default=str)
@@ -9976,6 +10605,17 @@ def _apply_turn_health(
     new_evidence_added = any(after_counts.get(key, 0) > before_workspace_counts.get(key, 0) for key in after_counts)
     agenda_item_closed = _closed_agenda_count(session.cognitive_workspace) > _closed_agenda_count(before_cognitive)
     resolution_readiness_changed = before_readiness != after_readiness and not repeated_submit_rejection
+    before_saved = len(session.draft_work_units) if before_saved_work_unit_count is None else int(before_saved_work_unit_count)
+    after_saved = len(session.draft_work_units)
+    delta_counts = _turn_delta_counts_from_output(
+        output,
+        before_saved_work_unit_count=before_saved,
+        after_saved_work_unit_count=after_saved,
+        agenda_item_closed=agenda_item_closed,
+        new_evidence_added=new_evidence_added,
+        repeated_submit_rejection=repeated_submit_rejection,
+        consecutive_tool_count=session.current_consecutive_tool_count,
+    )
     made_progress = any(
         [
             active_focus_changed,
@@ -9983,21 +10623,41 @@ def _apply_turn_health(
             agenda_item_closed,
             resolution_readiness_changed,
             bool(output.get("cognitive_workspace_changed")),
+            delta_counts["saved_work_unit_delta"] > 0,
+            delta_counts["new_high_quality_candidate_count"] > 0,
+            delta_counts["new_blocking_action_count"] > 0 and not repeated_submit_rejection,
         ]
     )
+    low_information_turn = bool(
+        not agenda_item_closed
+        and delta_counts["saved_work_unit_delta"] <= 0
+        and delta_counts["new_high_quality_candidate_count"] <= 0
+        and (
+            repeated_submit_rejection
+            or delta_counts["repeated_action_count"] > 0
+            or output.get("recovery_no_high_quality_action")
+            or (delta_counts["new_blocking_action_count"] <= 0 and delta_counts["new_noisy_candidate_count"] > 0)
+        )
+    )
     no_progress_turn_count = 0 if made_progress else session.no_progress_turn_count + 1
+    if low_information_turn and not made_progress:
+        no_progress_turn_count = max(no_progress_turn_count, session.no_progress_turn_count + 1)
     if repeated_submit_rejection and not made_progress:
         no_progress_turn_count = max(2, no_progress_turn_count)
     stall_warning_count = session.stall_warning_count
+    no_progress_escape_count = session.no_progress_escape_count
     turn_health: dict[str, object] = {
         "active_focus_changed": active_focus_changed,
         "new_evidence_added": new_evidence_added,
         "agenda_item_closed": agenda_item_closed,
         "resolution_readiness_changed": resolution_readiness_changed,
+        **delta_counts,
+        "low_information_turn": low_information_turn,
         "no_progress_turn_count": no_progress_turn_count,
     }
     if no_progress_turn_count >= 2:
         stall_warning_count += 1
+        no_progress_escape_count += 1
         turn_health["stall_warning"] = {
             "issue": "cognitive_workspace_stalled",
             "message": (
@@ -10005,12 +10665,45 @@ def _apply_turn_health(
                 "Re-focus the cognitive workspace before repeating the same path."
             ),
         }
+        turn_health["no_progress_escape"] = {
+            "issue": "low_information_path",
+            "message": (
+                "Current path is low information gain. Switch to a different title-tail/root/continuation frontier "
+                "or submit exact fail_closed for the active blocker after naming the remaining retrieval/evidence gap."
+            ),
+        }
+    weak_related_blocking_count = _weak_related_blocking_action_count(output)
+    recovery_frontier_switch_count = session.recovery_frontier_switch_count + (
+        1
+        if session.no_progress_turn_count
+        and delta_counts["new_high_quality_candidate_count"] > 0
+        else 0
+    )
     updated = replace(
         session,
         attention_focus_change_count=session.attention_focus_change_count + (1 if active_focus_changed else 0),
         agenda_closed_count=session.agenda_closed_count + (1 if agenda_item_closed else 0),
         stall_warning_count=stall_warning_count,
         no_progress_turn_count=no_progress_turn_count,
+        no_progress_escape_count=no_progress_escape_count,
+        recovery_frontier_switch_count=recovery_frontier_switch_count,
+        weak_related_blocking_action_count=session.weak_related_blocking_action_count + weak_related_blocking_count,
+        high_quality_candidate_count_by_turn=[
+            *session.high_quality_candidate_count_by_turn,
+            delta_counts["new_high_quality_candidate_count"],
+        ],
+        diagnostic_candidate_count_by_turn=[
+            *session.diagnostic_candidate_count_by_turn,
+            delta_counts["diagnostic_candidate_count"],
+        ],
+        noisy_candidate_count_by_turn=[
+            *session.noisy_candidate_count_by_turn,
+            delta_counts["new_noisy_candidate_count"],
+        ],
+        blocking_action_count_by_turn=[
+            *session.blocking_action_count_by_turn,
+            delta_counts["new_blocking_action_count"],
+        ],
         last_turn_health=turn_health,
     )
     return updated, {**output, "turn_health": turn_health}
@@ -10656,7 +11349,7 @@ def _repair_agenda_from_submit_feedback(feedback: dict[str, object], *, repeated
             target_surface_actions.append(action)
         if len(target_surface_actions) >= 4:
             break
-    return {
+    agenda = {
         "accepted": False,
         "status": "repair_required",
         "issue_counts": issue_counts,
@@ -10775,6 +11468,37 @@ def _repair_agenda_from_submit_feedback(feedback: dict[str, object], *, repeated
             "The fixed layer is only checking mechanics."
         ),
     }
+    for query in _repair_search_queries_to_try(agenda):
+        if query not in search_queries_to_try:
+            search_queries_to_try.append(query)
+        if len(search_queries_to_try) >= 8:
+            break
+    agenda["search_queries_to_try"] = search_queries_to_try[:8]
+    action_groups = _target_surface_action_quality_groups(agenda)
+    blocking_actions = [
+        str(action)
+        for action in list(action_groups.get("blocking") or [])
+        if str(action or "").strip()
+    ][:4]
+    diagnostic_actions = [
+        item
+        for item in list(action_groups.get("diagnostic") or [])
+        if isinstance(item, dict)
+    ][:8]
+    noisy_actions = [
+        item
+        for item in list(action_groups.get("noisy") or [])
+        if isinstance(item, dict)
+    ][:8]
+    agenda["target_surface_actions"] = blocking_actions
+    agenda["blocking_target_surface_actions"] = blocking_actions
+    agenda["diagnostic_target_surface_actions"] = diagnostic_actions
+    agenda["rejected_or_noisy_actions"] = noisy_actions
+    agenda["recovery_no_high_quality_action"] = bool(
+        not blocking_actions and (diagnostic_actions or noisy_actions) and _has_open_submit_repair(agenda)
+    )
+    agenda["repair_frontier"] = _repair_frontier_rows_from_agenda(agenda, repeated=repeated)
+    return agenda
 
 
 def _submit_rejection_fingerprint(feedback: dict[str, object]) -> str:
@@ -10816,7 +11540,19 @@ def _session_summary(session: HumanCaseSession, registry: LocatorRegistry) -> di
     counts: dict[str, int] = {}
     for tool in session.tool_sequence:
         counts[tool] = counts.get(tool, 0) + 1
-    near_turn_limit = bool(session.max_turns and session.turn_count >= max(1, session.max_turns - 1))
+    latest_repair = _latest_submit_repair_observation(session)
+    recovery_path_explained = bool(
+        session.no_progress_escape_count
+        or session.single_tool_loop_suspected_count
+        or session.repeated_submit_rejection_count
+        or session.exact_fail_closed_after_frontier_exhausted_count
+    )
+    near_turn_limit = bool(
+        session.max_turns
+        and session.turn_count >= max(1, session.max_turns - 1)
+        and (session.stall_warning_count or _has_open_submit_repair(latest_repair))
+        and not recovery_path_explained
+    )
     return {
         "note": "orchestrator_agent_session_summary",
         "case_agent_mode": "human_case_agent",
@@ -10845,6 +11581,14 @@ def _session_summary(session: HumanCaseSession, registry: LocatorRegistry) -> di
         "agenda_closed_count": session.agenda_closed_count,
         "noise_candidate_count": session.noise_candidate_count,
         "stall_warning_count": session.stall_warning_count,
+        "no_progress_escape_count": session.no_progress_escape_count,
+        "recovery_frontier_switch_count": session.recovery_frontier_switch_count,
+        "exact_fail_closed_after_frontier_exhausted_count": session.exact_fail_closed_after_frontier_exhausted_count,
+        "weak_related_blocking_action_count": session.weak_related_blocking_action_count,
+        "high_quality_candidate_count_by_turn": list(session.high_quality_candidate_count_by_turn),
+        "diagnostic_candidate_count_by_turn": list(session.diagnostic_candidate_count_by_turn),
+        "noisy_candidate_count_by_turn": list(session.noisy_candidate_count_by_turn),
+        "blocking_action_count_by_turn": list(session.blocking_action_count_by_turn),
         "manual_vs_agent_divergence_point": "",
         "resolution_readiness_summary": session.cognitive_workspace.resolution_readiness.model_dump(mode="json"),
         "cognitive_workspace": _compact_cognitive_workspace(session.cognitive_workspace),
@@ -10853,7 +11597,7 @@ def _session_summary(session: HumanCaseSession, registry: LocatorRegistry) -> di
         "saved_work_unit_count": len(session.draft_work_units),
         "saved_mechanically_ok_work_units": _draft_work_unit_summary(session.draft_work_units),
         "draft_revision_count": session.draft_revision_count,
-        "latest_submit_repair": _latest_submit_repair_observation(session),
+        "latest_submit_repair": latest_repair,
         "compact_count": 0,
         "context_soft_limit_hit_count": 0,
         "context_hard_limit_hit_count": 0,
@@ -10918,6 +11662,13 @@ def _budget_fallback_fail_closed_output(
             "HumanCaseAgent reached the turn budget with a concrete unresolved submit repair agenda: "
             + "; ".join(compact_blockers or ["unresolved submit repair"])
         )
+        summary = "agent_recovery_failed"
+        if session.no_progress_escape_count or session.repeated_submit_rejection_count or session.single_tool_loop_suspected_count:
+            summary = "agent_recovery_failed"
+        elif not _target_surface_actions_from_repair(latest_repair) and not _repair_search_queries_to_try(latest_repair):
+            summary = "retrieval_exhausted"
+        elif any("duplicate" in code or "conflict" in code for code in list(issue_counts) + verifier_issues):
+            summary = "semantic_ambiguity"
         return CaseJudgeOutput(
             action="fail_closed",
             fail_closed_reasons=[
@@ -10928,7 +11679,7 @@ def _budget_fallback_fail_closed_output(
                     related_refs=[],
                 )
             ],
-            summary="unresolved_submit_repair",
+            summary=summary,
         )
     return CaseJudgeOutput(
         action="fail_closed",
@@ -11018,7 +11769,7 @@ def run_human_case_agent(
     _register_existing_targets(initial_workspace, registry)
     session = HumanCaseSession(
         case_id=initial_workspace.header.case_id,
-        http_session_id=f"bar_human_lbg_{_slug(initial_workspace.header.case_id, fallback='case')}_{abs(hash(initial_workspace.header.case_id)) & 0xffff:x}",
+        http_session_id=f"bar_human_lbg_{_slug(initial_workspace.header.case_id, fallback='case')}",
         cognitive_workspace=_initial_cognitive_workspace_from_desk(desk),
     )
     desk_bytes = len(json.dumps(desk, ensure_ascii=False, default=str).encode("utf-8"))
@@ -11069,6 +11820,7 @@ def run_human_case_agent(
         output: dict[str, object]
         before_workspace_counts = _workspace_counts(workspace)
         before_cognitive = session.cognitive_workspace.model_copy(deep=True)
+        before_saved_work_unit_count = len(session.draft_work_units)
         repeated_for_health = False
         budget_rejection = _budget_pressure_tool_rejection(session, tool_call.tool_name, max_turns=max_turns)
         if budget_rejection is not None:
@@ -11208,6 +11960,7 @@ def run_human_case_agent(
                         after_workspace=workspace,
                         before_cognitive=before_cognitive,
                         repeated_submit_rejection=False,
+                        before_saved_work_unit_count=before_saved_work_unit_count,
                     )
                     session = _record_tool_output(session, tool_call, output)
                     _write_progress(workspace, session, f"tool_{tool_call.tool_name}", registry)
@@ -11221,6 +11974,17 @@ def run_human_case_agent(
                     }
                 if not dry_run:
                     final_submit = submit_result
+                    if (
+                        submit_result.output is not None
+                        and submit_result.output.action == "fail_closed"
+                        and not _repair_has_uninspected_target_surface_action(session, _latest_submit_repair_observation(session))
+                    ):
+                        session = replace(
+                            session,
+                            exact_fail_closed_after_frontier_exhausted_count=(
+                                session.exact_fail_closed_after_frontier_exhausted_count + 1
+                            ),
+                        )
                 session = replace(
                     session,
                     cognitive_workspace=_workspace_with_submit_acceptance(session.cognitive_workspace),
@@ -11247,6 +12011,7 @@ def run_human_case_agent(
                         before_workspace_counts=before_workspace_counts,
                         after_workspace=workspace,
                         before_cognitive=before_cognitive,
+                        before_saved_work_unit_count=before_saved_work_unit_count,
                     )
                     session = _record_tool_output(session, tool_call, output)
                     break
@@ -11256,6 +12021,7 @@ def run_human_case_agent(
                     before_workspace_counts=before_workspace_counts,
                     after_workspace=workspace,
                     before_cognitive=before_cognitive,
+                    before_saved_work_unit_count=before_saved_work_unit_count,
                 )
                 session = _record_tool_output(session, tool_call, output)
                 session = replace(session, last_submit_dry_run_accepted=True)
@@ -11370,6 +12136,7 @@ def run_human_case_agent(
             after_workspace=workspace,
             before_cognitive=before_cognitive,
             repeated_submit_rejection=repeated_for_health,
+            before_saved_work_unit_count=before_saved_work_unit_count,
         )
         session = _record_tool_output(session, tool_call, output)
         _write_progress(workspace, session, f"tool_{tool_call.tool_name}", registry)
@@ -11414,7 +12181,7 @@ def run_human_case_agent(
 
     workspace = _workspace_add_audits(workspace, audits)
     fail_output = _budget_fallback_fail_closed_output(session, last_verifier)
-    verifier = last_verifier or CaseVerifierResult(
+    verifier = CaseVerifierResult(
         passed=True,
         issues=[],
         summary=f"HumanCaseAgent fail_closed after {fail_output.summary or 'budget exhaustion'}",

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from dataclasses import replace
+
 from src.rename.case_agent.human_case_agent import (
     AttentionFocus,
     CaseCognitiveWorkspace,
@@ -23,6 +25,8 @@ from src.rename.case_agent.human_case_agent import (
     _repair_finalization_guard_for_prompt,
     _repair_agenda_from_submit_feedback,
     _record_tool_output,
+    _register_existing_targets,
+    _session_summary,
     _submit_tool,
     _turn_tail,
     _workspace_counts,
@@ -35,6 +39,8 @@ from src.rename.case_agent.models import (
     CaseContract,
     CaseHeader,
     LocalFileCard,
+    BangumiItemCard,
+    BangumiSubjectCard,
 )
 from src.rename.case_agent.workspace import CaseEvidenceWorkspace
 
@@ -160,6 +166,8 @@ def test_human_agent_call_records_cache_probe_without_previous_response_id():
 
     assert client.calls[0]["conversation_id"] == ""
     assert client.calls[1]["conversation_id"] == ""
+    assert "session_id" not in client.calls[0]
+    assert "session_id" not in client.calls[1]
     assert "previous_response_id" not in client.calls[0]
     assert "previous_response_id" not in client.calls[1]
     assert "previous_response_id_sent" not in first_audit
@@ -257,7 +265,148 @@ def test_submit_rejection_updates_readiness_and_repeated_rejection_stalls():
     assert session.stall_warning_count == 1
 
 
-def test_special_target_absent_semantics_are_diagnostics_not_hard_rejects():
+def test_recovery_brief_only_appears_for_open_repair_agenda():
+    workspace = _workspace()
+    desk, _registry = build_human_case_desk(workspace)
+    session = HumanCaseSession(case_id="CASE-RECOVERY-BRIEF")
+
+    assert "RECOVERY_BRIEF" not in _turn_tail(desk, session, max_turns=4)["case_memory"]
+
+    repair = {
+        "accepted": False,
+        "status": "repair_required",
+        "issue_counts": {"count_mismatch": 1},
+        "blocking_units": [
+            {
+                "unit": "main span",
+                "local": [desk["local_locators"][0]["locator"]],
+                "issue": "count_mismatch",
+            }
+        ],
+        "repair_frontier": [
+            {
+                "local": [desk["local_locators"][0]["locator"]],
+                "blocker": "count_mismatch",
+                "high_quality_next_actions": ["search: Show"],
+                "diagnostic_only": [],
+                "terminal_boundary": "exact fail_closed after frontier exhaustion",
+            }
+        ],
+    }
+    session.cognitive_workspace = _workspace_with_submit_rejection(
+        session.cognitive_workspace,
+        repair,
+        repeated=False,
+    )
+    session.observations.append({"tool": "submit", "output": repair})
+
+    brief = _turn_tail(desk, session, max_turns=4)["case_memory"]["RECOVERY_BRIEF"]
+
+    assert brief["current_blocker"] == "count_mismatch"
+    assert "high_quality_next_frontier" in brief
+    assert len(str(brief)) < 1200
+
+
+def test_no_progress_escape_triggers_on_repeated_low_information_action():
+    workspace = _workspace()
+    session = HumanCaseSession(case_id="CASE-NO-PROGRESS", current_consecutive_tool_count=2)
+    before = session.cognitive_workspace.model_copy(deep=True)
+
+    session, output = _apply_turn_health(
+        session,
+        {
+            "accepted": True,
+            "diagnostic_target_surface_actions": [
+                {
+                    "action": 'inspect(["target://bangumi/2-noisy"], scope=["details"])',
+                    "reason": "weak_related_diagnostic_only",
+                    "relation_quality": "weak_related",
+                }
+            ],
+            "recovery_no_high_quality_action": True,
+        },
+        before_workspace_counts=_workspace_counts(workspace),
+        after_workspace=workspace,
+        before_cognitive=before,
+    )
+    before = session.cognitive_workspace.model_copy(deep=True)
+    session, output = _apply_turn_health(
+        session,
+        {
+            "accepted": True,
+            "diagnostic_target_surface_actions": [
+                {
+                    "action": 'inspect(["target://bangumi/2-noisy"], scope=["details"])',
+                    "reason": "weak_related_diagnostic_only",
+                    "relation_quality": "weak_related",
+                }
+            ],
+            "recovery_no_high_quality_action": True,
+        },
+        before_workspace_counts=_workspace_counts(workspace),
+        after_workspace=workspace,
+        before_cognitive=before,
+    )
+
+    assert output["turn_health"]["no_progress_escape"]["issue"] == "low_information_path"
+    assert session.no_progress_escape_count == 1
+
+
+def test_repeated_submit_rejection_triggers_no_progress_escape():
+    workspace = _workspace()
+    session = HumanCaseSession(case_id="CASE-REPEAT-SUBMIT")
+    before = session.cognitive_workspace.model_copy(deep=True)
+
+    session, output = _apply_turn_health(
+        session,
+        {
+            "accepted": False,
+            "status": "repair_required",
+            "issue_counts": {"target_episode_surface_missing": 1},
+            "blocking_units": [{"unit": "main", "issue": "target_episode_surface_missing"}],
+            "blocking_target_surface_actions": ['inspect(["target://bangumi/1-show"], scope=["details"])'],
+        },
+        before_workspace_counts=_workspace_counts(workspace),
+        after_workspace=workspace,
+        before_cognitive=before,
+        repeated_submit_rejection=True,
+    )
+
+    assert output["turn_health"]["no_progress_escape"]["issue"] == "low_information_path"
+    assert session.no_progress_escape_count == 1
+
+
+def test_new_high_quality_candidate_resets_no_progress_counter():
+    workspace = _workspace()
+    session = HumanCaseSession(case_id="CASE-HQ-RESET", no_progress_turn_count=1)
+    before = session.cognitive_workspace.model_copy(deep=True)
+
+    session, output = _apply_turn_health(
+        session,
+        {
+            "accepted": True,
+            "queries": [
+                {
+                    "results": [
+                        {
+                            "target": "target://bangumi/1-show",
+                            "title": "Show",
+                            "relevance_layer": "title_relevant",
+                        }
+                    ]
+                }
+            ],
+        },
+        before_workspace_counts=_workspace_counts(workspace),
+        after_workspace=workspace,
+        before_cognitive=before,
+    )
+
+    assert output["turn_health"]["new_high_quality_candidate_count"] > 0
+    assert session.no_progress_turn_count == 0
+
+
+def test_numbered_special_target_absent_without_target_evidence_is_blocking():
     workspace = CaseEvidenceWorkspace.from_cards(
         header=CaseHeader(case_id="CASE-SP-DIAG"),
         budget=CaseBudget(max_judge_rounds=4),
@@ -266,8 +415,8 @@ def test_special_target_absent_semantics_are_diagnostics_not_hard_rejects():
             allowed_file_refs=["LF1", "LF2"],
         ),
         local_files=[
-            LocalFileCard(ref="LF1", path="Show/SPs/Show [SP01].mkv", is_main=True),
-            LocalFileCard(ref="LF2", path="Show/SPs/Show [SP02].mkv", is_main=True),
+            LocalFileCard(ref="LF1", path="Nebula Quest/SPs/Nebula Quest [SP01].mkv", is_main=True),
+            LocalFileCard(ref="LF2", path="Nebula Quest/SPs/Nebula Quest [SP02].mkv", is_main=True),
         ],
     )
     desk, registry = build_human_case_desk(workspace)
@@ -290,12 +439,71 @@ def test_special_target_absent_semantics_are_diagnostics_not_hard_rejects():
         ),
     )
 
+    assert result.accepted is False
+    assert result.feedback["package"]["issue_counts"]["numbered_special_exclusion_needs_target_evidence"] == 1
+    repair = result.feedback["package"]["numbered_special_exclusion_repairs"][0]
+    assert repair["issue"] == "numbered_special_exclusion_needs_target_evidence"
+    assert repair["negative_target_absence_submit_shape"]
+
+
+def test_numbered_special_target_absent_with_negative_target_evidence_is_accepted():
+    workspace = CaseEvidenceWorkspace.from_cards(
+        header=CaseHeader(case_id="CASE-SP-SUPPORTED"),
+        budget=CaseBudget(max_judge_rounds=4),
+        contract=CaseContract(
+            main_file_refs=["LF1", "LF2"],
+            allowed_file_refs=["LF1", "LF2"],
+            visible_target_refs=["BE1"],
+        ),
+        local_files=[
+            LocalFileCard(ref="LF1", path="Nebula Quest/SPs/Nebula Quest [SP01].mkv", is_main=True),
+            LocalFileCard(ref="LF2", path="Nebula Quest/SPs/Nebula Quest [SP02].mkv", is_main=True),
+        ],
+        bangumi_subjects=[
+            BangumiSubjectCard(
+                ref="BS1",
+                subject_id=101,
+                title="Nebula Quest",
+                name="Nebula Quest",
+                name_cn="Nebula Quest",
+                eps=12,
+                total_episodes=12,
+                search_query_ref="Nebula Quest",
+            ),
+        ],
+        bangumi_items=[BangumiItemCard(ref="BE1", subject_ref="BS1", sort=1, ep=1, title="Episode 1")],
+    )
+    desk, registry = build_human_case_desk(workspace)
+    _register_existing_targets(workspace, registry)
+    local = next(row["locator"] for row in desk["local_locators"] if row["locator"].endswith("/special-marker"))
+    support_target = registry.subject_locator_by_id[101]
+
+    result = _submit_tool(
+        workspace,
+        registry,
+        SubmitToolArgs(
+            resolution=PackageResolution(
+                work_units=[
+                    ResolutionWorkUnit(
+                        unit_label="SP extras",
+                        local=[local],
+                        outcome="bangumi_target_absent",
+                        support=[support_target],
+                        reason=(
+                            "No corresponding SP/OVA/OAD item is visible on the inspected Nebula Quest target surface; "
+                            "these numbered SP files are package extras."
+                        ),
+                    )
+                ]
+            )
+        ),
+    )
+
     assert result.accepted is True
-    assert result.feedback["semantic_diagnostics"]
-    assert result.feedback["semantic_diagnostics"][0]["issue_code"] == "numbered_special_exclusion_needs_target_evidence"
+    assert not result.feedback["semantic_diagnostics"]
 
 
-def test_repair_agenda_keeps_semantic_diagnostics_out_of_blocking_units():
+def test_repair_agenda_keeps_numbered_special_evidence_gap_blocking():
     feedback = {
         "package": {"issue_counts": {"target_episode_surface_missing": 1}},
         "units": [
@@ -329,8 +537,8 @@ def test_repair_agenda_keeps_semantic_diagnostics_out_of_blocking_units():
 
     agenda = _repair_agenda_from_submit_feedback(feedback, repeated=False)
 
-    assert [unit["unit"] for unit in agenda["blocking_units"]] == ["movie span"]
-    assert agenda["diagnostic_units"][0]["unit"] == "SP extras"
+    assert [unit["unit"] for unit in agenda["blocking_units"]] == ["SP extras", "movie span"]
+    assert agenda["diagnostic_units"] == []
     assert agenda["visible_target_surface_missing_units"][0]["local_slice_mapping_options"][0]["local"] == (
         "local://movie/main-episodes/episode/2"
     )
@@ -345,7 +553,7 @@ def test_repair_agenda_keeps_semantic_diagnostics_out_of_blocking_units():
     gap_codes = {gap.issue_code for gap in updated.resolution_readiness.mechanical_gaps}
 
     assert "target_episode_surface_missing" in gap_codes
-    assert "numbered_special_exclusion_needs_target_evidence" not in gap_codes
+    assert "numbered_special_exclusion_needs_target_evidence" in gap_codes
 
 
 def test_submit_rejection_creates_durable_repair_agenda_and_focus():
@@ -662,3 +870,32 @@ def test_submit_repair_loop_warning_triggers_for_consecutive_submit():
 
     assert updated.single_tool_loop_suspected_count == 1
     assert updated.observations[-1]["output"]["loop_health_warning"]["issue"] == "same_tool_repeated"
+
+
+def test_near_turn_limit_unhealthy_is_suppressed_by_recovery_detector():
+    workspace = _workspace()
+    _, registry = build_human_case_desk(workspace)
+    repair = {
+        "accepted": False,
+        "status": "repair_required",
+        "issue_counts": {"coverage_missing": 1},
+        "required_missing_work_units": [{"local": ["local://show/main"]}],
+    }
+    cognitive = _workspace_with_submit_rejection(
+        CaseCognitiveWorkspace(),
+        repair,
+        repeated=False,
+    )
+    base = HumanCaseSession(
+        case_id="CASE-NEAR-HEALTH",
+        turn_count=11,
+        max_turns=12,
+        cognitive_workspace=cognitive,
+        observations=[{"tool": "submit", "output": repair}],
+    )
+
+    assert _session_summary(base, registry)["near_turn_limit_unhealthy_count"] == 1
+
+    recovered = replace(base, single_tool_loop_suspected_count=1)
+
+    assert _session_summary(recovered, registry)["near_turn_limit_unhealthy_count"] == 0
