@@ -470,3 +470,96 @@ Acceptance status:
 ```text
 /goal 按 docs\LOCAL_BANGUMI_HUMAN_CASE_AGENT_ROBUSTNESS_PLAN.md 执行 HumanCaseAgent 鲁棒性修复：不要实现状态机，不写样本专属 alias/id/target 映射；固定层只做 evidence hygiene、action quality、repair frontier、no-progress escape、audit，不做 ownership/special/target_absent 语义裁决。完成 evidence quality model、blocking/diagnostic action split、repair frontier ledger、no-progress detector、generic title-tail/root/continuation frontier、RECOVERY_BRIEF prompt、trace summary 字段和测试。以 sample_0096 多次 fresh replay 加 0035/0126 protection、unit/focused/broader pytest、compile、boundary scan 为验收，并更新相关复盘文档。
 ```
+
+## Bounded CaseResolutionGoal Addendum: 2026-05-19
+
+The robustness pass above made repair feedback more durable, but it still left
+the Agent in a loose prompt loop: the fixed layer could tell it what was wrong,
+yet the Agent did not have to pick a bounded recovery mode or prove progress
+against the current blocker.
+
+This follow-up adds a bounded `CaseResolutionGoal` scaffold:
+
+- Every tool schema now exposes `repair_strategy`.
+- Allowed strategies are `repair_single`, `repair_cluster`, `repartition`,
+  `gather_evidence`, `revise_saved_rows`, and `terminal_fail_closed`.
+- `CASE_STATE.case_memory.case_resolution_goal` shows the active objective,
+  remaining turn budget, strategy history, active blockers, strong candidates,
+  saved mechanically-ok rows, progress ledger, and terminal fail-closed
+  contract.
+- If the same blocker plus same submit shape repeats, the fixed layer records
+  `strategy_change_required=true`; the next turn cannot reuse the blocked
+  strategy unless it submits a valid `terminal_fail_closed`.
+- A terminal fail-closed submit must name all active blocking/missing local
+  locators, address strong candidate surfaces, leave no unexecuted blocking
+  evidence action, preserve saved ok rows, and provide concrete
+  non-progressable reasons.
+
+Boundary:
+
+- The fixed layer still does not choose Bangumi targets, special/OVA ownership,
+  target_absent, work-unit ownership, or sample-specific mappings.
+- Strong candidates are surfaced as evidence obligations, not as accepted
+  semantic answers.
+
+New audit fields:
+
+- `case_resolution_goal_status`
+- `case_resolution_goal_strategy_counts`
+- `case_resolution_goal_progress_count`
+- `case_resolution_goal_progress_ledger`
+- `same_blocker_strategy_change_required_count`
+- `case_resolution_goal_terminal_rejection_count`
+- `obvious_terminal_fail_closed_count`
+- `repair_strategy_missing_count`
+
+Validation:
+
+- focused pytest plus sample-runner unit tests: `224 passed`
+- compile: passed for `src/ai`, `src/rename/case_agent`,
+  `tools/run_local_bangumi_mapping_sample_pool.py`, and
+  `tools/summarize_local_bangumi_human_trace.py`
+- boundary scan on `src/rename/case_agent`: `finding_count=0`
+- boundary scan on touched reporting tools: `finding_count=0`
+
+Sample gates:
+
+- `sample_0096`: `tests/sample_pool/generated/local_bangumi_mapping_gate_20260519_150428_845`,
+  `status=fail_closed`, `summary=agent_fail_closed_from_submit`,
+  `case_resolution_goal_status=accepted_or_idle`,
+  `obvious_terminal_fail_closed_count_total=1`,
+  `strict_failure_count=0`
+- `sample_0035` and `sample_0126`:
+  `tests/sample_pool/generated/local_bangumi_mapping_gate_20260519_150833_491`,
+  both `status=fail_closed`;
+  summaries are `obvious_terminal_fail_closed` and
+  `agent_fail_closed_from_submit`;
+  `strict_failure_count=0`
+
+## Future Plan: Fact Surface, Not Fixed-Layer Candidate Generation
+
+The next robustness direction is documented in
+`docs/LOCAL_BANGUMI_MANUAL_REPLAY_SAMPLE_0096.md` under
+`2026-05-19 Next Plan: Agent-Owned Evidence Composition For Derivative Shorts`.
+
+Key boundary:
+
+- Fixed layer may expose raw local media facts such as duration, file count,
+  numbered labels, path hierarchy, and container metadata for explicit local
+  locators.
+- Fixed layer may expose raw Bangumi related-subject facts such as relation
+  label, subject title, aliases returned by Bangumi, episode count, and visible
+  item refs.
+- Fixed layer must not generate derivative mapping candidates, recommended
+  targets, strong semantic candidates, target_absent decisions, supplemental
+  decisions, or sample-specific title/id bridges.
+- Agent must request these facts, compose the derivative/duplicate hypothesis,
+  and submit the semantic decision with cited evidence.
+- Verifier may check that the submitted decision cites the evidence classes it
+  claims to use, and may reject duplicate target usage or unsupported claims,
+  but it must not choose the target or outcome.
+
+This keeps the system strict while giving the Agent the same kind of evidence a
+human used for `sample_0096`: duration and related-graph facts. Unknown rows
+remain fail_closed or future unresolved/manual-review rows; they must not be
+accepted as generic supplemental merely to unblock the rest of the package.

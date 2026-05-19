@@ -117,6 +117,8 @@ def summarize_trace(path: Path) -> dict[str, Any]:
                 {
                     "turn": audit.get("turn_count"),
                     "tool": audit.get("tool_name"),
+                    "repair_strategy": audit.get("repair_strategy"),
+                    "repair_strategy_declared": audit.get("repair_strategy_declared"),
                     "consecutive_same_tool_count": audit.get("consecutive_same_tool_count"),
                     "single_tool_loop_suspected_count": audit.get("single_tool_loop_suspected_count"),
                 }
@@ -178,6 +180,18 @@ def summarize_trace(path: Path) -> dict[str, Any]:
         "repeated_submit_rejection_count": sum(
             1 for row in submit_results if row.get("repeated_submit_rejection")
         ),
+        "same_blocker_strategy_change_required_count": _int_value(
+            snapshot,
+            "same_blocker_strategy_change_required_count",
+        )
+        or _int_value(latest_session_summary, "same_blocker_strategy_change_required_count"),
+        "case_resolution_goal_terminal_rejection_count": _int_value(
+            snapshot,
+            "case_resolution_goal_terminal_rejection_count",
+        )
+        or _int_value(latest_session_summary, "case_resolution_goal_terminal_rejection_count"),
+        "repair_strategy_missing_count": _int_value(snapshot, "repair_strategy_missing_count")
+        or _int_value(latest_session_summary, "repair_strategy_missing_count"),
     }
     runtime_review = {
         "status": snapshot.get("status") or payload.get("status"),
@@ -193,6 +207,11 @@ def summarize_trace(path: Path) -> dict[str, Any]:
         "local_response_cache_file_count": _int_value(snapshot, "local_response_cache_file_count"),
         "manual_vs_agent_divergence_point": snapshot.get("manual_vs_agent_divergence_point") or "",
         "resolution_readiness_summary": readiness,
+        "case_resolution_goal_status": snapshot.get("case_resolution_goal_status")
+        or latest_session_summary.get("case_resolution_goal_status"),
+        "case_resolution_goal_strategy_counts": snapshot.get("case_resolution_goal_strategy_counts")
+        or latest_session_summary.get("case_resolution_goal_strategy_counts")
+        or {},
     }
 
     return {
@@ -221,6 +240,30 @@ def summarize_trace(path: Path) -> dict[str, Any]:
         )
         or _int_value(latest_session_summary, "exact_fail_closed_after_frontier_exhausted_count"),
         "weak_related_blocking_action_count": _int_value(snapshot, "weak_related_blocking_action_count") or _int_value(latest_session_summary, "weak_related_blocking_action_count"),
+        "case_resolution_goal_status": snapshot.get("case_resolution_goal_status")
+        or latest_session_summary.get("case_resolution_goal_status"),
+        "case_resolution_goal_strategy_counts": snapshot.get("case_resolution_goal_strategy_counts")
+        or latest_session_summary.get("case_resolution_goal_strategy_counts")
+        or {},
+        "case_resolution_goal_progress_count": _int_value(snapshot, "case_resolution_goal_progress_count")
+        or _int_value(latest_session_summary, "case_resolution_goal_progress_count"),
+        "case_resolution_goal_progress_ledger": snapshot.get("case_resolution_goal_progress_ledger")
+        or latest_session_summary.get("case_resolution_goal_progress_ledger")
+        or [],
+        "same_blocker_strategy_change_required_count": _int_value(
+            snapshot,
+            "same_blocker_strategy_change_required_count",
+        )
+        or _int_value(latest_session_summary, "same_blocker_strategy_change_required_count"),
+        "case_resolution_goal_terminal_rejection_count": _int_value(
+            snapshot,
+            "case_resolution_goal_terminal_rejection_count",
+        )
+        or _int_value(latest_session_summary, "case_resolution_goal_terminal_rejection_count"),
+        "obvious_terminal_fail_closed_count": _int_value(snapshot, "obvious_terminal_fail_closed_count")
+        or _int_value(latest_session_summary, "obvious_terminal_fail_closed_count"),
+        "repair_strategy_missing_count": _int_value(snapshot, "repair_strategy_missing_count")
+        or _int_value(latest_session_summary, "repair_strategy_missing_count"),
         "legacy_subagent_call_count": _int_value(snapshot, "legacy_subagent_call_count"),
         "legacy_orchestrator_main_path_used": bool(snapshot.get("legacy_orchestrator_main_path_used")),
         "provider_cached_input_ratio": _float_value(snapshot, "orchestrator_provider_cached_input_ratio"),
@@ -248,6 +291,8 @@ def summarize_trace(path: Path) -> dict[str, Any]:
             "repair_frontier": latest_submit_repair.get("repair_frontier") or [],
             "search_queries_to_try": latest_submit_repair.get("search_queries_to_try") or [],
             "repeat_rejection_warning": latest_submit_repair.get("repeat_rejection_warning"),
+            "case_resolution_goal": latest_submit_repair.get("case_resolution_goal") or {},
+            "terminal_fail_closed_contract": latest_submit_repair.get("terminal_fail_closed_contract") or {},
         },
     }
 
@@ -285,6 +330,16 @@ def _print_text(summary: dict[str, Any]) -> None:
         f"blocking_actions_by_turn={summary.get('blocking_action_count_by_turn')} "
         f"no_progress_escapes={summary.get('no_progress_escape_count')} "
         f"weak_related_blocking={summary.get('weak_related_blocking_action_count')}"
+    )
+    print(
+        "case_resolution_goal: "
+        f"status={summary.get('case_resolution_goal_status')} "
+        f"strategies={summary.get('case_resolution_goal_strategy_counts')} "
+        f"progress={summary.get('case_resolution_goal_progress_count')} "
+        f"strategy_change_required={summary.get('same_blocker_strategy_change_required_count')} "
+        f"terminal_rejections={summary.get('case_resolution_goal_terminal_rejection_count')} "
+        f"obvious_terminal={summary.get('obvious_terminal_fail_closed_count')} "
+        f"missing_strategy={summary.get('repair_strategy_missing_count')}"
     )
     if summary.get("tool_rejections"):
         print(f"tool_rejections: {summary['tool_rejections']}")

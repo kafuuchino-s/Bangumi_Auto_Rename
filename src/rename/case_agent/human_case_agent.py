@@ -102,6 +102,30 @@ ALLOWED_RELATED_RELATION_KINDS = {
 
 
 HumanToolName = Literal["inspect", "search", "note", "submit"]
+RepairStrategy = Literal[
+    "repair_single",
+    "repair_cluster",
+    "repartition",
+    "gather_evidence",
+    "revise_saved_rows",
+    "terminal_fail_closed",
+]
+REPAIR_STRATEGIES: tuple[str, ...] = (
+    "repair_single",
+    "repair_cluster",
+    "repartition",
+    "gather_evidence",
+    "revise_saved_rows",
+    "terminal_fail_closed",
+)
+REPAIR_STRATEGY_FIELD = Field(
+    "gather_evidence",
+    description=(
+        "Bounded CaseResolutionGoal strategy for this turn. Choose one of: "
+        "repair_single, repair_cluster, repartition, gather_evidence, "
+        "revise_saved_rows, terminal_fail_closed."
+    ),
+)
 REPAIR_FINALIZATION_TURN_WINDOW = 4
 SEARCH_TOOL_CALL_BUDGET = 3
 SEARCH_RESULTS_PER_VARIANT = 8
@@ -125,6 +149,7 @@ SEMANTIC_SUBMIT_DIAGNOSTIC_CODES = {
 class InspectToolArgs(BaseModel):
     locators: list[str] = Field(default_factory=list)
     scope: list[str] = Field(default_factory=list)
+    repair_strategy: RepairStrategy = REPAIR_STRATEGY_FIELD
     reason: str = ""
 
     model_config = ConfigDict(extra="forbid")
@@ -132,6 +157,7 @@ class InspectToolArgs(BaseModel):
 
 class SearchToolArgs(BaseModel):
     queries: list[str] = Field(default_factory=list)
+    repair_strategy: RepairStrategy = REPAIR_STRATEGY_FIELD
     reason: str = ""
 
     model_config = ConfigDict(extra="forbid")
@@ -225,6 +251,7 @@ class CaseCognitiveWorkspace(BaseModel):
 class NoteToolArgs(BaseModel):
     claims: list[str] = Field(default_factory=list)
     locators: list[str] = Field(default_factory=list)
+    repair_strategy: RepairStrategy = REPAIR_STRATEGY_FIELD
     reason: str = ""
     cognitive_workspace: CaseCognitiveWorkspace | None = None
 
@@ -265,6 +292,7 @@ class PackageResolution(BaseModel):
 
 class SubmitToolArgs(BaseModel):
     resolution: PackageResolution = Field(default_factory=PackageResolution)
+    repair_strategy: RepairStrategy = REPAIR_STRATEGY_FIELD
     reason: str = ""
     dry_run: bool = False
 
@@ -527,6 +555,15 @@ class HumanCaseSession:
     recovery_frontier_switch_count: int = 0
     exact_fail_closed_after_frontier_exhausted_count: int = 0
     weak_related_blocking_action_count: int = 0
+    case_resolution_goal_strategy_history: list[str] = field(default_factory=list)
+    case_resolution_goal_progress_ledger: list[dict[str, object]] = field(default_factory=list)
+    case_resolution_goal_strategy_change_required: bool = False
+    case_resolution_goal_blocked_strategy: str = ""
+    case_resolution_goal_blocker_fingerprint: str = ""
+    case_resolution_goal_strategy_change_required_count: int = 0
+    case_resolution_goal_terminal_rejection_count: int = 0
+    case_resolution_goal_obvious_terminal_fail_closed_count: int = 0
+    case_resolution_goal_missing_strategy_count: int = 0
     high_quality_candidate_count_by_turn: list[int] = field(default_factory=list)
     diagnostic_candidate_count_by_turn: list[int] = field(default_factory=list)
     noisy_candidate_count_by_turn: list[int] = field(default_factory=list)
@@ -585,12 +622,17 @@ def human_case_tool_definitions() -> list[dict[str, object]]:
     descriptions = {
         "inspect": (
             "Expand local:// or target:// locators. Use scope such as files, samples, "
-            "details, episodes, related, aliases, surface, or coverage. Batch multiple locators in one call."
+            "details, episodes, related, aliases, surface, or coverage. Batch multiple locators in one call. "
+            "Set repair_strategy to the CaseResolutionGoal strategy this evidence action advances."
         ),
-        "search": "Search Bangumi subjects from your own clean title queries. Batch all needed queries in one call.",
+        "search": (
+            "Search Bangumi subjects from your own clean title queries. Batch all needed queries in one call. "
+            "Set repair_strategy to the CaseResolutionGoal strategy this search advances."
+        ),
         "note": (
             "Update the cognitive workspace: hypotheses, active work units, attention focus, agenda, "
-            "rejected/noisy candidates, evidence gaps, and readiness. Use visible locators only."
+            "rejected/noisy candidates, evidence gaps, and readiness. Use visible locators only. "
+            "Set repair_strategy to the CaseResolutionGoal strategy whose progress you are recording."
         ),
         "submit": (
             "Submit package work-unit decisions. The first submit should try to cover every must_account "
@@ -599,6 +641,8 @@ def human_case_tool_definitions() -> list[dict[str, object]]:
             "merged and the full package is re-verified. "
             "Search results alone are not enough for mapped episode ranges: inspect target subjects with "
             "episodes/details/related before submit. Prefer dry_run=false for final answers. "
+            "Set repair_strategy to repair_single/repair_cluster/repartition/revise_saved_rows for repairs, "
+            "or terminal_fail_closed only when the terminal fail_closed contract is satisfied. "
             "The fixed layer performs only schema, locator, coverage, duplicate-target, and accounting checks."
         ),
     }
@@ -5585,6 +5629,310 @@ def _target_surface_actions_from_repair(repair: dict[str, object]) -> list[str]:
     ]
 
 
+def _repair_strategy_from_args(args: BaseModel) -> str:
+    strategy = str(getattr(args, "repair_strategy", "") or "").strip()
+    return strategy if strategy in REPAIR_STRATEGIES else ""
+
+
+def _tool_call_declared_repair_strategy(tool_call: HumanToolCall | None) -> bool:
+    return bool(tool_call and isinstance(tool_call.raw_arguments, dict) and "repair_strategy" in tool_call.raw_arguments)
+
+
+def _case_resolution_goal_blocker_fingerprint(repair: dict[str, object]) -> str:
+    rows = []
+    for row in _repair_agenda_rows(repair):
+        rows.append(
+            {
+                "issue": row.get("issue"),
+                "locators": row.get("locators"),
+                "target": row.get("target"),
+                "required_next_action": row.get("required_next_action"),
+            }
+        )
+    payload = {
+        "issue_counts": repair.get("issue_counts") or {},
+        "rows": rows[:12],
+    }
+    return _sha256_json(payload)[:16]
+
+
+def _target_locators_from_value(value: object, *, limit: int = 8) -> list[str]:
+    locators: list[str] = []
+
+    def add(raw: object) -> None:
+        text = str(raw or "").strip()
+        if text.startswith("target://") and text not in locators:
+            locators.append(text)
+
+    def visit(node: object) -> None:
+        if len(locators) >= limit:
+            return
+        if isinstance(node, str):
+            for match in re.findall(r"target://[^\s,'\")\]]+", node):
+                add(match)
+            add(node)
+            return
+        if isinstance(node, list):
+            for item in node:
+                visit(item)
+                if len(locators) >= limit:
+                    return
+            return
+        if isinstance(node, dict):
+            for key in (
+                "target",
+                "target_locator",
+                "target_subject",
+                "target_item",
+                "available_action",
+                "action",
+            ):
+                if key in node:
+                    visit(node.get(key))
+                    if len(locators) >= limit:
+                        return
+            for item in node.values():
+                visit(item)
+                if len(locators) >= limit:
+                    return
+
+    visit(value)
+    return locators[:limit]
+
+
+def _case_resolution_goal_strong_candidates(
+    session: HumanCaseSession,
+    repair: dict[str, object] | None = None,
+    *,
+    limit: int = 8,
+) -> list[dict[str, object]]:
+    latest_repair = repair if isinstance(repair, dict) else _latest_submit_repair_observation(session)
+    candidates: list[dict[str, object]] = []
+    seen: set[str] = set()
+
+    def add(source: str, value: object, *, locator: str = "", action: str = "") -> None:
+        target_locators = _target_locators_from_value(value)
+        if locator:
+            target_locators = [locator, *[item for item in target_locators if item != locator]]
+        if not target_locators and not action:
+            return
+        key = "|".join([source, action, ",".join(target_locators)])
+        if key in seen:
+            return
+        seen.add(key)
+        candidates.append(
+            {
+                "source": source,
+                "target_locators": target_locators[:4],
+                "action": action,
+                "must_address_before_terminal_fail_closed": True,
+            }
+        )
+
+    for action in _target_surface_actions_from_repair(latest_repair):
+        add("target_surface_action", action, action=action)
+        if len(candidates) >= limit:
+            return candidates[:limit]
+    for row in _active_repair_agenda_for_prompt(session):
+        visible_options = row.get("visible_options") if isinstance(row.get("visible_options"), dict) else {}
+        for key, value in visible_options.items():
+            add(f"active_repair_agenda.visible_options.{key}", value)
+            if len(candidates) >= limit:
+                return candidates[:limit]
+        frontier = row.get("repair_frontier") if isinstance(row.get("repair_frontier"), dict) else {}
+        for action in list(frontier.get("high_quality_next_actions") or []):
+            if str(action or "").startswith("inspect:"):
+                add("repair_frontier.high_quality_next_actions", action, action=str(action))
+                if len(candidates) >= limit:
+                    return candidates[:limit]
+    return candidates[:limit]
+
+
+def _case_resolution_goal_active_blockers(session: HumanCaseSession, *, limit: int = 8) -> list[dict[str, object]]:
+    blockers: list[dict[str, object]] = []
+    for row in _active_repair_agenda_for_prompt(session)[:limit]:
+        blockers.append(
+            {
+                "agenda_id": row.get("agenda_id"),
+                "blocking_issue": row.get("blocking_issue"),
+                "locators": row.get("locators") or [],
+                "required_next_action": row.get("required_next_action") or "",
+                "closure_condition": row.get("closure_condition") or "",
+                "strong_candidates": _case_resolution_goal_strong_candidates(session)[:4],
+            }
+        )
+    return blockers
+
+
+def _case_resolution_goal_state_for_prompt(
+    session: HumanCaseSession,
+    *,
+    max_turns: int,
+) -> dict[str, object]:
+    latest_repair = _latest_submit_repair_observation(session)
+    active_blockers = _case_resolution_goal_active_blockers(session)
+    remaining_turns = max(0, int(max_turns) - int(session.turn_count))
+    required_strategy_change = bool(
+        session.case_resolution_goal_strategy_change_required
+        or latest_repair.get("repeat_rejection_warning")
+    )
+    blocked_strategy = session.case_resolution_goal_blocked_strategy
+    if required_strategy_change and not blocked_strategy and session.case_resolution_goal_strategy_history:
+        blocked_strategy = session.case_resolution_goal_strategy_history[-1]
+    allowed_next = list(REPAIR_STRATEGIES)
+    forbidden_next = []
+    if required_strategy_change and blocked_strategy and blocked_strategy != "terminal_fail_closed":
+        forbidden_next.append(blocked_strategy)
+        allowed_next = [item for item in allowed_next if item != blocked_strategy]
+    return {
+        "status": "active" if active_blockers or latest_repair else "initial",
+        "objective": "accepted_contract_ok or obvious_terminal_fail_closed within the turn budget",
+        "remaining_turns": remaining_turns,
+        "allowed_strategies": list(REPAIR_STRATEGIES),
+        "allowed_next_strategies": allowed_next,
+        "forbidden_next_strategies": forbidden_next,
+        "current_strategy": session.case_resolution_goal_strategy_history[-1] if session.case_resolution_goal_strategy_history else "",
+        "strategy_history_tail": session.case_resolution_goal_strategy_history[-8:],
+        "strategy_change_required": required_strategy_change,
+        "blocked_strategy": blocked_strategy,
+        "same_blocker_submit_shape_repeat_count": session.repeated_submit_rejection_count,
+        "active_blockers": active_blockers,
+        "strong_candidates": _case_resolution_goal_strong_candidates(session, latest_repair)[:8],
+        "saved_ok_rows": {
+            "count": len(session.draft_work_units),
+            "preserve_instruction": (
+                "Saved mechanically-ok work units are merged by the fixed layer. "
+                "Do not drop or rewrite them unless the strategy is revise_saved_rows and you name why."
+            ),
+        },
+        "progress_ledger_tail": session.case_resolution_goal_progress_ledger[-8:],
+        "terminal_fail_closed_contract": {
+            "required_strategy": "terminal_fail_closed",
+            "must_name_all_blocking_or_missing_local_locators": True,
+            "must_address_strong_candidates": True,
+            "must_have_no_unexecuted_blocking_evidence_action": True,
+            "must_preserve_saved_ok_rows": True,
+            "must_give_concrete_non_progressable_reason": True,
+        },
+        "fixed_layer_boundaries": [
+            "fixed layer maintains goal board, budgets, progress detection, strong candidates, saved ok rows, and mechanical validation",
+            "fixed layer does not choose target",
+            "fixed layer does not choose special/OVA/OAD/SP ownership",
+            "fixed layer does not choose target_absent",
+            "fixed layer does not decide semantic ownership",
+        ],
+        "required_next_action": (
+            "The same blocker + submit shape repeated. Choose a different repair_strategy or submit terminal_fail_closed that satisfies the contract."
+            if required_strategy_change
+            else "Choose repair_strategy for this turn and make measurable progress against active_blockers."
+        ),
+    }
+
+
+def _case_resolution_goal_tool_rejection(
+    session: HumanCaseSession,
+    tool_call: HumanToolCall,
+    *,
+    max_turns: int,
+) -> dict[str, object] | None:
+    strategy = _repair_strategy_from_args(tool_call.arguments)
+    if not session.case_resolution_goal_strategy_change_required:
+        return None
+    blocked_strategy = session.case_resolution_goal_blocked_strategy
+    if not blocked_strategy or strategy != blocked_strategy or strategy == "terminal_fail_closed":
+        return None
+    return {
+        "accepted": False,
+        "status": "case_resolution_goal_strategy_gate",
+        "issue": "same_blocker_strategy_change_required",
+        "repair_strategy": strategy,
+        "blocked_strategy": blocked_strategy,
+        "case_resolution_goal": _case_resolution_goal_state_for_prompt(session, max_turns=max_turns),
+        "required_next_action": (
+            "The same blocker + submit shape already repeated under this repair_strategy. "
+            "Switch strategy or submit terminal_fail_closed with exact blockers and concrete reasons."
+        ),
+    }
+
+
+def _terminal_text_for_submit(args: SubmitToolArgs) -> str:
+    parts: list[str] = [args.reason, args.resolution.package_reason]
+    for unit in args.resolution.work_units:
+        parts.extend([unit.unit_label, unit.reason, unit.target, *unit.local, *unit.support])
+    return "\n".join(str(item or "") for item in parts)
+
+
+def _submit_addresses_strong_candidates(args: SubmitToolArgs, candidates: list[dict[str, object]]) -> bool:
+    target_locators: list[str] = []
+    for candidate in candidates:
+        for locator in list(candidate.get("target_locators") or []):
+            locator = str(locator or "").strip()
+            if locator and locator not in target_locators:
+                target_locators.append(locator)
+    if not target_locators:
+        return True
+    text = _terminal_text_for_submit(args)
+    return all(locator in text for locator in target_locators[:4])
+
+
+def _terminal_fail_closed_contract_guard_output(
+    session: HumanCaseSession,
+    args: SubmitToolArgs,
+    *,
+    max_turns: int,
+) -> dict[str, object]:
+    latest_repair = _latest_submit_repair_observation(session)
+    active_agenda = _active_repair_agenda_for_prompt(session)
+    finalization_target_locators = _repair_finalization_target_locators(session)
+    if not active_agenda and not finalization_target_locators and not _has_open_submit_repair(latest_repair):
+        return {}
+    exact_fail_closed_rows = _submit_exact_fail_closed_rows_for_repair(session, args)
+    covered_locators = {
+        str(locator)
+        for row in exact_fail_closed_rows
+        for locator in list(row.get("matched_active_repair_locators") or [])
+    }
+    missing_exact_fail_closed_locators = [
+        locator
+        for locator in finalization_target_locators
+        if not any(_local_locator_scope_matches(covered, locator) for covered in covered_locators)
+    ]
+    uninspected_targets = _uninspected_target_surface_action_locators(session, latest_repair)
+    strong_candidates = _case_resolution_goal_strong_candidates(session, latest_repair)
+    candidate_gap = bool(strong_candidates and not _submit_addresses_strong_candidates(args, strong_candidates))
+    if not missing_exact_fail_closed_locators and not uninspected_targets and not candidate_gap:
+        return {}
+    issue = "terminal_fail_closed_contract_incomplete"
+    if missing_exact_fail_closed_locators:
+        issue = "terminal_fail_closed_missing_blocking_locators"
+    elif uninspected_targets:
+        issue = "terminal_fail_closed_has_unexecuted_blocking_evidence_action"
+    elif candidate_gap:
+        issue = "terminal_fail_closed_must_address_strong_candidates"
+    return {
+        "accepted": False,
+        "status": "case_resolution_goal_terminal_fail_closed_blocked",
+        "issue": issue,
+        "issue_counts": {issue: 1},
+        "case_resolution_goal": _case_resolution_goal_state_for_prompt(session, max_turns=max_turns),
+        "terminal_fail_closed_contract": {
+            "finalization_target_locators": finalization_target_locators[:8],
+            "exact_fail_closed_rows": exact_fail_closed_rows,
+            "missing_exact_fail_closed_locators": missing_exact_fail_closed_locators,
+            "uninspected_target_surface_locators": uninspected_targets[:8],
+            "strong_candidates_to_address": strong_candidates[:8],
+            "saved_mechanically_ok_work_units": _draft_work_unit_summary(session.draft_work_units),
+            "saved_work_unit_count": len(session.draft_work_units),
+        },
+        "blocking_units": latest_repair.get("blocking_units") or [],
+        "required_missing_work_units": latest_repair.get("required_missing_work_units") or [],
+        "required_next_action": (
+            "terminal_fail_closed must name every blocking/missing local locator, address listed strong candidates "
+            "or inspect pending blocking evidence, preserve saved ok rows, and give concrete non-progressable reasons."
+        ),
+    }
+
+
 def _diagnostic_action_summaries(actions: object, *, limit: int = 6) -> list[str]:
     rows: list[str] = []
     for item in list(actions or []):
@@ -9939,6 +10287,19 @@ candidates, evidence gaps, and resolution readiness current through note when
 your view changes. Treat that workspace as higher priority than raw search
 results or old repair text. If a candidate is low relevance, mark it rejected
 or noisy so later searches do not keep presenting it as an equal choice.
+Maintain CASE_STATE.case_memory.case_resolution_goal as the bounded outer goal.
+Every tool call must choose repair_strategy:
+repair_single, repair_cluster, repartition, gather_evidence,
+revise_saved_rows, or terminal_fail_closed. The strategy is a commitment for
+this turn: say whether you are fixing one blocker, fixing a cluster, changing
+the work-unit partition, gathering missing evidence, revising saved ok rows, or
+ending in terminal fail_closed. Do not use repair_strategy as decoration.
+If case_resolution_goal.strategy_change_required is true, do not repeat the
+forbidden strategy. Switch strategy or submit terminal_fail_closed.
+terminal_fail_closed is valid only when it names every blocking/missing local
+locator, addresses listed strong_candidates, has no unexecuted blocking
+evidence action, preserves saved mechanically-ok rows, and gives a concrete
+non-progressable reason. A budget timeout alone is not terminal fail_closed.
 
 Prefer batch actions. Simple TV packages should usually be search -> inspect ->
 submit. Mixed or multi-season packages must use batch search/inspect: put all
@@ -10206,6 +10567,9 @@ def _turn_tail(desk: dict[str, object], session: HumanCaseSession, *, max_turns:
                         "repair_frontier",
                         "recovery_no_high_quality_action",
                         "repeat_rejection_warning",
+                        "case_resolution_goal",
+                        "case_resolution_goal_turn",
+                        "terminal_fail_closed_contract",
                         "required_next_action",
                     )
                     if key in output
@@ -10342,6 +10706,7 @@ def _turn_tail(desk: dict[str, object], session: HumanCaseSession, *, max_turns:
     repair_finalization_guard = _repair_finalization_guard_for_prompt(session, max_turns=max_turns)
     recovery_brief = _recovery_brief_for_prompt(session)
     case_memory = {
+            "case_resolution_goal": _case_resolution_goal_state_for_prompt(session, max_turns=max_turns),
             "active_repair_agenda": _active_repair_agenda_for_prompt(session),
             "near_cap_repair_finalization_guard": repair_finalization_guard,
             "immediate_repair_focus": _immediate_repair_focus(session),
@@ -10457,7 +10822,14 @@ def _call_human_agent(
     next_consecutive = session.current_consecutive_tool_count
     next_max_consecutive = session.max_consecutive_tool_count
     next_loop_suspected = session.single_tool_loop_suspected_count
+    next_strategy_history = list(session.case_resolution_goal_strategy_history)
+    next_missing_strategy_count = session.case_resolution_goal_missing_strategy_count
+    repair_strategy = _repair_strategy_from_args(tool_call.arguments) if tool_call else ""
     if tool_call:
+        if repair_strategy:
+            next_strategy_history.append(repair_strategy)
+        if not _tool_call_declared_repair_strategy(tool_call):
+            next_missing_strategy_count += 1
         dry_run_finish_repeat = tool_call.tool_name == "submit" and session.last_submit_dry_run_accepted
         next_consecutive = (
             session.current_consecutive_tool_count + 1
@@ -10479,6 +10851,8 @@ def _call_human_agent(
         current_consecutive_tool_count=next_consecutive,
         max_consecutive_tool_count=next_max_consecutive,
         single_tool_loop_suspected_count=next_loop_suspected,
+        case_resolution_goal_strategy_history=next_strategy_history[-64:],
+        case_resolution_goal_missing_strategy_count=next_missing_strategy_count,
         last_submit_dry_run_accepted=False,
     )
     audit = {
@@ -10505,6 +10879,8 @@ def _call_human_agent(
         "tail_lcp_with_previous_bytes": tail_lcp_bytes,
         "tail_lcp_with_previous_estimated_tokens": tail_lcp_bytes // 4,
         "tool_choice": tool_choice,
+        "repair_strategy": repair_strategy,
+        "repair_strategy_declared": _tool_call_declared_repair_strategy(tool_call),
         "provider_input_tokens": input_tokens,
         "provider_cached_input_tokens": cached_tokens,
         "provider_cached_input_ratio": (cached_tokens / input_tokens) if input_tokens else 0.0,
@@ -10679,6 +11055,53 @@ def _apply_turn_health(
         and delta_counts["new_high_quality_candidate_count"] > 0
         else 0
     )
+    strategy = session.case_resolution_goal_strategy_history[-1] if session.case_resolution_goal_strategy_history else ""
+    progress_signals = [
+        name
+        for name, active in (
+            ("active_focus_changed", active_focus_changed),
+            ("new_evidence_added", new_evidence_added),
+            ("agenda_item_closed", agenda_item_closed),
+            ("resolution_readiness_changed", resolution_readiness_changed),
+            ("cognitive_workspace_changed", bool(output.get("cognitive_workspace_changed"))),
+            ("saved_work_unit_delta", delta_counts["saved_work_unit_delta"] > 0),
+            ("new_high_quality_candidate_count", delta_counts["new_high_quality_candidate_count"] > 0),
+            ("new_blocking_action_count", delta_counts["new_blocking_action_count"] > 0 and not repeated_submit_rejection),
+        )
+        if active
+    ]
+    goal_change_required = session.case_resolution_goal_strategy_change_required
+    goal_blocked_strategy = session.case_resolution_goal_blocked_strategy
+    goal_blocker_fingerprint = session.case_resolution_goal_blocker_fingerprint
+    goal_change_required_count = session.case_resolution_goal_strategy_change_required_count
+    goal_terminal_rejection_count = session.case_resolution_goal_terminal_rejection_count
+    goal_obvious_terminal_count = session.case_resolution_goal_obvious_terminal_fail_closed_count
+    if repeated_submit_rejection:
+        goal_change_required = True
+        goal_blocked_strategy = strategy
+        goal_blocker_fingerprint = _case_resolution_goal_blocker_fingerprint(output)
+        goal_change_required_count += 1
+    elif goal_change_required and strategy and (
+        strategy != goal_blocked_strategy or strategy == "terminal_fail_closed" or bool(output.get("accepted"))
+    ):
+        goal_change_required = False
+        goal_blocked_strategy = ""
+    if output.get("status") == "case_resolution_goal_terminal_fail_closed_blocked":
+        goal_terminal_rejection_count += 1
+    if output.get("accepted") and output.get("status") == "fail_closed" and strategy == "terminal_fail_closed":
+        goal_obvious_terminal_count += 1
+    goal_turn = {
+        "turn": session.turn_count,
+        "tool": session.last_tool_name,
+        "repair_strategy": strategy,
+        "made_progress": made_progress,
+        "progress_signals": progress_signals,
+        "low_information_turn": low_information_turn,
+        "strategy_change_required_next": goal_change_required,
+        "blocked_strategy": goal_blocked_strategy,
+        "blocker_fingerprint": goal_blocker_fingerprint,
+    }
+    progress_ledger = [*session.case_resolution_goal_progress_ledger, goal_turn][-24:]
     updated = replace(
         session,
         attention_focus_change_count=session.attention_focus_change_count + (1 if active_focus_changed else 0),
@@ -10704,9 +11127,16 @@ def _apply_turn_health(
             *session.blocking_action_count_by_turn,
             delta_counts["new_blocking_action_count"],
         ],
+        case_resolution_goal_progress_ledger=progress_ledger,
+        case_resolution_goal_strategy_change_required=goal_change_required,
+        case_resolution_goal_blocked_strategy=goal_blocked_strategy,
+        case_resolution_goal_blocker_fingerprint=goal_blocker_fingerprint,
+        case_resolution_goal_strategy_change_required_count=goal_change_required_count,
+        case_resolution_goal_terminal_rejection_count=goal_terminal_rejection_count,
+        case_resolution_goal_obvious_terminal_fail_closed_count=goal_obvious_terminal_count,
         last_turn_health=turn_health,
     )
-    return updated, {**output, "turn_health": turn_health}
+    return updated, {**output, "turn_health": turn_health, "case_resolution_goal_turn": goal_turn}
 
 
 def _record_tool_output(session: HumanCaseSession, tool_call: HumanToolCall, output: dict[str, object]) -> HumanCaseSession:
@@ -11585,6 +12015,25 @@ def _session_summary(session: HumanCaseSession, registry: LocatorRegistry) -> di
         "recovery_frontier_switch_count": session.recovery_frontier_switch_count,
         "exact_fail_closed_after_frontier_exhausted_count": session.exact_fail_closed_after_frontier_exhausted_count,
         "weak_related_blocking_action_count": session.weak_related_blocking_action_count,
+        "case_resolution_goal_status": (
+            "strategy_change_required"
+            if session.case_resolution_goal_strategy_change_required
+            else "active"
+            if _has_open_submit_repair(latest_repair)
+            else "accepted_or_idle"
+        ),
+        "case_resolution_goal_strategy_history": list(session.case_resolution_goal_strategy_history),
+        "case_resolution_goal_strategy_counts": dict(Counter(session.case_resolution_goal_strategy_history)),
+        "case_resolution_goal_progress_count": sum(
+            1 for row in session.case_resolution_goal_progress_ledger if row.get("made_progress")
+        ),
+        "case_resolution_goal_progress_ledger": list(session.case_resolution_goal_progress_ledger),
+        "same_blocker_strategy_change_required_count": session.case_resolution_goal_strategy_change_required_count,
+        "case_resolution_goal_strategy_change_required": session.case_resolution_goal_strategy_change_required,
+        "case_resolution_goal_blocked_strategy": session.case_resolution_goal_blocked_strategy,
+        "case_resolution_goal_terminal_rejection_count": session.case_resolution_goal_terminal_rejection_count,
+        "obvious_terminal_fail_closed_count": session.case_resolution_goal_obvious_terminal_fail_closed_count,
+        "repair_strategy_missing_count": session.case_resolution_goal_missing_strategy_count,
         "high_quality_candidate_count_by_turn": list(session.high_quality_candidate_count_by_turn),
         "diagnostic_candidate_count_by_turn": list(session.diagnostic_candidate_count_by_turn),
         "noisy_candidate_count_by_turn": list(session.noisy_candidate_count_by_turn),
@@ -11649,8 +12098,24 @@ def _budget_fallback_fail_closed_output(
             unit_name = str(unit.get("unit") or unit.get("local") or "unit").strip()
             issue = unit.get("issue") or unit.get("issues") or "mechanical_blocker"
             compact_blockers.append(f"{unit_name}: {issue}")
+        finalization_locators = _repair_finalization_target_locators(session)
+        if finalization_locators:
+            compact_blockers.append("blocking_local_locators=" + ",".join(finalization_locators[:12]))
         if required_missing:
-            compact_blockers.append(f"missing_work_units={len(required_missing)}")
+            missing_locators: list[str] = []
+            for row in required_missing:
+                if not isinstance(row, dict):
+                    continue
+                raw_local = row.get("local") or row.get("locator") or row.get("locators")
+                if isinstance(raw_local, list):
+                    missing_locators.extend(str(item) for item in raw_local if str(item).strip())
+                elif str(raw_local or "").strip():
+                    missing_locators.append(str(raw_local))
+            compact_blockers.append(
+                "missing_work_units=" + ",".join(missing_locators[:12])
+                if missing_locators
+                else f"missing_work_units={len(required_missing)}"
+            )
         if verifier_issues:
             compact_blockers.append(f"verifier_issues={','.join(verifier_issues[:6])}")
         if issue_counts:
@@ -11658,14 +12123,42 @@ def _budget_fallback_fail_closed_output(
                 "issue_counts="
                 + ",".join(f"{key}:{value}" for key, value in list(issue_counts.items())[:8])
             )
-        description = (
-            "HumanCaseAgent reached the turn budget with a concrete unresolved submit repair agenda: "
-            + "; ".join(compact_blockers or ["unresolved submit repair"])
+        pending_actions = _target_surface_actions_from_repair(latest_repair)
+        pending_queries = _repair_search_queries_to_try(latest_repair)
+        strong_candidates = _case_resolution_goal_strong_candidates(session, latest_repair)
+        strong_candidate_locators = [
+            str(locator)
+            for candidate in strong_candidates
+            for locator in list(candidate.get("target_locators") or [])
+            if str(locator).strip()
+        ]
+        if strong_candidates:
+            compact_blockers.append(
+                "strong_candidates_addressed_as_unresolved="
+                + json.dumps(strong_candidates[:4], ensure_ascii=False, default=str)
+            )
+        obvious_terminal = bool(
+            (finalization_locators or required_missing or blocking_units)
+            and not pending_actions
+            and not pending_queries
         )
-        summary = "agent_recovery_failed"
-        if session.no_progress_escape_count or session.repeated_submit_rejection_count or session.single_tool_loop_suspected_count:
+        description = (
+            (
+                "HumanCaseAgent reached the bounded CaseResolutionGoal terminal boundary with no unexecuted "
+                "blocking target-surface action or repair search frontier: "
+            )
+            if obvious_terminal
+            else "HumanCaseAgent reached the turn budget with a concrete unresolved submit repair agenda: "
+        )
+        description += "; ".join(compact_blockers or ["unresolved submit repair"])
+        if session.draft_work_units:
+            description += f"; saved_ok_rows_preserved={len(session.draft_work_units)}"
+        summary = "obvious_terminal_fail_closed" if obvious_terminal else "agent_recovery_failed"
+        if obvious_terminal:
+            pass
+        elif session.no_progress_escape_count or session.repeated_submit_rejection_count or session.single_tool_loop_suspected_count:
             summary = "agent_recovery_failed"
-        elif not _target_surface_actions_from_repair(latest_repair) and not _repair_search_queries_to_try(latest_repair):
+        elif not pending_actions and not pending_queries:
             summary = "retrieval_exhausted"
         elif any("duplicate" in code or "conflict" in code for code in list(issue_counts) + verifier_issues):
             summary = "semantic_ambiguity"
@@ -11676,7 +12169,7 @@ def _budget_fallback_fail_closed_output(
                     ref="HFR1",
                     reason_kind="insufficient_evidence",
                     description=description,
-                    related_refs=[],
+                    related_refs=list(dict.fromkeys([*finalization_locators, *strong_candidate_locators]))[:8],
                 )
             ],
             summary=summary,
@@ -11822,8 +12315,20 @@ def run_human_case_agent(
         before_cognitive = session.cognitive_workspace.model_copy(deep=True)
         before_saved_work_unit_count = len(session.draft_work_units)
         repeated_for_health = False
+        goal_rejection = _case_resolution_goal_tool_rejection(session, tool_call, max_turns=max_turns)
         budget_rejection = _budget_pressure_tool_rejection(session, tool_call.tool_name, max_turns=max_turns)
-        if budget_rejection is not None:
+        if goal_rejection is not None:
+            output = goal_rejection
+            session.tool_rejection_count += 1
+            audits.append(
+                {
+                    "note": "human_case_agent_tool_rejected",
+                    "reason": output.get("issue"),
+                    "tool_name": tool_call.tool_name,
+                    "repair_strategy": _repair_strategy_from_args(tool_call.arguments),
+                }
+            )
+        elif budget_rejection is not None:
             output = budget_rejection
             session.tool_rejection_count += 1
             audits.append(
@@ -11972,6 +12477,56 @@ def run_human_case_agent(
                         "accepted_but_not_final": True,
                         "required_next_action": "Submit the same package resolution with dry_run=false to finish. Repeating an accepted dry_run makes no progress.",
                     }
+                terminal_contract_blocker = (
+                    _terminal_fail_closed_contract_guard_output(
+                        session,
+                        effective_submit_args,
+                        max_turns=max_turns,
+                    )
+                    if submit_result.output is not None
+                    and submit_result.output.action == "fail_closed"
+                    and not dry_run
+                    else {}
+                )
+                if terminal_contract_blocker:
+                    output = terminal_contract_blocker
+                    issue = str(output.get("issue") or "terminal_fail_closed_contract_incomplete")
+                    session.submit_rejection_count += 1
+                    session.submit_rejection_issue_counts[issue] = (
+                        session.submit_rejection_issue_counts.get(issue, 0) + 1
+                    )
+                    audits.append(
+                        {
+                            "note": "human_case_agent_submit_result",
+                            "accepted": False,
+                            "issue_counts": output.get("issue_counts"),
+                            "terminal_fail_closed_blocked": True,
+                        }
+                    )
+                    session = replace(
+                        session,
+                        cognitive_workspace=_workspace_with_submit_rejection(
+                            session.cognitive_workspace,
+                            output,
+                            repeated=False,
+                        ),
+                    )
+                    session, output = _apply_turn_health(
+                        session,
+                        {
+                            **output,
+                            "active_repair_agenda": _active_repair_agenda_for_prompt(session),
+                            "resolution_readiness": session.cognitive_workspace.resolution_readiness.model_dump(mode="json"),
+                        },
+                        before_workspace_counts=before_workspace_counts,
+                        after_workspace=workspace,
+                        before_cognitive=before_cognitive,
+                        repeated_submit_rejection=False,
+                        before_saved_work_unit_count=before_saved_work_unit_count,
+                    )
+                    session = _record_tool_output(session, tool_call, output)
+                    _write_progress(workspace, session, f"tool_{tool_call.tool_name}", registry)
+                    continue
                 if not dry_run:
                     final_submit = submit_result
                     if (

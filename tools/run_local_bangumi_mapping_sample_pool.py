@@ -38,6 +38,7 @@ ALLOWED_FAIL_CLOSED_SUMMARIES = {
     "semantic_ambiguity",
     "retrieval_exhausted",
     "agent_recovery_failed",
+    "obvious_terminal_fail_closed",
     "provider_failure",
 }
 AI_CALL_STAGE_BY_NAME = {
@@ -394,6 +395,23 @@ def _sample_row(sample_path: Path, result: dict[str, Any], elapsed_ms: int) -> d
     accepted_contract_ok = _accepted_contract_ok(snapshot) if isinstance(snapshot, dict) else False
     ai_stats = _case_agent_ai_call_stats(snapshot) if isinstance(snapshot, dict) else {}
     rejection_reason_counts = _tool_rejection_reason_counts(snapshot) if isinstance(snapshot, dict) else {}
+    audits = snapshot.get("case_judge_request_audits") if isinstance(snapshot, dict) and isinstance(snapshot.get("case_judge_request_audits"), list) else []
+    session_summary = next(
+        (
+            audit
+            for audit in reversed(audits)
+            if isinstance(audit, dict) and audit.get("note") == "orchestrator_agent_session_summary"
+        ),
+        {},
+    )
+    session_summary = session_summary if isinstance(session_summary, dict) else {}
+
+    def sample_value(key: str) -> Any:
+        if isinstance(snapshot, dict) and snapshot.get(key) is not None:
+            return snapshot.get(key)
+        return session_summary.get(key)
+
+    summary_value = snapshot.get("summary") or result.get("summary") if isinstance(snapshot, dict) else result.get("summary")
     return {
         "sample": sample_path.as_posix(),
         "status": status,
@@ -424,6 +442,14 @@ def _sample_row(sample_path: Path, result: dict[str, Any], elapsed_ms: int) -> d
         "recovery_frontier_switch_count": snapshot.get("recovery_frontier_switch_count") if isinstance(snapshot, dict) else None,
         "exact_fail_closed_after_frontier_exhausted_count": snapshot.get("exact_fail_closed_after_frontier_exhausted_count") if isinstance(snapshot, dict) else None,
         "weak_related_blocking_action_count": snapshot.get("weak_related_blocking_action_count") if isinstance(snapshot, dict) else None,
+        "case_resolution_goal_status": sample_value("case_resolution_goal_status"),
+        "case_resolution_goal_strategy_counts": sample_value("case_resolution_goal_strategy_counts"),
+        "case_resolution_goal_progress_count": sample_value("case_resolution_goal_progress_count"),
+        "same_blocker_strategy_change_required_count": sample_value("same_blocker_strategy_change_required_count"),
+        "case_resolution_goal_terminal_rejection_count": sample_value("case_resolution_goal_terminal_rejection_count"),
+        "obvious_terminal_fail_closed_count": sample_value("obvious_terminal_fail_closed_count")
+        or (1 if summary_value == "obvious_terminal_fail_closed" else 0),
+        "repair_strategy_missing_count": sample_value("repair_strategy_missing_count"),
         "high_quality_candidate_count_by_turn": snapshot.get("high_quality_candidate_count_by_turn") if isinstance(snapshot, dict) else None,
         "diagnostic_candidate_count_by_turn": snapshot.get("diagnostic_candidate_count_by_turn") if isinstance(snapshot, dict) else None,
         "noisy_candidate_count_by_turn": snapshot.get("noisy_candidate_count_by_turn") if isinstance(snapshot, dict) else None,
@@ -435,7 +461,7 @@ def _sample_row(sample_path: Path, result: dict[str, Any], elapsed_ms: int) -> d
         "case_planning_action": snapshot.get("case_planning_action") if isinstance(snapshot, dict) else None,
         "split_child_case_count": snapshot.get("split_child_case_count") if isinstance(snapshot, dict) else None,
         "split_child_statuses": snapshot.get("split_child_statuses") if isinstance(snapshot, dict) else None,
-        "summary": snapshot.get("summary") or result.get("summary") if isinstance(snapshot, dict) else result.get("summary"),
+        "summary": summary_value,
         "orchestrator_turn_count": snapshot.get("orchestrator_turn_count") if isinstance(snapshot, dict) else None,
         "orchestrator_tool_call_counts": snapshot.get("orchestrator_tool_call_counts") if isinstance(snapshot, dict) else None,
         "orchestrator_tool_sequence": snapshot.get("orchestrator_tool_sequence") if isinstance(snapshot, dict) else None,
@@ -953,6 +979,11 @@ def main() -> int:
         "stall_warning_count_total": sum(int(row.get("stall_warning_count") or 0) for row in rows),
         "no_progress_escape_count_total": sum(int(row.get("no_progress_escape_count") or 0) for row in rows),
         "weak_related_blocking_action_count_total": sum(int(row.get("weak_related_blocking_action_count") or 0) for row in rows),
+        "case_resolution_goal_progress_count_total": sum(int(row.get("case_resolution_goal_progress_count") or 0) for row in rows),
+        "same_blocker_strategy_change_required_count_total": sum(int(row.get("same_blocker_strategy_change_required_count") or 0) for row in rows),
+        "case_resolution_goal_terminal_rejection_count_total": sum(int(row.get("case_resolution_goal_terminal_rejection_count") or 0) for row in rows),
+        "obvious_terminal_fail_closed_count_total": sum(int(row.get("obvious_terminal_fail_closed_count") or 0) for row in rows),
+        "repair_strategy_missing_count_total": sum(int(row.get("repair_strategy_missing_count") or 0) for row in rows),
         "compact_count_total": sum(int(row.get("compact_count") or 0) for row in rows),
         "strict_failure_count": len(strict_failures),
         "strict_failures": strict_failures,

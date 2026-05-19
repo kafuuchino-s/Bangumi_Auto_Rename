@@ -16,7 +16,10 @@ from src.rename.case_agent.human_case_agent import (
     WorkUnitFocus,
     _apply_turn_health,
     _active_repair_agenda_for_prompt,
+    _budget_fallback_fail_closed_output,
     _call_human_agent,
+    _case_resolution_goal_state_for_prompt,
+    _case_resolution_goal_tool_rejection,
     _compact_cognitive_workspace,
     _initial_cognitive_workspace_from_desk,
     _layer_search_output_for_workspace,
@@ -28,11 +31,13 @@ from src.rename.case_agent.human_case_agent import (
     _register_existing_targets,
     _session_summary,
     _submit_tool,
+    _terminal_fail_closed_contract_guard_output,
     _turn_tail,
     _workspace_counts,
     _workspace_with_submit_rejection,
     build_human_case_desk,
     HumanToolCall,
+    human_case_tool_definitions,
 )
 from src.rename.case_agent.models import (
     CaseBudget,
@@ -643,6 +648,177 @@ def test_turn_tail_prioritizes_active_repair_agenda():
     active = tail["case_memory"]["active_repair_agenda"]
     assert active[0]["blocking_issue"] == "count_mismatch"
     assert active[0]["required_next_action"] == "split the visible local slices"
+
+
+def test_case_resolution_goal_is_in_tool_schema_and_turn_tail():
+    tool_definitions = human_case_tool_definitions()
+    by_name = {item["function"]["name"]: item["function"]["parameters"] for item in tool_definitions}
+
+    for name in ("inspect", "search", "note", "submit"):
+        schema = by_name[name]
+        assert "repair_strategy" in schema["properties"]
+        assert "repair_strategy" in schema["required"]
+
+    session = HumanCaseSession(
+        case_id="CASE-GOAL",
+        case_resolution_goal_strategy_history=["repair_single"],
+        case_resolution_goal_strategy_change_required=True,
+        case_resolution_goal_blocked_strategy="repair_single",
+        draft_work_units=[{"unit_label": "saved", "local": ["local://show/main"]}],
+    )
+    repair = {
+        "accepted": False,
+        "status": "repair_required",
+        "issue_counts": {"count_mismatch": 1},
+        "blocking_units": [
+            {
+                "unit": "movie parent",
+                "local": ["local://movie/main-episodes"],
+                "issue": "count_mismatch",
+            }
+        ],
+    }
+    session.cognitive_workspace = _workspace_with_submit_rejection(CaseCognitiveWorkspace(), repair, repeated=True)
+    session.observations.append({"tool": "submit", "output": {**repair, "repeat_rejection_warning": {"issue": "same_submit_rejection_repeated"}}})
+
+    tail = _turn_tail({"resolution_contract": {"must_account_locator_count": 2}}, session, max_turns=12)
+    goal = tail["case_memory"]["case_resolution_goal"]
+
+    assert goal["strategy_change_required"] is True
+    assert "repair_single" in goal["forbidden_next_strategies"]
+    assert "terminal_fail_closed" in goal["allowed_next_strategies"]
+    assert goal["saved_ok_rows"]["count"] == 1
+    assert goal["terminal_fail_closed_contract"]["must_name_all_blocking_or_missing_local_locators"] is True
+
+
+def test_case_resolution_goal_rejects_same_strategy_after_repeated_submit_shape():
+    session = HumanCaseSession(
+        case_id="CASE-GOAL-GATE",
+        case_resolution_goal_strategy_change_required=True,
+        case_resolution_goal_blocked_strategy="repair_single",
+        case_resolution_goal_strategy_history=["repair_single"],
+    )
+
+    rejected = _case_resolution_goal_tool_rejection(
+        session,
+        HumanToolCall(
+            tool_name="submit",
+            arguments=SubmitToolArgs(repair_strategy="repair_single"),
+            raw_arguments={"repair_strategy": "repair_single"},
+        ),
+        max_turns=12,
+    )
+
+    assert rejected is not None
+    assert rejected["issue"] == "same_blocker_strategy_change_required"
+
+    allowed = _case_resolution_goal_tool_rejection(
+        session,
+        HumanToolCall(
+            tool_name="submit",
+            arguments=SubmitToolArgs(repair_strategy="repair_cluster"),
+            raw_arguments={"repair_strategy": "repair_cluster"},
+        ),
+        max_turns=12,
+    )
+
+    assert allowed is None
+
+
+def test_terminal_fail_closed_contract_requires_blockers_and_strong_candidates():
+    repair = {
+        "accepted": False,
+        "status": "repair_required",
+        "issue_counts": {"count_mismatch": 1},
+        "target_surface_actions": [
+            "inspect(['target://bangumi/2-movie-part-two/episode/1'], scope=['details','episodes'])"
+        ],
+        "blocking_units": [
+            {
+                "unit": "movie parent",
+                "local": ["local://movie/main-episodes"],
+                "issue": "count_mismatch",
+            }
+        ],
+    }
+    session = HumanCaseSession(case_id="CASE-TERMINAL", turn_count=8, max_turns=12)
+    session.cognitive_workspace = _workspace_with_submit_rejection(CaseCognitiveWorkspace(), repair, repeated=False)
+    session.observations.append(
+        {
+            "tool": "inspect",
+            "output": {
+                "observations": [
+                    {"locator": "target://bangumi/2-movie-part-two", "kind": "target_subject"}
+                ]
+            },
+        }
+    )
+    session.observations.append({"tool": "submit", "output": repair})
+
+    vague = SubmitToolArgs(
+        repair_strategy="terminal_fail_closed",
+        resolution=PackageResolution(
+            work_units=[
+                ResolutionWorkUnit(
+                    unit_label="movie parent unresolved",
+                    local=["local://movie/main-episodes"],
+                    outcome="fail_closed",
+                    reason="Still unsafe after visible evidence.",
+                )
+            ]
+        ),
+    )
+    vague_rejection = _terminal_fail_closed_contract_guard_output(session, vague, max_turns=12)
+
+    assert vague_rejection["issue"] == "terminal_fail_closed_must_address_strong_candidates"
+    assert vague_rejection["terminal_fail_closed_contract"]["strong_candidates_to_address"]
+
+    addressed = SubmitToolArgs(
+        repair_strategy="terminal_fail_closed",
+        resolution=PackageResolution(
+            work_units=[
+                ResolutionWorkUnit(
+                    unit_label="movie parent unresolved",
+                    local=["local://movie/main-episodes"],
+                    outcome="fail_closed",
+                    support=["target://bangumi/2-movie-part-two/episode/1"],
+                    reason=(
+                        "Inspected target://bangumi/2-movie-part-two/episode/1, but visible evidence still "
+                        "does not safely close this local movie parent."
+                    ),
+                )
+            ]
+        ),
+    )
+
+    assert _terminal_fail_closed_contract_guard_output(session, addressed, max_turns=12) == {}
+
+
+def test_budget_fallback_can_emit_obvious_terminal_fail_closed_when_frontier_exhausted():
+    repair = {
+        "accepted": False,
+        "status": "repair_required",
+        "issue_counts": {"fail_closed_with_visible_slice_pairing": 1},
+        "blocking_units": [
+            {
+                "unit": "movie parent",
+                "local": ["local://movie/main-episodes"],
+                "issue": "fail_closed_with_visible_slice_pairing",
+            }
+        ],
+    }
+    session = HumanCaseSession(
+        case_id="CASE-OBVIOUS-TERMINAL",
+        draft_work_units=[{"unit_label": "saved", "local": ["local://show/main"]}],
+    )
+    session.cognitive_workspace = _workspace_with_submit_rejection(CaseCognitiveWorkspace(), repair, repeated=True)
+    session.observations.append({"tool": "submit", "output": repair})
+
+    output = _budget_fallback_fail_closed_output(session, None)
+
+    assert output.summary == "obvious_terminal_fail_closed"
+    assert "local://movie/main-episodes" in output.fail_closed_reasons[0].description
+    assert "saved_ok_rows_preserved=1" in output.fail_closed_reasons[0].description
 
 
 def test_near_cap_repair_finalization_guard_requires_evidence_or_exact_fail_closed():

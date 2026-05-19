@@ -827,3 +827,166 @@ Conclusion:
 - The stochastic `sample_0096` path no longer reports `unresolved_submit_repair`.
 - Source-query-only weak related evidence did not become a blocking inspect loop.
 - Late-turn failures are now represented as explicit recovery failure/frontier exhaustion telemetry rather than an unexplained near-cap health failure.
+
+## 2026-05-19 Bounded CaseResolutionGoal Follow-up
+
+The later focused sample run showed that `sample_0096`, `sample_0035`, and
+`sample_0126` were only safe strict fail-closed/non-regression cases, not stable
+accepted mappings. The remaining architecture gap was not another missing
+sample-specific repair rule: the Agent could repeatedly collide with a visible
+blocker without being forced into a bounded strategy change or an auditable
+terminal fail-closed.
+
+Implemented direction:
+
+- Add `CaseResolutionGoal` to `CASE_STATE.case_memory`.
+- Require every tool call to choose `repair_strategy`.
+- Track strategy history and a compact progress ledger.
+- Turn repeated same-blocker/same-submit-shape feedback into a strategy-change
+  gate.
+- Validate terminal fail-closed against exact active blockers, strong
+  candidates, pending blocking evidence actions, saved ok rows, and concrete
+  non-progressable reasons.
+
+This is intentionally not a target selector. The fixed layer only maintains the
+goal board and mechanical contract; ownership, target choice, special semantics,
+target_absent, and fail-closed meaning remain Agent decisions.
+
+Validation:
+
+- `sample_0096`: `tests/sample_pool/generated/local_bangumi_mapping_gate_20260519_150428_845`,
+  `fail_closed / agent_fail_closed_from_submit`,
+  `case_resolution_goal_status=accepted_or_idle`, strict failures `0`.
+- Protection `sample_0035` and `sample_0126`:
+  `tests/sample_pool/generated/local_bangumi_mapping_gate_20260519_150833_491`,
+  both `fail_closed`; summaries are `obvious_terminal_fail_closed` and
+  `agent_fail_closed_from_submit`, strict failures `0`.
+- focused pytest plus sample runner tests: `224 passed`.
+- compile and boundary scans passed with `finding_count=0`.
+
+## 2026-05-19 Next Plan: Agent-Owned Evidence Composition For Derivative Shorts
+
+Follow-up discussion found a more accurate interpretation of the remaining
+`sample_0096` failures:
+
+- The text-only evidence surface is not enough to prove the true Overlord
+  `Ple Ple Pleiades` ownership.
+- Human review can infer more because it uses extra evidence: video duration,
+  actual playback/title cards, and the Bangumi related graph between main
+  seasons and derivative short subjects.
+- `OVERLORD Ple Ple Pleiades main` is likely a compilation of the first
+  `Play Play` short series, not episode 1.
+- `OVERLORD SP extras`, `OVERLORD II SP01-SP13`, and
+  `OVERLORD III SP01-SP13` are likely derivative short episodes, not generic
+  supplemental extras.
+- Without those additional media/related facts, strict fail-closed is a valid
+  outcome. The system must not accept unknown rows as supplemental just to make
+  the rest of the package pass.
+
+Design principle:
+
+The fixed layer may expose facts, but must not arrange facts into the answer.
+It must not emit `candidate derivative mapping`, `recommended target`,
+`strong candidate`, or any target-shaped suggestion such as
+`OVERLORD II SP01-SP13 -> Play Play 2`. The Agent must request the facts,
+compose the hypothesis, and decide mapping, duplicate packaging,
+target_absent/supplemental, or fail_closed.
+
+Allowed fixed-layer fact surfaces:
+
+- Local media facts for explicitly requested local locators:
+  `duration_sec`, file count, numbered token sequence, path hierarchy,
+  representative labels, container/video/audio/subtitle metadata, and optional
+  sampled title/OCR facts if implemented.
+- Bangumi related graph facts for explicitly inspected subjects:
+  related subject title, aliases already returned by Bangumi, relation label,
+  episode count, and visible item refs.
+- Existing Agent decisions as case memory facts:
+  for example, `OVERLORD II main-episodes` has already been mapped to
+  `OVERLORD 第二季`.
+- Mechanical validation:
+  coverage, duplicate target usage, legal refs, visible target spans, support
+  shape, and whether a submitted claim cites the evidence it says it used.
+
+Forbidden fixed-layer behavior:
+
+- Do not generate semantic candidate mappings from local SP rows to related
+  Bangumi subjects.
+- Do not infer that a numbered SP row is `target_absent`, `supplemental`, or
+  mapped because counts happen to match.
+- Do not hard-code `OVERLORD`, `Ple Ple Pleiades`, Bangumi subject ids, title
+  translations, aliases, or file-to-target mappings.
+- Do not label a related subject as the likely owner. Present it as a related
+  subject fact only.
+
+Agent workflow to implement:
+
+1. For unresolved `SPxx`, `special-marker`, singleton compilation, or suspected
+   duplicate-packaging rows, the Agent should request local media facts for the
+   exact local locator instead of guessing from filenames only.
+2. If the row belongs under a main season folder, the Agent should inspect the
+   already-mapped main season's related Bangumi surface and any related subject
+   it wants to use.
+3. The Agent must explicitly write its own hypothesis before submit:
+   local parent identity, local count/numbering, duration pattern, related
+   subject relationship, target episode count, and duplicate/alternate
+   packaging risk.
+4. The Agent may map a numbered SP row only when its own cited evidence supports
+   a derivative short subject and a legal episode span.
+5. The Agent may map a singleton compilation as `mapped_composite_feature` only
+   when the cited media facts support that one file covering multiple visible
+   target items.
+6. If both a split episode set and a compilation point at the same target span,
+   the Agent must pick one mapping owner and mark the other as
+   duplicate/alternate packaging, or fail_closed if overlap cannot be proven.
+7. If evidence remains insufficient, the row should be `fail_closed` or a future
+   unresolved/manual-review state, not accepted supplemental.
+
+Expected `sample_0096` behavior with media-duration evidence available:
+
+- TV main rows and the two recap movies remain mapped as before.
+- `OVERLORD SP01-SP08` can map to the first visible `Play Play` short subject
+  if the Agent cites related-graph, count, numbering, and duration evidence.
+- `OVERLORD Ple Ple Pleiades main` should not also claim the same target span;
+  if its roughly 30-minute duration matches the same short series, treat it as
+  duplicate/alternate packaging unless the split episodes are absent.
+- `OVERLORD II SP01-SP13` can map to the related `Play Play` season-2 short
+  subject if the Agent cites the `OVERLORD II` derivative relation, 13 short
+  files, and 13 visible target items.
+- `OVERLORD III SP01-SP13` follows the same rule for the season-3 derivative
+  short subject.
+- Without media-duration and related-subject evidence, these rows should remain
+  strict fail_closed rather than being accepted as generic supplemental.
+
+Implementation phases:
+
+1. Add a read-only `local_media_probe` evidence path or equivalent local fact
+   surface for explicit local locators. Start with duration and numbered-label
+   summaries; keep OCR/frame/title extraction optional.
+2. Add or expose a raw related-subject fact surface in `inspect`, without
+   ranking or candidate wording.
+3. Extend the Agent prompt/tool contract so unresolved SP/composite rows ask for
+   media facts and related facts before terminal fail_closed.
+4. Extend submit validation to check evidence support shape for Agent-authored
+   claims: derivative mapping claims need cited related graph + count/numbering
+   + media-duration facts; duplicate-packaging claims need cited overlap facts.
+   The validator must not choose the target.
+5. Add trace/audit fields for media-fact requests, related-graph requests, and
+   Agent-authored hypothesis text.
+6. Reconsider product status semantics separately: a future
+   `partial_accepted_with_unresolved` may be better than global fail_closed, but
+   it must not relax what `supplemental` means.
+
+Validation plan:
+
+- Unit tests proving the new fact surface contains raw local media facts and
+  raw related-subject facts, with no generated mapping candidate.
+- Boundary scan rules for target-shaped wording such as `recommended target`,
+  `candidate derivative mapping`, or sample-specific Overlord/Pleiades ids.
+- A `sample_0096` run without media facts should remain safe fail_closed for
+  the derivative shorts.
+- A fixture-backed `sample_0096` run with duration facts may accept the
+  derivative short mappings, but only if the Agent authors the hypothesis and
+  cites the required facts.
+- Protection samples `0035` and `0126` should not gain new accepted
+  supplemental rows from unrelated SP/count coincidences.
