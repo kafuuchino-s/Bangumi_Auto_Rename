@@ -28,6 +28,7 @@ from .models import (
 )
 from .span_builder import build_bangumi_span_cards, compact_span_card
 from .salience import build_salience_overview
+from ..local_fact_surface import compact_file_fact_for_card
 from .notebook import compact_case_briefing, compact_investigation_notebook
 
 
@@ -317,6 +318,7 @@ def build_bounded_case_dossier(dossier: CaseDossier, *, title_cue_limit: int = 5
     main_file_overview = {
         'main_file_ref_range': [main_files[0].ref, main_files[-1].ref] if main_files else [],
         'path_samples': [(_tail_label(card.path), card.label, card.is_main) for card in (main_files[:2] + main_files[-2:] if len(main_files) > 2 else main_files)],
+        'local_fact_summary_samples': [dict(getattr(card, 'fact_summary', {}) or {}) for card in (main_files[:2] + main_files[-2:] if len(main_files) > 2 else main_files) if getattr(card, 'fact_summary', None)],
         'raw_order_summary': {
             'count': len(main_files),
             'main_file_refs': list(dossier.contract.main_file_refs[:10]),
@@ -412,7 +414,7 @@ def build_initial_compact_projection(bounded: BoundedCaseDossier, *, detailed_ca
     def _compact_local_file_card(card) -> dict[str, object]:
         data = card.model_dump(mode='json') if hasattr(card, 'model_dump') else dict(card)
         path = str(data.get('path', '') or '').replace('\\', '/')
-        return {
+        compact = {
             'ref': data.get('ref', ''),
             'basename': path.rsplit('/', 1)[-1],
             'path_tail': path.rsplit('/', 2)[-1] if '/' in path else path,
@@ -420,7 +422,12 @@ def build_initial_compact_projection(bounded: BoundedCaseDossier, *, detailed_ca
             'label': data.get('label', ''),
             'kind': data.get('file_kind', data.get('kind', '')),
             'is_main': data.get('is_main', False),
+            'fact_summary': data.get('fact_summary') or {},
         }
+        fact_card = compact_file_fact_for_card(data, detail=False)
+        if fact_card:
+            compact['local_facts'] = fact_card
+        return compact
 
     def _compact_local_span_card(card) -> dict[str, object]:
         data = card.model_dump(mode='json') if hasattr(card, 'model_dump') else dict(card)

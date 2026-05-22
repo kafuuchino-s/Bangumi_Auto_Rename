@@ -1,6 +1,7 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path
 
+from .local_fact_surface import LocalFactSurface, build_local_fact_surface
 from .local_supplemental_filter import classify_local_video_supplemental
 from .utils import VIDEO_SUFFIX
 
@@ -38,6 +39,7 @@ class LocalEvidence:
     main_video_count: int
     supplemental_candidate_count: int
     directory_structure: list[str]
+    fact_surface: LocalFactSurface | None = None
 
 
 def build_local_evidence(root: Path, ordered_files: list[Path] | None = None) -> LocalEvidence:
@@ -59,19 +61,23 @@ def build_local_evidence(root: Path, ordered_files: list[Path] | None = None) ->
 
     files: list[LocalFileEvidence] = []
     directories: set[str] = set()
+    actual_paths: dict[str, Path] = {}
     for index, file_path in enumerate(file_paths, start=1):
         try:
             relative_path = file_path.relative_to(evidence_root).as_posix()
         except ValueError:
             relative_path = file_path.name
         directories.update(Path(relative_path).parts[:-1])
-        files.append(_build_file_evidence(index, relative_path, file_path))
+        file_evidence = _build_file_evidence(index, relative_path, file_path)
+        files.append(file_evidence)
+        actual_paths[file_evidence.file_id] = file_path
+        actual_paths[file_evidence.relative_path] = file_path
 
     video_count = sum(1 for file in files if file.is_video)
     main_video_count = sum(1 for file in files if file.is_main_video_candidate)
     supplemental_count = sum(1 for file in files if file.is_supplemental_candidate)
 
-    return LocalEvidence(
+    evidence = LocalEvidence(
         root_name=root_name,
         root_path=str(root),
         files=files,
@@ -80,6 +86,7 @@ def build_local_evidence(root: Path, ordered_files: list[Path] | None = None) ->
         supplemental_candidate_count=supplemental_count,
         directory_structure=sorted(directories),
     )
+    return replace(evidence, fact_surface=build_local_fact_surface(evidence, actual_paths=actual_paths))
 
 
 def _build_file_evidence(

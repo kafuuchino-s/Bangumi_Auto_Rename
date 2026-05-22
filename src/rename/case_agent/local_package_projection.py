@@ -5,6 +5,8 @@ import re
 from collections import Counter, defaultdict
 from typing import Any
 
+from ..local_fact_surface import compact_fact_surface_summary, compact_file_fact_summary
+
 
 def _normalize_path(text: object) -> str:
     return str(text or '').strip().replace('\\', '/')
@@ -47,6 +49,17 @@ def build_local_package_projection(local_evidence_summary: dict[str, Any] | None
     root_path = str(summary.get('root_path') or '').strip()
     files = [dict(item) for item in (summary.get('files') or []) if isinstance(item, dict)]
     directory_structure = [str(item) for item in (summary.get('directory_structure') or []) if str(item).strip()]
+    fact_surface = summary.get('fact_surface') if isinstance(summary.get('fact_surface'), dict) else {}
+    fact_files = [dict(item) for item in (fact_surface.get('files') or []) if isinstance(item, dict)] if isinstance(fact_surface, dict) else []
+    fact_lookup: dict[str, dict[str, Any]] = {}
+    for item in fact_files:
+        file_id = str(item.get('file_id') or '')
+        relative_path = _normalize_path(item.get('relative_path'))
+        if file_id:
+            fact_lookup[file_id] = item
+        if relative_path:
+            fact_lookup[relative_path] = item
+    local_fact_surface_summary = compact_fact_surface_summary(fact_surface)
 
     video_files = [item for item in files if item.get('is_video', True)]
     main_files = [item for item in video_files if item.get('is_main_video_candidate', True)]
@@ -74,11 +87,13 @@ def build_local_package_projection(local_evidence_summary: dict[str, Any] | None
 
     file_entries = [
         {
+            'file_id': str(item.get('file_id') or ''),
             'relative_path': _normalize_path(item.get('relative_path')),
             'name': str(item.get('name') or ''),
             'is_main_video_candidate': bool(item.get('is_main_video_candidate')),
             'is_supplemental_candidate': bool(item.get('is_supplemental_candidate')),
             'suffix': str(item.get('suffix') or ''),
+            'fact_summary': compact_file_fact_summary(fact_lookup.get(str(item.get('file_id') or '')) or fact_lookup.get(_normalize_path(item.get('relative_path'))) or {}),
         }
         for item in files
     ]
@@ -112,6 +127,7 @@ def build_local_package_projection(local_evidence_summary: dict[str, Any] | None
         'file_count': len(files),
         'media_counts': dict(media_counts),
         'extension_counts': dict(ext_counts),
+        'local_fact_surface_summary': local_fact_surface_summary,
         'directory_structure': directory_structure[:40],
         'directory_cluster_summary': directory_clusters[:20],
         'representative_samples': {
@@ -154,6 +170,7 @@ def build_local_package_projection(local_evidence_summary: dict[str, Any] | None
                 'file_count': len(files),
                 'media_counts': dict(media_counts),
                 'extension_counts': dict(ext_counts),
+                'local_fact_surface_summary': local_fact_surface_summary,
                 'directory_cluster_summary': directory_clusters[:5],
                 'representative_samples': {
                     'first': first_samples[:2],

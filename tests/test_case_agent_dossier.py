@@ -243,3 +243,33 @@ def test_initial_compact_projection_omits_full_target_catalog():
     text = json.dumps(projection, ensure_ascii=False)
     assert 'catalog_summary' in text
     assert 'target_ref_count' in text
+
+
+def test_detailed_local_file_cards_include_fact_surface():
+    header = CaseHeader(case_id='C8')
+    budget = CaseBudget(max_judge_rounds=1)
+    files = [
+        LocalFileCard(
+            ref='LF1',
+            label='main',
+            is_main=True,
+            path='a/b1.mkv',
+            parent_display='a',
+            path_facts={'basename': 'b1.mkv', 'raw_number_tokens': [{'raw_text': '1', 'source': 'raw_path_text'}]},
+            container_facts={'probe_status': 'not_attempted', 'duration_seconds': None},
+            subtitle_facts={'external_subtitle_refs': [], 'language_markers': []},
+            stream_facts={'is_stream_file': False},
+            missing_facts=[{'fact_class': 'container_facts', 'status': 'not_attempted', 'reason': 'media_probe_disabled', 'attempted': False}],
+            fact_summary={'probe_status': 'not_attempted', 'missing_fact_classes': ['container_facts']},
+        )
+    ]
+    items = [BangumiItemCard(ref='BE1', title='Ep1', subject_ref='BS1', sort=1, ep=1)]
+    dossier = build_case_dossier(header=header, budget=budget, local_files=files, local_clusters=[], bangumi_subjects=[], bangumi_relations=[], bangumi_groups=[], bangumi_items=items, query_cards=[], provenance_cards=[])
+    object.__setattr__(dossier, 'seen_detail_refs', ['LF1'])
+
+    bounded = build_bounded_case_dossier(dossier)
+    projection = build_initial_compact_projection(bounded)
+
+    local_card = projection['detailed_local_file_cards'][0]
+    assert local_card['fact_summary']['probe_status'] == 'not_attempted'
+    assert local_card['local_facts']['missing_facts'][0]['fact_class'] == 'container_facts'

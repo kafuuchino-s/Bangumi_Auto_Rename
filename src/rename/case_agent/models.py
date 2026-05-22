@@ -123,6 +123,7 @@ class ProvenanceCard(BaseModel):
 
 class LocalFileCard(BaseModel):
     ref: str = ''
+    source_file_id: str = ''
     path: str = ''
     is_main: bool = False
     size_bytes: int = 0
@@ -131,6 +132,13 @@ class LocalFileCard(BaseModel):
     label: str = 'unknown'
     file_kind: Literal['video', 'subtitle', 'unknown'] = 'unknown'
     related_refs: list[str] = Field(default_factory=list)
+    path_facts: dict[str, Any] = Field(default_factory=dict)
+    container_facts: dict[str, Any] = Field(default_factory=dict)
+    subtitle_facts: dict[str, Any] = Field(default_factory=dict)
+    subtitle_compact_facts: dict[str, Any] = Field(default_factory=dict)
+    stream_facts: dict[str, Any] = Field(default_factory=dict)
+    missing_facts: list[dict[str, Any]] = Field(default_factory=list)
+    fact_summary: dict[str, Any] = Field(default_factory=dict)
 
     model_config: ClassVar[ConfigDict] = ConfigDict(extra='forbid')
 
@@ -741,6 +749,12 @@ class MappingDraftPatch(BaseModel):
 
 
 CaseResolutionLedgerOutcome = Literal[
+    'open',
+    'evidence_required',
+    'candidate_must_address',
+    'mapped',
+    'manual_review',
+    'fail_closed',
     'map_to_bangumi',
     'target_absent',
     'supplemental',

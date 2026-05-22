@@ -15,6 +15,7 @@ from .models import (
     CaseDossier,
 )
 from .notebook import validate_case_briefing_refs
+from ..local_fact_surface import compact_file_fact_for_card
 
 
 @dataclass
@@ -52,7 +53,7 @@ def _sample(values: list[str], *, limit: int = 8) -> list[str]:
 def _compact_local_file(card: object) -> dict[str, object]:
     data = card.model_dump(mode='json') if hasattr(card, 'model_dump') else dict(card)
     path = str(data.get('path', '') or '').replace('\\', '/')
-    return {
+    compact = {
         'ref': data.get('ref', ''),
         'basename': path.rsplit('/', 1)[-1],
         'path_tail': path.rsplit('/', 2)[-1] if '/' in path else path,
@@ -61,7 +62,12 @@ def _compact_local_file(card: object) -> dict[str, object]:
         'file_kind': data.get('file_kind', ''),
         'is_main': data.get('is_main', False),
         'size_bytes': data.get('size_bytes', 0),
+        'fact_summary': data.get('fact_summary') or {},
     }
+    fact_card = compact_file_fact_for_card(data, detail=False)
+    if fact_card:
+        compact['local_facts'] = fact_card
+    return compact
 
 
 def _compact_local_span(card: object) -> dict[str, object]:

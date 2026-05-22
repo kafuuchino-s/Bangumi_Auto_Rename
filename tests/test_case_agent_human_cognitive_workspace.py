@@ -821,7 +821,7 @@ def test_budget_fallback_can_emit_obvious_terminal_fail_closed_when_frontier_exh
     assert "saved_ok_rows_preserved=1" in output.fail_closed_reasons[0].description
 
 
-def test_near_cap_repair_finalization_guard_requires_evidence_or_exact_fail_closed():
+def test_near_cap_repair_finalization_guard_requires_evidence_or_exact_outcome():
     repair = {
         "accepted": False,
         "status": "repair_required",
@@ -863,20 +863,34 @@ def test_near_cap_repair_finalization_guard_requires_evidence_or_exact_fail_clos
     assert "fail_closed" in guard["required_next_action"]
     assert "fixed layer does not choose target" in guard["forbidden_fixed_layer_choices"]
 
-    broad_submit = SubmitToolArgs(
+    unrelated_submit = SubmitToolArgs(
         resolution=PackageResolution(
             work_units=[
                 ResolutionWorkUnit(
-                    unit_label="movie parent still broad",
-                    local=["local://movie/main-episodes"],
+                    unit_label="other unit",
+                    local=["local://other/main-episodes"],
                     outcome="supplemental",
-                    reason="Agent semantic judgment, but not an exact final blocker.",
+                    reason="Agent semantic judgment, but not the active repair locator.",
                 )
             ]
         )
     )
-    rejected = _near_cap_submit_finalization_guard_output(session, broad_submit, max_turns=12)
+    rejected = _near_cap_submit_finalization_guard_output(session, unrelated_submit, max_turns=12)
     assert rejected["issue"] == "near_cap_repair_finalization_requires_exact_work_unit_closure"
+
+    exact_supplemental = SubmitToolArgs(
+        resolution=PackageResolution(
+            work_units=[
+                ResolutionWorkUnit(
+                    unit_label="movie parent supplemental",
+                    local=["local://movie/main-episodes"],
+                    outcome="supplemental",
+                    reason="Agent semantic judgment closes this exact localized repair unit.",
+                )
+            ]
+        )
+    )
+    assert _near_cap_submit_finalization_guard_output(session, exact_supplemental, max_turns=12) == {}
 
     exact_fail_closed = SubmitToolArgs(
         resolution=PackageResolution(

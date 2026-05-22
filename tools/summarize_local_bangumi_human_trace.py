@@ -74,23 +74,33 @@ def _explicit_value(*values: Any) -> Any:
 
 
 def _accepted_contract_ok(snapshot: dict[str, Any], payload: dict[str, Any]) -> bool:
-    explicit = _explicit_value(snapshot.get("accepted_contract_ok"), payload.get("accepted_contract_ok"))
+    runner = payload.get("sample_runner") if isinstance(payload.get("sample_runner"), dict) else {}
+    explicit = _explicit_value(
+        snapshot.get("accepted_contract_ok"),
+        payload.get("accepted_contract_ok"),
+        runner.get("accepted_contract_ok"),
+    )
     if explicit is not None:
         return bool(explicit)
     if str(snapshot.get("status") or payload.get("status") or "") != "accepted":
         return False
-    main_count = _int_value(snapshot, "main_file_count") or _int_value(snapshot, "contract_main_file_count")
-    accounted = _int_value(snapshot, "accounted_for_count")
-    mapped = _int_value(snapshot, "mapped_file_count")
-    excluded = _int_value(snapshot, "excluded_file_count")
-    unresolved = _int_value(snapshot, "unresolved_count")
+    main_count = (
+        _int_value(snapshot, "main_file_count")
+        or _int_value(runner, "main_file_count")
+        or _int_value(snapshot, "contract_main_file_count")
+    )
+    mapped = _int_value(snapshot, "mapped_file_count") or _int_value(runner, "mapped_file_count")
+    excluded = _int_value(snapshot, "excluded_file_count") or _int_value(runner, "excluded_file_count")
+    manual_review = _int_value(snapshot, "manual_review_file_count") or _int_value(runner, "manual_review_file_count")
+    accounted = _int_value(snapshot, "accounted_for_count") or mapped + excluded + manual_review
+    unresolved = _int_value(snapshot, "unresolved_count") or _int_value(runner, "unresolved_count")
     open_count = _int_value(snapshot, "open_file_count")
     needs_more = _int_value(snapshot, "needs_more_evidence_file_count")
     unaligned = _int_value(snapshot, "unaligned_file_count")
     return (
         main_count > 0
         and accounted == main_count
-        and mapped + excluded == main_count
+        and mapped + excluded + manual_review == main_count
         and unresolved == 0
         and open_count == 0
         and needs_more == 0

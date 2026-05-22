@@ -17,6 +17,8 @@ from .models import (
     BangumiItemCard,
     BangumiRelationCard,
     BangumiSubjectCard,
+    CaseResolutionLedger,
+    CaseResolutionLedgerRow,
     CaseJudgeOutput,
     CaseVerifierResult,
     EvidenceBatchResult,
@@ -26,6 +28,7 @@ from .models import (
     VerifierIssue,
 )
 from .workspace import CaseEvidenceWorkspace
+from ..local_fact_surface import compact_file_fact_for_card, summarize_file_fact_group
 
 
 LOCAL_MARKER_RE = re.compile(
@@ -101,7 +104,24 @@ ALLOWED_RELATED_RELATION_KINDS = {
 }
 
 
-HumanToolName = Literal["inspect", "search", "note", "submit"]
+HumanToolName = Literal["inspect", "search", "note", "patch_ledger", "submit"]
+ResolutionLedgerRowStatus = Literal[
+    "open",
+    "evidence_required",
+    "candidate_must_address",
+    "mapped",
+    "manual_review",
+    "target_absent",
+    "supplemental",
+    "fail_closed",
+]
+ResolutionLedgerCandidateDischarge = Literal[
+    "open",
+    "mapped",
+    "manual_review",
+    "rejected",
+    "fail_closed",
+]
 RepairStrategy = Literal[
     "repair_single",
     "repair_cluster",
@@ -143,6 +163,36 @@ SEMANTIC_SUBMIT_DIAGNOSTIC_CODES = {
     "mapped_target_title_bridge_missing",
     "singleton_target_alias_matches_excluded_local_better",
     "supplemental_main_episodes_without_concrete_extra_reason",
+}
+LEDGER_TERMINAL_REPAIR_ISSUES = {
+    "episode_range_required",
+    "ledger_candidate_debt_open",
+    "ledger_fail_closed_target_ignored",
+    "ledger_strong_candidate_manual_review_requires_contradiction",
+    "ledger_composite_feature_shape_invalid",
+    "ledger_count_mismatch",
+    "ledger_duplicate_target",
+    "ledger_manual_review_candidate_invalid",
+    "ledger_mapped_target_invalid",
+    "ledger_strong_candidate_rejected_requires_contradiction",
+    "locator_not_found",
+    "target_episode_surface_missing",
+}
+STRONG_MAPPING_CANDIDATE_DEBT_SOURCES = {
+    "fail_closed_with_mapped_sibling",
+    "ledger_candidate_mapped_discharge_mismatch",
+    "ledger_candidate_manual_review_discharge_missing_target",
+    "manual_review_strong_non_regular_mapping_should_revise",
+    "manual_review_duplicate_variant_should_split",
+    "manual_review_visible_slice_pairing_should_split",
+    "numbered_special_exclusion_needs_target_evidence",
+    "patch_ledger_suggested_shape_unaddressed",
+}
+REPAIR_GROUP_ISSUE_CODES = {
+    "manual_review_strong_non_regular_mapping_repairs": "manual_review_strong_non_regular_mapping_should_revise",
+    "manual_review_duplicate_variant_repairs": "manual_review_duplicate_variant_should_split",
+    "manual_review_visible_slice_pairing_repairs": "manual_review_visible_slice_pairing_should_split",
+    "numbered_special_exclusion_repairs": "numbered_special_exclusion_needs_target_evidence",
 }
 
 
@@ -269,6 +319,7 @@ class ResolutionWorkUnit(BaseModel):
         "bangumi_target_absent",
         "supplemental",
         "non_bangumi",
+        "manual_review",
         "fail_closed",
     ] = "fail_closed"
     target: str = ""
@@ -279,6 +330,7 @@ class ResolutionWorkUnit(BaseModel):
     confidence: Literal["high", "medium", "low"] = "medium"
     reason: str = ""
     open_questions: list[str] = Field(default_factory=list)
+    manual_review_candidate_targets: list[str] = Field(default_factory=list)
 
     model_config = ConfigDict(extra="forbid")
 
@@ -299,10 +351,64 @@ class SubmitToolArgs(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
 
+class ResolutionLedgerCandidateDebt(BaseModel):
+    target: str = ""
+    source: str = ""
+    mapped_outcome: str = ""
+    discharge: ResolutionLedgerCandidateDischarge = "open"
+    contradiction: str = ""
+    blocker: str = ""
+    support: list[str] = Field(default_factory=list)
+    reason: str = ""
+
+    model_config = ConfigDict(extra="forbid")
+
+
+class ResolutionLedgerRow(BaseModel):
+    row_id: str = ""
+    local: list[str] = Field(default_factory=list)
+    status: ResolutionLedgerRowStatus = "open"
+    target: str = ""
+    mapped_outcome: Literal[
+        "mapped_regular_span",
+        "mapped_explicit_item",
+        "mapped_special_or_ova",
+        "mapped_composite_feature",
+    ] = "mapped_explicit_item"
+    episode_start: int | None = None
+    episode_end: int | None = None
+    support: list[str] = Field(default_factory=list)
+    confidence: Literal["high", "medium", "low"] = "medium"
+    reason: str = ""
+    open_questions: list[str] = Field(default_factory=list)
+    manual_review_candidate_targets: list[str] = Field(default_factory=list)
+    must_address_candidates: list[ResolutionLedgerCandidateDebt] = Field(default_factory=list)
+
+    model_config = ConfigDict(extra="forbid")
+
+
+class ResolutionLedger(BaseModel):
+    rows: list[ResolutionLedgerRow] = Field(default_factory=list)
+    version: int = 0
+    summary: str = ""
+
+    model_config = ConfigDict(extra="forbid")
+
+
+class PatchLedgerToolArgs(BaseModel):
+    rows: list[ResolutionLedgerRow] = Field(default_factory=list)
+    repair_strategy: RepairStrategy = REPAIR_STRATEGY_FIELD
+    reason: str = ""
+    dry_run: bool = False
+
+    model_config = ConfigDict(extra="forbid")
+
+
 TOOL_ARG_MODELS: dict[str, type[BaseModel]] = {
     "inspect": InspectToolArgs,
     "search": SearchToolArgs,
     "note": NoteToolArgs,
+    "patch_ledger": PatchLedgerToolArgs,
     "submit": SubmitToolArgs,
 }
 
@@ -338,6 +444,9 @@ class AgentLocator:
         "no_title_bridge",
     ] = "no_title_bridge"
     answers_current_blocker: bool = False
+    fact_summary: dict[str, object] = field(default_factory=dict)
+    file_fact_cards: tuple[dict[str, object], ...] = ()
+    subtitle_compact_cards: tuple[dict[str, object], ...] = ()
     debug_refs: tuple[str, ...] = ()
 
 
@@ -449,7 +558,7 @@ class LocatorRegistry:
 
     def _parse_local_locator(self, raw: str) -> tuple[AgentLocator | None, dict[str, object] | None]:
         match = re.match(
-            r"^(?P<base>local://.+?)/(?P<kind>episode|episodes)/(?P<start>\d+)(?:-(?P<end>\d+))?$",
+            r"^(?P<base>local://.+?)/(?P<kind>episode|episodes)/(?P<start>\d+)(?:-(?P<end>\d+))?(?:/variant/(?P<variant>\d+))?$",
             raw,
         )
         if not match:
@@ -477,6 +586,13 @@ class LocatorRegistry:
         end = int(match.group("end") or start)
         if end < start:
             start, end = end, start
+        variant_index = int(match.group("variant") or 0)
+        if variant_index and (match.group("kind") != "episode" or start != end):
+            return None, {
+                "issue": "local_episode_variant_scope_invalid",
+                "locator": raw,
+                "expected": "local://.../episode/N/variant/K",
+            }
         available_numbers = {num for num, _ref in episode_pairs}
         missing_numbers = [num for num in range(start, end + 1) if num not in available_numbers]
         if missing_numbers:
@@ -487,22 +603,69 @@ class LocatorRegistry:
                 "missing_episode_numbers": missing_numbers[:16],
                 "available_episode_numbers": sorted(available_numbers)[:48],
             }
-        selected_refs = [ref for num, ref in episode_pairs if start <= num <= end]
         label_by_ref = {ref: label for _num, ref, label in _episode_label_triples(base_locator)}
+        if variant_index:
+            variant_pairs = [(num, ref) for num, ref in episode_pairs if int(num) == start]
+            if variant_index > len(variant_pairs):
+                return None, {
+                    "issue": "local_episode_variant_missing",
+                    "locator": raw,
+                    "base_locator": base,
+                    "episode_number": start,
+                    "requested_variant": variant_index,
+                    "available_variants": [
+                        {
+                            "locator": f"{base}/episode/{start}/variant/{index}",
+                            "variant_index": index,
+                            "file_ref": ref,
+                            "label": label_by_ref.get(ref, ref),
+                        }
+                        for index, (_num, ref) in enumerate(variant_pairs, start=1)
+                    ],
+                }
+            selected_refs = [variant_pairs[variant_index - 1][1]]
+        else:
+            selected_refs = [ref for num, ref in episode_pairs if start <= num <= end]
         selected_labels = [label_by_ref.get(ref, ref) for ref in selected_refs]
+        selected_ref_set = set(selected_refs)
+        fact_cards_by_ref = {
+            ref: fact
+            for ref, fact in zip(base_locator.file_refs, base_locator.file_fact_cards)
+        }
+        subtitle_cards_by_ref = {
+            ref: card
+            for ref, card in zip(base_locator.file_refs, base_locator.subtitle_compact_cards)
+        }
+        selected_file_fact_cards = tuple(
+            fact_cards_by_ref[ref]
+            for ref in selected_refs
+            if ref in fact_cards_by_ref
+        )
+        selected_subtitle_cards = tuple(
+            subtitle_cards_by_ref[ref]
+            for ref in selected_refs
+            if ref in subtitle_cards_by_ref
+        )
         locator_kind: Literal["local"] = "local"
         return AgentLocator(
             locator=raw,
             kind=locator_kind,
-            title=f"{base_locator.title} episodes {start}-{end}",
+            title=(
+                f"{base_locator.title} episode {start} variant {variant_index}"
+                if variant_index
+                else f"{base_locator.title} episodes {start}-{end}"
+            ),
             contract_role=base_locator.contract_role,
             file_refs=tuple(selected_refs),
             episode_start=start,
             episode_end=end,
             markers=base_locator.markers,
             representative_labels=tuple(_representative_labels(selected_labels)),
-            episode_file_refs=tuple((num, ref) for num, ref in episode_pairs if start <= num <= end),
-            episode_file_labels=tuple((num, ref, label_by_ref.get(ref, ref)) for num, ref in episode_pairs if start <= num <= end),
+            episode_file_refs=tuple((num, ref) for num, ref in episode_pairs if ref in selected_ref_set),
+            episode_file_labels=tuple((num, ref, label_by_ref.get(ref, ref)) for num, ref in episode_pairs if ref in selected_ref_set),
+            fact_summary=summarize_file_fact_group(list(selected_file_fact_cards)),
+            file_fact_cards=selected_file_fact_cards,
+            subtitle_compact_cards=selected_subtitle_cards,
             debug_refs=tuple(selected_refs),
         ), None
 
@@ -564,6 +727,12 @@ class HumanCaseSession:
     case_resolution_goal_terminal_rejection_count: int = 0
     case_resolution_goal_obvious_terminal_fail_closed_count: int = 0
     case_resolution_goal_missing_strategy_count: int = 0
+    resolution_ledger: ResolutionLedger = field(default_factory=ResolutionLedger)
+    resolution_ledger_revision_count: int = 0
+    resolution_ledger_rejection_count: int = 0
+    resolution_ledger_row_rejection_counts: dict[str, int] = field(default_factory=dict)
+    last_resolution_ledger_rejection_fingerprint: str = ""
+    repeated_resolution_ledger_rejection_count: int = 0
     high_quality_candidate_count_by_turn: list[int] = field(default_factory=list)
     diagnostic_candidate_count_by_turn: list[int] = field(default_factory=list)
     noisy_candidate_count_by_turn: list[int] = field(default_factory=list)
@@ -588,6 +757,7 @@ class SubmitCompileResult:
     feedback: dict[str, object]
     mapped_file_count: int = 0
     excluded_file_count: int = 0
+    manual_review_file_count: int = 0
 
 
 def _strict_schema_for_model(model: type[BaseModel]) -> dict[str, object]:
@@ -634,13 +804,21 @@ def human_case_tool_definitions() -> list[dict[str, object]]:
             "rejected/noisy candidates, evidence gaps, and readiness. Use visible locators only. "
             "Set repair_strategy to the CaseResolutionGoal strategy whose progress you are recording."
         ),
+        "patch_ledger": (
+            "Patch the row-level resolution ledger. Each must_account local locator or exact slice belongs "
+            "to exactly one ledger row. Use status=open, evidence_required, candidate_must_address, mapped, "
+            "manual_review, target_absent, supplemental, or fail_closed. Put visible candidate debt in "
+            "must_address_candidates; every candidate must be discharged by mapping to it, keeping it as a "
+            "manual_review candidate, rejecting it with a concrete contradiction, or fail_closed with a "
+            "blocker. When every row is terminal, the fixed layer compiles the ledger into the final package "
+            "and runs the normal mechanical verifier."
+        ),
         "submit": (
-            "Submit package work-unit decisions. The first submit should try to cover every must_account "
-            "local locator exactly once. After a rejection, mechanically-ok work units are saved by the "
-            "fixed layer, so you may submit only changed, blocked, or missing work units; saved units are "
-            "merged and the full package is re-verified. "
+            "Legacy diagnostic verifier for old work-unit submissions. In the primary runtime, direct submit "
+            "is not a final answer: patch_ledger is the only accepted resolution action, and terminal ledger "
+            "rows are compiled by the fixed layer. "
             "Search results alone are not enough for mapped episode ranges: inspect target subjects with "
-            "episodes/details/related before submit. Prefer dry_run=false for final answers. "
+            "episodes/details/related before any mapped terminal ledger row. "
             "Set repair_strategy to repair_single/repair_cluster/repartition/revise_saved_rows for repairs, "
             "or terminal_fail_closed only when the terminal fail_closed contract is satisfied. "
             "The fixed layer performs only schema, locator, coverage, duplicate-target, and accounting checks."
@@ -967,15 +1145,39 @@ def _episode_pairs_for_group(refs: list[str], local_by_ref: dict[str, object]) -
     return tuple(ref_pairs), tuple(label_pairs)
 
 
-def _episode_locator_hints(locator: str, episode_pairs: tuple[tuple[int, str], ...]) -> dict[str, object]:
+def _episode_locator_hints(
+    locator: str,
+    episode_pairs: tuple[tuple[int, str], ...],
+    *,
+    episode_labels: dict[str, str] | None = None,
+) -> dict[str, object]:
     numbers = sorted({int(num) for num, _ref in episode_pairs})
     if not numbers:
         return {}
     episode_counts = Counter(int(num) for num, _ref in episode_pairs)
+    refs_by_number: dict[int, list[str]] = defaultdict(list)
+    for num, ref in episode_pairs:
+        refs_by_number[int(num)].append(str(ref))
+    duplicate_variants: list[dict[str, object]] = []
+    for num in numbers:
+        refs = refs_by_number.get(num, [])
+        if len(refs) <= 1:
+            continue
+        for index, ref in enumerate(refs, start=1):
+            duplicate_variants.append(
+                {
+                    "locator": f"{locator}/episode/{num}/variant/{index}",
+                    "episode_number": num,
+                    "variant_index": index,
+                    "file_ref": ref,
+                    "label": (episode_labels or {}).get(ref, ref),
+                }
+            )
     hints: dict[str, object] = {
         "episode_locator_syntax": {
             "single": f"{locator}/episode/{numbers[0]}",
             "range": f"{locator}/episodes/{numbers[0]}-{numbers[-1]}",
+            "variant": f"{locator}/episode/{numbers[0]}/variant/1",
         },
         "available_episode_numbers": numbers[:64],
         "episode_locators": [
@@ -987,6 +1189,8 @@ def _episode_locator_hints(locator: str, episode_pairs: tuple[tuple[int, str], .
             for num in numbers[:16]
         ],
     }
+    if duplicate_variants:
+        hints["duplicate_episode_variant_locators"] = duplicate_variants[:24]
     if 0 in numbers and any(num > 0 for num in numbers):
         positive = [num for num in numbers if num > 0]
         hints["common_split_examples"] = [
@@ -1065,6 +1269,38 @@ def _work_unit_query_hints(title: str, representative_labels: list[str], *, limi
         if len(hints) >= limit:
             break
     return hints[:limit]
+
+
+def _subtitle_compact_card(file_fact: LocalFileCard | dict[str, object] | None) -> dict[str, object]:
+    data = compact_file_fact_for_card(
+        file_fact.model_dump(mode="json") if hasattr(file_fact, "model_dump") else file_fact,
+        detail=True,
+    )
+    if not data:
+        return {}
+    raw = file_fact.model_dump(mode="json") if hasattr(file_fact, "model_dump") else (dict(file_fact) if isinstance(file_fact, dict) else {})
+    subtitle = raw.get("subtitle_compact_facts") if isinstance(raw.get("subtitle_compact_facts"), dict) else {}
+    if not subtitle:
+        subtitle = data.get("subtitle_facts") if isinstance(data.get("subtitle_facts"), dict) else {}
+    snippets = [
+        dict(item)
+        for item in list(subtitle.get("bounded_text_snippets") or [])
+        if isinstance(item, dict) and str(item.get("text") or "").strip()
+    ][:3]
+    if not snippets:
+        return {}
+    return {
+        "file_id": data.get("file_id", ""),
+        "relative_path": data.get("relative_path", ""),
+        "language_markers": list(subtitle.get("language_markers") or [])[:8],
+        "external_subtitle_refs": list(subtitle.get("external_subtitle_refs") or [])[:4],
+        "bounded_text_snippets": snippets,
+        "compact_policy": {
+            "on_demand_only": True,
+            "snippet_count_limit": 3,
+            "snippet_text_limit": 120,
+        },
+    }
 
 
 def _recommended_search_queries(local_locators: list[dict[str, object]], title_cues: list[str], *, limit: int = 24) -> list[str]:
@@ -1152,6 +1388,25 @@ def build_human_case_desk(workspace: CaseEvidenceWorkspace) -> tuple[dict[str, o
             suffix = "main-episodes" if index == 1 or len(grouped) == 1 else f"{series_slug}-episodes"
         markers = list(dict.fromkeys(marker for path in paths for marker in _markers(_basename(path))))[:12]
         episode_file_refs, episode_file_labels = _episode_pairs_for_group(refs, local_by_ref)
+        file_fact_cards = tuple(
+            fact
+            for fact in (
+                compact_file_fact_for_card(local_by_ref[ref].model_dump(mode="json"), detail=False)
+                for ref in refs
+                if ref in local_by_ref and hasattr(local_by_ref[ref], "model_dump")
+            )
+            if fact
+        )
+        subtitle_compact_cards = tuple(
+            card
+            for card in (
+                _subtitle_compact_card(local_by_ref.get(ref))
+                for ref in refs
+                if ref in local_by_ref
+            )
+            if card
+        )
+        fact_summary = summarize_file_fact_group(list(file_fact_cards))
         readable_locator = f"local://{root_slug}/{suffix}"
         alias_locators: list[str] = []
         locator = readable_locator
@@ -1171,6 +1426,9 @@ def build_human_case_desk(workspace: CaseEvidenceWorkspace) -> tuple[dict[str, o
             representative_labels=tuple(_representative_labels(paths)),
             episode_file_refs=episode_file_refs,
             episode_file_labels=episode_file_labels,
+            fact_summary=fact_summary,
+            file_fact_cards=file_fact_cards,
+            subtitle_compact_cards=subtitle_compact_cards,
             debug_refs=tuple(refs),
         )
         registry.add(entry)
@@ -1185,9 +1443,14 @@ def build_human_case_desk(workspace: CaseEvidenceWorkspace) -> tuple[dict[str, o
             "episode_range": _range_summary(paths),
             "markers": markers,
             "representative_labels": list(entry.representative_labels),
+            "fact_summary": fact_summary,
             "search_query_hints": _work_unit_query_hints(entry.title, list(entry.representative_labels), limit=12),
         }
-        local_entry.update(_episode_locator_hints(locator, episode_file_refs))
+        local_entry.update(_episode_locator_hints(
+            locator,
+            episode_file_refs,
+            episode_labels={ref: label for _num, ref, label in episode_file_labels},
+        ))
         local_locators.append(local_entry)
 
     filtered_audits = [
@@ -1236,16 +1499,31 @@ def build_human_case_desk(workspace: CaseEvidenceWorkspace) -> tuple[dict[str, o
         "resolution_contract": {
             "must_account_locator_count": len(local_locators),
             "support_only_locator_count": len(support_locators),
-            "coverage_rule": "Every must_account local locator must appear exactly once in submit.work_units[].local.",
+            "coverage_rule": "Every must_account local locator or exact local slice must appear in exactly one resolution ledger row.",
             "coverage_note": "Locators are selectable file surfaces and may overlap; the verifier checks exact-once file coverage, not semantic correctness.",
             "support_rule": "support_only locators may appear in support but do not require an outcome.",
+            "local_fact_rule": (
+                "Use inspect with scope including facts when duration, stream files, or missing local evidence "
+                "could affect the semantic decision. Use subtitle_compact only on low-confidence local "
+                "locators/groups that need subtitle anchors; do not request subtitles package-wide."
+            ),
         },
         "local_locators": local_locators,
         "support_only_locators": support_locators,
         "possible_title_cues": title_cues[:16],
         "recommended_search_queries": recommended_search_queries,
         "tool_guide": {
-            "tools": ["inspect", "search", "note", "submit"],
+            "tools": ["inspect", "search", "note", "patch_ledger", "submit"],
+            "ledger_statuses": [
+                "open",
+                "evidence_required",
+                "candidate_must_address",
+                "mapped",
+                "manual_review",
+                "target_absent",
+                "supplemental",
+                "fail_closed",
+            ],
             "submit_outcomes": [
                 "mapped_regular_span",
                 "mapped_explicit_item",
@@ -1253,6 +1531,7 @@ def build_human_case_desk(workspace: CaseEvidenceWorkspace) -> tuple[dict[str, o
                 "bangumi_target_absent",
                 "supplemental",
                 "non_bangumi",
+                "manual_review",
                 "fail_closed",
             ],
         },
@@ -1526,8 +1805,6 @@ def _is_allowed_related_relation(value: object) -> bool:
 def _is_allowed_related_subject(relation: object, related_detail: object | None = None) -> bool:
     if int(getattr(relation, "type", 0) or 0) != 2:
         return False
-    if not _is_allowed_related_relation(getattr(relation, "relation", "")):
-        return False
     if related_detail is not None and int(getattr(related_detail, "type", 2) or 2) != 2:
         return False
     return True
@@ -1545,8 +1822,6 @@ def _relation_quality_for_subject(subject: BangumiSubjectCard) -> Literal[
     related = bool(relation_to_main or relation_path_refs or source_role.startswith("related_"))
     if not related:
         return "direct"
-    if relation_to_main and not _is_allowed_related_relation(relation_to_main):
-        return "disallowed_related"
     if relation_to_main and _is_allowed_related_relation(relation_to_main):
         return "owner_relevant_related"
     return "weak_related"
@@ -1584,6 +1859,9 @@ def _subject_with_search_query_provenance(
     matched_query: str,
     rank: int,
 ) -> BangumiSubjectCard:
+    current_rank = int(getattr(subject, "search_rank", 0) or 0)
+    if current_rank and rank > current_rank:
+        return subject
     parts = _search_query_ref_parts(getattr(subject, "search_query_ref", ""))
     for item in (query, matched_query):
         text = str(item or "").strip()
@@ -1591,7 +1869,6 @@ def _subject_with_search_query_provenance(
             parts.append(text)
     if not parts:
         return subject
-    current_rank = int(getattr(subject, "search_rank", 0) or 0)
     next_rank = current_rank if current_rank and current_rank <= rank else rank
     return subject.model_copy(update={"search_query_ref": " | ".join(parts), "search_rank": next_rank})
 
@@ -1845,7 +2122,21 @@ def _inspect_local(locator: AgentLocator, scope: set[str]) -> dict[str, object]:
         "episode_range": episode_range,
         "files": list(locator.representative_labels) if "files" in scope or "samples" in scope else list(locator.representative_labels[:6]),
     }
-    result.update(_episode_locator_hints(locator.locator, locator.episode_file_refs))
+    if locator.fact_summary:
+        result["fact_summary"] = dict(locator.fact_summary)
+    if locator.file_fact_cards and scope.intersection({"facts", "details"}):
+        result["local_fact_cards"] = list(locator.file_fact_cards[:12])
+    if locator.subtitle_compact_cards and scope.intersection({"subtitle_compact", "subtitles"}):
+        result["subtitle_compact_cards"] = list(locator.subtitle_compact_cards[:8])
+        result["subtitle_compact_note"] = (
+            "On-demand subtitle compact only; use as supporting evidence for low-confidence "
+            "non-main ownership checks, not as a standalone mapping decision."
+        )
+    result.update(_episode_locator_hints(
+        locator.locator,
+        locator.episode_file_refs,
+        episode_labels={ref: label for _num, ref, label in _episode_label_triples(locator)},
+    ))
     return result
 
 
@@ -2645,9 +2936,6 @@ def _inspect_target(
             if int(getattr(relation, "type", 0) or 0) != 2:
                 skipped_related_counts["non_anime_type"] += 1
                 continue
-            if not _is_allowed_related_relation(relation_name):
-                skipped_related_counts["disallowed_relation"] += 1
-                continue
             ref = _next_ref("BS", [*[card.ref for card in workspace.bangumi_subjects], *[card.ref for card in subjects]])
             try:
                 related_detail = getattr(bangumi_client, "get_subject")(rid)
@@ -2949,11 +3237,36 @@ def _locators_from_repair_row(row: dict[str, object]) -> set[str]:
     result: set[str] = set()
     for key in ("local", "target", "locator"):
         value = row.get(key)
+        if key == "local":
+            result.update(_repair_local_values(value))
+            continue
         if isinstance(value, list):
             result.update(str(item) for item in value if str(item).strip())
         elif str(value or "").strip():
             result.add(str(value).strip())
     return result
+
+
+_SYNTHETIC_LOCAL_LOCATOR_PREFIX_RE = re.compile(
+    r"(?i)^local://(?:ledger|repair|validation|coverage)(?:[-_/]|$)"
+)
+
+
+def _is_patchable_local_locator_text(value: object) -> bool:
+    text = str(value or "").strip()
+    return bool(text.startswith("local://") and not _SYNTHETIC_LOCAL_LOCATOR_PREFIX_RE.search(text))
+
+
+def _repair_local_values(value: object) -> list[str]:
+    items = value if isinstance(value, list) else [value]
+    values: list[str] = []
+    for item in list(items or []):
+        text = str(item or "").strip()
+        if not text or not _is_patchable_local_locator_text(text):
+            continue
+        if text not in values:
+            values.append(text)
+    return values
 
 
 def _primary_issue_code(row: dict[str, object]) -> str:
@@ -2975,6 +3288,26 @@ def _repair_row_label(row: dict[str, object]) -> str:
 
 def _repair_required_next_action(row: dict[str, object]) -> str:
     issue_code = _primary_issue_code(row)
+    if row.get("terminal_repair_required"):
+        issue_codes = set(_issue_codes_from_value(row.get("issue") or row.get("issue_codes") or row.get("issues")))
+        if {
+            "ledger_strong_candidate_manual_review_requires_contradiction",
+            "ledger_candidate_manual_review_discharge_missing_target",
+            "ledger_candidate_debt_open",
+        }.intersection(issue_codes):
+            return (
+                "Patch this exact ledger row from the visible suggested mapped row, or use manual_review/fail_closed "
+                "only with the suggested target named and a concrete post-upgrade contradiction or blocker."
+            )
+        if "ledger_coverage_overlap" in issue_codes:
+            return (
+                "Replace the overlapping parent/child rows with exact non-overlapping rows; use the listed "
+                "multi_version_submit_shape when present."
+            )
+        return (
+            "Patch this exact ledger row to a terminal status that passes mechanics: valid mapped, "
+            "candidate-bearing manual_review, supplemental, target_absent, or fail_closed."
+        )
     if row.get("split_first_repair") or row.get("local_slice_mapping_options"):
         return "Resolve the parent locator at visible local slice granularity, or fail_closed the exact unresolved slice."
     if row.get("target_surface_repairs") or row.get("visible_alternate_subjects") or row.get("target_surface_visible"):
@@ -2989,13 +3322,59 @@ def _repair_required_next_action(row: dict[str, object]) -> str:
         return "Change one conflicting unit's target/outcome, or fail_closed the exact unresolved conflicting unit."
     if issue_code in {"coverage_missing", "count_mismatch", "composite_feature_shape_invalid"}:
         return "Change local granularity, target range, outcome, or fail_closed the exact unresolved local locator."
-    if issue_code in {"mapped_title_season_mismatch", "mapped_target_title_bridge_missing"}:
+    if issue_code == "fail_closed_with_visible_slice_pairing":
+        return (
+            "Use the visible local slice locators and target pairing options if semantically correct; "
+            "if the slice ownership remains localized uncertainty, submit manual_review for the exact slices "
+            "instead of fail_closed so the rest of the package can pass."
+        )
+    if issue_code == "fail_closed_title_tail_bridge_uninspected":
+        return (
+            "Inspect/search the listed title-tail bridge if it is still useful; if budget is near the cap "
+            "and this is localized uncertainty, submit manual_review for the exact local locator instead of fail_closed."
+        )
+    if issue_code == "numbered_special_exclusion_needs_target_evidence":
+        return "If the numbered SP ownership remains ambiguous after visible related/same-series evidence, submit manual_review for this local SP group."
+    if issue_code == "mapped_numbered_special_related_count_needs_stronger_evidence":
+        return (
+            "Use evidence_upgrade_options to inspect local duration/subtitle_compact anchors, then cite stronger "
+            "local/title evidence for this related same-count SP mapping or submit manual_review if it remains ambiguous."
+        )
+    if issue_code == "manual_review_evidence_upgrade_required":
+        return (
+            "Inspect evidence_upgrade_options local duration/subtitle_compact anchors before using manual_review; "
+            "manual_review is the fallback after the upgrade attempt, not a way to skip it."
+        )
+    if issue_code == "manual_review_strong_non_regular_mapping_should_revise":
+        return (
+            "Use revise_saved_rows to replace the saved manual_review placeholder with the suggested mapped "
+            "numbered-special rows, unless you can name a concrete post-upgrade contradiction."
+        )
+    if issue_code == "manual_review_visible_slice_pairing_should_split":
+        return (
+            "Split the broad parent manual_review into exact local episode slices and resolve each visible title "
+            "pairing independently."
+        )
+    if issue_code == "manual_review_duplicate_variant_should_split":
+        return (
+            "Split the duplicated local number with local://.../episode/N/variant/K and submit each same-episode "
+            "variant as a separate multi-version mapping when target ownership is closed; if ownership remains "
+            "ambiguous, submit exact non-overlapping manual_review locators."
+        )
+    if issue_code in {
+        "mapped_title_season_mismatch",
+        "mapped_target_title_bridge_missing",
+        "mapped_singleton_broad_title_bridge_missing",
+        "mapped_numbered_special_related_count_needs_stronger_evidence",
+    }:
         return "Choose a visible target with adequate title/season support, inspect/search more evidence, or fail_closed this locator."
     return "Change the cited locator/range/support/outcome, inspect/search needed facts, or fail_closed this exact work unit."
 
 
 def _repair_closure_condition(row: dict[str, object]) -> str:
     issue_code = _primary_issue_code(row)
+    if row.get("terminal_repair_required"):
+        return "Closed when this exact ledger row is terminal and no longer repeats the listed mechanical issue."
     if row.get("split_first_repair") or row.get("local_slice_mapping_options"):
         return "Closed when every intended local slice is submitted exactly once, or unresolved slices are fail_closed explicitly."
     if row.get("target_surface_repairs") or row.get("visible_alternate_subjects") or row.get("target_surface_visible"):
@@ -3008,7 +3387,33 @@ def _repair_closure_condition(row: dict[str, object]) -> str:
         return "Closed when the merged package has no duplicate target items for these work units."
     if issue_code in {"coverage_missing", "count_mismatch", "composite_feature_shape_invalid"}:
         return "Closed when coverage/count/shape checks pass for this work unit, or the exact unit is fail_closed with a blocker."
-    if issue_code in {"mapped_title_season_mismatch", "mapped_target_title_bridge_missing"}:
+    if issue_code in {
+        "numbered_special_exclusion_needs_target_evidence",
+        "mapped_numbered_special_related_count_needs_stronger_evidence",
+        "manual_review_evidence_upgrade_required",
+        "manual_review_strong_non_regular_mapping_should_revise",
+    }:
+        return (
+            "Closed when AI-owned upgraded local evidence supports the numbered SP mapping, or when the exact "
+            "locator is submitted as manual_review/fail_closed with the remaining ambiguity."
+        )
+    if issue_code == "manual_review_visible_slice_pairing_should_split":
+        return (
+            "Closed when the parent locator is resolved through exact local episode slices, either mapped or "
+            "manual_review only for the exact unresolved slice."
+        )
+    if issue_code == "manual_review_duplicate_variant_should_split":
+        return (
+            "Closed when the duplicate variant local files are split and accepted as multi-version mappings to one "
+            "target item, or when exact non-overlapping locators are submitted as manual_review for unresolved "
+            "target ownership."
+        )
+    if issue_code in {
+        "mapped_title_season_mismatch",
+        "mapped_target_title_bridge_missing",
+        "mapped_singleton_broad_title_bridge_missing",
+        "mapped_numbered_special_related_count_needs_stronger_evidence",
+    }:
         return "Closed when target title/season provenance is adequate for the submitted outcome, or the unit is fail_closed."
     return "Closed when this issue no longer appears in submit feedback, or the exact work unit is fail_closed with a blocker."
 
@@ -3060,11 +3465,17 @@ def _repair_agenda_rows(agenda: dict[str, object]) -> list[dict[str, object]]:
             for key in (
                 "local_slice_mapping_options",
                 "local_target_title_pairing_options",
+                "suggested_submit_shape",
+                "strong_mapping_candidates",
                 "candidate_local_locators",
                 "candidate_target_locators",
                 "single_file_target_item_options",
                 "visible_alternate_subjects",
                 "search_queries_to_try",
+                "manual_review_candidate_submit_shape",
+                "terminal_repair_required",
+                "terminal_repair_options",
+                "do_not_retry_targets_without_new_evidence",
             )
             if row.get(key)
         }
@@ -3422,6 +3833,124 @@ def _file_refs_for_locators(
     return refs, issues, canonical
 
 
+def _candidate_local_locators_for_file_refs(
+    registry: LocatorRegistry,
+    file_refs: list[str],
+    *,
+    limit: int = 12,
+) -> list[dict[str, object]]:
+    missing_refs = {str(ref) for ref in list(file_refs or []) if str(ref).strip()}
+    if not missing_refs:
+        return []
+    candidates: list[dict[str, object]] = []
+    seen_locator_texts: set[str] = set()
+
+    def add_candidate(locator: AgentLocator, overlap: set[str], extra_refs: set[str], *, locator_text: str | None = None) -> None:
+        text = str(locator_text or locator.locator or "").strip()
+        if not text or text in seen_locator_texts:
+            return
+        seen_locator_texts.add(text)
+        candidates.append(
+            {
+                "locator": text,
+                "title": locator.title,
+                "file_refs": sorted(overlap),
+                "covered_ref_count": len(overlap),
+                "extra_ref_count": len(extra_refs),
+                "exact_missing_subset": not extra_refs,
+                "representative_labels": list(locator.representative_labels[:3]),
+            }
+        )
+
+    for locator in registry.locators.values():
+        if locator.kind != "local":
+            continue
+        locator_refs = {str(ref) for ref in list(locator.file_refs or []) if str(ref).strip()}
+        overlap = locator_refs.intersection(missing_refs)
+        if not overlap:
+            continue
+        extra_refs = locator_refs.difference(missing_refs)
+        add_candidate(locator, overlap, extra_refs)
+        if not locator.episode_file_refs:
+            continue
+        refs_by_number: dict[int, list[str]] = defaultdict(list)
+        for number, ref in locator.episode_file_refs:
+            refs_by_number[int(number)].append(str(ref))
+        labels_by_ref = {ref: label for _num, ref, label in _episode_label_triples(locator)}
+        full_missing_numbers: list[int] = []
+        for number, refs in refs_by_number.items():
+            ref_set = set(refs)
+            missing_for_number = ref_set.intersection(missing_refs)
+            if not missing_for_number:
+                continue
+            if missing_for_number == ref_set:
+                full_missing_numbers.append(number)
+                continue
+            for variant_index, ref in enumerate(refs, start=1):
+                if ref not in missing_refs:
+                    continue
+                add_candidate(
+                    AgentLocator(
+                        locator=f"{locator.locator}/episode/{number}/variant/{variant_index}",
+                        kind="local",
+                        title=f"{locator.title} episode {number} variant {variant_index}",
+                        contract_role=locator.contract_role,
+                        file_refs=(ref,),
+                        representative_labels=(labels_by_ref.get(ref, ref),),
+                    ),
+                    {ref},
+                    set(),
+                )
+        for start, end in _episode_ranges_excluding_numbers(full_missing_numbers, set()):
+            if start == end:
+                dynamic_locator = f"{locator.locator}/episode/{start}"
+            else:
+                dynamic_locator = f"{locator.locator}/episodes/{start}-{end}"
+            dynamic_refs = {
+                ref
+                for number, refs in refs_by_number.items()
+                if start <= int(number) <= end
+                for ref in refs
+                if ref in missing_refs
+            }
+            if not dynamic_refs:
+                continue
+            add_candidate(
+                AgentLocator(
+                    locator=dynamic_locator,
+                    kind="local",
+                    title=f"{locator.title} episodes {start}-{end}",
+                    contract_role=locator.contract_role,
+                    file_refs=tuple(sorted(dynamic_refs)),
+                    representative_labels=tuple(
+                        _representative_labels([labels_by_ref.get(ref, ref) for ref in sorted(dynamic_refs)])
+                    ),
+                ),
+                dynamic_refs,
+                set(),
+            )
+    candidates.sort(
+        key=lambda item: (
+            0 if item.get("exact_missing_subset") else 1,
+            -str(item.get("locator") or "").count("/"),
+            -int(item.get("covered_ref_count") or 0),
+            int(item.get("extra_ref_count") or 0),
+            str(item.get("locator") or ""),
+        )
+    )
+    selected: list[dict[str, object]] = []
+    covered: set[str] = set()
+    for candidate in candidates:
+        candidate_refs = {str(ref) for ref in list(candidate.get("file_refs") or [])}
+        if not candidate_refs.difference(covered):
+            continue
+        selected.append(candidate)
+        covered.update(candidate_refs)
+        if len(selected) >= limit or missing_refs.issubset(covered):
+            break
+    return selected[:limit]
+
+
 def _normalized_locator_match_text(value: str) -> str:
     text = str(value or "").casefold()
     text = re.sub(r"\.[a-z0-9]{1,6}$", " ", text)
@@ -3604,6 +4133,2693 @@ def _validate_support_locators(
             continue
         canonical.append(locator.locator)
     return issues, canonical
+
+
+def _validate_manual_review_candidate_targets(
+    registry: LocatorRegistry,
+    unit: ResolutionWorkUnit,
+) -> tuple[list[dict[str, object]], list[str]]:
+    raw_targets = [
+        str(item).strip()
+        for item in [unit.target, *list(unit.manual_review_candidate_targets or [])]
+        if str(item).strip()
+    ]
+    issues: list[dict[str, object]] = []
+    canonical: list[str] = []
+    seen: set[str] = set()
+    for raw in raw_targets:
+        locator, issue = registry.resolve(raw)
+        if issue:
+            candidates = _candidate_target_locators_for_raw_text(registry, raw)
+            if candidates:
+                issue = {**issue, "candidate_target_locators": candidates}
+            issues.append(
+                {
+                    **issue,
+                    "issue": str(issue.get("issue") or "manual_review_candidate_target_invalid"),
+                    "review_hint_only": True,
+                    "required": (
+                        "manual_review_candidate_targets may cite only visible target:// locators. "
+                        "They are review hints only and do not create accepted mappings."
+                    ),
+                }
+            )
+            continue
+        if locator is None:
+            issues.append(
+                {
+                    "issue": "locator_not_found",
+                    "locator": raw,
+                    "review_hint_only": True,
+                    "required": "manual_review_candidate_targets may cite only visible target:// locators.",
+                }
+            )
+            continue
+        if locator.kind not in {"target_subject", "target_episode", "target_span"}:
+            issues.append(
+                {
+                    "issue": "manual_review_candidate_target_not_target",
+                    "locator": locator.locator,
+                    "kind": locator.kind,
+                    "review_hint_only": True,
+                    "required": "manual_review_candidate_targets must be target:// locators, not local/support locators.",
+                }
+            )
+            continue
+        key = locator.locator.casefold()
+        if key in seen:
+            continue
+        seen.add(key)
+        canonical.append(locator.locator)
+    return issues, canonical
+
+
+def _initial_resolution_ledger_from_desk(desk: dict[str, object]) -> ResolutionLedger:
+    rows: list[ResolutionLedgerRow] = []
+    for index, row in enumerate(list(desk.get("local_locators") or []), start=1):
+        if not isinstance(row, dict):
+            continue
+        locator = str(row.get("locator") or "").strip()
+        if not locator:
+            continue
+        rows.append(ResolutionLedgerRow(row_id=f"LR{index}", local=[locator], status="open"))
+    return ResolutionLedger(rows=rows, version=1, summary="initialized from must_account local locators")
+
+
+def _compact_resolution_ledger(ledger: ResolutionLedger) -> dict[str, object]:
+    rows: list[dict[str, object]] = []
+    status_counts: dict[str, int] = {}
+    for row in list(ledger.rows or []):
+        status = str(row.status or "open")
+        status_counts[status] = status_counts.get(status, 0) + 1
+        candidates = [
+            {
+                key: value
+                for key, value in candidate.model_dump(mode="json").items()
+                if value not in ("", [], "open")
+            }
+            for candidate in list(row.must_address_candidates or [])
+        ]
+        rows.append(
+            {
+                "row_id": row.row_id,
+                "local": list(row.local or []),
+                "status": status,
+                "target": row.target,
+                "manual_review_candidate_targets": list(row.manual_review_candidate_targets or []),
+                "must_address_candidates": candidates,
+                "confidence": row.confidence,
+                "reason": row.reason,
+                "open_questions": list(row.open_questions or []),
+            }
+        )
+    return {
+        "version": int(ledger.version or 0),
+        "row_count": len(rows),
+        "status_counts": status_counts,
+        "rows": rows,
+        "summary": ledger.summary,
+    }
+
+
+def _case_resolution_ledger_from_human_ledger(ledger: ResolutionLedger) -> CaseResolutionLedger:
+    rows: list[CaseResolutionLedgerRow] = []
+    for index, row in enumerate(list(ledger.rows or []), start=1):
+        rows.append(
+            CaseResolutionLedgerRow(
+                ledger_row_ref=row.row_id or f"LR{index}",
+                local_ref=(row.local or [""])[0],
+                local_refs=list(row.local or []),
+                outcome=row.status,
+                target_refs=[row.target] if row.target else list(row.manual_review_candidate_targets or []),
+                support_refs=list(row.support or []),
+                reason=row.reason,
+                confidence=row.confidence if row.confidence in {"high", "medium", "low"} else "unknown",
+            )
+        )
+    return CaseResolutionLedger(
+        ledger_ref="HCRL1",
+        rows=rows,
+        summary=ledger.summary,
+        version=int(ledger.version or 0),
+    )
+
+
+def _ledger_candidate_matches_target(candidate_target: str, row_target: str) -> bool:
+    candidate = str(candidate_target or "").strip().casefold()
+    target = str(row_target or "").strip().casefold()
+    if not candidate or not target:
+        return False
+    if candidate == target:
+        return True
+    return candidate.startswith(target + "/") or target.startswith(candidate + "/")
+
+
+def _canonical_target_locator_for_ledger(
+    registry: LocatorRegistry,
+    raw: str,
+) -> tuple[str, dict[str, object] | None]:
+    locator, issue = registry.resolve(raw)
+    if issue:
+        candidates = _candidate_target_locators_for_raw_text(registry, raw)
+        if candidates:
+            issue = {**issue, "candidate_target_locators": candidates}
+        return "", issue
+    if locator is None or locator.kind not in {"target_subject", "target_episode", "target_span"}:
+        return "", {
+            "issue": "ledger_target_not_target_locator",
+            "target": raw,
+            "actual_kind": getattr(locator, "kind", "") if locator is not None else "",
+            "required": "ledger target and candidate targets must be visible target:// locators.",
+        }
+    canonical_subject = registry.subject_locator_by_id.get(int(locator.subject_id or 0))
+    if canonical_subject:
+        if locator.kind == "target_subject":
+            return canonical_subject, None
+        start = int(locator.episode_start or 0)
+        end = int(locator.episode_end or start or 0)
+        if start > 0:
+            if locator.kind == "target_episode" and end == start:
+                return f"{canonical_subject}/episode/{start}", None
+            if end > 0:
+                suffix = f"{start}-{end}" if end != start else str(start)
+                return f"{canonical_subject}/episodes/{suffix}", None
+    return locator.locator, None
+
+
+def _candidate_debt_requires_concrete_resolution(candidate: ResolutionLedgerCandidateDebt) -> bool:
+    source_text = " ".join(
+        str(item or "")
+        for item in (
+            candidate.source,
+            candidate.blocker,
+            candidate.reason,
+        )
+    )
+    return any(code in source_text for code in STRONG_MAPPING_CANDIDATE_DEBT_SOURCES)
+
+
+def _ledger_issue_prefers_mapped_candidate_resolution(issue_code: str, issue: dict[str, object]) -> bool:
+    if issue_code in {
+        "ledger_strong_candidate_manual_review_requires_contradiction",
+        "ledger_strong_candidate_rejected_requires_contradiction",
+    }:
+        return True
+    source_text = str(issue.get("candidate_source") or "")
+    if not source_text:
+        source_text = " ".join(
+            str(item.get("source") or "")
+            for item in list(issue.get("candidate_target_locators") or [])
+            if isinstance(item, dict)
+        )
+    return bool(
+        issue_code in {
+            "ledger_candidate_debt_open",
+            "ledger_candidate_manual_review_discharge_missing_target",
+        }
+        and any(code in source_text for code in STRONG_MAPPING_CANDIDATE_DEBT_SOURCES)
+    )
+
+
+def _candidate_debt_has_manual_review_contradiction(
+    row: ResolutionLedgerRow,
+    *,
+    target: str,
+    target_subject: str,
+) -> bool:
+    row_payload = {
+        "manual_review_candidate_targets": list(row.manual_review_candidate_targets or []),
+        "explicit_review_candidate_targets": list(row.manual_review_candidate_targets or []),
+        "reason": row.reason,
+        "open_questions": list(row.open_questions or []),
+    }
+    return _manual_review_candidate_has_post_upgrade_contradiction(
+        row_payload,
+        target=target,
+        target_subject=target_subject,
+    )
+
+
+def _candidate_debt_rejection_has_concrete_contradiction(
+    candidate: ResolutionLedgerCandidateDebt,
+) -> bool:
+    text = " ".join(
+        str(value or "")
+        for value in [
+            candidate.contradiction,
+            candidate.blocker,
+            candidate.reason,
+        ]
+    ).casefold()
+    if not text:
+        return False
+    if any(
+        marker in text
+        for marker in (
+            "without a concrete contradiction",
+            "without concrete contradiction",
+            "no concrete contradiction",
+            "not a contradiction",
+            "not forced",
+            "over-forced",
+            "forced regular",
+        )
+    ):
+        return False
+    return any(
+        term in text
+        for term in (
+            "mismatch",
+            "contradict",
+            "different target",
+            "different subject",
+            "different title",
+            "duration differs",
+            "duration mismatch",
+            "runtime differs",
+            "runtime mismatch",
+            "title mismatch",
+            "episode title mismatch",
+            "count mismatch",
+            "target count mismatch",
+            "same-count competitor",
+            "not the same episode",
+        )
+    )
+
+
+def _ledger_row_candidate_debt_issues(
+    registry: LocatorRegistry,
+    row: ResolutionLedgerRow,
+) -> list[dict[str, object]]:
+    issues: list[dict[str, object]] = []
+    review_targets = {
+        str(target or "").strip().casefold()
+        for target in list(row.manual_review_candidate_targets or [])
+        if str(target or "").strip()
+    }
+    row_target = str(row.target or "").strip()
+    for index, candidate in enumerate(list(row.must_address_candidates or []), start=1):
+        target = str(candidate.target or "").strip()
+        if not target:
+            issues.append(
+                {
+                    "issue": "ledger_candidate_target_required",
+                    "row_id": row.row_id,
+                    "candidate_index": index,
+                    "required": "Each must_address_candidate must name one visible target:// locator.",
+                }
+            )
+            continue
+        canonical_target, target_issue = _canonical_target_locator_for_ledger(registry, target)
+        if target_issue:
+            issues.append(
+                {
+                    **target_issue,
+                    "issue": str(target_issue.get("issue") or "ledger_candidate_target_invalid"),
+                    "row_id": row.row_id,
+                    "candidate_index": index,
+                }
+            )
+            continue
+        discharge = str(candidate.discharge or "open")
+        mapped_discharge = row.status == "mapped" and _ledger_candidate_matches_target(canonical_target, row_target)
+        manual_review_discharge = row.status == "manual_review" and any(
+            _ledger_candidate_matches_target(canonical_target, review_target)
+            for review_target in review_targets
+        )
+        requires_concrete_resolution = _candidate_debt_requires_concrete_resolution(candidate)
+        low_confidence_review_hint = (
+            not requires_concrete_resolution
+            and "manual_review_candidate_submit_shape" in str(candidate.source or "")
+        )
+        if row.status == "mapped" and low_confidence_review_hint and not _ledger_candidate_matches_target(canonical_target, row_target):
+            continue
+        target_subject = _target_subject_locator_text(canonical_target)
+        manual_review_contradiction_discharge = bool(
+            manual_review_discharge
+            and _candidate_debt_has_manual_review_contradiction(
+                row,
+                target=canonical_target,
+                target_subject=target_subject,
+            )
+        )
+        rejected_discharge = discharge == "rejected" and bool(str(candidate.contradiction or "").strip())
+        fail_closed_discharge = (
+            row.status == "fail_closed"
+            and discharge == "fail_closed"
+            and bool(str(candidate.blocker or candidate.reason or row.reason or "").strip())
+        )
+        if mapped_discharge:
+            continue
+        if discharge == "mapped" and not mapped_discharge:
+            issues.append(
+                {
+                    "issue": "ledger_candidate_mapped_discharge_mismatch",
+                    "row_id": row.row_id,
+                    "candidate_target": canonical_target,
+                    "row_status": row.status,
+                    "row_target": row.target,
+                    "required": "candidate discharge=mapped requires the row to map to that candidate target.",
+                }
+            )
+            continue
+        if discharge == "manual_review" and not manual_review_discharge:
+            support_locators = _repair_local_values(list(candidate.support or [])) or list(row.local or [])
+            suggested_reason = (
+                "Map this strong candidate debt, or keep manual_review only with a concrete post-upgrade contradiction."
+                if requires_concrete_resolution
+                else candidate.reason
+                or "Map this candidate debt, or keep manual_review only with a concrete reason."
+            )
+            issues.append(
+                {
+                    "issue": "ledger_candidate_manual_review_discharge_missing_target",
+                    "row_id": row.row_id,
+                    "candidate_target": canonical_target,
+                    "candidate_source": candidate.source,
+                    "manual_review_candidate_targets": list(row.manual_review_candidate_targets or []),
+                    "candidate_target_locators": [
+                        {
+                            "target": canonical_target,
+                            "source": candidate.source,
+                            "support": list(candidate.support or []),
+                            "reason": candidate.reason,
+                        }
+                    ],
+                    "suggested_submit_shape": [
+                        {
+                            "local": support_locator,
+                            "target": canonical_target,
+                            "outcome": str(candidate.mapped_outcome or "mapped_special_or_ova"),
+                            "reason": suggested_reason,
+                        }
+                        for support_locator in support_locators[:8]
+                    ]
+                    if requires_concrete_resolution
+                    else [],
+                    "required": "candidate discharge=manual_review requires row status manual_review and the candidate in manual_review_candidate_targets.",
+                }
+            )
+            continue
+        if discharge == "fail_closed" and not fail_closed_discharge:
+            issues.append(
+                {
+                    "issue": "ledger_candidate_fail_closed_discharge_missing_blocker",
+                    "row_id": row.row_id,
+                    "candidate_target": canonical_target,
+                    "required": "candidate discharge=fail_closed requires row status fail_closed and a concrete blocker/reason.",
+                }
+            )
+            continue
+        if (
+            discharge == "rejected"
+            and requires_concrete_resolution
+            and not _candidate_debt_rejection_has_concrete_contradiction(candidate)
+        ):
+            support_locators = _repair_local_values(list(candidate.support or [])) or list(row.local or [])
+            suggested_reason = (
+                "Map this strong candidate debt, or reject it only with a concrete post-upgrade contradiction."
+            )
+            issues.append(
+                {
+                    "issue": "ledger_strong_candidate_rejected_requires_contradiction",
+                    "row_id": row.row_id,
+                    "candidate_target": canonical_target,
+                    "candidate_source": candidate.source,
+                    "candidate_contradiction": candidate.contradiction,
+                    "suggested_submit_shape": [
+                        {
+                            "local": support_locator,
+                            "target": canonical_target,
+                            "outcome": str(candidate.mapped_outcome or "mapped_special_or_ova"),
+                            "reason": suggested_reason,
+                        }
+                        for support_locator in support_locators[:8]
+                    ],
+                    "required": (
+                        "This candidate debt came from a strong mapping repair. Rejecting it requires a concrete "
+                        "post-upgrade contradiction such as count/title/duration/subject mismatch. Saying the local "
+                        "files are bonus/SP material is not enough when the candidate target is itself the visible "
+                        "special/derivative owner."
+                    ),
+                }
+            )
+            continue
+        if requires_concrete_resolution and manual_review_discharge and not manual_review_contradiction_discharge:
+            support_locators = _repair_local_values(list(candidate.support or [])) or list(row.local or [])
+            suggested_reason = (
+                "Map this strong candidate debt, or keep manual_review only with a concrete post-upgrade contradiction."
+            )
+            issues.append(
+                {
+                    "issue": "ledger_strong_candidate_manual_review_requires_contradiction",
+                    "row_id": row.row_id,
+                    "candidate_target": canonical_target,
+                    "candidate_source": candidate.source,
+                    "manual_review_candidate_targets": list(row.manual_review_candidate_targets or []),
+                    "suggested_submit_shape": [
+                        {
+                            "local": support_locator,
+                            "target": canonical_target,
+                            "outcome": str(candidate.mapped_outcome or "mapped_special_or_ova"),
+                            "reason": suggested_reason,
+                        }
+                        for support_locator in support_locators[:8]
+                    ],
+                    "required": (
+                        "This candidate debt came from a strong mapping repair. A low-confidence manual_review "
+                        "that merely carries the candidate target is not enough to discharge it. Map the candidate, "
+                        "or keep manual_review/fail_closed only with a concrete post-upgrade contradiction."
+                    ),
+                }
+            )
+            continue
+        if mapped_discharge or manual_review_discharge or rejected_discharge or fail_closed_discharge:
+            continue
+        issues.append(
+            {
+                "issue": "ledger_candidate_debt_open",
+                "row_id": row.row_id,
+                "candidate_target": canonical_target,
+                "candidate_target_locators": [
+                    {
+                        "target": canonical_target,
+                        "source": candidate.source,
+                        "support": list(candidate.support or []),
+                        "reason": candidate.reason,
+                    }
+                ],
+                "suggested_submit_shape": [
+                    {
+                        "local": support_locator,
+                        "target": canonical_target,
+                        "outcome": str(candidate.mapped_outcome or "mapped_special_or_ova"),
+                        "reason": (
+                            "Map this strong candidate debt, or reject/manual_review it only with a concrete post-upgrade contradiction."
+                            if requires_concrete_resolution
+                            else candidate.reason
+                            or "Map this candidate if the Agent agrees the candidate debt evidence closes ownership."
+                        ),
+                    }
+                    for support_locator in _repair_local_values(list(candidate.support or []))
+                ],
+                "discharge": discharge,
+                "required": (
+                    "Each must_address_candidate must be discharged by mapping to it, carrying it in "
+                    "manual_review_candidate_targets, rejecting it with contradiction, or fail_closed with blocker."
+                ),
+            }
+        )
+    return issues
+
+
+def _unit_issue_rows_from_repair(repair: dict[str, object] | None) -> list[dict[str, object]]:
+    if not isinstance(repair, dict):
+        return []
+    rows: list[dict[str, object]] = []
+    for unit in list(repair.get("units") or []):
+        if not isinstance(unit, dict):
+            continue
+        raw_issues = unit.get("issues")
+        if not isinstance(raw_issues, list):
+            continue
+        for issue in raw_issues:
+            if not isinstance(issue, dict):
+                continue
+            row = dict(issue)
+            row.setdefault("unit", unit.get("unit"))
+            row.setdefault("local", unit.get("local"))
+            row.setdefault("target", unit.get("target"))
+            rows.append(row)
+    return rows[:24]
+
+
+def _direct_issue_rows_from_repair(repair: dict[str, object] | None) -> list[dict[str, object]]:
+    if not isinstance(repair, dict):
+        return []
+    rows: list[dict[str, object]] = []
+    package = repair.get("package") if isinstance(repair.get("package"), dict) else {}
+    for container in (repair, package):
+        for issue in list(container.get("issues") or []):
+            if isinstance(issue, dict):
+                rows.append(dict(issue))
+    return rows[:24]
+
+
+def _strong_suggested_shape_issue(issue_code: str, issue: dict[str, object]) -> bool:
+    if issue_code in STRONG_MAPPING_CANDIDATE_DEBT_SOURCES:
+        return True
+    if _ledger_issue_prefers_mapped_candidate_resolution(issue_code, issue):
+        return True
+    return False
+
+
+def _repair_group_rows(repair: dict[str, object], key: str) -> list[dict[str, object]]:
+    rows: list[dict[str, object]] = []
+    package = repair.get("package") if isinstance(repair.get("package"), dict) else {}
+    for container in (repair, package):
+        for row in list(container.get(key) or []):
+            if isinstance(row, dict):
+                rows.append(row)
+    return rows
+
+
+def _strong_suggested_submit_shape_rows_from_repair(
+    repair: dict[str, object] | None,
+    *,
+    limit: int = 12,
+) -> list[dict[str, object]]:
+    if not isinstance(repair, dict):
+        return []
+    rows: list[dict[str, object]] = []
+    seen: set[tuple[str, str, str]] = set()
+
+    def issue_identity_values(issue: dict[str, object]) -> set[str]:
+        values = {
+            str(issue.get("row_id") or "").strip(),
+            str(issue.get("unit") or "").strip(),
+        }
+        values.update(
+            str(row_id or "").strip()
+            for row_id in list(issue.get("row_ids") or [])
+            if str(row_id or "").strip()
+        )
+        return {value for value in values if value}
+
+    strong_issue_ids: set[str] = set()
+
+    def register_strong_issue(issue_code: str, issue: dict[str, object]) -> None:
+        if _strong_suggested_shape_issue(issue_code, issue):
+            strong_issue_ids.update(issue_identity_values(issue))
+
+    def iter_issue_rows() -> list[tuple[str, dict[str, object]]]:
+        entries: list[tuple[str, dict[str, object]]] = []
+        for key, default_issue in REPAIR_GROUP_ISSUE_CODES.items():
+            for row in _repair_group_rows(repair, key):
+                entries.append((str(row.get("issue") or default_issue).strip(), row))
+        for row in list(repair.get("repair_frontier") or []):
+            if not isinstance(row, dict):
+                continue
+            issue_codes = _issue_codes_from_value(
+                row.get("issue")
+                or row.get("issue_codes")
+                or row.get("blocking_issue")
+                or row.get("blocker")
+            )
+            for issue_code in issue_codes:
+                entries.append((issue_code, row))
+        for row in [*_direct_issue_rows_from_repair(repair), *_unit_issue_rows_from_repair(repair)]:
+            issue_code = str(row.get("issue") or "").strip()
+            if issue_code:
+                entries.append((issue_code, row))
+        return entries
+
+    issue_rows = iter_issue_rows()
+    for issue_code, issue in issue_rows:
+        register_strong_issue(issue_code, issue)
+
+    def issue_has_strong_code(issue: dict[str, object]) -> bool:
+        issue_codes = _issue_codes_from_value(
+            issue.get("issue")
+            or issue.get("issue_codes")
+            or issue.get("blocking_issue")
+            or issue.get("blocker")
+        )
+        return any(_strong_suggested_shape_issue(issue_code, issue) for issue_code in issue_codes)
+
+    def overlap_multi_version_tied_to_strong(issue_code: str, issue: dict[str, object]) -> bool:
+        if issue_code != "ledger_coverage_overlap":
+            return False
+        if not _repair_dict_items(issue.get("multi_version_submit_shape")):
+            return False
+        return issue_has_strong_code(issue) or bool(issue_identity_values(issue).intersection(strong_issue_ids))
+
+    def add_shape(
+        value: object,
+        *,
+        issue_code: str,
+        issue: dict[str, object],
+        force: bool = False,
+    ) -> None:
+        if not force and not _strong_suggested_shape_issue(issue_code, issue):
+            return
+        issue_row_id = str(issue.get("row_id") or issue.get("unit") or "").strip()
+        issue_locals = {
+            str(local or "").strip()
+            for local in _repair_local_values(issue.get("local"))
+            if str(local or "").strip()
+        }
+        for item in _repair_dict_items(value):
+            local = str(item.get("local") or "").strip()
+            target = str(item.get("target") or "").strip()
+            outcome = str(item.get("outcome") or "").strip()
+            if local and not _is_patchable_local_locator_text(local):
+                continue
+            if not (local and target and outcome.startswith("mapped_")):
+                continue
+            key = (local, target, outcome)
+            if key in seen:
+                continue
+            seen.add(key)
+            shape_row = {
+                "local": local,
+                "target": target,
+                "outcome": outcome,
+                "reason": str(item.get("reason") or "").strip()[:240],
+            }
+            item_row_id = str(item.get("row_id") or "").strip()
+            if item_row_id:
+                shape_row["row_id"] = item_row_id
+            elif issue_row_id and local in issue_locals:
+                shape_row["row_id"] = issue_row_id
+            rows.append(shape_row)
+            if len(rows) >= limit:
+                return
+
+    for issue_code, row in issue_rows:
+        if not overlap_multi_version_tied_to_strong(issue_code, row):
+            continue
+        add_shape(row.get("multi_version_submit_shape"), issue_code=issue_code, issue=row, force=True)
+        if len(rows) >= limit:
+            return rows[:limit]
+
+    for key, default_issue in REPAIR_GROUP_ISSUE_CODES.items():
+        for row in _repair_group_rows(repair, key):
+            issue_code = str(row.get("issue") or default_issue).strip()
+            add_shape(row.get("suggested_submit_shape"), issue_code=issue_code, issue=row)
+            if len(rows) >= limit:
+                return rows[:limit]
+            add_shape(row.get("multi_version_submit_shape"), issue_code=issue_code, issue=row)
+            if len(rows) >= limit:
+                return rows[:limit]
+
+    for row in list(repair.get("repair_frontier") or []):
+        if not isinstance(row, dict):
+            continue
+        issue_codes = _issue_codes_from_value(
+            row.get("issue")
+            or row.get("issue_codes")
+            or row.get("blocking_issue")
+            or row.get("blocker")
+        )
+        for issue_code in issue_codes:
+            add_shape(row.get("suggested_submit_shape"), issue_code=issue_code, issue=row)
+            if len(rows) >= limit:
+                return rows[:limit]
+            add_shape(row.get("multi_version_submit_shape"), issue_code=issue_code, issue=row)
+            if len(rows) >= limit:
+                return rows[:limit]
+
+    for row in [*_direct_issue_rows_from_repair(repair), *_unit_issue_rows_from_repair(repair)]:
+        issue_code = str(row.get("issue") or "").strip()
+        add_shape(row.get("suggested_submit_shape"), issue_code=issue_code, issue=row)
+        if len(rows) >= limit:
+            return rows[:limit]
+        add_shape(row.get("multi_version_submit_shape"), issue_code=issue_code, issue=row)
+        if len(rows) >= limit:
+            return rows[:limit]
+    return rows[:limit]
+
+
+def _strong_suggested_ledger_patch_rows_from_repair(
+    session: HumanCaseSession,
+    repair: dict[str, object] | None,
+    *,
+    limit: int = 12,
+) -> list[dict[str, object]]:
+    rows = _ledger_patch_rows_from_submit_shapes(
+        session,
+        _strong_suggested_submit_shape_rows_from_repair(repair, limit=limit),
+        limit=limit,
+    )
+    if rows or not isinstance(repair, dict):
+        return rows
+    top_issue = str(repair.get("issue") or "").strip()
+    top_issue_counts = repair.get("issue_counts") if isinstance(repair.get("issue_counts"), dict) else {}
+    strong_top_issue = any(
+        code in source
+        for source in [top_issue, *[str(item or "").strip() for item in top_issue_counts]]
+        for code in STRONG_MAPPING_CANDIDATE_DEBT_SOURCES
+        if source
+    )
+    if not strong_top_issue:
+        return rows
+    seen: set[tuple[tuple[str, ...], str, str]] = set()
+    for item in list(repair.get("must_address_suggested_ledger_patch_rows") or []) + list(
+        repair.get("suggested_ledger_patch_rows") or []
+    ):
+        if not isinstance(item, dict) or str(item.get("status") or "") != "mapped":
+            continue
+        local_values = [
+            str(local or "").strip()
+            for local in list(item.get("local") or [])
+            if str(local or "").strip()
+        ]
+        target = str(item.get("target") or "").strip()
+        outcome = str(item.get("mapped_outcome") or item.get("outcome") or "").strip()
+        if not local_values or not target:
+            continue
+        key = (tuple(local_values), target, outcome)
+        if key in seen:
+            continue
+        seen.add(key)
+        rows.append(
+            {
+                "row_id": str(item.get("row_id") or "").strip(),
+                "local": local_values,
+                "reason": str(item.get("reason") or "").strip()[:260],
+                "status": "mapped",
+                "mapped_outcome": outcome or "mapped_special_or_ova",
+                "target": target,
+                "confidence": str(item.get("confidence") or "high").strip() or "high",
+            }
+        )
+        if len(rows) >= limit:
+            break
+    return rows[:limit]
+
+
+def _suggested_candidate_debts_from_repair(repair: dict[str, object] | None) -> list[dict[str, str]]:
+    debts: list[dict[str, str]] = []
+    seen: set[tuple[str, str]] = set()
+    if not isinstance(repair, dict):
+        return debts
+
+    def add_shape(value: object, *, source: str) -> None:
+        for row in _repair_dict_items(value):
+            raw_local = row.get("local")
+            if isinstance(raw_local, list):
+                local = str(next((item for item in raw_local if str(item or "").strip()), "") or "").strip()
+            else:
+                local = str(raw_local or "").strip()
+            target = str(row.get("target") or "").strip()
+            outcome = str(row.get("outcome") or row.get("mapped_outcome") or "").strip()
+            if not outcome and str(row.get("status") or "") == "mapped":
+                outcome = "mapped_special_or_ova"
+            if not local or not target:
+                continue
+            key = (local.casefold(), target.casefold())
+            if key in seen:
+                continue
+            seen.add(key)
+            debts.append(
+                {
+                    "local": local,
+                    "target": target,
+                    "mapped_outcome": outcome,
+                    "source": source or "active_repair_suggested_submit_shape",
+                    "reason": str(row.get("reason") or "").strip()[:240],
+                }
+            )
+            if len(debts) >= 24:
+                return
+
+    top_issue = str(repair.get("issue") or "").strip()
+    top_issue_counts = repair.get("issue_counts") if isinstance(repair.get("issue_counts"), dict) else {}
+    top_sources = [
+        source
+        for source in [
+            top_issue,
+            *[str(code or "").strip() for code in top_issue_counts],
+        ]
+        if source and any(code in source for code in STRONG_MAPPING_CANDIDATE_DEBT_SOURCES)
+    ]
+    for source in top_sources:
+        add_shape(repair.get("must_address_suggested_ledger_patch_rows"), source=source)
+        if len(debts) >= 24:
+            return debts[:24]
+        add_shape(repair.get("suggested_ledger_patch_rows"), source=source)
+        if len(debts) >= 24:
+            return debts[:24]
+
+    for row in list(repair.get("repair_frontier") or []):
+        if not isinstance(row, dict):
+            continue
+        source = str(
+            row.get("issue")
+            or row.get("issue_codes")
+            or row.get("blocking_issue")
+            or row.get("blocker")
+            or "repair_frontier.suggested_submit_shape"
+        ).strip()
+        add_shape(row.get("suggested_submit_shape"), source=source)
+        if len(debts) >= 24:
+            return debts[:24]
+        add_shape(row.get("multi_version_submit_shape"), source=source)
+        if len(debts) >= 24:
+            return debts[:24]
+    for key, default_issue in REPAIR_GROUP_ISSUE_CODES.items():
+        for row in _repair_group_rows(repair, key):
+            source = str(row.get("issue") or default_issue).strip()
+            add_shape(row.get("suggested_submit_shape"), source=source)
+            if len(debts) >= 24:
+                return debts[:24]
+            add_shape(row.get("multi_version_submit_shape"), source=source)
+            if len(debts) >= 24:
+                return debts[:24]
+    for row in _unit_issue_rows_from_repair(repair):
+        source = str(row.get("issue") or "unit_issue").strip()
+        add_shape(row.get("suggested_submit_shape"), source=source)
+        if len(debts) >= 24:
+            return debts[:24]
+        add_shape(row.get("multi_version_submit_shape"), source=source)
+        if len(debts) >= 24:
+            return debts[:24]
+    return debts
+
+
+def _ledger_with_repair_candidate_debt(
+    registry: LocatorRegistry,
+    ledger: ResolutionLedger,
+    repair: dict[str, object] | None,
+) -> ResolutionLedger:
+    debts = _suggested_candidate_debts_from_repair(repair)
+    if not debts:
+        return ledger
+
+    rows = [row.model_copy(deep=True) for row in list(ledger.rows or [])]
+    row_refs: dict[str, set[str]] = {}
+    for row in rows:
+        refs, _issues, _canonical = _file_refs_for_locators(registry, list(row.local or []))
+        row_refs[str(row.row_id or "")] = set(refs)
+
+    for debt in debts:
+        debt_local = debt["local"]
+        debt_refs, _issues, _canonical = _file_refs_for_locators(registry, [debt_local])
+        debt_ref_set = set(debt_refs)
+        target = debt["target"]
+        for row in rows:
+            row_id = str(row.row_id or "")
+            overlaps_refs = bool(debt_ref_set and row_refs.get(row_id, set()).intersection(debt_ref_set))
+            overlaps_locator = any(
+                _local_locator_scope_matches(str(row_local or ""), debt_local)
+                for row_local in list(row.local or [])
+            )
+            if not overlaps_refs and not overlaps_locator:
+                continue
+            existing_targets = [
+                str(candidate.target or "").strip().casefold()
+                for candidate in list(row.must_address_candidates or [])
+            ]
+            if target.casefold() in existing_targets:
+                continue
+            row.must_address_candidates.append(
+                ResolutionLedgerCandidateDebt(
+                    target=target,
+                    source=debt["source"],
+                    mapped_outcome=debt.get("mapped_outcome", ""),
+                    support=[debt_local],
+                    reason=debt["reason"],
+                )
+            )
+
+    return ResolutionLedger(
+        rows=rows,
+        version=int(ledger.version or 0),
+        summary=ledger.summary,
+    )
+
+
+def _ledger_with_persisted_candidate_debt(
+    registry: LocatorRegistry,
+    current: ResolutionLedger,
+    proposed: ResolutionLedger,
+) -> ResolutionLedger:
+    current_rows = list(current.rows or [])
+    if not current_rows:
+        return proposed
+    proposed_rows = [row.model_copy(deep=True) for row in list(proposed.rows or [])]
+    if not proposed_rows:
+        return proposed
+
+    current_ref_cache: dict[str, set[str]] = {}
+    proposed_ref_cache: dict[str, set[str]] = {}
+
+    def row_key(row: ResolutionLedgerRow) -> str:
+        return str(row.row_id or "")
+
+    def row_refs(row: ResolutionLedgerRow, cache: dict[str, set[str]]) -> set[str]:
+        key = row_key(row)
+        if key not in cache:
+            refs, _issues, _canonical = _file_refs_for_locators(registry, list(row.local or []))
+            cache[key] = set(refs)
+        return cache[key]
+
+    def candidate_support_refs(candidate: ResolutionLedgerCandidateDebt) -> set[str]:
+        refs, _issues, _canonical = _file_refs_for_locators(
+            registry,
+            _repair_local_values(list(candidate.support or [])),
+        )
+        return set(refs)
+
+    def candidate_support_locators(candidate: ResolutionLedgerCandidateDebt) -> list[str]:
+        return _repair_local_values(list(candidate.support or []))
+
+    def applies(
+        candidate: ResolutionLedgerCandidateDebt,
+        current_row: ResolutionLedgerRow,
+        proposed_row: ResolutionLedgerRow,
+    ) -> bool:
+        proposed_refs = row_refs(proposed_row, proposed_ref_cache)
+        support_refs = candidate_support_refs(candidate)
+        if support_refs:
+            return bool(proposed_refs and proposed_refs.intersection(support_refs))
+        support_locators = candidate_support_locators(candidate)
+        if support_locators:
+            for proposed_local in list(proposed_row.local or []):
+                proposed_text = str(proposed_local or "").strip()
+                if not proposed_text:
+                    continue
+                if any(
+                    _local_locator_scope_matches(proposed_text, support)
+                    or _local_locator_scope_matches(support, proposed_text)
+                    for support in support_locators
+                ):
+                    return True
+            return False
+        current_refs = row_refs(current_row, current_ref_cache)
+        if current_refs and proposed_refs and current_refs.intersection(proposed_refs):
+            return True
+        return bool(row_key(current_row) and row_key(current_row) == row_key(proposed_row))
+
+    def existing_candidate_matches(row: ResolutionLedgerRow, candidate: ResolutionLedgerCandidateDebt) -> bool:
+        target = str(candidate.target or "").strip()
+        if not target:
+            return True
+        for existing in list(row.must_address_candidates or []):
+            existing_target = str(existing.target or "").strip()
+            if existing_target and (
+                _ledger_candidate_matches_target(existing_target, target)
+                or _ledger_candidate_matches_target(target, existing_target)
+            ):
+                return True
+        return False
+
+    changed = False
+    for current_row in current_rows:
+        for candidate in list(current_row.must_address_candidates or []):
+            if not str(candidate.target or "").strip():
+                continue
+            for proposed_row in proposed_rows:
+                if not applies(candidate, current_row, proposed_row):
+                    continue
+                if existing_candidate_matches(proposed_row, candidate):
+                    continue
+                proposed_row.must_address_candidates.append(candidate.model_copy(deep=True))
+                changed = True
+
+    if not changed:
+        return proposed
+    return ResolutionLedger(
+        rows=proposed_rows,
+        version=int(proposed.version or 0),
+        summary=proposed.summary,
+    )
+
+
+def _ledger_overlap_multi_version_submit_shape(
+    registry: LocatorRegistry,
+    row_summaries: list[dict[str, object]],
+    row_ids: list[str],
+) -> list[dict[str, object]]:
+    rows_by_id = {
+        str(row.get("row_id") or ""): row
+        for row in row_summaries
+        if str(row.get("row_id") or "")
+    }
+    involved_rows = [
+        rows_by_id[row_id]
+        for row_id in row_ids
+        if row_id in rows_by_id
+    ]
+    if len(involved_rows) < 2:
+        return []
+    for parent_row in involved_rows:
+        parent_locals = [
+            str(local or "").strip()
+            for local in list(parent_row.get("local") or [])
+            if str(local or "").strip()
+        ]
+        if len(parent_locals) != 1:
+            continue
+        parent_locator = registry.locators.get(parent_locals[0])
+        if parent_locator is None or parent_locator.kind != "local":
+            continue
+        if not _is_non_regular_numbered_locator(registry, parent_locator):
+            continue
+        duplicate_variant_locators = list(
+            _episode_locator_hints(
+                parent_locator.locator,
+                parent_locator.episode_file_refs,
+                episode_labels={ref: label for _num, ref, label in _episode_label_triples(parent_locator)},
+            ).get("duplicate_episode_variant_locators")
+            or []
+        )
+        if not duplicate_variant_locators:
+            continue
+        episode_numbers = {
+            int(num)
+            for num, _ref in list(parent_locator.episode_file_refs or [])
+            if int(num or 0) > 0
+        }
+        if not episode_numbers:
+            continue
+        local_tokens = _non_regular_local_bridge_tokens([parent_locator])
+        local_season_hints, local_unseasoned = _local_season_hints_for_locators([parent_locator])
+        target_subjects: list[AgentLocator] = []
+
+        def add_target_subject(raw_target: object) -> None:
+            target_subject = _resolve_target_subject_from_candidate_text(registry, raw_target)
+            if target_subject is None:
+                return
+            if int(target_subject.subject_eps or 0) != len(episode_numbers):
+                return
+            if not _target_matches_local_season(target_subject, local_season_hints, local_unseasoned):
+                return
+            if not _target_has_non_regular_mapping_support(target_subject, local_tokens):
+                return
+            if target_subject.locator not in [item.locator for item in target_subjects]:
+                target_subjects.append(target_subject)
+
+        for child_row in involved_rows:
+            if child_row is parent_row:
+                continue
+            child_locals = [
+                str(local or "").strip()
+                for local in list(child_row.get("local") or [])
+                if str(local or "").strip()
+            ]
+            if not child_locals or not all(
+                _local_locator_scope_matches(child_local, parent_locator.locator)
+                and child_local != parent_locator.locator
+                for child_local in child_locals
+            ):
+                continue
+            add_target_subject(child_row.get("target"))
+            for candidate_target in list(child_row.get("manual_review_candidate_targets") or []):
+                add_target_subject(candidate_target)
+        for candidate_target in list(parent_row.get("manual_review_candidate_targets") or []):
+            add_target_subject(candidate_target)
+        if len(target_subjects) != 1:
+            continue
+        return _duplicate_variant_multi_version_submit_shape(
+            parent_locator,
+            duplicate_variant_locators,
+            target_subjects[0],
+        )
+    return []
+
+
+def _ledger_missing_multi_version_submit_shape(
+    registry: LocatorRegistry,
+    missing_refs: list[str],
+    target_usage: dict[str, list[dict[str, object]]],
+) -> list[dict[str, object]]:
+    candidate_locators = _candidate_local_locators_for_file_refs(registry, missing_refs)
+    for candidate in candidate_locators:
+        missing_local = str(candidate.get("locator") or "").strip()
+        missing_key = _duplicate_number_variant_key(registry, missing_local)
+        if missing_key is None:
+            continue
+        missing_parent, missing_episode = missing_key
+        parent_locator = registry.locators.get(missing_parent)
+        if parent_locator is None or parent_locator.kind != "local":
+            continue
+        duplicate_variant_locators = list(
+            _episode_locator_hints(
+                parent_locator.locator,
+                parent_locator.episode_file_refs,
+                episode_labels={ref: label for _num, ref, label in _episode_label_triples(parent_locator)},
+            ).get("duplicate_episode_variant_locators")
+            or []
+        )
+        if not duplicate_variant_locators:
+            continue
+        for target_ref, usages in target_usage.items():
+            if _target_episode_number_for_item_ref(registry, target_ref) != missing_episode:
+                continue
+            for usage in list(usages or []):
+                usage_locals = [
+                    str(local or "").strip()
+                    for local in list(usage.get("local") or [])
+                    if str(local or "").strip()
+                ]
+                if not any(_duplicate_number_variant_key(registry, local) == missing_key for local in usage_locals):
+                    continue
+                target_item_text = str(usage.get("target_item") or _target_item_locator_for_ref(registry, target_ref))
+                target_item, target_issue = registry.resolve(target_item_text)
+                if target_issue or target_item is None:
+                    continue
+                target_subject = _target_subject_locator_for(registry, target_item)
+                if int(target_subject.subject_eps or 0) <= 0:
+                    continue
+                return _duplicate_variant_multi_version_submit_shape(
+                    parent_locator,
+                    duplicate_variant_locators,
+                    target_subject,
+                )
+    return []
+
+
+def _ledger_missing_title_pairing_repair_fields(
+    registry: LocatorRegistry,
+    candidate_local_locators: list[dict[str, object]],
+) -> dict[str, object]:
+    local_values = [
+        str(item.get("locator") or "").strip()
+        for item in list(candidate_local_locators or [])
+        if str(item.get("locator") or "").strip()
+    ]
+    if not local_values:
+        return {}
+    pairing_options = _local_target_title_pairing_options_for_locators(
+        registry,
+        local_values,
+        limit=12,
+    )
+    local_slice_mapping_options = _local_slice_mapping_options_from_title_pairings(
+        pairing_options,
+        limit=12,
+    )
+    suggested_submit_shape = [
+        {
+            "local": str(item.get("local") or "").strip(),
+            "target": str(item.get("target") or "").strip(),
+            "outcome": str(item.get("outcome") or "mapped_explicit_item").strip() or "mapped_explicit_item",
+            "reason": (
+                "Visible title-pairing candidate for a currently missing local slice; map only if "
+                "the Agent judges this target is the semantic owner."
+            ),
+        }
+        for item in _one_mapping_option_per_local_slice(local_slice_mapping_options)
+        if str(item.get("local") or "").strip() and str(item.get("target") or "").strip()
+    ][:8]
+    manual_review_candidate_submit_shape = _manual_review_candidate_submit_shape_from_pairings(
+        pairing_options,
+        limit=8,
+    )
+    fields: dict[str, object] = {}
+    if pairing_options:
+        fields["local_target_title_pairing_options"] = pairing_options[:12]
+    if local_slice_mapping_options:
+        fields["local_slice_mapping_options"] = local_slice_mapping_options[:12]
+    if suggested_submit_shape:
+        fields["suggested_submit_shape"] = suggested_submit_shape
+    if manual_review_candidate_submit_shape:
+        fields["manual_review_candidate_submit_shape"] = manual_review_candidate_submit_shape
+    return fields
+
+
+def _validate_resolution_ledger(
+    registry: LocatorRegistry,
+    ledger: ResolutionLedger,
+    *,
+    main_refs: list[str],
+    require_terminal: bool,
+) -> tuple[list[dict[str, object]], list[dict[str, object]]]:
+    issues: list[dict[str, object]] = []
+    row_summaries: list[dict[str, object]] = []
+    covered: Counter[str] = Counter()
+    covered_by_ref: dict[str, list[dict[str, object]]] = defaultdict(list)
+    local_locator_counts: Counter[str] = Counter()
+    target_counts: Counter[str] = Counter()
+    target_usage: dict[str, list[dict[str, object]]] = defaultdict(list)
+    terminal_statuses = {"mapped", "manual_review", "target_absent", "supplemental", "fail_closed"}
+    main_ref_set = set(main_refs)
+
+    if not list(ledger.rows or []):
+        issues.append({"issue": "ledger_empty", "required": "ledger must contain at least one row."})
+
+    for index, row in enumerate(list(ledger.rows or []), start=1):
+        row_id = str(row.row_id or f"LR{index}")
+        local_refs, local_issues, canonical_locators = _file_refs_for_locators(registry, list(row.local or []))
+        support_issues, canonical_support = _validate_support_locators(registry, list(row.support or []))
+        ignored_support_issues = list(support_issues)
+        row.support = canonical_support
+        if not row.row_id:
+            issues.append({"issue": "ledger_row_id_required", "row_index": index})
+        if not canonical_locators:
+            issues.append(
+                {
+                    "issue": "ledger_row_local_required",
+                    "row_id": row_id,
+                    "local": list(row.local or []),
+                    "required": "Each ledger row must cite one visible local:// locator or exact local slice.",
+                }
+            )
+        for item in local_issues:
+            issues.append({**item, "issue": str(item.get("issue") or "ledger_local_locator_invalid"), "row_id": row_id})
+        for locator_text in canonical_locators:
+            local_locator_counts[locator_text] += 1
+        for ref in local_refs:
+            covered[ref] += 1
+            covered_by_ref[ref].append(
+                {
+                    "row_id": row_id,
+                    "local": canonical_locators or list(row.local or []),
+                    "status": row.status,
+                    "target": row.target,
+                }
+            )
+        if require_terminal and row.status not in terminal_statuses:
+            issues.append(
+                {
+                    "issue": "ledger_row_not_terminal",
+                    "row_id": row_id,
+                    "status": row.status,
+                    "required": "Final ledger compilation requires every row to be mapped/manual_review/target_absent/supplemental/fail_closed.",
+                }
+            )
+        if row.status == "mapped":
+            canonical_target, target_issue = _canonical_target_locator_for_ledger(registry, row.target)
+            if target_issue:
+                issues.append({**target_issue, "issue": str(target_issue.get("issue") or "ledger_mapped_target_invalid"), "row_id": row_id})
+            else:
+                row.target = canonical_target
+                unit = _ledger_row_to_work_unit(row)
+                target_refs, target_issues, canonical_unit_target = _target_items_for_unit(
+                    registry,
+                    unit,
+                    local_file_count=len(local_refs),
+                    local_locators=canonical_locators,
+                )
+                if target_issues:
+                    for item in target_issues:
+                        issues.append({**item, "issue": str(item.get("issue") or "ledger_mapped_target_invalid"), "row_id": row_id})
+                if row.mapped_outcome == "mapped_composite_feature":
+                    if len(local_refs) != 1 or len(target_refs) <= 1:
+                        issues.append(
+                            {
+                                "issue": "ledger_composite_feature_shape_invalid",
+                                "row_id": row_id,
+                                "local_count": len(local_refs),
+                                "target_count": len(target_refs),
+                                "required": "mapped_composite_feature requires exactly one local file and two or more visible target items.",
+                            }
+                        )
+                elif target_refs and len(target_refs) != len(local_refs):
+                    pairing_options = _local_target_title_pairing_options_for_locators(
+                        registry,
+                        canonical_locators,
+                        limit=12,
+                        demoted_targets={canonical_target},
+                    )
+                    local_slice_mapping_options = _local_slice_mapping_options_from_title_pairings(
+                        pairing_options,
+                        limit=12,
+                    )
+                    suggested_submit_shape: list[dict[str, object]] = []
+                    expected_local_slices = _expected_local_slices_for_pairing_options(registry, canonical_locators)
+                    if expected_local_slices:
+                        one_per_slice = _one_mapping_option_per_local_slice(local_slice_mapping_options)
+                        covered_slices = {
+                            str(item.get("local") or "").strip()
+                            for item in one_per_slice
+                            if str(item.get("local") or "").strip()
+                        }
+                        if expected_local_slices.issubset(covered_slices):
+                            suggested_submit_shape = one_per_slice
+                    issues.append(
+                        {
+                            "issue": "ledger_count_mismatch",
+                            "row_id": row_id,
+                            "local_count": len(local_refs),
+                            "target_count": len(target_refs),
+                            "local": canonical_locators,
+                            "target": canonical_target,
+                            "local_target_title_pairing_options": pairing_options[:12],
+                            "local_slice_mapping_options": local_slice_mapping_options[:12],
+                            "suggested_submit_shape": suggested_submit_shape[:12],
+                            "required": "mapped rows require equal local/target item counts unless mapped_composite_feature shape is valid.",
+                        }
+                    )
+                for target_ref in target_refs:
+                    target_counts[target_ref] += 1
+                    target_usage[target_ref].append(
+                        {
+                            "row_id": row_id,
+                            "local": canonical_locators,
+                            "target": canonical_unit_target or canonical_target,
+                            "target_item": _target_item_locator_for_ref(registry, target_ref),
+                            "status": row.status,
+                            "reason": row.reason,
+                        }
+                    )
+        elif row.status == "manual_review":
+            if not str(row.reason or "").strip():
+                issues.append(
+                    {
+                        "issue": "ledger_manual_review_reason_required",
+                        "row_id": row_id,
+                        "required": "manual_review rows must name the concrete unresolved evidence gap.",
+                    }
+                )
+            review_candidate_targets = list(row.manual_review_candidate_targets or [])
+            if str(row.target or "").strip():
+                review_candidate_targets.insert(0, str(row.target).strip())
+            candidate_unit = ResolutionWorkUnit(
+                unit_label=row_id,
+                local=canonical_locators,
+                outcome="manual_review",
+                target="",
+                manual_review_candidate_targets=review_candidate_targets,
+                reason=row.reason,
+                confidence=row.confidence,
+            )
+            candidate_issues, canonical_review_targets = _validate_manual_review_candidate_targets(registry, candidate_unit)
+            if candidate_issues:
+                for item in candidate_issues:
+                    issues.append({**item, "issue": str(item.get("issue") or "ledger_manual_review_candidate_invalid"), "row_id": row_id})
+            row.manual_review_candidate_targets = canonical_review_targets
+            row.target = ""
+        elif row.status in {"target_absent", "supplemental", "fail_closed"}:
+            if not str(row.reason or "").strip():
+                issues.append(
+                    {
+                        "issue": f"ledger_{row.status}_reason_required",
+                        "row_id": row_id,
+                        "required": f"{row.status} rows must include a concrete reason.",
+                    }
+                )
+            if row.status == "fail_closed" and str(row.target or "").strip():
+                fail_closed_target = str(row.target or "").strip()
+                target_shape: list[dict[str, object]] = []
+                canonical_target, target_issue = _canonical_target_locator_for_ledger(registry, fail_closed_target)
+                if not target_issue and canonical_locators:
+                    target_locator, _resolve_issue = registry.resolve(canonical_target)
+                    if target_locator is not None and target_locator.kind in {"target_subject", "target_episode", "target_span"}:
+                        target_subject = _target_subject_locator_for(registry, target_locator)
+                        local_count = len(local_refs)
+                        target_for_shape = ""
+                        if target_locator.kind in {"target_episode", "target_span"}:
+                            target_for_shape = canonical_target
+                        elif local_count > 0 and int(target_subject.subject_eps or 0) == local_count:
+                            target_for_shape = _target_episode_range_locator(target_subject, 1, local_count)
+                        elif local_count == 1 and canonical_locators:
+                            local_locator_for_shape, _local_issue = registry.resolve(canonical_locators[0])
+                            local_episode_numbers = [
+                                int(number)
+                                for number, _ref in list(getattr(local_locator_for_shape, "episode_file_refs", ()) or [])
+                                if int(number or 0) > 0
+                            ]
+                            if (
+                                len(set(local_episode_numbers)) == 1
+                                and int(target_subject.subject_eps or 0) >= local_episode_numbers[0]
+                            ):
+                                target_for_shape = _target_episode_locator(target_subject, local_episode_numbers[0])
+                        if target_for_shape:
+                            target_shape.append(
+                                {
+                                    "local": canonical_locators[0],
+                                    "target": target_for_shape,
+                                    "outcome": "mapped_explicit_item" if local_count == 1 else "mapped_special_or_ova",
+                                    "reason": (
+                                        "The fail_closed row already cited this visible target; map it if ownership "
+                                        "is closed, or convert the row to manual_review with this target as a candidate."
+                                    ),
+                                }
+                            )
+                issues.append(
+                    {
+                        "issue": "ledger_fail_closed_target_ignored",
+                        "row_id": row_id,
+                        "local": canonical_locators,
+                        "target": fail_closed_target,
+                        "suggested_submit_shape": target_shape[:4],
+                        "manual_review_candidate_submit_shape": [
+                            {
+                                "local": canonical_locators[0],
+                                "outcome": "manual_review",
+                                "manual_review_candidate_targets": [fail_closed_target],
+                                "confidence": "low",
+                                "reason": (
+                                    "Use manual_review when this visible target is useful for human replay but "
+                                    "ownership remains localized uncertainty."
+                                ),
+                            }
+                        ] if canonical_locators else [],
+                        "required": (
+                            "fail_closed rows cannot carry target as a review hint because fail_closed target is "
+                            "ignored during final assignment. Use mapped for accepted ownership, manual_review with "
+                            "manual_review_candidate_targets for localized uncertainty, or fail_closed with no target "
+                            "only when the row should block the whole package."
+                        ),
+                    }
+                )
+        elif row.status == "candidate_must_address" and not list(row.must_address_candidates or []):
+            issues.append(
+                {
+                    "issue": "ledger_candidate_must_address_without_candidates",
+                    "row_id": row_id,
+                    "required": "candidate_must_address rows must list must_address_candidates.",
+                }
+            )
+        issues.extend(_ledger_row_candidate_debt_issues(registry, row))
+        row_summaries.append(
+            {
+                "row_id": row_id,
+                "local": canonical_locators or list(row.local or []),
+                "status": row.status,
+                "target": row.target,
+                "manual_review_candidate_targets": list(row.manual_review_candidate_targets or []),
+                "support": canonical_support,
+                "ignored_support_issues": ignored_support_issues[:6],
+                "file_refs": local_refs,
+                "must_address_candidate_count": len(list(row.must_address_candidates or [])),
+            }
+        )
+
+    duplicate_locators = [locator for locator, count in local_locator_counts.items() if count > 1]
+    if duplicate_locators:
+        issues.append(
+            {
+                "issue": "ledger_duplicate_local_locator",
+                "local": duplicate_locators[:24],
+                "required": "Each local locator/slice may appear in only one ledger row.",
+            }
+        )
+    missing = [ref for ref in main_refs if covered.get(ref, 0) == 0]
+    duplicates = [ref for ref, count in covered.items() if count > 1]
+    extra = [ref for ref in covered if ref not in main_ref_set]
+    if missing:
+        candidate_local_locators = _candidate_local_locators_for_file_refs(registry, missing[:24])
+        multi_version_submit_shape = _ledger_missing_multi_version_submit_shape(
+            registry,
+            missing[:24],
+            target_usage,
+        )
+        missing_issue = {
+            "issue": "ledger_coverage_missing",
+            "file_refs": missing[:24],
+            "candidate_local_locators": candidate_local_locators,
+            "required": (
+                "Every must-account file ref must be covered exactly once. Add or widen ledger rows using "
+                "visible candidate_local_locators that cover these missing refs."
+            ),
+        }
+        if multi_version_submit_shape:
+            missing_issue.update(
+                {
+                    "multi_version_submit_shape": multi_version_submit_shape,
+                    "suggested_submit_shape": multi_version_submit_shape,
+                    "repair_instruction": (
+                        "A same-number duplicate local variant is missing while another variant of that episode "
+                        "is already mapped. Replace the same-parent rows with these complete multi_version_submit_shape "
+                        "rows so every variant and trailing slice is covered exactly once."
+                    ),
+                }
+            )
+        else:
+            missing_issue.update(
+                _ledger_missing_title_pairing_repair_fields(
+                    registry,
+                    candidate_local_locators,
+                )
+            )
+        issues.append(
+            missing_issue
+        )
+    if duplicates:
+        overlap_rows = [
+            {
+                "file_ref": ref,
+                "rows": list(covered_by_ref.get(ref) or [])[:8],
+            }
+            for ref in duplicates[:24]
+        ]
+        duplicate_row_ids = list(
+            dict.fromkeys(
+                str(row.get("row_id") or "")
+                for item in overlap_rows
+                for row in list(item.get("rows") or [])
+                if str(row.get("row_id") or "")
+            )
+        )
+        multi_version_submit_shape = _ledger_overlap_multi_version_submit_shape(
+            registry,
+            row_summaries,
+            duplicate_row_ids,
+        )
+        overlap_issue = {
+            "issue": "ledger_coverage_overlap",
+            "file_refs": duplicates[:24],
+            "row_ids": duplicate_row_ids[:24],
+            "overlap_rows": overlap_rows,
+            "candidate_local_locators": _candidate_local_locators_for_file_refs(registry, duplicates[:24]),
+            "repair_instruction": (
+                "Do not patch a broad parent locator and one of its episode/variant child locators at the same time. "
+                "Either keep one broad parent row and remove the child row, or split the parent into exact non-overlapping "
+                "episode/range/variant rows."
+            ),
+            "required": "Each must-account file ref may be covered by only one ledger row. Narrow or remove overlapping local locators.",
+        }
+        if multi_version_submit_shape:
+            overlap_issue.update(
+                {
+                    "multi_version_submit_shape": multi_version_submit_shape,
+                    "suggested_submit_shape": multi_version_submit_shape,
+                    "repair_instruction": (
+                        "Replace the overlapping broad parent/child rows with the listed non-overlapping "
+                        "multi_version_submit_shape rows. Reuse the parent row_id for the first listed row and "
+                        "use split row_ids for the remaining rows."
+                    ),
+                }
+            )
+        issues.append(
+            overlap_issue
+        )
+    if extra:
+        issues.append({"issue": "ledger_coverage_extra", "file_refs": extra[:24]})
+    allowed_multi_version_duplicate_targets = _allowed_multi_version_duplicate_targets(registry, target_counts, target_usage)
+    duplicate_targets = [
+        ref
+        for ref, count in target_counts.items()
+        if count > 1 and ref not in set(allowed_multi_version_duplicate_targets)
+    ]
+    if duplicate_targets:
+        duplicate_target_rows = list(
+            dict.fromkeys(
+                str(item.get("row_id") or "")
+                for target_ref in duplicate_targets
+                for item in list(target_usage.get(target_ref, []) or [])
+                if str(item.get("row_id") or "")
+            )
+        )
+        duplicate_target_candidate_locators = [
+            {
+                "target": _target_item_locator_for_ref(registry, ref),
+                "target_ref": ref,
+                "reason": (
+                    "This visible target item is already claimed by more than one mapped ledger row. "
+                    "Keep only the semantically correct mapped owner, or carry this target as a manual_review "
+                    "candidate on rows whose ownership remains localized uncertainty."
+                ),
+            }
+            for ref in duplicate_targets[:12]
+        ]
+        issues.append(
+            {
+                "issue": "ledger_duplicate_target",
+                "target_refs": duplicate_targets[:24],
+                "candidate_target_locators": duplicate_target_candidate_locators,
+                "row_ids": duplicate_target_rows[:24],
+                "required": (
+                    "Mapped ledger rows may not duplicate target items except same-number local variants. "
+                    "Patch the conflicting row_ids in place; do not add another row for the same local files. "
+                    "Use mapped for the single owner, or manual_review with the visible candidate target when "
+                    "the conflict is localized uncertainty."
+                ),
+            }
+        )
+    return issues, row_summaries
+
+
+_LEDGER_FEEDBACK_OPTION_KEYS = (
+    "available_target_episode_numbers",
+    "target_episode_locator_samples",
+    "target_span_examples",
+    "target_surface_visible",
+    "visible_alternate_subjects",
+    "local_target_title_pairing_options",
+    "local_slice_mapping_options",
+    "available_action",
+    "search_queries_to_try",
+    "continuation_evidence_hint",
+    "candidate_target_locators",
+    "candidate_local_locators",
+    "manual_review_candidate_targets",
+    "target_refs",
+    "row_ids",
+)
+
+
+def _expanded_ledger_validation_issues(validation_issues: list[dict[str, object]]) -> list[dict[str, object]]:
+    expanded: list[dict[str, object]] = []
+    for issue in validation_issues:
+        row_id = str(issue.get("row_id") or issue.get("unit_label") or "").strip()
+        row_ids: list[str] = []
+        if row_id:
+            row_ids.append(row_id)
+        elif isinstance(issue.get("row_ids"), list):
+            row_ids.extend(str(item).strip() for item in list(issue.get("row_ids") or []) if str(item).strip())
+        if not row_ids:
+            expanded.append(issue)
+            continue
+        for item in row_ids:
+            expanded.append({**issue, "row_id": item})
+    return expanded
+
+
+_MECHANICAL_REJECTED_TARGET_ONLY_ISSUES = {
+    "target_episode_surface_missing",
+    "ledger_count_mismatch",
+    "ledger_composite_feature_shape_invalid",
+}
+
+
+def _manual_review_candidate_target_hint_from_issue(issue_code: str, target: object) -> str:
+    target_text = str(target or "").strip()
+    if not target_text:
+        return ""
+    if issue_code == "target_episode_surface_missing":
+        for marker in ("/episodes/", "/episode/"):
+            if marker in target_text:
+                return target_text.split(marker, 1)[0]
+    return target_text
+
+
+def _append_manual_review_candidate_sources(
+    review_candidate_sources: list[object],
+    raw_sources: object,
+) -> None:
+    if not raw_sources:
+        return
+    items = raw_sources if isinstance(raw_sources, list) else [raw_sources]
+    for candidate in list(items or []):
+        if isinstance(candidate, dict):
+            target = str(
+                candidate.get("target")
+                or candidate.get("target_subject")
+                or candidate.get("locator")
+                or ""
+            ).strip()
+            if target:
+                review_candidate_sources.append({**candidate, "target": target})
+            continue
+        target = str(candidate or "").strip()
+        if target:
+            review_candidate_sources.append({"target": target})
+
+
+def _ledger_validation_units_from_issues(
+    validation_issues: list[dict[str, object]],
+    row_summaries: list[dict[str, object]],
+) -> list[dict[str, object]]:
+    rows_by_id = {
+        str(row.get("row_id") or ""): row
+        for row in row_summaries
+        if str(row.get("row_id") or "")
+    }
+    grouped: dict[str, dict[str, object]] = {}
+    order: list[str] = []
+
+    for issue in _expanded_ledger_validation_issues(validation_issues):
+        row_id = str(issue.get("row_id") or issue.get("unit_label") or "").strip()
+        label = row_id or str(issue.get("issue") or "ledger").strip()
+        if label not in grouped:
+            row = rows_by_id.get(row_id, {})
+            local_values = _repair_local_values(row.get("local") or issue.get("local"))
+            grouped[label] = {
+                "unit": label,
+                "local": local_values,
+                "file_refs": issue.get("file_refs") or row.get("file_refs") or [],
+                "target": issue.get("target") or row.get("target") or "",
+                "issue": "",
+                "issue_codes": [],
+                "issues": [],
+            }
+            order.append(label)
+
+        unit = grouped[label]
+        issue_code = str(issue.get("issue") or "ledger_validation_failed")
+        issue_codes = list(unit.get("issue_codes") or [])
+        if issue_code not in issue_codes:
+            issue_codes.append(issue_code)
+        unit["issue_codes"] = issue_codes
+        unit["issue"] = issue_code if len(issue_codes) == 1 else issue_codes
+        issues = list(unit.get("issues") or [])
+        issues.append(issue)
+        unit["issues"] = issues[:12]
+        for shape_key in ("suggested_submit_shape", "multi_version_submit_shape", "manual_review_candidate_submit_shape"):
+            shape_value = issue.get(shape_key)
+            shape_rows = _repair_dict_items(shape_value)
+            if not shape_rows:
+                continue
+            existing_shapes = [
+                item
+                for item in list(unit.get(shape_key) or [])
+                if isinstance(item, dict)
+            ]
+            seen_shapes = {
+                json.dumps(item, ensure_ascii=False, sort_keys=True, default=str)
+                for item in existing_shapes
+            }
+            for shape_item in shape_rows:
+                shape_key_text = json.dumps(shape_item, ensure_ascii=False, sort_keys=True, default=str)
+                if shape_key_text in seen_shapes:
+                    continue
+                seen_shapes.add(shape_key_text)
+                existing_shapes.append(shape_item)
+                if len(existing_shapes) >= 12:
+                    break
+            if existing_shapes:
+                unit[shape_key] = existing_shapes[:12]
+
+        if issue.get("required") and not unit.get("required"):
+            unit["required"] = issue.get("required")
+        if issue.get("repair_instruction") and not unit.get("repair_instruction"):
+            unit["repair_instruction"] = issue.get("repair_instruction")
+        for key in _LEDGER_FEEDBACK_OPTION_KEYS:
+            if issue.get(key) and not unit.get(key):
+                unit[key] = issue.get(key)
+        if issue.get("target_surface_visible") or issue_code in {"episode_range_required", "target_episode_surface_missing"}:
+            repair = {
+                key: issue.get(key)
+                for key in (
+                    "target",
+                    "available_target_episode_numbers",
+                    "target_episode_locator_samples",
+                    "target_span_examples",
+                    "target_surface_visible",
+                    "visible_alternate_subjects",
+                    "local_target_title_pairing_options",
+                    "local_slice_mapping_options",
+                    "available_action",
+                    "search_queries_to_try",
+                    "continuation_evidence_hint",
+                    "required",
+                    "repair_instruction",
+                )
+                if key in issue
+            }
+            if repair:
+                unit.setdefault("target_surface_repairs", [])
+                repairs = list(unit.get("target_surface_repairs") or [])
+                repairs.append(repair)
+                unit["target_surface_repairs"] = repairs[:6]
+        if issue_code == "episode_range_required" and issue.get("target_span_examples") and row_id:
+            row = rows_by_id.get(row_id, {})
+            local_count = len(list(row.get("file_refs") or []))
+            suggested_rows: list[dict[str, object]] = []
+            for example in list(issue.get("target_span_examples") or []):
+                if not isinstance(example, dict):
+                    continue
+                locator = str(example.get("locator") or "").strip()
+                if not locator or int(example.get("target_count") or 0) != local_count:
+                    continue
+                suggested_rows.append(
+                    {
+                        "local": row.get("local") or [],
+                        "target": locator,
+                        "outcome": "mapped_regular_span",
+                        "reason": "Mechanical repair shape for the Agent's already selected target subject.",
+                    }
+                )
+                break
+            if suggested_rows and not unit.get("suggested_submit_shape"):
+                unit["suggested_submit_shape"] = suggested_rows
+        review_candidate_sources: list[object] = []
+        _append_manual_review_candidate_sources(review_candidate_sources, issue.get("candidate_target_locators"))
+        _append_manual_review_candidate_sources(review_candidate_sources, issue.get("visible_alternate_subjects"))
+        _append_manual_review_candidate_sources(review_candidate_sources, issue.get("local_target_title_pairing_options"))
+        _append_manual_review_candidate_sources(review_candidate_sources, issue.get("local_slice_mapping_options"))
+        _append_manual_review_candidate_sources(review_candidate_sources, issue.get("candidate_target"))
+        row = rows_by_id.get(row_id, {})
+        _append_manual_review_candidate_sources(review_candidate_sources, row.get("manual_review_candidate_targets"))
+        if issue.get("target") and issue_code not in _MECHANICAL_REJECTED_TARGET_ONLY_ISSUES:
+            target_hint = _manual_review_candidate_target_hint_from_issue(issue_code, issue.get("target"))
+            if target_hint:
+                review_candidate_sources.append({"target": target_hint})
+        if (
+            row_id
+            and review_candidate_sources
+            and issue_code not in {
+            "ledger_coverage_overlap",
+            "ledger_duplicate_local_locator",
+            }
+            and not _ledger_issue_prefers_mapped_candidate_resolution(issue_code, issue)
+        ):
+            candidate_targets: list[str] = []
+            for candidate in review_candidate_sources:
+                if not isinstance(candidate, dict):
+                    continue
+                target = str(candidate.get("target") or "").strip()
+                if target and target not in candidate_targets:
+                    candidate_targets.append(target)
+                if len(candidate_targets) >= 4:
+                    break
+            if candidate_targets:
+                existing_manual_shapes = [
+                    item
+                    for item in list(unit.get("manual_review_candidate_submit_shape") or [])
+                    if isinstance(item, dict)
+                ]
+                if existing_manual_shapes:
+                    primary = dict(existing_manual_shapes[0])
+                    merged_targets = [
+                        str(target or "").strip()
+                        for target in list(primary.get("manual_review_candidate_targets") or [])
+                        if str(target or "").strip()
+                    ]
+                    for target in candidate_targets:
+                        if target not in merged_targets:
+                            merged_targets.append(target)
+                    primary["manual_review_candidate_targets"] = merged_targets[:6]
+                    existing_manual_shapes[0] = primary
+                    unit["manual_review_candidate_submit_shape"] = existing_manual_shapes[:6]
+                else:
+                    unit["manual_review_candidate_submit_shape"] = [
+                        {
+                            "local": row.get("local") or [],
+                            "outcome": "manual_review",
+                            "manual_review_candidate_targets": candidate_targets,
+                            "reason": (
+                                "The candidate debt remains localized uncertainty. If ownership is not accepted, "
+                                "carry visible candidate targets as manual-review hints instead of dropping them."
+                            ),
+                        }
+                    ]
+        if issue_code in {"ledger_count_mismatch", "ledger_composite_feature_shape_invalid"} and int(issue.get("local_count") or 0) > 1:
+            unit["split_first_repair"] = {
+                "local_count": issue.get("local_count"),
+                "target_count": issue.get("target_count"),
+                "required": (
+                    "If only part of the parent local locator maps cleanly, narrow this row to an exact "
+                    "local://.../episode/N slice and add separate ledger rows for the remaining slices. "
+                    "The fixed layer will only verify exact-once coverage and target mechanics."
+                ),
+            }
+
+    return [grouped[label] for label in order if label in grouped][:24]
+
+
+def _ledger_rejection_details_by_row(validation_issues: list[dict[str, object]]) -> dict[str, list[dict[str, object]]]:
+    details: dict[str, list[dict[str, object]]] = defaultdict(list)
+    for issue in _expanded_ledger_validation_issues(validation_issues):
+        row_id = str(issue.get("row_id") or "").strip()
+        if not row_id:
+            continue
+        details[row_id].append(
+            {
+                key: issue.get(key)
+                for key in (
+                    "issue",
+                    "target",
+                    "locator",
+                    "local",
+                    "local_count",
+                    "target_count",
+                    "episode_start",
+                    "episode_end",
+                    "required",
+                    "repair_instruction",
+                )
+                if key in issue
+            }
+        )
+    return details
+
+
+def _ledger_validation_fingerprint(validation_issues: list[dict[str, object]]) -> str:
+    payload: list[dict[str, object]] = []
+    for issue in _expanded_ledger_validation_issues(validation_issues):
+        payload.append(
+            {
+                "row_id": str(issue.get("row_id") or ""),
+                "issue": str(issue.get("issue") or ""),
+                "target": str(issue.get("target") or ""),
+                "locator": str(issue.get("locator") or ""),
+                "local_count": issue.get("local_count"),
+                "target_count": issue.get("target_count"),
+                "episode_start": issue.get("episode_start"),
+                "episode_end": issue.get("episode_end"),
+            }
+        )
+    payload.sort(key=lambda item: json.dumps(item, ensure_ascii=False, sort_keys=True, default=str))
+    return json.dumps(payload, ensure_ascii=False, sort_keys=True, default=str)
+
+
+def _issue_codes_from_ledger_unit(unit: dict[str, object]) -> list[str]:
+    codes: list[str] = []
+
+    def add(value: object) -> None:
+        code = str(value or "").strip()
+        if code and code not in codes:
+            codes.append(code)
+
+    issue = unit.get("issue")
+    if isinstance(issue, list):
+        for item in issue:
+            add(item)
+    else:
+        add(issue)
+    for item in list(unit.get("issue_codes") or []):
+        add(item)
+    for item in list(unit.get("issues") or []):
+        if isinstance(item, dict):
+            add(item.get("issue"))
+    return codes
+
+
+def _annotate_ledger_units_with_rejection_pressure(
+    feedback_units: list[dict[str, object]],
+    *,
+    row_rejection_details: dict[str, list[dict[str, object]]],
+    row_rejection_counts: dict[str, int],
+    proposed_row_summaries: list[dict[str, object]],
+) -> list[dict[str, object]]:
+    proposed_by_row = {
+        str(row.get("row_id") or ""): row
+        for row in proposed_row_summaries
+        if str(row.get("row_id") or "")
+    }
+    annotated: list[dict[str, object]] = []
+    for unit in feedback_units:
+        row_id = str(unit.get("unit") or "").strip()
+        if not row_id:
+            annotated.append(unit)
+            continue
+        next_unit = dict(unit)
+        details = list(row_rejection_details.get(row_id) or [])
+        issue_codes = _issue_codes_from_ledger_unit(next_unit)
+        proposed = proposed_by_row.get(row_id, {})
+        proposed_status = str(proposed.get("status") or "").strip()
+        rejection_count = int(row_rejection_counts.get(row_id) or 0)
+        terminal_pressure = bool(
+            rejection_count >= 2
+            and any(code in LEDGER_TERMINAL_REPAIR_ISSUES for code in issue_codes)
+        )
+        if rejection_count:
+            next_unit["row_rejection_count"] = rejection_count
+        if proposed_status:
+            next_unit["rejected_patch_status"] = proposed_status
+        if details:
+            detail_issue_codes = []
+            rejected_targets = []
+            for detail in details:
+                code = str(detail.get("issue") or "").strip()
+                if code and code not in detail_issue_codes:
+                    detail_issue_codes.append(code)
+                target = str(detail.get("target") or detail.get("locator") or "").strip()
+                if target and target not in rejected_targets:
+                    rejected_targets.append(target)
+            if detail_issue_codes:
+                next_unit["row_rejection_issue_codes"] = detail_issue_codes[:8]
+            if rejected_targets:
+                next_unit["do_not_retry_targets_without_new_evidence"] = rejected_targets[:6]
+        if proposed_status == "mapped" and any(code in LEDGER_TERMINAL_REPAIR_ISSUES for code in issue_codes):
+            next_unit["invalid_mapped_attempt"] = True
+        if terminal_pressure:
+            next_unit["terminal_repair_required"] = True
+            if any(
+                code in issue_codes
+                for code in (
+                    "ledger_strong_candidate_manual_review_requires_contradiction",
+                    "ledger_candidate_manual_review_discharge_missing_target",
+                    "ledger_candidate_debt_open",
+                )
+            ):
+                next_unit["terminal_repair_options"] = [
+                    "mapped with the visible suggested target shape if ownership is closed",
+                    "manual_review only when it names the suggested target and a concrete post-upgrade contradiction",
+                    "fail_closed only with a concrete package-blocking candidate blocker",
+                ]
+                next_unit["repair_instruction"] = (
+                    "This ledger row has repeated candidate-debt rejection. Patch the listed suggested mapped "
+                    "row if you accept ownership. Do not preserve manual_review merely as uncertainty; "
+                    "manual_review/fail_closed must name the suggested target and a concrete post-upgrade "
+                    "contradiction or blocker."
+                )
+            elif "ledger_coverage_overlap" in issue_codes:
+                next_unit["terminal_repair_options"] = [
+                    "replace overlapping parent/child rows with exact non-overlapping mapped/manual_review rows",
+                    "use the listed multi_version_submit_shape when it is present and semantically accepted",
+                    "fail_closed only when the overlap reflects package-blocking unresolved ownership",
+                ]
+                next_unit["repair_instruction"] = (
+                    "This ledger row has repeated overlap rejection. Remove the broad parent/child overlap by "
+                    "patching exact non-overlapping local slices; when multi_version_submit_shape is listed, "
+                    "patch those row templates or an exact candidate-bearing contradiction."
+                )
+            else:
+                next_unit["terminal_repair_options"] = [
+                    "mapped with a visible legal target shape if the row ownership is actually closed",
+                    "manual_review with visible manual_review_candidate_targets when uncertainty is localized",
+                    "supplemental with concrete extra/packaging evidence",
+                    "target_absent with concrete negative target evidence",
+                    "fail_closed only when this row should block the whole package",
+                ]
+                next_unit["repair_instruction"] = (
+                    "This ledger row has repeated mechanical rejection. Patch this exact row_id to a terminal "
+                    "status that passes locator/count/coverage validation; do not retry the same invalid mapped "
+                    "target or invented target. If ownership remains uncertain but localized, use the visible "
+                    "manual_review_candidate_submit_shape or another visible candidate-bearing manual_review."
+                )
+            next_unit["closure_condition"] = (
+                "Closed when this row is terminal and no longer produces the listed mechanical issue codes."
+            )
+        annotated.append(next_unit)
+    return annotated
+
+
+def _issue_counts_from_submit_feedback(feedback: dict[str, object]) -> dict[str, object]:
+    if isinstance(feedback.get("issue_counts"), dict):
+        return dict(feedback.get("issue_counts") or {})
+    package = feedback.get("package") if isinstance(feedback.get("package"), dict) else {}
+    if isinstance(package.get("issue_counts"), dict):
+        return dict(package.get("issue_counts") or {})
+    return {}
+
+
+def _ledger_row_to_work_unit(row: ResolutionLedgerRow) -> ResolutionWorkUnit:
+    outcome_by_status = {
+        "mapped": row.mapped_outcome,
+        "manual_review": "manual_review",
+        "target_absent": "bangumi_target_absent",
+        "supplemental": "supplemental",
+        "fail_closed": "fail_closed",
+    }
+    manual_review_targets = list(row.manual_review_candidate_targets or [])
+    for candidate in list(row.must_address_candidates or []):
+        if str(candidate.discharge or "") == "manual_review" and str(candidate.target or "").strip():
+            manual_review_targets.append(str(candidate.target).strip())
+    return ResolutionWorkUnit(
+        unit_label=row.row_id,
+        local=list(row.local or []),
+        outcome=outcome_by_status.get(row.status, "fail_closed"),  # type: ignore[arg-type]
+        target=row.target if row.status == "mapped" else "",
+        episode_start=row.episode_start,
+        episode_end=row.episode_end,
+        support=list(row.support or []),
+        confidence=row.confidence,
+        reason=row.reason,
+        open_questions=list(row.open_questions or []),
+        manual_review_candidate_targets=list(dict.fromkeys(manual_review_targets)),
+    )
+
+
+def _submit_args_from_resolution_ledger(ledger: ResolutionLedger, *, dry_run: bool, reason: str) -> SubmitToolArgs:
+    terminal_rows = [
+        row
+        for row in list(ledger.rows or [])
+        if row.status in {"mapped", "manual_review", "target_absent", "supplemental", "fail_closed"}
+    ]
+    resolution = PackageResolution(
+        work_units=[_ledger_row_to_work_unit(row) for row in terminal_rows],
+        package_reason=reason or ledger.summary or "compiled from resolution ledger",
+    )
+    return SubmitToolArgs(
+        resolution=resolution,
+        repair_strategy="revise_saved_rows",
+        reason=reason or ledger.summary or "compiled from resolution ledger",
+        dry_run=dry_run,
+    )
+
+
+def _compile_resolution_ledger_to_submit_result(
+    workspace: CaseEvidenceWorkspace,
+    registry: LocatorRegistry,
+    ledger: ResolutionLedger,
+    *,
+    searched_query_variant_keys: set[str] | None = None,
+    inspected_locators: set[str] | None = None,
+) -> SubmitCompileResult:
+    main_refs = list(workspace.contract.main_file_refs or [])
+    validation_issues, row_summaries = _validate_resolution_ledger(
+        registry,
+        ledger,
+        main_refs=main_refs,
+        require_terminal=True,
+    )
+    if validation_issues:
+        issue_counts = dict(Counter(str(item.get("issue") or "ledger_issue") for item in validation_issues))
+        feedback_units = _ledger_validation_units_from_issues(validation_issues, row_summaries)
+        verifier_issues = [
+            _issue(
+                str(item.get("row_id") or "ledger"),
+                str(item.get("issue") or "ledger_validation_failed"),
+                json.dumps(item, ensure_ascii=False),
+            )
+            for item in validation_issues
+        ]
+        return SubmitCompileResult(
+            accepted=False,
+            output=None,
+            verifier=CaseVerifierResult(
+                passed=False,
+                issues=verifier_issues,
+                summary="resolution ledger mechanical validation failed",
+            ),
+            feedback={
+                "accepted": False,
+                "status": "ledger_validation_failed",
+                "issue_counts": issue_counts,
+                "issues": validation_issues[:24],
+                "row_summaries": row_summaries,
+                "package": {
+                    "issue_counts": issue_counts,
+                    "unit_mechanical_checklist": [
+                        {
+                            "unit": unit.get("unit"),
+                            "local": unit.get("local"),
+                            "target": unit.get("target"),
+                            "issue": unit.get("issue"),
+                        }
+                        for unit in feedback_units[:16]
+                    ],
+                    "mechanical_repair_hints": [
+                        "Patch the named ledger row(s), not a whole legacy submit package.",
+                        (
+                            "To split a broad parent row, reuse that row_id for one exact local slice "
+                            "and add new row_id values for the remaining exact local slices."
+                        ),
+                    ],
+                },
+                "units": feedback_units,
+            },
+        )
+
+    submit_args = _submit_args_from_resolution_ledger(
+        ledger,
+        dry_run=False,
+        reason=ledger.summary or "compiled from resolution ledger",
+    )
+    submit_result = _submit_tool(
+        workspace,
+        registry,
+        submit_args,
+        searched_query_variant_keys=searched_query_variant_keys,
+        inspected_locators=inspected_locators,
+    )
+    submit_result.feedback = {
+        **submit_result.feedback,
+        "from_resolution_ledger": True,
+        "ledger": _compact_resolution_ledger(ledger),
+    }
+    return submit_result
+
+
+def _patch_resolution_ledger(
+    current: ResolutionLedger,
+    patch_rows: list[ResolutionLedgerRow],
+    *,
+    reason: str,
+) -> ResolutionLedger:
+    by_id: dict[str, ResolutionLedgerRow] = {
+        str(row.row_id or f"LR{index}"): row
+        for index, row in enumerate(list(current.rows or []), start=1)
+    }
+    order: list[str] = [
+        str(row.row_id or f"LR{index}")
+        for index, row in enumerate(list(current.rows or []), start=1)
+    ]
+    for patch_index, patch_row in enumerate(list(patch_rows or []), start=1):
+        row_id = str(patch_row.row_id or "").strip()
+        if not row_id:
+            row_id = f"LR{len(order) + patch_index}"
+            patch_row = patch_row.model_copy(update={"row_id": row_id})
+        if row_id not in by_id:
+            order.append(row_id)
+        by_id[row_id] = patch_row
+    return ResolutionLedger(
+        rows=[by_id[row_id] for row_id in order if row_id in by_id],
+        version=int(current.version or 0) + 1,
+        summary=reason or current.summary,
+    )
+
+
+def _ledger_with_replaced_parent_rows_pruned(
+    registry: LocatorRegistry,
+    current: ResolutionLedger,
+    proposed: ResolutionLedger,
+    patch_rows: list[ResolutionLedgerRow],
+) -> ResolutionLedger:
+    if not patch_rows:
+        return proposed
+    rows_to_remove: set[str] = set()
+    proposed_child_refs_by_locator: list[tuple[str, str, set[str]]] = []
+    for proposed_row in list(proposed.rows or []):
+        proposed_row_id = str(proposed_row.row_id or "").strip()
+        for raw_local in list(proposed_row.local or []):
+            refs, _issues, canonical = _file_refs_for_locators(registry, [str(raw_local or "")])
+            for local in canonical or [raw_local]:
+                local_text = str(local or "").strip()
+                if local_text:
+                    proposed_child_refs_by_locator.append((proposed_row_id, local_text, set(refs)))
+    if not proposed_child_refs_by_locator:
+        return proposed
+
+    for candidate_parent_row in list(proposed.rows or []):
+        row_id = str(candidate_parent_row.row_id or "").strip()
+        if not row_id:
+            continue
+        parent_refs, _issues, parent_locals = _file_refs_for_locators(
+            registry,
+            list(candidate_parent_row.local or []),
+        )
+        parent_ref_set = set(parent_refs)
+        if len(parent_ref_set) <= 1:
+            continue
+        child_ref_union: set[str] = set()
+        for parent_local in parent_locals or list(candidate_parent_row.local or []):
+            parent_local_text = str(parent_local or "").strip()
+            if not parent_local_text:
+                continue
+            for proposed_row_id, patch_local, patch_refs in proposed_child_refs_by_locator:
+                if proposed_row_id == row_id:
+                    continue
+                if patch_local == parent_local_text:
+                    continue
+                patch_refs_in_parent = patch_refs.intersection(parent_ref_set)
+                if not patch_refs_in_parent:
+                    continue
+                is_descendant_scope = _local_locator_scope_matches(patch_local, parent_local_text)
+                is_ref_child = patch_refs_in_parent == patch_refs and patch_refs != parent_ref_set
+                if is_descendant_scope or is_ref_child:
+                    child_ref_union.update(patch_refs_in_parent)
+        if parent_ref_set and parent_ref_set.issubset(child_ref_union):
+            rows_to_remove.add(row_id)
+    if not rows_to_remove:
+        return proposed
+    return ResolutionLedger(
+        rows=[
+            row
+            for row in list(proposed.rows or [])
+            if str(row.row_id or "").strip() not in rows_to_remove
+        ],
+        version=int(proposed.version or 0),
+        summary=proposed.summary,
+    )
+
+
+def _ledger_with_revise_overlap_rows_pruned(
+    registry: LocatorRegistry,
+    current: ResolutionLedger,
+    proposed: ResolutionLedger,
+    patch_rows: list[ResolutionLedgerRow],
+    *,
+    repair_strategy: str,
+) -> ResolutionLedger:
+    if repair_strategy != "revise_saved_rows" or not patch_rows:
+        return proposed
+    patch_row_ids = {str(row.row_id or "").strip() for row in patch_rows if str(row.row_id or "").strip()}
+    patch_ref_union: set[str] = set()
+    for row in patch_rows:
+        refs, _issues, _canonical = _file_refs_for_locators(registry, list(row.local or []))
+        patch_ref_union.update(str(ref) for ref in refs)
+    if not patch_ref_union:
+        return proposed
+
+    current_row_ids = {
+        str(row.row_id or "").strip()
+        for row in list(current.rows or [])
+        if str(row.row_id or "").strip()
+    }
+    rows_to_remove: set[str] = set()
+    for row in list(proposed.rows or []):
+        row_id = str(row.row_id or "").strip()
+        if not row_id or row_id in patch_row_ids or row_id not in current_row_ids:
+            continue
+        refs, _issues, _canonical = _file_refs_for_locators(registry, list(row.local or []))
+        ref_set = {str(ref) for ref in refs}
+        if ref_set and ref_set.issubset(patch_ref_union):
+            rows_to_remove.add(row_id)
+    if not rows_to_remove:
+        return proposed
+    return ResolutionLedger(
+        rows=[
+            row
+            for row in list(proposed.rows or [])
+            if str(row.row_id or "").strip() not in rows_to_remove
+        ],
+        version=int(proposed.version or 0),
+        summary=proposed.summary,
+    )
+
+
+def _patch_ledger_tool(
+    registry: LocatorRegistry,
+    session: HumanCaseSession,
+    args: PatchLedgerToolArgs,
+    *,
+    main_refs: list[str],
+) -> tuple[HumanCaseSession, dict[str, object], bool]:
+    patch_rows = list(args.rows or [])
+    suggested_shape_guard = _patch_ledger_suggested_shape_guard(registry, session, patch_rows)
+    if suggested_shape_guard:
+        session = replace(
+            session,
+            resolution_ledger_rejection_count=session.resolution_ledger_rejection_count + 1,
+        )
+        return session, suggested_shape_guard, False
+    latest_repair = _latest_submit_repair_observation(session)
+    current_ledger = _ledger_with_repair_candidate_debt(registry, session.resolution_ledger, latest_repair)
+    proposed_ledger = _patch_resolution_ledger(current_ledger, patch_rows, reason=args.reason)
+    proposed_ledger = _ledger_with_replaced_parent_rows_pruned(registry, current_ledger, proposed_ledger, patch_rows)
+    proposed_ledger = _ledger_with_revise_overlap_rows_pruned(
+        registry,
+        current_ledger,
+        proposed_ledger,
+        patch_rows,
+        repair_strategy=args.repair_strategy,
+    )
+    proposed_ledger = _ledger_with_persisted_candidate_debt(registry, current_ledger, proposed_ledger)
+    proposed_ledger = _ledger_with_repair_candidate_debt(registry, proposed_ledger, latest_repair)
+    validation_issues, proposed_row_summaries = _validate_resolution_ledger(
+        registry,
+        proposed_ledger,
+        main_refs=main_refs,
+        require_terminal=False,
+    )
+    row_issue_ids: set[str] = set()
+    for issue in validation_issues:
+        row_id = str(issue.get("row_id") or "").strip()
+        if row_id:
+            row_issue_ids.add(row_id)
+        for item in list(issue.get("row_ids") or []):
+            item_text = str(item or "").strip()
+            if item_text:
+                row_issue_ids.add(item_text)
+    row_rejection_details = _ledger_rejection_details_by_row(validation_issues)
+    valid_patch_rows = [
+        row
+        for row in patch_rows
+        if str(row.row_id or "").strip() and str(row.row_id or "").strip() not in row_issue_ids
+    ]
+    partial = bool(validation_issues and valid_patch_rows)
+    updated_ledger = proposed_ledger
+    row_summaries = proposed_row_summaries
+    save_issues: list[dict[str, object]] = []
+    if validation_issues and valid_patch_rows:
+        updated_ledger = _patch_resolution_ledger(current_ledger, valid_patch_rows, reason=args.reason)
+        updated_ledger = _ledger_with_replaced_parent_rows_pruned(registry, current_ledger, updated_ledger, valid_patch_rows)
+        updated_ledger = _ledger_with_revise_overlap_rows_pruned(
+            registry,
+            current_ledger,
+            updated_ledger,
+            valid_patch_rows,
+            repair_strategy=args.repair_strategy,
+        )
+        updated_ledger = _ledger_with_persisted_candidate_debt(registry, current_ledger, updated_ledger)
+        updated_ledger = _ledger_with_repair_candidate_debt(registry, updated_ledger, latest_repair)
+        save_issues, row_summaries = _validate_resolution_ledger(
+            registry,
+            updated_ledger,
+            main_refs=main_refs,
+            require_terminal=False,
+        )
+        blocking_save_issues = [
+            issue
+            for issue in save_issues
+            if str(issue.get("issue") or "") != "ledger_coverage_missing"
+        ]
+        if blocking_save_issues:
+            valid_patch_rows = []
+            partial = False
+    accepted = not validation_issues or bool(valid_patch_rows)
+    next_row_rejection_counts = dict(session.resolution_ledger_row_rejection_counts)
+    saved_row_ids = {
+        str(row.row_id or "").strip()
+        for row in (valid_patch_rows if validation_issues else patch_rows)
+        if str(row.row_id or "").strip()
+    }
+    for row_id in saved_row_ids:
+        next_row_rejection_counts.pop(row_id, None)
+    for row_id in row_rejection_details:
+        next_row_rejection_counts[row_id] = int(next_row_rejection_counts.get(row_id) or 0) + 1
+    ledger_rejection_fingerprint = _ledger_validation_fingerprint(validation_issues) if validation_issues else ""
+    repeated_ledger_rejection = bool(
+        ledger_rejection_fingerprint
+        and ledger_rejection_fingerprint == session.last_resolution_ledger_rejection_fingerprint
+    )
+    repeated_ledger_rejection_count = (
+        session.repeated_resolution_ledger_rejection_count + 1
+        if repeated_ledger_rejection
+        else 0
+    )
+    ledger_rejection_session_update = {
+        "resolution_ledger_row_rejection_counts": next_row_rejection_counts,
+        "last_resolution_ledger_rejection_fingerprint": ledger_rejection_fingerprint,
+        "repeated_resolution_ledger_rejection_count": repeated_ledger_rejection_count,
+    }
+    if accepted:
+        session = replace(
+            session,
+            resolution_ledger=updated_ledger,
+            resolution_ledger_revision_count=session.resolution_ledger_revision_count + 1,
+            **ledger_rejection_session_update,
+        )
+    else:
+        session = replace(
+            session,
+            resolution_ledger_rejection_count=session.resolution_ledger_rejection_count + 1,
+            **ledger_rejection_session_update,
+        )
+    terminal_statuses = {"mapped", "manual_review", "target_absent", "supplemental", "fail_closed"}
+    nonterminal_rows = [
+        row.row_id
+        for row in list(updated_ledger.rows or [])
+        if row.status not in terminal_statuses
+    ]
+    issue_counts = dict(Counter(str(item.get("issue") or "ledger_issue") for item in validation_issues))
+    feedback_units = _ledger_validation_units_from_issues(validation_issues, proposed_row_summaries)
+    feedback_units = _annotate_ledger_units_with_rejection_pressure(
+        feedback_units,
+        row_rejection_details=row_rejection_details,
+        row_rejection_counts=session.resolution_ledger_row_rejection_counts,
+        proposed_row_summaries=proposed_row_summaries,
+    )
+    terminal_repair_units = [
+        unit
+        for unit in feedback_units
+        if isinstance(unit, dict) and unit.get("terminal_repair_required")
+    ]
+    output_ledger = updated_ledger if accepted else session.resolution_ledger
+    output_row_summaries = row_summaries
+    if not accepted:
+        _saved_issues, output_row_summaries = _validate_resolution_ledger(
+            registry,
+            session.resolution_ledger,
+            main_refs=main_refs,
+            require_terminal=False,
+        )
+        nonterminal_rows = [
+            row.row_id
+            for row in list(session.resolution_ledger.rows or [])
+            if row.status not in terminal_statuses
+        ]
+    output = {
+        "accepted": accepted,
+        "partial": partial,
+        "tool": "patch_ledger",
+        "ledger_version": int(output_ledger.version or 0),
+        "ledger": _compact_resolution_ledger(output_ledger),
+        "row_summaries": output_row_summaries,
+        "rejected_proposed_row_summaries": proposed_row_summaries if validation_issues else [],
+        "issue_counts": issue_counts,
+        "issues": validation_issues[:24],
+        "package": {
+            "issue_counts": issue_counts,
+            "unit_mechanical_checklist": [
+                {
+                    "unit": unit.get("unit"),
+                    "local": unit.get("local"),
+                    "target": unit.get("target"),
+                    "issue": unit.get("issue"),
+                }
+                for unit in feedback_units[:16]
+            ],
+            "mechanical_repair_hints": [
+                "Patch the named ledger row(s), not a whole legacy submit package.",
+                (
+                    "To split a broad parent row, reuse that row_id for one exact local slice "
+                    "and add new row_id values for the remaining exact local slices."
+                ),
+                (
+                    "For terminal_repair_required candidate-debt rows, prefer the listed mapped template; "
+                    "manual_review/fail_closed must name the suggested target and a concrete contradiction or blocker."
+                )
+                if terminal_repair_units
+                else "",
+            ],
+            "ledger_terminal_repair_rows": terminal_repair_units[:8],
+        },
+        "units": feedback_units,
+        "saved_row_count": len(valid_patch_rows) if validation_issues else len(patch_rows),
+        "rejected_row_ids": sorted(row_issue_ids)[:24],
+        "save_issue_counts": dict(Counter(str(item.get("issue") or "ledger_issue") for item in save_issues)),
+        "save_issues": save_issues[:12],
+        "nonterminal_row_ids": nonterminal_rows[:24],
+        "complete": accepted and not validation_issues and not nonterminal_rows,
+        "row_rejection_counts": {
+            row_id: count
+            for row_id, count in sorted(session.resolution_ledger_row_rejection_counts.items())
+            if count
+        },
+        "required_next_action": (
+            "Some ledger rows were saved; patch only rejected_row_ids and keep saved rows unchanged."
+            if partial
+            else "Patch terminal_repair_required row(s) to terminal status; do not retry the same invalid mapped target."
+            if terminal_repair_units
+            else "Fix the ledger issues before adding semantic decisions."
+            if validation_issues
+            else "Patch remaining open/evidence_required/candidate_must_address rows."
+            if nonterminal_rows
+            else "Ledger is terminal; the fixed layer will compile it into the final package."
+        ),
+    }
+    output["package"]["mechanical_repair_hints"] = [
+        item
+        for item in list(output["package"].get("mechanical_repair_hints") or [])
+        if str(item or "").strip()
+    ]
+    if repeated_ledger_rejection:
+        output["repeat_rejection_warning"] = {
+            "issue": "same_ledger_rejection_repeated",
+            "repeat_count": repeated_ledger_rejection_count,
+            "message": (
+                "The same ledger patch rejection repeated. Do not retry the same mapped target/range; "
+                "patch the listed row(s) to a mechanically valid terminal status or gather the named evidence first."
+            ),
+        }
+    if validation_issues:
+        repair_agenda = _repair_agenda_from_submit_feedback(output, repeated=repeated_ledger_rejection)
+        for key in (
+            "blocking_units",
+            "diagnostic_units",
+            "ledger_terminal_repair_rows",
+            "visible_target_surface_missing_units",
+            "blocking_target_surface_actions",
+            "diagnostic_target_surface_actions",
+            "rejected_or_noisy_actions",
+            "repair_frontier",
+            "recovery_no_high_quality_action",
+        ):
+            if repair_agenda.get(key):
+                output[key] = repair_agenda.get(key)
+        strong_suggested_rows = _strong_suggested_ledger_patch_rows_from_repair(session, output, limit=12)
+        if strong_suggested_rows:
+            output["must_address_suggested_ledger_patch_rows"] = strong_suggested_rows
+            output["suggested_ledger_patch_rows"] = strong_suggested_rows
+            output["required_next_action"] = (
+                "Patch the listed must_address_suggested_ledger_patch_rows with repair_strategy=revise_saved_rows, "
+                "copying each row_id/local/status/target template exactly if you semantically accept ownership, "
+                "or patch exact manual_review/fail_closed rows that name the suggested target and concrete "
+                "post-upgrade contradiction. Do not preserve broad manual_review/supplemental rows while this "
+                "candidate debt is open."
+            )
+        else:
+            suggested_rows = _suggested_ledger_patch_rows_from_repair(session, output, limit=12)
+            if suggested_rows:
+                output["suggested_ledger_patch_rows"] = suggested_rows
+                output["required_next_action"] = (
+                    "Patch the listed suggested_ledger_patch_rows with repair_strategy=revise_saved_rows, "
+                    "or patch an equivalent terminal ledger shape that covers the same local refs exactly once."
+                )
+    return session, output, bool(accepted and not validation_issues and not nonterminal_rows)
+
+
+def _manual_review_candidate_targets_for_unit(
+    registry: LocatorRegistry,
+    *,
+    local_locators: list[str],
+    local_file_count: int,
+    demoted_targets: set[str] | None = None,
+) -> list[str]:
+    candidates: list[str] = []
+    seen: set[str] = set()
+    demoted_target_keys = {
+        str(item or "").strip().casefold()
+        for item in (demoted_targets or set())
+        if str(item or "").strip()
+    }
+
+    def append(locator_text: str) -> None:
+        locator_text = str(locator_text or "").strip()
+        if not locator_text:
+            return
+        locator, issue = registry.resolve(locator_text)
+        if issue or locator is None or locator.kind not in {"target_subject", "target_episode", "target_span"}:
+            return
+        key = locator.locator.casefold()
+        if key in seen:
+            return
+        seen.add(key)
+        candidates.append(locator.locator)
+
+    local_cards: list[AgentLocator] = []
+    special_parent_cards: list[AgentLocator] = []
+    for raw in list(local_locators or []):
+        locator, issue = registry.resolve(str(raw))
+        if issue or locator is None or locator.kind != "local":
+            continue
+        local_cards.append(locator)
+        parent = registry.locators.get(_episode_slice_parent_locator(locator.locator)) or locator
+        if parent.locator.rsplit("/", 1)[-1] == "special-marker" and parent.episode_file_refs:
+            special_parent_cards.append(parent)
+    if not local_cards:
+        return candidates
+
+    local_tokens: set[str] = set()
+    local_season_hints: set[int] = set()
+    local_unseasoned = False
+    for locator in [*local_cards, *special_parent_cards]:
+        local_tokens.update(_locator_distinctive_tokens(locator))
+        season_hint = _title_season_number_hint(locator.title)
+        if season_hint is None:
+            local_unseasoned = True
+        else:
+            local_season_hints.add(season_hint)
+    generic_local_tokens = {"sp", "sps", "special", "specials", "marker", "episode", "episodes"}
+    local_tokens = {
+        token
+        for token in local_tokens
+        if token not in generic_local_tokens and not re.fullmatch(r"sp\d{1,3}", token)
+    }
+    scored_candidates: list[tuple[int, str]] = []
+    for target in registry.locators.values():
+        if target.kind != "target_subject" or not target.subject_id:
+            continue
+        if target.subject_eps <= 0:
+            continue
+        target_season = _title_season_number_hint(target.title)
+        if local_season_hints:
+            if target_season not in local_season_hints:
+                continue
+        elif local_unseasoned and target_season is not None:
+            continue
+        target_tokens = _target_visible_title_tokens(target).union(_target_query_distinctive_tokens(target))
+        related = target.relation_quality == "owner_relevant_related"
+        title_bridge = bool(local_tokens.intersection(target_tokens))
+        count_close = abs(int(target.subject_eps or 0) - int(local_file_count or 0)) <= 1
+        if not related and not title_bridge:
+            continue
+        if not count_close and not title_bridge:
+            continue
+        episode_numbers = _target_episode_numbers_for_subject(registry, int(target.subject_id or 0))
+        if episode_numbers:
+            start = int(min(episode_numbers))
+            end = int(max(episode_numbers))
+            if start == end:
+                target_locator = f"{target.locator}/episode/{start}"
+            else:
+                target_locator = f"{target.locator}/episodes/{start}-{end}"
+        else:
+            target_locator = target.locator
+        if (
+            target.locator.casefold() in demoted_target_keys
+            or target_locator.casefold() in demoted_target_keys
+            or any(_locator_same_scope(target.locator, demoted) for demoted in demoted_targets or set())
+            or any(_locator_same_scope(target_locator, demoted) for demoted in demoted_targets or set())
+        ):
+            continue
+        score = 0
+        if int(target.subject_eps or 0) == int(local_file_count or 0):
+            score += 1000
+        elif count_close:
+            score += 600
+        if related:
+            score += 300
+        if title_bridge:
+            score += 250
+        if _target_visible_title_tokens(target).intersection(local_tokens):
+            score += 100
+        scored_candidates.append((score, target_locator))
+    scored_candidates.sort(key=lambda item: (-item[0], item[1]))
+    for _score, target_locator in scored_candidates[:4]:
+        append(target_locator)
+    return candidates
 
 
 _MEDIA_FORM_ALIASES: dict[str, tuple[str, ...]] = {
@@ -3816,6 +7032,77 @@ def _local_target_title_pairing_options_for_slice(
     return options[:limit]
 
 
+def _local_target_title_pairing_options_for_locators(
+    registry: LocatorRegistry,
+    locators: list[str],
+    *,
+    limit: int = 12,
+    demoted_targets: set[str] | None = None,
+) -> list[dict[str, object]]:
+    """Expose title-pairing options for parent or exact local episode locators."""
+
+    options: list[dict[str, object]] = []
+    seen: set[tuple[str, str]] = set()
+    cleaned_locators = [str(locator or "").strip() for locator in locators if str(locator or "").strip()]
+    if not cleaned_locators:
+        return []
+    per_locator_limit = max(4, min(limit, 6))
+    for raw in cleaned_locators:
+        locator, issue = registry.resolve(raw)
+        if issue or locator is None or locator.kind != "local":
+            continue
+        parent = _episode_slice_parent_locator(locator.locator)
+        if parent and parent != locator.locator:
+            locator_options = _local_target_title_pairing_options_for_slice(
+                registry,
+                locator.locator,
+                limit=per_locator_limit,
+                demoted_targets=demoted_targets,
+            )
+        else:
+            locator_options = _local_target_title_pairing_options(
+                registry,
+                [locator.locator],
+                limit=per_locator_limit,
+                demoted_targets=demoted_targets,
+            )
+        for item in locator_options:
+            local_slice = str(item.get("local_slice") or "").strip()
+            target = str(item.get("target") or item.get("target_subject") or "").strip()
+            if not local_slice or not target:
+                continue
+            key = (local_slice.casefold(), target.casefold())
+            if key in seen:
+                continue
+            seen.add(key)
+            options.append(item)
+            if len(options) >= limit:
+                return options[:limit]
+    return options[:limit]
+
+
+def _expected_local_slices_for_pairing_options(
+    registry: LocatorRegistry,
+    locators: list[str],
+) -> set[str]:
+    expected: set[str] = set()
+    for raw in locators:
+        locator, issue = registry.resolve(str(raw or ""))
+        if issue or locator is None or locator.kind != "local":
+            continue
+        parent = _episode_slice_parent_locator(locator.locator)
+        if parent and parent != locator.locator:
+            expected.add(locator.locator)
+            continue
+        triples = _episode_label_triples(locator)
+        if triples:
+            for number, _ref, _label in triples:
+                expected.add(f"{locator.locator}/episode/{int(number)}")
+        else:
+            expected.add(locator.locator)
+    return expected
+
+
 def _local_slice_mapping_options_from_title_pairings(
     pairing_options: list[dict[str, object]],
     *,
@@ -3858,6 +7145,129 @@ def _local_slice_mapping_options_from_title_pairings(
         )
         if len(options) >= limit:
             break
+    return options
+
+
+def _local_slice_sort_key(locator: object) -> tuple[int, str]:
+    text = str(locator or "")
+    match = re.search(r"/episode/(\d+)(?:/|$)", text)
+    return (int(match.group(1)) if match else 10**9, text)
+
+
+def _ordered_media_form_slice_mapping_options_from_pairings(
+    pairing_options: list[dict[str, object]],
+    *,
+    limit: int = 8,
+) -> list[dict[str, object]]:
+    if not pairing_options:
+        return []
+    local_slices = sorted(
+        {
+            str(item.get("local_slice") or "").strip()
+            for item in pairing_options
+            if str(item.get("local_slice") or "").strip()
+        },
+        key=_local_slice_sort_key,
+    )
+    if not (2 <= len(local_slices) <= 4):
+        return []
+    form_pairings = [
+        item
+        for item in pairing_options
+        if isinstance(item, dict)
+        and str(item.get("target") or "").strip()
+        and str(item.get("local_slice") or "").strip()
+        and list(item.get("shared_media_form_tokens") or [])
+        and list(item.get("shared_context_title_tokens") or item.get("shared_title_tokens") or [])
+    ]
+    if not form_pairings:
+        return []
+    if any("recap" in {str(token or "").casefold() for token in list(item.get("shared_media_form_tokens") or [])} for item in form_pairings):
+        form_pairings = [
+            item
+            for item in form_pairings
+            if "recap" in {str(token or "").casefold() for token in list(item.get("shared_media_form_tokens") or [])}
+        ]
+    max_form_count = max(len(set(str(token or "").casefold() for token in list(item.get("shared_media_form_tokens") or []))) for item in form_pairings)
+    form_pairings = [
+        item
+        for item in form_pairings
+        if len(set(str(token or "").casefold() for token in list(item.get("shared_media_form_tokens") or []))) == max_form_count
+    ]
+    targets_by_locator: dict[str, dict[str, object]] = {}
+    slices_by_target: dict[str, set[str]] = defaultdict(set)
+    for item in form_pairings:
+        target = str(item.get("target") or "").strip()
+        local_slice = str(item.get("local_slice") or "").strip()
+        if not target or not local_slice:
+            continue
+        targets_by_locator.setdefault(target, item)
+        slices_by_target[target].add(local_slice)
+    candidate_targets = sorted(targets_by_locator, key=lambda value: str(value))
+    if len(candidate_targets) != len(local_slices):
+        return []
+    required_slices = set(local_slices)
+    if any(slices_by_target.get(target, set()) != required_slices for target in candidate_targets):
+        return []
+    options: list[dict[str, object]] = []
+    for local_slice, target in zip(local_slices, candidate_targets):
+        item = targets_by_locator[target]
+        options.append(
+            {
+                "local": local_slice,
+                "target": target,
+                "outcome": "mapped_explicit_item",
+                "target_subject": item.get("target_subject"),
+                "target_title": item.get("target_title"),
+                "local_label": item.get("local_label"),
+                "shared_title_tail_tokens": item.get("shared_title_tail_tokens") or [],
+                "shared_source_query_tail_tokens": item.get("shared_source_query_tail_tokens") or [],
+                "shared_media_form_tokens": item.get("shared_media_form_tokens") or [],
+                "target_source_query_texts": item.get("target_source_query_texts") or [],
+                "ordered_media_form_pairing": True,
+                "required": (
+                    "Ordered same-count media-form candidate: the local parent exposes ordered slices and the target "
+                    "side exposes the same number of single-item title-family/media-form candidates. This is a "
+                    "candidate shape for Agent judgment, not a fixed-layer semantic assignment."
+                ),
+            }
+        )
+        if len(options) >= limit:
+            break
+    return options
+
+
+def _one_mapping_option_per_local_slice(mapping_options: list[dict[str, object]]) -> list[dict[str, object]]:
+    options: list[dict[str, object]] = []
+    options_by_local: dict[str, list[dict[str, object]]] = defaultdict(list)
+    local_order: list[str] = []
+    for item in mapping_options:
+        if not isinstance(item, dict):
+            continue
+        local = str(item.get("local") or "").strip().casefold()
+        if not local:
+            continue
+        if local not in options_by_local:
+            local_order.append(local)
+        options_by_local[local].append(item)
+    used_targets: set[str] = set()
+    for local in local_order:
+        choices = options_by_local.get(local) or []
+        selected = next(
+            (
+                item
+                for item in choices
+                if str(item.get("target") or "").strip().casefold()
+                not in used_targets
+            ),
+            choices[0] if choices else None,
+        )
+        if not selected:
+            continue
+        target = str(selected.get("target") or "").strip().casefold()
+        if target:
+            used_targets.add(target)
+        options.append(selected)
     return options
 
 
@@ -4238,7 +7648,11 @@ def _local_locator_feedback(registry: LocatorRegistry, locators: list[str]) -> l
             ),
             "representative_labels": list(locator.representative_labels[:4]),
         }
-        row.update(_episode_locator_hints(locator.locator, locator.episode_file_refs))
+        row.update(_episode_locator_hints(
+            locator.locator,
+            locator.episode_file_refs,
+            episode_labels={ref: label for _num, ref, label in _episode_label_triples(locator)},
+        ))
         rows.append(row)
     return rows
 
@@ -4256,6 +7670,7 @@ def _local_episode_split_options_from_feedback(
         raw_options = [
             *list(detail.get("common_split_examples") or []),
             *list(detail.get("suggested_episode_slices") or []),
+            *list(detail.get("duplicate_episode_variant_locators") or []),
             *list(detail.get("episode_locators") or []),
         ]
         for option in raw_options:
@@ -4505,7 +7920,11 @@ def _local_locator_hints_for_refs(registry: LocatorRegistry, refs: list[str], *,
         }
         if locator.episode_file_refs:
             row["suggested_episode_slices"] = _episode_slice_locators(locator, refset)[:6]
-            row.update(_episode_locator_hints(locator.locator, locator.episode_file_refs))
+            row.update(_episode_locator_hints(
+                locator.locator,
+                locator.episode_file_refs,
+                episode_labels={ref: label for _num, ref, label in _episode_label_triples(locator)},
+            ))
         hints.append(row)
         if len(hints) >= limit:
             break
@@ -4533,6 +7952,7 @@ def _missing_work_unit_repairs(missing_locator_hints: list[dict[str, object]]) -
                     "bangumi_target_absent",
                     "supplemental",
                     "non_bangumi",
+                    "manual_review",
                     "fail_closed",
                 ],
                 "suggested_episode_slices": item.get("suggested_episode_slices") or [],
@@ -4747,6 +8167,92 @@ def _target_locator_feedback(registry: LocatorRegistry, target: str, target_refs
         "target_item_count": len(target_refs),
         "target_item_locators": [_target_item_locator_for_ref(registry, ref) for ref in target_refs[:12]],
         "available_target_episode_numbers": _target_episode_numbers_for_subject(registry, locator.subject_id)[:64],
+    }
+
+
+def _single_file_multi_episode_item_repair(
+    registry: LocatorRegistry,
+    *,
+    unit: ResolutionWorkUnit,
+    local_refs: list[str],
+    target_refs: list[str],
+    canonical_locators: list[str],
+    canonical_target: str,
+) -> dict[str, object]:
+    if (
+        len(local_refs) != 1
+        or len(target_refs) != 1
+        or unit.outcome == "mapped_composite_feature"
+        or not unit.outcome.startswith("mapped_")
+    ):
+        return {}
+    target_locator, target_issue = registry.resolve(canonical_target)
+    if target_issue or target_locator is None or not target_locator.subject_id:
+        return {}
+    subject_episode_numbers = _target_episode_numbers_for_subject(registry, target_locator.subject_id)
+    subject_episode_count = max(len(subject_episode_numbers), int(getattr(target_locator, "subject_eps", 0) or 0))
+    if subject_episode_count <= 1:
+        return {}
+    target_start = int(getattr(target_locator, "episode_start", 0) or 0)
+    target_end = int(getattr(target_locator, "episode_end", 0) or target_start or 0)
+    if target_start and target_end and target_start != target_end:
+        return {}
+
+    resolved_local: list[AgentLocator] = []
+    for raw in canonical_locators:
+        local_locator, local_issue = registry.resolve(raw)
+        if local_issue or local_locator is None or local_locator.kind != "local":
+            return {}
+        resolved_local.append(local_locator)
+    local_episode_numbers = sorted({
+        int(num)
+        for locator in resolved_local
+        for num, _ref in locator.episode_file_refs
+        if str(num).strip()
+    })
+    explicit_local_episode = any(locator.episode_start is not None for locator in resolved_local)
+    if explicit_local_episode or local_episode_numbers:
+        return {}
+
+    target_subject_locator = registry.subject_locator_by_id.get(target_locator.subject_id, "")
+    local_locator_details = _local_locator_feedback(registry, canonical_locators)
+    return {
+        "issue": "single_file_multi_episode_subject_item",
+        "local_count": len(local_refs),
+        "target_count": len(target_refs),
+        "target": canonical_target,
+        "target_subject": target_subject_locator,
+        "target_subject_episode_count": subject_episode_count,
+        "selected_target_episode_start": target_start,
+        "selected_target_episode_end": target_end,
+        "local": canonical_locators,
+        "local_locator_details": local_locator_details,
+        "target_locator_details": _target_locator_feedback(registry, canonical_target, target_refs),
+        "same_count_target_span_candidates": _same_count_target_span_candidates(
+            registry,
+            target=canonical_target,
+            local_locators=canonical_locators,
+            local_count=len(local_refs),
+        ),
+        "single_file_target_item_options": _single_file_target_item_options(
+            registry,
+            target=canonical_target,
+            local_locators=canonical_locators,
+            local_count=len(local_refs),
+        ),
+        "required": (
+            "A single local file without a matching local episode cue cannot use one episode item from a multi-episode "
+            "subject as a stand-in for the whole subject. If the file is a compilation, submit mapped_composite_feature "
+            "with the visible multi-item target span and cite evidence that the file covers that span. If it is duplicate "
+            "or alternate packaging, say so explicitly. If the remaining uncertainty should be reviewed by a human, use "
+            "manual_review so the rest of the package can still be accepted."
+        ),
+        "actionable_options": [
+            "Use the selected target episode only when the local file visibly identifies that exact episode.",
+            "Use mapped_composite_feature with target://.../episodes/A-B only if the one local file covers multiple visible target items.",
+            "If split episode files elsewhere in the package own that target span, mark this singleton as duplicate/alternate packaging or fail_closed with cited evidence.",
+            "If evidence is insufficient but the rest of the package is safe, submit manual_review for this singleton instead of mapping it to episode 1 by title alone.",
+        ],
     }
 
 
@@ -5054,11 +8560,37 @@ def _submit_args_with_saved_draft(
     return SubmitToolArgs(resolution=resolution, reason=args.reason, dry_run=args.dry_run)
 
 
+def _repair_with_flat_package_fields(repair: dict[str, object]) -> dict[str, object]:
+    """Expose package-level submit feedback at the shape repair helpers expect."""
+    flattened = dict(repair)
+    package = repair.get("package") if isinstance(repair.get("package"), dict) else {}
+    for key, value in package.items():
+        existing = flattened.get(key)
+        if existing in (None, "", [], {}):
+            flattened[key] = value
+        elif key not in flattened:
+            flattened[key] = value
+    return flattened
+
+
 def _latest_submit_repair_observation(session: HumanCaseSession) -> dict[str, object]:
     for item in reversed(session.observations):
-        if isinstance(item, dict) and item.get("tool") == "submit":
-            output = item.get("output")
-            return dict(output) if isinstance(output, dict) else {}
+        if not isinstance(item, dict):
+            continue
+        output = item.get("output")
+        if item.get("tool") == "patch_ledger" and isinstance(output, dict):
+            compiled = output.get("compiled_submit_feedback")
+            if isinstance(compiled, dict):
+                return _repair_with_flat_package_fields({
+                    **dict(compiled),
+                    "accepted": bool(output.get("compiled_submit_accepted")),
+                    "from_patch_ledger": True,
+                    "ledger": output.get("ledger"),
+                })
+            if not output.get("accepted"):
+                return _repair_with_flat_package_fields(dict(output))
+        if item.get("tool") == "submit":
+            return _repair_with_flat_package_fields(dict(output)) if isinstance(output, dict) else {}
     return {}
 
 
@@ -5096,8 +8628,8 @@ def _immediate_repair_focus(session: HumanCaseSession) -> dict[str, object]:
     focus: dict[str, object] = {
         "status": "open",
         "mechanical_constraint": (
-            "The next corrected submit must resolve these exact mechanical gaps. "
-            "Saved mechanically-ok work units are merged automatically; do not resubmit the full package unless you are changing it."
+            "The next corrected ledger patch must resolve these exact mechanical gaps. "
+            "Do not repatch terminal rows unless you are changing them."
         ),
     }
     if required_missing:
@@ -5108,10 +8640,10 @@ def _immediate_repair_focus(session: HumanCaseSession) -> dict[str, object]:
                 "choose_outcome": item.get("choose_outcome"),
                 "suggested_episode_slices": item.get("suggested_episode_slices") or [],
                 "submit_shape": {
-                    "unit_label": "choose a concise label for this missing local locator",
+                    "row_id": "choose or reuse the ledger row id for this missing local locator",
                     "local": item.get("local"),
-                    "outcome": "choose one value from choose_outcome",
-                    "target": "only if you choose a mapped_* outcome",
+                    "status": "choose mapped/manual_review/target_absent/supplemental/fail_closed",
+                    "target": "only if you choose status=mapped",
                     "support": "optional visible local:// or target:// locators",
                     "reason": "required concrete reason for the chosen outcome",
                 },
@@ -5120,7 +8652,7 @@ def _immediate_repair_focus(session: HumanCaseSession) -> dict[str, object]:
         ]
         focus["coverage_rule"] = (
             "Every listed local locator is still missing from the merged package resolution. "
-            "Include each one exactly once in resolution.work_units, or include one of its suggested local episode slices "
+            "Include each one exactly once in the resolution ledger, or include one of its suggested local episode slices "
             "only if that slice covers the missing files you intend to resolve."
         )
     if duplicate_repairs:
@@ -5166,6 +8698,48 @@ def _immediate_repair_focus(session: HumanCaseSession) -> dict[str, object]:
     ]
     if mapped_bridge_repairs:
         focus["mapped_target_title_bridge_repairs"] = mapped_bridge_repairs[:6]
+    mapped_numbered_special_repairs = [
+        item
+        for item in list(repair.get("mapped_numbered_special_related_count_repairs") or [])
+        if isinstance(item, dict)
+    ]
+    if mapped_numbered_special_repairs:
+        focus["mapped_numbered_special_related_count_repairs"] = mapped_numbered_special_repairs[:6]
+    manual_upgrade_repairs = [
+        item
+        for item in list(repair.get("manual_review_evidence_upgrade_repairs") or [])
+        if isinstance(item, dict)
+    ]
+    if manual_upgrade_repairs:
+        focus["manual_review_evidence_upgrade_repairs"] = manual_upgrade_repairs[:6]
+    manual_strong_mapping_repairs = [
+        item
+        for item in list(repair.get("manual_review_strong_non_regular_mapping_repairs") or [])
+        if isinstance(item, dict)
+    ]
+    if manual_strong_mapping_repairs:
+        focus["manual_review_strong_non_regular_mapping_repairs"] = manual_strong_mapping_repairs[:6]
+    manual_slice_pairing_repairs = [
+        item
+        for item in list(repair.get("manual_review_visible_slice_pairing_repairs") or [])
+        if isinstance(item, dict)
+    ]
+    if manual_slice_pairing_repairs:
+        focus["manual_review_visible_slice_pairing_repairs"] = manual_slice_pairing_repairs[:6]
+    mapped_slice_manual_sibling_repairs = [
+        item
+        for item in list(repair.get("mapped_slice_manual_sibling_repairs") or [])
+        if isinstance(item, dict)
+    ]
+    if mapped_slice_manual_sibling_repairs:
+        focus["mapped_slice_manual_sibling_repairs"] = mapped_slice_manual_sibling_repairs[:6]
+    manual_duplicate_variant_repairs = [
+        item
+        for item in list(repair.get("manual_review_duplicate_variant_repairs") or [])
+        if isinstance(item, dict)
+    ]
+    if manual_duplicate_variant_repairs:
+        focus["manual_review_duplicate_variant_repairs"] = manual_duplicate_variant_repairs[:6]
     mapped_season_repairs = [
         item
         for item in list(repair.get("mapped_title_season_mismatch_repairs") or [])
@@ -5289,6 +8863,29 @@ def _active_repair_agenda_for_prompt(session: HumanCaseSession) -> list[dict[str
         latest_repair,
         repeated=bool(latest_repair.get("repeat_rejection_warning")),
     )
+    suggested_ledger_patch_rows = (
+        _strong_suggested_ledger_patch_rows_from_repair(session, latest_repair, limit=12)
+        or _suggested_ledger_patch_rows_from_repair(session, latest_repair, limit=12)
+    )
+
+    def matching_patch_rows(locators: list[str]) -> list[dict[str, object]]:
+        matched: list[dict[str, object]] = []
+        for patch_row in suggested_ledger_patch_rows:
+            patch_locals = [
+                str(local or "").strip()
+                for local in list(patch_row.get("local") or [])
+                if str(local or "").strip()
+            ]
+            if any(
+                _local_locator_scope_matches(patch_local, agenda_locator)
+                for patch_local in patch_locals
+                for agenda_locator in locators
+            ):
+                matched.append(patch_row)
+            if len(matched) >= 6:
+                break
+        return matched
+
     for item in session.cognitive_workspace.investigation_agenda:
         if item.status != "open" or not str(item.agenda_id or "").startswith("REPAIR-"):
             continue
@@ -5311,6 +8908,11 @@ def _active_repair_agenda_for_prompt(session: HumanCaseSession) -> list[dict[str
                 "closure_condition": item.closure_condition,
                 "visible_options": _compact_repair_payload(visible_options, list_limit=4, text_limit=220),
                 "repair_frontier": _compact_repair_payload(matching_frontier or {}, list_limit=4, text_limit=220),
+                "suggested_ledger_patch_rows": _compact_repair_payload(
+                    matching_patch_rows(list(item.locators)),
+                    list_limit=6,
+                    text_limit=240,
+                ),
             }
         )
         if len(rows) >= 8:
@@ -5322,6 +8924,7 @@ def _has_open_submit_repair(repair: dict[str, object]) -> bool:
     return bool(
         repair.get("required_missing_work_units")
         or repair.get("blocking_units")
+        or repair.get("ledger_terminal_repair_rows")
         or repair.get("duplicate_target_repair_units")
         or repair.get("fail_closed_mapped_sibling_repairs")
         or repair.get("excluded_slice_mapped_sibling_repairs")
@@ -5330,6 +8933,12 @@ def _has_open_submit_repair(repair: dict[str, object]) -> bool:
         or repair.get("excluded_singleton_visible_subject_repairs")
         or repair.get("singleton_target_alias_repairs")
         or repair.get("mapped_target_title_bridge_repairs")
+        or repair.get("mapped_numbered_special_related_count_repairs")
+        or repair.get("manual_review_evidence_upgrade_repairs")
+        or repair.get("manual_review_strong_non_regular_mapping_repairs")
+        or repair.get("manual_review_visible_slice_pairing_repairs")
+        or repair.get("mapped_slice_manual_sibling_repairs")
+        or repair.get("manual_review_duplicate_variant_repairs")
         or repair.get("mapped_title_season_mismatch_repairs")
         or repair.get("excluded_main_mapped_sibling_repairs")
         or repair.get("supplemental_main_episode_repairs")
@@ -5341,6 +8950,7 @@ def _has_open_submit_repair(repair: dict[str, object]) -> bool:
         or repair.get("fail_closed_title_tail_bridge_repairs")
         or repair.get("excluded_singleton_unassigned_target_repairs")
         or repair.get("fail_closed_singleton_unassigned_target_repairs")
+        or _unit_issue_rows_from_repair(repair)
     )
 
 
@@ -5584,6 +9194,107 @@ def _repair_has_uninspected_target_surface_action(
     return False
 
 
+def _evidence_upgrade_options_from_repair(repair: dict[str, object] | None = None) -> list[dict[str, object]]:
+    repair = repair if isinstance(repair, dict) else {}
+    options: list[dict[str, object]] = []
+
+    def add_from(value: object) -> None:
+        if not isinstance(value, list):
+            return
+        for item in value:
+            if isinstance(item, dict) and item.get("locators"):
+                options.append(item)
+
+    def visit_row(row: object) -> None:
+        if not isinstance(row, dict):
+            return
+        add_from(row.get("evidence_upgrade_options"))
+        raw_issues = row.get("issues")
+        if isinstance(raw_issues, list):
+            for issue in raw_issues:
+                if isinstance(issue, dict):
+                    add_from(issue.get("evidence_upgrade_options"))
+
+    add_from(repair.get("evidence_upgrade_options"))
+    for key in (
+        "blocking_units",
+        "mapped_numbered_special_related_count_repairs",
+        "manual_review_evidence_upgrade_repairs",
+    ):
+        value = repair.get(key)
+        if not isinstance(value, list):
+            continue
+        for row in value:
+            visit_row(row)
+    return options[:8]
+
+
+def _evidence_upgrade_locator_already_inspected(locator: str, inspected_locators: set[str], inspected_subject_ids: set[int]) -> bool:
+    locator = str(locator or "").strip()
+    if not locator:
+        return True
+    if locator.startswith("local://"):
+        return any(_local_locator_scope_matches(inspected, locator) for inspected in inspected_locators)
+    return _is_repair_locator_already_inspected(locator, inspected_locators, inspected_subject_ids)
+
+
+def _uninspected_evidence_upgrade_requirements(
+    session: HumanCaseSession,
+    repair: dict[str, object] | None = None,
+    *,
+    limit: int = 8,
+) -> dict[str, object]:
+    repair = repair if isinstance(repair, dict) else _latest_submit_repair_observation(session)
+    inspected_locators = _inspected_locators_from_session(session)
+    inspected_subject_ids = _inspected_target_subject_ids_from_session(session)
+    locators: list[str] = []
+    scope: list[str] = []
+    for option in _evidence_upgrade_options_from_repair(repair):
+        option_scope = [
+            str(item).strip()
+            for item in list(option.get("scope") or [])
+            if str(item or "").strip()
+        ]
+        for item in option_scope:
+            if item not in scope:
+                scope.append(item)
+        option_locators = [
+            str(raw_locator or "").strip()
+            for raw_locator in list(option.get("locators") or [])
+            if str(raw_locator or "").strip()
+        ]
+        if any(
+            _evidence_upgrade_locator_already_inspected(locator, inspected_locators, inspected_subject_ids)
+            for locator in option_locators
+        ):
+            continue
+        for locator in option_locators:
+            if (
+                not locator
+                or locator in locators
+            ):
+                continue
+            locators.append(locator)
+            if len(locators) >= limit:
+                break
+        if len(locators) >= limit:
+            break
+    if locators and not scope:
+        scope = ["facts", "subtitle_compact"]
+    return {
+        "locators": locators[:limit],
+        "scope": scope[:4],
+    }
+
+
+def _repair_has_uninspected_evidence_upgrade_action(
+    session: HumanCaseSession,
+    repair: dict[str, object] | None = None,
+) -> bool:
+    requirements = _uninspected_evidence_upgrade_requirements(session, repair, limit=1)
+    return bool(requirements.get("locators"))
+
+
 def _repair_search_queries_to_try(repair: dict[str, object] | None = None) -> list[str]:
     repair = repair if isinstance(repair, dict) else {}
     queries: list[str] = []
@@ -5700,6 +9411,702 @@ def _target_locators_from_value(value: object, *, limit: int = 8) -> list[str]:
     return locators[:limit]
 
 
+def _suggested_submit_shape_rows_from_repair(
+    repair: dict[str, object] | None,
+    *,
+    limit: int = 12,
+) -> list[dict[str, object]]:
+    if not isinstance(repair, dict):
+        return []
+    rows: list[dict[str, object]] = []
+    seen: set[tuple[str, str, str]] = set()
+
+    def add_shape(value: object, *, issue: dict[str, object] | None = None) -> None:
+        issue = issue or {}
+        issue_row_id = str(issue.get("row_id") or issue.get("unit") or "").strip()
+        issue_locals = {
+            str(local or "").strip()
+            for local in _repair_local_values(issue.get("local"))
+            if str(local or "").strip()
+        }
+        for item in _repair_dict_items(value):
+            local = str(item.get("local") or "").strip()
+            target = str(item.get("target") or "").strip()
+            outcome = str(item.get("outcome") or "").strip()
+            if local and not _is_patchable_local_locator_text(local):
+                continue
+            if not (local or target or outcome):
+                continue
+            key = (local, target, outcome)
+            if key in seen:
+                continue
+            seen.add(key)
+            shape_row = {
+                "local": local,
+                "target": target,
+                "outcome": outcome,
+                "reason": str(item.get("reason") or "").strip()[:240],
+            }
+            item_row_id = str(item.get("row_id") or "").strip()
+            if item_row_id:
+                shape_row["row_id"] = item_row_id
+            elif issue_row_id and local in issue_locals:
+                shape_row["row_id"] = issue_row_id
+            rows.append(shape_row)
+            if len(rows) >= limit:
+                return
+
+    for row in list(repair.get("repair_frontier") or []):
+        if not isinstance(row, dict):
+            continue
+        add_shape(row.get("suggested_submit_shape"), issue=row)
+        if len(rows) >= limit:
+            return rows[:limit]
+        add_shape(row.get("multi_version_submit_shape"), issue=row)
+        if len(rows) >= limit:
+            return rows[:limit]
+    for key in (
+        "numbered_special_exclusion_repairs",
+        "manual_review_strong_non_regular_mapping_repairs",
+        "manual_review_visible_slice_pairing_repairs",
+        "manual_review_duplicate_variant_repairs",
+    ):
+        for row in _repair_group_rows(repair, key):
+            add_shape(row.get("suggested_submit_shape"), issue=row)
+            if len(rows) >= limit:
+                return rows[:limit]
+            add_shape(row.get("multi_version_submit_shape"), issue=row)
+            if len(rows) >= limit:
+                return rows[:limit]
+    for row in _unit_issue_rows_from_repair(repair):
+        add_shape(row.get("suggested_submit_shape"), issue=row)
+        if len(rows) >= limit:
+            return rows[:limit]
+        add_shape(row.get("multi_version_submit_shape"), issue=row)
+        if len(rows) >= limit:
+            return rows[:limit]
+    return rows[:limit]
+
+
+def _manual_review_candidate_shape_rows_from_repair(
+    repair: dict[str, object] | None,
+    *,
+    limit: int = 12,
+) -> list[dict[str, object]]:
+    if not isinstance(repair, dict):
+        return []
+    rows: list[dict[str, object]] = []
+    seen: set[tuple[str, str]] = set()
+
+    def add_shape(value: object) -> None:
+        for item in _repair_dict_items(value):
+            local = str(item.get("local") or "").strip()
+            if local and not _is_patchable_local_locator_text(local):
+                continue
+            candidates = [
+                str(candidate or "").strip()
+                for candidate in list(item.get("manual_review_candidate_targets") or [])
+                if str(candidate or "").strip()
+            ]
+            if not local and not candidates:
+                continue
+            key = (local, "|".join(candidates))
+            if key in seen:
+                continue
+            seen.add(key)
+            rows.append(
+                {
+                    "local": local,
+                    "outcome": "manual_review",
+                    "manual_review_candidate_targets": candidates[:6],
+                    "confidence": str(item.get("confidence") or "low").strip() or "low",
+                    "reason": str(item.get("reason") or "").strip()[:240],
+                }
+            )
+            if len(rows) >= limit:
+                return
+
+    for row in list(repair.get("repair_frontier") or []):
+        if not isinstance(row, dict):
+            continue
+        add_shape(row.get("manual_review_candidate_submit_shape"))
+        if len(rows) >= limit:
+            return rows[:limit]
+    for key in (
+        "numbered_special_exclusion_repairs",
+        "manual_review_visible_slice_pairing_repairs",
+        "manual_review_strong_non_regular_mapping_repairs",
+        "manual_review_duplicate_variant_repairs",
+    ):
+        for row in _repair_group_rows(repair, key):
+            add_shape(row.get("manual_review_candidate_submit_shape"))
+            if len(rows) >= limit:
+                return rows[:limit]
+    for row in _unit_issue_rows_from_repair(repair):
+        add_shape(row.get("manual_review_candidate_submit_shape"))
+        if len(rows) >= limit:
+            return rows[:limit]
+    return rows[:limit]
+
+
+def _ledger_patch_rows_from_submit_shapes(
+    session: HumanCaseSession,
+    submit_shape_rows: list[dict[str, object]],
+    *,
+    limit: int = 12,
+) -> list[dict[str, object]]:
+    if not submit_shape_rows:
+        return []
+
+    def matching_base_row_id(local: str) -> str:
+        parent = _episode_slice_parent_locator(local)
+        for row in list(session.resolution_ledger.rows or []):
+            row_id = str(row.row_id or "").strip()
+            for row_local in list(row.local or []):
+                row_local_text = str(row_local or "").strip()
+                if (
+                    row_local_text
+                    and (
+                        _local_locator_scope_matches(local, row_local_text)
+                        or _local_locator_scope_matches(parent, row_local_text)
+                    )
+                ):
+                    return row_id
+        return ""
+
+    base_counts: dict[str, int] = {}
+    used_row_ids: set[str] = set()
+    rows: list[dict[str, object]] = []
+    for item in submit_shape_rows:
+        if not isinstance(item, dict):
+            continue
+        local = str(item.get("local") or "").strip()
+        outcome = str(item.get("outcome") or "").strip()
+        target = str(item.get("target") or "").strip()
+        if not local:
+            continue
+        base_row_id = matching_base_row_id(local)
+        base_key = base_row_id or _episode_slice_parent_locator(local) or local
+        base_counts[base_key] = int(base_counts.get(base_key) or 0) + 1
+        split_index = base_counts[base_key]
+        row_id_hint = str(item.get("row_id") or "").strip()
+        if row_id_hint and row_id_hint not in used_row_ids:
+            row_id = row_id_hint
+        elif base_row_id:
+            row_id = base_row_id if split_index == 1 else f"{base_row_id}_split_{split_index}"
+        else:
+            row_id = f"choose_existing_row_id_for_{split_index}"
+        used_row_ids.add(row_id)
+        patch_row: dict[str, object] = {
+            "row_id": row_id,
+            "local": [local],
+            "reason": str(item.get("reason") or "Patch from visible repair shape if Agent agrees.").strip()[:260],
+        }
+        if outcome.startswith("mapped_"):
+            patch_row.update(
+                {
+                    "status": "mapped",
+                    "mapped_outcome": outcome,
+                    "target": target,
+                    "confidence": "high",
+                }
+            )
+        elif outcome == "manual_review":
+            patch_row.update(
+                {
+                    "status": "manual_review",
+                    "manual_review_candidate_targets": [
+                        str(candidate or "").strip()
+                        for candidate in list(item.get("manual_review_candidate_targets") or [])
+                        if str(candidate or "").strip()
+                    ][:6],
+                    "confidence": str(item.get("confidence") or "low").strip() or "low",
+                }
+            )
+        elif outcome == "bangumi_target_absent":
+            patch_row.update({"status": "target_absent", "confidence": "medium"})
+        elif outcome in {"supplemental", "non_bangumi"}:
+            patch_row.update({"status": "supplemental", "confidence": "medium"})
+        elif outcome == "fail_closed":
+            patch_row.update({"status": "fail_closed", "confidence": "low"})
+        else:
+            patch_row.update({"status": "open"})
+        rows.append(patch_row)
+        if len(rows) >= limit:
+            break
+    return rows
+
+
+def _ledger_patch_rows_from_submit_args(
+    session: HumanCaseSession,
+    args: SubmitToolArgs,
+    *,
+    limit: int = 24,
+) -> list[dict[str, object]]:
+    def matching_base_row_id(local_values: list[str]) -> str:
+        for local in local_values:
+            local_text = str(local or "").strip()
+            if not local_text:
+                continue
+            parent = _episode_slice_parent_locator(local_text)
+            for row in list(session.resolution_ledger.rows or []):
+                row_id = str(row.row_id or "").strip()
+                if not row_id:
+                    continue
+                for row_local in list(row.local or []):
+                    row_local_text = str(row_local or "").strip()
+                    if (
+                        row_local_text
+                        and (
+                            _local_locator_scope_matches(local_text, row_local_text)
+                            or _local_locator_scope_matches(parent, row_local_text)
+                            or _local_locator_scope_matches(row_local_text, local_text)
+                        )
+                    ):
+                        return row_id
+        return ""
+
+    def status_for_outcome(outcome: str) -> str:
+        if outcome.startswith("mapped_"):
+            return "mapped"
+        if outcome == "manual_review":
+            return "manual_review"
+        if outcome == "bangumi_target_absent":
+            return "target_absent"
+        if outcome in {"supplemental", "non_bangumi"}:
+            return "supplemental"
+        if outcome == "fail_closed":
+            return "fail_closed"
+        return "open"
+
+    base_counts: dict[str, int] = {}
+    rows: list[dict[str, object]] = []
+    for index, unit in enumerate(list(args.resolution.work_units or []), start=1):
+        local_values = [
+            str(local or "").strip()
+            for local in list(unit.local or [])
+            if str(local or "").strip()
+        ]
+        if not local_values:
+            continue
+        base_row_id = matching_base_row_id(local_values)
+        base_key = base_row_id or "|".join(local_values)
+        base_counts[base_key] = int(base_counts.get(base_key) or 0) + 1
+        split_index = base_counts[base_key]
+        if base_row_id:
+            row_id = base_row_id if split_index == 1 else f"{base_row_id}_split_{split_index}"
+        else:
+            row_label = _slug(str(unit.unit_label or f"submit_unit_{index}"), fallback=f"submit_unit_{index}")
+            row_id = f"choose_existing_row_id_for_{row_label}"
+        outcome = str(unit.outcome or "").strip()
+        status = status_for_outcome(outcome)
+        patch_row: dict[str, object] = {
+            "row_id": row_id,
+            "local": local_values,
+            "status": status,
+            "support": [
+                str(support or "").strip()
+                for support in list(unit.support or [])
+                if str(support or "").strip()
+            ][:8],
+            "confidence": str(unit.confidence or "medium").strip() or "medium",
+            "reason": str(unit.reason or args.reason or args.resolution.package_reason or "").strip()[:360],
+            "open_questions": [
+                str(question or "").strip()
+                for question in list(unit.open_questions or [])
+                if str(question or "").strip()
+            ][:8],
+        }
+        if status == "mapped":
+            patch_row.update(
+                {
+                    "target": str(unit.target or "").strip(),
+                    "mapped_outcome": outcome,
+                    "episode_start": unit.episode_start,
+                    "episode_end": unit.episode_end,
+                }
+            )
+        elif status == "manual_review":
+            patch_row["manual_review_candidate_targets"] = [
+                str(target or "").strip()
+                for target in list(unit.manual_review_candidate_targets or [])
+                if str(target or "").strip()
+            ][:6]
+        rows.append(patch_row)
+        if len(rows) >= limit:
+            break
+    return rows
+
+
+def _resolution_ledger_required_for_submit_output(
+    session: HumanCaseSession,
+    args: SubmitToolArgs,
+) -> dict[str, object]:
+    suggested_rows = _ledger_patch_rows_from_submit_args(session, args, limit=24)
+    units = [
+        {
+            "unit": str(unit.unit_label or f"submit_unit_{index}"),
+            "local": [
+                str(local or "").strip()
+                for local in list(unit.local or [])
+                if str(local or "").strip()
+            ],
+            "target": str(unit.target or "").strip(),
+            "outcome": str(unit.outcome or "").strip(),
+            "issue": "submit_requires_resolution_ledger_patch",
+        }
+        for index, unit in enumerate(list(args.resolution.work_units or []), start=1)
+    ]
+    return {
+        "accepted": False,
+        "tool": "submit",
+        "status": "submit_requires_resolution_ledger_patch",
+        "issue": "submit_requires_resolution_ledger_patch",
+        "issue_counts": {"submit_requires_resolution_ledger_patch": 1},
+        "legacy_submit_work_unit_count": len(list(args.resolution.work_units or [])),
+        "ledger": _compact_resolution_ledger(session.resolution_ledger),
+        "suggested_ledger_patch_rows": suggested_rows,
+        "blocking_units": units[:16],
+        "repair_frontier": [
+            {
+                "unit": unit.get("unit"),
+                "local": unit.get("local"),
+                "blocker": "submit_requires_resolution_ledger_patch",
+                "suggested_ledger_patch_rows": suggested_rows[:12],
+                "high_quality_next_actions": [
+                    "call patch_ledger with these row decisions after checking they are still your semantic choices"
+                ],
+                "terminal_boundary": "terminal ledger compilation only",
+            }
+            for unit in units[:1]
+        ],
+        "package": {
+            "issue_counts": {"submit_requires_resolution_ledger_patch": 1},
+            "unit_mechanical_checklist": [
+                {
+                    "unit": unit.get("unit"),
+                    "local": unit.get("local"),
+                    "target": unit.get("target"),
+                    "issue": unit.get("issue"),
+                }
+                for unit in units[:16]
+            ],
+            "mechanical_repair_hints": [
+                "Direct submit cannot finalize the primary HumanCaseAgent runtime.",
+                "Patch the resolution ledger rows instead; the fixed layer will compile the terminal ledger into the final package.",
+            ],
+        },
+        "required_next_action": (
+            "Call patch_ledger with row-level decisions. Keep the same semantic choices only if you still own them, "
+            "or change them before patching. Final package submission is compiled from terminal ledger rows only."
+        ),
+    }
+
+
+def _suggested_ledger_patch_rows_from_repair(
+    session: HumanCaseSession,
+    repair: dict[str, object] | None,
+    *,
+    limit: int = 12,
+) -> list[dict[str, object]]:
+    rows = _ledger_patch_rows_from_submit_shapes(
+        session,
+        _suggested_submit_shape_rows_from_repair(repair, limit=limit),
+        limit=limit,
+    )
+    if len(rows) >= limit:
+        return rows[:limit]
+    manual_rows = _ledger_patch_rows_from_submit_shapes(
+        session,
+        _manual_review_candidate_shape_rows_from_repair(repair, limit=limit),
+        limit=limit - len(rows),
+    )
+    combined = [*rows, *manual_rows]
+    if isinstance(repair, dict) and isinstance(repair.get("suggested_ledger_patch_rows"), list):
+        seen = {
+            (
+                tuple(str(local) for local in list(item.get("local") or [])),
+                str(item.get("target") or ""),
+                str(item.get("status") or ""),
+                str(item.get("mapped_outcome") or ""),
+            )
+            for item in combined
+            if isinstance(item, dict)
+        }
+        for item in list(repair.get("suggested_ledger_patch_rows") or []):
+            if not isinstance(item, dict):
+                continue
+            key = (
+                tuple(str(local) for local in list(item.get("local") or [])),
+                str(item.get("target") or ""),
+                str(item.get("status") or ""),
+                str(item.get("mapped_outcome") or ""),
+            )
+            if key in seen:
+                continue
+            seen.add(key)
+            combined.append(item)
+            if len(combined) >= limit:
+                break
+    return combined[:limit]
+
+
+def _patch_ledger_suggested_shape_guard(
+    registry: LocatorRegistry,
+    session: HumanCaseSession,
+    patch_rows: list[ResolutionLedgerRow],
+) -> dict[str, object]:
+    latest_repair = _latest_submit_repair_observation(session)
+    if not latest_repair or latest_repair.get("accepted"):
+        return {}
+    blocking_issue_names = {
+        str(row.get("issue") or "").strip()
+        for row in [
+            *_repair_group_rows(latest_repair, "manual_review_strong_non_regular_mapping_repairs"),
+            *_repair_group_rows(latest_repair, "manual_review_duplicate_variant_repairs"),
+            *_repair_group_rows(latest_repair, "manual_review_visible_slice_pairing_repairs"),
+            *_repair_group_rows(latest_repair, "numbered_special_exclusion_repairs"),
+        ]
+        if isinstance(row, dict)
+    }
+    latest_issue_counts = latest_repair.get("issue_counts")
+    if isinstance(latest_issue_counts, dict) and "ledger_coverage_overlap" in latest_issue_counts:
+        blocking_issue_names.add("ledger_coverage_overlap")
+    strong_suggested_rows = _strong_suggested_submit_shape_rows_from_repair(latest_repair, limit=12)
+    if isinstance(latest_issue_counts, dict):
+        for issue_code in latest_issue_counts:
+            issue_code_text = str(issue_code or "").strip()
+            if _strong_suggested_shape_issue(issue_code_text, {"issue": issue_code_text}):
+                blocking_issue_names.add(issue_code_text)
+    if not blocking_issue_names and not strong_suggested_rows:
+        return {}
+    suggested_rows = strong_suggested_rows or _suggested_submit_shape_rows_from_repair(latest_repair, limit=12)
+    if not suggested_rows:
+        suggested_rows = _manual_review_candidate_shape_rows_from_repair(latest_repair, limit=12)
+    if not suggested_rows:
+        return {}
+    suggested_by_parent: dict[str, list[dict[str, object]]] = defaultdict(list)
+    for row in suggested_rows:
+        local = str(row.get("local") or "").strip()
+        target = str(row.get("target") or "").strip()
+        outcome = str(row.get("outcome") or "").strip()
+        candidate_targets = [
+            str(candidate or "").strip()
+            for candidate in list(row.get("manual_review_candidate_targets") or [])
+            if str(candidate or "").strip()
+        ]
+        if not local:
+            continue
+        if outcome.startswith("mapped_") and target:
+            suggested_by_parent[_episode_slice_parent_locator(local)].append(row)
+        elif outcome == "manual_review" and candidate_targets:
+            suggested_by_parent[_episode_slice_parent_locator(local)].append(row)
+    if not suggested_by_parent:
+        return {}
+
+    def patch_touches_parent(row: ResolutionLedgerRow, parent: str) -> bool:
+        return any(
+            _local_locator_scope_matches(str(local or ""), parent)
+            for local in list(row.local or [])
+            if str(local or "").strip()
+        )
+
+    def patch_maps_suggested(row: ResolutionLedgerRow, suggested: dict[str, object]) -> bool:
+        if row.status != "mapped":
+            return False
+        target = str(suggested.get("target") or "").strip()
+        canonical_target, _target_issue = _canonical_target_locator_for_ledger(registry, target)
+        canonical_row_target, _row_target_issue = _canonical_target_locator_for_ledger(registry, str(row.target or ""))
+        target_for_compare = canonical_target or target
+        row_target_for_compare = canonical_row_target or str(row.target or "").strip()
+        outcome = str(suggested.get("outcome") or "").strip()
+        local = str(suggested.get("local") or "").strip()
+        return (
+            bool(target_for_compare and _locator_same_scope(row_target_for_compare, target_for_compare))
+            and (not outcome or str(row.mapped_outcome or "") == outcome)
+            and any(_local_locator_scope_matches(str(row_local or ""), local) for row_local in list(row.local or []))
+        )
+
+    def patch_manual_reviews_suggested(row: ResolutionLedgerRow, suggested: dict[str, object]) -> bool:
+        if row.status != "manual_review":
+            return False
+        local = str(suggested.get("local") or "").strip()
+        if not any(_local_locator_scope_matches(str(row_local or ""), local) for row_local in list(row.local or [])):
+            return False
+        suggested_candidates = [
+            str(candidate or "").strip()
+            for candidate in list(suggested.get("manual_review_candidate_targets") or [])
+            if str(candidate or "").strip()
+        ]
+        if not suggested_candidates:
+            return True
+        row_candidates = [
+            str(candidate or "").strip()
+            for candidate in list(row.manual_review_candidate_targets or [])
+            if str(candidate or "").strip()
+        ]
+        return all(
+            any(_locator_same_scope(row_candidate, suggested_candidate) for row_candidate in row_candidates)
+            for suggested_candidate in suggested_candidates
+        )
+
+    def patch_addresses_suggested(row: ResolutionLedgerRow, suggested: dict[str, object]) -> bool:
+        outcome = str(suggested.get("outcome") or "").strip()
+        if outcome.startswith("mapped_"):
+            return patch_maps_suggested(row, suggested)
+        if outcome == "manual_review":
+            return patch_manual_reviews_suggested(row, suggested)
+        return False
+
+    def patch_has_concrete_contradiction(row: ResolutionLedgerRow, suggested: dict[str, object]) -> bool:
+        if row.status not in {"manual_review", "fail_closed"}:
+            return False
+        target = str(suggested.get("target") or "").strip()
+        subject = _target_subject_locator_text(target)
+        row_payload = {
+            "manual_review_candidate_targets": list(row.manual_review_candidate_targets or []),
+            "explicit_review_candidate_targets": list(row.manual_review_candidate_targets or []),
+            "reason": row.reason,
+            "open_questions": list(row.open_questions or []),
+        }
+        if _manual_review_candidate_has_post_upgrade_contradiction(
+            row_payload,
+            target=target,
+            target_subject=subject,
+        ):
+            return True
+        reason_text = " ".join([str(row.reason or ""), *[str(item or "") for item in list(row.open_questions or [])]]).casefold()
+        concrete_terms = (
+            "duration mismatch",
+            "runtime mismatch",
+            "episode title mismatch",
+            "title mismatch",
+            "count mismatch",
+            "target count mismatch",
+            "not the same episode",
+            "different subject",
+            "different target",
+            "same-count competitor",
+        )
+        mentions_target = bool(
+            (target and target.casefold() in reason_text)
+            or (subject and subject.casefold() in reason_text)
+            or any(_locator_same_scope(candidate, target) for candidate in list(row.manual_review_candidate_targets or []))
+        )
+        return mentions_target and any(term in reason_text for term in concrete_terms)
+
+    unresolved: list[dict[str, object]] = []
+    for parent, parent_suggestions in suggested_by_parent.items():
+        touching_rows = [row for row in patch_rows if patch_touches_parent(row, parent)]
+        if not touching_rows:
+            unresolved.append(
+                {
+                    "local_parent": parent,
+                    "issue": "patch_ledger_suggested_shape_not_patched",
+                    "suggested_submit_shape": parent_suggestions[:8],
+                    "patched_rows": [],
+                }
+            )
+            continue
+        addressed_suggestions = {
+            (
+                str(item.get("local") or ""),
+                str(item.get("target") or ""),
+                str(item.get("outcome") or ""),
+                "|".join(str(candidate or "") for candidate in list(item.get("manual_review_candidate_targets") or [])),
+            )
+            for item in parent_suggestions
+            if any(patch_addresses_suggested(row, item) for row in touching_rows)
+        }
+        all_suggestions = {
+            (
+                str(item.get("local") or ""),
+                str(item.get("target") or ""),
+                str(item.get("outcome") or ""),
+                "|".join(str(candidate or "") for candidate in list(item.get("manual_review_candidate_targets") or [])),
+            )
+            for item in parent_suggestions
+        }
+        if addressed_suggestions and addressed_suggestions == all_suggestions:
+            continue
+        if any(
+            patch_has_concrete_contradiction(row, item)
+            for row in touching_rows
+            for item in parent_suggestions
+        ):
+            continue
+        unresolved.append(
+            {
+                "local_parent": parent,
+                "issue": "patch_ledger_suggested_shape_unaddressed",
+                "suggested_submit_shape": parent_suggestions[:8],
+                "patched_rows": [
+                    {
+                        "row_id": row.row_id,
+                        "local": list(row.local or []),
+                        "status": row.status,
+                        "target": row.target,
+                        "manual_review_candidate_targets": list(row.manual_review_candidate_targets or []),
+                        "reason": row.reason,
+                    }
+                    for row in touching_rows[:6]
+                ],
+            }
+        )
+    if not unresolved:
+        return {}
+    preserved_repair_keys = (
+        "manual_review_strong_non_regular_mapping_repairs",
+        "manual_review_duplicate_variant_repairs",
+        "manual_review_visible_slice_pairing_repairs",
+        "mapped_target_title_bridge_repairs",
+        "mapped_numbered_special_related_count_repairs",
+        "manual_review_evidence_upgrade_repairs",
+        "numbered_special_exclusion_repairs",
+        "visible_target_surface_missing_units",
+        "blocking_target_surface_actions",
+        "diagnostic_target_surface_actions",
+        "rejected_or_noisy_actions",
+        "search_queries_to_try",
+        "do_not_retry_targets_without_new_evidence",
+    )
+    preserved_repair_fields = {
+        key: latest_repair.get(key)
+        for key in preserved_repair_keys
+        if latest_repair.get(key)
+    }
+    strong_suggested_ledger_patch_rows = _strong_suggested_ledger_patch_rows_from_repair(
+        session,
+        latest_repair,
+        limit=12,
+    )
+    return {
+        "accepted": False,
+        "tool": "patch_ledger",
+        "issue": "patch_ledger_suggested_shape_unaddressed",
+        "issue_counts": {"patch_ledger_suggested_shape_unaddressed": len(unresolved)},
+        "source_submit_repair_issue_counts": latest_repair.get("issue_counts") or {},
+        **preserved_repair_fields,
+        "blocking_units": [
+            {
+                "unit": item.get("local_parent"),
+                "local": [item.get("local_parent")],
+                "issue": "patch_ledger_suggested_shape_unaddressed",
+            }
+            for item in unresolved
+        ],
+        "suggested_ledger_patch_rows": strong_suggested_ledger_patch_rows
+        or _suggested_ledger_patch_rows_from_repair(session, latest_repair, limit=12),
+        "unaddressed_suggested_shapes": unresolved[:6],
+        "required_next_action": (
+            "The previous verifier exposed strong suggested_submit_shape rows for these local parents. "
+            "Patch those mapped rows with repair_strategy=revise_saved_rows, copying the row templates exactly when "
+            "you semantically accept ownership, or patch exact manual_review/fail_closed "
+            "rows that name the suggested target and a concrete post-upgrade contradiction. Vague uncertainty does not discharge this candidate debt."
+        ),
+    }
+
+
 def _case_resolution_goal_strong_candidates(
     session: HumanCaseSession,
     repair: dict[str, object] | None = None,
@@ -5731,6 +10138,23 @@ def _case_resolution_goal_strong_candidates(
 
     for action in _target_surface_actions_from_repair(latest_repair):
         add("target_surface_action", action, action=action)
+        if len(candidates) >= limit:
+            return candidates[:limit]
+    for row in _suggested_submit_shape_rows_from_repair(latest_repair):
+        target = str(row.get("target") or "").strip()
+        local = str(row.get("local") or "").strip()
+        outcome = str(row.get("outcome") or "").strip()
+        if not target.startswith("target://"):
+            continue
+        add(
+            "repair_frontier.suggested_submit_shape",
+            {"target": target},
+            locator=target,
+            action=(
+                "address suggested_submit_shape "
+                f"local={local} outcome={outcome} target={target}"
+            ),
+        )
         if len(candidates) >= limit:
             return candidates[:limit]
     for row in _active_repair_agenda_for_prompt(session):
@@ -5772,6 +10196,11 @@ def _case_resolution_goal_state_for_prompt(
     latest_repair = _latest_submit_repair_observation(session)
     active_blockers = _case_resolution_goal_active_blockers(session)
     remaining_turns = max(0, int(max_turns) - int(session.turn_count))
+    strong_suggested_patch_rows = _strong_suggested_ledger_patch_rows_from_repair(
+        session,
+        latest_repair,
+        limit=12,
+    )
     required_strategy_change = bool(
         session.case_resolution_goal_strategy_change_required
         or latest_repair.get("repeat_rejection_warning")
@@ -5797,12 +10226,13 @@ def _case_resolution_goal_state_for_prompt(
         "blocked_strategy": blocked_strategy,
         "same_blocker_submit_shape_repeat_count": session.repeated_submit_rejection_count,
         "active_blockers": active_blockers,
-        "strong_candidates": _case_resolution_goal_strong_candidates(session, latest_repair)[:8],
+        "strong_candidates": _case_resolution_goal_strong_candidates(session, latest_repair, limit=12)[:12],
+        "must_address_suggested_ledger_patch_rows": strong_suggested_patch_rows,
         "saved_ok_rows": {
             "count": len(session.draft_work_units),
             "preserve_instruction": (
-                "Saved mechanically-ok work units are merged by the fixed layer. "
-                "Do not drop or rewrite them unless the strategy is revise_saved_rows and you name why."
+                "The resolution ledger is the current source of truth. "
+                "Do not drop or rewrite settled rows unless the strategy is revise_saved_rows and you name why."
             ),
         },
         "progress_ledger_tail": session.case_resolution_goal_progress_ledger[-8:],
@@ -5822,7 +10252,10 @@ def _case_resolution_goal_state_for_prompt(
             "fixed layer does not decide semantic ownership",
         ],
         "required_next_action": (
-            "The same blocker + submit shape repeated. Choose a different repair_strategy or submit terminal_fail_closed that satisfies the contract."
+            "Strong suggested ledger patch rows are open. The next resolution action must apply those rows with repair_strategy=revise_saved_rows, or patch exact manual_review/fail_closed rows that name the suggested target and concrete post-upgrade contradiction."
+            if strong_suggested_patch_rows
+            else
+            "The same blocker + ledger shape repeated. Choose a different repair_strategy or patch terminal fail_closed that satisfies the contract."
             if required_strategy_change
             else "Choose repair_strategy for this turn and make measurable progress against active_blockers."
         ),
@@ -5836,6 +10269,32 @@ def _case_resolution_goal_tool_rejection(
     max_turns: int,
 ) -> dict[str, object] | None:
     strategy = _repair_strategy_from_args(tool_call.arguments)
+    latest_repair = _latest_submit_repair_observation(session)
+    strong_suggested_patch_rows = _strong_suggested_ledger_patch_rows_from_repair(
+        session,
+        latest_repair,
+        limit=8,
+    )
+    if (
+        strong_suggested_patch_rows
+        and tool_call.tool_name != "patch_ledger"
+        and not _repair_has_uninspected_evidence_upgrade_action(session, latest_repair)
+        and not _repair_has_uninspected_target_surface_action(session, latest_repair)
+    ):
+        return {
+            "accepted": False,
+            "status": "case_resolution_goal_suggested_patch_gate",
+            "issue": "strong_suggested_ledger_patch_rows_require_patch_ledger",
+            "tool": tool_call.tool_name,
+            "repair_strategy": strategy,
+            "case_resolution_goal": _case_resolution_goal_state_for_prompt(session, max_turns=max_turns),
+            "must_address_suggested_ledger_patch_rows": strong_suggested_patch_rows,
+            "required_next_action": (
+                "The latest repair exposed strong row-shaped mapping candidates and no required evidence action is open. "
+                "Use patch_ledger with repair_strategy=revise_saved_rows to apply those rows, or patch exact "
+                "manual_review/fail_closed rows that name the suggested target and concrete post-upgrade contradiction."
+            ),
+        }
     if not session.case_resolution_goal_strategy_change_required:
         return None
     blocked_strategy = session.case_resolution_goal_blocked_strategy
@@ -5849,8 +10308,8 @@ def _case_resolution_goal_tool_rejection(
         "blocked_strategy": blocked_strategy,
         "case_resolution_goal": _case_resolution_goal_state_for_prompt(session, max_turns=max_turns),
         "required_next_action": (
-            "The same blocker + submit shape already repeated under this repair_strategy. "
-            "Switch strategy or submit terminal_fail_closed with exact blockers and concrete reasons."
+            "The same blocker + ledger shape already repeated under this repair_strategy. "
+            "Switch strategy or patch terminal fail_closed with exact blockers and concrete reasons."
         ),
     }
 
@@ -5960,6 +10419,84 @@ def _repair_frontier_rows_from_agenda(agenda: dict[str, object], *, repeated: bo
     noisy_actions = _diagnostic_action_summaries(action_groups.get("noisy"), limit=4)
     search_queries = _repair_search_queries_to_try(agenda)[:6]
     rows: list[dict[str, object]] = []
+    repair_merge_keys = (
+        "suggested_submit_shape",
+        "multi_version_submit_shape",
+        "manual_review_candidate_submit_shape",
+        "local_slice_mapping_options",
+        "local_target_title_pairing_options",
+        "local_target_count_pairing_options",
+        "same_count_visible_subjects",
+        "strong_mapping_candidates",
+        "evidence_upgrade_options",
+        "non_regular_evidence_closure",
+        "negative_target_absence_support_candidates",
+        "negative_target_absence_submit_shape",
+        "duplicate_episode_variant_locators",
+        "candidate_local_locators",
+        "candidate_targets",
+        "terminal_repair_required",
+        "terminal_repair_options",
+        "do_not_retry_targets_without_new_evidence",
+    )
+    repair_source_keys = (
+        "excluded_title_tail_search_repairs",
+        "excluded_title_tail_unresolved_repairs",
+        "fail_closed_title_tail_bridge_repairs",
+        "visible_target_surface_missing_units",
+        "excluded_singleton_unassigned_target_repairs",
+        "fail_closed_singleton_unassigned_target_repairs",
+        "fail_closed_slice_pairing_repairs",
+        "fail_closed_mapped_sibling_repairs",
+        "mapped_target_title_bridge_repairs",
+        "mapped_numbered_special_related_count_repairs",
+        "manual_review_evidence_upgrade_repairs",
+        "manual_review_strong_non_regular_mapping_repairs",
+        "manual_review_visible_slice_pairing_repairs",
+        "numbered_special_exclusion_repairs",
+        "manual_review_duplicate_variant_repairs",
+    )
+
+    def ordered_rows() -> list[dict[str, object]]:
+        def priority(row: dict[str, object]) -> int:
+            value = row.get("repair_priority")
+            return int(value) if str(value).isdigit() else 9
+
+        return sorted(
+            rows,
+            key=lambda row: (
+                priority(row),
+                str(row.get("blocker") or ""),
+                ",".join(str(item) for item in list(row.get("local") or [])),
+            ),
+        )
+
+    def matching_repair_rows(blocking_row: dict[str, object]) -> list[dict[str, object]]:
+        unit = str(blocking_row.get("unit") or "").strip()
+        issue_codes = set(_issue_codes_from_value(blocking_row.get("issue") or blocking_row.get("issue_codes")))
+        local_values = set(_locators_from_repair_row(blocking_row))
+        matches: list[dict[str, object]] = []
+        for key in repair_source_keys:
+            for repair_row in list(agenda.get(key) or []):
+                if not isinstance(repair_row, dict):
+                    continue
+                repair_unit = str(repair_row.get("unit") or "").strip()
+                repair_issue_codes = set(_issue_codes_from_value(repair_row.get("issue") or key))
+                unit_matches = bool(unit and repair_unit and unit == repair_unit)
+                local_matches = bool(local_values and local_values.intersection(_locators_from_repair_row(repair_row)))
+                issue_matches = bool(issue_codes and repair_issue_codes and issue_codes.intersection(repair_issue_codes))
+                if unit_matches or (local_matches and issue_matches):
+                    matches.append(repair_row)
+        return matches
+
+    def enrich_blocking_row(blocking_row: dict[str, object]) -> dict[str, object]:
+        row = dict(blocking_row)
+        for repair_row in matching_repair_rows(blocking_row):
+            for key in repair_merge_keys:
+                if row.get(key) or not repair_row.get(key):
+                    continue
+                row[key] = repair_row.get(key)
+        return row
 
     def add_row(
         *,
@@ -5969,10 +10506,88 @@ def _repair_frontier_rows_from_agenda(agenda: dict[str, object], *, repeated: bo
         row_search_queries: object = None,
         row_blocking_actions: object = None,
         row_diagnostics: object = None,
+        row_resolution_options: object = None,
+        row_evidence_upgrade_options: object = None,
+        row_multi_version_submit_shape: object = None,
+        row_suggested_submit_shape: object = None,
+        row_manual_review_candidate_submit_shape: object = None,
+        row_negative_target_absence_submit_shape: object = None,
+        row_negative_target_absence_support_candidates: object = None,
+        row_candidate_local_locators: object = None,
+        row_terminal_repair_required: object = None,
+        row_terminal_repair_options: object = None,
+        row_do_not_retry_targets: object = None,
     ) -> None:
-        local_values = [str(item) for item in list(local or []) if str(item or "").strip()]
+        local_values = _repair_local_values(local)
         blocker_text = str(blocker or "submit_repair").strip()
         high_quality: list[str] = []
+        multi_version_shape = _repair_dict_items(row_multi_version_submit_shape)
+        suggested_shape = _repair_dict_items(row_suggested_submit_shape)
+        manual_review_candidate_shape = _repair_dict_items(row_manual_review_candidate_submit_shape)
+        negative_target_absence_shape = (
+            row_negative_target_absence_submit_shape
+            if isinstance(row_negative_target_absence_submit_shape, dict)
+            else {}
+        )
+        negative_target_absence_support = [
+            item
+            for item in list(row_negative_target_absence_support_candidates or [])
+            if isinstance(item, (dict, str))
+        ] if isinstance(row_negative_target_absence_support_candidates, list) else []
+        candidate_local_locators = [
+            item
+            for item in list(row_candidate_local_locators or [])
+            if isinstance(item, dict)
+        ] if isinstance(row_candidate_local_locators, list) else []
+        terminal_repair_required = bool(row_terminal_repair_required)
+        terminal_repair_options = [
+            str(item)
+            for item in list(row_terminal_repair_options or [])
+            if str(item or "").strip()
+        ] if isinstance(row_terminal_repair_options, list) else []
+        do_not_retry_targets = [
+            str(item)
+            for item in list(row_do_not_retry_targets or [])
+            if str(item or "").strip()
+        ] if isinstance(row_do_not_retry_targets, list) else []
+        has_multi_version_shape = bool(multi_version_shape)
+        has_search_queries = any(
+            str(query or "").strip()
+            for query in list(row_search_queries or search_queries)
+        )
+        upgrade_options = [
+            item
+            for item in list(row_evidence_upgrade_options or [])
+            if isinstance(item, dict)
+        ] if isinstance(row_evidence_upgrade_options, list) else []
+
+        def insert_after_priority_actions(action: str) -> None:
+            insert_at = 0
+            for index, existing in enumerate(high_quality):
+                if existing.startswith(
+                    (
+                        "patch the listed multi_version_submit_shape rows",
+                        "patch suggested_submit_shape rows",
+                        "inspect evidence_upgrade_options anchors",
+                        "patch negative_target_absence_submit_shape",
+                    )
+                ):
+                    insert_at = index + 1
+            high_quality.insert(insert_at, action)
+
+        def insert_after_search_actions(action: str) -> None:
+            if action in high_quality:
+                return
+            insert_at = 0
+            for index, existing in enumerate(high_quality):
+                if existing.startswith("search: "):
+                    insert_at = index + 1
+            high_quality.insert(insert_at, action)
+
+        def append_after_search_actions(action: str) -> None:
+            if action not in high_quality:
+                high_quality.append(action)
+
         for query in list(row_search_queries or search_queries):
             text = str(query or "").strip()
             if text and f"search: {text}" not in high_quality:
@@ -5981,40 +10596,271 @@ def _repair_frontier_rows_from_agenda(agenda: dict[str, object], *, repeated: bo
             text = str(action or "").strip()
             if text and f"inspect: {text}" not in high_quality:
                 high_quality.append(f"inspect: {text}")
+        if upgrade_options:
+            first_upgrade = upgrade_options[0]
+            upgrade_locators = [
+                str(item)
+                for item in list(first_upgrade.get("locators") or [])
+                if str(item or "").strip()
+            ][:4]
+            upgrade_scope = [
+                str(item)
+                for item in list(first_upgrade.get("scope") or [])
+                if str(item or "").strip()
+            ] or ["facts", "subtitle_compact"]
+            inspect_action = (
+                "inspect evidence_upgrade_options anchors with "
+                f"scope={upgrade_scope}: {upgrade_locators}"
+            )
+            if inspect_action not in high_quality:
+                high_quality.insert(0, inspect_action)
+        if suggested_shape:
+            suggested_action = (
+                "patch suggested_submit_shape rows with repair_strategy=revise_saved_rows; "
+                "revise the saved manual_review placeholder instead of preserving it"
+            )
+            if suggested_action not in high_quality:
+                high_quality.insert(0, suggested_action)
+        if manual_review_candidate_shape:
+            manual_shape_action = (
+                "patch manual_review_candidate_submit_shape rows if ownership remains uncertain; "
+                "these rows keep visible targets as low-confidence review hints"
+            )
+            if manual_shape_action not in high_quality:
+                search_first_manual_review = (
+                    "manual_review_visible_slice_pairing_should_split" in blocker_text
+                    and not suggested_shape
+                    and has_search_queries
+                )
+                if search_first_manual_review:
+                    append_after_search_actions(manual_shape_action)
+                else:
+                    insert_after_priority_actions(manual_shape_action)
+        if negative_target_absence_shape or negative_target_absence_support:
+            negative_shape_action = (
+                "patch negative_target_absence_submit_shape only if your semantic conclusion is no corresponding "
+                "Bangumi target; include listed support and a concrete no-corresponding-target reason"
+            )
+            if negative_shape_action not in high_quality:
+                if upgrade_options or has_multi_version_shape or suggested_shape or manual_review_candidate_shape:
+                    insert_after_priority_actions(negative_shape_action)
+                else:
+                    high_quality.insert(0, negative_shape_action)
+        if terminal_repair_required:
+            terminal_action = (
+                "patch this ledger row to a terminal status now: valid mapped, candidate-bearing "
+                "manual_review, supplemental, target_absent, or fail_closed"
+            )
+            if terminal_action not in high_quality:
+                high_quality.insert(0, terminal_action)
+        if candidate_local_locators and blocker_text in {"coverage_missing", "ledger_coverage_missing"}:
+            coverage_action = (
+                "patch rows for candidate_local_locators to cover missing file refs exactly once; "
+                "choose mapped/manual_review/supplemental/target_absent/fail_closed by semantic evidence"
+            )
+            if coverage_action not in high_quality:
+                high_quality.insert(0, coverage_action)
+        if candidate_local_locators and "ledger_coverage_overlap" in blocker_text:
+            overlap_action = (
+                "fix ledger_coverage_overlap by narrowing/removing the overlapping parent or child row; "
+                "do not add another broad manual_review row for the same files"
+            )
+            if overlap_action not in high_quality:
+                high_quality.insert(0, overlap_action)
+        if row_resolution_options:
+            has_multi_version_shape = has_multi_version_shape or isinstance(row_resolution_options, list) and any(
+                isinstance(item, dict)
+                and (
+                    item.get("multi_version_submit_shape")
+                    or (
+                        item.get("local")
+                        and item.get("target")
+                        and _DUPLICATE_VARIANT_REASON_RE.search(str(item.get("reason") or ""))
+                    )
+                )
+                for item in row_resolution_options
+            )
+            if not has_multi_version_shape:
+                high_quality.append("patch a visible slice-level resolution from local_slice_mapping_options if semantically correct")
+            if has_multi_version_shape:
+                high_quality.insert(
+                    0,
+                    "patch the listed multi_version_submit_shape rows: map the non-duplicate slices and map each same-number variant to the same target episode as alternate versions",
+                )
+        if blocker_text in {
+            "numbered_special_exclusion_needs_target_evidence",
+            "mapped_numbered_special_related_count_needs_stronger_evidence",
+        } or "numbered_special_exclusion_needs_target_evidence" in blocker_text:
+            manual_action = (
+                "submit manual_review for this numbered SP group if related/same-count ownership remains ambiguous"
+            )
+            if (
+                "mapped_numbered_special_related_count_needs_stronger_evidence" in blocker_text
+                and upgrade_options
+            ):
+                manual_action = (
+                    "after considering evidence_upgrade_options, patch manual_review if the upgraded "
+                    "duration/subtitle/title evidence still does not close ownership"
+                )
+            if manual_action not in high_quality:
+                if (
+                    upgrade_options
+                    or has_multi_version_shape
+                    or suggested_shape
+                    or negative_target_absence_shape
+                    or negative_target_absence_support
+                ):
+                    insert_after_priority_actions(manual_action)
+                else:
+                    high_quality.insert(0, manual_action)
+        if "manual_review_duplicate_variant_should_split" in blocker_text:
+            split_action = (
+                "patch split variant rows: map local://.../episode/N/variant/1 and "
+                "local://.../episode/N/variant/2 to the same target episode as alternate multi-version files"
+            )
+            if split_action not in high_quality:
+                if has_multi_version_shape:
+                    insert_after_priority_actions(split_action)
+                else:
+                    high_quality.insert(0, split_action)
+        if "manual_review_strong_non_regular_mapping_should_revise" in blocker_text:
+            revise_action = (
+                "revise saved manual_review rows into the listed mapped numbered-special rows if the exposed "
+                "duration/count closure closes ownership"
+            )
+            if revise_action not in high_quality:
+                insert_after_priority_actions(revise_action)
+        if "manual_review_visible_slice_pairing_should_split" in blocker_text:
+            split_action = (
+                "split the parent manual_review into exact local episode slices, or add visible candidate targets to exact manual_review rows"
+            )
+            if split_action not in high_quality:
+                if has_search_queries and not suggested_shape:
+                    insert_after_search_actions(split_action)
+                else:
+                    insert_after_priority_actions(split_action)
+        if "mapped_slice_target_contested_by_manual_review_sibling" in blocker_text:
+            sibling_action = (
+                "resolve the same-parent target conflict: do not leave one slice mapped to a target still cited by a sibling manual_review row"
+            )
+            if sibling_action not in high_quality:
+                insert_after_priority_actions(sibling_action)
+        if (
+            "fail_closed_with_visible_slice_pairing" in blocker_text
+            or "fail_closed_title_tail_bridge_uninspected" in blocker_text
+        ):
+            manual_action = "patch manual_review for the exact local slice/locator if visible pairing remains uncertain and should not block the package"
+            if manual_action not in high_quality:
+                high_quality.insert(0, manual_action)
         diagnostic_only = list(row_diagnostics or diagnostic_actions)[:4]
         bad_paths = noisy_actions[:4]
         if repeated:
             bad_paths.append("repeated_submit_shape")
+        if do_not_retry_targets:
+            bad_paths.append(
+                "do not retry without new evidence: " + ", ".join(do_not_retry_targets[:3])
+            )
         if not high_quality:
-            high_quality.append("submit exact fail_closed for this work unit with the remaining retrieval/evidence gap")
-        rows.append(
-            {
-                "local": local_values[:6],
-                "blocker": blocker_text,
-                "open_question": open_question,
-                "already_tried": ["same submit rejection repeated"] if repeated else [],
-                "bad_paths": bad_paths[:6],
-                "high_quality_next_actions": high_quality[:6],
-                "diagnostic_only": diagnostic_only[:6],
-                "terminal_boundary": (
-                    "If the high-quality frontier is exhausted, submit exact fail_closed for the listed local "
-                    "work unit and name the retrieval/evidence gap."
-                ),
-            }
-        )
+            high_quality.append("patch manual_review for localized semantic uncertainty that should not block the rest of the package, or exact fail_closed only for package-blocking ambiguity")
+        if has_multi_version_shape:
+            repair_priority = 0
+        elif suggested_shape:
+            repair_priority = 1
+        elif candidate_local_locators:
+            repair_priority = 2
+        elif upgrade_options:
+            repair_priority = 3
+        elif terminal_repair_required:
+            repair_priority = 4
+        elif manual_review_candidate_shape:
+            repair_priority = 5
+        elif negative_target_absence_shape or negative_target_absence_support:
+            repair_priority = 6
+        else:
+            repair_priority = 9
+        entry = {
+            "local": local_values[:6],
+            "blocker": blocker_text,
+            "open_question": open_question,
+            "already_tried": ["same submit rejection repeated"] if repeated else [],
+            "bad_paths": bad_paths[:6],
+            "high_quality_next_actions": high_quality[:6],
+            "evidence_upgrade_options": _compact_repair_field(
+                "evidence_upgrade_options",
+                upgrade_options,
+            ) if upgrade_options else [],
+            "multi_version_submit_shape": _compact_repair_field(
+                "multi_version_submit_shape",
+                multi_version_shape,
+            ) if multi_version_shape else [],
+            "suggested_submit_shape": _compact_repair_field(
+                "suggested_submit_shape",
+                suggested_shape,
+            ) if suggested_shape else [],
+            "manual_review_candidate_submit_shape": _compact_repair_field(
+                "manual_review_candidate_submit_shape",
+                manual_review_candidate_shape,
+            ) if manual_review_candidate_shape else [],
+            "negative_target_absence_submit_shape": _compact_repair_field(
+                "negative_target_absence_submit_shape",
+                negative_target_absence_shape,
+            ) if negative_target_absence_shape else {},
+            "negative_target_absence_support_candidates": _compact_repair_field(
+                "negative_target_absence_support_candidates",
+                negative_target_absence_support,
+            ) if negative_target_absence_support else [],
+            "candidate_local_locators": _compact_repair_field(
+                "candidate_local_locators",
+                candidate_local_locators,
+            ) if candidate_local_locators else [],
+            "repair_priority": repair_priority,
+            "terminal_repair_required": terminal_repair_required,
+            "terminal_repair_options": terminal_repair_options[:6],
+            "do_not_retry_targets_without_new_evidence": do_not_retry_targets[:6],
+            "diagnostic_only": diagnostic_only[:6],
+            "terminal_boundary": (
+                "If the high-quality frontier is exhausted, use manual_review for localized semantic uncertainty "
+                "that should not block the rest of the package; use exact fail_closed only for package-blocking ambiguity."
+            ),
+        }
+        insert_at = len(rows)
+        for index, existing in enumerate(rows):
+            if int(existing.get("repair_priority") or 9) > repair_priority:
+                insert_at = index
+                break
+        rows.insert(insert_at, entry)
 
     for row in list(agenda.get("blocking_units") or []):
         if not isinstance(row, dict):
             continue
+        row = enrich_blocking_row(row)
         issue = row.get("issue") or row.get("issue_codes") or "submit_repair"
         add_row(
             local=row.get("local"),
             blocker=issue,
             open_question=str(row.get("required") or row.get("repair_instruction") or _repair_required_next_action(row)),
             row_search_queries=row.get("search_queries_to_try") or search_queries,
+            row_resolution_options=(
+                row.get("suggested_submit_shape")
+                or row.get("multi_version_submit_shape")
+                or row.get("manual_review_candidate_submit_shape")
+                or row.get("local_slice_mapping_options")
+                or row.get("local_target_title_pairing_options")
+                or row.get("local_target_count_pairing_options")
+            ),
+            row_evidence_upgrade_options=row.get("evidence_upgrade_options"),
+            row_multi_version_submit_shape=row.get("multi_version_submit_shape"),
+            row_suggested_submit_shape=row.get("suggested_submit_shape"),
+            row_manual_review_candidate_submit_shape=row.get("manual_review_candidate_submit_shape"),
+            row_negative_target_absence_submit_shape=row.get("negative_target_absence_submit_shape"),
+            row_negative_target_absence_support_candidates=row.get("negative_target_absence_support_candidates"),
+            row_candidate_local_locators=row.get("candidate_local_locators"),
+            row_terminal_repair_required=row.get("terminal_repair_required"),
+            row_terminal_repair_options=row.get("terminal_repair_options"),
+            row_do_not_retry_targets=row.get("do_not_retry_targets_without_new_evidence"),
         )
         if len(rows) >= 8:
-            return rows
+            return ordered_rows()[:8]
     for key in (
         "excluded_title_tail_search_repairs",
         "excluded_title_tail_unresolved_repairs",
@@ -6022,6 +10868,15 @@ def _repair_frontier_rows_from_agenda(agenda: dict[str, object], *, repeated: bo
         "visible_target_surface_missing_units",
         "excluded_singleton_unassigned_target_repairs",
         "fail_closed_singleton_unassigned_target_repairs",
+        "fail_closed_slice_pairing_repairs",
+        "fail_closed_mapped_sibling_repairs",
+        "mapped_target_title_bridge_repairs",
+        "mapped_numbered_special_related_count_repairs",
+        "manual_review_evidence_upgrade_repairs",
+        "manual_review_strong_non_regular_mapping_repairs",
+        "manual_review_visible_slice_pairing_repairs",
+        "numbered_special_exclusion_repairs",
+        "manual_review_duplicate_variant_repairs",
     ):
         for row in list(agenda.get(key) or []):
             if not isinstance(row, dict):
@@ -6031,9 +10886,26 @@ def _repair_frontier_rows_from_agenda(agenda: dict[str, object], *, repeated: bo
                 blocker=row.get("issue") or key,
                 open_question=str(row.get("required") or row.get("repair_instruction") or key),
                 row_search_queries=row.get("search_queries_to_try") or search_queries,
+                row_resolution_options=(
+                    row.get("suggested_submit_shape")
+                    or row.get("multi_version_submit_shape")
+                    or row.get("manual_review_candidate_submit_shape")
+                    or row.get("local_slice_mapping_options")
+                    or row.get("same_count_visible_subjects")
+                ),
+                row_evidence_upgrade_options=row.get("evidence_upgrade_options"),
+                row_multi_version_submit_shape=row.get("multi_version_submit_shape"),
+                row_suggested_submit_shape=row.get("suggested_submit_shape"),
+                row_manual_review_candidate_submit_shape=row.get("manual_review_candidate_submit_shape"),
+                row_negative_target_absence_submit_shape=row.get("negative_target_absence_submit_shape"),
+                row_negative_target_absence_support_candidates=row.get("negative_target_absence_support_candidates"),
+                row_candidate_local_locators=row.get("candidate_local_locators"),
+                row_terminal_repair_required=row.get("terminal_repair_required"),
+                row_terminal_repair_options=row.get("terminal_repair_options"),
+                row_do_not_retry_targets=row.get("do_not_retry_targets_without_new_evidence"),
             )
             if len(rows) >= 8:
-                return rows
+                return ordered_rows()[:8]
     for row in list(agenda.get("required_missing_work_units") or []):
         if not isinstance(row, dict):
             continue
@@ -6044,8 +10916,8 @@ def _repair_frontier_rows_from_agenda(agenda: dict[str, object], *, repeated: bo
             open_question="This must-account local locator is not covered exactly once.",
         )
         if len(rows) >= 8:
-            return rows
-    return rows
+            return ordered_rows()[:8]
+    return ordered_rows()
 
 
 def _local_locator_scope_matches(candidate: str, target: str) -> bool:
@@ -6063,15 +10935,39 @@ def _local_locator_scope_matches(candidate: str, target: str) -> bool:
     return False
 
 
+def _target_subject_locator_text(locator: str) -> str:
+    return re.sub(r"/episodes/\d+-\d+$|/episode/\d+$", "", str(locator or "").strip())
+
+
 def _repair_finalization_target_locators(session: HumanCaseSession, *, limit: int = 12) -> list[str]:
     locators: list[str] = []
+    shape_parent_locators: set[str] = set()
 
-    def add(value: object) -> None:
+    def add(value: object, *, skip_shape_parent: bool = False) -> None:
         locator = str(value or "").strip()
-        if locator.startswith("local://") and locator not in locators:
-            locators.append(locator)
+        if not _is_patchable_local_locator_text(locator) or locator in locators:
+            return
+        if skip_shape_parent and _episode_slice_parent_locator(locator) in shape_parent_locators:
+            return
+        locators.append(locator)
+
+    def add_multi_version_shape(value: object) -> bool:
+        added = False
+        for row in _repair_dict_items(value):
+            before = len(locators)
+            local = str(row.get("local") or "").strip()
+            add(local)
+            added = added or len(locators) > before
+            if local.startswith("local://"):
+                shape_parent_locators.add(_episode_slice_parent_locator(local))
+        return added
 
     for item in _active_repair_agenda_for_prompt(session):
+        frontier = item.get("repair_frontier") if isinstance(item.get("repair_frontier"), dict) else {}
+        if add_multi_version_shape(frontier.get("multi_version_submit_shape") if isinstance(frontier, dict) else None):
+            continue
+        if add_multi_version_shape(frontier.get("suggested_submit_shape") if isinstance(frontier, dict) else None):
+            continue
         for locator in list(item.get("locators") or []):
             add(locator)
         visible_options = item.get("visible_options") if isinstance(item.get("visible_options"), dict) else {}
@@ -6085,7 +10981,7 @@ def _repair_finalization_target_locators(session: HumanCaseSession, *, limit: in
                 add(row.get("local") or row.get("local_slice"))
     readiness = session.cognitive_workspace.resolution_readiness
     for item in readiness.blocking_work_units:
-        add(item)
+        add(item, skip_shape_parent=True)
     return locators[:limit]
 
 
@@ -6123,6 +11019,35 @@ def _submit_exact_fail_closed_rows_for_repair(
     return rows
 
 
+def _submit_addressed_rows_for_repair(
+    session: HumanCaseSession,
+    args: SubmitToolArgs,
+    *,
+    limit: int = 12,
+) -> list[dict[str, object]]:
+    target_locators = _repair_finalization_target_locators(session)
+    if not target_locators:
+        return []
+    rows: list[dict[str, object]] = []
+    for unit in args.resolution.work_units:
+        unit_locators = [str(locator or "").strip() for locator in unit.local if str(locator or "").strip()]
+        matched = [target for target in target_locators if target in unit_locators]
+        if not matched:
+            continue
+        rows.append(
+            {
+                "unit_label": unit.unit_label,
+                "local": unit_locators,
+                "outcome": unit.outcome,
+                "matched_active_repair_locators": matched[:6],
+                "reason": str(unit.reason or "").strip()[:320],
+            }
+        )
+        if len(rows) >= limit:
+            break
+    return rows
+
+
 def _repair_finalization_guard_for_prompt(
     session: HumanCaseSession,
     *,
@@ -6141,9 +11066,27 @@ def _repair_finalization_guard_for_prompt(
     diagnostic_actions = latest_repair.get("diagnostic_target_surface_actions") or []
     noisy_actions = latest_repair.get("rejected_or_noisy_actions") or []
     uninspected_targets = _uninspected_target_surface_action_locators(session, latest_repair)
+    evidence_upgrade_requirements = _uninspected_evidence_upgrade_requirements(session, latest_repair, limit=6)
+    uninspected_upgrade_locators = [
+        str(locator)
+        for locator in list(evidence_upgrade_requirements.get("locators") or [])
+        if str(locator or "").strip()
+    ]
+    suggested_submit_shape_rows = _suggested_submit_shape_rows_from_repair(latest_repair, limit=12)
+    suggested_ledger_patch_rows = _suggested_ledger_patch_rows_from_repair(session, latest_repair, limit=12)
+    strong_suggested_ledger_patch_rows = _strong_suggested_ledger_patch_rows_from_repair(
+        session,
+        latest_repair,
+        limit=12,
+    )
     search_queries = _repair_search_queries_to_try(latest_repair)
     finalization_locators = _repair_finalization_target_locators(session)
-    if uninspected_targets:
+    if uninspected_upgrade_locators:
+        required_next_action = (
+            "Use inspect on the listed evidence_upgrade_options local anchors before another manual_review or "
+            "terminal submit. This is evidence access only; mapped versus manual_review remains Agent-decided."
+        )
+    elif uninspected_targets:
         required_next_action = (
             "Use inspect on the listed target_surface_actions, or use note to record why the exact active "
             "work unit remains unresolved after visible evidence. Do not resubmit a broad package first."
@@ -6153,10 +11096,18 @@ def _repair_finalization_guard_for_prompt(
             "Use one batched search for the listed repair queries, then inspect visible candidates or exact-fail-close "
             "the active work unit. Do not use submit as another exploratory try."
         )
+    elif suggested_submit_shape_rows:
+        required_next_action = (
+            "The active repair frontier exposes suggested_submit_shape rows. Patch the ledger with those rows using "
+            "repair_strategy=revise_saved_rows if you agree the upgraded evidence closes ownership; otherwise patch "
+            "an exact manual_review/fail_closed row that names the suggested target and the concrete post-upgrade "
+            "contradiction. Do not preserve the unresolved manual_review placeholder silently."
+        )
     else:
         required_next_action = (
-            "Submit only concrete repairs for the active work units. If they are still unsafe, submit every "
-            "listed finalization_target_locator as outcome=fail_closed with visible-evidence blockers."
+            "Patch only concrete repairs for the active work units. Address every listed "
+            "finalization_target_locator with an exact mapped/manual_review/exclusion/fail_closed ledger row; "
+            "use fail_closed only for package-blocking blockers."
         )
     return {
         "issue": "near_cap_repair_finalization_guard" if near_cap else "stall_repair_finalization_guard",
@@ -6165,15 +11116,21 @@ def _repair_finalization_guard_for_prompt(
         "active_repair_agenda": active_repair_agenda[:4],
         "finalization_target_locators": finalization_locators[:8],
         "target_surface_actions": target_surface_actions[:4],
+        "evidence_upgrade_inspect_locators": uninspected_upgrade_locators[:6],
+        "evidence_upgrade_inspect_scope": list(evidence_upgrade_requirements.get("scope") or [])[:4],
         "diagnostic_target_surface_actions": diagnostic_actions[:4] if isinstance(diagnostic_actions, list) else [],
         "rejected_or_noisy_actions": noisy_actions[:4] if isinstance(noisy_actions, list) else [],
         "recovery_no_high_quality_action": bool(not target_surface_actions and (diagnostic_actions or noisy_actions)),
         "uninspected_target_surface_locators": uninspected_targets[:4],
+        "uninspected_evidence_upgrade_locators": uninspected_upgrade_locators[:6],
+        "suggested_submit_shape_rows": suggested_submit_shape_rows[:12],
+        "suggested_ledger_patch_rows": (strong_suggested_ledger_patch_rows or suggested_ledger_patch_rows)[:12],
+        "must_address_suggested_ledger_patch_rows": strong_suggested_ledger_patch_rows[:12],
         "search_queries_to_try": search_queries[:8],
         "allowed_actions": [
             "inspect/search/note only when it adds evidence for the current active_repair_agenda",
-            "submit accepted mapping/exclusion only if the active repair agenda is actually closed by the submitted fields",
-            "submit outcome=fail_closed for every listed finalization_target_locator with concrete visible-evidence blockers",
+            "patch_ledger accepted mapping/exclusion only if the active repair agenda is actually closed by the patched fields",
+            "patch_ledger an exact outcome for every listed finalization_target_locator; fail_closed is only for package-blocking blockers",
         ],
         "forbidden_fixed_layer_choices": [
             "fixed layer does not choose target",
@@ -6198,36 +11155,56 @@ def _near_cap_submit_finalization_guard_output(
     if remaining_turns > 2 and not guard.get("stall_warning_active"):
         return {}
     exact_fail_closed_rows = _submit_exact_fail_closed_rows_for_repair(session, args)
+    addressed_rows = _submit_addressed_rows_for_repair(session, args)
     finalization_target_locators = _repair_finalization_target_locators(session)
     covered_locators = {
         str(locator)
-        for row in exact_fail_closed_rows
+        for row in addressed_rows
         for locator in list(row.get("matched_active_repair_locators") or [])
     }
     missing_exact_fail_closed_locators = [
         locator
         for locator in finalization_target_locators
-        if not any(_local_locator_scope_matches(covered, locator) for covered in covered_locators)
+        if locator not in covered_locators
     ]
     if finalization_target_locators and not missing_exact_fail_closed_locators:
         return {}
-    if guard.get("uninspected_target_surface_locators"):
+    if guard.get("uninspected_evidence_upgrade_locators"):
+        required_next_action = (
+            "The active repair agenda still has uninspected evidence_upgrade_options local anchors. Inspect those "
+            "locators with the listed scope first; only after that submit mapped rows if ownership closes, or "
+            "manual_review for exact localized uncertainty if it remains weak. Do not convert this unresolved "
+            "upgrade step into fail_closed merely because the turn cap is near."
+        )
+    elif guard.get("uninspected_target_surface_locators"):
         required_next_action = (
             "The active repair agenda still has uninspected target-surface evidence. Inspect those locators, "
-            "then submit the repaired work unit or exact fail_closed blocker."
+            "then submit the repaired work unit. If the remaining target-surface action is not enough to resolve "
+            "localized uncertainty near the turn cap, submit manual_review for the exact local locator instead of "
+            "fail_closed so the rest of the package can pass."
+        )
+    elif guard.get("suggested_submit_shape_rows"):
+        required_next_action = (
+            "The active repair agenda has suggested_submit_shape rows and no pending evidence action. Patch those "
+            "ledger rows with repair_strategy=revise_saved_rows if you agree the upgraded evidence closes ownership; otherwise "
+            "the exact terminal/manual_review row must name the suggested target and a concrete contradiction. A broad "
+            "budget fail_closed does not address this frontier."
         )
     else:
         required_next_action = (
-            "The active repair agenda is near the turn cap. Submit exact fail_closed rows for every listed "
-            "finalization_target_locator, with concrete visible-evidence blockers, unless you can submit a "
-            "package that actually passes mechanical verification."
+            "The active repair agenda is near the turn cap. Address every listed finalization_target_locator "
+            "with an exact mapped/manual_review/exclusion/fail_closed work unit. Use manual_review for localized "
+            "uncertainty that should not block the rest of the package; use exact fail_closed only for package-blocking "
+            "blockers. A package with mapped/excluded/manual_review coverage can pass mechanical verification."
         )
     return {
         "accepted": False,
         "status": "near_cap_repair_finalization_guard",
         "issue": "near_cap_repair_finalization_requires_exact_work_unit_closure",
         "near_cap_repair_finalization_guard": guard,
+        "addressed_repair_rows": addressed_rows,
         "exact_fail_closed_rows": exact_fail_closed_rows,
+        "manual_review_allowed_for_localized_uncertainty": True,
         "missing_exact_fail_closed_locators": missing_exact_fail_closed_locators,
         "required_next_action": required_next_action,
     }
@@ -6273,10 +11250,20 @@ def _budget_pressure_tool_choice(
     has_open_repair = _has_open_submit_repair(latest_repair)
     repair_finalization_pressure = remaining_turns <= REPAIR_FINALIZATION_TURN_WINDOW
     target_surface_action_open = _repair_has_uninspected_target_surface_action(session, latest_repair)
+    evidence_upgrade_action_open = _repair_has_uninspected_evidence_upgrade_action(session, latest_repair)
     repair_queries = _repair_search_queries_to_try(latest_repair)
+    ledger_has_rows = bool(list(session.resolution_ledger.rows or []))
+    suggested_submit_shape_open = bool(_suggested_submit_shape_rows_from_repair(latest_repair, limit=1))
+    strong_suggested_patch_open = bool(
+        _strong_suggested_ledger_patch_rows_from_repair(session, latest_repair, limit=1)
+    )
     if repair_finalization_pressure and has_open_repair:
+        if evidence_upgrade_action_open and remaining_turns > 1:
+            return {"type": "function", "function": {"name": "inspect"}}
         if target_surface_action_open and remaining_turns > 1:
             return {"type": "function", "function": {"name": "inspect"}}
+        if ledger_has_rows and strong_suggested_patch_open:
+            return {"type": "function", "function": {"name": "patch_ledger"}}
         if (
             remaining_turns > 2
             and session.last_tool_name != "search"
@@ -6284,8 +11271,16 @@ def _budget_pressure_tool_choice(
             and repair_queries
         ):
             return {"type": "function", "function": {"name": "search"}}
+        if ledger_has_rows and (suggested_submit_shape_open or session.draft_work_units or remaining_turns <= 2):
+            return {"type": "function", "function": {"name": "patch_ledger"}}
         if remaining_turns <= 2 and session.draft_work_units:
             return {"type": "function", "function": {"name": "submit"}}
+    if evidence_upgrade_action_open and remaining_turns > 1:
+        return {"type": "function", "function": {"name": "inspect"}}
+    if target_surface_action_open and remaining_turns > 1:
+        return {"type": "function", "function": {"name": "inspect"}}
+    if has_open_repair and ledger_has_rows and strong_suggested_patch_open:
+        return {"type": "function", "function": {"name": "patch_ledger"}}
     if (
         remaining_turns > 1
         and session.last_tool_name != "search"
@@ -6293,8 +11288,6 @@ def _budget_pressure_tool_choice(
         and repair_queries
     ):
         return {"type": "function", "function": {"name": "search"}}
-    if target_surface_action_open and remaining_turns > 1:
-        return {"type": "function", "function": {"name": "inspect"}}
     if remaining_turns > REPAIR_FINALIZATION_TURN_WINDOW or not session.draft_work_units:
         return "required"
     if not has_open_repair:
@@ -6305,6 +11298,9 @@ def _budget_pressure_tool_choice(
 
 
 def _search_budget_tool_choice(session: HumanCaseSession) -> str | dict[str, object]:
+    latest_repair = _latest_submit_repair_observation(session)
+    if list(session.resolution_ledger.rows or []) and _has_open_submit_repair(latest_repair):
+        return {"type": "function", "function": {"name": "patch_ledger"}}
     if session.search_call_count < SEARCH_TOOL_CALL_BUDGET:
         return "required"
     if "inspect" in session.tool_sequence:
@@ -6327,6 +11323,8 @@ def _budget_pressure_tool_rejection(
     if not _has_open_submit_repair(latest_repair):
         return None
     if tool_name == "inspect" and _repair_has_uninspected_target_surface_action(session, latest_repair):
+        return None
+    if tool_name == "inspect" and _repair_has_uninspected_evidence_upgrade_action(session, latest_repair):
         return None
     return {
         "accepted": False,
@@ -6379,32 +11377,43 @@ def _inspect_args_with_required_repair_locators(
     """
 
     required = _uninspected_target_surface_action_locators(session)
-    if not required:
+    evidence_requirements = _uninspected_evidence_upgrade_requirements(session, limit=6)
+    required_upgrade = [
+        str(locator)
+        for locator in list(evidence_requirements.get("locators") or [])
+        if str(locator or "").strip()
+    ]
+    if not required and not required_upgrade:
         return args, {}
     requested = [str(item).strip() for item in list(args.locators or []) if str(item).strip()]
     merged: list[str] = []
-    for locator in [*required, *requested]:
+    for locator in [*required_upgrade, *required, *requested]:
         if locator and locator not in merged:
             merged.append(locator)
         if len(merged) >= max_locators:
             break
     scope = [str(item).strip() for item in list(args.scope or []) if str(item).strip()]
-    for required_scope in ("details", "episodes", "related"):
+    required_scopes = ["details", "episodes", "related"] if required else []
+    for item in list(evidence_requirements.get("scope") or []):
+        if str(item or "").strip() and str(item).strip() not in required_scopes:
+            required_scopes.append(str(item).strip())
+    for required_scope in required_scopes:
         if required_scope not in {item.casefold() for item in scope}:
             scope.append(required_scope)
     if merged == requested and scope == list(args.scope or []):
         return args, {}
     updated = args.model_copy(update={"locators": merged, "scope": scope})
-    added = [locator for locator in required if locator not in requested]
+    added = [locator for locator in [*required_upgrade, *required] if locator not in requested]
     return updated, {
         "required_repair_inspect_locators": required,
         "required_repair_inspect_locators_added": added,
+        "required_evidence_upgrade_locators": required_upgrade,
         "original_requested_locators": requested,
         "effective_locators": merged,
         "effective_scope": scope,
         "reason": (
-            "Previous submit feedback exposed target_surface_actions. The fixed layer consumed those "
-            "mechanically required target surfaces in this inspect call; semantic ownership remains Agent-decided."
+            "Previous submit feedback exposed target_surface_actions or evidence_upgrade_options. The fixed layer "
+            "kept this inspect call on the required evidence-access anchors; semantic ownership remains Agent-decided."
         ),
     }
 
@@ -6450,6 +11459,7 @@ def _submit_result_with_auto_target_surface_inspect(
         registry,
         args,
         searched_query_variant_keys=searched_query_variant_keys,
+        inspected_locators=_inspected_locators_from_session(session),
     )
     return workspace, session, retried, {
         "note": "human_case_agent_submit_auto_target_surface_inspect",
@@ -6468,6 +11478,81 @@ def _submit_result_with_auto_target_surface_inspect(
         "boundary": (
             "Mechanical target-surface completion only. The fixed layer inspected target locators exposed by "
             "the verifier for the Agent's submitted resolution; it did not choose a Bangumi target or outcome."
+        ),
+    }
+
+
+def _compile_resolution_ledger_with_auto_target_surface_inspect(
+    workspace: CaseEvidenceWorkspace,
+    registry: LocatorRegistry,
+    bangumi_client: object,
+    session: HumanCaseSession,
+    ledger: ResolutionLedger,
+    *,
+    searched_query_variant_keys: set[str] | None = None,
+) -> tuple[CaseEvidenceWorkspace, HumanCaseSession, SubmitCompileResult, dict[str, object]]:
+    submit_result = _compile_resolution_ledger_to_submit_result(
+        workspace,
+        registry,
+        ledger,
+        searched_query_variant_keys=searched_query_variant_keys,
+        inspected_locators=_inspected_locators_from_session(session),
+    )
+    if submit_result.accepted:
+        return workspace, session, submit_result, {}
+
+    agenda = _repair_agenda_from_submit_feedback(submit_result.feedback, repeated=False)
+    locators = _uninspected_target_surface_action_locators(session, agenda, limit=4)
+    if not locators:
+        return workspace, session, submit_result, {}
+
+    workspace, inspect_output = _inspect_tool(
+        workspace,
+        registry,
+        bangumi_client,
+        InspectToolArgs(
+            locators=locators,
+            scope=["details", "episodes", "related"],
+            reason=(
+                "Auto-consume target_surface_actions exposed by ledger compilation before retrying the same "
+                "Agent ledger."
+            ),
+        ),
+    )
+    session.observations.append(
+        {
+            "tool": "inspect",
+            "output": {
+                **inspect_output,
+                "auto_from_ledger_compile": True,
+                "required_repair_inspect_locators": locators,
+            },
+        }
+    )
+    retried = _compile_resolution_ledger_to_submit_result(
+        workspace,
+        registry,
+        ledger,
+        searched_query_variant_keys=searched_query_variant_keys,
+        inspected_locators=_inspected_locators_from_session(session),
+    )
+    return workspace, session, retried, {
+        "note": "human_case_agent_resolution_ledger_auto_target_surface_inspect",
+        "locators": locators,
+        "original_issue_counts": (
+            submit_result.feedback.get("package", {}).get("issue_counts", {})
+            if isinstance(submit_result.feedback.get("package"), dict)
+            else {}
+        ),
+        "retry_accepted": retried.accepted,
+        "retry_issue_counts": (
+            retried.feedback.get("package", {}).get("issue_counts", {})
+            if isinstance(retried.feedback.get("package"), dict)
+            else {}
+        ),
+        "boundary": (
+            "Mechanical target-surface completion only. The fixed layer inspected target locators exposed by "
+            "the ledger verifier for the Agent's submitted ledger; it did not choose a Bangumi target or outcome."
         ),
     }
 
@@ -6653,6 +11738,16 @@ def _feedback_units_with_package_repairs(
                         "parent_local",
                         "parent_local_fact",
                         "mapped_siblings",
+                        "non_regular_evidence_closure",
+                        "evidence_upgrade_options",
+                        "local_unique_episode_count",
+                        "local_duplicate_episode_count",
+                        "duplicate_episode_variant_locators",
+                        "candidate_targets",
+                        "strong_mapping_candidates",
+                        "suggested_submit_shape",
+                        "manual_review_candidate_submit_shape",
+                        "multi_version_submit_shape",
                         "local_target_title_pairing_options",
                         "local_slice_mapping_options",
                         "unassigned_target_candidates",
@@ -6706,7 +11801,7 @@ def _feedback_units_with_package_repairs(
 
 
 def _episode_slice_parent_locator(locator: str) -> str:
-    return re.sub(r"/episodes/\d+-\d+$|/episode/\d+$", "", str(locator or "").strip())
+    return re.sub(r"/episodes/\d+-\d+$|/episode/\d+(?:/variant/\d+)?$", "", str(locator or "").strip())
 
 
 def _fail_closed_mapped_sibling_repairs(
@@ -6819,6 +11914,10 @@ def _excluded_slice_mapped_sibling_repairs(
             local_locator, local_issue = registry.resolve(str(local))
             if local_issue or local_locator is None or local_locator.kind != "local":
                 continue
+            if _is_duplicate_number_variant_locator(registry, local_locator) and _DUPLICATE_VARIANT_REASON_RE.search(
+                " ".join(str(unit.get(key) or "") for key in ("unit", "reason"))
+            ):
+                continue
             if _has_hard_non_owner_reason(
                 unit.get("unit"),
                 unit.get("reason"),
@@ -6900,6 +11999,51 @@ def _fail_closed_with_visible_slice_pairing_repairs(
             locator, issue = registry.resolve(str(raw_local))
             if issue or locator is None or locator.kind != "local":
                 continue
+            parent_locator = registry.locators.get(_episode_slice_parent_locator(locator.locator))
+            if parent_locator is not None and parent_locator.locator != locator.locator:
+                parent_category = parent_locator.locator.rsplit("/", 1)[-1]
+                if parent_category not in {"main", "main-episodes", "episodes"}:
+                    continue
+                pairing_options = _local_target_title_pairing_options_for_slice(
+                    registry,
+                    locator.locator,
+                    limit=8,
+                )
+                hard_pairings = [
+                    item
+                    for item in pairing_options
+                    if _title_pairing_option_is_hard_blocker(item)
+                ]
+                if not hard_pairings:
+                    continue
+                mapping_options = _one_mapping_option_per_local_slice(
+                    _local_slice_mapping_options_from_title_pairings(
+                        hard_pairings,
+                        limit=8,
+                    )
+                )
+                repairs.append(
+                    {
+                        "issue": "fail_closed_with_visible_slice_pairing",
+                        "unit": unit.get("unit"),
+                        "local": [locator.locator],
+                        "parent_local": parent_locator.locator,
+                        "reason": unit.get("reason"),
+                        "file_count": len(locator.file_refs),
+                        "representative_labels": list(locator.representative_labels[:4]),
+                        "local_target_title_pairing_options": hard_pairings,
+                        "local_slice_mapping_options": mapping_options,
+                        "suggested_submit_shape": mapping_options,
+                        "required": (
+                            "This exact main/movie-like local slice is fail_closed while a high-signal visible "
+                            "title-pairing target remains available. Map the paired target if semantically correct, "
+                            "or convert this exact slice to manual_review with the visible candidate and a concrete "
+                            "post-comparison contradiction. Do not terminally fail_closed the slice while the "
+                            "candidate debt is still undischarged."
+                        ),
+                    }
+                )
+                break
             triples = _episode_label_triples(locator)
             if not (2 <= len(triples) <= 4):
                 continue
@@ -6913,6 +12057,20 @@ def _fail_closed_with_visible_slice_pairing_repairs(
             )
             if not pairing_options:
                 continue
+            hard_pairings = [
+                item
+                for item in pairing_options
+                if _title_pairing_option_is_hard_blocker(item)
+            ]
+            mapping_options = _one_mapping_option_per_local_slice(
+                _local_slice_mapping_options_from_title_pairings(
+                    hard_pairings or pairing_options,
+                    limit=16,
+                )
+            )
+            covered_slices = {str(item.get("local") or "") for item in mapping_options if isinstance(item, dict)}
+            required_slices = {f"{locator.locator}/episode/{int(number)}" for number, _ref, _label in triples}
+            all_slices_covered = bool(required_slices and required_slices.issubset(covered_slices))
             repairs.append(
                 {
                     "issue": "fail_closed_with_visible_slice_pairing",
@@ -6922,7 +12080,9 @@ def _fail_closed_with_visible_slice_pairing_repairs(
                     "file_count": len(locator.file_refs),
                     "representative_labels": list(locator.representative_labels[:4]),
                     "local_target_title_pairing_options": pairing_options,
-                    "local_slice_mapping_options": _local_slice_mapping_options_from_title_pairings(pairing_options),
+                    "local_slice_mapping_options": mapping_options,
+                    "suggested_submit_shape": mapping_options if all_slices_covered else [],
+                    "unpaired_local_slices": sorted(required_slices - covered_slices)[:8],
                     "required": (
                         "This multi-file local locator is fail_closed at parent level while visible local://.../episode/N "
                         "slice locators and one-item target pairing candidates are available. Split the local side into "
@@ -6985,6 +12145,16 @@ def _shared_distinctive_title_token(left: str, right: str) -> bool:
 
 
 def _title_season_number_hint(value: str) -> int | None:
+    raw_text = str(value or "").casefold()
+    cjk_number_map = {
+        "\u4e8c": 2,
+        "\u4e09": 3,
+        "\u56db": 4,
+        "\u4e94": 5,
+    }
+    for match in re.finditer(r"\u7b2c([2-5\u4e8c\u4e09\u56db\u4e94])(?:\u5b63|\u671f)", raw_text):
+        token = match.group(1)
+        return int(token) if token.isdigit() else cjk_number_map.get(token)
     text = _normalized_locator_match_text(value)
     if not text:
         return None
@@ -7299,8 +12469,8 @@ def _excluded_singleton_visible_subject_repairs(
                 continue
             if local_season_hint is not None and subject_season_hint is not None and local_season_hint != subject_season_hint:
                 continue
-            local_tokens = _distinctive_title_tokens(local_locator.title)
-            subject_tokens = _distinctive_title_tokens(subject.title)
+            local_tokens = _locator_distinctive_tokens(local_locator)
+            subject_tokens = _target_visible_title_tokens(subject).union(_target_query_distinctive_tokens(subject))
             overlap_tokens = local_tokens.intersection(subject_tokens)
             if not overlap_tokens:
                 continue
@@ -7323,13 +12493,13 @@ def _excluded_singleton_visible_subject_repairs(
                 "visible_subject_fact": _locator_count_match_fact(registry, subject, subject.locator),
                 "available_target_episode_numbers": episode_numbers[:48],
                 "target_span_examples": target_span_examples,
-                "required": (
-                    "A singleton local title matches a visible multi-episode target subject. Before excluding it, "
-                    "inspect/use that target surface and decide whether this is a composite feature, a real extra, "
-                    "or target_absent. The fixed layer is exposing the composite candidate; it is not choosing the "
-                    "semantic outcome."
-                ),
-            }
+                    "required": (
+                        "A singleton local title matches a visible multi-episode target subject. Before excluding it, "
+                        "inspect/use that target surface and decide whether this is a composite feature, a real extra, "
+                        "target_absent, or manual_review. The fixed layer is exposing the review candidate; it is not "
+                        "choosing the semantic outcome."
+                    ),
+                }
             if episode_numbers:
                 repair["suggested_submit_shape"] = {
                     "local": local_locator.locator,
@@ -7361,11 +12531,13 @@ def _mapped_title_season_mismatch_repair(
         return None
     local_facts: list[dict[str, object]] = []
     local_titles: list[str] = []
+    resolved_local_locators: list[AgentLocator] = []
     local_seasons: set[int] = set()
     for raw_local in local_locators:
         local_locator, local_issue = registry.resolve(raw_local)
         if local_issue or local_locator is None or local_locator.kind != "local":
             continue
+        resolved_local_locators.append(local_locator)
         local_facts.append(_locator_count_match_fact(registry, local_locator, local_locator.locator))
         local_titles.append(local_locator.title)
         local_season = _title_season_number_hint(local_locator.title)
@@ -7373,6 +12545,15 @@ def _mapped_title_season_mismatch_repair(
             local_seasons.add(local_season)
     if not local_titles or target_season in local_seasons:
         return None
+    if target_subject_locator is not None:
+        closure = _non_regular_mapping_closure(
+            registry,
+            local_locators=resolved_local_locators,
+            target_subject=target_subject_locator,
+            file_count=sum(len(locator.file_refs) for locator in resolved_local_locators),
+        )
+        if closure.get("strong"):
+            return None
     seasonless_query = _seasonless_title_query(target_title)
     search_queries_to_try = [seasonless_query] if seasonless_query else []
     if local_seasons:
@@ -7769,6 +12950,633 @@ def _supplemental_main_episode_repairs(
     return repairs
 
 
+_MAIN_LOCAL_CATEGORIES = {"main", "main-episodes", "episodes"}
+_NON_REGULAR_LOCAL_CATEGORIES = {"special-marker", "packaging-extras"}
+_DUPLICATE_VARIANT_REASON_RE = re.compile(
+    r"(?i)\b(?:duplicate|alternate|variant|version|multi[-\s]?version|same\s+(?:title|subtitle|episode|duration)|copy|identical)\b"
+)
+
+
+def _parent_local_locator(registry: LocatorRegistry, locator: AgentLocator) -> AgentLocator:
+    return registry.locators.get(_episode_slice_parent_locator(locator.locator)) or locator
+
+
+def _local_locator_category(registry: LocatorRegistry, locator: AgentLocator) -> str:
+    parent = _parent_local_locator(registry, locator)
+    return parent.locator.rsplit("/", 1)[-1]
+
+
+def _is_non_regular_numbered_locator(registry: LocatorRegistry, locator: AgentLocator) -> bool:
+    parent = _parent_local_locator(registry, locator)
+    category = parent.locator.rsplit("/", 1)[-1]
+    return category in _NON_REGULAR_LOCAL_CATEGORIES and bool(parent.episode_file_refs)
+
+
+def _is_duplicate_number_variant_locator(registry: LocatorRegistry, locator: AgentLocator) -> bool:
+    parent = _parent_local_locator(registry, locator)
+    if len(locator.file_refs) != 1 or len(locator.episode_file_refs) != 1:
+        return False
+    number = int(locator.episode_file_refs[0][0])
+    return sum(1 for num, _ref in parent.episode_file_refs if int(num) == number) > 1
+
+
+def _duplicate_number_variant_key(registry: LocatorRegistry, raw_locator: object) -> tuple[str, int] | None:
+    locator, issue = registry.resolve(str(raw_locator or ""))
+    if issue or locator is None or locator.kind != "local":
+        return None
+    if not _is_duplicate_number_variant_locator(registry, locator):
+        return None
+    parent = _parent_local_locator(registry, locator)
+    if not locator.episode_file_refs:
+        return None
+    return parent.locator, int(locator.episode_file_refs[0][0])
+
+
+def _target_episode_number_for_item_ref(registry: LocatorRegistry, target_ref: str) -> int | None:
+    target_item = _target_item_locator_for_ref(registry, target_ref)
+    if not target_item:
+        return None
+    locator, issue = registry.resolve(target_item)
+    if issue or locator is None:
+        return None
+    if locator.episode_start is None or locator.episode_end is None:
+        return None
+    if int(locator.episode_start) != int(locator.episode_end):
+        return None
+    return int(locator.episode_start)
+
+
+def _duplicate_target_is_allowed_multi_version_variant(
+    registry: LocatorRegistry,
+    target_ref: str,
+    usages: list[dict[str, object]],
+) -> bool:
+    if not 2 <= len(usages) <= 8:
+        return False
+    variant_keys: set[tuple[str, int]] = set()
+    local_locators: list[str] = []
+    reason_parts: list[str] = []
+    for usage in usages:
+        raw_locators = [str(item or "").strip() for item in list(usage.get("local") or []) if str(item or "").strip()]
+        if len(raw_locators) != 1:
+            return False
+        key = _duplicate_number_variant_key(registry, raw_locators[0])
+        if key is None:
+            return False
+        variant_keys.add(key)
+        local_locators.append(raw_locators[0])
+        reason_parts.extend([str(usage.get("unit") or ""), str(usage.get("reason") or "")])
+    if len(variant_keys) != 1 or len(set(local_locators)) != len(local_locators):
+        return False
+    _parent_locator, episode_number = next(iter(variant_keys))
+    target_episode_number = _target_episode_number_for_item_ref(registry, target_ref)
+    if target_episode_number is not None and target_episode_number != episode_number:
+        return False
+    return bool(_DUPLICATE_VARIANT_REASON_RE.search(" ".join(reason_parts)))
+
+
+def _allowed_multi_version_duplicate_targets(
+    registry: LocatorRegistry,
+    target_counts: Counter[str],
+    target_usage: dict[str, list[dict[str, object]]],
+) -> list[str]:
+    return [
+        target_ref
+        for target_ref, count in target_counts.items()
+        if count > 1
+        and _duplicate_target_is_allowed_multi_version_variant(
+            registry,
+            target_ref,
+            list(target_usage.get(target_ref) or []),
+        )
+    ]
+
+
+def _assignment_risk_flags_for_mapped_unit(
+    registry: LocatorRegistry,
+    locators: list[str],
+    *,
+    outcome: str,
+) -> list[str]:
+    flags: list[str] = []
+    resolved_locators: list[AgentLocator] = []
+    for raw in locators:
+        locator, issue = registry.resolve(raw)
+        if not issue and locator is not None and locator.kind == "local":
+            resolved_locators.append(locator)
+    if outcome == "mapped_special_or_ova" or any(_is_non_regular_numbered_locator(registry, locator) for locator in resolved_locators):
+        flags.append("special_or_ova")
+    if any(_is_duplicate_number_variant_locator(registry, locator) for locator in resolved_locators):
+        flags.append("duplicate_like")
+    return flags
+
+
+def _float_value(value: object) -> float | None:
+    try:
+        if value is None or value == "":
+            return None
+        return float(value)
+    except (TypeError, ValueError):
+        return None
+
+
+def _duration_values_for_locator(locator: AgentLocator) -> list[float]:
+    values: list[float] = []
+    for card in list(locator.file_fact_cards or []):
+        if not isinstance(card, dict):
+            continue
+        container = card.get("container_facts") if isinstance(card.get("container_facts"), dict) else {}
+        if str(container.get("probe_status") or "") != "available":
+            continue
+        duration = _float_value(container.get("duration_seconds"))
+        if duration is not None and duration > 0:
+            values.append(duration)
+    return values
+
+
+def _duration_closure_for_locators(locators: list[AgentLocator], *, file_count: int) -> dict[str, object]:
+    values = [
+        duration
+        for locator in locators
+        for duration in _duration_values_for_locator(locator)
+    ]
+    if not values:
+        return {"available": False, "reason": "duration_missing"}
+    if len(values) < max(1, int(file_count or 0)):
+        return {
+            "available": False,
+            "reason": "duration_partial",
+            "duration_count": len(values),
+            "file_count": int(file_count or 0),
+        }
+    minimum = min(values)
+    maximum = max(values)
+    average = sum(values) / len(values)
+    spread = maximum - minimum
+    relative_spread = spread / max(1.0, average)
+    strong = spread <= 180.0 or relative_spread <= 0.25
+    return {
+        "available": True,
+        "strong": bool(strong),
+        "duration_count": len(values),
+        "file_count": int(file_count or 0),
+        "min_seconds": round(minimum, 3),
+        "max_seconds": round(maximum, 3),
+        "avg_seconds": round(average, 3),
+        "spread_seconds": round(spread, 3),
+        "relative_spread": round(relative_spread, 4),
+        "reason": "duration_distribution_consistent" if strong else "duration_distribution_mixed",
+    }
+
+
+def _local_season_hints_for_locators(locators: list[AgentLocator]) -> tuple[set[int], bool]:
+    hints: set[int] = set()
+    unseasoned = False
+    for locator in locators:
+        season_hint = _title_season_number_hint(" ".join([locator.title, *locator.representative_labels[:4]]))
+        if season_hint is None:
+            unseasoned = True
+        else:
+            hints.add(season_hint)
+    return hints, unseasoned
+
+
+def _target_matches_local_season(target: AgentLocator, season_hints: set[int], local_unseasoned: bool) -> bool:
+    target_season = _title_season_number_hint(target.title)
+    if season_hints:
+        return target_season in season_hints or target_season is None
+    if local_unseasoned and target_season is not None:
+        return False
+    return True
+
+
+def _non_regular_local_bridge_tokens(locators: list[AgentLocator]) -> set[str]:
+    local_tokens = set().union(*[_locator_distinctive_tokens(locator) for locator in locators]) if locators else set()
+    generic_local_tokens = {"sp", "sps", "special", "specials", "marker", "episode", "episodes", "main"}
+    return {
+        token
+        for token in local_tokens
+        if token not in generic_local_tokens and not re.fullmatch(r"(?:sp|ova|oad|oav|op|ed|ncop|nced)\d{0,3}", token)
+    }
+
+
+_NON_REGULAR_TARGET_FORM_SUPPORT = {"ova", "oad", "special", "recap", "movie"}
+_NON_REGULAR_QUERY_MARKER_SUPPORT = {
+    "sp",
+    "sps",
+    "ova",
+    "oad",
+    "oav",
+    "recap",
+    "digest",
+    "compilation",
+    "tokuten",
+    "bonus",
+}
+
+
+def _target_non_regular_mapping_support_details(target: AgentLocator, local_tokens: set[str]) -> dict[str, object]:
+    visible_tokens = _target_visible_title_tokens(target)
+    query_tokens = _target_query_distinctive_tokens(target)
+    target_form_tokens = _media_form_tokens(target.title, " ".join(target.markers))
+    query_form_tokens = _media_form_tokens(" ".join(target.query_markers))
+    query_marker_bridge = bool(
+        query_form_tokens.intersection(_NON_REGULAR_TARGET_FORM_SUPPORT)
+        or query_tokens.intersection(_NON_REGULAR_QUERY_MARKER_SUPPORT)
+    )
+    visible_title_overlap = bool(local_tokens.intersection(visible_tokens))
+    title_or_query_bridge = bool(local_tokens.intersection(visible_tokens.union(query_tokens)))
+    direct_non_regular_query_bridge = bool(
+        target.relation_quality == "direct"
+        and local_tokens.intersection(query_tokens)
+        and query_marker_bridge
+        and not visible_title_overlap
+    )
+    direct_distinct_query_bridge = bool(
+        target.relation_quality == "direct"
+        and local_tokens.intersection(query_tokens)
+        and not visible_title_overlap
+    )
+    non_regular_target_form = bool(target_form_tokens.intersection(_NON_REGULAR_TARGET_FORM_SUPPORT))
+    owner_relevant_related = target.relation_quality == "owner_relevant_related"
+    related_title_or_query_bridge = bool(title_or_query_bridge and target.relation_quality != "direct")
+    return {
+        "owner_relevant_related": owner_relevant_related,
+        "non_regular_target_form": non_regular_target_form,
+        "title_or_query_bridge": title_or_query_bridge,
+        "visible_title_overlap": visible_title_overlap,
+        "related_title_or_query_bridge": related_title_or_query_bridge,
+        "direct_non_regular_query_bridge": direct_non_regular_query_bridge,
+        "direct_distinct_query_bridge": direct_distinct_query_bridge,
+        "query_non_regular_marker": query_marker_bridge,
+        "strong": bool(
+            owner_relevant_related
+            or non_regular_target_form
+            or related_title_or_query_bridge
+            or direct_non_regular_query_bridge
+        ),
+    }
+
+
+def _target_has_non_regular_mapping_support(target: AgentLocator, local_tokens: set[str]) -> bool:
+    support = _target_non_regular_mapping_support_details(target, local_tokens)
+    return bool(support.get("strong") or support.get("direct_distinct_query_bridge"))
+
+
+def _same_count_non_regular_target_candidates(
+    registry: LocatorRegistry,
+    *,
+    target_subject: AgentLocator,
+    local_locators: list[AgentLocator],
+    file_count: int,
+) -> list[AgentLocator]:
+    local_tokens = _non_regular_local_bridge_tokens(local_locators)
+    local_season_hints, local_unseasoned = _local_season_hints_for_locators(local_locators)
+    candidates: list[AgentLocator] = []
+    seen: set[str] = set()
+    for target in registry.locators.values():
+        if target.kind != "target_subject" or int(target.subject_eps or 0) != int(file_count or 0):
+            continue
+        if not _target_matches_local_season(target, local_season_hints, local_unseasoned):
+            continue
+        selected = target.locator == target_subject.locator
+        if not (selected or _target_has_non_regular_mapping_support(target, local_tokens)):
+            continue
+        key = target.locator.casefold()
+        if key in seen:
+            continue
+        seen.add(key)
+        candidates.append(target)
+    return candidates
+
+
+def _non_regular_mapping_closure(
+    registry: LocatorRegistry,
+    *,
+    local_locators: list[AgentLocator],
+    target_subject: AgentLocator,
+    file_count: int,
+) -> dict[str, object]:
+    if file_count <= 1:
+        return {"strong": False, "reason": "singleton_or_empty"}
+    if not local_locators or not all(_is_non_regular_numbered_locator(registry, locator) for locator in local_locators):
+        return {"strong": False, "reason": "not_non_regular_numbered_local"}
+    if int(target_subject.subject_eps or 0) != int(file_count or 0):
+        return {"strong": False, "reason": "target_count_mismatch"}
+    duration_closure = _duration_closure_for_locators(local_locators, file_count=file_count)
+    if not duration_closure.get("strong"):
+        return {"strong": False, "reason": "duration_closure_weak", "duration_closure": duration_closure}
+    local_tokens = _non_regular_local_bridge_tokens(local_locators)
+    selected_support = _target_non_regular_mapping_support_details(target_subject, local_tokens)
+    candidates = _same_count_non_regular_target_candidates(
+        registry,
+        target_subject=target_subject,
+        local_locators=local_locators,
+        file_count=file_count,
+    )
+    candidate_locators = [candidate.locator for candidate in candidates]
+    if target_subject.locator not in candidate_locators:
+        candidate_locators.insert(0, target_subject.locator)
+    competing_same_count_candidates = [
+        locator for locator in candidate_locators if locator != target_subject.locator
+    ][:6]
+    visible_title_overlap = sorted(local_tokens.intersection(_target_visible_title_tokens(target_subject)))
+    direct_query_duration_unique = bool(
+        selected_support.get("title_or_query_bridge")
+        and not selected_support.get("strong")
+        and not visible_title_overlap
+        and not competing_same_count_candidates
+        and target_subject.evidence_origin == "direct_search"
+    )
+    strong = bool(selected_support.get("strong") or direct_query_duration_unique)
+    return {
+        "strong": strong,
+        "reason": (
+            "non_regular_count_duration_selected_target_supported"
+            if selected_support.get("strong")
+            else "non_regular_count_duration_unique_query_bridge"
+            if direct_query_duration_unique
+            else "selected_target_support_insufficient"
+        ),
+        "duration_closure": duration_closure,
+        "same_count_target_candidates": candidate_locators[:8],
+        "selected_target_support": selected_support,
+        "visible_title_overlap": visible_title_overlap[:8],
+        "direct_query_duration_unique": direct_query_duration_unique,
+        "competing_same_count_candidates": competing_same_count_candidates,
+    }
+
+
+def _anchor_numbers_for_episode_pairs(episode_pairs: tuple[tuple[int, str], ...], *, limit: int = 3) -> list[int]:
+    numbers = sorted({int(num) for num, _ref in episode_pairs if int(num) > 0})
+    if not numbers:
+        return []
+    indexes = [0, len(numbers) // 2, len(numbers) - 1]
+    anchors: list[int] = []
+    for index in indexes:
+        number = numbers[max(0, min(index, len(numbers) - 1))]
+        if number not in anchors:
+            anchors.append(number)
+        if len(anchors) >= limit:
+            break
+    return anchors
+
+
+def _duration_by_file_ref(locator: AgentLocator) -> dict[str, float]:
+    values: dict[str, float] = {}
+    for ref, card in zip(locator.file_refs, locator.file_fact_cards):
+        if not isinstance(card, dict):
+            continue
+        container = card.get("container_facts") if isinstance(card.get("container_facts"), dict) else {}
+        if str(container.get("probe_status") or "") != "available":
+            continue
+        duration = _float_value(container.get("duration_seconds"))
+        if duration is not None and duration > 0:
+            values[str(ref)] = round(duration, 3)
+    return values
+
+
+def _subtitle_compact_availability_by_file_ref(locator: AgentLocator) -> dict[str, dict[str, object]]:
+    values: dict[str, dict[str, object]] = {}
+    for ref, card in zip(locator.file_refs, locator.subtitle_compact_cards):
+        if not isinstance(card, dict):
+            continue
+        snippets = [
+            item
+            for item in list(card.get("bounded_text_snippets") or [])
+            if isinstance(item, dict) and str(item.get("text") or "").strip()
+        ]
+        if snippets:
+            values[str(ref)] = {
+                "available": True,
+                "snippet_count": len(snippets),
+                "language_markers": list(card.get("language_markers") or [])[:8],
+            }
+    return values
+
+
+def _subtitle_compact_distinctive_tokens_for_locators(locators: list[AgentLocator]) -> set[str]:
+    tokens: set[str] = set()
+    for locator in locators:
+        for card in list(locator.subtitle_compact_cards or []):
+            if not isinstance(card, dict):
+                continue
+            for snippet in list(card.get("bounded_text_snippets") or []):
+                if not isinstance(snippet, dict):
+                    continue
+                tokens.update(_distinctive_title_tokens(str(snippet.get("text") or "")))
+    return tokens
+
+
+def _evidence_upgrade_options_for_non_regular_mapping(
+    registry: LocatorRegistry,
+    *,
+    local_locators: list[AgentLocator],
+    target_subject: AgentLocator,
+    closure: dict[str, object],
+) -> list[dict[str, object]]:
+    anchor_rows: list[dict[str, object]] = []
+    anchor_locators: list[str] = []
+    seen_locators: set[str] = set()
+    for locator in local_locators:
+        parent = _parent_local_locator(registry, locator)
+        labels_by_ref = {ref: label for _num, ref, label in _episode_label_triples(parent)}
+        durations_by_ref = _duration_by_file_ref(parent)
+        subtitle_by_ref = _subtitle_compact_availability_by_file_ref(parent)
+        refs_by_number: dict[int, list[str]] = defaultdict(list)
+        for num, ref in parent.episode_file_refs:
+            refs_by_number[int(num)].append(str(ref))
+        for number in _anchor_numbers_for_episode_pairs(parent.episode_file_refs):
+            refs = refs_by_number.get(number) or []
+            if len(refs) <= 1:
+                candidates = [(f"{parent.locator}/episode/{number}", refs[0] if refs else "")]
+            else:
+                candidates = [
+                    (f"{parent.locator}/episode/{number}/variant/{index}", ref)
+                    for index, ref in enumerate(refs, start=1)
+                ]
+            for anchor_locator, ref in candidates:
+                if not anchor_locator or anchor_locator in seen_locators:
+                    continue
+                seen_locators.add(anchor_locator)
+                anchor_locators.append(anchor_locator)
+                anchor_rows.append(
+                    {
+                        "locator": anchor_locator,
+                        "episode_number": number,
+                        "file_ref": ref,
+                        "label": labels_by_ref.get(ref, ref),
+                        "duration_seconds": durations_by_ref.get(ref),
+                        "subtitle_compact_available": bool(subtitle_by_ref.get(ref, {}).get("available")),
+                        "subtitle_language_markers": subtitle_by_ref.get(ref, {}).get("language_markers", []),
+                    }
+                )
+                if len(anchor_rows) >= 6:
+                    break
+            if len(anchor_rows) >= 6:
+                break
+        if len(anchor_rows) >= 6:
+            break
+    if not anchor_rows:
+        return []
+    return [
+        {
+            "option": "inspect_local_duration_and_subtitle_anchors",
+            "tool": "inspect",
+            "locators": anchor_locators[:6],
+            "scope": ["facts", "subtitle_compact"],
+            "target": target_subject.locator,
+            "target_title": target_subject.title,
+            "blocking_issue": "mapped_numbered_special_related_count_needs_stronger_evidence",
+            "anchor_samples": anchor_rows[:6],
+            "current_closure": closure,
+            "close_condition": (
+                "After AI inspects these anchors, mapped accept is appropriate only if local duration/subtitle/title-card "
+                "facts make the related same-count target the semantic owner; otherwise submit manual_review for the "
+                "localized uncertainty."
+            ),
+            "fixed_layer_boundary": (
+                "This option is evidence access only. The fixed layer does not auto-inspect these locators and does "
+                "not choose mapped versus manual_review."
+            ),
+        }
+    ]
+
+
+def _episode_ranges_excluding_numbers(numbers: list[int], excluded: set[int]) -> list[tuple[int, int]]:
+    values = [number for number in sorted(set(int(number) for number in numbers)) if number not in excluded]
+    if not values:
+        return []
+    ranges: list[tuple[int, int]] = []
+    start = previous = values[0]
+    for number in values[1:]:
+        if number == previous + 1:
+            previous = number
+            continue
+        ranges.append((start, previous))
+        start = previous = number
+    ranges.append((start, previous))
+    return ranges
+
+
+def _target_episode_locator(target_subject: AgentLocator, episode_number: int) -> str:
+    return f"{target_subject.locator}/episode/{episode_number}"
+
+
+def _target_episode_range_locator(target_subject: AgentLocator, start: int, end: int) -> str:
+    if int(start) == int(end):
+        return _target_episode_locator(target_subject, int(start))
+    return f"{target_subject.locator}/episodes/{int(start)}-{int(end)}"
+
+
+def _local_episode_range_locator(base_locator: str, start: int, end: int) -> str:
+    if int(start) == int(end):
+        return f"{base_locator}/episode/{int(start)}"
+    return f"{base_locator}/episodes/{int(start)}-{int(end)}"
+
+
+def _duplicate_variant_multi_version_submit_shape(
+    parent_locator: AgentLocator,
+    duplicate_variant_locators: list[dict[str, object]],
+    target_subject: AgentLocator,
+) -> list[dict[str, object]]:
+    duplicate_numbers = {
+        int(item.get("episode_number") or 0)
+        for item in duplicate_variant_locators
+        if int(item.get("episode_number") or 0) > 0
+    }
+    episode_numbers = [int(num) for num, _ref in parent_locator.episode_file_refs]
+    variants_by_number: dict[int, list[dict[str, object]]] = defaultdict(list)
+    for variant in duplicate_variant_locators:
+        episode_number = int(variant.get("episode_number") or 0)
+        if episode_number > 0:
+            variants_by_number[episode_number].append(variant)
+    shape: list[dict[str, object]] = []
+    range_start: int | None = None
+    range_end: int | None = None
+
+    def flush_range() -> None:
+        nonlocal range_start, range_end
+        if range_start is None or range_end is None:
+            return
+        shape.append(
+            {
+                "local": _local_episode_range_locator(parent_locator.locator, range_start, range_end),
+                "outcome": "mapped_special_or_ova",
+                "target": _target_episode_range_locator(target_subject, range_start, range_end),
+                "reason": "continuous numbered non-regular local slice maps to the visible same-count target slice",
+            }
+        )
+        range_start = None
+        range_end = None
+
+    for episode_number in sorted(set(episode_numbers)):
+        if episode_number in duplicate_numbers:
+            flush_range()
+            for variant in variants_by_number.get(episode_number, []):
+                shape.append(
+                    {
+                        "local": variant.get("locator"),
+                        "outcome": "mapped_special_or_ova",
+                        "target": _target_episode_locator(target_subject, episode_number),
+                        "reason": "same local episode duplicate/alternate variant; accept as multi-version",
+                    }
+                )
+            continue
+        if range_start is None:
+            range_start = range_end = episode_number
+        elif range_end is not None and episode_number == range_end + 1:
+            range_end = episode_number
+        else:
+            flush_range()
+            range_start = range_end = episode_number
+    flush_range()
+    return shape[:12]
+
+
+def _numbered_non_regular_mapping_submit_shape(
+    parent_locator: AgentLocator,
+    target_subject: AgentLocator,
+) -> list[dict[str, object]]:
+    episode_numbers = [int(num) for num, _ref in parent_locator.episode_file_refs]
+    unique_episode_count = len(set(episode_numbers))
+    duplicate_episode_count = max(0, len(episode_numbers) - unique_episode_count)
+    duplicate_variant_locators = list(
+        _episode_locator_hints(
+            parent_locator.locator,
+            parent_locator.episode_file_refs,
+            episode_labels={ref: label for _num, ref, label in _episode_label_triples(parent_locator)},
+        ).get("duplicate_episode_variant_locators")
+        or []
+    )
+    if duplicate_episode_count and int(target_subject.subject_eps or 0) == unique_episode_count:
+        return _duplicate_variant_multi_version_submit_shape(
+            parent_locator,
+            duplicate_variant_locators,
+            target_subject,
+        )
+
+    shape: list[dict[str, object]] = []
+    target_count = int(target_subject.subject_eps or 0)
+    for start, end in _episode_ranges_excluding_numbers(episode_numbers, set()):
+        if target_count and (int(start) < 1 or int(end) > target_count):
+            continue
+        shape.append(
+            {
+                "local": _local_episode_range_locator(parent_locator.locator, start, end),
+                "outcome": "mapped_special_or_ova",
+                "target": _target_episode_range_locator(target_subject, start, end),
+                "reason": (
+                    "continuous numbered non-regular local slice maps to the visible same-count "
+                    "target slice after local duration/title evidence closes ownership"
+                ),
+            }
+        )
+        if len(shape) >= 12:
+            break
+    return shape
+
+
 def _numbered_special_exclusion_repairs(
     registry: LocatorRegistry,
     feedback_units: list[dict[str, object]],
@@ -7776,6 +13584,20 @@ def _numbered_special_exclusion_repairs(
     inspected_subject_ids: set[int] | None = None,
 ) -> list[dict[str, object]]:
     inspected_subject_ids = set(inspected_subject_ids or set())
+    subjects_already_mapped_by_other_parent: dict[int, set[str]] = defaultdict(set)
+    for mapped_unit in feedback_units:
+        if not isinstance(mapped_unit, dict) or not str(mapped_unit.get("outcome") or "").startswith("mapped_"):
+            continue
+        mapped_target, mapped_target_issue = registry.resolve(str(mapped_unit.get("target") or ""))
+        if mapped_target_issue or mapped_target is None or not mapped_target.subject_id:
+            continue
+        for raw_local in list(mapped_unit.get("local") or []):
+            mapped_local, mapped_local_issue = registry.resolve(str(raw_local))
+            if mapped_local_issue or mapped_local is None or mapped_local.kind != "local":
+                continue
+            subjects_already_mapped_by_other_parent[int(mapped_target.subject_id)].add(
+                _parent_local_locator(registry, mapped_local).locator
+            )
     repairs: list[dict[str, object]] = []
     for unit in feedback_units:
         if not isinstance(unit, dict) or unit.get("outcome") not in {"supplemental", "bangumi_target_absent", "non_bangumi", "fail_closed"}:
@@ -7791,7 +13613,11 @@ def _numbered_special_exclusion_repairs(
                 continue
             parent_locator = registry.locators.get(_episode_slice_parent_locator(locator.locator)) or locator
             category = parent_locator.locator.rsplit("/", 1)[-1]
-            if category != "special-marker" or not locator.episode_file_refs:
+            if not _is_non_regular_numbered_locator(registry, locator):
+                continue
+            if _is_duplicate_number_variant_locator(registry, locator) and _DUPLICATE_VARIANT_REASON_RE.search(
+                " ".join(str(unit.get(key) or "") for key in ("unit", "reason"))
+            ):
                 continue
             label_text = " ".join(
                 [
@@ -7805,9 +13631,11 @@ def _numbered_special_exclusion_repairs(
                     str(unit.get("reason") or ""),
                 ]
             )
-            if not re.search(r"(?i)(?:^|[\s._\-\[\]()])sp\d{1,3}(?:$|[\s._\-\[\]()])", label_text):
+            if not re.search(r"(?i)(?:^|[\s._\-\[\]()])(?:sp|ova|oad|oav|ncop|nced|op|ed)\d{1,3}(?:$|[\s._\-\[\]()])", label_text):
                 continue
             local_bridge_tokens = _locator_distinctive_tokens(locator).union(_locator_distinctive_tokens(parent_locator))
+            local_non_regular_tokens = _non_regular_local_bridge_tokens([parent_locator])
+            local_season_hints, local_unseasoned = _local_season_hints_for_locators([parent_locator])
             special_marker_tokens = {"sp", "special", "specials", "ova", "oad", "oav"}
             support_sufficient = False
             for support_locator in support_target_locators:
@@ -7819,23 +13647,76 @@ def _numbered_special_exclusion_repairs(
             if support_sufficient:
                 continue
             same_count_subjects: list[dict[str, object]] = []
+            episode_numbers = [int(num) for num, _ref in locator.episode_file_refs]
+            unique_episode_count = len(set(episode_numbers))
+            duplicate_episode_count = max(0, len(episode_numbers) - unique_episode_count)
+            count_match_values = {len(locator.file_refs)}
+            if duplicate_episode_count and unique_episode_count > 0:
+                count_match_values.add(unique_episode_count)
+            duplicate_variant_locators = list(
+                _episode_locator_hints(
+                    parent_locator.locator,
+                    parent_locator.episode_file_refs,
+                    episode_labels={ref: label for _num, ref, label in _episode_label_triples(parent_locator)},
+                ).get("duplicate_episode_variant_locators")
+                or []
+            )
             for target in registry.locators.values():
                 if target.kind != "target_subject":
                     continue
-                if int(target.subject_id or 0) in inspected_subject_ids:
+                target_eps = int(target.subject_eps or 0)
+                if target_eps not in count_match_values:
                     continue
-                if int(target.subject_eps or 0) != len(locator.file_refs):
+                if not _target_matches_local_season(target, local_season_hints, local_unseasoned):
                     continue
-                target_tokens = _target_visible_title_tokens(target)
-                if not target_tokens.intersection(local_bridge_tokens) and not target_tokens.intersection(special_marker_tokens):
+                mapped_parent_locators = subjects_already_mapped_by_other_parent.get(int(target.subject_id or 0), set())
+                if mapped_parent_locators and parent_locator.locator not in mapped_parent_locators:
                     continue
+                support_details = _target_non_regular_mapping_support_details(target, local_non_regular_tokens)
+                if not (support_details.get("strong") or support_details.get("direct_distinct_query_bridge")):
+                    continue
+                related_same_count = target.relation_quality == "owner_relevant_related" and int(target.subject_eps or 0) > 1
+                duplicate_variant_count_match = bool(duplicate_episode_count and target_eps == unique_episode_count)
+                closure = _non_regular_mapping_closure(
+                    registry,
+                    local_locators=[parent_locator],
+                    target_subject=target,
+                    file_count=target_eps,
+                )
+                submit_shape = _numbered_non_regular_mapping_submit_shape(parent_locator, target) if closure.get("strong") else []
                 same_count_subjects.append(
                     {
                         "target": target.locator,
                         "title": target.title,
                         "subject_id": target.subject_id,
                         "subject_eps": target.subject_eps,
+                        "local_file_count": len(locator.file_refs),
+                        "local_unique_episode_count": unique_episode_count,
+                        "local_duplicate_episode_count": duplicate_episode_count,
+                        "relation_to_main": target.relation_to_main,
+                        "relation_quality": target.relation_quality,
+                        "evidence_origin": target.evidence_origin,
+                        "target_support": support_details,
+                        "non_regular_evidence_closure": closure,
+                        "ambiguity_reason": (
+                            "duplicate_variant_count_match"
+                            if duplicate_variant_count_match
+                            else "related_continuous_same_count"
+                            if related_same_count
+                            else "same_count_non_regular_query_or_title_bridge"
+                        ),
                         "available_action": f'inspect(["{target.locator}"], scope=["details","episodes","related"])',
+                        "duplicate_episode_variant_locators": duplicate_variant_locators[:8]
+                        if duplicate_variant_count_match
+                        else [],
+                        "multi_version_submit_shape": _duplicate_variant_multi_version_submit_shape(
+                            parent_locator,
+                            duplicate_variant_locators,
+                            target,
+                        )
+                        if duplicate_variant_count_match
+                        else [],
+                        "suggested_submit_shape": submit_shape,
                     }
                 )
                 if len(same_count_subjects) >= 6:
@@ -7846,6 +13727,32 @@ def _numbered_special_exclusion_repairs(
                 inspected_subject_ids=inspected_subject_ids,
                 local_bridge_tokens=local_bridge_tokens,
             )
+            duration_closure = _duration_closure_for_locators(
+                [parent_locator],
+                file_count=len(parent_locator.file_refs),
+            )
+            duration_mixed = bool(
+                duration_closure.get("available")
+                and not duration_closure.get("strong")
+                and str(duration_closure.get("reason") or "") == "duration_distribution_mixed"
+            )
+            manual_review_targets = [
+                str(candidate.get("target") or "").strip()
+                for candidate in [*same_count_subjects, *negative_evidence_support_candidates]
+                if str(candidate.get("target") or "").strip()
+            ]
+            manual_review_candidate_submit_shape = [
+                {
+                    "local": locator.locator,
+                    "outcome": "manual_review",
+                    "manual_review_candidate_targets": list(dict.fromkeys(manual_review_targets))[:6],
+                    "confidence": "low",
+                    "reason": (
+                        "Numbered SP group remains localized uncertainty after target-side evidence; "
+                        "keep it for human review instead of clearing it as mapped or supplemental."
+                    ),
+                }
+            ]
             if (
                 not same_count_subjects
                 and negative_evidence_support_candidates
@@ -7854,12 +13761,16 @@ def _numbered_special_exclusion_repairs(
                     unit.get("reason"),
                     " ".join(str(item) for item in list(unit.get("support") or [])),
                 )
+                and not duration_mixed
             ):
                 continue
             repairs.append(
                 {
                     "issue": "numbered_special_exclusion_needs_target_evidence",
                     "shape_issue": (
+                        "related_continuous_subject_ambiguous"
+                        if same_count_subjects
+                        else
                         "negative_evidence_shape_missing"
                         if negative_evidence_support_candidates and not same_count_subjects
                         else "target_evidence_missing"
@@ -7867,11 +13778,17 @@ def _numbered_special_exclusion_repairs(
                     "unit": unit.get("unit"),
                     "outcome": unit.get("outcome"),
                     "invalid_current_outcome": unit.get("outcome"),
-                    "allowed_without_target_evidence": "fail_closed",
+                    "allowed_without_target_evidence": "manual_review or fail_closed",
+                    "allowed_with_related_continuous_ambiguity": [
+                        "map the related target only if the Agent-owned evidence proves ownership",
+                        "manual_review for localized uncertainty that should not block the package",
+                        "fail_closed only for package-blocking ambiguity",
+                    ],
                     "allowed_with_negative_target_absence_evidence": [
                         "bangumi_target_absent",
                         "supplemental",
                         "non_bangumi",
+                        "manual_review",
                     ],
                     "negative_target_absence_support_candidates": negative_evidence_support_candidates,
                     "negative_target_absence_submit_shape": {
@@ -7895,19 +13812,1268 @@ def _numbered_special_exclusion_repairs(
                     "parent_file_count": len(parent_locator.file_refs),
                     "episode_numbers": [number for number, _ref in locator.episode_file_refs[:12]],
                     "representative_labels": list(locator.representative_labels[:6]),
+                    "local_duration_closure": duration_closure,
+                    "mixed_duration_requires_split_or_manual_review": duration_mixed,
                     "same_count_visible_subjects": same_count_subjects,
+                    "strong_mapping_candidates": [
+                        candidate
+                        for candidate in same_count_subjects
+                        if isinstance(candidate.get("non_regular_evidence_closure"), dict)
+                        and candidate["non_regular_evidence_closure"].get("strong")
+                    ],
+                    "suggested_submit_shape": next(
+                        (
+                            list(candidate.get("suggested_submit_shape") or [])
+                            for candidate in same_count_subjects
+                            if candidate.get("suggested_submit_shape")
+                        ),
+                        [],
+                    ),
+                    "manual_review_candidate_submit_shape": manual_review_candidate_submit_shape,
                     "required": (
                         "The current supplemental/target_absent/non_bangumi outcome for this numbered SP group is "
                         "not mechanically acceptable without target-side support or negative target-absence evidence. "
-                        "Search/inspect a special/OVA/OAD/SP target surface if same_count_visible_subjects names one; "
-                        "map it if it has a Bangumi owner. If no such target remains visible after inspecting the "
+                        "Search/inspect a special/OVA/OAD/SP target surface if same_count_visible_subjects names one. "
+                        "A visible related subject with the same continuous episode count is unresolved ownership evidence; "
+                        "do not clear the local SP group as supplemental merely because the main-season subject lacks SP/OAD items. "
+                        "If strong_mapping_candidates or suggested_submit_shape is present, upgraded local duration/title "
+                        "evidence already closes enough ownership to submit those mapped rows unless you can name a "
+                        "concrete contradiction. "
+                        "Map the related target only if your cited evidence proves ownership; otherwise use manual_review for "
+                        "localized uncertainty that should not block the package. If same_count_visible_subjects reports "
+                        "duplicate_variant_count_match, split the duplicated local episode with "
+                        "local://.../episode/N/variant/K and map each same-episode variant to the single legal target "
+                        "episode as alternate/multi-version packaging when local facts show they are the same "
+                        "episode/title/duration. If no such target remains visible after inspecting the "
                         "same-series/related surface, submit target_absent/supplemental/non_bangumi with that "
                         "inspected target locator in support and a concrete no-corresponding-target reason. If "
                         "negative_target_absence_support_candidates is non-empty, use one of those target locators "
-                        "as support for that negative evidence. Use "
-                        "fail_closed only when the local SP group is still semantically ambiguous, not merely because "
-                        "a positive Bangumi SP target was absent. Do not resubmit the same unsupported exclusion "
+                        "as support for that negative evidence. If local_duration_closure is mixed, do not clear the "
+                        "whole numbered SP group as one supplemental/target_absent unit from target absence alone; "
+                        "split it by exact local slices or use manual_review for localized uncertainty. Use "
+                        "manual_review when the local SP group is still semantically ambiguous but should not block "
+                        "the rest of the package; use fail_closed only for package-blocking ambiguity. Do not resubmit the same unsupported exclusion "
                         "outcome. The fixed layer is checking evidence support, not choosing the target."
+                    ),
+                }
+            )
+            break
+        if len(repairs) >= 8:
+            break
+    return repairs
+
+
+def _mapped_numbered_special_related_count_repairs(
+    registry: LocatorRegistry,
+    feedback_units: list[dict[str, object]],
+) -> list[dict[str, object]]:
+    repairs: list[dict[str, object]] = []
+    generic_local_tokens = {"sp", "sps", "special", "specials", "marker", "episode", "episodes"}
+    strong_reason_pattern = re.compile(
+        r"(?i)\b(?:duration|runtime|title\s*card|ocr|subtitle|episode\s+title|"
+        r"sampled\s+title|opening\s+card|end\s+card|media\s+fact|local\s+fact)\b"
+    )
+    for unit in feedback_units:
+        if not isinstance(unit, dict) or not str(unit.get("outcome") or "").startswith("mapped_"):
+            continue
+        target_locator, target_issue = registry.resolve(str(unit.get("target") or ""))
+        if target_issue or target_locator is None or target_locator.kind not in {"target_subject", "target_episode", "target_span"}:
+            continue
+        target_subject = _target_subject_locator_for(registry, target_locator)
+        local_locators: list[AgentLocator] = []
+        non_regular_parent_locators: list[AgentLocator] = []
+        for raw_local in list(unit.get("local") or []):
+            locator, issue = registry.resolve(str(raw_local))
+            if issue or locator is None or locator.kind != "local":
+                continue
+            local_locators.append(locator)
+            parent_locator = registry.locators.get(_episode_slice_parent_locator(locator.locator)) or locator
+            if _is_non_regular_numbered_locator(registry, locator):
+                non_regular_parent_locators.append(parent_locator)
+        if not non_regular_parent_locators:
+            continue
+        local_file_refs = {
+            ref
+            for locator in local_locators
+            for ref in locator.file_refs
+        } or {
+            ref
+            for locator in non_regular_parent_locators
+            for ref in locator.file_refs
+        }
+        local_file_count = len(local_file_refs)
+        if local_file_count <= 1 or int(target_subject.subject_eps or 0) != local_file_count:
+            continue
+        local_tokens = set().union(*[_locator_distinctive_tokens(locator) for locator in non_regular_parent_locators])
+        local_tokens = {
+            token
+            for token in local_tokens
+            if token not in generic_local_tokens and not re.fullmatch(r"(?:sp|ova|oad|oav|op|ed|ncop|nced)\d{0,3}", token)
+        }
+        target_title_tokens = _target_visible_title_tokens(target_subject)
+        visible_title_overlap = sorted(local_tokens.intersection(target_title_tokens))
+        subtitle_compact_tokens = _subtitle_compact_distinctive_tokens_for_locators(non_regular_parent_locators)
+        subtitle_target_overlap = sorted(
+            subtitle_compact_tokens.intersection(target_title_tokens.union(_target_query_distinctive_tokens(target_subject)))
+        )
+        reason_text = " ".join(str(unit.get(key) or "") for key in ("unit", "reason"))
+        if visible_title_overlap or subtitle_target_overlap or strong_reason_pattern.search(reason_text):
+            continue
+        closure = _non_regular_mapping_closure(
+            registry,
+            local_locators=non_regular_parent_locators,
+            target_subject=target_subject,
+            file_count=local_file_count,
+        )
+        if closure.get("strong"):
+            continue
+        target_query_bridge_tokens = sorted(local_tokens.intersection(_target_query_distinctive_tokens(target_subject)))
+        evidence_upgrade_options = _evidence_upgrade_options_for_non_regular_mapping(
+            registry,
+            local_locators=non_regular_parent_locators,
+            target_subject=target_subject,
+            closure=closure,
+        )
+        repairs.append(
+            {
+                "issue": "mapped_numbered_special_related_count_needs_stronger_evidence",
+                "unit": unit.get("unit"),
+                "local": [locator.locator for locator in non_regular_parent_locators],
+                "target": target_locator.locator,
+                "target_subject": target_subject.locator,
+                "target_title": target_subject.title,
+                "target_subject_eps": target_subject.subject_eps,
+                "relation_to_main": target_subject.relation_to_main,
+                "relation_quality": target_subject.relation_quality,
+                "file_count": local_file_count,
+                "episode_numbers": [
+                    number
+                    for locator in non_regular_parent_locators
+                    for number, _ref in locator.episode_file_refs[:16]
+                ],
+                "representative_labels": [
+                    label
+                    for locator in non_regular_parent_locators
+                    for label in locator.representative_labels[:6]
+                ][:12],
+                "local_title_tokens": sorted(local_tokens),
+                "target_title_tokens": sorted(target_title_tokens),
+                "subtitle_target_overlap": subtitle_target_overlap[:8],
+                "target_query_bridge_tokens": target_query_bridge_tokens,
+                "non_regular_evidence_closure": closure,
+                "evidence_upgrade_options": evidence_upgrade_options,
+                "required": (
+                    "The local non-regular numbered group is mapped to a same-count short/special subject, but the submitted "
+                    "support only shows count, search, or related-family structure. Same-count structure is unresolved "
+                    "ownership evidence, not enough by itself to claim mapped ownership. Use evidence_upgrade_options "
+                    "to inspect local duration/subtitle_compact anchors if you want to upgrade this mapping. Cite "
+                    "stronger local/title evidence such as visible title overlap, episode-title/title-card facts, "
+                    "subtitle/title-card facts, or duration facts when local count/numbering/duration and the selected "
+                    "related/non-regular target form a closed evidence loop after comparing exposed competitors. "
+                    "If upgraded evidence remains weak, submit manual_review "
+                    "for localized uncertainty that should not block the package."
+                ),
+            }
+        )
+        if len(repairs) >= 8:
+            break
+    return repairs
+
+
+def _manual_review_evidence_upgrade_required_repairs(
+    registry: LocatorRegistry,
+    feedback_units: list[dict[str, object]],
+    *,
+    inspected_locators: set[str] | None = None,
+) -> list[dict[str, object]]:
+    inspected_locators = {str(item).strip() for item in set(inspected_locators or set()) if str(item).strip()}
+    repairs: list[dict[str, object]] = []
+    for unit in feedback_units:
+        if not isinstance(unit, dict) or unit.get("outcome") != "manual_review":
+            continue
+        local_locators: list[AgentLocator] = []
+        parent_locators: list[AgentLocator] = []
+        for raw_local in list(unit.get("local") or []):
+            locator, issue = registry.resolve(str(raw_local))
+            if issue or locator is None or locator.kind != "local":
+                continue
+            local_locators.append(locator)
+            parent = _parent_local_locator(registry, locator)
+            if _is_non_regular_numbered_locator(registry, parent) and parent.locator not in {
+                item.locator for item in parent_locators
+            }:
+                parent_locators.append(parent)
+        if not parent_locators:
+            continue
+        local_file_count = len({ref for locator in local_locators for ref in locator.file_refs})
+        parent_file_count = len({ref for locator in parent_locators for ref in locator.file_refs})
+        unique_episode_count = len({int(num) for locator in parent_locators for num, _ref in locator.episode_file_refs})
+        count_values = {
+            int(value)
+            for value in (local_file_count, parent_file_count, unique_episode_count)
+            if int(value or 0) > 1
+        }
+        target_candidates = [
+            target_subject
+            for target_subject, _source in _manual_review_count_matched_target_subjects(
+                registry,
+                unit,
+                parent_locators=parent_locators,
+                count_values=count_values,
+            )
+        ]
+        if not target_candidates:
+            continue
+        for target_subject in target_candidates:
+            target_count = int(target_subject.subject_eps or 0)
+            if target_count <= 1 or target_count not in {
+                int(local_file_count or 0),
+                int(parent_file_count or 0),
+                int(unique_episode_count or 0),
+            }:
+                continue
+            closure = _non_regular_mapping_closure(
+                registry,
+                local_locators=parent_locators,
+                target_subject=target_subject,
+                file_count=target_count,
+            )
+            if closure.get("strong"):
+                continue
+            evidence_upgrade_options = _evidence_upgrade_options_for_non_regular_mapping(
+                registry,
+                local_locators=parent_locators,
+                target_subject=target_subject,
+                closure=closure,
+            )
+            if not evidence_upgrade_options:
+                continue
+            option_locators = [
+                str(locator)
+                for option in evidence_upgrade_options
+                for locator in list(option.get("locators") or [])
+                if str(locator or "").strip()
+            ]
+            parent_locator_values = [locator.locator for locator in parent_locators]
+            attempted_upgrade = any(
+                any(
+                    _local_locator_scope_matches(inspected, option_locator)
+                    or _local_locator_scope_matches(inspected, parent_locator)
+                    for inspected in inspected_locators
+                )
+                for option_locator in option_locators
+                for parent_locator in parent_locator_values
+            )
+            if attempted_upgrade:
+                continue
+            repairs.append(
+                {
+                    "issue": "manual_review_evidence_upgrade_required",
+                    "unit": unit.get("unit"),
+                    "local": [locator.locator for locator in parent_locators],
+                    "target_subject": target_subject.locator,
+                    "target_title": target_subject.title,
+                    "target_subject_eps": target_subject.subject_eps,
+                    "local_file_count": local_file_count,
+                    "parent_file_count": parent_file_count,
+                    "local_unique_episode_count": unique_episode_count,
+                    "non_regular_evidence_closure": closure,
+                    "evidence_upgrade_options": evidence_upgrade_options,
+                    "required": (
+                        "This manual_review covers a non-regular numbered group with visible same-count/related "
+                        "target candidates and local duration/subtitle_compact anchors are available. Inspect the "
+                        "listed evidence_upgrade_options anchors first. If upgraded evidence closes ownership, submit "
+                        "the mapped rows; if it remains insufficient after inspection, resubmit manual_review with "
+                        "the remaining uncertainty. The fixed layer is enforcing evidence access order only; it does "
+                        "not choose mapped versus manual_review."
+                    ),
+                }
+            )
+            break
+        if len(repairs) >= 8:
+            break
+    return repairs
+
+
+def _manual_review_count_matched_target_subjects(
+    registry: LocatorRegistry,
+    unit: dict[str, object],
+    *,
+    parent_locators: list[AgentLocator],
+    count_values: set[int],
+) -> list[tuple[AgentLocator, str]]:
+    targets: list[tuple[AgentLocator, str]] = []
+    seen: set[str] = set()
+    local_tokens = _non_regular_local_bridge_tokens(parent_locators)
+    local_season_hints, local_unseasoned = _local_season_hints_for_locators(parent_locators)
+
+    def add(target_subject: AgentLocator, source: str, *, require_non_regular_support: bool = False) -> None:
+        if int(target_subject.subject_eps or 0) not in count_values:
+            return
+        if not _target_matches_local_season(target_subject, local_season_hints, local_unseasoned):
+            return
+        if require_non_regular_support and not _target_has_non_regular_mapping_support(target_subject, local_tokens):
+            return
+        key = target_subject.locator.casefold()
+        if key in seen:
+            return
+        seen.add(key)
+        targets.append((target_subject, source))
+
+    for raw_target in [
+        *list(unit.get("explicit_review_candidate_targets") or []),
+        *list(unit.get("manual_review_candidate_targets") or []),
+        *list(unit.get("review_candidate_targets") or []),
+    ]:
+        target_subject = _resolve_target_subject_from_candidate_text(registry, raw_target)
+        if target_subject is None:
+            continue
+        add(
+            target_subject,
+            "manual_review_candidate_target",
+            require_non_regular_support=True,
+        )
+
+    if targets:
+        return targets[:6]
+
+    for count in sorted(count_values):
+        if count <= 1:
+            continue
+        for target in registry.locators.values():
+            if target.kind != "target_subject" or int(target.subject_eps or 0) != count:
+                continue
+            for candidate in _same_count_non_regular_target_candidates(
+                registry,
+                target_subject=target,
+                local_locators=parent_locators,
+                file_count=count,
+            ):
+                candidate_support = _target_non_regular_mapping_support_details(candidate, local_tokens)
+                if (
+                    candidate.relation_quality != "owner_relevant_related"
+                    and not candidate_support.get("direct_distinct_query_bridge")
+                ):
+                    continue
+                add(candidate, "visible_owner_relevant_same_count_target")
+                if len(targets) >= 6:
+                    return targets[:6]
+    return targets[:6]
+
+
+def _resolve_target_subject_from_candidate_text(
+    registry: LocatorRegistry,
+    raw_target: object,
+) -> AgentLocator | None:
+    target_text = str(raw_target or "").strip()
+    if not target_text:
+        return None
+    candidates = [target_text]
+    subject_text = _target_subject_locator_text(target_text)
+    if subject_text and subject_text != target_text:
+        candidates.append(subject_text)
+    for candidate in candidates:
+        target_locator, target_issue = registry.resolve(candidate)
+        if target_issue or target_locator is None:
+            continue
+        if target_locator.kind in {"target_subject", "target_episode", "target_span"}:
+            return _target_subject_locator_for(registry, target_locator)
+    return None
+
+
+def _manual_review_strong_non_regular_mapping_repairs(
+    registry: LocatorRegistry,
+    feedback_units: list[dict[str, object]],
+) -> list[dict[str, object]]:
+    repairs: list[dict[str, object]] = []
+    repaired_parents: set[str] = set()
+
+    def build_repair(
+        *,
+        unit: dict[str, object],
+        parent_locators: list[AgentLocator],
+        local_refs: set[str],
+        source_units: list[dict[str, object]] | None = None,
+    ) -> dict[str, object] | None:
+        parent_file_refs = {ref for locator in parent_locators for ref in locator.file_refs}
+        unique_episode_numbers = {
+            int(num)
+            for locator in parent_locators
+            for num, _ref in locator.episode_file_refs
+            if int(num) > 0
+        }
+        count_values = {
+            int(value)
+            for value in (len(local_refs), len(parent_file_refs), len(unique_episode_numbers))
+            if int(value) > 1
+        }
+        if not count_values:
+            return None
+        target_subjects = _manual_review_count_matched_target_subjects(
+            registry,
+            unit,
+            parent_locators=parent_locators,
+            count_values=count_values,
+        )
+        strong_candidates: list[dict[str, object]] = []
+        for target_subject, source in target_subjects:
+            target_count = int(target_subject.subject_eps or 0)
+            duration_closure = _duration_closure_for_locators(parent_locators, file_count=target_count)
+            if not duration_closure.get("strong"):
+                continue
+            closure = _non_regular_mapping_closure(
+                registry,
+                local_locators=parent_locators,
+                target_subject=target_subject,
+                file_count=target_count,
+            )
+            if not closure.get("strong"):
+                continue
+            submit_shape: list[dict[str, object]] = []
+            for parent in parent_locators:
+                submit_shape.extend(_numbered_non_regular_mapping_submit_shape(parent, target_subject))
+            submit_shape = submit_shape[:12]
+            if not submit_shape:
+                continue
+            strong_candidates.append(
+                {
+                    "target_subject": target_subject.locator,
+                    "target_title": target_subject.title,
+                    "target_subject_eps": target_subject.subject_eps,
+                    "relation_to_main": target_subject.relation_to_main,
+                    "relation_quality": target_subject.relation_quality,
+                    "candidate_source": source,
+                    "duration_closure": duration_closure,
+                    "non_regular_evidence_closure": closure,
+                    "competing_same_count_candidates": [
+                        locator
+                        for locator in list(closure.get("same_count_target_candidates") or [])
+                        if str(locator or "") and str(locator) != target_subject.locator
+                    ][:6],
+                    "suggested_submit_shape": submit_shape,
+                }
+            )
+        if len(strong_candidates) != 1:
+            return None
+        candidate = strong_candidates[0]
+        suggested_shape = [
+            row
+            for row in list(candidate.get("suggested_submit_shape") or [])
+            if isinstance(row, dict)
+        ]
+        contradiction_units = source_units or [unit]
+        if any(
+            _manual_review_candidate_has_post_upgrade_contradiction(
+                contradiction_unit,
+                target=candidate.get("target_subject"),
+                target_subject=candidate.get("target_subject"),
+            )
+            for contradiction_unit in contradiction_units
+        ):
+            return None
+        multi_version_shape = (
+            suggested_shape
+            if any("/variant/" in str(row.get("local") or "") for row in suggested_shape)
+            else []
+        )
+        return {
+            "issue": "manual_review_strong_non_regular_mapping_should_revise",
+            "unit": unit.get("unit"),
+            "local": [locator.locator for locator in parent_locators],
+            "target_subject": candidate.get("target_subject"),
+            "target_title": candidate.get("target_title"),
+            "target_subject_eps": candidate.get("target_subject_eps"),
+            "local_file_count": len(local_refs),
+            "parent_file_count": len(parent_file_refs),
+            "local_unique_episode_count": len(unique_episode_numbers),
+            "strong_mapping_candidates": strong_candidates,
+            "non_regular_evidence_closure": candidate.get("non_regular_evidence_closure"),
+            "suggested_submit_shape": suggested_shape,
+            "multi_version_submit_shape": multi_version_shape,
+            "required": (
+                "This manual_review covers a non-regular numbered group, but a visible same-count target candidate "
+                "now has strong local duration/count closure and a legal split submit shape. Same-count competitors "
+                "are exposed for comparison when present. Do not preserve the saved manual-review placeholder. Use "
+                "repair_strategy=revise_saved_rows and submit the suggested mapped rows if you agree this evidence "
+                "closes ownership; only keep manual_review by splitting exact unresolved locators and naming a "
+                "concrete post-upgrade contradiction. The fixed layer is rejecting the unresolved placeholder, not "
+                "assigning the target automatically."
+            ),
+        }
+
+    for unit in feedback_units:
+        if not isinstance(unit, dict) or unit.get("outcome") != "manual_review":
+            continue
+        parent_locators: list[AgentLocator] = []
+        local_refs: set[str] = set()
+        for raw_local in list(unit.get("local") or []):
+            locator, issue = registry.resolve(str(raw_local))
+            if issue or locator is None or locator.kind != "local":
+                continue
+            local_refs.update(locator.file_refs)
+            parent = _parent_local_locator(registry, locator)
+            if _is_non_regular_numbered_locator(registry, parent) and parent.locator not in {
+                item.locator for item in parent_locators
+            }:
+                parent_locators.append(parent)
+        if not parent_locators:
+            continue
+        repair = build_repair(unit=unit, parent_locators=parent_locators, local_refs=local_refs)
+        if not repair:
+            continue
+        repairs.append(repair)
+        repaired_parents.update(locator.locator for locator in parent_locators)
+        if len(repairs) >= 8:
+            break
+    if len(repairs) >= 8:
+        return repairs
+    grouped_units: dict[str, dict[str, object]] = {}
+    for unit in feedback_units:
+        if not isinstance(unit, dict) or unit.get("outcome") != "manual_review":
+            continue
+        for raw_local in list(unit.get("local") or []):
+            locator, issue = registry.resolve(str(raw_local))
+            if issue or locator is None or locator.kind != "local":
+                continue
+            parent = _parent_local_locator(registry, locator)
+            if not _is_non_regular_numbered_locator(registry, parent) or parent.locator in repaired_parents:
+                continue
+            group = grouped_units.setdefault(
+                parent.locator,
+                {"parent": parent, "units": [], "local_refs": set(), "candidate_targets": []},
+            )
+            group["units"].append(unit)  # type: ignore[index]
+            group["local_refs"].update(locator.file_refs)  # type: ignore[union-attr]
+            for target in [
+                *list(unit.get("explicit_review_candidate_targets") or []),
+                *list(unit.get("manual_review_candidate_targets") or []),
+                *list(unit.get("review_candidate_targets") or []),
+            ]:
+                target_text = str(target or "").strip()
+                if target_text and target_text not in group["candidate_targets"]:  # type: ignore[operator]
+                    group["candidate_targets"].append(target_text)  # type: ignore[union-attr]
+    for parent_key, group in grouped_units.items():
+        parent = group.get("parent")
+        if not isinstance(parent, AgentLocator):
+            continue
+        parent_refs = set(parent.file_refs)
+        local_refs = set(group.get("local_refs") or set())
+        if parent_refs and not parent_refs.issubset(local_refs):
+            continue
+        source_units = [unit for unit in list(group.get("units") or []) if isinstance(unit, dict)]
+        synthetic_unit = {
+            "unit": ",".join(str(unit.get("unit") or "") for unit in source_units if str(unit.get("unit") or "")) or parent_key,
+            "manual_review_candidate_targets": list(group.get("candidate_targets") or []),
+            "reason": " ".join(str(unit.get("reason") or "") for unit in source_units),
+            "open_questions": [
+                question
+                for unit in source_units
+                for question in list(unit.get("open_questions") or [])
+            ],
+        }
+        repair = build_repair(
+            unit=synthetic_unit,
+            parent_locators=[parent],
+            local_refs=local_refs,
+            source_units=source_units,
+        )
+        if not repair:
+            continue
+        repair["grouped_manual_review_units"] = [
+            {"unit": unit.get("unit"), "local": unit.get("local")}
+            for unit in source_units[:8]
+        ]
+        repairs.append(repair)
+        repaired_parents.add(parent_key)
+        if len(repairs) >= 8:
+            break
+    return repairs
+
+
+def _manual_review_candidate_is_addressed(
+    unit: dict[str, object],
+    *,
+    target: object,
+    target_subject: object = "",
+) -> bool:
+    target_text = str(target or "").strip()
+    subject_text = str(target_subject or "").strip()
+    explicit_targets = [
+        str(item or "").strip()
+        for item in [
+            *list(unit.get("explicit_review_candidate_targets") or []),
+            *list(unit.get("manual_review_candidate_targets") or []),
+        ]
+        if str(item or "").strip()
+    ]
+    if not explicit_targets:
+        return False
+
+    if not any(
+        _locator_same_scope(candidate, target_text) or _locator_same_scope(candidate, subject_text)
+        for candidate in explicit_targets
+    ):
+        return False
+    reason_text = " ".join(
+        str(value or "")
+        for value in [
+            unit.get("reason"),
+            *list(unit.get("open_questions") or []),
+        ]
+    ).casefold()
+    contradiction_tokens = (
+        "ambiguous",
+        "ambiguity",
+        "uncertain",
+        "uncertainty",
+        "unresolved",
+        "insufficient",
+        "mismatch",
+        "contradict",
+        "not owner",
+        "not enough",
+        "无法",
+        "不能",
+        "不足",
+        "不成立",
+        "矛盾",
+        "歧义",
+        "不确定",
+        "仍需",
+    )
+    return any(token in reason_text for token in contradiction_tokens)
+
+
+def _manual_review_pairing_candidate_is_addressed(
+    unit: dict[str, object],
+    pairing: dict[str, object],
+) -> bool:
+    target = pairing.get("target")
+    target_subject = pairing.get("target_subject")
+    if _title_pairing_option_is_hard_blocker(pairing):
+        return _manual_review_candidate_has_title_pairing_contradiction(
+            unit,
+            target=target,
+            target_subject=target_subject,
+        )
+    return _manual_review_candidate_is_addressed(
+        unit,
+        target=target,
+        target_subject=target_subject,
+    )
+
+
+def _manual_review_candidate_has_title_pairing_contradiction(
+    unit: dict[str, object],
+    *,
+    target: object,
+    target_subject: object = "",
+) -> bool:
+    if not _manual_review_candidate_has_post_upgrade_contradiction(
+        unit,
+        target=target,
+        target_subject=target_subject,
+    ):
+        return False
+    reason_text = " ".join(
+        str(value or "")
+        for value in [
+            unit.get("reason"),
+            *list(unit.get("open_questions") or []),
+        ]
+    ).casefold()
+    title_pairing_terms = (
+        "not owner",
+        "not the owner",
+        "not own",
+        "does not own",
+        "different target",
+        "different subject",
+        "different title",
+        "duration differs",
+        "duration mismatch",
+        "runtime differs",
+        "runtime mismatch",
+        "title mismatch",
+        "episode title mismatch",
+        "competing target",
+        "competing subject",
+        "same-count competitor",
+        "alternate packaging",
+        "duplicate packaging",
+        "not the same episode",
+    )
+    return any(term in reason_text for term in title_pairing_terms)
+
+
+def _manual_review_candidate_has_post_upgrade_contradiction(
+    unit: dict[str, object],
+    *,
+    target: object,
+    target_subject: object = "",
+) -> bool:
+    if not _manual_review_candidate_is_addressed(unit, target=target, target_subject=target_subject):
+        return False
+    reason_text = " ".join(
+        str(value or "")
+        for value in [
+            unit.get("reason"),
+            *list(unit.get("open_questions") or []),
+        ]
+    ).casefold()
+    if any(
+        marker in reason_text
+        for marker in (
+            "without a concrete contradiction",
+            "without concrete contradiction",
+            "no concrete contradiction",
+            "no contradiction",
+            "not a contradiction",
+        )
+    ):
+        return False
+    concrete_terms = (
+        "mismatch",
+        "contradict",
+        "not owner",
+        "not the owner",
+        "not own",
+        "does not own",
+        "different target",
+        "different subject",
+        "different title",
+        "duration differs",
+        "duration mismatch",
+        "runtime differs",
+        "runtime mismatch",
+        "title mismatch",
+        "episode title mismatch",
+        "count mismatch",
+        "target count mismatch",
+        "competing target",
+        "competing subject",
+        "same-count competitor",
+        "alternate packaging",
+        "duplicate packaging",
+        "not the same episode",
+    )
+    return any(term in reason_text for term in concrete_terms)
+
+
+def _locator_same_scope(candidate: object, wanted: object) -> bool:
+    candidate_text = str(candidate or "").strip()
+    wanted_text = str(wanted or "").strip()
+    if not candidate_text or not wanted_text:
+        return False
+    candidate_key = candidate_text.casefold()
+    wanted_key = wanted_text.casefold()
+    return (
+        candidate_key == wanted_key
+        or candidate_key.startswith(f"{wanted_key}/")
+        or wanted_key.startswith(f"{candidate_key}/")
+    )
+
+
+def _candidate_targets_from_pairings(pairings: list[dict[str, object]]) -> list[dict[str, object]]:
+    candidate_targets: list[dict[str, object]] = []
+    seen_targets: set[str] = set()
+    for item in pairings:
+        target_text = str(item.get("target") or item.get("target_subject") or "").strip()
+        if not target_text or target_text in seen_targets:
+            continue
+        seen_targets.add(target_text)
+        candidate_targets.append(
+            {
+                "target": target_text,
+                "target_subject": item.get("target_subject"),
+                "target_title": item.get("target_title"),
+                "local_slice": item.get("local_slice"),
+            }
+        )
+    return candidate_targets
+
+
+def _manual_review_candidate_submit_shape_from_pairings(
+    pairings: list[dict[str, object]],
+    *,
+    limit: int = 8,
+) -> list[dict[str, object]]:
+    targets_by_slice: dict[str, list[str]] = defaultdict(list)
+    for item in pairings:
+        local_slice = str(item.get("local_slice") or "").strip()
+        target = str(item.get("target") or item.get("target_subject") or "").strip()
+        if not local_slice or not target:
+            continue
+        if target not in targets_by_slice[local_slice]:
+            targets_by_slice[local_slice].append(target)
+    rows: list[dict[str, object]] = []
+    for local_slice, targets in targets_by_slice.items():
+        rows.append(
+            {
+                "local": local_slice,
+                "outcome": "manual_review",
+                "manual_review_candidate_targets": targets[:4],
+                "confidence": "low",
+                "reason": (
+                    "Visible title-pairing candidate remains unresolved; keep candidate target(s) for human review "
+                    "instead of accepting or silently dropping the evidence."
+                ),
+            }
+        )
+        if len(rows) >= limit:
+            break
+    return rows
+
+
+def _manual_review_visible_slice_pairing_repairs(
+    registry: LocatorRegistry,
+    feedback_units: list[dict[str, object]],
+    *,
+    searched_query_variant_keys: set[str] | None = None,
+) -> list[dict[str, object]]:
+    searched_query_variant_keys = {str(item).casefold() for item in (searched_query_variant_keys or set()) if str(item)}
+    repairs: list[dict[str, object]] = []
+    for unit in feedback_units:
+        if not isinstance(unit, dict) or unit.get("outcome") != "manual_review":
+            continue
+        for raw_local in list(unit.get("local") or []):
+            locator, issue = registry.resolve(str(raw_local))
+            if issue or locator is None or locator.kind != "local":
+                continue
+            parent_locator = registry.locators.get(_episode_slice_parent_locator(locator.locator))
+            if parent_locator is not None and parent_locator.locator != locator.locator:
+                parent_category = parent_locator.locator.rsplit("/", 1)[-1]
+                if parent_category not in {"main", "main-episodes", "episodes"}:
+                    continue
+                pairing_options = _local_target_title_pairing_options_for_slice(
+                    registry,
+                    locator.locator,
+                    limit=12,
+                )
+                hard_pairings = [
+                    item
+                    for item in pairing_options
+                    if _title_pairing_option_is_hard_blocker(item)
+                ]
+                candidate_pairings = hard_pairings or pairing_options
+                if not hard_pairings and _manual_review_unit_has_visible_candidate_target(unit):
+                    candidate_pairings = [
+                        item
+                        for item in candidate_pairings
+                        if not _title_pairing_option_is_weak_isolated_tail(item)
+                    ]
+                    if not candidate_pairings:
+                        continue
+                if not candidate_pairings:
+                    continue
+                unresolved_pairings = [
+                    item for item in candidate_pairings
+                    if not _manual_review_pairing_candidate_is_addressed(unit, item)
+                ]
+                if not unresolved_pairings:
+                    continue
+                hard_unresolved_pairings = [
+                    item for item in unresolved_pairings if _title_pairing_option_is_hard_blocker(item)
+                ]
+                mapping_options = _local_slice_mapping_options_from_title_pairings(
+                    hard_unresolved_pairings,
+                    limit=12,
+                )
+                candidate_targets = _candidate_targets_from_pairings(unresolved_pairings)
+                manual_review_candidate_shape = _manual_review_candidate_submit_shape_from_pairings(
+                    unresolved_pairings,
+                    limit=12,
+                )
+                search_queries_to_try = _unsearched_slice_tail_search_queries(
+                    unresolved_pairings,
+                    searched_query_variant_keys=searched_query_variant_keys,
+                )
+                repairs.append(
+                    {
+                        "issue": "manual_review_visible_slice_pairing_should_split",
+                        "unit": unit.get("unit"),
+                        "local": [locator.locator],
+                        "file_count": len(locator.file_refs),
+                        "representative_labels": list(locator.representative_labels[:4]),
+                        "local_target_title_pairing_options": unresolved_pairings[:8],
+                        "local_slice_mapping_options": mapping_options[:8],
+                        "suggested_submit_shape": mapping_options[:8],
+                        "candidate_targets": candidate_targets[:8],
+                        "manual_review_candidate_submit_shape": manual_review_candidate_shape[:8],
+                        "search_queries_to_try": search_queries_to_try[:8],
+                        "required": (
+                            "This exact manual_review slice still has visible title-pairing candidates. High-signal "
+                            "pairings are exposed as suggested mapped shapes; lower-confidence pairings are review "
+                            "candidates only. If search_queries_to_try is non-empty, search one concrete local title-tail "
+                            "query before treating a media-form-only pairing as terminal. Map a paired target if "
+                            "semantically correct, or keep manual_review only by putting the visible target in "
+                            "manual_review_candidate_targets and naming the concrete contradiction or unresolved evidence. "
+                            "The fixed layer is preserving a must-address "
+                            "evidence debt, not assigning the target."
+                        ),
+                    }
+                )
+                break
+            category = locator.locator.rsplit("/", 1)[-1]
+            if category not in {"main", "main-episodes", "episodes"}:
+                continue
+            triples = _episode_label_triples(locator)
+            if not (2 <= len(triples) <= 4):
+                continue
+            pairing_options = _local_target_title_pairing_options(
+                registry,
+                [locator.locator],
+                limit=12,
+            )
+            hard_pairings = [
+                item
+                for item in pairing_options
+                if _title_pairing_option_is_hard_blocker(item)
+            ]
+            candidate_pairings = hard_pairings or pairing_options
+            if not hard_pairings and _manual_review_unit_has_visible_candidate_target(unit):
+                candidate_pairings = [
+                    item
+                    for item in candidate_pairings
+                    if not _title_pairing_option_is_weak_isolated_tail(item)
+                ]
+                search_queries_to_try = _unsearched_slice_tail_search_queries(
+                    candidate_pairings,
+                    searched_query_variant_keys=searched_query_variant_keys,
+                )
+                ordered_probe = _ordered_media_form_slice_mapping_options_from_pairings(
+                    candidate_pairings,
+                    limit=12,
+                )
+                probe_covered_slices = {str(item.get("local") or "") for item in ordered_probe}
+                probe_required_slices = {f"{locator.locator}/episode/{int(number)}" for number, _ref, _label in triples}
+                if not search_queries_to_try and not (
+                    probe_required_slices and probe_required_slices.issubset(probe_covered_slices)
+                ):
+                    candidate_pairings = []
+            if not candidate_pairings:
+                continue
+            unresolved_pairings = [
+                item for item in candidate_pairings
+                if not _manual_review_pairing_candidate_is_addressed(unit, item)
+            ]
+            hard_resolution_pairings = [
+                item for item in candidate_pairings if _title_pairing_option_is_hard_blocker(item)
+            ]
+            mapping_options = _local_slice_mapping_options_from_title_pairings(hard_resolution_pairings, limit=12)
+            ordered_mapping_options = []
+            if not mapping_options:
+                ordered_mapping_options = _ordered_media_form_slice_mapping_options_from_pairings(
+                    candidate_pairings,
+                    limit=12,
+                )
+                mapping_options = ordered_mapping_options
+            covered_slices = {str(item.get("local") or "") for item in mapping_options}
+            required_slices = {f"{locator.locator}/episode/{int(number)}" for number, _ref, _label in triples}
+            candidate_targets = _candidate_targets_from_pairings(unresolved_pairings or candidate_pairings)
+            manual_review_candidate_shape = _manual_review_candidate_submit_shape_from_pairings(
+                candidate_pairings,
+                limit=12,
+            )
+            search_queries_to_try = _unsearched_slice_tail_search_queries(
+                unresolved_pairings or candidate_pairings,
+                searched_query_variant_keys=searched_query_variant_keys,
+            )
+            if not covered_slices and not candidate_targets:
+                continue
+            unpaired_slices = sorted(required_slices - covered_slices)
+            all_slices_covered = bool(required_slices and required_slices.issubset(covered_slices))
+            repairs.append(
+                {
+                    "issue": "manual_review_visible_slice_pairing_should_split",
+                    "unit": unit.get("unit"),
+                    "local": [locator.locator],
+                    "file_count": len(locator.file_refs),
+                    "representative_labels": list(locator.representative_labels[:4]),
+                    "local_target_title_pairing_options": candidate_pairings[:8],
+                    "local_slice_mapping_options": mapping_options[:8] if all_slices_covered else [],
+                    "ordered_media_form_slice_mapping_options": ordered_mapping_options[:8],
+                    "unpaired_local_slices": unpaired_slices[:8],
+                    "candidate_targets": candidate_targets[:8],
+                    "suggested_submit_shape": mapping_options[:8] if all_slices_covered else [],
+                    "manual_review_candidate_submit_shape": manual_review_candidate_shape[:8],
+                    "search_queries_to_try": search_queries_to_try[:8],
+                    "required": (
+                        "This parent-level manual_review still has visible slice-level title pairing options. "
+                        "If search_queries_to_try is non-empty, search one concrete local title-tail query before "
+                        "treating a media-form-only pairing as terminal. If the pairing closes ownership, split and "
+                        "map the listed local://.../episode/N slices. "
+                        "If ownership remains uncertain, keep manual_review only after adding the visible target "
+                        "to manual_review_candidate_targets and naming the concrete ambiguity. Any "
+                        "unpaired_local_slices need their own exact outcome if the parent is split. Do not "
+                        "preserve a broad parent manual-review placeholder with no candidate targets."
+                    ),
+                }
+            )
+            break
+        if len(repairs) >= 8:
+            break
+    return repairs
+
+
+def _mapped_slice_target_contested_by_manual_sibling_repairs(
+    registry: LocatorRegistry,
+    feedback_units: list[dict[str, object]],
+) -> list[dict[str, object]]:
+    """Reject a package where one slice maps a target still claimed by a sibling review row.
+
+    This is a consistency check, not a target choice: if a manual_review row for
+    a sibling slice still cites the mapped target as support/candidate evidence,
+    the package has not resolved ownership of that target.
+    """
+
+    mapped_rows: list[dict[str, object]] = []
+    for unit in feedback_units:
+        if not isinstance(unit, dict) or not str(unit.get("outcome") or "").startswith("mapped_"):
+            continue
+        target_locator, target_issue = registry.resolve(str(unit.get("target") or ""))
+        if target_issue or target_locator is None or target_locator.kind not in {
+            "target_subject",
+            "target_episode",
+            "target_span",
+        }:
+            continue
+        target_subject = _target_subject_locator_for(registry, target_locator)
+        for raw_local in list(unit.get("local") or []):
+            locator, issue = registry.resolve(str(raw_local))
+            if issue or locator is None or locator.kind != "local":
+                continue
+            parent_key = _episode_slice_parent_locator(locator.locator)
+            parent_locator = registry.locators.get(parent_key)
+            if parent_locator is None or parent_locator.locator == locator.locator:
+                continue
+            if parent_locator.locator.rsplit("/", 1)[-1] not in {"main", "main-episodes", "episodes"}:
+                continue
+            mapped_rows.append(
+                {
+                    "unit": unit.get("unit"),
+                    "local": locator.locator,
+                    "parent": parent_locator.locator,
+                    "target": target_locator.locator,
+                    "target_subject": target_subject.locator,
+                    "target_title": target_subject.title,
+                }
+            )
+    if not mapped_rows:
+        return []
+
+    repairs: list[dict[str, object]] = []
+    for unit in feedback_units:
+        if not isinstance(unit, dict) or unit.get("outcome") != "manual_review":
+            continue
+        cited_targets = [
+            str(item or "").strip()
+            for item in [
+                *list(unit.get("review_candidate_targets") or []),
+                *list(unit.get("explicit_review_candidate_targets") or []),
+                *list(unit.get("manual_review_candidate_targets") or []),
+                *list(unit.get("support") or []),
+            ]
+            if str(item or "").strip()
+        ]
+        for raw_local in list(unit.get("local") or []):
+            locator, issue = registry.resolve(str(raw_local))
+            if issue or locator is None or locator.kind != "local":
+                continue
+            parent_key = _episode_slice_parent_locator(locator.locator)
+            parent_locator = registry.locators.get(parent_key)
+            if parent_locator is None or parent_locator.locator == locator.locator:
+                continue
+            if parent_locator.locator.rsplit("/", 1)[-1] not in {"main", "main-episodes", "episodes"}:
+                continue
+            hard_pairing_targets = [
+                str(item.get("target") or item.get("target_subject") or "").strip()
+                for item in _local_target_title_pairing_options_for_slice(registry, locator.locator, limit=12)
+                if _title_pairing_option_is_hard_blocker(item)
+            ]
+            candidate_targets = [target for target in [*cited_targets, *hard_pairing_targets] if target]
+            if not candidate_targets:
+                continue
+            for mapped in mapped_rows:
+                if mapped["parent"] != parent_locator.locator or mapped["local"] == locator.locator:
+                    continue
+                if not any(
+                    _locator_same_scope(candidate, mapped["target"])
+                    or _locator_same_scope(candidate, mapped["target_subject"])
+                    for candidate in candidate_targets
+                ):
+                    continue
+                repairs.append(
+                    {
+                        "issue": "mapped_slice_target_contested_by_manual_review_sibling",
+                        "mapped_unit": mapped["unit"],
+                        "mapped_local": mapped["local"],
+                        "manual_review_unit": unit.get("unit"),
+                        "manual_review_local": locator.locator,
+                        "parent_local": parent_locator.locator,
+                        "target": mapped["target"],
+                        "target_subject": mapped["target_subject"],
+                        "target_title": mapped["target_title"],
+                        "manual_review_candidate_targets": candidate_targets[:8],
+                        "required": (
+                            "A sibling slice is mapped to a target that this manual_review slice still cites as a "
+                            "candidate/support target. Resolve that target ownership before accepting: map the target "
+                            "to the semantically correct slice, move the mapped slice to manual_review as well, or "
+                            "remove the candidate only with a concrete contradiction. The fixed layer is checking "
+                            "same-parent target ownership consistency, not choosing the winner."
+                        ),
+                    }
+                )
+                break
+            if repairs:
+                break
+        if len(repairs) >= 8:
+            break
+    return repairs
+
+
+def _manual_review_keeps_target_ownership_ambiguous(unit: dict[str, object]) -> bool:
+    text = " ".join(
+        [
+            str(unit.get("reason") or ""),
+            " ".join(str(item) for item in list(unit.get("open_questions") or [])),
+        ]
+    ).casefold()
+    if not text:
+        return False
+    ownership_terms = (
+        "ownership",
+        "owner",
+        "own ",
+        "owns",
+        "target",
+        "semantic",
+        "对应",
+        "归属",
+        "目标",
+    )
+    uncertainty_terms = (
+        "ambiguous",
+        "ambiguity",
+        "uncertain",
+        "insufficient",
+        "not prove",
+        "does not prove",
+        "cannot prove",
+        "remaining ambiguity",
+        "不确定",
+        "证据不足",
+        "无法确认",
+    )
+    return any(term in text for term in ownership_terms) and any(term in text for term in uncertainty_terms)
+
+
+def _manual_review_duplicate_variant_repairs(
+    registry: LocatorRegistry,
+    feedback_units: list[dict[str, object]],
+) -> list[dict[str, object]]:
+    repairs: list[dict[str, object]] = []
+    for unit in feedback_units:
+        if not isinstance(unit, dict) or unit.get("outcome") != "manual_review":
+            continue
+        explicit_review_targets = [
+            str(item)
+            for item in [
+                *list(unit.get("explicit_review_candidate_targets") or []),
+                *list(unit.get("manual_review_candidate_targets") or []),
+                *list(unit.get("review_candidate_targets") or []),
+            ]
+            if str(item or "").strip()
+        ]
+        if not explicit_review_targets:
+            continue
+        if _manual_review_keeps_target_ownership_ambiguous(unit):
+            continue
+        for raw_local in list(unit.get("local") or []):
+            locator, issue = registry.resolve(str(raw_local))
+            if issue or locator is None or locator.kind != "local":
+                continue
+            parent_locator = _parent_local_locator(registry, locator)
+            if not _is_non_regular_numbered_locator(registry, parent_locator):
+                continue
+            episode_numbers = [int(num) for num, _ref in parent_locator.episode_file_refs]
+            unique_episode_count = len(set(episode_numbers))
+            duplicate_episode_count = max(0, len(episode_numbers) - unique_episode_count)
+            if not duplicate_episode_count or unique_episode_count <= 0:
+                continue
+            duplicate_variant_locators = list(
+                _episode_locator_hints(
+                    parent_locator.locator,
+                    parent_locator.episode_file_refs,
+                    episode_labels={ref: label for _num, ref, label in _episode_label_triples(parent_locator)},
+                ).get("duplicate_episode_variant_locators")
+                or []
+            )
+            if not duplicate_variant_locators:
+                continue
+            local_tokens = _non_regular_local_bridge_tokens([parent_locator])
+            local_season_hints, local_unseasoned = _local_season_hints_for_locators([parent_locator])
+            candidate_targets: list[AgentLocator] = []
+            for raw_target in explicit_review_targets:
+                target_subject = _resolve_target_subject_from_candidate_text(registry, raw_target)
+                if target_subject is None:
+                    continue
+                if (
+                    int(target_subject.subject_eps or 0) == unique_episode_count
+                    and _target_matches_local_season(target_subject, local_season_hints, local_unseasoned)
+                    and _target_has_non_regular_mapping_support(target_subject, local_tokens)
+                ):
+                    candidate_targets.append(target_subject)
+            if not candidate_targets:
+                for target in registry.locators.values():
+                    if target.kind != "target_subject" or int(target.subject_eps or 0) != unique_episode_count:
+                        continue
+                    if not _target_matches_local_season(target, local_season_hints, local_unseasoned):
+                        continue
+                    if target.relation_quality != "owner_relevant_related":
+                        continue
+                    candidate_targets.append(target)
+            seen: set[str] = set()
+            candidate_targets = [
+                target
+                for target in candidate_targets
+                if target.locator not in seen and not seen.add(target.locator)
+            ]
+            if not candidate_targets:
+                continue
+            repairs.append(
+                {
+                    "issue": "manual_review_duplicate_variant_should_split",
+                    "unit": unit.get("unit"),
+                    "local": parent_locator.locator,
+                    "local_file_count": len(parent_locator.file_refs),
+                    "local_unique_episode_count": unique_episode_count,
+                    "local_duplicate_episode_count": duplicate_episode_count,
+                    "duplicate_episode_variant_locators": duplicate_variant_locators[:8],
+                    "candidate_targets": [
+                        {
+                            "target": target.locator,
+                            "title": target.title,
+                            "subject_id": target.subject_id,
+                            "subject_eps": target.subject_eps,
+                            "relation_to_main": target.relation_to_main,
+                            "relation_quality": target.relation_quality,
+                        }
+                        for target in candidate_targets[:6]
+                    ],
+                    "multi_version_submit_shape": _duplicate_variant_multi_version_submit_shape(
+                        parent_locator,
+                        duplicate_variant_locators,
+                        candidate_targets[0],
+                    ),
+                    "required": (
+                        "This numbered non-regular local group has duplicate filename variants, but its unique "
+                        "episode-number count matches a visible candidate target. Do not keep the whole group in "
+                        "manual_review for the duplicate variant alone. Split the duplicate number with "
+                        "local://.../episode/N/variant/K and map each same-episode variant to the single legal target "
+                        "episode as an alternate/multi-version file when target ownership is closed. If target "
+                        "ownership itself remains ambiguous after upgraded evidence, submit exact non-overlapping "
+                        "manual_review locators instead; that uncertainty should not block the rest of the package."
                     ),
                 }
             )
@@ -7946,7 +15112,7 @@ def _fail_closed_negative_target_absence_repairs(
                 continue
             parent_locator = registry.locators.get(_episode_slice_parent_locator(locator.locator)) or locator
             category = parent_locator.locator.rsplit("/", 1)[-1]
-            if category != "special-marker" or not locator.episode_file_refs:
+            if not _is_non_regular_numbered_locator(registry, locator):
                 continue
             label_text = " ".join(
                 [
@@ -7960,7 +15126,7 @@ def _fail_closed_negative_target_absence_repairs(
                     reason,
                 ]
             )
-            if not re.search(r"(?i)(?:^|[\s._\-\[\]()])sp\d{1,3}(?:$|[\s._\-\[\]()])", label_text):
+            if not re.search(r"(?i)(?:^|[\s._\-\[\]()])(?:sp|ova|oad|oav|ncop|nced|op|ed)\d{1,3}(?:$|[\s._\-\[\]()])", label_text):
                 continue
             local_bridge_tokens = _locator_distinctive_tokens(locator).union(_locator_distinctive_tokens(parent_locator))
             support_candidates = _numbered_special_negative_evidence_support_candidates(
@@ -8205,6 +15371,214 @@ def _reason_mentions_visible_target_alias(unit: dict[str, object], target_locato
     return False
 
 
+def _unit_part_of_closed_non_regular_parent_mapping(
+    registry: LocatorRegistry,
+    feedback_units: list[dict[str, object]],
+    *,
+    local_locators: list[AgentLocator],
+    target_subject: AgentLocator,
+) -> bool:
+    parent_locators = {
+        _parent_local_locator(registry, locator).locator
+        for locator in local_locators
+        if _is_non_regular_numbered_locator(registry, locator)
+    }
+    if not parent_locators:
+        return False
+    for parent_locator_text in parent_locators:
+        grouped_locators: list[AgentLocator] = []
+        grouped_target_refs: list[str] = []
+        for candidate in feedback_units:
+            if not isinstance(candidate, dict) or not str(candidate.get("outcome") or "").startswith("mapped_"):
+                continue
+            candidate_target, target_issue = registry.resolve(str(candidate.get("target") or ""))
+            if target_issue or candidate_target is None:
+                continue
+            candidate_subject = _target_subject_locator_for(registry, candidate_target)
+            if candidate_subject.locator != target_subject.locator:
+                continue
+            candidate_locators: list[AgentLocator] = []
+            for raw_local in list(candidate.get("local") or []):
+                locator, issue = registry.resolve(str(raw_local))
+                if not issue and locator is not None and locator.kind == "local":
+                    candidate_locators.append(locator)
+            if not any(_parent_local_locator(registry, locator).locator == parent_locator_text for locator in candidate_locators):
+                continue
+            grouped_locators.extend(candidate_locators)
+            grouped_target_refs.extend(str(ref) for ref in list(candidate.get("target_refs") or []) if str(ref))
+        if not grouped_locators:
+            continue
+        grouped_local_refs = {
+            ref
+            for locator in grouped_locators
+            for ref in locator.file_refs
+        }
+        grouped_episode_numbers = {
+            int(num)
+            for locator in grouped_locators
+            for num, _ref in locator.episode_file_refs
+        }
+        target_eps = int(target_subject.subject_eps or 0)
+        if (
+            target_eps <= 1
+            or len(grouped_episode_numbers) != target_eps
+            or len(set(grouped_target_refs)) != target_eps
+        ):
+            continue
+        duration_closure = _duration_closure_for_locators(
+            grouped_locators,
+            file_count=len(grouped_local_refs),
+        )
+        if duration_closure.get("strong"):
+            return True
+    return False
+
+
+def _mapped_unit_has_visible_slice_title_pairing(
+    registry: LocatorRegistry,
+    *,
+    local_locators: list[AgentLocator],
+    target_locator: AgentLocator,
+    target_subject: AgentLocator,
+) -> bool:
+    for locator in local_locators:
+        parent = _episode_slice_parent_locator(locator.locator)
+        if parent and parent != locator.locator:
+            pairing_options = _local_target_title_pairing_options_for_slice(
+                registry,
+                locator.locator,
+                limit=12,
+            )
+        else:
+            pairing_options = _local_target_title_pairing_options(
+                registry,
+                [locator.locator],
+                limit=12,
+            )
+        for item in pairing_options:
+            target = str(item.get("target") or "").strip()
+            subject = str(item.get("target_subject") or "").strip()
+            if not (
+                _locator_same_scope(target, target_locator.locator)
+                or _locator_same_scope(target, target_subject.locator)
+                or _locator_same_scope(subject, target_subject.locator)
+            ):
+                continue
+            if _title_pairing_option_is_hard_blocker(item):
+                return True
+    if _mapped_unit_has_source_query_slice_title_pairing(
+        registry,
+        local_locators=local_locators,
+        target_subject=target_subject,
+    ):
+        return True
+    return False
+
+
+def _local_locator_tail_tokens(locator: AgentLocator) -> set[str]:
+    tail_tokens: set[str] = set()
+    generic_tokens = _TITLE_TAIL_GENERIC_TOKENS.union({"main", "episodes", "episode"})
+    for label in list(locator.representative_labels or []):
+        for match in re.finditer(r"\[([^\]]+)\]|\(([^\)]+)\)", str(label or "")):
+            content = str(match.group(1) or match.group(2) or "")
+            content = re.sub(r"(?i)^\s*\d{1,3}\s*[-_.:]?\s*", " ", content)
+            content = re.sub(r"(?i)\b(?:\d{3,4}p|x26[45]|flac|aac|ac3|ma10p|hi10p)\b", " ", content)
+            content = re.sub(r"\s+", " ", content).strip(" ._-/[](){}")
+            if not content or QUERY_NOISE_TOKEN_RE.search(content):
+                continue
+            tail_tokens.update(_distinctive_tokens(content) - generic_tokens)
+    return tail_tokens
+
+
+def _tail_phrases_from_local_label(label: object) -> list[str]:
+    phrases: list[str] = []
+    seen: set[str] = set()
+    for match in re.finditer(r"\[([^\]]+)\]|\(([^\)]+)\)", str(label or "")):
+        content = str(match.group(1) or match.group(2) or "")
+        content = re.sub(r"(?i)^\s*\d{1,3}\s*[-_.:]?\s*", " ", content)
+        content = re.sub(r"(?i)\b(?:\d{3,4}p|x26[45]|flac|aac|ac3|ma10p|hi10p)\b", " ", content)
+        content = re.sub(r"\s+", " ", content).strip(" ._-/[](){}")
+        if not content or QUERY_NOISE_TOKEN_RE.search(content):
+            continue
+        key = content.casefold()
+        if key in seen:
+            continue
+        seen.add(key)
+        phrases.append(content)
+    return phrases[:4]
+
+
+def _unsearched_slice_tail_search_queries(
+    pairings: list[dict[str, object]],
+    *,
+    searched_query_variant_keys: set[str],
+    limit: int = 8,
+) -> list[str]:
+    queries: list[str] = []
+    seen: set[str] = set()
+    for item in list(pairings or []):
+        if not isinstance(item, dict):
+            continue
+        if item.get("shared_title_tail_tokens") or item.get("shared_source_query_tail_tokens"):
+            continue
+        if not item.get("shared_media_form_tokens"):
+            continue
+        context_tokens = [
+            str(token or "").strip()
+            for token in list(item.get("shared_context_title_tokens") or item.get("shared_title_tokens") or [])
+            if str(token or "").strip()
+        ]
+        if not context_tokens:
+            continue
+        for phrase in _tail_phrases_from_local_label(item.get("local_label")):
+            query = _clean_search_query_seed(" ".join([*context_tokens[:3], phrase]))
+            if not query:
+                continue
+            key = query.casefold()
+            if key in seen or _search_hint_was_executed(query, searched_query_variant_keys):
+                continue
+            seen.add(key)
+            queries.append(query)
+            if len(queries) >= limit:
+                return queries[:limit]
+    return queries[:limit]
+
+
+def _mapped_unit_has_source_query_slice_title_pairing(
+    registry: LocatorRegistry,
+    *,
+    local_locators: list[AgentLocator],
+    target_subject: AgentLocator,
+) -> bool:
+    target_query_tokens = _target_query_distinctive_tokens(target_subject) - _TITLE_TAIL_GENERIC_TOKENS
+    if not target_query_tokens:
+        return False
+    target_title_tokens = _target_visible_title_tokens(target_subject) - _TITLE_TAIL_GENERIC_TOKENS
+    target_form_tokens = _media_form_tokens(target_subject.locator, target_subject.title, " ".join(target_subject.markers[:8]))
+    if not target_form_tokens:
+        return False
+    for locator in local_locators:
+        parent_key = _episode_slice_parent_locator(locator.locator)
+        parent = registry.locators.get(parent_key) if parent_key and parent_key != locator.locator else None
+        if parent is None or parent.locator.rsplit("/", 1)[-1] not in {"main", "main-episodes", "episodes"}:
+            continue
+        local_tail_tokens = _local_locator_tail_tokens(locator)
+        if len(local_tail_tokens.intersection(target_query_tokens)) < 2:
+            continue
+        local_title_tokens = _locator_distinctive_tokens(locator).union(_locator_distinctive_tokens(parent))
+        if not (local_title_tokens - _TITLE_TAIL_GENERIC_TOKENS).intersection(target_title_tokens):
+            continue
+        local_form_tokens = _media_form_tokens(
+            locator.title,
+            parent.title,
+            " ".join(locator.representative_labels[:4]),
+            " ".join(parent.representative_labels[:4]),
+        )
+        if local_form_tokens.intersection(target_form_tokens):
+            return True
+    return False
+
+
 def _mapped_target_title_bridge_repairs(
     registry: LocatorRegistry,
     feedback_units: list[dict[str, object]],
@@ -8256,15 +15630,80 @@ def _mapped_target_title_bridge_repairs(
         )
         if target_subject_total and target_subject_total == local_file_count and local_file_count > 1 and not local_has_special_marker:
             continue
+        closure = _non_regular_mapping_closure(
+            registry,
+            local_locators=local_locators,
+            target_subject=target_subject,
+            file_count=local_file_count,
+        )
+        if closure.get("strong"):
+            continue
         local_tokens = set().union(*[_locator_distinctive_tokens(locator) for locator in local_locators])
-        if not local_tokens or target_tokens.intersection(local_tokens):
+        if not local_tokens:
             continue
         target_query_tokens = _target_query_distinctive_tokens(target_subject)
+        target_title_bridge_tokens = sorted(target_tokens.intersection(local_tokens))
         query_bridge_tokens = sorted(local_tokens.intersection(target_query_tokens))
-        unbridged_query_tokens = sorted(local_tokens - target_tokens - target_query_tokens)
-        if len(query_bridge_tokens) >= 2 and not (local_file_count == 1 and len(unbridged_query_tokens) >= 2):
+        unbridged_title_tokens = sorted(local_tokens - target_tokens)
+        unbridged_query_tokens = sorted(set(unbridged_title_tokens) - target_query_tokens)
+        non_generic_title_bridge_tokens = [
+            token for token in target_title_bridge_tokens
+            if token not in _TITLE_TAIL_GENERIC_TOKENS
+        ]
+        broad_singleton_title_bridge = bool(
+            local_file_count == 1
+            and target_title_bridge_tokens
+            and len(unbridged_title_tokens) >= 2
+            and len(non_generic_title_bridge_tokens) <= 1
+        )
+        exact_slice_media_form_supported = False
+        if broad_singleton_title_bridge:
+            target_form_tokens = _media_form_tokens(
+                target_subject.title,
+                " ".join(target_subject.markers[:4]),
+                target_locator.title,
+                " ".join(target_locator.markers[:4]),
+            )
+            for locator in local_locators:
+                parent = registry.locators.get(_episode_slice_parent_locator(locator.locator))
+                if parent is None or parent.locator == locator.locator:
+                    continue
+                parent_category = parent.locator.rsplit("/", 1)[-1]
+                if parent_category not in {"main", "main-episodes", "episodes"}:
+                    continue
+                local_form_tokens = _media_form_tokens(
+                    locator.title,
+                    parent.title,
+                    " ".join(locator.representative_labels[:4]),
+                    " ".join(parent.representative_labels[:4]),
+                )
+                if local_form_tokens.intersection(target_form_tokens).intersection({"movie", "recap"}):
+                    exact_slice_media_form_supported = True
+                    break
+        if exact_slice_media_form_supported:
+            continue
+        if target_title_bridge_tokens and not broad_singleton_title_bridge:
+            continue
+        if len(query_bridge_tokens) >= 2 and not (
+            broad_singleton_title_bridge
+            or (local_file_count == 1 and len(unbridged_query_tokens) >= 2)
+        ):
             continue
         if local_has_special_marker and target_tokens.intersection(excluded_packaging_title_tokens):
+            continue
+        if _unit_part_of_closed_non_regular_parent_mapping(
+            registry,
+            feedback_units,
+            local_locators=local_locators,
+            target_subject=target_subject,
+        ):
+            continue
+        if _mapped_unit_has_visible_slice_title_pairing(
+            registry,
+            local_locators=local_locators,
+            target_locator=target_locator,
+            target_subject=target_subject,
+        ):
             continue
         query_hints: list[str] = []
         seen_hints: set[str] = set()
@@ -8280,9 +15719,24 @@ def _mapped_target_title_bridge_repairs(
             for hint in query_hints
             if not _search_hint_was_executed(hint, searched_query_variant_keys)
         ]
+        demoted_targets = {target_locator.locator, target_subject.locator}
+        manual_review_candidate_targets = (
+            _manual_review_candidate_targets_for_unit(
+                registry,
+                local_locators=[locator.locator for locator in local_locators],
+                local_file_count=local_file_count,
+                demoted_targets=demoted_targets,
+            )
+            if broad_singleton_title_bridge
+            else []
+        )
         repairs.append(
             {
-                "issue": "mapped_target_title_bridge_missing",
+                "issue": (
+                    "mapped_singleton_broad_title_bridge_missing"
+                    if broad_singleton_title_bridge
+                    else "mapped_target_title_bridge_missing"
+                ),
                 "unit": unit.get("unit"),
                 "local": [locator.locator for locator in local_locators],
                 "local_title_tokens": sorted(local_tokens),
@@ -8293,19 +15747,36 @@ def _mapped_target_title_bridge_repairs(
                 "selected_target_title": target_locator.title,
                 "selected_target_title_aliases": list(target_locator.markers[:8]),
                 "target_source_query_texts": list(target_subject.query_markers[:4]),
+                "target_title_bridge_tokens": target_title_bridge_tokens[:8],
                 "target_query_bridge_tokens": query_bridge_tokens,
-                "unbridged_local_title_tokens": unbridged_query_tokens[:12],
+                "unbridged_local_title_tokens": unbridged_title_tokens[:12],
+                "unbridged_local_tokens_after_source_query": unbridged_query_tokens[:12],
                 "target_title_tokens": sorted(target_subject_tokens),
                 "selected_target_title_tokens": sorted(target_item_tokens),
+                "manual_review_candidate_submit_shape": [
+                    {
+                        "local": [locator.locator for locator in local_locators],
+                        "outcome": "manual_review",
+                        "manual_review_candidate_targets": manual_review_candidate_targets[:4],
+                        "confidence": "low",
+                        "reason": (
+                            "The selected mapped target only has broad franchise title overlap. Keep independently "
+                            "visible candidate targets as low-confidence human-review hints instead of accepting "
+                            "or promoting the rejected mapped target."
+                        ),
+                    }
+                ] if broad_singleton_title_bridge and manual_review_candidate_targets else [],
+                "do_not_retry_targets_without_new_evidence": sorted(demoted_targets)[:4],
                 "search_queries_to_try": unsearched_hints[:8],
                 "searched_query_count": len(searched_query_variant_keys),
                 "required": (
-                    "The selected target's visible title aliases have no lexical overlap with the local title/labels. "
-                    "A clean source query that overlaps the local title can also act as provenance, but this target "
-                    "does not have enough local/source-query overlap. Do not use the selected target title itself "
-                    "as the bridge: search/inspect a better title alias, choose a target whose visible title facts "
-                    "or source-query provenance bridge to the local title, or fail_closed if the visible evidence "
-                    "remains insufficient. This is a support/provenance check; the fixed layer is not choosing the target."
+                    "The selected target's visible title aliases do not bridge the local title strongly enough. "
+                    "For singleton named specials/compilations, broad franchise overlap alone is not enough when "
+                    "the local title still has distinctive unbridged title-tail tokens. A clean source query can "
+                    "be a lead, but it is not a visible target title alias. Search/inspect a better title alias, "
+                    "choose a target whose visible title facts bridge to the local title, use manual_review for "
+                    "localized uncertainty, or fail_closed if the visible evidence remains insufficient. This is "
+                    "a support/provenance check; the fixed layer is not choosing the target."
                 ),
             }
         )
@@ -8345,6 +15816,13 @@ def _mapped_contextual_packaging_extra_target_repairs(
         if target_issue or target_locator is None or target_locator.kind not in {"target_subject", "target_episode", "target_span"}:
             continue
         target_subject = _target_subject_locator_for(registry, target_locator)
+        if _unit_part_of_closed_non_regular_parent_mapping(
+            registry,
+            feedback_units,
+            local_locators=local_locators,
+            target_subject=target_subject,
+        ):
+            continue
         target_tokens = _target_visible_title_tokens(target_subject).union(_target_distinctive_tokens(target_locator))
         if target_supports_extra_tokens(extra_tokens, target_tokens):
             continue
@@ -8635,8 +16113,10 @@ def _has_hard_non_owner_reason(*parts: object) -> bool:
         return False
     markers = {
         "alternate encode",
+        "alternate variant",
         "alternate version",
         "copy",
+        "duplicate",
         "menu",
         "nced",
         "ncop",
@@ -8663,7 +16143,23 @@ def _title_pairing_option_is_hard_blocker(item: dict[str, object]) -> bool:
         if str(token or "").strip()
     }
     if not shared_tail:
-        return False
+        shared_query_tail = {
+            str(token or "").casefold()
+            for token in list(item.get("shared_source_query_tail_tokens") or [])
+            if str(token or "").strip()
+        }
+        shared_title = {
+            str(token or "").casefold()
+            for token in list(item.get("shared_title_tokens") or [])
+            if str(token or "").strip()
+        }
+        shared_form = {
+            str(token or "").casefold()
+            for token in list(item.get("shared_media_form_tokens") or [])
+            if str(token or "").strip()
+        }
+        non_tail_title_context = shared_title - shared_query_tail - _TITLE_TAIL_GENERIC_TOKENS
+        return bool(len(shared_query_tail) >= 2 and shared_form and non_tail_title_context)
     if len(shared_tail) >= 2:
         return True
     shared_title = {
@@ -8673,6 +16169,33 @@ def _title_pairing_option_is_hard_blocker(item: dict[str, object]) -> bool:
     }
     non_tail_title_context = shared_title - shared_tail - _TITLE_TAIL_GENERIC_TOKENS
     return bool(non_tail_title_context)
+
+
+def _title_pairing_option_is_weak_isolated_tail(item: dict[str, object]) -> bool:
+    shared_tail = {
+        str(token or "").casefold()
+        for token in list(item.get("shared_title_tail_tokens") or [])
+        if str(token or "").strip()
+    }
+    if not shared_tail or len(shared_tail) >= 2:
+        return False
+    shared_context = {
+        str(token or "").casefold()
+        for token in list(item.get("shared_context_title_tokens") or [])
+        if str(token or "").strip()
+    }
+    return not bool(shared_context)
+
+
+def _manual_review_unit_has_visible_candidate_target(unit: dict[str, object]) -> bool:
+    return any(
+        str(item or "").strip()
+        for item in [
+            *list(unit.get("explicit_review_candidate_targets") or []),
+            *list(unit.get("manual_review_candidate_targets") or []),
+            *list(unit.get("review_candidate_targets") or []),
+        ]
+    )
 
 
 def _excluded_visible_title_pairing_repairs(
@@ -8846,7 +16369,7 @@ def _visible_source_query_bridge_targets(
     ]:
         relation_quality = str(getattr(subject, "relation_quality", "") or "direct")
         if relation_quality == "disallowed_related":
-            continue
+            relation_quality = "weak_related"
         query_tokens = _target_query_distinctive_tokens(subject) - _TITLE_TAIL_GENERIC_TOKENS
         shared_query_tail = sorted(title_tail_tokens.intersection(query_tokens))
         if len(shared_query_tail) < 2:
@@ -8857,8 +16380,6 @@ def _visible_source_query_bridge_targets(
         relation_to_main = str(subject.relation_to_main or "").strip()
         source_role = str(subject.source_role or "").strip()
         related_query_bridge = bool(relation_to_main or relation_path_refs or source_role.startswith("related_"))
-        if related_query_bridge and relation_to_main and not _is_allowed_related_relation(relation_to_main):
-            continue
         evidence_origin = "related_expansion" if related_query_bridge else str(subject.evidence_origin or "direct_search")
         if relation_quality == "direct" and related_query_bridge:
             relation_quality = "owner_relevant_related" if _is_allowed_related_relation(relation_to_main) else "weak_related"
@@ -9310,6 +16831,7 @@ def _submit_tool(
     args: SubmitToolArgs,
     *,
     searched_query_variant_keys: set[str] | None = None,
+    inspected_locators: set[str] | None = None,
 ) -> SubmitCompileResult:
     issues: list[VerifierIssue] = []
     feedback_units: list[dict[str, object]] = []
@@ -9323,6 +16845,7 @@ def _submit_tool(
     fail_closed_file_count = 0
     mapped_file_count = 0
     excluded_file_count = 0
+    manual_review_file_count = 0
     finding_index = 1
     assignment_index = 1
     allowed_exclusion_outcomes = {"supplemental", "bangumi_target_absent", "non_bangumi"}
@@ -9398,6 +16921,24 @@ def _submit_tool(
                     }
                 )
                 continue
+            singleton_item_repair = _single_file_multi_episode_item_repair(
+                registry,
+                unit=unit,
+                local_refs=local_refs,
+                target_refs=target_refs,
+                canonical_locators=canonical_locators,
+                canonical_target=canonical_target,
+            )
+            if singleton_item_repair:
+                issues.append(
+                    _issue(
+                        unit.unit_label or f"WU{unit_index}",
+                        "single_file_multi_episode_subject_item",
+                        json.dumps(singleton_item_repair, ensure_ascii=False),
+                    )
+                )
+                feedback_units.append({"unit": unit.unit_label or f"WU{unit_index}", **singleton_item_repair})
+                continue
             composite_feature_shape = (
                 len(target_refs) > 1
                 and _is_single_non_episode_feature_local(
@@ -9463,11 +17004,11 @@ def _submit_tool(
                         ),
                         "required_shape": "mapped_composite_feature requires exactly one local file and two or more visible target episode items",
                         "actionable_options": [
-                            "If the local locator contains multiple numbered files but the target has one item, split the local side with local://.../episode/N or local://.../episodes/A-B locators.",
-                            "If each local file is a separate movie/feature/special, submit one work unit per local episode slice and choose the matching visible target for each slice.",
-                            "If this one local file corresponds to one visible target item inside the subject, use that target://.../episode/N item instead of the full subject span.",
-                            "If one local feature file semantically covers multiple Bangumi episode parts, use outcome=mapped_composite_feature with that single local file and a visible target span.",
-                            "If a local slice has no safe Bangumi target, submit that slice as bangumi_target_absent, supplemental, non_bangumi, or fail_closed according to your semantic judgment.",
+                        "If the local locator contains multiple numbered files but the target has one item, split the local side with local://.../episode/N or local://.../episodes/A-B locators.",
+                        "If each local file is a separate movie/feature/special, submit one work unit per local episode slice and choose the matching visible target for each slice.",
+                        "If this one local file visibly identifies one exact target episode, use that target://.../episode/N item instead of the full subject span.",
+                        "If one local feature file semantically covers multiple Bangumi episode parts, use outcome=mapped_composite_feature with that single local file and a visible target span.",
+                        "If a local slice has no safe Bangumi target, submit that slice as bangumi_target_absent, supplemental, non_bangumi, or fail_closed according to your semantic judgment.",
                         ],
                     }
                     issues.append(_issue(unit.unit_label or f"WU{unit_index}", "composite_feature_shape_invalid", json.dumps(issue_payload, ensure_ascii=False)))
@@ -9483,6 +17024,8 @@ def _submit_tool(
                             "local": canonical_locators,
                             "target": canonical_target,
                             "target_item": _target_item_locator_for_ref(registry, target_ref),
+                            "outcome": unit.outcome,
+                            "reason": unit.reason,
                             "composite_target_count": len(target_refs),
                         }
                     )
@@ -9495,6 +17038,11 @@ def _submit_tool(
                         support_finding_refs=[finding_ref],
                         support_card_refs=list(dict.fromkeys([local_ref, *target_refs])),
                         confidence=unit.confidence,
+                        risk_flags=_assignment_risk_flags_for_mapped_unit(
+                            registry,
+                            canonical_locators,
+                            outcome=unit.outcome,
+                        ),
                         reason=unit.reason or f"human_case_agent:{unit.unit_label}:composite_feature",
                     )
                 )
@@ -9510,6 +17058,7 @@ def _submit_tool(
                         "reason": unit.reason,
                         "compiled_as": "mapped_composite_feature",
                         "mapped_files": 1,
+                        "target_refs": list(target_refs),
                         "composite_target_item_count": len(target_refs),
                     }
                 )
@@ -9568,8 +17117,9 @@ def _submit_tool(
                     ),
                     "actionable_options": [
                         "If the target is correct but the local locator contains extra numbered files, split the local side with local://.../episode/N or local://.../episodes/A-B locators.",
+                        "If one local episode number has duplicate variants that are the same episode/version, submit each local://.../episode/N/variant/K as its own mapped work unit to the same target episode with an alternate/multi-version reason.",
                         "If Bangumi has no target item for part of the local locator, submit that local sub-locator as bangumi_target_absent, supplemental, or non_bangumi according to your semantic judgment.",
-                        "If this one local file corresponds to one visible target item inside the subject, use that target://.../episode/N item instead of the full subject span.",
+                        "If this one local file visibly identifies one exact target episode, use that target://.../episode/N item instead of the full subject span.",
                         "If one local feature/movie file semantically covers multiple Bangumi episode parts, use outcome=mapped_composite_feature with that visible target span.",
                         "If the target surface is incomplete, inspect the target subject with scope [details, episodes, related] before resubmitting.",
                     ],
@@ -9603,6 +17153,8 @@ def _submit_tool(
                         "local": canonical_locators,
                         "target": canonical_target,
                         "target_item": _target_item_locator_for_ref(registry, target_ref),
+                        "outcome": unit.outcome,
+                        "reason": unit.reason,
                     }
                 )
                 assignments.append(
@@ -9613,6 +17165,11 @@ def _submit_tool(
                         support_finding_refs=[finding_ref],
                         support_card_refs=[local_ref, target_ref],
                         confidence=unit.confidence,
+                        risk_flags=_assignment_risk_flags_for_mapped_unit(
+                            registry,
+                            canonical_locators,
+                            outcome=unit.outcome,
+                        ),
                         reason=unit.reason or f"human_case_agent:{unit.unit_label}",
                     )
                 )
@@ -9627,6 +17184,7 @@ def _submit_tool(
                     "outcome": unit.outcome,
                     "reason": unit.reason,
                     "mapped_files": len(local_refs),
+                    "target_refs": list(target_refs),
                     "season_mismatch_repair": season_mismatch_repair,
                     "semantic_diagnostics": [season_mismatch_repair] if season_mismatch_repair else [],
                 }
@@ -9660,6 +17218,89 @@ def _submit_tool(
                     "reason_kind": reason_kind,
                     "reason": unit.reason,
                     "excluded_files": len(local_refs),
+                }
+            )
+        elif unit.outcome == "manual_review":
+            reason = str(unit.reason or "").strip()
+            candidate_issues, canonical_review_targets = _validate_manual_review_candidate_targets(registry, unit)
+            inferred_review_targets = _manual_review_candidate_targets_for_unit(
+                registry,
+                local_locators=canonical_locators,
+                local_file_count=len(local_refs),
+            )
+            explicit_review_targets = list(canonical_review_targets)
+            canonical_review_targets = list(dict.fromkeys([*canonical_review_targets, *inferred_review_targets]))
+            inferred_only_review_targets = [
+                target for target in inferred_review_targets if target not in explicit_review_targets
+            ]
+            if candidate_issues:
+                for item in candidate_issues:
+                    issues.append(
+                        _issue(
+                            unit.unit_label or f"WU{unit_index}",
+                            str(item.get("issue") or "manual_review_candidate_target_invalid"),
+                            json.dumps(item, ensure_ascii=False),
+                            related_refs=local_refs[:8],
+                        )
+                    )
+                feedback_units.append(
+                    {
+                        "unit": unit.unit_label or f"WU{unit_index}",
+                        "local": canonical_locators,
+                        "support": canonical_support,
+                        "outcome": "manual_review",
+                        "issues": candidate_issues,
+                    }
+                )
+                continue
+            if not reason:
+                issues.append(
+                    _issue(
+                        unit.unit_label or f"WU{unit_index}",
+                        "manual_review_reason_required",
+                        "manual_review work units must include the concrete uncertainty for human review",
+                        related_refs=local_refs[:8],
+                    )
+                )
+                feedback_units.append(
+                    {
+                        "unit": unit.unit_label or f"WU{unit_index}",
+                        "local": canonical_locators,
+                        "support": canonical_support,
+                        "outcome": "manual_review",
+                        "issues": [{"issue": "manual_review_reason_required"}],
+                    }
+                )
+                continue
+            for local_ref in local_refs:
+                assignments.append(
+                    AssignmentIntent(
+                        ref=f"HA{assignment_index}",
+                        file_ref=local_ref,
+                        target_ref="UNALIGNED",
+                        support_finding_refs=[finding_ref],
+                        support_card_refs=[local_ref],
+                        confidence=unit.confidence,
+                        reason=f"mapping_draft:human_case_agent:manual_review:manual_review:{reason}",
+                    )
+                )
+                assignment_index += 1
+                manual_review_file_count += 1
+            feedback_units.append(
+                {
+                    "unit": unit.unit_label or f"WU{unit_index}",
+                    "local": canonical_locators,
+                    "support": canonical_support,
+                    "outcome": "manual_review",
+                    "reason_kind": "manual_review",
+                    "reason": reason,
+                    "review_candidate_targets": canonical_review_targets,
+                    "explicit_review_candidate_targets": explicit_review_targets,
+                    "inferred_review_candidate_targets": inferred_only_review_targets,
+                    "review_candidate_confidence": unit.confidence,
+                    "open_questions": list(unit.open_questions or []),
+                    "review_hint_only": bool(canonical_review_targets or unit.open_questions),
+                    "manual_review_files": len(local_refs),
                 }
             )
         elif unit.outcome == "fail_closed":
@@ -9708,7 +17349,16 @@ def _submit_tool(
     missing = [ref for ref in main_refs if covered.get(ref, 0) == 0]
     duplicates = [ref for ref, count in covered.items() if count > 1]
     extra = [ref for ref in covered if ref not in main_refs]
-    duplicate_targets = [ref for ref, count in target_counts.items() if count > 1]
+    allowed_multi_version_duplicate_targets = _allowed_multi_version_duplicate_targets(
+        registry,
+        target_counts,
+        target_usage,
+    )
+    duplicate_targets = [
+        ref
+        for ref, count in target_counts.items()
+        if count > 1 and ref not in set(allowed_multi_version_duplicate_targets)
+    ]
     if missing:
         issues.append(_issue("package", "coverage_missing", "must_account local refs missing", related_refs=missing[:12]))
     if duplicates:
@@ -9751,6 +17401,32 @@ def _submit_tool(
         feedback_units,
         inspected_subject_ids=inspected_subject_ids,
     )
+    mapped_numbered_special_related_count_repairs = _mapped_numbered_special_related_count_repairs(
+        registry,
+        feedback_units,
+    )
+    manual_review_evidence_upgrade_repairs = _manual_review_evidence_upgrade_required_repairs(
+        registry,
+        feedback_units,
+        inspected_locators=inspected_locators,
+    )
+    manual_review_strong_non_regular_mapping_repairs = _manual_review_strong_non_regular_mapping_repairs(
+        registry,
+        feedback_units,
+    )
+    manual_review_visible_slice_pairing_repairs = _manual_review_visible_slice_pairing_repairs(
+        registry,
+        feedback_units,
+        searched_query_variant_keys=searched_query_variant_keys,
+    )
+    mapped_slice_manual_sibling_repairs = _mapped_slice_target_contested_by_manual_sibling_repairs(
+        registry,
+        feedback_units,
+    )
+    manual_review_duplicate_variant_repairs = _manual_review_duplicate_variant_repairs(
+        registry,
+        feedback_units,
+    )
     fail_closed_negative_target_absence_repairs = _fail_closed_negative_target_absence_repairs(
         registry,
         fail_closed_units,
@@ -9765,6 +17441,17 @@ def _submit_tool(
         feedback_units,
         searched_query_variant_keys=searched_query_variant_keys,
     )
+    mapped_singleton_broad_title_bridge_repairs = [
+        repair
+        for repair in mapped_target_title_bridge_repairs
+        if str(repair.get("issue") or "") == "mapped_singleton_broad_title_bridge_missing"
+    ]
+    mapped_target_title_bridge_missing_repairs = [
+        repair
+        for repair in mapped_target_title_bridge_repairs
+        if str(repair.get("issue") or "mapped_target_title_bridge_missing")
+        == "mapped_target_title_bridge_missing"
+    ]
     mapped_packaging_extra_target_repairs = _mapped_contextual_packaging_extra_target_repairs(
         registry,
         feedback_units,
@@ -9880,6 +17567,54 @@ def _submit_tool(
                 json.dumps(repair, ensure_ascii=False),
             )
         )
+    for repair in mapped_numbered_special_related_count_repairs:
+        issues.append(
+            _issue(
+                str(repair.get("unit") or "package"),
+                "mapped_numbered_special_related_count_needs_stronger_evidence",
+                json.dumps(repair, ensure_ascii=False),
+            )
+        )
+    for repair in manual_review_evidence_upgrade_repairs:
+        issues.append(
+            _issue(
+                str(repair.get("unit") or "package"),
+                "manual_review_evidence_upgrade_required",
+                json.dumps(repair, ensure_ascii=False),
+            )
+        )
+    for repair in manual_review_strong_non_regular_mapping_repairs:
+        issues.append(
+            _issue(
+                str(repair.get("unit") or "package"),
+                "manual_review_strong_non_regular_mapping_should_revise",
+                json.dumps(repair, ensure_ascii=False),
+            )
+        )
+    for repair in manual_review_visible_slice_pairing_repairs:
+        issues.append(
+            _issue(
+                str(repair.get("unit") or "package"),
+                "manual_review_visible_slice_pairing_should_split",
+                json.dumps(repair, ensure_ascii=False),
+            )
+        )
+    for repair in mapped_slice_manual_sibling_repairs:
+        issues.append(
+            _issue(
+                str(repair.get("mapped_unit") or repair.get("manual_review_unit") or "package"),
+                "mapped_slice_target_contested_by_manual_review_sibling",
+                json.dumps(repair, ensure_ascii=False),
+            )
+        )
+    for repair in manual_review_duplicate_variant_repairs:
+        issues.append(
+            _issue(
+                str(repair.get("unit") or "package"),
+                "manual_review_duplicate_variant_should_split",
+                json.dumps(repair, ensure_ascii=False),
+            )
+        )
     for repair in fail_closed_negative_target_absence_repairs:
         issues.append(
             _issue(
@@ -9897,10 +17632,11 @@ def _submit_tool(
             )
         )
     for repair in mapped_target_title_bridge_repairs:
+        issue_code = str(repair.get("issue") or "mapped_target_title_bridge_missing")
         issues.append(
             _issue(
                 str(repair.get("unit") or "package"),
-                "mapped_target_title_bridge_missing",
+                issue_code,
                 json.dumps(repair, ensure_ascii=False),
             )
         )
@@ -9999,9 +17735,16 @@ def _submit_tool(
             "excluded_main_locator_with_mapped_title_sibling": excluded_main_sibling_repairs,
             "supplemental_main_episodes_without_concrete_extra_reason": supplemental_main_episode_repairs,
             "numbered_special_exclusion_needs_target_evidence": numbered_special_exclusion_repairs,
+            "mapped_numbered_special_related_count_needs_stronger_evidence": mapped_numbered_special_related_count_repairs,
+            "manual_review_evidence_upgrade_required": manual_review_evidence_upgrade_repairs,
+            "manual_review_strong_non_regular_mapping_should_revise": manual_review_strong_non_regular_mapping_repairs,
+            "manual_review_visible_slice_pairing_should_split": manual_review_visible_slice_pairing_repairs,
+            "mapped_slice_target_contested_by_manual_review_sibling": mapped_slice_manual_sibling_repairs,
+            "manual_review_duplicate_variant_should_split": manual_review_duplicate_variant_repairs,
             "fail_closed_negative_target_absence_outcome_inconsistent": fail_closed_negative_target_absence_repairs,
             "singleton_target_alias_matches_excluded_local_better": singleton_target_alias_repairs,
-            "mapped_target_title_bridge_missing": mapped_target_title_bridge_repairs,
+            "mapped_target_title_bridge_missing": mapped_target_title_bridge_missing_repairs,
+            "mapped_singleton_broad_title_bridge_missing": mapped_singleton_broad_title_bridge_repairs,
             "mapped_title_season_mismatch": mapped_title_season_mismatch_repairs,
             "mapped_packaging_extra_marker_without_specific_target": mapped_packaging_extra_target_repairs,
             "excluded_episode_title_search_not_exhausted": excluded_episode_title_search_repairs,
@@ -10062,6 +17805,26 @@ def _submit_tool(
         if numbered_special_exclusion_repairs:
             repair_hints.append(
                 "Do not clear numbered SP groups as supplemental/target_absent/non_bangumi without target-side special evidence or a concrete unresolved fail_closed reason."
+            )
+        if mapped_numbered_special_related_count_repairs:
+            repair_hints.append(
+                "Do not map numbered SP groups to related same-count short subjects from count/related structure alone; cite stronger local/title evidence or use manual_review."
+            )
+        if manual_review_evidence_upgrade_repairs:
+            repair_hints.append(
+                "Do not send same-count/related numbered SP groups to manual_review before inspecting the listed local duration/subtitle_compact anchors."
+            )
+        if manual_review_strong_non_regular_mapping_repairs:
+            repair_hints.append(
+                "Do not preserve saved manual_review placeholders for numbered non-regular groups after a single visible target candidate has strong local duration/count closure; revise saved rows or name the concrete remaining contradiction."
+            )
+        if manual_review_visible_slice_pairing_repairs:
+            repair_hints.append(
+                "Do not preserve manual_review for a visible slice-level title candidate without adding the candidate target and concrete unresolved evidence; split broad parents to exact local episode locators."
+            )
+        if mapped_slice_manual_sibling_repairs:
+            repair_hints.append(
+                "Do not map one slice to a target while a sibling manual_review still cites that same target as candidate/support evidence; resolve same-parent target ownership first."
             )
         if fail_closed_negative_target_absence_repairs:
             repair_hints.append(
@@ -10125,6 +17888,7 @@ def _submit_tool(
                 "missing_local_ref_count": len(missing),
                 "duplicate_local_ref_count": len(duplicates),
                 "duplicate_target_count": len(duplicate_targets),
+                "allowed_multi_version_duplicate_target_count": len(allowed_multi_version_duplicate_targets),
                 "missing_local_ref_sample": missing[:12],
                 "duplicate_local_ref_sample": duplicates[:12],
                 "missing_local_locator_hints": missing_locator_hints,
@@ -10141,6 +17905,14 @@ def _submit_tool(
                     }
                     for ref in duplicate_targets[:12]
                 ],
+                "allowed_multi_version_duplicate_target_details": [
+                    {
+                        "target_item": _target_item_locator_for_ref(registry, ref),
+                        "usage": target_usage.get(ref, [])[:8],
+                        "accepted_as": "same local episode multi-version variants",
+                    }
+                    for ref in allowed_multi_version_duplicate_targets[:12]
+                ],
                 "duplicate_target_repair_units": duplicate_target_repair_units,
                 "fail_closed_mapped_sibling_repairs": fail_closed_sibling_repairs,
                 "excluded_slice_mapped_sibling_repairs": excluded_slice_sibling_repairs,
@@ -10150,6 +17922,12 @@ def _submit_tool(
                 "excluded_main_mapped_sibling_repairs": excluded_main_sibling_repairs,
                 "supplemental_main_episode_repairs": supplemental_main_episode_repairs,
                 "numbered_special_exclusion_repairs": numbered_special_exclusion_repairs,
+                "mapped_numbered_special_related_count_repairs": mapped_numbered_special_related_count_repairs,
+                "manual_review_evidence_upgrade_repairs": manual_review_evidence_upgrade_repairs,
+                "manual_review_strong_non_regular_mapping_repairs": manual_review_strong_non_regular_mapping_repairs,
+                "manual_review_visible_slice_pairing_repairs": manual_review_visible_slice_pairing_repairs,
+                "mapped_slice_manual_sibling_repairs": mapped_slice_manual_sibling_repairs,
+                "manual_review_duplicate_variant_repairs": manual_review_duplicate_variant_repairs,
                 "fail_closed_negative_target_absence_repairs": fail_closed_negative_target_absence_repairs,
                 "singleton_target_alias_repairs": singleton_target_alias_repairs,
                 "mapped_target_title_bridge_repairs": mapped_target_title_bridge_repairs,
@@ -10188,7 +17966,7 @@ def _submit_tool(
                 "The fixed layer will only recheck locators, coverage, duplicate targets, and accounting."
             ),
         }
-        return SubmitCompileResult(False, None, verifier, feedback, mapped_file_count, excluded_file_count)
+        return SubmitCompileResult(False, None, verifier, feedback, mapped_file_count, excluded_file_count, manual_review_file_count)
 
     if fail_closed_units:
         output = CaseJudgeOutput(
@@ -10222,7 +18000,9 @@ def _submit_tool(
         "status": feedback_status,
         "mapped_file_count": mapped_file_count,
         "excluded_file_count": excluded_file_count,
+        "manual_review_file_count": manual_review_file_count,
         "fail_closed_file_count": fail_closed_file_count,
+        "allowed_multi_version_duplicate_target_count": len(allowed_multi_version_duplicate_targets),
         "assignment_count": len(assignments),
         "units": feedback_units[:24],
         "semantic_diagnostics": [
@@ -10235,7 +18015,7 @@ def _submit_tool(
             for issue in semantic_submit_diagnostics[:24]
         ],
     }
-    return SubmitCompileResult(True, output, verifier, feedback, mapped_file_count, excluded_file_count)
+    return SubmitCompileResult(True, output, verifier, feedback, mapped_file_count, excluded_file_count, manual_review_file_count)
 
 
 def _parse_tool_call(response: dict[str, object]) -> tuple[HumanToolCall | None, str]:
@@ -10269,17 +18049,26 @@ def _parse_tool_call(response: dict[str, object]) -> tuple[HumanToolCall | None,
 
 HUMAN_CASE_AGENT_INSTRUCTIONS = """You are HumanCaseAgent for one Local->Bangumi package.
 
-Use natural locators, not LF/BS/BE refs. You have four tools only:
-inspect, search, note, submit.
+Use natural locators, not LF/BS/BE refs. You have five tools only:
+inspect, search, note, patch_ledger, submit.
 
 You are the only semantic brain. There are no child sessions and no separate
-QueryComposer, MappingDraftEditor, Judge, CasePlanner, ledger, board, or patch
-roles. Decide work units, targets, target_absent, supplemental, non_bangumi, or
-fail_closed yourself.
+QueryComposer, MappingDraftEditor, Judge, CasePlanner, or child roles. The
+resolution ledger is your explicit case desk: decide row status, targets,
+target_absent, supplemental, manual_review, fail_closed, candidate rejection,
+and candidate discharge yourself by calling patch_ledger.
 
 The fixed layer only checks mechanics: locator resolution, schema, exact-once
-coverage for must_account local locators, support locator existence, work-unit
-overlap, duplicate target items, accounting, loop/budget.
+coverage for must_account local locators, row overlap, duplicate target items,
+candidate debt discharge, accounting, loop/budget. It does not choose semantic
+ownership, reject candidates for you, or decide whether special/extra evidence
+is sufficient.
+
+The fixed layer may also expose local_fact_surface facts: raw path hierarchy,
+raw number tokens, container/duration probe status, subtitle/stream metadata,
+and explicit missing-fact reasons. These are observations, not conclusions. You
+must decide any derivative-short ownership, duplicate packaging, target_absent,
+supplemental, or mapped outcome yourself.
 
 Maintain CASE_STATE.case_memory.cognitive_workspace as your desk. Keep primary
 hypotheses, active work units, attention focus, agenda, rejected/noisy
@@ -10302,45 +18091,58 @@ evidence action, preserves saved mechanically-ok rows, and gives a concrete
 non-progressable reason. A budget timeout alone is not terminal fail_closed.
 
 Prefer batch actions. Simple TV packages should usually be search -> inspect ->
-submit. Mixed or multi-season packages must use batch search/inspect: put all
+patch_ledger. Mixed or multi-season packages must use batch search/inspect: put all
 clean title aliases you need into one search call, then inspect all plausible
 target subjects in one inspect call. Do not spend one turn per season/title when
-the tool can batch them. One repair submit is fine if mechanical feedback
-rejects it.
+the tool can batch them. One ledger repair patch is fine if mechanical feedback
+rejects the compiled package.
 CASE_STATE.desk.recommended_search_queries is mechanically derived from local
 work-unit titles and filenames. For multi-season/OAD/special packages, use
 those work-unit title queries as the first batch search surface unless you have
 a better clean official/original alias. Do not search one raw release filename
 per episode.
-Do not use submit as an exploration tool. If submit is rejected, read the
+Do not use patch_ledger as an exploration tool. Direct submit is a legacy
+diagnostic verifier and cannot finalize this primary runtime. If ledger compilation is rejected, read the
 locator/work-unit feedback and change the specific local locator, target
-locator, episode range, support, or outcome before submitting again. If the
-same submit rejection repeats, use inspect/search/note or make a concrete
+locator, episode range, support, or outcome before patching again. If the
+same compiled-ledger rejection repeats, use inspect/search/note or make a concrete
 resolution change first.
-After a submit rejection, CASE_STATE.case_memory.active_repair_agenda is your
+After a ledger compilation or submit rejection, CASE_STATE.case_memory.active_repair_agenda is your
 top-priority desk. Each item names the work unit/locator, blocking issue,
-required_next_action, and closure_condition. Do not call submit again merely to
-try the same plan. Before another submit, close the agenda item by adding needed
-search/inspect evidence, changing the cited resolution fields, or submitting
-that exact local locator as fail_closed with a concrete evidence blocker.
+required_next_action, and closure_condition. Do not call patch_ledger again
+merely to try the same plan. Before another terminal patch, close the agenda
+item by adding needed search/inspect evidence, changing the cited resolution
+fields, or patching that exact local locator as fail_closed with a concrete
+evidence blocker.
+If a repair row says terminal_repair_required, the fixed layer is telling you
+that this ledger row has already repeated mechanical invalid shapes. Resolve
+that exact row now with a terminal status that validates: a legal mapped target,
+candidate-bearing manual_review, supplemental, target_absent, or fail_closed.
+Do not retry the listed invalid mapped target/range without new evidence.
+Terminal ledger rows are still compiled through the same submit verifier as a
+legacy submit package. If compiled_submit_feedback rejects a terminal ledger,
+patch the named ledger row(s); do not treat terminal ledger status as final when
+generic evidence-upgrade or ownership repairs are still open.
 When CASE_STATE.case_memory.RECOVERY_BRIEF is present, read it after recent tool
 observations and before choosing the next action. Do not spend budget on
 diagnostic-only evidence unless you can explain how it answers the exact
-blocker. If no high-quality frontier remains, submit exact fail_closed for that
-work unit with the remaining retrieval/evidence gap. Preserve saved
-mechanically-ok work units; change only blocked or missing units.
+blocker. If no high-quality frontier remains and the blocker is localized to a
+few locators while the rest of the package is safe, patch manual_review for
+those locators. Use exact fail_closed only when the ambiguity should block the
+whole package. Preserve already-settled ledger rows; change only blocked or
+missing rows.
 Search results only identify candidate subjects. Before submitting any
-mapped_* work unit that uses target episodes or episode_start/episode_end,
+mapped row that uses target episodes or episode_start/episode_end,
 inspect the chosen target subject with scope [details, episodes, related].
 Use note after a rejection when your semantic hypothesis or work-unit agenda
 changed and that update needs to stay in the desk; otherwise use inspect/search
-or a corrected submit that satisfies the active repair agenda's closure condition.
+or a corrected ledger patch that satisfies the active repair agenda's closure condition.
 If CASE_STATE.case_memory.immediate_repair_focus is present, handle that
 mechanical agenda before broader package reasoning. It names exact local
 locators or target conflicts that are still not mechanically covered; choose
 their semantic outcome yourself, but do not omit those locators again.
-If feedback.package.required_missing_work_units is present, the next submit must
-include those local locators exactly once, choosing the semantic outcome yourself.
+If feedback.package.required_missing_work_units is present, the next ledger patch
+must include those local locators exactly once, choosing the semantic outcome yourself.
 If submit feedback for a mapped range includes visible_alternate_subjects or an
 available_action to inspect a target, use that inspect surface before
 fail_closed, especially when an alternate subject has the same episode count as
@@ -10358,16 +18160,23 @@ token such as an uppercase code or roman numeral, compare the specific title-tai
 candidate with the broad franchise candidate; episode count alone is not enough
 to choose the broad first-season subject.
 Search has a small tool-call budget because each search call accepts multiple
-queries. After the budget is exhausted, continue with inspect or submit using
+queries. After the budget is exhausted, continue with inspect or patch_ledger using
 visible evidence instead of spending more turns on search.
 
-Never ask to call split_work_units, patches, ledgers, hidden refs, or child
-agents. Submit work-unit decisions using local:// and target:// locators. The
-first submit should be a complete package-level resolution. After a submit
-rejection, CASE_STATE.case_memory.saved_mechanically_ok_work_units lists the
-agent decisions that the fixed layer can mechanically reuse; you may then
-submit only the blocked, missing, or intentionally changed units. The fixed
-layer will merge saved units and recheck the full package mechanically.
+Do not ask for hidden refs, child agents, or a separate planner. Patch the
+visible resolution ledger with local:// and target:// locators. Every
+must_account local locator or exact local slice must belong to one ledger row
+only. Row status must be one of: open, evidence_required,
+candidate_must_address, mapped, manual_review, target_absent, supplemental,
+fail_closed. For candidate_must_address or any row with visible candidate debt,
+put candidates in must_address_candidates and discharge each candidate by one
+of four concrete actions: map the row to that target, keep that target in
+manual_review_candidate_targets, reject it with a concrete contradiction, or
+fail_closed with a blocker. When all rows are terminal, the fixed layer compiles
+the ledger into the final package and reuses the existing submit verifier.
+Do not hand-roll a final package with submit. Patch rows in the resolution
+ledger; when all rows are terminal, the fixed layer automatically compiles that
+terminal ledger into the final package and runs the submit verifier.
 For regular TV spans you may use a subject target with episode_start
 and episode_end after inspecting episodes, or a target://.../episodes/A-B span.
 For a single local movie/feature file that semantically covers a Bangumi subject
@@ -10375,18 +18184,54 @@ represented as multiple episode parts, use outcome=mapped_composite_feature with
 the visible target://.../episodes/A-B locator. This is your semantic judgment;
 the fixed layer only checks that the local side is one file, target parts are
 visible, support exists, and target items are not duplicated elsewhere.
+Do not map a singleton compilation or series-bundle file to target://.../episode/1
+as a proxy for the whole multi-episode subject. Use a single episode item only
+when the local file visibly identifies that exact episode; otherwise use
+mapped_composite_feature with the covered visible span, mark duplicate/alternate
+packaging with evidence, or use manual_review when the package can be accepted
+while this one locator needs human review.
 Do not mark such a main movie/feature locator as supplemental merely because the
 Bangumi surface is split into multiple parts; supplemental is for actual extras,
 packaging material, duplicate local copies, menus, previews, NCOP/NCED, etc.
+Use manual_review for a covered local locator that should not block the package
+but should also not be called mapped, supplemental, target_absent, or non_bangumi
+from the current evidence. This is appropriate for uncertain singleton
+compilations or alternate packaging that needs a human decision. Always give the
+concrete uncertainty in reason.
+When manual_review has a low-confidence candidate that will help human replay,
+put that visible target locator in manual_review_candidate_targets and set
+confidence=low. These candidates are review hints only: they are not accepted
+mappings, must not be treated as proof, and will compile to UNALIGNED rather
+than a target_ref.
+Do not promote a target that was only listed in do_not_retry_targets_without_new_evidence
+or only came from a rejected count/range shape into a semantic review candidate.
+Use manual_review_candidate_targets for visible candidates that have independent
+surface evidence, saved candidate provenance, title pairing, related/same-count
+ownership evidence, or a concrete low-confidence human replay value.
 If a local locator is episode-like, the desk or inspect output may show
 local://.../episode/N and local://.../episodes/A-B sub-locators. Use them when
 only part of a local group maps to Bangumi and another part is target_absent,
 supplemental, or non_bangumi. The fixed layer is not choosing that split; it
 only exposes filename-numbered slices you can cite.
-If submit feedback includes local_target_title_pairing_options, it has found
+When an episode-like local group has duplicate filename numbers, inspect output
+may also expose local://.../episode/N/variant/K locators. If two variants have
+the same local title/subtitle title card/duration and BGM exposes only one legal
+episode item, submit each same-episode variant as a separate mapped work unit
+to that item with an alternate/multi-version reason. This is the only duplicate
+target exception: it is for same-number local variants of the same episode, not
+for two different local episodes competing for one target. Do not put the whole
+numbered group into manual_review when only the duplicate variant handling is
+uncertain.
+If ledger compilation feedback includes local_target_title_pairing_options, it has found
 visible one-item target candidates whose title/search tokens pair with specific
 local numbered slices. Use those slice locators only if you judge the semantic
 ownership correct; otherwise choose another target/outcome or fail_closed.
+For recap/movie/feature parent rows, when exact local episode slices carry
+distinctive title labels and each slice has a visible one-item recap/movie
+target pairing, prefer mapped exact-slice rows once ownership closes. Keep
+manual_review only for the exact slice whose visible pairing still has a
+concrete contradiction or unresolved post-upgrade evidence gap; do not leave a
+broad parent review row just because the parent locator was too coarse.
 The local locator category is a filename/packaging clue. Treat special-marker,
 previews, packaging-extras, CM/Menu/NCOP/NCED/PV style groups as separate work
 units from regular main-episodes. Do not map those groups to a regular TV
@@ -10394,13 +18239,42 @@ episode span only because their numbers overlap. Search/inspect a special,
 OVA/OAD/SP, related, or subject-level target if you believe they are mapped;
 otherwise classify them as supplemental/non_bangumi/target_absent according to
 your semantic judgment.
-For numbered SP groups, lack of a positive Bangumi special target after a finite
-same-series/related inspection is not automatically fail_closed. If the local
-SP labels and package context make the group bonus/extra material, submit
+For unresolved non-regular rows such as SP, OVA/OAD, recap, NCOP/NCED,
+special-marker, singleton compilation, duplicate-packaging, or derivative-short
+rows, inspect the exact local locator with scope including facts before a
+terminal claim when local duration, stream, or missing facts could change the
+decision. Missing local facts are evidence too: if the duration/container facts
+are unavailable and the remaining evidence is insufficient, use manual_review
+for localized uncertainty or fail_closed the exact locator if it must block the
+package. Do not request subtitles by default; request inspect scope
+subtitle_compact only for a small set of local anchors when structure/count/
+duration/title evidence is still too weak.
+Do not use missing local facts to override visible title/count/slice evidence
+that already supports a recap, movie, or feature mapping. If your conclusion
+does not depend on duration, subtitles, or stream metadata, resolve the visible
+slice/target surface normally and cite those visible facts.
+For numbered non-regular groups, lack of a positive Bangumi special target
+under the main-season subject is not enough to call the local files
+supplemental. If the same-series/related Bangumi surface exposes a derivative,
+side-story, OVA/OAD, recap, or special subject whose visible episode structure
+has the same continuous count as the local group, treat that as ownership
+evidence to close, not as an automatic manual_review. You may map it when the
+local group boundary is clear, numbering/count match, local durations are
+available and internally consistent, and the selected related/non-regular target
+is the best-supported same-count owner after comparing exposed competitors. In that strong closed-loop case subtitle
+compact is not required. If count/related-family structure is the only bridge,
+or duration facts are missing/mixed, or the exposed same-count competitors leave
+target ownership genuinely unresolved,
+gather more evidence: inspect facts, inspect target surface, then request
+subtitle_compact for a few anchor files only if still low-confidence. If the
+evidence remains insufficient, use manual_review with low-confidence candidate
+targets rather than accept. If no such related continuous target remains visible
+after a finite same-series/related inspection and the local labels/package
+context make the group bonus/extra material, submit
 target_absent/supplemental/non_bangumi and cite the inspected target locator as
 support for the negative target-side evidence. Use fail_closed only when you
-cannot safely decide whether the SP group is extra material, a mapped special,
-or target_absent from the visible evidence.
+cannot safely decide whether the group is extra material, a mapped special, or
+target_absent from the visible evidence.
 A target-side check that exposes the same-series/related subject but no
 corresponding SP/OVA/OAD item is target-side evidence. Do not require a positive
 Bangumi item in order to choose target_absent/supplemental for local bonus SP
@@ -10410,22 +18284,53 @@ numbered SP group, that rejection means the support/negative-evidence shape was
 missing. It does not mean target_absent/supplemental is forbidden. Add the
 inspected same-series/related target support and resubmit that semantic outcome
 when that is your conclusion.
-If submit feedback returns numbered_special_exclusion_repairs, your previous
+If ledger compilation feedback returns numbered_special_exclusion_repairs, your previous
 supplemental/target_absent/non_bangumi outcome for that numbered SP group is not
 mechanically accepted. Use any listed same_count_visible_subjects or
-target_surface_actions for more target evidence; if
-negative_target_absence_support_candidates is listed, cite one candidate target
-locator as support and state the concrete negative evidence that no
-corresponding Bangumi item is visible. If no such evidence is listed or the
-evidence remains unresolved, submit target_absent/supplemental/non_bangumi only
-if you cite an inspected same-series or related target locator as support.
-Otherwise change that exact local locator to outcome=fail_closed with a concrete
-evidence gap. Do not resubmit the same unsupported exclusion outcome.
-If submit feedback returns fail_closed_negative_target_absence_repairs, your
+target_surface_actions for more target evidence. A listed same-count related
+subject means "ownership unresolved", not "safe supplemental"; choose a mapped
+target only with evidence, or manual_review when the uncertainty is localized.
+If negative_target_absence_support_candidates is listed and no same-count
+related ownership ambiguity remains, cite one candidate target locator as
+support and state the concrete negative evidence that no corresponding Bangumi
+item is visible. If no such evidence is listed or the evidence remains
+unresolved, submit target_absent/supplemental/non_bangumi only if you cite an
+inspected same-series or related target locator as support. Otherwise use
+manual_review for localized uncertainty that should not block the package, or
+fail_closed only when the ambiguity should block the whole package.
+Do not resubmit the same unsupported exclusion outcome.
+If ledger compilation feedback returns fail_closed_negative_target_absence_repairs, your
 fail_closed reason already describes target absence instead of unresolved
 ambiguity. Either submit the listed target_absent/supplemental/non_bangumi shape
 with one negative_target_absence_support_candidates target as support, or rewrite
 fail_closed to name the remaining ambiguity beyond positive-target absence.
+If ledger compilation feedback returns manual_review_strong_non_regular_mapping_repairs, a
+saved manual_review row is now too weak: the local non-regular numbered group
+has a visible same-count target candidate and strong local duration/count
+closure, with same-count competitors exposed when present. Use revise_saved_rows and replace that placeholder with the listed
+suggested_submit_shape if you judge ownership closed. When CASE_STATE exposes
+suggested_ledger_patch_rows, prefer those row-shaped templates over inventing
+local rows yourself; they use local:// locators and row_id hints, not LF refs.
+Keep manual_review only
+for exact unresolved locators and name the concrete post-upgrade contradiction
+that remains after local duration/title/subtitle evidence is considered. A vague
+"still ambiguous" candidate-bearing manual_review does not discharge this repair
+when the exposed evidence loop is already strong.
+Do not cite "target surface was not directly inspected" or a prior mechanical
+target-surface miss as a semantic contradiction to a strong suggested shape. If
+a target_surface_action is open, inspect it; otherwise patch the suggested
+mapped row and let the fixed layer validate or auto-complete target surface.
+If ledger compilation feedback returns manual_review_visible_slice_pairing_repairs, do not
+preserve the broad parent manual_review or an exact slice manual_review with no
+candidate. Split the parent into the listed local://.../episode/N slices, map a
+paired target only if ownership closes, or keep exact manual_review with the
+visible target in manual_review_candidate_targets and the concrete ambiguity.
+Never put LF*/file refs in patch_ledger.rows.local; ledger rows must cite
+local:// locators or exact local:// episode/variant slices.
+If ledger compilation feedback returns mapped_slice_manual_sibling_repairs, one mapped slice
+uses a target that a sibling manual_review still cites as candidate/support.
+Resolve that same-parent target ownership before accepting; do not leave the
+same target both assigned and unresolved inside sibling slices.
 If local labels use S00, Special, OVA/OAD/SP, final/finale, or similar
 special-season wording, compare visible same-count special/finale subjects before
 mapping the files to episode 1..N of a broad regular season. A mechanically available regular season slice is not enough by itself when the local title surface signals special-season ownership.
@@ -10434,16 +18339,16 @@ semantic conclusion after search/inspect. Do not use them to bypass a visible
 matching Bangumi subject or to avoid a duplicate-target repair.
 For small named main/movie-style units, target_absent requires that you have
 searched the unit's own distinctive title-tail aliases, not only the broad
-franchise title. If submit feedback returns excluded_title_tail_search_repairs,
+franchise title. If ledger compilation feedback returns excluded_title_tail_search_repairs,
 run one batch search for search_queries_to_try or submit that exact local
 locator as fail_closed with the remaining evidence gap; do not use a broad
 same-franchise support target as proof that the named unit has no Bangumi owner.
-If submit feedback returns excluded_visible_title_pairing_repairs, the visible
+If ledger compilation feedback returns excluded_visible_title_pairing_repairs, the visible
 target surface already contains title-tail pairing candidates for a main/movie
 local locator you excluded. Map a pairing if you judge it correct, choose a
 different visible target, give a hard duplicate/packaging non-owner reason, or
 fail_closed that exact local locator if the evidence is still unsafe.
-If submit feedback returns excluded_title_tail_unresolved_repairs, you have
+If ledger compilation feedback returns excluded_title_tail_unresolved_repairs, you have
 searched the current title-tail hints but still have no visible target bridge.
 Do not clear that main/movie local locator from only a broad same-franchise
 subject. If visible_source_query_bridge_targets is listed, inspect or use one
@@ -10473,6 +18378,12 @@ more specifically than the other, keep that matching unit as owner;
 search/inspect a distinct target for the other named unit or fail_closed if it
 remains unresolved. Do not let a different named special take a target only
 because that target is already visible.
+For a named singleton derivative, compilation, or bundle file, do not map it to
+a broad franchise OAD/OVA/special target when the visible target title only
+shares the franchise name and does not carry the singleton's distinctive
+title-tail. Source-query provenance is a lead, not a title alias. Search or
+inspect a better target; if the rest of the package is safe and the singleton
+owner remains uncertain, use manual_review with the visible candidate target.
 Use fail_closed only when the local locator remains semantically unresolved or
 unsafe after visible evidence. If you can positively conclude a locator is a
 bonus, preview, packaging extra, NCOP/NCED, menu, SP bundle extra, or otherwise
@@ -10498,7 +18409,7 @@ episodes start again at 1. In that case, split by local locator or episode slice
 and map the later local slice to the later visible subject with the appropriate
 target episode_start/episode_end. The fixed layer checks only counts and visible
 target items; you decide whether the later subject is semantically correct.
-When submit feedback exposes local_slice_mapping_options, the fixed layer is
+When ledger compilation feedback exposes local_slice_mapping_options, the fixed layer is
 telling you the parent local locator has legal visible local://.../episode/N
 sub-locators. If the listed title pairing is semantically correct, submit each
 slice as its own work unit; do not fail_closed only because the original parent
@@ -10518,17 +18429,15 @@ target subject, while a smaller same-title-family singleton is mapped to one ite
 of that subject, explicitly compare ownership. Do not finish fail_closed for the
 numbered group until you decide whether the numbered group owns that target span
 or the smaller singleton/compilation is supplemental.
-If submit feedback says a count-matched visible subject is uninspected, inspect it
+If ledger compilation feedback says a count-matched visible subject is uninspected, inspect it
 before declaring the matching numbered local group supplemental or target_absent.
 For a singleton local file whose title matches a visible multi-episode target
 subject, consider mapped_composite_feature when the one file is a compilation or
 combined feature covering that target span; do not discard it solely because
 file_count differs from target episode count.
-Avoid dry_run during normal operation; it costs an extra turn. Use dry_run only
-when you intentionally want a mechanical preflight. For normal final answers,
-prefer dry_run=false. If a dry_run submit is accepted, the case is not finished;
-next call submit the same resolution with dry_run=false unless you intentionally
-changed the resolution.
+Avoid dry_run during normal operation; it costs an extra turn. Finalization does
+not require a direct submit call from you. Patch terminal ledger rows with
+dry_run=false; the fixed layer compiles and verifies the terminal ledger.
 """
 
 
@@ -10536,6 +18445,34 @@ def _turn_tail(desk: dict[str, object], session: HumanCaseSession, *, max_turns:
     def _compact_memory_observation(observation: dict[str, object]) -> dict[str, object]:
         tool = str(observation.get("tool") or "")
         output = observation.get("output") if isinstance(observation.get("output"), dict) else {}
+        if tool == "patch_ledger":
+            ledger = output.get("ledger") if isinstance(output.get("ledger"), dict) else {}
+            return {
+                "tool": tool,
+                "output": {
+                    key: output.get(key)
+                    for key in (
+                        "accepted",
+                        "complete",
+                        "compiled_submit_accepted",
+                        "compiled_submit_status",
+                        "issue_counts",
+                        "nonterminal_row_ids",
+                        "compiled_submit_issue_counts",
+                        "blocking_units",
+                        "ledger_terminal_repair_rows",
+                        "repair_frontier",
+                        "row_rejection_counts",
+                        "repeat_rejection_warning",
+                        "required_next_action",
+                    )
+                    if key in output
+                }
+                | {
+                    "ledger_status_counts": ledger.get("status_counts"),
+                    "ledger_rows": list(ledger.get("rows") or [])[:24],
+                },
+            }
         if tool == "submit":
             return {
                 "tool": tool,
@@ -10556,6 +18493,9 @@ def _turn_tail(desk: dict[str, object], session: HumanCaseSession, *, max_turns:
                         "excluded_main_mapped_sibling_repairs",
                         "supplemental_main_episode_repairs",
                         "numbered_special_exclusion_repairs",
+                        "manual_review_strong_non_regular_mapping_repairs",
+                        "manual_review_visible_slice_pairing_repairs",
+                        "mapped_slice_manual_sibling_repairs",
                         "excluded_title_tail_search_repairs",
                         "excluded_visible_title_pairing_repairs",
                         "excluded_title_tail_unresolved_repairs",
@@ -10684,7 +18624,7 @@ def _turn_tail(desk: dict[str, object], session: HumanCaseSession, *, max_turns:
         (
             _compact_memory_observation(item)
             for item in reversed(session.observations)
-            if isinstance(item, dict) and item.get("tool") == "submit"
+            if isinstance(item, dict) and item.get("tool") in {"submit", "patch_ledger"}
         ),
         None,
     )
@@ -10696,18 +18636,41 @@ def _turn_tail(desk: dict[str, object], session: HumanCaseSession, *, max_turns:
     latest_repair_observation = _latest_submit_repair_observation(session)
     has_open_repair = _has_open_submit_repair(latest_repair_observation)
     target_surface_action_open = _repair_has_uninspected_target_surface_action(session, latest_repair_observation)
+    evidence_upgrade_action_open = _repair_has_uninspected_evidence_upgrade_action(session, latest_repair_observation)
+    evidence_upgrade_requirements = _uninspected_evidence_upgrade_requirements(
+        session,
+        latest_repair_observation,
+        limit=6,
+    )
+    suggested_submit_shape_rows = _suggested_submit_shape_rows_from_repair(latest_repair_observation, limit=12)
+    suggested_ledger_patch_rows = _suggested_ledger_patch_rows_from_repair(
+        session,
+        latest_repair_observation,
+        limit=12,
+    )
+    strong_suggested_ledger_patch_rows = _strong_suggested_ledger_patch_rows_from_repair(
+        session,
+        latest_repair_observation,
+        limit=12,
+    )
     repair_search_queries = _repair_search_queries_to_try(latest_repair_observation)
     forced_finalization = (
         budget_pressure
         and has_open_repair
         and bool(session.draft_work_units)
         and (remaining_turns <= 1 or not target_surface_action_open)
+        and not evidence_upgrade_action_open
     )
     repair_finalization_guard = _repair_finalization_guard_for_prompt(session, max_turns=max_turns)
     recovery_brief = _recovery_brief_for_prompt(session)
     case_memory = {
             "case_resolution_goal": _case_resolution_goal_state_for_prompt(session, max_turns=max_turns),
             "active_repair_agenda": _active_repair_agenda_for_prompt(session),
+            "resolution_ledger": _compact_resolution_ledger(session.resolution_ledger),
+            "resolution_ledger_revision_count": session.resolution_ledger_revision_count,
+            "resolution_ledger_rejection_count": session.resolution_ledger_rejection_count,
+            "resolution_ledger_row_rejection_counts": dict(session.resolution_ledger_row_rejection_counts),
+            "repeated_resolution_ledger_rejection_count": session.repeated_resolution_ledger_rejection_count,
             "near_cap_repair_finalization_guard": repair_finalization_guard,
             "immediate_repair_focus": _immediate_repair_focus(session),
             "cognitive_workspace": _compact_cognitive_workspace(session.cognitive_workspace),
@@ -10742,23 +18705,41 @@ def _turn_tail(desk: dict[str, object], session: HumanCaseSession, *, max_turns:
                 "budget_pressure": budget_pressure,
                 "repair_finalization_pressure": repair_finalization_pressure,
                 "forced_finalization": forced_finalization,
-                "allowed_tool_when_forced": "submit" if forced_finalization else "",
+                "allowed_tool_when_forced": "patch_ledger" if forced_finalization else "inspect" if evidence_upgrade_action_open else "",
                 "target_surface_action_open": target_surface_action_open,
+                "evidence_upgrade_action_open": evidence_upgrade_action_open,
+                "evidence_upgrade_inspect_locators": list(evidence_upgrade_requirements.get("locators") or [])[:6],
+                "evidence_upgrade_inspect_scope": list(evidence_upgrade_requirements.get("scope") or [])[:4],
+                "suggested_submit_shape_rows": suggested_submit_shape_rows[:12],
+                "suggested_ledger_patch_rows": (
+                    strong_suggested_ledger_patch_rows or suggested_ledger_patch_rows
+                )[:12],
+                "must_address_suggested_ledger_patch_rows": strong_suggested_ledger_patch_rows[:12],
                 "saved_work_unit_count": saved_count,
                 "must_account_locator_count": must_account_count,
                 "finalization_guard_issue": repair_finalization_guard.get("issue") if repair_finalization_guard else "",
                 "instruction": (
-                    "A submit repair agenda is open and remaining turns are limited. The next tool call must be submit. "
-                    "Submit the remaining blocking/missing local locators exactly once. If you cannot safely map or exclude "
-                    "a remaining locator from visible evidence, submit it as outcome=fail_closed with a concrete reason. "
-                    "Saved mechanically-ok units are merged by the fixed layer."
+                    "Strong suggested ledger patch rows are open. The next tool call should be patch_ledger with repair_strategy=revise_saved_rows: apply every must_address_suggested_ledger_patch_rows template you semantically accept by copying row_id/local/status/target exactly, or patch exact manual_review/fail_closed rows that name the suggested target and concrete post-upgrade contradiction. Do not spend another turn preserving broad manual_review/supplemental rows."
+                    if strong_suggested_ledger_patch_rows and not evidence_upgrade_action_open and not target_surface_action_open
+                    else
+                    "A submit repair agenda is open, remaining turns are limited, and suggested_submit_shape rows are visible. "
+                    "The next tool call must be patch_ledger with repair_strategy=revise_saved_rows: use suggested_ledger_patch_rows "
+                    "as row templates if you agree the upgraded evidence closes ownership, or patch an exact manual_review/fail_closed row that names the "
+                    "suggested target and concrete post-upgrade contradiction."
+                    if forced_finalization and suggested_submit_shape_rows
+                    else
+                    "A repair agenda is open and remaining turns are limited. The next tool call must be patch_ledger. "
+                    "Patch the remaining blocking/missing local locators exactly once. If you cannot safely map or exclude "
+                    "a remaining locator from visible evidence, patch it as status=fail_closed with a concrete reason."
                     if forced_finalization
+                    else "Budget pressure is high, but the latest repair names evidence_upgrade_options. Inspect those local anchors now; after inspection, patch mapped rows only if ownership closes, otherwise manual_review for exact localized uncertainty."
+                    if budget_pressure and evidence_upgrade_action_open
                     else "Budget pressure is high, but the latest repair names target_surface_actions. Inspect those target locators now, then submit the repaired units on the next turn."
                     if budget_pressure and target_surface_action_open
                     else "Budget pressure is high. Do not search unless the latest repair explicitly requires a new target. "
-                    "Prefer submit for the remaining blocking/missing local units; saved mechanically-ok units are merged."
+                    "Prefer patch_ledger for the remaining blocking/missing local units."
                     if budget_pressure
-                    else "Continue normal inspect/search/submit investigation."
+                    else "Continue normal inspect/search/patch_ledger investigation."
                 ),
             },
     }
@@ -11251,6 +19232,22 @@ def _compact_repair_field(key: str, value: object) -> object:
         return _compact_repair_payload(value, list_limit=4, text_limit=220)
     if key == "local_episode_split_options":
         return _compact_repair_payload(value, list_limit=8, text_limit=220)
+    if key in {"multi_version_submit_shape", "suggested_submit_shape", "manual_review_candidate_submit_shape", "duplicate_episode_variant_locators"}:
+        return _compact_repair_payload(value, list_limit=12, text_limit=240)
+    if key in {
+        "terminal_repair_options",
+        "do_not_retry_targets_without_new_evidence",
+        "row_rejection_issue_codes",
+    }:
+        return _compact_repair_payload(value, list_limit=8, text_limit=240)
+    if key in {"terminal_repair_required", "invalid_mapped_attempt", "row_rejection_count"}:
+        return value
+    if key == "strong_mapping_candidates":
+        return _compact_repair_payload(value, list_limit=4, text_limit=260)
+    if key == "evidence_upgrade_options":
+        return _compact_repair_payload(value, list_limit=4, text_limit=260)
+    if key == "non_regular_evidence_closure":
+        return _compact_repair_payload(value, list_limit=6, text_limit=260)
     if key in {"local_target_count_pairing_options", "local_target_title_pairing_options", "local_slice_mapping_options"}:
         return _compact_repair_payload(value, list_limit=6, text_limit=220)
     if key == "local_locator_details":
@@ -11258,6 +19255,28 @@ def _compact_repair_field(key: str, value: object) -> object:
     if key in {"target_locator_details", "split_first_repair", "continuation_evidence_hint"}:
         return _compact_repair_payload(value, list_limit=8, text_limit=260)
     return _compact_repair_payload(value)
+
+
+def _repair_dict_items(value: object) -> list[dict[str, object]]:
+    if not isinstance(value, list):
+        return []
+    rows: list[dict[str, object]] = []
+    for item in value:
+        if isinstance(item, dict):
+            rows.append(item)
+            continue
+        if not isinstance(item, str):
+            continue
+        text = item.strip()
+        if not text.startswith("{"):
+            continue
+        try:
+            parsed = json.loads(text)
+        except json.JSONDecodeError:
+            continue
+        if isinstance(parsed, dict):
+            rows.append(parsed)
+    return rows
 
 
 def _compact_submit_feedback_for_audit(feedback: dict[str, object]) -> dict[str, object]:
@@ -11275,19 +19294,34 @@ def _compact_submit_feedback_for_audit(feedback: dict[str, object]) -> dict[str,
                     "local",
                     "target",
                     "issue",
+                    "issue_codes",
                     "issues",
+                    "required",
+                    "repair_instruction",
                     "local_locator_details",
                     "target_locator_details",
+                    "target_surface_repairs",
+                    "available_target_episode_numbers",
+                    "target_episode_locator_samples",
+                    "target_span_examples",
                     "same_count_target_span_candidates",
+                    "evidence_upgrade_options",
+                    "non_regular_evidence_closure",
+                    "strong_mapping_candidates",
+                    "suggested_submit_shape",
+                    "manual_review_candidate_submit_shape",
                     "local_episode_split_options",
                     "local_target_count_pairing_options",
                     "local_target_title_pairing_options",
                     "single_file_target_item_options",
+                    "multi_version_submit_shape",
+                    "duplicate_episode_variant_locators",
                     "local_slice_mapping_options",
                     "season_mismatch_repair",
                     "split_first_repair",
                     "visible_alternate_subjects",
                     "candidate_local_locators",
+                    "candidate_target_locators",
                     "unassigned_target_candidates",
                     "negative_target_absence_support_candidates",
                     "negative_target_absence_submit_shape",
@@ -11297,6 +19331,14 @@ def _compact_submit_feedback_for_audit(feedback: dict[str, object]) -> dict[str,
                     "search_queries_to_try",
                     "unbridged_title_tail_tokens",
                     "searched_query_hints",
+                    "row_rejection_count",
+                    "row_rejection_issue_codes",
+                    "rejected_patch_status",
+                    "invalid_mapped_attempt",
+                    "terminal_repair_required",
+                    "terminal_repair_options",
+                    "do_not_retry_targets_without_new_evidence",
+                    "closure_condition",
                 )
                 if key in unit
             }
@@ -11324,6 +19366,11 @@ def _compact_submit_feedback_for_audit(feedback: dict[str, object]) -> dict[str,
                 "excluded_singleton_visible_subject_repairs": package.get("excluded_singleton_visible_subject_repairs"),
                 "singleton_target_alias_repairs": package.get("singleton_target_alias_repairs"),
                 "mapped_target_title_bridge_repairs": package.get("mapped_target_title_bridge_repairs"),
+                "mapped_numbered_special_related_count_repairs": package.get("mapped_numbered_special_related_count_repairs"),
+                "manual_review_evidence_upgrade_repairs": package.get("manual_review_evidence_upgrade_repairs"),
+                "manual_review_strong_non_regular_mapping_repairs": package.get("manual_review_strong_non_regular_mapping_repairs"),
+                "manual_review_visible_slice_pairing_repairs": package.get("manual_review_visible_slice_pairing_repairs"),
+                "mapped_slice_manual_sibling_repairs": package.get("mapped_slice_manual_sibling_repairs"),
                 "mapped_title_season_mismatch_repairs": package.get("mapped_title_season_mismatch_repairs"),
                 "excluded_main_mapped_sibling_repairs": package.get("excluded_main_mapped_sibling_repairs"),
                 "supplemental_main_episode_repairs": package.get("supplemental_main_episode_repairs"),
@@ -11338,6 +19385,7 @@ def _compact_submit_feedback_for_audit(feedback: dict[str, object]) -> dict[str,
                 "fail_closed_singleton_unassigned_target_repairs": package.get("fail_closed_singleton_unassigned_target_repairs"),
                 "unit_mechanical_checklist": package.get("unit_mechanical_checklist"),
                 "mechanical_repair_hints": package.get("mechanical_repair_hints"),
+                "ledger_terminal_repair_rows": package.get("ledger_terminal_repair_rows"),
         },
         "units": compact_units,
         "semantic_diagnostics": feedback.get("semantic_diagnostics"),
@@ -11389,6 +19437,14 @@ def _repair_agenda_from_submit_feedback(feedback: dict[str, object], *, repeated
             "local_target_count_pairing_options",
             "local_target_title_pairing_options",
             "single_file_target_item_options",
+            "multi_version_submit_shape",
+            "suggested_submit_shape",
+            "manual_review_candidate_submit_shape",
+            "strong_mapping_candidates",
+            "evidence_upgrade_options",
+            "non_regular_evidence_closure",
+            "duplicate_episode_variant_locators",
+            "candidate_targets",
             "local_slice_mapping_options",
             "same_count_target_span_candidates",
             "split_first_repair",
@@ -11406,6 +19462,14 @@ def _repair_agenda_from_submit_feedback(feedback: dict[str, object], *, repeated
             "searched_query_hints",
             "visible_source_query_bridge_targets",
             "continuation_evidence_hint",
+            "row_rejection_count",
+            "row_rejection_issue_codes",
+            "rejected_patch_status",
+            "invalid_mapped_attempt",
+            "terminal_repair_required",
+            "terminal_repair_options",
+            "do_not_retry_targets_without_new_evidence",
+            "closure_condition",
         ):
             if unit.get(key):
                 row[key] = _compact_repair_field(key, unit.get(key))
@@ -11503,6 +19567,118 @@ def _repair_agenda_from_submit_feedback(feedback: dict[str, object], *, repeated
             row["negative_target_absence_support_candidates"] = deduped_support
         if negative_submit_shape:
             row["negative_target_absence_submit_shape"] = negative_submit_shape
+        evidence_upgrade_options: list[dict[str, object]] = []
+        non_regular_evidence_closure: dict[str, object] = {}
+        if isinstance(raw_issues, list):
+            for issue_item in raw_issues:
+                if not isinstance(issue_item, dict):
+                    continue
+                raw_upgrade_options = issue_item.get("evidence_upgrade_options")
+                if isinstance(raw_upgrade_options, list):
+                    evidence_upgrade_options.extend(
+                        [item for item in raw_upgrade_options if isinstance(item, dict)]
+                    )
+                raw_closure = issue_item.get("non_regular_evidence_closure")
+                if isinstance(raw_closure, dict) and not non_regular_evidence_closure:
+                    non_regular_evidence_closure = raw_closure
+        if evidence_upgrade_options and not row.get("evidence_upgrade_options"):
+            row["evidence_upgrade_options"] = _compact_repair_field(
+                "evidence_upgrade_options",
+                evidence_upgrade_options,
+            )
+        if non_regular_evidence_closure and not row.get("non_regular_evidence_closure"):
+            row["non_regular_evidence_closure"] = _compact_repair_field(
+                "non_regular_evidence_closure",
+                non_regular_evidence_closure,
+            )
+        multi_version_shape: list[dict[str, object]] = []
+        suggested_submit_shape: list[dict[str, object]] = []
+        manual_review_candidate_shape: list[dict[str, object]] = []
+        duplicate_variant_locators: list[dict[str, object]] = []
+        duplicate_variant_targets: list[dict[str, object]] = []
+        if isinstance(raw_issues, list):
+            for issue_item in raw_issues:
+                if not isinstance(issue_item, dict):
+                    continue
+                raw_shape = issue_item.get("multi_version_submit_shape")
+                multi_version_shape.extend(_repair_dict_items(raw_shape))
+                raw_suggested_shape = issue_item.get("suggested_submit_shape")
+                suggested_submit_shape.extend(_repair_dict_items(raw_suggested_shape))
+                raw_manual_review_shape = issue_item.get("manual_review_candidate_submit_shape")
+                manual_review_candidate_shape.extend(_repair_dict_items(raw_manual_review_shape))
+                raw_variants = issue_item.get("duplicate_episode_variant_locators")
+                duplicate_variant_locators.extend(_repair_dict_items(raw_variants))
+                raw_targets = issue_item.get("candidate_targets")
+                duplicate_variant_targets.extend(_repair_dict_items(raw_targets))
+        if multi_version_shape and not row.get("multi_version_submit_shape"):
+            seen_rows: set[tuple[str, str, str]] = set()
+            deduped_shape: list[dict[str, object]] = []
+            for item in multi_version_shape:
+                key = (
+                    str(item.get("local") or ""),
+                    str(item.get("target") or ""),
+                    str(item.get("outcome") or ""),
+                )
+                if not key[0] or not key[1] or key in seen_rows:
+                    continue
+                seen_rows.add(key)
+                deduped_shape.append(item)
+                if len(deduped_shape) >= 12:
+                    break
+            if deduped_shape:
+                row["multi_version_submit_shape"] = _compact_repair_field(
+                    "multi_version_submit_shape",
+                    deduped_shape,
+                )
+        if suggested_submit_shape and not row.get("suggested_submit_shape"):
+            seen_rows: set[tuple[str, str, str]] = set()
+            deduped_shape: list[dict[str, object]] = []
+            for item in suggested_submit_shape:
+                key = (
+                    str(item.get("local") or ""),
+                    str(item.get("target") or ""),
+                    str(item.get("outcome") or ""),
+                )
+                if not key[0] or not key[1] or key in seen_rows:
+                    continue
+                seen_rows.add(key)
+                deduped_shape.append(item)
+                if len(deduped_shape) >= 12:
+                    break
+            if deduped_shape:
+                row["suggested_submit_shape"] = _compact_repair_field(
+                    "suggested_submit_shape",
+                    deduped_shape,
+                )
+        if manual_review_candidate_shape and not row.get("manual_review_candidate_submit_shape"):
+            seen_rows: set[tuple[str, str]] = set()
+            deduped_shape: list[dict[str, object]] = []
+            for item in manual_review_candidate_shape:
+                local = str(item.get("local") or "")
+                targets = ",".join(str(target) for target in list(item.get("manual_review_candidate_targets") or []))
+                key = (local, targets)
+                if not key[0] or not key[1] or key in seen_rows:
+                    continue
+                seen_rows.add(key)
+                deduped_shape.append(item)
+                if len(deduped_shape) >= 12:
+                    break
+            if deduped_shape:
+                row["manual_review_candidate_submit_shape"] = _compact_repair_field(
+                    "manual_review_candidate_submit_shape",
+                    deduped_shape,
+                )
+        if duplicate_variant_locators and not row.get("duplicate_episode_variant_locators"):
+            row["duplicate_episode_variant_locators"] = _compact_repair_field(
+                "duplicate_episode_variant_locators",
+                duplicate_variant_locators,
+            )
+        if duplicate_variant_targets and not row.get("candidate_targets"):
+            row["candidate_targets"] = _compact_repair_payload(
+                duplicate_variant_targets,
+                list_limit=6,
+                text_limit=220,
+            )
         issue_title_pairing_options: list[dict[str, object]] = []
         if isinstance(raw_issues, list):
             for issue_item in raw_issues:
@@ -11663,6 +19839,24 @@ def _repair_agenda_from_submit_feedback(feedback: dict[str, object], *, repeated
     mapped_target_title_bridge_repairs = package.get("mapped_target_title_bridge_repairs")
     if isinstance(mapped_target_title_bridge_repairs, list):
         mapped_target_title_bridge_repairs = mapped_target_title_bridge_repairs[:6]
+    mapped_numbered_special_related_count_repairs = package.get("mapped_numbered_special_related_count_repairs")
+    if isinstance(mapped_numbered_special_related_count_repairs, list):
+        mapped_numbered_special_related_count_repairs = mapped_numbered_special_related_count_repairs[:6]
+    manual_review_evidence_upgrade_repairs = package.get("manual_review_evidence_upgrade_repairs")
+    if isinstance(manual_review_evidence_upgrade_repairs, list):
+        manual_review_evidence_upgrade_repairs = manual_review_evidence_upgrade_repairs[:6]
+    manual_review_strong_non_regular_mapping_repairs = package.get("manual_review_strong_non_regular_mapping_repairs")
+    if isinstance(manual_review_strong_non_regular_mapping_repairs, list):
+        manual_review_strong_non_regular_mapping_repairs = manual_review_strong_non_regular_mapping_repairs[:6]
+    manual_review_visible_slice_pairing_repairs = package.get("manual_review_visible_slice_pairing_repairs")
+    if isinstance(manual_review_visible_slice_pairing_repairs, list):
+        manual_review_visible_slice_pairing_repairs = manual_review_visible_slice_pairing_repairs[:6]
+    mapped_slice_manual_sibling_repairs = package.get("mapped_slice_manual_sibling_repairs")
+    if isinstance(mapped_slice_manual_sibling_repairs, list):
+        mapped_slice_manual_sibling_repairs = mapped_slice_manual_sibling_repairs[:6]
+    manual_review_duplicate_variant_repairs = package.get("manual_review_duplicate_variant_repairs")
+    if isinstance(manual_review_duplicate_variant_repairs, list):
+        manual_review_duplicate_variant_repairs = manual_review_duplicate_variant_repairs[:6]
     mapped_title_season_mismatch_repairs = package.get("mapped_title_season_mismatch_repairs")
     if isinstance(mapped_title_season_mismatch_repairs, list):
         mapped_title_season_mismatch_repairs = mapped_title_season_mismatch_repairs[:6]
@@ -11793,6 +19987,12 @@ def _repair_agenda_from_submit_feedback(feedback: dict[str, object], *, repeated
         "excluded_singleton_visible_subject_repairs": excluded_singleton_visible_subject_repairs or [],
         "singleton_target_alias_repairs": singleton_target_alias_repairs or [],
         "mapped_target_title_bridge_repairs": mapped_target_title_bridge_repairs or [],
+        "mapped_numbered_special_related_count_repairs": mapped_numbered_special_related_count_repairs or [],
+        "manual_review_evidence_upgrade_repairs": manual_review_evidence_upgrade_repairs or [],
+        "manual_review_strong_non_regular_mapping_repairs": manual_review_strong_non_regular_mapping_repairs or [],
+        "manual_review_visible_slice_pairing_repairs": manual_review_visible_slice_pairing_repairs or [],
+        "mapped_slice_manual_sibling_repairs": mapped_slice_manual_sibling_repairs or [],
+        "manual_review_duplicate_variant_repairs": manual_review_duplicate_variant_repairs or [],
         "mapped_title_season_mismatch_repairs": mapped_title_season_mismatch_repairs or [],
         "excluded_main_mapped_sibling_repairs": excluded_main_mapped_sibling_repairs or [],
         "numbered_special_exclusion_repairs": numbered_special_exclusion_repairs or [],
@@ -11810,6 +20010,7 @@ def _repair_agenda_from_submit_feedback(feedback: dict[str, object], *, repeated
         "target_surface_actions": target_surface_actions,
         "search_queries_to_try": search_queries_to_try,
         "visible_target_surface_missing_units": visible_target_surface_missing_units[:8],
+        "ledger_terminal_repair_rows": package.get("ledger_terminal_repair_rows") or [],
         "mechanical_repair_hints": package.get("mechanical_repair_hints") or [],
         "coverage_missing_instruction": package.get("coverage_missing_instruction") or "",
         "repeat_rejection_warning": feedback.get("repeat_rejection_warning") if repeated else None,
@@ -11822,6 +20023,8 @@ def _repair_agenda_from_submit_feedback(feedback: dict[str, object], *, repeated
             "of those visible local:// locators if it matches your intended local work unit. "
             "If candidate_target_locators appears under a blocking unit, replace the invalid raw target with one "
             "of those visible target:// locators only if it matches your intended Bangumi target. "
+            "If ledger_terminal_repair_rows or terminal_repair_required appears, patch that exact ledger row "
+            "to a terminal status that validates now; do not retry the same invalid mapped target/range. "
             "If visible_target_surface_missing_units is non-empty, the target surface was already visible and the requested "
             "episode/range is absent; do not retry the same mapped target/range. Change the target, split the local locator, "
             "or use supplemental/non_bangumi/target_absent/fail_closed according to your semantic judgment. If those units "
@@ -11832,6 +20035,11 @@ def _repair_agenda_from_submit_feedback(feedback: dict[str, object], *, repeated
             "for the individual slices, but make the semantic target/exclusion decision yourself. "
             "If local_slice_mapping_options appears, those local://.../episode/N locators are visible legal split locators; "
             "you may submit them as separate work units if you judge the listed target pairing correct. "
+            "If manual_review_duplicate_variant_repairs is non-empty, do not repeat whole-group manual_review for that "
+            "unit; use the listed local://.../episode/N/variant/K locators and map each same-episode variant to the "
+            "single target episode as alternate/multi-version files when the local facts show they are the same episode "
+            "and target ownership is closed. If target ownership remains ambiguous after the available evidence, use "
+            "exact non-overlapping manual_review locators so the rest of the package can pass. "
             "If single_file_target_item_options appears, the local side has one file but the target subject has multiple "
             "visible items; choose one listed target://.../episode/N item only if it is the semantic owner, choose "
             "mapped_composite_feature only if the one file covers multiple target items, or fail_closed with a concrete "
@@ -11870,6 +20078,25 @@ def _repair_agenda_from_submit_feedback(feedback: dict[str, object], *, repeated
             "If mapped_target_title_bridge_repairs is non-empty, the selected target lacks visible title/alias/source-query "
             "provenance for the local title; run one batch search for search_queries_to_try when present, choose a "
             "better visible target, or submit fail_closed for that exact local locator. "
+            "If mapped_numbered_special_related_count_repairs is non-empty, a numbered SP group was mapped to a "
+            "related same-count short/special subject using only related/count structure. Prefer the listed "
+            "evidence_upgrade_options first: the Agent may inspect the local duration/subtitle_compact anchors, then "
+            "cite stronger local/title/title-card evidence if it closes ownership. The fixed layer does not run this "
+            "upgrade automatically and does not choose the target. If upgraded evidence still does not close ownership, "
+            "submit manual_review for that localized uncertainty. "
+            "If manual_review_evidence_upgrade_repairs is non-empty, the Agent tried to use manual_review for a "
+            "same-count/related numbered SP group before inspecting available local duration/subtitle_compact anchors. "
+            "Inspect the listed evidence_upgrade_options first, then either map with closed evidence or resubmit "
+            "manual_review with the post-inspection uncertainty. "
+            "If manual_review_strong_non_regular_mapping_repairs is non-empty, a saved manual_review placeholder "
+            "now has a visible same-count target candidate plus strong local duration/count closure. Use "
+            "repair_strategy=revise_saved_rows and replace the placeholder with suggested_submit_shape mapped rows "
+            "when you agree ownership is closed; keep manual_review only for exact unresolved locators with a concrete "
+            "post-upgrade contradiction. If manual_review_visible_slice_pairing_repairs is non-empty, split the broad "
+            "parent manual_review into exact local episode slices and resolve the listed title-pairing candidates; "
+            "for exact slices, keep manual_review only with manual_review_candidate_targets and concrete ambiguity. "
+            "If mapped_slice_manual_sibling_repairs is non-empty, a mapped slice target is still cited by a sibling "
+            "manual_review row; resolve that same-parent ownership conflict before resubmitting. "
             "If mapped_title_season_mismatch_repairs is non-empty, the selected target has an explicit season suffix "
             "that is absent from or conflicts with the local title; choose a season-compatible visible target, inspect "
             "a listed alternate, or fail_closed with the unresolved season-ownership blocker. "
@@ -12264,6 +20491,7 @@ def run_human_case_agent(
         case_id=initial_workspace.header.case_id,
         http_session_id=f"bar_human_lbg_{_slug(initial_workspace.header.case_id, fallback='case')}",
         cognitive_workspace=_initial_cognitive_workspace_from_desk(desk),
+        resolution_ledger=_initial_resolution_ledger_from_desk(desk),
     )
     desk_bytes = len(json.dumps(desk, ensure_ascii=False, default=str).encode("utf-8"))
     desk_audit = {
@@ -12277,6 +20505,7 @@ def run_human_case_agent(
         "must_account_locator_count": int((desk.get("resolution_contract") or {}).get("must_account_locator_count") or 0),
         "support_only_locator_count": int((desk.get("resolution_contract") or {}).get("support_only_locator_count") or 0),
         "cognitive_workspace_initial_work_unit_count": len(session.cognitive_workspace.active_work_units),
+        "resolution_ledger_initial_row_count": len(session.resolution_ledger.rows),
     }
     workspace = _workspace_add_audits(initial_workspace, [desk_audit])
     max_turns = max(1, int(max_rounds or initial_workspace.header.max_rounds or 12))
@@ -12298,7 +20527,7 @@ def run_human_case_agent(
                         "output": {
                             "accepted": False,
                             "issue": error,
-                            "available_action": "Call exactly one of inspect, search, note, or submit with valid JSON arguments.",
+                            "available_action": "Call exactly one of inspect, search, note, patch_ledger, or submit with valid JSON arguments.",
                         },
                     }
                 )
@@ -12379,7 +20608,180 @@ def run_human_case_agent(
             output = _note_tool(registry, session, tool_call.arguments)  # type: ignore[arg-type]
             if not output.get("accepted"):
                 session.tool_rejection_count += 1
+        elif tool_call.tool_name == "patch_ledger":
+            session, output, ledger_complete = _patch_ledger_tool(
+                registry,
+                session,
+                tool_call.arguments,  # type: ignore[arg-type]
+                main_refs=list(workspace.contract.main_file_refs or []),
+            )
+            repeated_for_health = bool(output.get("repeat_rejection_warning"))
+            if output.get("accepted"):
+                workspace = replace(
+                    workspace,
+                    case_resolution_ledger=_case_resolution_ledger_from_human_ledger(session.resolution_ledger),
+                )
+                audits.append(
+                    {
+                        "note": "human_case_agent_resolution_ledger_patched",
+                        "accepted": True,
+                        "ledger_version": session.resolution_ledger.version,
+                        "ledger_status_counts": (_compact_resolution_ledger(session.resolution_ledger)).get("status_counts"),
+                        "complete": ledger_complete,
+                    }
+                )
+            else:
+                session.tool_rejection_count += 1
+                audits.append(
+                    {
+                        "note": "human_case_agent_resolution_ledger_rejected",
+                        "accepted": False,
+                        "issue_counts": output.get("issue_counts"),
+                    }
+                )
+            if output.get("issue_counts") and (not output.get("accepted") or output.get("partial")):
+                session = replace(
+                    session,
+                    cognitive_workspace=_workspace_with_submit_rejection(
+                        session.cognitive_workspace,
+                        output,
+                        repeated=bool(output.get("repeat_rejection_warning")),
+                    ),
+                )
+            if ledger_complete:
+                terminal_issues, _row_summaries = _validate_resolution_ledger(
+                    registry,
+                    session.resolution_ledger,
+                    main_refs=list(workspace.contract.main_file_refs or []),
+                    require_terminal=True,
+                )
+                if terminal_issues:
+                    output = {
+                        **output,
+                        "complete": False,
+                        "accepted": False,
+                        "terminal_issue_counts": dict(Counter(str(item.get("issue") or "ledger_issue") for item in terminal_issues)),
+                        "terminal_issues": terminal_issues[:24],
+                        "required_next_action": "Patch terminal ledger issues before final package compilation.",
+                    }
+                    session = replace(
+                        session,
+                        resolution_ledger_rejection_count=session.resolution_ledger_rejection_count + 1,
+                    )
+                else:
+                    workspace, session, submit_result, auto_inspect_audit = _compile_resolution_ledger_with_auto_target_surface_inspect(
+                        workspace,
+                        registry,
+                        bangumi_client,
+                        session,
+                        session.resolution_ledger,
+                        searched_query_variant_keys=session.searched_query_variant_keys,
+                    )
+                    if auto_inspect_audit:
+                        audits.append(auto_inspect_audit)
+                    last_verifier = submit_result.verifier
+                    compiled_feedback = submit_result.feedback
+                    output = {
+                        **output,
+                        "compiled_submit_accepted": submit_result.accepted,
+                        "compiled_submit_status": compiled_feedback.get("status"),
+                        "compiled_submit_issue_counts": _issue_counts_from_submit_feedback(compiled_feedback),
+                        "compiled_submit_feedback": _compact_submit_feedback_for_audit(compiled_feedback),
+                    }
+                    if submit_result.accepted and not bool(getattr(tool_call.arguments, "dry_run", False)):
+                        final_submit = submit_result
+                        session = replace(
+                            session,
+                            cognitive_workspace=_workspace_with_submit_acceptance(session.cognitive_workspace),
+                        )
+                        output = {
+                            **output,
+                            "required_next_action": "Ledger compiled and final package verifier accepted.",
+                            "resolution_readiness": session.cognitive_workspace.resolution_readiness.model_dump(mode="json"),
+                        }
+                        audits.append(
+                            {
+                                "note": "human_case_agent_resolution_ledger_compiled",
+                                "accepted": True,
+                                "mapped_file_count": submit_result.mapped_file_count,
+                                "excluded_file_count": submit_result.excluded_file_count,
+                                "manual_review_file_count": submit_result.manual_review_file_count,
+                            }
+                        )
+                    elif submit_result.accepted:
+                        output = {
+                            **output,
+                            "accepted_but_not_final": True,
+                            "required_next_action": "Patch the same terminal ledger with dry_run=false to finish.",
+                        }
+                    else:
+                        session.submit_rejection_count += 1
+                        issue_counts = _issue_counts_from_submit_feedback(compiled_feedback)
+                        if isinstance(issue_counts, dict):
+                            for key, value in issue_counts.items():
+                                session.submit_rejection_issue_counts[str(key)] = (
+                                    session.submit_rejection_issue_counts.get(str(key), 0) + int(value or 0)
+                                )
+                        output = {
+                            **output,
+                            "accepted": False,
+                            "required_next_action": (
+                                "Patch the ledger rows named by compiled_submit_feedback; do not resubmit a whole package."
+                            ),
+                        }
+                        session = replace(
+                            session,
+                            resolution_ledger=_ledger_with_repair_candidate_debt(
+                                registry,
+                                session.resolution_ledger,
+                                compiled_feedback,
+                            ),
+                        )
+                        session = replace(
+                            session,
+                            cognitive_workspace=_workspace_with_submit_rejection(
+                                session.cognitive_workspace,
+                                _repair_agenda_from_submit_feedback(compiled_feedback, repeated=False),
+                                repeated=False,
+                            ),
+                        )
+            if final_submit is not None and final_submit.output is not None and not bool(getattr(tool_call.arguments, "dry_run", False)):
+                session, output = _apply_turn_health(
+                    session,
+                    output,
+                    before_workspace_counts=before_workspace_counts,
+                    after_workspace=workspace,
+                    before_cognitive=before_cognitive,
+                    before_saved_work_unit_count=before_saved_work_unit_count,
+                )
+                session = _record_tool_output(session, tool_call, output)
+                break
         elif tool_call.tool_name == "submit":
+            output = _resolution_ledger_required_for_submit_output(
+                session,
+                tool_call.arguments,  # type: ignore[arg-type]
+            )
+            session.tool_rejection_count += 1
+            session.submit_rejection_count += 1
+            session.submit_rejection_issue_counts["submit_requires_resolution_ledger_patch"] = (
+                session.submit_rejection_issue_counts.get("submit_requires_resolution_ledger_patch", 0) + 1
+            )
+            session = replace(
+                session,
+                cognitive_workspace=_workspace_with_submit_rejection(
+                    session.cognitive_workspace,
+                    output,
+                    repeated=False,
+                ),
+            )
+            audits.append(
+                {
+                    "note": "human_case_agent_submit_rejected_resolution_ledger_required",
+                    "accepted": False,
+                    "suggested_ledger_patch_row_count": len(output.get("suggested_ledger_patch_rows") or []),
+                }
+            )
+        elif tool_call.tool_name == "submit_legacy_disabled":
             effective_submit_args = _submit_args_with_saved_draft(
                 registry,
                 tool_call.arguments,  # type: ignore[arg-type]
@@ -12390,6 +20792,7 @@ def run_human_case_agent(
                 registry,
                 effective_submit_args,
                 searched_query_variant_keys=session.searched_query_variant_keys,
+                inspected_locators=_inspected_locators_from_session(session),
             )
             workspace, session, submit_result, auto_inspect_audit = _submit_result_with_auto_target_surface_inspect(
                 workspace,
@@ -12413,7 +20816,17 @@ def run_human_case_agent(
             requested_dry_run = bool(getattr(tool_call.arguments, "dry_run", False))
             dry_run = requested_dry_run
             if submit_result.accepted:
-                dry_run_promoted_to_final = bool(requested_dry_run and session.turn_count >= max_turns)
+                dry_run_promoted_to_final = bool(
+                    requested_dry_run
+                    and (
+                        session.turn_count >= max_turns
+                        or (
+                            session.turn_count >= max_turns - REPAIR_FINALIZATION_TURN_WINDOW
+                            and submit_result.output is not None
+                            and submit_result.output.action != "fail_closed"
+                        )
+                    )
+                )
                 if dry_run_promoted_to_final:
                     dry_run = False
                     output = {
@@ -12421,8 +20834,9 @@ def run_human_case_agent(
                         "requested_dry_run": True,
                         "dry_run_promoted_to_final": True,
                         "promotion_reason": (
-                            "The package resolution already passed verifier/accounting on the final allowed turn; "
-                            "the fixed layer finalized the same resolution instead of spending an impossible extra turn."
+                            "The package resolution already passed verifier/accounting near the turn cap; "
+                            "the fixed layer finalized the same non-fail-closed resolution instead of spending "
+                            "another turn that could regress the accepted package."
                         ),
                     }
                 fail_closed_blocker = (
@@ -12557,6 +20971,7 @@ def run_human_case_agent(
                         "dry_run_promoted_to_final": dry_run_promoted_to_final,
                         "mapped_file_count": submit_result.mapped_file_count,
                         "excluded_file_count": submit_result.excluded_file_count,
+                        "manual_review_file_count": submit_result.manual_review_file_count,
                     }
                 )
                 if not dry_run:
@@ -12695,6 +21110,58 @@ def run_human_case_agent(
         )
         session = _record_tool_output(session, tool_call, output)
         _write_progress(workspace, session, f"tool_{tool_call.tool_name}", registry)
+
+    if final_submit is None and list(session.resolution_ledger.rows or []):
+        terminal_issues, _terminal_rows = _validate_resolution_ledger(
+            registry,
+            session.resolution_ledger,
+            main_refs=list(workspace.contract.main_file_refs or []),
+            require_terminal=True,
+        )
+        terminal_statuses = {"mapped", "manual_review", "target_absent", "supplemental", "fail_closed"}
+        terminal_row_ids = [
+            row.row_id
+            for row in list(session.resolution_ledger.rows or [])
+            if row.status not in terminal_statuses
+        ]
+        if not terminal_issues and not terminal_row_ids:
+            workspace = replace(
+                workspace,
+                case_resolution_ledger=_case_resolution_ledger_from_human_ledger(session.resolution_ledger),
+            )
+            workspace, session, budget_submit, auto_inspect_audit = _compile_resolution_ledger_with_auto_target_surface_inspect(
+                workspace,
+                registry,
+                bangumi_client,
+                session,
+                session.resolution_ledger,
+                searched_query_variant_keys=session.searched_query_variant_keys,
+            )
+            if auto_inspect_audit:
+                audits.append(auto_inspect_audit)
+            audits.append(
+                {
+                    "note": "human_case_agent_resolution_ledger_budget_compile",
+                    "accepted": budget_submit.accepted,
+                    "mapped_file_count": budget_submit.mapped_file_count,
+                    "excluded_file_count": budget_submit.excluded_file_count,
+                    "manual_review_file_count": budget_submit.manual_review_file_count,
+                    "feedback": _compact_submit_feedback_for_audit(budget_submit.feedback)
+                    if not budget_submit.accepted
+                    else {},
+                }
+            )
+            if budget_submit.accepted:
+                final_submit = budget_submit
+                last_verifier = budget_submit.verifier
+        else:
+            audits.append(
+                {
+                    "note": "human_case_agent_resolution_ledger_budget_compile_skipped",
+                    "terminal_issue_counts": dict(Counter(str(item.get("issue") or "ledger_issue") for item in terminal_issues)),
+                    "nonterminal_row_ids": terminal_row_ids[:24],
+                }
+            )
 
     audits.append(_session_summary(session, registry))
     if final_submit is not None and final_submit.output is not None:

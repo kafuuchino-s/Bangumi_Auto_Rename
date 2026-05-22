@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import re
+from collections import Counter
 from dataclasses import asdict, is_dataclass
 from types import SimpleNamespace
 from typing import Any
@@ -28,6 +29,12 @@ from .orchestrator import CaseAgentRunResult, run_local_bangumi_case_agent
 from .mapping_draft import compute_local_span_partition_coverage, summarize_mapping_draft_coverage
 from .mapping_draft import compute_mapping_draft_accounting
 from .workspace import CaseEvidenceWorkspace
+from ..local_fact_surface import (
+    compact_fact_surface_summary,
+    compact_file_fact_for_card,
+    compact_file_fact_summary,
+    local_fact_surface_to_dict,
+)
 from ..local_supplemental_filter import classify_local_video_supplemental
 from ...config.config_manager import cm
 from ...bangumi.client import BangumiClient
@@ -130,7 +137,7 @@ def _verdict_assignment_accounting(final_dossier: Any, final_output: Any) -> dic
     expanded_bulk, expansion_issues = expand_bulk_assignment_intents(final_dossier, final_output)
     assignments = [*assignments, *expanded_bulk]
     counts: dict[str, int] = {}
-    mapped = excluded = needs = unaligned = open_count = 0
+    mapped = excluded = manual_review = needs = unaligned = open_count = 0
     for assignment in assignments:
         file_ref = str(getattr(assignment, 'file_ref', '') or '')
         if file_ref not in main_refs:
@@ -139,7 +146,9 @@ def _verdict_assignment_accounting(final_dossier: Any, final_output: Any) -> dic
         target_ref = str(getattr(assignment, 'target_ref', '') or '')
         if target_ref == 'UNALIGNED':
             reason = str(getattr(assignment, 'reason', '') or '')
-            if reason.startswith('mapping_draft:') and ':supplemental:' in reason:
+            if reason.startswith('mapping_draft:') and ':manual_review:' in reason:
+                manual_review += 1
+            elif reason.startswith('mapping_draft:') and ':supplemental:' in reason:
                 excluded += 1
             else:
                 unaligned += 1
@@ -153,6 +162,7 @@ def _verdict_assignment_accounting(final_dossier: Any, final_output: Any) -> dic
         'main_file_count': len(main_refs),
         'mapped_file_count': mapped,
         'excluded_file_count': excluded,
+        'manual_review_file_count': manual_review,
         'needs_more_evidence_file_count': needs,
         'unaligned_file_count': unaligned,
         'open_file_count': open_count,
@@ -340,8 +350,51 @@ def _as_bool(value: object, default: bool = False) -> bool:
     return default
 
 
+def _local_fact_lookup(local_evidence: object) -> dict[str, dict[str, object]]:
+    surface = local_fact_surface_to_dict(getattr(local_evidence, 'fact_surface', None))
+    lookup: dict[str, dict[str, object]] = {}
+    for item in surface.get('files') or []:
+        if not isinstance(item, dict):
+            continue
+        file_id = str(item.get('file_id') or '')
+        relative_path = str(item.get('relative_path') or '')
+        if file_id:
+            lookup[file_id] = item
+        if relative_path:
+            lookup[relative_path] = item
+    return lookup
+
+
+def _workspace_local_fact_summary(local_files: list[LocalFileCard]) -> dict[str, object]:
+    probe_status_counts = Counter(
+        str((getattr(card, 'container_facts', {}) or {}).get('probe_status') or 'unknown')
+        for card in local_files
+    )
+    missing_class_counts = Counter(
+        str(item.get('fact_class') or '')
+        for card in local_files
+        for item in (getattr(card, 'missing_facts', []) or [])
+        if isinstance(item, dict) and str(item.get('fact_class') or '')
+    )
+    requestable_fact_card_count = sum(
+        1
+        for card in local_files
+        if getattr(card, 'path_facts', None)
+        or getattr(card, 'container_facts', None)
+        or getattr(card, 'subtitle_facts', None)
+        or getattr(card, 'stream_facts', None)
+        or getattr(card, 'missing_facts', None)
+    )
+    return {
+        'local_fact_card_count': requestable_fact_card_count,
+        'local_fact_probe_status_counts': dict(sorted(probe_status_counts.items())),
+        'local_fact_missing_class_counts': dict(sorted(missing_class_counts.items())),
+    }
+
+
 def build_local_bangumi_cards_view(local_evidence, bangumi_contexts: list[dict[str, object]]):
     root_name = str(getattr(local_evidence, 'root_name', '') or getattr(local_evidence, 'source_path', '') or 'local package')
+    fact_lookup = _local_fact_lookup(local_evidence)
     local_files: list[dict[str, Any]] = []
     filtered_files: list[dict[str, Any]] = []
     cluster_refs: dict[str, str] = {}
@@ -351,6 +404,7 @@ def build_local_bangumi_cards_view(local_evidence, bangumi_contexts: list[dict[s
 
     visible_index = 1
     for source_index, file in enumerate(list(getattr(local_evidence, 'files', []) or []), start=1):
+        file_id = str(getattr(file, 'file_id', '') or '')
         relative_path = str(getattr(file, 'relative_path', '') or getattr(file, 'name', '') or '')
         name = str(getattr(file, 'name', '') or relative_path.rsplit('/', 1)[-1] or relative_path)
         parent_display = relative_path.rsplit('/', 1)[0] if '/' in relative_path else root_name
@@ -365,9 +419,17 @@ def build_local_bangumi_cards_view(local_evidence, bangumi_contexts: list[dict[s
             or (is_video and explicit_main_candidate is not None and not _as_bool(explicit_main_candidate, True))
         )
         is_main = is_video and not is_supplemental
+        raw_fact = fact_lookup.get(file_id) or fact_lookup.get(relative_path) or {}
+        fact_card = compact_file_fact_for_card(raw_fact, detail=False)
+        subtitle_compact_card = compact_file_fact_for_card(raw_fact, detail=True)
+        subtitle_compact_facts = subtitle_compact_card.get('subtitle_facts', {}) if isinstance(subtitle_compact_card, dict) else {}
+        if not (isinstance(subtitle_compact_facts, dict) and subtitle_compact_facts.get('bounded_text_snippets')):
+            subtitle_compact_facts = {}
+        fact_summary = compact_file_fact_summary(raw_fact)
         if not is_main:
             filtered_files.append({
                 'source_index': source_index,
+                'source_file_id': file_id,
                 'path': relative_path or name,
                 'relative_path': relative_path or name,
                 'is_video': is_video,
@@ -375,6 +437,7 @@ def build_local_bangumi_cards_view(local_evidence, bangumi_contexts: list[dict[s
                 'rule_id': local_filter.rule_id or ('non_video' if not is_video else 'explicit_supplemental_candidate'),
                 'reason_kind': local_filter.reason_kind or ('non_video_support' if not is_video else 'other_supplemental'),
                 'reason': local_filter.reason or ('non-video local support file' if not is_video else 'explicit supplemental local file'),
+                'fact_summary': fact_summary,
             })
             continue
 
@@ -388,6 +451,7 @@ def build_local_bangumi_cards_view(local_evidence, bangumi_contexts: list[dict[s
             supplemental_file_refs.append(ref)
         local_files.append({
             'ref': ref,
+            'source_file_id': file_id,
             'path': relative_path or name,
             'relative_path': relative_path or name,
             'is_main_video_candidate': is_main,
@@ -400,6 +464,13 @@ def build_local_bangumi_cards_view(local_evidence, bangumi_contexts: list[dict[s
             'label': name,
             'basename': name,
             'related_refs': [],
+            'path_facts': fact_card.get('path_facts', {}),
+            'container_facts': fact_card.get('container_facts', {}),
+            'subtitle_facts': fact_card.get('subtitle_facts', {}),
+            'subtitle_compact_facts': subtitle_compact_facts,
+            'stream_facts': fact_card.get('stream_facts', {}),
+            'missing_facts': list(fact_card.get('missing_facts') or []),
+            'fact_summary': fact_summary,
         })
 
     local_cluster_cards = [
@@ -498,7 +569,29 @@ def build_local_bangumi_cards_view(local_evidence, bangumi_contexts: list[dict[s
 
 def _build_workspace(*, local_evidence, bangumi_contexts: list[dict[str, object]], local_package_analysis: Any | None = None) -> CaseEvidenceWorkspace:
     views = build_local_bangumi_cards_view(local_evidence, bangumi_contexts)
-    local_files = [LocalFileCard(ref=card['ref'], path=card.get('path') or card.get('relative_path') or '', is_main=bool(card.get('is_main_video_candidate')), size_bytes=int(card.get('size_bytes') or 0), parent_display=card.get('parent_display') or '', cluster_ref=views.ref_map.source_ref_to_parent_ref.get(card['ref'], ''), label=card.get('label') or card.get('basename') or '', file_kind='video' if bool(card.get('is_main_video_candidate')) else 'unknown', related_refs=list(card.get('related_refs') or [])) for card in (views.local_source_view.get('files') or []) if isinstance(card, dict) and card.get('ref')]
+    local_files = [
+        LocalFileCard(
+            ref=card['ref'],
+            source_file_id=str(card.get('source_file_id') or ''),
+            path=card.get('path') or card.get('relative_path') or '',
+            is_main=bool(card.get('is_main_video_candidate')),
+            size_bytes=int(card.get('size_bytes') or 0),
+            parent_display=card.get('parent_display') or '',
+            cluster_ref=views.ref_map.source_ref_to_parent_ref.get(card['ref'], ''),
+            label=card.get('label') or card.get('basename') or '',
+            file_kind='video' if bool(card.get('is_main_video_candidate')) else 'unknown',
+            related_refs=list(card.get('related_refs') or []),
+            path_facts=dict(card.get('path_facts') or {}),
+            container_facts=dict(card.get('container_facts') or {}),
+            subtitle_facts=dict(card.get('subtitle_facts') or {}),
+            subtitle_compact_facts=dict(card.get('subtitle_compact_facts') or {}),
+            stream_facts=dict(card.get('stream_facts') or {}),
+            missing_facts=[dict(item) for item in list(card.get('missing_facts') or []) if isinstance(item, dict)],
+            fact_summary=dict(card.get('fact_summary') or {}),
+        )
+        for card in (views.local_source_view.get('files') or [])
+        if isinstance(card, dict) and card.get('ref')
+    ]
     local_clusters = [LocalClusterCard(ref=card['ref'], cluster_name=card.get('display_title') or card.get('title') or '', title_cues=list(card.get('title_tokens') or []), file_refs=list(card.get('member_refs') or []), cluster_kind='mixed' if card.get('kind') in {'movie_like', 'spinoff_like'} else 'local', summary=card.get('display_title') or '') for card in (views.local_bangumi_direct_view.get('local_cluster_cards') or []) if isinstance(card, dict) and card.get('ref')]
     bangumi_cards = [card for card in (views.local_bangumi_direct_view.get('bangumi_cards') or []) if isinstance(card, dict)]
     bangumi_subjects = [BangumiSubjectCard(ref=str(card.get('ref') or card.get('entity_ref') or ''), subject_id=int(card.get('subject_id') or 0), subject_type='anime', title=card.get('title') or card.get('subject_title') or '', name=card.get('name') or '', name_cn=card.get('name_cn') or '', summary_short=card.get('summary_short') or '', eps=int(card.get('episode_count') or 0), total_episodes=int(card.get('episode_count') or 0), source_form_hint=card.get('source_form_hint') or '', relation_to_main=card.get('relation_to_main') or '', source_role=card.get('source_role') or '') for card in bangumi_cards if str(card.get('ref') or card.get('entity_ref') or '').startswith('BS')]
@@ -514,6 +607,11 @@ def _build_workspace(*, local_evidence, bangumi_contexts: list[dict[str, object]
     local_span_cards = _build_raw_local_span_shells(local_files, contract)
     workspace = CaseEvidenceWorkspace.from_cards(header=header, budget=budget, contract=contract, local_files=local_files, local_clusters=local_clusters, local_span_cards=local_span_cards, bangumi_subjects=bangumi_subjects, bangumi_groups=bangumi_groups, bangumi_items=bangumi_items, query_cards=query_cards, provenance_cards=provenance_cards)
     filtered_files = list(getattr(views.ref_map, 'filtered_files', []) or [])
+    local_fact_summary = compact_fact_surface_summary(getattr(local_evidence, 'fact_surface', None))
+    fact_audit = {
+        'note': 'local_fact_surface_projection',
+        'fact_surface_summary': local_fact_summary,
+    } if int(local_fact_summary.get('file_fact_count') or 0) > 0 else {}
     if filtered_files:
         object.__setattr__(
             workspace,
@@ -533,6 +631,15 @@ def _build_workspace(*, local_evidence, bangumi_contexts: list[dict[str, object]
                         for file in filtered_files[:12]
                     ],
                 },
+            ],
+        )
+    if fact_audit:
+        object.__setattr__(
+            workspace,
+            'judge_request_audits',
+            [
+                *list(getattr(workspace, 'judge_request_audits', []) or []),
+                fact_audit,
             ],
         )
     return workspace
@@ -966,8 +1073,10 @@ def run_local_bangumi_case_agent_mapping(*, local_evidence, bangumi_contexts: li
         'span_mapping_patch_count': mapping_draft_metrics['span_mapping_patch_count'],
         'candidate_comparison_count': mapping_draft_metrics['candidate_comparison_count'],
         'main_file_count': int(getattr(accounting, 'main_file_count', 0) or 0),
+        **_workspace_local_fact_summary(list(result.final_workspace.local_files or [])),
         'mapped_file_count': int(getattr(accounting, 'mapped_file_count', 0) or 0),
         'excluded_file_count': int(getattr(accounting, 'excluded_file_count', 0) or 0),
+        'manual_review_file_count': int(getattr(accounting, 'manual_review_file_count', 0) or 0),
         'needs_more_evidence_file_count': int(getattr(accounting, 'needs_more_evidence_file_count', 0) or 0),
         'unaligned_file_count': int(getattr(accounting, 'unaligned_file_count', 0) or 0),
         'open_file_count': int(getattr(accounting, 'open_file_count', 0) or 0),
@@ -1168,6 +1277,7 @@ def run_local_bangumi_case_agent_mapping(*, local_evidence, bangumi_contexts: li
         child_verdict_accounting = _verdict_assignment_accounting(final_dossier, final_output)
         child_mapped_count = int(child_verdict_accounting.get('mapped_file_count') or 0) if child_verdict_accounting else child_assignment_count
         child_excluded_count = int(child_verdict_accounting.get('excluded_file_count') or 0) if child_verdict_accounting else 0
+        child_manual_review_count = int(child_verdict_accounting.get('manual_review_file_count') or 0) if child_verdict_accounting else 0
         child_needs_more_count = int(child_verdict_accounting.get('needs_more_evidence_file_count') or 0) if child_verdict_accounting else 0
         child_unaligned_count = int(child_verdict_accounting.get('unaligned_file_count') or 0) if child_verdict_accounting else 0
         child_open_count = int(child_verdict_accounting.get('open_file_count') or 0) if child_verdict_accounting else 0
@@ -1179,6 +1289,7 @@ def run_local_bangumi_case_agent_mapping(*, local_evidence, bangumi_contexts: li
         canonical_snapshot['main_file_count'] = child_main_count
         canonical_snapshot['mapped_file_count'] = child_mapped_count
         canonical_snapshot['excluded_file_count'] = child_excluded_count
+        canonical_snapshot['manual_review_file_count'] = child_manual_review_count
         canonical_snapshot['accounted_for_count'] = child_accounted_count
         canonical_snapshot['unresolved_count'] = child_unresolved_count
         canonical_snapshot['needs_more_evidence_file_count'] = child_needs_more_count
@@ -1187,7 +1298,7 @@ def run_local_bangumi_case_agent_mapping(*, local_evidence, bangumi_contexts: li
         canonical_snapshot['accepted_accounting_ready'] = bool(
             child_main_count > 0
             and child_accounted_count == child_main_count
-            and child_mapped_count + child_excluded_count == child_main_count
+            and child_mapped_count + child_excluded_count + child_manual_review_count == child_main_count
             and child_unresolved_count == 0
             and child_needs_more_count == 0
             and child_unaligned_count == 0

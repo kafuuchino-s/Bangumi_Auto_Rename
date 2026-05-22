@@ -269,7 +269,7 @@ Focused validation commands:
 ```powershell
 .venv\Scripts\python.exe -m pytest tests\test_local_evidence.py tests\test_local_package_projection.py tests\test_local_bangumi_sample_runner.py tests\test_case_agent_dossier.py tests\test_case_agent_orchestrator_agent.py tests\test_ai_models.py -q
 .venv\Scripts\python.exe -m compileall src\rename src\ai tools\run_local_bangumi_mapping_sample_pool.py tools\run_local_bangumi_human_gate.py tools\summarize_local_bangumi_human_trace.py
-.venv\Scripts\python.exe tools\scan_local_bangumi_boundary_risks.py src\rename\case_agent src\rename\local_evidence.py tools\run_local_bangumi_mapping_sample_pool.py --json
+.venv\Scripts\python.exe tools\scan_local_bangumi_boundary_risks.py src\rename\case_agent src\rename\local_evidence.py src\rename\local_fact_surface.py tools\run_local_bangumi_mapping_sample_pool.py --json
 .venv\Scripts\python.exe tools\run_local_bangumi_mapping_sample_pool.py --sample sample_0096 --limit 1 --dry-build --output-dir tests\sample_pool\generated\local_bangumi_mapping_sample_0096_local_fact_surface_dry_build_20260519
 .venv\Scripts\python.exe tools\run_local_bangumi_human_gate.py --sample 0096 --max-rounds 12 --sample-timeout-seconds 420 --output-dir tests\sample_pool\generated\local_bangumi_mapping_sample_0096_local_fact_surface_gate_20260519
 ```
@@ -288,8 +288,9 @@ The expected focused-gate result is the current safe shape:
   - `OVERLORD II main-episodes` -> regular episodes 1-13;
   - `OVERLORD III main-episodes` -> regular episodes 1-13;
 - the two recap movie rows remain mapped/accepted;
-- non-controversial supplemental rows such as previews, CM, PV, Menu, NCOP,
-  NCED, and already-safe extras remain accepted/supplemental as before;
+- non-controversial supplemental material such as previews, CM, PV, Menu,
+  NCOP, NCED, and already-safe extras remains accepted as front-filtered
+  support-only material where the local filename marker is deterministic;
 - evidence-insufficient derivative-short/SP/composite rows may remain
   `fail_closed`, including the current problematic rows:
   - `OVERLORD Ple Ple Pleiades main`;
@@ -309,6 +310,124 @@ Acceptance fails if:
 In short: after this goal, `sample_0096` should still look like "everything that
 was already decidable stays accepted; only the evidence-insufficient SP-like
 work units are allowed to fail closed."
+
+## 2026-05-19 Implementation Notes
+
+Implemented as a sidecar fact model in `src/rename/local_fact_surface.py`.
+
+Stable contract:
+
+- `LocalFactSurface` is built from `LocalEvidence` and can be serialized through
+  `local_fact_surface_to_dict(...)`.
+- `LocalFileFact` carries raw `path_facts`, `container_facts`,
+  `subtitle_facts`, `stream_facts`, and `missing_facts`.
+- `raw_number_tokens` and `raw_marker_tokens` are explicitly path facts only;
+  they are not episode, season, special, owner, or target interpretation.
+- Missing or unavailable facts are represented as data, not exceptions. The
+  dry sample pool therefore emits `not_attempted` for videos without real local
+  paths and `unsupported` for non-video files.
+- `.strm` files expose stream scheme/path-class facts and an explicit probe
+  limitation rather than duration/container claims.
+- Subtitle facts include bounded external-subtitle references and snippets.
+
+Projection points updated:
+
+- `LocalEvidence` has an optional `fact_surface`; `build_local_evidence(...)`
+  populates it from real local paths when available.
+- The raw sample pool uses the same builder through
+  `local_evidence_from_raw_sample(...)`; dry-build rows include file fact count,
+  probe status counts, and missing-fact summaries.
+- `LocalFileCard` now has fact fields, and the Case Agent projections carry
+  compact fact summaries into dossier, prompting, query composition, briefing,
+  and package projection surfaces.
+- HumanCaseAgent keeps fact cards off the initial desk by default. Local facts
+  are available through explicit `inspect` scopes such as `facts` or `details`,
+  which prevents large packages from being biased by unrequested missing-fact
+  summaries.
+- Agent guidance was updated to treat local facts as observations only:
+  missing duration/subtitle facts do not override visible title, count, slice,
+  or target evidence.
+
+Boundary notes:
+
+- The fixed layer does not emit `recommended_target`,
+  `candidate_derivative_mapping`, owner recommendations, sample-specific
+  Overlord/Pleiades aliases, Bangumi ids, or file-to-target mappings.
+- New recovery-frontier entries are mechanical repair categories; they do not
+  decide whether SP, derivative, recap, or supplemental semantics are true.
+- Boundary scan of the source paths listed below returned `finding_count=0`.
+
+## 2026-05-19 Validation Result
+
+Focused unit regression:
+
+```powershell
+.venv\Scripts\python.exe -m pytest tests\test_local_evidence.py tests\test_local_fact_surface.py tests\test_local_package_projection.py tests\test_local_bangumi_sample_runner.py tests\test_case_agent_dossier.py tests\test_case_agent_human_case_agent.py tests\test_case_agent_orchestrator_agent.py tests\test_ai_models.py -q
+```
+
+Result: `225 passed`.
+
+Compile:
+
+```powershell
+.venv\Scripts\python.exe -m compileall src\rename src\ai tools\run_local_bangumi_mapping_sample_pool.py tools\run_local_bangumi_human_gate.py tools\summarize_local_bangumi_human_trace.py
+```
+
+Result: passed.
+
+Boundary scan:
+
+```powershell
+.venv\Scripts\python.exe tools\scan_local_bangumi_boundary_risks.py src\rename\case_agent src\rename\local_evidence.py src\rename\local_fact_surface.py tools\run_local_bangumi_mapping_sample_pool.py --json
+```
+
+Result: `finding_count=0`.
+
+Dry build:
+
+```powershell
+.venv\Scripts\python.exe tools\run_local_bangumi_mapping_sample_pool.py --sample sample_0096 --limit 1 --dry-build --output-dir tests\sample_pool\generated\local_bangumi_mapping_sample_0096_preview_prefilter_dry_build_20260519
+```
+
+Result: `dry_build`, `file_count=676`, `video_count=168`,
+`main_video_count=81`, `supplemental_candidate_count=87`,
+`local_fact_file_count=676`, probe statuses
+`not_attempted=168` and `unsupported=508`,
+`files_with_external_subtitles=79`.
+
+Focused `sample_0096` gate:
+
+```powershell
+.venv\Scripts\python.exe tools\run_local_bangumi_human_gate.py --sample 0096 --max-rounds 12 --sample-timeout-seconds 420 --output-dir tests\sample_pool\generated\local_bangumi_mapping_sample_0096_manual_review_hints_gate2_20260519
+```
+
+Result: `status=accepted`, `accepted_contract_ok=true`,
+`final_verifier_passed=true`, `turn_count=11`,
+`tool_sequence=search -> inspect -> search -> submit -> search -> submit -> submit -> submit -> submit -> submit -> submit`,
+`submit_rejection_count=4`, `strict_failure_count=0`,
+`legacy_subagent_call_count=0`.
+
+Spot check of final assignment shape:
+
+- 39 files map to visible Bangumi refs: the three regular TV seasons.
+- 42 preview-marked files are front-filtered deterministic supplemental
+  material and do not enter the HumanCaseAgent must-account contract.
+- 42 files are `UNALIGNED` `manual_review`, which is counted as accounted-for
+  but not mapped or supplemental.
+- TV rows remain mapped: `OVERLORD` 13 files, `OVERLORD II` 13 files, and
+  `OVERLORD III` 13 files.
+- Numbered SP groups now stay out of mapped ownership when only related
+  same-count `Play Play` structure is visible. They are `manual_review` instead
+  of mapped or supplemental.
+- `OVERLORD Ple Ple Pleiades` remains `manual_review`: the local evidence does
+  not prove whether the singleton is a whole-series compilation, a duplicate
+  packaging unit, or one visible `Play Play` item, so it must not claim episode
+  1 or any other single item as a subject proxy.
+- `manual_review` rows may carry low-confidence `review_candidate_targets` for
+  human replay; those hints do not populate final `target_ref`, do not create
+  `target_refs`, and do not count as mapped/accepted targets.
+- Recap movies and movie/theater-manners SPs remain `manual_review` in this
+  conservative run; this is accepted-accounted and not unsafe.
 
 ## Recommended Goal Command
 

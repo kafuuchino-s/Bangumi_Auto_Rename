@@ -50,6 +50,12 @@ _VIDEO_EXTRA_RULES: list[tuple[str, str, str, re.Pattern[str]]] = [
         re.compile(r'(?i)\[PV[^\]]*\]'),
     ),
     (
+        'bracketed_preview',
+        'pv_cm',
+        'bracketed preview asset',
+        re.compile(r'(?i)\[(?:(?:TV|BD|Blu-ray)\s*)?Preview(?:\s*\d{0,3}(?:[_-]\d+)?)?(?:[\s_-][^\]]*)?\]'),
+    ),
+    (
         'bracketed_creditless_op_ed',
         'creditless_op_ed',
         'bracketed NCOP/NCED asset',

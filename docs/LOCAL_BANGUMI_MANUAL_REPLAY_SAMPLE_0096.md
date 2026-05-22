@@ -90,7 +90,10 @@ The current accepted mapping appears semantically safe:
 - `OVERLORD III` 01-13 -> `target://bangumi/242170-overlord-第三季/episodes/1-13`
 - `Gekijouban Soushuuhen OVERLORD` part 1 -> `target://bangumi/194036-剧场版总集篇-overlord-不死者之王/episode/1`
 - `Gekijouban Soushuuhen OVERLORD` part 2 -> `target://bangumi/198968-剧场版总集篇-overlord-漆黑的英雄/episode/1`
-- `OVERLORD Ple Ple Pleiades` -> `target://bangumi/193953-play-play-昴宿星团/episode/1`
+- Historical run note, now superseded: `OVERLORD Ple Ple Pleiades`
+  previously mapped to `target://bangumi/193953-play-play-昴宿星团/episode/1`,
+  but the current policy treats that as unsafe without stronger compilation or
+  item-level evidence.
 - movie SP/theater manners and TV SP/previews/menu/CM/PV/NCOP/NCED groups -> supplemental/non-Bangumi/target_absent with inspected same-series support where required.
 
 Safety conclusion:
@@ -128,7 +131,9 @@ Result:
 
 Current safe-fail blocker:
 
-- `OVERLORD Ple Ple Pleiades` now maps to `target://bangumi/193953-play-play-昴宿星团/episode/1`.
+- Historical run note, now superseded: `OVERLORD Ple Ple Pleiades` previously
+  mapped to `target://bangumi/193953-play-play-昴宿星团/episode/1`; current
+  handling sends this singleton to `manual_review` instead.
 - The two `Gekijouban Soushuuhen OVERLORD` movie files no longer get unsafe accepted as supplemental/target_absent.
 - They end as `fail_closed` because the searched title-tail aliases did not expose a reliable visible Bangumi owner after removing the previous work-specific alias bridge.
 
@@ -163,7 +168,9 @@ Spot check:
 
 - `Gekijouban Soushuuhen OVERLORD` part 1 maps to `target://bangumi/194036-剧场版总集篇-overlord-不死者之王/episode/1`.
 - `Gekijouban Soushuuhen OVERLORD` part 2 maps to `target://bangumi/198968-剧场版总集篇-overlord-漆黑的英雄/episode/1`.
-- `OVERLORD Ple Ple Pleiades` maps to `target://bangumi/193953-play-play-昴宿星团/episode/1`.
+- Historical run note, now superseded: `OVERLORD Ple Ple Pleiades` previously
+  mapped to `target://bangumi/193953-play-play-昴宿星团/episode/1`; current
+  handling sends this singleton to `manual_review` instead.
 - `OVERLORD`, `OVERLORD II`, and `OVERLORD III` TV spans map to their 13-episode subjects.
 - Movie SP/theater-manners and TV SP/previews/menu/CM/PV/NCOP/NCED groups are supplemental with same-series support.
 
@@ -564,7 +571,9 @@ Spot check:
 - `OVERLORD III` 01-13 -> `target://bangumi/242170-overlord-第三季/episodes/1-13`
 - `Gekijouban Soushuuhen OVERLORD` part 1 -> `target://bangumi/194036-剧场版总集篇-overlord-不死者之王/episode/1`
 - `Gekijouban Soushuuhen OVERLORD` part 2 -> `target://bangumi/198968-剧场版总集篇-overlord-漆黑的英雄/episode/1`
-- `OVERLORD Ple Ple Pleiades` -> `target://bangumi/193953-play-play-昴宿星团/episode/1`
+- Historical run note, now superseded: `OVERLORD Ple Ple Pleiades`
+  previously mapped to `target://bangumi/193953-play-play-昴宿星团/episode/1`;
+  current handling sends this singleton to `manual_review`.
 - movie/TV SP, preview, menu, CM, PV, NCOP/NCED groups remain supplemental with inspected same-series support.
 
 Safety conclusion:
@@ -617,7 +626,9 @@ Final spot check:
 - `OVERLORD III` 01-13 -> `target://bangumi/242170-overlord-第三季/episodes/1-13`
 - `Gekijouban Soushuuhen OVERLORD` part 1 -> `target://bangumi/194036-剧场版总集篇-overlord-不死者之王/episodes/1-1`
 - `Gekijouban Soushuuhen OVERLORD` part 2 -> `target://bangumi/198968-剧场版总集篇-overlord-漆黑的英雄/episode/1`
-- `OVERLORD Ple Ple Pleiades` -> `target://bangumi/193953-play-play-昴宿星团/episode/1`
+- Historical run note, now superseded: `OVERLORD Ple Ple Pleiades`
+  previously mapped to `target://bangumi/193953-play-play-昴宿星团/episode/1`;
+  current handling sends this singleton to `manual_review`.
 - SP/previews/menu/CM/PV/NCOP/NCED groups remain excluded/supplemental with visible support or mechanical verification.
 
 Safety conclusion:
@@ -761,8 +772,13 @@ Spot check:
 - `OVERLORD` -> `target://bangumi/112146-overlord/episodes/1-13`
 - `OVERLORD II` -> `target://bangumi/211027-overlord-第二季/episodes/1-13`
 - `OVERLORD III` -> `target://bangumi/242170-overlord-第三季/episodes/1-13`
-- `OVERLORD Ple Ple Pleiades` -> `target://bangumi/193953-play-play-昴宿星团/episode/1`
-- Numbered SP groups remain supplemental only with inspected same-series support and concrete no-corresponding-SP/OAD reasons.
+- Historical run note, now superseded: `OVERLORD Ple Ple Pleiades`
+  previously mapped to `target://bangumi/193953-play-play-昴宿星团/episode/1`;
+  current handling sends this singleton to `manual_review`.
+- Historical run note, now superseded: numbered SP groups previously remained
+  supplemental with inspected same-series support. Current handling sends
+  numbered SP groups to `manual_review` when related same-count short-series
+  structure is visible but ownership is not strongly proven.
 
 Conclusion:
 
@@ -990,3 +1006,77 @@ Validation plan:
   cites the required facts.
 - Protection samples `0035` and `0126` should not gain new accepted
   supplemental rows from unrelated SP/count coincidences.
+
+## 2026-05-19 Local Fact Surface Validation
+
+Plan: `docs/LOCAL_BANGUMI_LOCAL_FACT_SURFACE_GOAL_PLAN.md`
+
+Implemented delta:
+
+- Added a sidecar local fact surface for raw path/container/subtitle/stream and
+  explicit missing facts.
+- Reused the same fact builder in real `LocalEvidence` and sample-pool raw JSON
+  dry builds.
+- Projected compact fact summaries into Case Agent dossier/prompt/query
+  surfaces and made detailed fact cards available through explicit
+  HumanCaseAgent `inspect` scopes.
+- Kept fact cards off the initial HumanCaseAgent desk by default after
+  validation showed that unrequested missing-fact summaries could bias
+  `sample_0096` into premature movie/recap fail-closed.
+
+Focused gate:
+
+```powershell
+.venv\Scripts\python.exe tools\run_local_bangumi_human_gate.py --sample 0096 --max-rounds 12 --sample-timeout-seconds 420 --output-dir tests\sample_pool\generated\local_bangumi_mapping_sample_0096_manual_review_hints_gate2_20260519
+```
+
+Result:
+
+- `status=accepted`
+- `accepted_contract_ok=true`
+- `final_verifier_passed=true`
+- `turn_count=11`
+- `tool_sequence=search -> inspect -> search -> submit -> search -> submit -> submit -> submit -> submit -> submit -> submit`
+- `submit_rejection_count=4`
+- `strict_failure_count=0`
+- `legacy_subagent_call_count=0`
+- `main_file_count=81`
+- `mapped_file_count=39`
+- `excluded_file_count=0`
+- `manual_review_file_count=42`
+- `unresolved_count=0`
+- `deterministic_filtered_video_count=87`
+
+Spot check:
+
+- Three TV spans remain mapped: `OVERLORD`, `OVERLORD II`, and
+  `OVERLORD III` each map 13 files to visible Bangumi episode refs.
+- The two `Gekijouban Soushuuhen OVERLORD` recap movie files are
+  `manual_review` in this conservative run.
+- `OVERLORD Ple Ple Pleiades` is now an Agent-authored `UNALIGNED`
+  `manual_review` row. The local evidence does not prove whether this singleton
+  is a whole-series compilation, duplicate packaging, or one visible `Play Play`
+  item, so mapping it to `episode/1` or any other single item is unsafe.
+- Preview-marked rows such as `Preview01_1` are now filtered before the
+  HumanCaseAgent contract as deterministic supplemental material, alongside
+  CM/Menu/PV/NCOP/NCED support-only files.
+- Numbered SP groups now stay out of mapped ownership when only related
+  same-count `Play Play` structure is visible. They are `manual_review` instead
+  of mapped or supplemental, and they do not block package acceptance.
+- `manual_review` rows may carry low-confidence `review_candidate_targets`
+  such as visible `Play Play` spans for human replay. Those hints compile only
+  into review metadata: final assignment rows still use `target_ref=UNALIGNED`,
+  have no `target_refs`, and do not count as mapped/accepted targets.
+
+Boundary conclusion:
+
+- This local fact surface goal did not add fixed-layer target selection,
+  sample-specific Overlord/Pleiades aliases, Bangumi ids, or file-to-target
+  mappings.
+- The accepted SP/theater-manners and `manual_review` outcomes are
+  recorded as the Agent's terminal judgment from the current evidence path, not
+  as fact-model conclusions.
+- If product policy later requires derivative-short rows to remain unresolved
+  unless duration/related-graph evidence is cited, that should be enforced as a
+  separate Agent/validator support-shape change rather than by weakening the
+  local fact model.

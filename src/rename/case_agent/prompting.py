@@ -10,6 +10,7 @@ from .policy import build_action_policy
 from .notebook import build_notebook
 from .issue_router import route_verifier_issues
 from .models import CaseDossier
+from ..local_fact_surface import compact_file_fact_for_card
 
 
 def _jsonable(value):
@@ -90,7 +91,7 @@ def _compact_local_file_card(card) -> dict[str, object]:
     data = card.model_dump(mode='json') if hasattr(card, 'model_dump') else dict(card)
     path = str(data.get('path', '') or '')
     parent_display = str(data.get('parent_display', '') or '')
-    return {
+    compact = {
         'ref': data.get('ref', ''),
         'basename': path.replace('\\', '/').rsplit('/', 1)[-1],
         'path_tail': path.replace('\\', '/').rsplit('/', 2)[-1] if '/' in path.replace('\\', '/') else path,
@@ -102,7 +103,12 @@ def _compact_local_file_card(card) -> dict[str, object]:
         'title': data.get('title', ''),
         'title_cn': data.get('title_cn', ''),
         'cues': _sample_values([str(v) for v in (data.get('title_cues') or [])], limit=3),
+        'fact_summary': data.get('fact_summary') or {},
     }
+    fact_card = compact_file_fact_for_card(data, detail=False)
+    if fact_card:
+        compact['local_facts'] = fact_card
+    return compact
 
 
 def _compact_local_span_card(card) -> dict[str, object]:

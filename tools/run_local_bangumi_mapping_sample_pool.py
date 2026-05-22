@@ -8,7 +8,7 @@ import sys
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from queue import Empty
-from dataclasses import asdict, is_dataclass
+from dataclasses import asdict, is_dataclass, replace
 from pathlib import Path
 from typing import Any
 
@@ -20,6 +20,7 @@ from src.ai.client import AIClient
 from src.bangumi.client import BangumiClient
 from src.config.config_manager import cm
 from src.rename.case_agent.local_bangumi_entry import run_local_bangumi_case_agent_mapping
+from src.rename.local_fact_surface import build_local_fact_surface, compact_fact_surface_summary
 from src.rename.local_evidence import LocalEvidence, LocalFileEvidence
 from src.rename.local_supplemental_filter import classify_local_video_supplemental
 from src.rename.utils import VIDEO_SUFFIX
@@ -108,7 +109,7 @@ def local_evidence_from_raw_sample(path: Path) -> LocalEvidence:
             )
         )
 
-    return LocalEvidence(
+    evidence = LocalEvidence(
         root_name=root_name,
         root_path=str(path),
         files=files,
@@ -117,6 +118,13 @@ def local_evidence_from_raw_sample(path: Path) -> LocalEvidence:
         supplemental_candidate_count=sum(1 for file in files if file.is_supplemental_candidate),
         directory_structure=sorted(directories),
     )
+    embedded_fact_surface = payload.get("local_fact_surface")
+    fact_surface = (
+        embedded_fact_surface
+        if isinstance(embedded_fact_surface, dict)
+        else build_local_fact_surface(evidence)
+    )
+    return replace(evidence, fact_surface=fact_surface)
 
 
 def _select_samples(raw_root: Path, filters: list[str], limit: int | None, offset: int = 0) -> list[Path]:
@@ -222,6 +230,7 @@ def _accepted_contract_ok(snapshot: dict[str, Any]) -> bool:
     accounted = int(snapshot.get("accounted_for_count") or 0)
     mapped = int(snapshot.get("mapped_file_count") or 0)
     excluded = int(snapshot.get("excluded_file_count") or 0)
+    manual_review = int(snapshot.get("manual_review_file_count") or 0)
     unresolved = int(snapshot.get("unresolved_count") or 0)
     open_count = int(snapshot.get("open_file_count") or 0)
     needs_more = int(snapshot.get("needs_more_evidence_file_count") or 0)
@@ -229,7 +238,7 @@ def _accepted_contract_ok(snapshot: dict[str, Any]) -> bool:
     return (
         main_count > 0
         and accounted == main_count
-        and mapped + excluded == main_count
+        and mapped + excluded + manual_review == main_count
         and unresolved == 0
         and open_count == 0
         and needs_more == 0
@@ -422,6 +431,7 @@ def _sample_row(sample_path: Path, result: dict[str, Any], elapsed_ms: int) -> d
         "assignment_intent_count": snapshot.get("assignment_intent_count") if isinstance(snapshot, dict) else None,
         "mapped_file_count": snapshot.get("mapped_file_count") if isinstance(snapshot, dict) else None,
         "excluded_file_count": snapshot.get("excluded_file_count") if isinstance(snapshot, dict) else None,
+        "manual_review_file_count": snapshot.get("manual_review_file_count") if isinstance(snapshot, dict) else None,
         "unresolved_count": snapshot.get("unresolved_count") if isinstance(snapshot, dict) else None,
         "final_verifier_passed": snapshot.get("final_verifier_passed") if isinstance(snapshot, dict) else None,
         "case_agent_mode": snapshot.get("case_agent_mode") if isinstance(snapshot, dict) else None,
@@ -563,6 +573,7 @@ def _row_with_partial_progress(row: dict[str, Any], progress_path: Path) -> dict
 
 def _dry_build_row(sample: Path) -> dict[str, Any]:
     evidence = local_evidence_from_raw_sample(sample)
+    fact_summary = compact_fact_surface_summary(evidence.fact_surface)
     return {
         "sample": sample.as_posix(),
         "status": "dry_build",
@@ -571,6 +582,10 @@ def _dry_build_row(sample: Path) -> dict[str, Any]:
         "main_video_count": evidence.main_video_count,
         "supplemental_candidate_count": evidence.supplemental_candidate_count,
         "root_name": evidence.root_name,
+        "local_fact_surface": fact_summary,
+        "local_fact_file_count": int(fact_summary.get("file_fact_count") or 0),
+        "local_fact_probe_status_counts": fact_summary.get("probe_status_counts") or {},
+        "local_fact_missing_fact_summary": fact_summary.get("missing_fact_summary") or {},
     }
 
 

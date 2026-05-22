@@ -148,6 +148,9 @@ Allowed evidence request types:
 - Only use `fail_closed` on the initial round when evidence cannot plausibly help: no budget, no legal anchor, or the missing detail cannot be requested.
 - On the safety-cap final round, if the case is still not safe to resolve, prefer `fail_closed` with explicit reasons over another evidence request.
 - Non-semantic request templates you may use include `target_window` and `local_file_detail`; keep them generic and do not invent sample-specific requests.
+- `local_file_detail` can expose `local_facts`: raw path hierarchy, raw number tokens, container/duration probe status, subtitle/stream metadata, and explicit missing-fact reasons. Treat these as facts only; you decide any mapping, derivative ownership, target_absent, or supplemental outcome.
+- Non-regular files are not manual-review by default. For SP, OVA/OAD, recap, special-marker, singleton compilation, duplicate-packaging, NCOP/NCED, or suspected derivative-short rows, first try to close the loop with local group boundary, numbering/count, duration consistency, and the unique visible Bangumi legal target. If that closed loop is strong, a mapped outcome can be accepted without subtitle text.
+- Request subtitle/body evidence only as bounded, on-demand compact evidence for low-confidence anchors when structure/count/duration/title evidence is still insufficient. Do not request or rely on package-wide subtitle text.
 - Use `target_span` when you need span proof for a large continuous package and cannot safely conclude alignment from the compact span cards.
 - `LS_PACKAGE` is overview-only; when requesting `target_span`, ask for child spans instead of `LS_PACKAGE`.
 - `LS_PACKAGE` remains overview-only guidance, not a request payload.

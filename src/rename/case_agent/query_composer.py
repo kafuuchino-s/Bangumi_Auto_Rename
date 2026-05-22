@@ -11,6 +11,7 @@ from pydantic import ValidationError
 from .dossier import build_bounded_case_dossier
 from .models import CaseDossier, QueryCard, QueryComposerOutput
 from .notebook import compact_case_briefing, compact_investigation_notebook
+from ..local_fact_surface import compact_file_fact_for_card
 
 
 @dataclass
@@ -59,7 +60,7 @@ def _compact_query_card(card: QueryCard) -> dict[str, object]:
 def _compact_local_file_card(card: object) -> dict[str, object]:
     data = card.model_dump(mode='json') if hasattr(card, 'model_dump') else dict(card)
     path = str(data.get('path', '') or '').replace('\\', '/')
-    return {
+    compact = {
         'ref': data.get('ref', ''),
         'basename': path.rsplit('/', 1)[-1],
         'path_tail': path.rsplit('/', 2)[-1] if '/' in path else path,
@@ -67,7 +68,12 @@ def _compact_local_file_card(card: object) -> dict[str, object]:
         'is_main': data.get('is_main', False),
         'label': data.get('label', ''),
         'file_kind': data.get('file_kind', ''),
+        'fact_summary': data.get('fact_summary') or {},
     }
+    fact_card = compact_file_fact_for_card(data, detail=False)
+    if fact_card:
+        compact['local_facts'] = fact_card
+    return compact
 
 
 def _compact_local_cluster_card(card: object) -> dict[str, object]:

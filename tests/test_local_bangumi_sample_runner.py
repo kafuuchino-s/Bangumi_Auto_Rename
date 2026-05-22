@@ -134,6 +134,25 @@ def test_strict_row_ok_accepts_agent_fail_closed_submit_summary():
     )
 
 
+def test_accepted_contract_ok_counts_manual_review_as_accounted():
+    assert runner._accepted_contract_ok(
+        {
+            "status": "accepted",
+            "main_file_count": 3,
+            "accounted_for_count": 3,
+            "mapped_file_count": 1,
+            "excluded_file_count": 1,
+            "manual_review_file_count": 1,
+            "unresolved_count": 0,
+            "open_file_count": 0,
+            "needs_more_evidence_file_count": 0,
+            "unaligned_file_count": 0,
+            "accepted_accounting_ready": True,
+            "final_verifier_passed": True,
+        }
+    )
+
+
 def test_strict_row_ok_accepts_recovery_failure_semantics():
     for summary in ("retrieval_exhausted", "agent_recovery_failed", "semantic_ambiguity", "provider_failure"):
         assert runner._strict_row_ok(
@@ -238,6 +257,52 @@ def test_runner_progress_is_used_when_orchestrator_progress_not_started(tmp_path
     assert payload["phase"] == "case_agent_mapping_started"
     assert row["partial_progress_phase"] == "case_agent_mapping_started"
     assert row["partial_progress_path"] == progress_path.as_posix()
+
+
+def test_raw_sample_builds_local_fact_surface_shape(tmp_path: Path):
+    sample = tmp_path / "sample_fact.json"
+    sample.write_text(
+        json.dumps(
+            {
+                "root_name": "Fact Sample",
+                "files": [
+                    {"path": "Fact Sample/Fact Sample - 01.mkv", "size": 123},
+                    {"path": "Fact Sample/Fact Sample - 01.chs.ass", "size": 45},
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    evidence = runner.local_evidence_from_raw_sample(sample)
+
+    assert evidence.fact_surface is not None
+    assert len(evidence.fact_surface.files) == 2
+    video_fact = next(fact for fact in evidence.fact_surface.files if fact.relative_path.endswith(".mkv"))
+    assert video_fact.container_facts.probe_status == "not_attempted"
+    assert video_fact.subtitle_facts.external_subtitle_refs
+    assert video_fact.subtitle_facts.external_subtitle_refs[0]["language_markers"] == ["chs"]
+    assert video_fact.missing_facts
+
+
+def test_dry_build_row_reports_local_fact_counts(tmp_path: Path):
+    sample = tmp_path / "sample_fact_dry.json"
+    sample.write_text(
+        json.dumps(
+            {
+                "root_name": "Dry Fact Sample",
+                "files": [{"path": "Dry Fact Sample/Dry Fact Sample - 01.mkv", "size": 123}],
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    row = runner._dry_build_row(sample)
+
+    assert row["status"] == "dry_build"
+    assert row["local_fact_file_count"] == 1
+    assert row["local_fact_probe_status_counts"]["not_attempted"] == 1
+    assert row["local_fact_missing_fact_summary"]["by_class"]["container_facts"] == 1
 
 
 def test_run_in_parallel_runs_single_sample_serially(monkeypatch):
