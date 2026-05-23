@@ -167,6 +167,7 @@ SEMANTIC_SUBMIT_DIAGNOSTIC_CODES = {
 LEDGER_TERMINAL_REPAIR_ISSUES = {
     "episode_range_required",
     "ledger_candidate_debt_open",
+    "ledger_candidate_manual_review_requires_localized_uncertainty",
     "ledger_fail_closed_target_ignored",
     "ledger_strong_candidate_manual_review_requires_contradiction",
     "ledger_composite_feature_shape_invalid",
@@ -193,7 +194,41 @@ REPAIR_GROUP_ISSUE_CODES = {
     "manual_review_duplicate_variant_repairs": "manual_review_duplicate_variant_should_split",
     "manual_review_visible_slice_pairing_repairs": "manual_review_visible_slice_pairing_should_split",
     "numbered_special_exclusion_repairs": "numbered_special_exclusion_needs_target_evidence",
+    "supplemental_special_marker_repairs": "supplemental_special_marker_without_hard_extra_reason",
 }
+SUBMIT_REPAIR_GROUP_KEYS = (
+    "fail_closed_mapped_sibling_repairs",
+    "excluded_slice_mapped_sibling_repairs",
+    "fail_closed_count_matched_target_sibling_repairs",
+    "excluded_count_matched_uninspected_subject_repairs",
+    "excluded_singleton_visible_subject_repairs",
+    "singleton_target_alias_repairs",
+    "mapped_target_title_bridge_repairs",
+    "mapped_numbered_special_related_count_repairs",
+    "manual_review_evidence_upgrade_repairs",
+    "manual_review_strong_non_regular_mapping_repairs",
+    "manual_review_visible_slice_pairing_repairs",
+    "mapped_slice_manual_sibling_repairs",
+    "manual_review_duplicate_variant_repairs",
+    "mapped_title_season_mismatch_repairs",
+    "excluded_main_mapped_sibling_repairs",
+    "supplemental_main_episode_repairs",
+    "supplemental_special_marker_repairs",
+    "numbered_special_exclusion_repairs",
+    "fail_closed_negative_target_absence_repairs",
+    "excluded_title_tail_search_repairs",
+    "excluded_visible_title_pairing_repairs",
+    "excluded_title_tail_unresolved_repairs",
+    "fail_closed_slice_pairing_repairs",
+    "fail_closed_title_tail_bridge_repairs",
+    "excluded_singleton_unassigned_target_repairs",
+    "fail_closed_singleton_unassigned_target_repairs",
+    "duplicate_like_singleton_exclusion_mismatch_repairs",
+)
+REPAIR_FRONTIER_SOURCE_KEYS = (
+    *SUBMIT_REPAIR_GROUP_KEYS,
+    "visible_target_surface_missing_units",
+)
 
 
 class InspectToolArgs(BaseModel):
@@ -3235,9 +3270,9 @@ def _mechanical_gap_rows_from_repair(agenda: dict[str, object]) -> list[dict[str
 
 def _locators_from_repair_row(row: dict[str, object]) -> set[str]:
     result: set[str] = set()
-    for key in ("local", "target", "locator"):
+    for key in ("local", "target", "locator", "local_parent"):
         value = row.get(key)
-        if key == "local":
+        if key in {"local", "local_parent"}:
             result.update(_repair_local_values(value))
             continue
         if isinstance(value, list):
@@ -3296,8 +3331,9 @@ def _repair_required_next_action(row: dict[str, object]) -> str:
             "ledger_candidate_debt_open",
         }.intersection(issue_codes):
             return (
-                "Patch this exact ledger row from the visible suggested mapped row, or use manual_review/fail_closed "
-                "only with the suggested target named and a concrete post-upgrade contradiction or blocker."
+                "Patch this exact ledger row from the visible suggested mapped row, or use exact "
+                "candidate-bearing manual_review for a specific localized evidence gap, rejected with a concrete contradiction, "
+                "or fail_closed with a concrete blocker."
             )
         if "ledger_coverage_overlap" in issue_codes:
             return (
@@ -3348,7 +3384,8 @@ def _repair_required_next_action(row: dict[str, object]) -> str:
     if issue_code == "manual_review_strong_non_regular_mapping_should_revise":
         return (
             "Use revise_saved_rows to replace the saved manual_review placeholder with the suggested mapped "
-            "numbered-special rows, unless you can name a concrete post-upgrade contradiction."
+            "numbered-special rows, or split it into exact candidate-bearing manual_review rows if ownership "
+            "remains localized uncertainty."
         )
     if issue_code == "manual_review_visible_slice_pairing_should_split":
         return (
@@ -4360,6 +4397,172 @@ def _candidate_debt_has_manual_review_contradiction(
     )
 
 
+def _manual_review_candidate_has_localized_uncertainty(
+    unit: dict[str, object],
+    *,
+    target: object = "",
+    target_subject: object = "",
+) -> bool:
+    if (str(target or "").strip() or str(target_subject or "").strip()) and not _manual_review_candidate_is_addressed(
+        unit,
+        target=target,
+        target_subject=target_subject,
+    ):
+        return False
+    text = " ".join(
+        str(value or "")
+        for value in [
+            unit.get("reason"),
+            *list(unit.get("open_questions") or []),
+        ]
+    ).casefold()
+    if not text.strip():
+        return False
+    uncertainty_terms = (
+        "ambiguous",
+        "ambiguity",
+        "uncertain",
+        "uncertainty",
+        "unresolved",
+        "insufficient",
+        "not enough",
+        "cannot determine",
+        "unknown",
+        "gap",
+        "mismatch",
+        "contradict",
+        "conflict",
+        "missing",
+        "uninspected",
+        "not inspected",
+    )
+    evidence_terms = (
+        "duration",
+        "runtime",
+        "title",
+        "subtitle",
+        "count",
+        "episode",
+        "range",
+        "subject",
+        "surface",
+        "same-count",
+        "competitor",
+        "variant",
+        "duplicate",
+        "recap",
+        "movie",
+        "theater",
+        "special",
+        "sp",
+        "ova",
+        "oad",
+        "packaging",
+        "part",
+        "cour",
+        "target item",
+        "search",
+        "inspect",
+    )
+    return any(term in text for term in uncertainty_terms) and any(term in text for term in evidence_terms)
+
+
+def _manual_review_candidate_has_strong_resolution_uncertainty(
+    unit: dict[str, object],
+    *,
+    target: object = "",
+    target_subject: object = "",
+) -> bool:
+    if not _manual_review_candidate_has_localized_uncertainty(
+        unit,
+        target=target,
+        target_subject=target_subject,
+    ):
+        return False
+    text = " ".join(
+        str(value or "")
+        for value in [
+            unit.get("reason"),
+            *list(unit.get("open_questions") or []),
+        ]
+    ).casefold()
+    concrete_anchor_terms = (
+        "duration",
+        "runtime",
+        "title",
+        "subtitle",
+        "same-count",
+        "same count",
+        "count mismatch",
+        "target count",
+        "episode range",
+        "episode title",
+        "target-surface",
+        "target surface",
+        "surface",
+        "variant",
+        "duplicate",
+        "competitor",
+        "competing",
+        "mismatch",
+        "conflict",
+        "contradict",
+        "local fact",
+        "local facts",
+    )
+    return any(term in text for term in concrete_anchor_terms)
+
+
+def _ledger_manual_review_has_localized_candidate_uncertainty(
+    row: ResolutionLedgerRow,
+    *,
+    target: str,
+    target_subject: str,
+    strong_candidate: bool = False,
+) -> bool:
+    row_payload = {
+        "manual_review_candidate_targets": list(row.manual_review_candidate_targets or []),
+        "explicit_review_candidate_targets": list(row.manual_review_candidate_targets or []),
+        "reason": row.reason,
+        "open_questions": list(row.open_questions or []),
+    }
+    if strong_candidate:
+        return _manual_review_candidate_has_strong_resolution_uncertainty(
+            row_payload,
+            target=target,
+            target_subject=target_subject,
+        )
+    return _manual_review_candidate_has_localized_uncertainty(
+        row_payload,
+        target=target,
+        target_subject=target_subject,
+    )
+
+
+def _ledger_row_covers_candidate_support_exactly(
+    row: ResolutionLedgerRow,
+    candidate: ResolutionLedgerCandidateDebt,
+) -> bool:
+    support_locators = _repair_local_values(list(candidate.support or []))
+    if not support_locators:
+        return True
+    row_locators = [
+        str(local or "").strip()
+        for local in list(row.local or [])
+        if str(local or "").strip()
+    ]
+    if not row_locators:
+        return False
+    row_keys = {locator.casefold() for locator in row_locators}
+    return all(support.casefold() in row_keys for support in support_locators)
+
+
+def _local_locator_exact_match(left: object, right: object) -> bool:
+    left_text = str(left or "").strip().casefold()
+    right_text = str(right or "").strip().casefold()
+    return bool(left_text and right_text and left_text == right_text)
+
+
 def _candidate_debt_rejection_has_concrete_contradiction(
     candidate: ResolutionLedgerCandidateDebt,
 ) -> bool:
@@ -4448,6 +4651,17 @@ def _ledger_row_candidate_debt_issues(
             _ledger_candidate_matches_target(canonical_target, review_target)
             for review_target in review_targets
         )
+        target_subject = _target_subject_locator_text(canonical_target)
+        manual_review_localized_discharge = bool(
+            manual_review_discharge
+            and (not _candidate_debt_requires_concrete_resolution(candidate) or _ledger_row_covers_candidate_support_exactly(row, candidate))
+            and _ledger_manual_review_has_localized_candidate_uncertainty(
+                row,
+                target=canonical_target,
+                target_subject=target_subject,
+                strong_candidate=_candidate_debt_requires_concrete_resolution(candidate),
+            )
+        )
         requires_concrete_resolution = _candidate_debt_requires_concrete_resolution(candidate)
         low_confidence_review_hint = (
             not requires_concrete_resolution
@@ -4455,15 +4669,6 @@ def _ledger_row_candidate_debt_issues(
         )
         if row.status == "mapped" and low_confidence_review_hint and not _ledger_candidate_matches_target(canonical_target, row_target):
             continue
-        target_subject = _target_subject_locator_text(canonical_target)
-        manual_review_contradiction_discharge = bool(
-            manual_review_discharge
-            and _candidate_debt_has_manual_review_contradiction(
-                row,
-                target=canonical_target,
-                target_subject=target_subject,
-            )
-        )
         rejected_discharge = discharge == "rejected" and bool(str(candidate.contradiction or "").strip())
         fail_closed_discharge = (
             row.status == "fail_closed"
@@ -4484,10 +4689,44 @@ def _ledger_row_candidate_debt_issues(
                 }
             )
             continue
+        if discharge == "manual_review" and manual_review_discharge and not manual_review_localized_discharge:
+            support_locators = _repair_local_values(list(candidate.support or [])) or list(row.local or [])
+            suggested_reason = (
+                "Map this candidate if ownership is closed, or keep manual_review only with a specific localized evidence gap."
+                if requires_concrete_resolution
+                else candidate.reason
+                or "Map this candidate debt, or keep manual_review only with a specific localized evidence gap."
+            )
+            issues.append(
+                {
+                    "issue": "ledger_candidate_manual_review_requires_localized_uncertainty",
+                    "row_id": row.row_id,
+                    "candidate_target": canonical_target,
+                    "candidate_source": candidate.source,
+                    "manual_review_candidate_targets": list(row.manual_review_candidate_targets or []),
+                    "suggested_submit_shape": [
+                        {
+                            "local": support_locator,
+                            "target": canonical_target,
+                            "outcome": str(candidate.mapped_outcome or "mapped_special_or_ova"),
+                            "reason": suggested_reason,
+                        }
+                        for support_locator in support_locators[:8]
+                    ]
+                    if requires_concrete_resolution
+                    else [],
+                    "required": (
+                        "candidate discharge=manual_review requires the candidate target plus a localized unresolved "
+                        "evidence point, such as title/count/duration/target-surface/variant ambiguity. Vague "
+                        "uncertainty does not discharge candidate debt."
+                    ),
+                }
+            )
+            continue
         if discharge == "manual_review" and not manual_review_discharge:
             support_locators = _repair_local_values(list(candidate.support or [])) or list(row.local or [])
             suggested_reason = (
-                "Map this strong candidate debt, or keep manual_review only with a concrete post-upgrade contradiction."
+                "Map this candidate if ownership is closed, or carry it in manual_review_candidate_targets with localized uncertainty."
                 if requires_concrete_resolution
                 else candidate.reason
                 or "Map this candidate debt, or keep manual_review only with a concrete reason."
@@ -4566,36 +4805,7 @@ def _ledger_row_candidate_debt_issues(
                 }
             )
             continue
-        if requires_concrete_resolution and manual_review_discharge and not manual_review_contradiction_discharge:
-            support_locators = _repair_local_values(list(candidate.support or [])) or list(row.local or [])
-            suggested_reason = (
-                "Map this strong candidate debt, or keep manual_review only with a concrete post-upgrade contradiction."
-            )
-            issues.append(
-                {
-                    "issue": "ledger_strong_candidate_manual_review_requires_contradiction",
-                    "row_id": row.row_id,
-                    "candidate_target": canonical_target,
-                    "candidate_source": candidate.source,
-                    "manual_review_candidate_targets": list(row.manual_review_candidate_targets or []),
-                    "suggested_submit_shape": [
-                        {
-                            "local": support_locator,
-                            "target": canonical_target,
-                            "outcome": str(candidate.mapped_outcome or "mapped_special_or_ova"),
-                            "reason": suggested_reason,
-                        }
-                        for support_locator in support_locators[:8]
-                    ],
-                    "required": (
-                        "This candidate debt came from a strong mapping repair. A low-confidence manual_review "
-                        "that merely carries the candidate target is not enough to discharge it. Map the candidate, "
-                        "or keep manual_review/fail_closed only with a concrete post-upgrade contradiction."
-                    ),
-                }
-            )
-            continue
-        if mapped_discharge or manual_review_discharge or rejected_discharge or fail_closed_discharge:
+        if mapped_discharge or manual_review_localized_discharge or rejected_discharge or fail_closed_discharge:
             continue
         issues.append(
             {
@@ -4616,7 +4826,7 @@ def _ledger_row_candidate_debt_issues(
                         "target": canonical_target,
                         "outcome": str(candidate.mapped_outcome or "mapped_special_or_ova"),
                         "reason": (
-                            "Map this strong candidate debt, or reject/manual_review it only with a concrete post-upgrade contradiction."
+                            "Map this candidate debt if ownership is closed, or discharge it with candidate-bearing manual_review that names a specific localized evidence gap, rejected contradiction, or fail_closed blocker."
                             if requires_concrete_resolution
                             else candidate.reason
                             or "Map this candidate if the Agent agrees the candidate debt evidence closes ownership."
@@ -4664,11 +4874,36 @@ def _direct_issue_rows_from_repair(repair: dict[str, object] | None) -> list[dic
         for issue in list(container.get("issues") or []):
             if isinstance(issue, dict):
                 rows.append(dict(issue))
+        for issue in list(container.get("save_issues") or []):
+            if isinstance(issue, dict):
+                rows.append(dict(issue))
     return rows[:24]
+
+
+def _explicit_episode_span_from_locator(locator: object) -> tuple[int, int] | None:
+    text = str(locator or "").strip()
+    match = re.search(r"/episodes/(\d+)-(\d+)$", text)
+    if match:
+        start = int(match.group(1))
+        end = int(match.group(2))
+        return (start, end) if start <= end else (end, start)
+    match = re.search(r"/episode/(\d+)(?:/variant/\d+)?$", text)
+    if match:
+        value = int(match.group(1))
+        return value, value
+    return None
+
+
+def _local_target_episode_span_compatible(local: object, target: object) -> bool:
+    local_span = _explicit_episode_span_from_locator(local)
+    target_span = _explicit_episode_span_from_locator(target)
+    return not (local_span and target_span and local_span != target_span)
 
 
 def _strong_suggested_shape_issue(issue_code: str, issue: dict[str, object]) -> bool:
     if issue_code in STRONG_MAPPING_CANDIDATE_DEBT_SOURCES:
+        return True
+    if issue_code == "ledger_candidate_debt_open" and _repair_dict_items(issue.get("suggested_submit_shape")):
         return True
     if _ledger_issue_prefers_mapped_candidate_resolution(issue_code, issue):
         return True
@@ -4682,6 +4917,29 @@ def _repair_group_rows(repair: dict[str, object], key: str) -> list[dict[str, ob
         for row in list(container.get(key) or []):
             if isinstance(row, dict):
                 rows.append(row)
+    return rows
+
+
+def _unaddressed_suggested_shape_rows_from_repair(repair: dict[str, object] | None) -> list[dict[str, object]]:
+    if not isinstance(repair, dict):
+        return []
+    rows: list[dict[str, object]] = []
+    for row in list(repair.get("unaddressed_suggested_shapes") or []):
+        if not isinstance(row, dict):
+            continue
+        local_parent = str(row.get("local_parent") or "").strip()
+        issue = str(row.get("issue") or "patch_ledger_suggested_shape_unaddressed").strip()
+        local = _repair_local_values(row.get("local")) or ([local_parent] if _is_patchable_local_locator_text(local_parent) else [])
+        rows.append(
+            {
+                **row,
+                "unit": str(row.get("unit") or local_parent).strip(),
+                "local": local,
+                "issue": issue,
+            }
+        )
+        if len(rows) >= 24:
+            break
     return rows
 
 
@@ -4729,6 +4987,9 @@ def _strong_suggested_submit_shape_rows_from_repair(
             )
             for issue_code in issue_codes:
                 entries.append((issue_code, row))
+        for row in _unaddressed_suggested_shape_rows_from_repair(repair):
+            issue_code = str(row.get("issue") or "patch_ledger_suggested_shape_unaddressed").strip()
+            entries.append((issue_code, row))
         for row in [*_direct_issue_rows_from_repair(repair), *_unit_issue_rows_from_repair(repair)]:
             issue_code = str(row.get("issue") or "").strip()
             if issue_code:
@@ -4747,6 +5008,17 @@ def _strong_suggested_submit_shape_rows_from_repair(
             or issue.get("blocker")
         )
         return any(_strong_suggested_shape_issue(issue_code, issue) for issue_code in issue_codes)
+
+    def top_level_strong_issue_open() -> bool:
+        top_issue = str(repair.get("issue") or "").strip()
+        top_issue_counts = repair.get("issue_counts") if isinstance(repair.get("issue_counts"), dict) else {}
+        sources = [top_issue, *[str(item or "").strip() for item in top_issue_counts]]
+        return any(
+            source == "ledger_candidate_debt_open"
+            or any(code in source for code in STRONG_MAPPING_CANDIDATE_DEBT_SOURCES)
+            for source in sources
+            if source
+        )
 
     def overlap_multi_version_tied_to_strong(issue_code: str, issue: dict[str, object]) -> bool:
         if issue_code != "ledger_coverage_overlap":
@@ -4831,6 +5103,15 @@ def _strong_suggested_submit_shape_rows_from_repair(
             if len(rows) >= limit:
                 return rows[:limit]
 
+    for row in _unaddressed_suggested_shape_rows_from_repair(repair):
+        issue_code = str(row.get("issue") or "patch_ledger_suggested_shape_unaddressed").strip()
+        add_shape(row.get("suggested_submit_shape"), issue_code=issue_code, issue=row)
+        if len(rows) >= limit:
+            return rows[:limit]
+        add_shape(row.get("multi_version_submit_shape"), issue_code=issue_code, issue=row)
+        if len(rows) >= limit:
+            return rows[:limit]
+
     for row in [*_direct_issue_rows_from_repair(repair), *_unit_issue_rows_from_repair(repair)]:
         issue_code = str(row.get("issue") or "").strip()
         add_shape(row.get("suggested_submit_shape"), issue_code=issue_code, issue=row)
@@ -4839,6 +5120,40 @@ def _strong_suggested_submit_shape_rows_from_repair(
         add_shape(row.get("multi_version_submit_shape"), issue_code=issue_code, issue=row)
         if len(rows) >= limit:
             return rows[:limit]
+    if top_level_strong_issue_open():
+        for item in list(repair.get("must_address_suggested_ledger_patch_rows") or []) + list(
+            repair.get("suggested_ledger_patch_rows") or []
+        ):
+            if not isinstance(item, dict) or str(item.get("status") or "") != "mapped":
+                continue
+            local_values = [
+                str(local or "").strip()
+                for local in list(item.get("local") or [])
+                if str(local or "").strip()
+            ]
+            target = str(item.get("target") or "").strip()
+            outcome = str(item.get("mapped_outcome") or item.get("outcome") or "").strip()
+            if not local_values or not target:
+                continue
+            local = local_values[0]
+            if not _local_target_episode_span_compatible(local, target):
+                continue
+            key = (local, target, outcome)
+            if key in seen:
+                continue
+            seen.add(key)
+            shape_row = {
+                "local": local,
+                "target": target,
+                "outcome": outcome or "mapped_special_or_ova",
+                "reason": str(item.get("reason") or "").strip()[:240],
+            }
+            row_id = str(item.get("row_id") or "").strip()
+            if row_id:
+                shape_row["row_id"] = row_id
+            rows.append(shape_row)
+            if len(rows) >= limit:
+                return rows[:limit]
     return rows[:limit]
 
 
@@ -4862,6 +5177,9 @@ def _strong_suggested_ledger_patch_rows_from_repair(
         for source in [top_issue, *[str(item or "").strip() for item in top_issue_counts]]
         for code in STRONG_MAPPING_CANDIDATE_DEBT_SOURCES
         if source
+    ) or any(
+        source == "ledger_candidate_debt_open"
+        for source in [top_issue, *[str(item or "").strip() for item in top_issue_counts]]
     )
     if not strong_top_issue:
         return rows
@@ -4879,6 +5197,8 @@ def _strong_suggested_ledger_patch_rows_from_repair(
         target = str(item.get("target") or "").strip()
         outcome = str(item.get("mapped_outcome") or item.get("outcome") or "").strip()
         if not local_values or not target:
+            continue
+        if not _local_target_episode_span_compatible(local_values[0], target):
             continue
         key = (tuple(local_values), target, outcome)
         if key in seen:
@@ -4963,6 +5283,14 @@ def _suggested_candidate_debts_from_repair(repair: dict[str, object] | None) -> 
             or row.get("blocker")
             or "repair_frontier.suggested_submit_shape"
         ).strip()
+        add_shape(row.get("suggested_submit_shape"), source=source)
+        if len(debts) >= 24:
+            return debts[:24]
+        add_shape(row.get("multi_version_submit_shape"), source=source)
+        if len(debts) >= 24:
+            return debts[:24]
+    for row in _unaddressed_suggested_shape_rows_from_repair(repair):
+        source = str(row.get("issue") or "patch_ledger_suggested_shape_unaddressed").strip()
         add_shape(row.get("suggested_submit_shape"), source=source)
         if len(debts) >= 24:
             return debts[:24]
@@ -5851,7 +6179,12 @@ def _ledger_validation_units_from_issues(
         issues = list(unit.get("issues") or [])
         issues.append(issue)
         unit["issues"] = issues[:12]
-        for shape_key in ("suggested_submit_shape", "multi_version_submit_shape", "manual_review_candidate_submit_shape"):
+        for shape_key in (
+            "suggested_submit_shape",
+            "multi_version_submit_shape",
+            "manual_review_candidate_submit_shape",
+            "fail_closed_submit_shape",
+        ):
             shape_value = issue.get(shape_key)
             shape_rows = _repair_dict_items(shape_value)
             if not shape_rows:
@@ -5875,6 +6208,41 @@ def _ledger_validation_units_from_issues(
                     break
             if existing_shapes:
                 unit[shape_key] = existing_shapes[:12]
+
+        if issue_code in {"ledger_candidate_debt_open", "ledger_candidate_manual_review_requires_localized_uncertainty"}:
+            manual_shapes = _manual_review_candidate_submit_shapes_from_mapped_shapes(
+                _repair_dict_items(issue.get("suggested_submit_shape")),
+                limit=6,
+            )
+            if manual_shapes:
+                existing_manual_shapes = [
+                    item
+                    for item in list(unit.get("manual_review_candidate_submit_shape") or [])
+                    if isinstance(item, dict)
+                ]
+                seen_manual_shapes = {
+                    (
+                        str(item.get("local") or ""),
+                        ",".join(str(target) for target in list(item.get("manual_review_candidate_targets") or [])),
+                    )
+                    for item in existing_manual_shapes
+                }
+                for shape_item in manual_shapes:
+                    key = (
+                        str(shape_item.get("local") or ""),
+                        ",".join(
+                            str(target)
+                            for target in list(shape_item.get("manual_review_candidate_targets") or [])
+                        ),
+                    )
+                    if not key[0] or not key[1] or key in seen_manual_shapes:
+                        continue
+                    seen_manual_shapes.add(key)
+                    existing_manual_shapes.append(shape_item)
+                    if len(existing_manual_shapes) >= 12:
+                        break
+                if existing_manual_shapes:
+                    unit["manual_review_candidate_submit_shape"] = existing_manual_shapes[:12]
 
         if issue.get("required") and not unit.get("required"):
             unit["required"] = issue.get("required")
@@ -5985,8 +6353,8 @@ def _ledger_validation_units_from_issues(
                             "outcome": "manual_review",
                             "manual_review_candidate_targets": candidate_targets,
                             "reason": (
-                                "The candidate debt remains localized uncertainty. If ownership is not accepted, "
-                                "carry visible candidate targets as manual-review hints instead of dropping them."
+                                "The candidate debt remains a specific localized evidence gap. If ownership is not accepted, "
+                                "carry visible candidate targets as manual-review hints and name that gap instead of dropping them."
                             ),
                         }
                     ]
@@ -6132,14 +6500,15 @@ def _annotate_ledger_units_with_rejection_pressure(
             ):
                 next_unit["terminal_repair_options"] = [
                     "mapped with the visible suggested target shape if ownership is closed",
-                    "manual_review only when it names the suggested target and a concrete post-upgrade contradiction",
+                    "manual_review when it covers the exact local refs, names the suggested target, and localizes the unresolved uncertainty",
+                    "rejected candidate debt only with a concrete post-upgrade contradiction",
                     "fail_closed only with a concrete package-blocking candidate blocker",
                 ]
                 next_unit["repair_instruction"] = (
                     "This ledger row has repeated candidate-debt rejection. Patch the listed suggested mapped "
-                    "row if you accept ownership. Do not preserve manual_review merely as uncertainty; "
-                    "manual_review/fail_closed must name the suggested target and a concrete post-upgrade "
-                    "contradiction or blocker."
+                    "row if you accept ownership. Do not preserve broad manual_review merely as uncertainty; "
+                    "exact manual_review must name the suggested target and localize the unresolved evidence, "
+                    "while fail_closed must name a concrete package-blocking blocker."
                 )
             elif "ledger_coverage_overlap" in issue_codes:
                 next_unit["terminal_repair_options"] = [
@@ -6628,7 +6997,8 @@ def _patch_ledger_tool(
                 ),
                 (
                     "For terminal_repair_required candidate-debt rows, prefer the listed mapped template; "
-                    "manual_review/fail_closed must name the suggested target and a concrete contradiction or blocker."
+                    "exact manual_review must name the suggested target and a specific localized evidence gap; "
+                    "fail_closed must name a concrete blocker."
                 )
                 if terminal_repair_units
                 else "",
@@ -6685,18 +7055,26 @@ def _patch_ledger_tool(
             "rejected_or_noisy_actions",
             "repair_frontier",
             "recovery_no_high_quality_action",
+            *SUBMIT_REPAIR_GROUP_KEYS,
         ):
             if repair_agenda.get(key):
                 output[key] = repair_agenda.get(key)
         strong_suggested_rows = _strong_suggested_ledger_patch_rows_from_repair(session, output, limit=12)
+        manual_review_candidate_rows = _manual_review_candidate_ledger_patch_rows_from_repair(
+            session,
+            output,
+            limit=12,
+        )
+        if manual_review_candidate_rows:
+            output["manual_review_candidate_ledger_patch_rows"] = manual_review_candidate_rows
         if strong_suggested_rows:
             output["must_address_suggested_ledger_patch_rows"] = strong_suggested_rows
             output["suggested_ledger_patch_rows"] = strong_suggested_rows
             output["required_next_action"] = (
                 "Patch the listed must_address_suggested_ledger_patch_rows with repair_strategy=revise_saved_rows, "
                 "copying each row_id/local/status/target template exactly if you semantically accept ownership, "
-                "or patch exact manual_review/fail_closed rows that name the suggested target and concrete "
-                "post-upgrade contradiction. Do not preserve broad manual_review/supplemental rows while this "
+                "or copy manual_review_candidate_ledger_patch_rows when ownership remains localized uncertainty, "
+                "or fail_closed rows with a concrete package blocker. Do not preserve broad manual_review/supplemental rows while this "
                 "candidate debt is open."
             )
         else:
@@ -6707,6 +7085,9 @@ def _patch_ledger_tool(
                     "Patch the listed suggested_ledger_patch_rows with repair_strategy=revise_saved_rows, "
                     "or patch an equivalent terminal ledger shape that covers the same local refs exactly once."
                 )
+        ledger_choice_rows = _ledger_choice_patch_rows_from_repair(session, output, limit=24)
+        if ledger_choice_rows:
+            output["ledger_choice_patch_rows"] = ledger_choice_rows
     return session, output, bool(accepted and not validation_issues and not nonterminal_rows)
 
 
@@ -8754,6 +9135,13 @@ def _immediate_repair_focus(session: HumanCaseSession) -> dict[str, object]:
     ]
     if numbered_special_repairs:
         focus["numbered_special_exclusion_repairs"] = numbered_special_repairs[:6]
+    supplemental_special_repairs = [
+        item
+        for item in list(repair.get("supplemental_special_marker_repairs") or [])
+        if isinstance(item, dict)
+    ]
+    if supplemental_special_repairs:
+        focus["supplemental_special_marker_repairs"] = supplemental_special_repairs[:6]
     title_tail_repairs = [
         item
         for item in list(repair.get("excluded_title_tail_search_repairs") or [])
@@ -8867,6 +9255,7 @@ def _active_repair_agenda_for_prompt(session: HumanCaseSession) -> list[dict[str
         _strong_suggested_ledger_patch_rows_from_repair(session, latest_repair, limit=12)
         or _suggested_ledger_patch_rows_from_repair(session, latest_repair, limit=12)
     )
+    ledger_choice_patch_rows = _ledger_choice_patch_rows_from_repair(session, latest_repair, limit=24)
 
     def matching_patch_rows(locators: list[str]) -> list[dict[str, object]]:
         matched: list[dict[str, object]] = []
@@ -8883,6 +9272,35 @@ def _active_repair_agenda_for_prompt(session: HumanCaseSession) -> list[dict[str
             ):
                 matched.append(patch_row)
             if len(matched) >= 6:
+                break
+        return matched
+
+    def matching_choice_rows(locators: list[str]) -> list[dict[str, object]]:
+        matched: list[dict[str, object]] = []
+        seen: set[tuple[tuple[str, ...], str, str, str]] = set()
+        for patch_row in ledger_choice_patch_rows:
+            patch_locals = [
+                str(local or "").strip()
+                for local in list(patch_row.get("local") or [])
+                if str(local or "").strip()
+            ]
+            if not any(
+                _local_locator_scope_matches(patch_local, agenda_locator)
+                for patch_local in patch_locals
+                for agenda_locator in locators
+            ):
+                continue
+            key = (
+                tuple(patch_locals),
+                str(patch_row.get("status") or ""),
+                str(patch_row.get("target") or ""),
+                ",".join(str(target) for target in list(patch_row.get("manual_review_candidate_targets") or [])),
+            )
+            if key in seen:
+                continue
+            seen.add(key)
+            matched.append(patch_row)
+            if len(matched) >= 8:
                 break
         return matched
 
@@ -8913,6 +9331,11 @@ def _active_repair_agenda_for_prompt(session: HumanCaseSession) -> list[dict[str
                     list_limit=6,
                     text_limit=240,
                 ),
+                "ledger_choice_patch_rows": _compact_repair_payload(
+                    matching_choice_rows(list(item.locators)),
+                    list_limit=8,
+                    text_limit=240,
+                ),
             }
         )
         if len(rows) >= 8:
@@ -8926,30 +9349,7 @@ def _has_open_submit_repair(repair: dict[str, object]) -> bool:
         or repair.get("blocking_units")
         or repair.get("ledger_terminal_repair_rows")
         or repair.get("duplicate_target_repair_units")
-        or repair.get("fail_closed_mapped_sibling_repairs")
-        or repair.get("excluded_slice_mapped_sibling_repairs")
-        or repair.get("fail_closed_count_matched_target_sibling_repairs")
-        or repair.get("excluded_count_matched_uninspected_subject_repairs")
-        or repair.get("excluded_singleton_visible_subject_repairs")
-        or repair.get("singleton_target_alias_repairs")
-        or repair.get("mapped_target_title_bridge_repairs")
-        or repair.get("mapped_numbered_special_related_count_repairs")
-        or repair.get("manual_review_evidence_upgrade_repairs")
-        or repair.get("manual_review_strong_non_regular_mapping_repairs")
-        or repair.get("manual_review_visible_slice_pairing_repairs")
-        or repair.get("mapped_slice_manual_sibling_repairs")
-        or repair.get("manual_review_duplicate_variant_repairs")
-        or repair.get("mapped_title_season_mismatch_repairs")
-        or repair.get("excluded_main_mapped_sibling_repairs")
-        or repair.get("supplemental_main_episode_repairs")
-        or repair.get("numbered_special_exclusion_repairs")
-        or repair.get("excluded_title_tail_search_repairs")
-        or repair.get("excluded_visible_title_pairing_repairs")
-        or repair.get("excluded_title_tail_unresolved_repairs")
-        or repair.get("fail_closed_slice_pairing_repairs")
-        or repair.get("fail_closed_title_tail_bridge_repairs")
-        or repair.get("excluded_singleton_unassigned_target_repairs")
-        or repair.get("fail_closed_singleton_unassigned_target_repairs")
+        or any(repair.get(key) for key in SUBMIT_REPAIR_GROUP_KEYS)
         or _unit_issue_rows_from_repair(repair)
     )
 
@@ -9465,12 +9865,14 @@ def _suggested_submit_shape_rows_from_repair(
         add_shape(row.get("multi_version_submit_shape"), issue=row)
         if len(rows) >= limit:
             return rows[:limit]
-    for key in (
-        "numbered_special_exclusion_repairs",
-        "manual_review_strong_non_regular_mapping_repairs",
-        "manual_review_visible_slice_pairing_repairs",
-        "manual_review_duplicate_variant_repairs",
-    ):
+    for row in _unaddressed_suggested_shape_rows_from_repair(repair):
+        add_shape(row.get("suggested_submit_shape"), issue=row)
+        if len(rows) >= limit:
+            return rows[:limit]
+        add_shape(row.get("multi_version_submit_shape"), issue=row)
+        if len(rows) >= limit:
+            return rows[:limit]
+    for key in SUBMIT_REPAIR_GROUP_KEYS:
         for row in _repair_group_rows(repair, key):
             add_shape(row.get("suggested_submit_shape"), issue=row)
             if len(rows) >= limit:
@@ -9479,6 +9881,13 @@ def _suggested_submit_shape_rows_from_repair(
             if len(rows) >= limit:
                 return rows[:limit]
     for row in _unit_issue_rows_from_repair(repair):
+        add_shape(row.get("suggested_submit_shape"), issue=row)
+        if len(rows) >= limit:
+            return rows[:limit]
+        add_shape(row.get("multi_version_submit_shape"), issue=row)
+        if len(rows) >= limit:
+            return rows[:limit]
+    for row in _direct_issue_rows_from_repair(repair):
         add_shape(row.get("suggested_submit_shape"), issue=row)
         if len(rows) >= limit:
             return rows[:limit]
@@ -9516,6 +9925,7 @@ def _manual_review_candidate_shape_rows_from_repair(
             seen.add(key)
             rows.append(
                 {
+                    "row_id": str(item.get("row_id") or "").strip(),
                     "local": local,
                     "outcome": "manual_review",
                     "manual_review_candidate_targets": candidates[:6],
@@ -9532,12 +9942,11 @@ def _manual_review_candidate_shape_rows_from_repair(
         add_shape(row.get("manual_review_candidate_submit_shape"))
         if len(rows) >= limit:
             return rows[:limit]
-    for key in (
-        "numbered_special_exclusion_repairs",
-        "manual_review_visible_slice_pairing_repairs",
-        "manual_review_strong_non_regular_mapping_repairs",
-        "manual_review_duplicate_variant_repairs",
-    ):
+    for row in _unaddressed_suggested_shape_rows_from_repair(repair):
+        add_shape(row.get("manual_review_candidate_submit_shape"))
+        if len(rows) >= limit:
+            return rows[:limit]
+    for key in SUBMIT_REPAIR_GROUP_KEYS:
         for row in _repair_group_rows(repair, key):
             add_shape(row.get("manual_review_candidate_submit_shape"))
             if len(rows) >= limit:
@@ -9546,6 +9955,101 @@ def _manual_review_candidate_shape_rows_from_repair(
         add_shape(row.get("manual_review_candidate_submit_shape"))
         if len(rows) >= limit:
             return rows[:limit]
+    for row in _direct_issue_rows_from_repair(repair):
+        add_shape(row.get("manual_review_candidate_submit_shape"))
+        if len(rows) >= limit:
+            return rows[:limit]
+    return rows[:limit]
+
+
+def _fail_closed_shape_rows_from_repair(
+    repair: dict[str, object] | None,
+    *,
+    limit: int = 12,
+) -> list[dict[str, object]]:
+    if not isinstance(repair, dict):
+        return []
+    rows: list[dict[str, object]] = []
+    seen: set[str] = set()
+
+    def add_shape(value: object) -> None:
+        for item in _repair_dict_items(value):
+            local = str(item.get("local") or "").strip()
+            if local and not _is_patchable_local_locator_text(local):
+                continue
+            if not local:
+                continue
+            if local in seen:
+                continue
+            seen.add(local)
+            rows.append(
+                {
+                    "row_id": str(item.get("row_id") or "").strip(),
+                    "local": local,
+                    "outcome": "fail_closed",
+                    "confidence": str(item.get("confidence") or "low").strip() or "low",
+                    "reason": str(item.get("reason") or "").strip()[:240],
+                }
+            )
+            if len(rows) >= limit:
+                return
+
+    for row in list(repair.get("repair_frontier") or []):
+        if not isinstance(row, dict):
+            continue
+        add_shape(row.get("fail_closed_submit_shape"))
+        if len(rows) >= limit:
+            return rows[:limit]
+    for row in _unaddressed_suggested_shape_rows_from_repair(repair):
+        add_shape(row.get("fail_closed_submit_shape"))
+        if len(rows) >= limit:
+            return rows[:limit]
+    for key in SUBMIT_REPAIR_GROUP_KEYS:
+        for row in _repair_group_rows(repair, key):
+            add_shape(row.get("fail_closed_submit_shape"))
+            if len(rows) >= limit:
+                return rows[:limit]
+    for row in _unit_issue_rows_from_repair(repair):
+        add_shape(row.get("fail_closed_submit_shape"))
+        if len(rows) >= limit:
+            return rows[:limit]
+    for row in _direct_issue_rows_from_repair(repair):
+        add_shape(row.get("fail_closed_submit_shape"))
+        if len(rows) >= limit:
+            return rows[:limit]
+    return rows[:limit]
+
+
+def _ledger_choice_submit_shape_rows_from_repair(
+    repair: dict[str, object] | None,
+    *,
+    limit: int = 24,
+) -> list[dict[str, object]]:
+    rows: list[dict[str, object]] = []
+    seen: set[tuple[str, str, str, str]] = set()
+    per_source_limit = max(limit, limit * 2)
+    for source_rows in (
+        _suggested_submit_shape_rows_from_repair(repair, limit=per_source_limit),
+        _manual_review_candidate_shape_rows_from_repair(repair, limit=per_source_limit),
+        _fail_closed_shape_rows_from_repair(repair, limit=per_source_limit),
+    ):
+        for item in source_rows:
+            if not isinstance(item, dict):
+                continue
+            local = str(item.get("local") or "").strip()
+            outcome = str(item.get("outcome") or "").strip()
+            target = str(item.get("target") or "").strip()
+            candidates = ",".join(
+                str(candidate)
+                for candidate in list(item.get("manual_review_candidate_targets") or [])
+            )
+            key = (local, outcome, target, candidates)
+            if not local or key in seen:
+                continue
+            seen.add(key)
+            rows.append(item)
+            if len(rows) >= limit:
+                return rows[:limit]
     return rows[:limit]
 
 
@@ -9632,6 +10136,46 @@ def _ledger_patch_rows_from_submit_shapes(
         else:
             patch_row.update({"status": "open"})
         rows.append(patch_row)
+        if len(rows) >= limit:
+            break
+    return rows
+
+
+def _manual_review_candidate_submit_shapes_from_mapped_shapes(
+    submit_shape_rows: list[dict[str, object]],
+    *,
+    limit: int = 12,
+) -> list[dict[str, object]]:
+    rows: list[dict[str, object]] = []
+    seen: set[tuple[str, str]] = set()
+    for item in submit_shape_rows:
+        if not isinstance(item, dict):
+            continue
+        local = str(item.get("local") or "").strip()
+        target = str(item.get("target") or "").strip()
+        outcome = str(item.get("outcome") or "").strip()
+        if not (local and target and outcome.startswith("mapped_")):
+            continue
+        if not _local_target_episode_span_compatible(local, target):
+            continue
+        key = (local, target)
+        if key in seen:
+            continue
+        seen.add(key)
+        row = {
+            "local": local,
+            "outcome": "manual_review",
+            "manual_review_candidate_targets": [target],
+            "confidence": "low",
+            "reason": (
+                "Target title/count/duration/episode-surface evidence remains unresolved "
+                "for this exact local slice."
+            ),
+        }
+        row_id = str(item.get("row_id") or "").strip()
+        if row_id:
+            row["row_id"] = row_id
+        rows.append(row)
         if len(rows) >= limit:
             break
     return rows
@@ -9836,6 +10380,14 @@ def _suggested_ledger_patch_rows_from_repair(
         for item in list(repair.get("suggested_ledger_patch_rows") or []):
             if not isinstance(item, dict):
                 continue
+            if str(item.get("status") or "") == "mapped":
+                local_values = [
+                    str(local or "").strip()
+                    for local in list(item.get("local") or [])
+                    if str(local or "").strip()
+                ]
+                if local_values and not _local_target_episode_span_compatible(local_values[0], item.get("target")):
+                    continue
             key = (
                 tuple(str(local) for local in list(item.get("local") or [])),
                 str(item.get("target") or ""),
@@ -9848,7 +10400,164 @@ def _suggested_ledger_patch_rows_from_repair(
             combined.append(item)
             if len(combined) >= limit:
                 break
+    if isinstance(repair, dict) and isinstance(repair.get("manual_review_candidate_ledger_patch_rows"), list):
+        seen = {
+            (
+                tuple(str(local) for local in list(item.get("local") or [])),
+                ",".join(str(target) for target in list(item.get("manual_review_candidate_targets") or [])),
+                str(item.get("status") or ""),
+            )
+            for item in combined
+            if isinstance(item, dict)
+        }
+        for item in list(repair.get("manual_review_candidate_ledger_patch_rows") or []):
+            if not isinstance(item, dict):
+                continue
+            key = (
+                tuple(str(local) for local in list(item.get("local") or [])),
+                ",".join(str(target) for target in list(item.get("manual_review_candidate_targets") or [])),
+                str(item.get("status") or ""),
+            )
+            if key in seen:
+                continue
+            seen.add(key)
+            combined.append(item)
+            if len(combined) >= limit:
+                break
+    if len(combined) < limit:
+        fail_closed_rows = _ledger_patch_rows_from_submit_shapes(
+            session,
+            _fail_closed_shape_rows_from_repair(repair, limit=limit),
+            limit=limit - len(combined),
+        )
+        seen = {
+            (
+                tuple(str(local) for local in list(item.get("local") or [])),
+                str(item.get("status") or ""),
+                str(item.get("reason") or ""),
+            )
+            for item in combined
+            if isinstance(item, dict)
+        }
+        for item in fail_closed_rows:
+            key = (
+                tuple(str(local) for local in list(item.get("local") or [])),
+                str(item.get("status") or ""),
+                str(item.get("reason") or ""),
+            )
+            if key in seen:
+                continue
+            seen.add(key)
+            combined.append(item)
+            if len(combined) >= limit:
+                break
     return combined[:limit]
+
+
+def _manual_review_candidate_ledger_patch_rows_from_repair(
+    session: HumanCaseSession,
+    repair: dict[str, object] | None,
+    *,
+    limit: int = 12,
+) -> list[dict[str, object]]:
+    rows = _ledger_patch_rows_from_submit_shapes(
+        session,
+        _manual_review_candidate_shape_rows_from_repair(repair, limit=limit),
+        limit=limit,
+    )
+    if not isinstance(repair, dict) or not isinstance(repair.get("manual_review_candidate_ledger_patch_rows"), list):
+        return rows[:limit]
+    seen = {
+        (
+            tuple(str(local) for local in list(item.get("local") or [])),
+            ",".join(str(target) for target in list(item.get("manual_review_candidate_targets") or [])),
+            str(item.get("status") or ""),
+        )
+        for item in rows
+        if isinstance(item, dict)
+    }
+    for item in list(repair.get("manual_review_candidate_ledger_patch_rows") or []):
+        if not isinstance(item, dict) or str(item.get("status") or "") != "manual_review":
+            continue
+        local_values = [
+            str(local or "").strip()
+            for local in list(item.get("local") or [])
+            if str(local or "").strip()
+        ]
+        candidate_targets = [
+            str(target or "").strip()
+            for target in list(item.get("manual_review_candidate_targets") or [])
+            if str(target or "").strip()
+        ]
+        if local_values and candidate_targets and not any(
+            _local_target_episode_span_compatible(local_values[0], target)
+            for target in candidate_targets
+        ):
+            continue
+        key = (
+            tuple(local_values),
+            ",".join(candidate_targets),
+            str(item.get("status") or ""),
+        )
+        if key in seen:
+            continue
+        seen.add(key)
+        rows.append(item)
+        if len(rows) >= limit:
+            break
+    return rows[:limit]
+
+
+def _ledger_choice_patch_rows_from_repair(
+    session: HumanCaseSession,
+    repair: dict[str, object] | None,
+    *,
+    limit: int = 24,
+) -> list[dict[str, object]]:
+    rows = _ledger_patch_rows_from_submit_shapes(
+        session,
+        _ledger_choice_submit_shape_rows_from_repair(repair, limit=limit),
+        limit=limit,
+    )
+    if not isinstance(repair, dict):
+        return rows[:limit]
+    seen = {
+        (
+            tuple(str(local) for local in list(item.get("local") or [])),
+            str(item.get("status") or ""),
+            str(item.get("target") or ""),
+            str(item.get("mapped_outcome") or ""),
+            ",".join(str(target) for target in list(item.get("manual_review_candidate_targets") or [])),
+        )
+        for item in rows
+        if isinstance(item, dict)
+    }
+    for key in (
+        "ledger_choice_patch_rows",
+        "suggested_ledger_patch_rows",
+        "must_address_suggested_ledger_patch_rows",
+        "manual_review_candidate_ledger_patch_rows",
+    ):
+        for item in list(repair.get(key) or []):
+            if not isinstance(item, dict):
+                continue
+            status = str(item.get("status") or "").strip()
+            if status not in {"mapped", "manual_review", "target_absent", "supplemental", "fail_closed"}:
+                continue
+            key_tuple = (
+                tuple(str(local) for local in list(item.get("local") or [])),
+                status,
+                str(item.get("target") or ""),
+                str(item.get("mapped_outcome") or ""),
+                ",".join(str(target) for target in list(item.get("manual_review_candidate_targets") or [])),
+            )
+            if key_tuple in seen:
+                continue
+            seen.add(key_tuple)
+            rows.append(item)
+            if len(rows) >= limit:
+                return rows[:limit]
+    return rows[:limit]
 
 
 def _patch_ledger_suggested_shape_guard(
@@ -9866,12 +10575,16 @@ def _patch_ledger_suggested_shape_guard(
             *_repair_group_rows(latest_repair, "manual_review_duplicate_variant_repairs"),
             *_repair_group_rows(latest_repair, "manual_review_visible_slice_pairing_repairs"),
             *_repair_group_rows(latest_repair, "numbered_special_exclusion_repairs"),
+            *_repair_group_rows(latest_repair, "supplemental_special_marker_repairs"),
         ]
         if isinstance(row, dict)
     }
     latest_issue_counts = latest_repair.get("issue_counts")
-    if isinstance(latest_issue_counts, dict) and "ledger_coverage_overlap" in latest_issue_counts:
-        blocking_issue_names.add("ledger_coverage_overlap")
+    if isinstance(latest_issue_counts, dict):
+        if "ledger_coverage_overlap" in latest_issue_counts:
+            blocking_issue_names.add("ledger_coverage_overlap")
+        if "ledger_coverage_missing" in latest_issue_counts:
+            blocking_issue_names.add("ledger_coverage_missing")
     strong_suggested_rows = _strong_suggested_submit_shape_rows_from_repair(latest_repair, limit=12)
     if isinstance(latest_issue_counts, dict):
         for issue_code in latest_issue_counts:
@@ -9945,21 +10658,78 @@ def _patch_ledger_suggested_shape_guard(
             for candidate in list(row.manual_review_candidate_targets or [])
             if str(candidate or "").strip()
         ]
+        row_payload = {
+            "manual_review_candidate_targets": list(row.manual_review_candidate_targets or []),
+            "explicit_review_candidate_targets": list(row.manual_review_candidate_targets or []),
+            "reason": row.reason,
+            "open_questions": list(row.open_questions or []),
+        }
         return all(
             any(_locator_same_scope(row_candidate, suggested_candidate) for row_candidate in row_candidates)
+            and _manual_review_candidate_has_localized_uncertainty(
+                row_payload,
+                target=suggested_candidate,
+                target_subject=_target_subject_locator_text(suggested_candidate),
+            )
             for suggested_candidate in suggested_candidates
         )
+
+    def patch_manual_reviews_mapped_candidate(row: ResolutionLedgerRow, suggested: dict[str, object]) -> bool:
+        if row.status != "manual_review":
+            return False
+        target = str(suggested.get("target") or "").strip()
+        local = str(suggested.get("local") or "").strip()
+        if not target or not local or not str(row.reason or "").strip():
+            return False
+        canonical_target, _target_issue = _canonical_target_locator_for_ledger(registry, target)
+        target_for_compare = canonical_target or target
+        row_candidates = [
+            str(candidate or "").strip()
+            for candidate in list(row.manual_review_candidate_targets or [])
+            if str(candidate or "").strip()
+        ]
+        if not any(_locator_same_scope(row_candidate, target_for_compare) for row_candidate in row_candidates):
+            return False
+        row_payload = {
+            "manual_review_candidate_targets": list(row.manual_review_candidate_targets or []),
+            "explicit_review_candidate_targets": list(row.manual_review_candidate_targets or []),
+            "reason": row.reason,
+            "open_questions": list(row.open_questions or []),
+        }
+        if not _manual_review_candidate_has_localized_uncertainty(
+            row_payload,
+            target=target_for_compare,
+            target_subject=_target_subject_locator_text(target_for_compare),
+        ):
+            return False
+        suggested_refs, _suggested_issues, _suggested_canonical = _file_refs_for_locators(registry, [local])
+        row_refs, _row_issues, _row_canonical = _file_refs_for_locators(registry, list(row.local or []))
+        if suggested_refs and row_refs:
+            return set(row_refs) == set(suggested_refs)
+        return any(str(row_local or "").strip() == local for row_local in list(row.local or []))
+
+    def patch_covers_exact_suggested_refs(row: ResolutionLedgerRow, suggested: dict[str, object]) -> bool:
+        local = str(suggested.get("local") or "").strip()
+        if not local:
+            return False
+        suggested_refs, _suggested_issues, _suggested_canonical = _file_refs_for_locators(registry, [local])
+        row_refs, _row_issues, _row_canonical = _file_refs_for_locators(registry, list(row.local or []))
+        if suggested_refs and row_refs:
+            return set(row_refs) == set(suggested_refs)
+        return any(str(row_local or "").strip() == local for row_local in list(row.local or []))
 
     def patch_addresses_suggested(row: ResolutionLedgerRow, suggested: dict[str, object]) -> bool:
         outcome = str(suggested.get("outcome") or "").strip()
         if outcome.startswith("mapped_"):
-            return patch_maps_suggested(row, suggested)
+            return patch_maps_suggested(row, suggested) or patch_manual_reviews_mapped_candidate(row, suggested)
         if outcome == "manual_review":
             return patch_manual_reviews_suggested(row, suggested)
         return False
 
     def patch_has_concrete_contradiction(row: ResolutionLedgerRow, suggested: dict[str, object]) -> bool:
         if row.status not in {"manual_review", "fail_closed"}:
+            return False
+        if not patch_covers_exact_suggested_refs(row, suggested):
             return False
         target = str(suggested.get("target") or "").strip()
         subject = _target_subject_locator_text(target)
@@ -9995,15 +10765,24 @@ def _patch_ledger_suggested_shape_guard(
         )
         return mentions_target and any(term in reason_text for term in concrete_terms)
 
+    def manual_review_candidate_submit_shape_for_suggestions(
+        suggestions: list[dict[str, object]],
+        *,
+        limit: int = 8,
+    ) -> list[dict[str, object]]:
+        return _manual_review_candidate_submit_shapes_from_mapped_shapes(suggestions, limit=limit)
+
     unresolved: list[dict[str, object]] = []
     for parent, parent_suggestions in suggested_by_parent.items():
         touching_rows = [row for row in patch_rows if patch_touches_parent(row, parent)]
+        manual_review_candidate_submit_shape = manual_review_candidate_submit_shape_for_suggestions(parent_suggestions)
         if not touching_rows:
             unresolved.append(
                 {
                     "local_parent": parent,
                     "issue": "patch_ledger_suggested_shape_not_patched",
                     "suggested_submit_shape": parent_suggestions[:8],
+                    "manual_review_candidate_submit_shape": manual_review_candidate_submit_shape[:8],
                     "patched_rows": [],
                 }
             )
@@ -10040,6 +10819,7 @@ def _patch_ledger_suggested_shape_guard(
                 "local_parent": parent,
                 "issue": "patch_ledger_suggested_shape_unaddressed",
                 "suggested_submit_shape": parent_suggestions[:8],
+                "manual_review_candidate_submit_shape": manual_review_candidate_submit_shape[:8],
                 "patched_rows": [
                     {
                         "row_id": row.row_id,
@@ -10063,6 +10843,7 @@ def _patch_ledger_suggested_shape_guard(
         "mapped_numbered_special_related_count_repairs",
         "manual_review_evidence_upgrade_repairs",
         "numbered_special_exclusion_repairs",
+        "supplemental_special_marker_repairs",
         "visible_target_surface_missing_units",
         "blocking_target_surface_actions",
         "diagnostic_target_surface_actions",
@@ -10078,6 +10859,27 @@ def _patch_ledger_suggested_shape_guard(
     strong_suggested_ledger_patch_rows = _strong_suggested_ledger_patch_rows_from_repair(
         session,
         latest_repair,
+        limit=12,
+    )
+    ledger_choice_patch_rows = _ledger_choice_patch_rows_from_repair(session, latest_repair, limit=24)
+    unresolved_manual_review_submit_shapes: list[dict[str, object]] = []
+    seen_manual_review_shapes: set[tuple[str, str]] = set()
+    for item in unresolved:
+        for shape in _repair_dict_items(item.get("manual_review_candidate_submit_shape")):
+            local = str(shape.get("local") or "").strip()
+            targets = ",".join(str(target) for target in list(shape.get("manual_review_candidate_targets") or []))
+            key = (local, targets)
+            if not local or not targets or key in seen_manual_review_shapes:
+                continue
+            seen_manual_review_shapes.add(key)
+            unresolved_manual_review_submit_shapes.append(shape)
+            if len(unresolved_manual_review_submit_shapes) >= 12:
+                break
+        if len(unresolved_manual_review_submit_shapes) >= 12:
+            break
+    manual_review_candidate_ledger_patch_rows = _ledger_patch_rows_from_submit_shapes(
+        session,
+        unresolved_manual_review_submit_shapes,
         limit=12,
     )
     return {
@@ -10097,12 +10899,14 @@ def _patch_ledger_suggested_shape_guard(
         ],
         "suggested_ledger_patch_rows": strong_suggested_ledger_patch_rows
         or _suggested_ledger_patch_rows_from_repair(session, latest_repair, limit=12),
+        "manual_review_candidate_ledger_patch_rows": manual_review_candidate_ledger_patch_rows,
         "unaddressed_suggested_shapes": unresolved[:6],
         "required_next_action": (
-            "The previous verifier exposed strong suggested_submit_shape rows for these local parents. "
-            "Patch those mapped rows with repair_strategy=revise_saved_rows, copying the row templates exactly when "
-            "you semantically accept ownership, or patch exact manual_review/fail_closed "
-            "rows that name the suggested target and a concrete post-upgrade contradiction. Vague uncertainty does not discharge this candidate debt."
+            "The previous verifier exposed blocking repair template rows for these local parents. "
+            "Patch mapped rows with repair_strategy=revise_saved_rows when you semantically accept ownership, "
+            "or copy manual_review_candidate_ledger_patch_rows when ownership remains a localized uncertainty. "
+            "Use fail_closed rows only with a concrete blocker. Broad supplemental/manual_review uncertainty does "
+            "not discharge open repair debt."
         ),
     }
 
@@ -10252,7 +11056,7 @@ def _case_resolution_goal_state_for_prompt(
             "fixed layer does not decide semantic ownership",
         ],
         "required_next_action": (
-            "Strong suggested ledger patch rows are open. The next resolution action must apply those rows with repair_strategy=revise_saved_rows, or patch exact manual_review/fail_closed rows that name the suggested target and concrete post-upgrade contradiction."
+            "Strong suggested ledger patch rows are open. The next resolution action must apply those rows with repair_strategy=revise_saved_rows, or patch exact candidate-bearing manual_review rows with a specific localized evidence gap, or fail_closed rows with a concrete blocker."
             if strong_suggested_patch_rows
             else
             "The same blocker + ledger shape repeated. Choose a different repair_strategy or patch terminal fail_closed that satisfies the contract."
@@ -10292,7 +11096,7 @@ def _case_resolution_goal_tool_rejection(
             "required_next_action": (
                 "The latest repair exposed strong row-shaped mapping candidates and no required evidence action is open. "
                 "Use patch_ledger with repair_strategy=revise_saved_rows to apply those rows, or patch exact "
-                "manual_review/fail_closed rows that name the suggested target and concrete post-upgrade contradiction."
+                "candidate-bearing manual_review rows with a specific localized evidence gap, or fail_closed rows with a concrete blocker."
             ),
         }
     if not session.case_resolution_goal_strategy_change_required:
@@ -10423,6 +11227,8 @@ def _repair_frontier_rows_from_agenda(agenda: dict[str, object], *, repeated: bo
         "suggested_submit_shape",
         "multi_version_submit_shape",
         "manual_review_candidate_submit_shape",
+        "fail_closed_submit_shape",
+        "ledger_choice_submit_shape",
         "local_slice_mapping_options",
         "local_target_title_pairing_options",
         "local_target_count_pairing_options",
@@ -10439,23 +11245,7 @@ def _repair_frontier_rows_from_agenda(agenda: dict[str, object], *, repeated: bo
         "terminal_repair_options",
         "do_not_retry_targets_without_new_evidence",
     )
-    repair_source_keys = (
-        "excluded_title_tail_search_repairs",
-        "excluded_title_tail_unresolved_repairs",
-        "fail_closed_title_tail_bridge_repairs",
-        "visible_target_surface_missing_units",
-        "excluded_singleton_unassigned_target_repairs",
-        "fail_closed_singleton_unassigned_target_repairs",
-        "fail_closed_slice_pairing_repairs",
-        "fail_closed_mapped_sibling_repairs",
-        "mapped_target_title_bridge_repairs",
-        "mapped_numbered_special_related_count_repairs",
-        "manual_review_evidence_upgrade_repairs",
-        "manual_review_strong_non_regular_mapping_repairs",
-        "manual_review_visible_slice_pairing_repairs",
-        "numbered_special_exclusion_repairs",
-        "manual_review_duplicate_variant_repairs",
-    )
+    repair_source_keys = REPAIR_FRONTIER_SOURCE_KEYS
 
     def ordered_rows() -> list[dict[str, object]]:
         def priority(row: dict[str, object]) -> int:
@@ -10487,6 +11277,14 @@ def _repair_frontier_rows_from_agenda(agenda: dict[str, object], *, repeated: bo
                 issue_matches = bool(issue_codes and repair_issue_codes and issue_codes.intersection(repair_issue_codes))
                 if unit_matches or (local_matches and issue_matches):
                     matches.append(repair_row)
+        for repair_row in _unaddressed_suggested_shape_rows_from_repair(agenda):
+            repair_unit = str(repair_row.get("unit") or "").strip()
+            repair_issue_codes = set(_issue_codes_from_value(repair_row.get("issue")))
+            unit_matches = bool(unit and repair_unit and unit == repair_unit)
+            local_matches = bool(local_values and local_values.intersection(_locators_from_repair_row(repair_row)))
+            issue_matches = bool(issue_codes and repair_issue_codes and issue_codes.intersection(repair_issue_codes))
+            if unit_matches or (local_matches and issue_matches):
+                matches.append(repair_row)
         return matches
 
     def enrich_blocking_row(blocking_row: dict[str, object]) -> dict[str, object]:
@@ -10511,6 +11309,7 @@ def _repair_frontier_rows_from_agenda(agenda: dict[str, object], *, repeated: bo
         row_multi_version_submit_shape: object = None,
         row_suggested_submit_shape: object = None,
         row_manual_review_candidate_submit_shape: object = None,
+        row_fail_closed_submit_shape: object = None,
         row_negative_target_absence_submit_shape: object = None,
         row_negative_target_absence_support_candidates: object = None,
         row_candidate_local_locators: object = None,
@@ -10524,6 +11323,13 @@ def _repair_frontier_rows_from_agenda(agenda: dict[str, object], *, repeated: bo
         multi_version_shape = _repair_dict_items(row_multi_version_submit_shape)
         suggested_shape = _repair_dict_items(row_suggested_submit_shape)
         manual_review_candidate_shape = _repair_dict_items(row_manual_review_candidate_submit_shape)
+        fail_closed_shape = _repair_dict_items(row_fail_closed_submit_shape)
+        ledger_choice_shape = [
+            *multi_version_shape,
+            *suggested_shape,
+            *manual_review_candidate_shape,
+            *fail_closed_shape,
+        ]
         negative_target_absence_shape = (
             row_negative_target_absence_submit_shape
             if isinstance(row_negative_target_absence_submit_shape, dict)
@@ -10636,6 +11442,13 @@ def _repair_frontier_rows_from_agenda(agenda: dict[str, object], *, repeated: bo
                     append_after_search_actions(manual_shape_action)
                 else:
                     insert_after_priority_actions(manual_shape_action)
+        if fail_closed_shape:
+            fail_closed_action = (
+                "patch fail_closed_submit_shape rows only when the exact local locator remains package-blocking "
+                "after listed search/inspect evidence is exhausted"
+            )
+            if fail_closed_action not in high_quality:
+                insert_after_priority_actions(fail_closed_action)
         if negative_target_absence_shape or negative_target_absence_support:
             negative_shape_action = (
                 "patch negative_target_absence_submit_shape only if your semantic conclusion is no corresponding "
@@ -10774,8 +11587,10 @@ def _repair_frontier_rows_from_agenda(agenda: dict[str, object], *, repeated: bo
             repair_priority = 4
         elif manual_review_candidate_shape:
             repair_priority = 5
-        elif negative_target_absence_shape or negative_target_absence_support:
+        elif fail_closed_shape:
             repair_priority = 6
+        elif negative_target_absence_shape or negative_target_absence_support:
+            repair_priority = 7
         else:
             repair_priority = 9
         entry = {
@@ -10801,6 +11616,14 @@ def _repair_frontier_rows_from_agenda(agenda: dict[str, object], *, repeated: bo
                 "manual_review_candidate_submit_shape",
                 manual_review_candidate_shape,
             ) if manual_review_candidate_shape else [],
+            "fail_closed_submit_shape": _compact_repair_field(
+                "fail_closed_submit_shape",
+                fail_closed_shape,
+            ) if fail_closed_shape else [],
+            "ledger_choice_submit_shape": _compact_repair_field(
+                "ledger_choice_submit_shape",
+                ledger_choice_shape,
+            ) if ledger_choice_shape else [],
             "negative_target_absence_submit_shape": _compact_repair_field(
                 "negative_target_absence_submit_shape",
                 negative_target_absence_shape,
@@ -10852,6 +11675,7 @@ def _repair_frontier_rows_from_agenda(agenda: dict[str, object], *, repeated: bo
             row_multi_version_submit_shape=row.get("multi_version_submit_shape"),
             row_suggested_submit_shape=row.get("suggested_submit_shape"),
             row_manual_review_candidate_submit_shape=row.get("manual_review_candidate_submit_shape"),
+            row_fail_closed_submit_shape=row.get("fail_closed_submit_shape"),
             row_negative_target_absence_submit_shape=row.get("negative_target_absence_submit_shape"),
             row_negative_target_absence_support_candidates=row.get("negative_target_absence_support_candidates"),
             row_candidate_local_locators=row.get("candidate_local_locators"),
@@ -10861,23 +11685,35 @@ def _repair_frontier_rows_from_agenda(agenda: dict[str, object], *, repeated: bo
         )
         if len(rows) >= 8:
             return ordered_rows()[:8]
-    for key in (
-        "excluded_title_tail_search_repairs",
-        "excluded_title_tail_unresolved_repairs",
-        "fail_closed_title_tail_bridge_repairs",
-        "visible_target_surface_missing_units",
-        "excluded_singleton_unassigned_target_repairs",
-        "fail_closed_singleton_unassigned_target_repairs",
-        "fail_closed_slice_pairing_repairs",
-        "fail_closed_mapped_sibling_repairs",
-        "mapped_target_title_bridge_repairs",
-        "mapped_numbered_special_related_count_repairs",
-        "manual_review_evidence_upgrade_repairs",
-        "manual_review_strong_non_regular_mapping_repairs",
-        "manual_review_visible_slice_pairing_repairs",
-        "numbered_special_exclusion_repairs",
-        "manual_review_duplicate_variant_repairs",
-    ):
+    for row in _unaddressed_suggested_shape_rows_from_repair(agenda):
+        add_row(
+            local=row.get("local"),
+            blocker=row.get("issue") or "patch_ledger_suggested_shape_unaddressed",
+            open_question=str(row.get("required") or row.get("repair_instruction") or _repair_required_next_action(row)),
+            row_search_queries=row.get("search_queries_to_try") or search_queries,
+            row_resolution_options=(
+                row.get("suggested_submit_shape")
+                or row.get("multi_version_submit_shape")
+                or row.get("manual_review_candidate_submit_shape")
+                or row.get("local_slice_mapping_options")
+                or row.get("local_target_title_pairing_options")
+                or row.get("local_target_count_pairing_options")
+            ),
+            row_evidence_upgrade_options=row.get("evidence_upgrade_options"),
+            row_multi_version_submit_shape=row.get("multi_version_submit_shape"),
+            row_suggested_submit_shape=row.get("suggested_submit_shape"),
+            row_manual_review_candidate_submit_shape=row.get("manual_review_candidate_submit_shape"),
+            row_fail_closed_submit_shape=row.get("fail_closed_submit_shape"),
+            row_negative_target_absence_submit_shape=row.get("negative_target_absence_submit_shape"),
+            row_negative_target_absence_support_candidates=row.get("negative_target_absence_support_candidates"),
+            row_candidate_local_locators=row.get("candidate_local_locators"),
+            row_terminal_repair_required=row.get("terminal_repair_required"),
+            row_terminal_repair_options=row.get("terminal_repair_options"),
+            row_do_not_retry_targets=row.get("do_not_retry_targets_without_new_evidence"),
+        )
+        if len(rows) >= 8:
+            return ordered_rows()[:8]
+    for key in repair_source_keys:
         for row in list(agenda.get(key) or []):
             if not isinstance(row, dict):
                 continue
@@ -10897,6 +11733,7 @@ def _repair_frontier_rows_from_agenda(agenda: dict[str, object], *, repeated: bo
                 row_multi_version_submit_shape=row.get("multi_version_submit_shape"),
                 row_suggested_submit_shape=row.get("suggested_submit_shape"),
                 row_manual_review_candidate_submit_shape=row.get("manual_review_candidate_submit_shape"),
+                row_fail_closed_submit_shape=row.get("fail_closed_submit_shape"),
                 row_negative_target_absence_submit_shape=row.get("negative_target_absence_submit_shape"),
                 row_negative_target_absence_support_candidates=row.get("negative_target_absence_support_candidates"),
                 row_candidate_local_locators=row.get("candidate_local_locators"),
@@ -11079,6 +11916,7 @@ def _repair_finalization_guard_for_prompt(
         latest_repair,
         limit=12,
     )
+    ledger_choice_patch_rows = _ledger_choice_patch_rows_from_repair(session, latest_repair, limit=24)
     search_queries = _repair_search_queries_to_try(latest_repair)
     finalization_locators = _repair_finalization_target_locators(session)
     if uninspected_upgrade_locators:
@@ -11100,8 +11938,8 @@ def _repair_finalization_guard_for_prompt(
         required_next_action = (
             "The active repair frontier exposes suggested_submit_shape rows. Patch the ledger with those rows using "
             "repair_strategy=revise_saved_rows if you agree the upgraded evidence closes ownership; otherwise patch "
-            "an exact manual_review/fail_closed row that names the suggested target and the concrete post-upgrade "
-            "contradiction. Do not preserve the unresolved manual_review placeholder silently."
+            "an exact candidate-bearing manual_review row that names the specific localized evidence gap, or fail_closed with "
+            "a concrete blocker. Do not preserve the unresolved manual_review placeholder silently."
         )
     else:
         required_next_action = (
@@ -11126,6 +11964,7 @@ def _repair_finalization_guard_for_prompt(
         "suggested_submit_shape_rows": suggested_submit_shape_rows[:12],
         "suggested_ledger_patch_rows": (strong_suggested_ledger_patch_rows or suggested_ledger_patch_rows)[:12],
         "must_address_suggested_ledger_patch_rows": strong_suggested_ledger_patch_rows[:12],
+        "ledger_choice_patch_rows": ledger_choice_patch_rows[:24],
         "search_queries_to_try": search_queries[:8],
         "allowed_actions": [
             "inspect/search/note only when it adds evidence for the current active_repair_agenda",
@@ -11187,7 +12026,8 @@ def _near_cap_submit_finalization_guard_output(
         required_next_action = (
             "The active repair agenda has suggested_submit_shape rows and no pending evidence action. Patch those "
             "ledger rows with repair_strategy=revise_saved_rows if you agree the upgraded evidence closes ownership; otherwise "
-            "the exact terminal/manual_review row must name the suggested target and a concrete contradiction. A broad "
+            "the exact manual_review row must name the suggested target and a specific localized evidence gap, or fail_closed "
+            "must name a concrete package blocker. A broad "
             "budget fail_closed does not address this frontier."
         )
     else:
@@ -11747,6 +12587,8 @@ def _feedback_units_with_package_repairs(
                         "strong_mapping_candidates",
                         "suggested_submit_shape",
                         "manual_review_candidate_submit_shape",
+                        "fail_closed_submit_shape",
+                        "ledger_choice_submit_shape",
                         "multi_version_submit_shape",
                         "local_target_title_pairing_options",
                         "local_slice_mapping_options",
@@ -11877,6 +12719,32 @@ def _fail_closed_mapped_sibling_repairs(
             )
             if pairing_options:
                 repair["local_target_title_pairing_options"] = pairing_options
+                mapping_options = _one_mapping_option_per_local_slice(
+                    _local_slice_mapping_options_from_title_pairings(
+                        pairing_options,
+                        limit=8,
+                    )
+                )
+                manual_review_candidate_shape = _manual_review_candidate_submit_shape_from_pairings(
+                    pairing_options,
+                    limit=8,
+                )
+                if mapping_options:
+                    repair["local_slice_mapping_options"] = mapping_options
+                    repair["suggested_submit_shape"] = mapping_options
+                if manual_review_candidate_shape:
+                    repair["manual_review_candidate_submit_shape"] = manual_review_candidate_shape
+            repair["fail_closed_submit_shape"] = [
+                {
+                    "local": local_locator.locator,
+                    "outcome": "fail_closed",
+                    "confidence": "low",
+                    "reason": (
+                        "Exact slice remains unresolved after mapped sibling ownership and visible pairing "
+                        "evidence are compared; it cannot be safely mapped or excluded."
+                    ),
+                }
+            ]
             repairs.append(repair)
             break
     return repairs[:8]
@@ -12980,6 +13848,66 @@ def _is_duplicate_number_variant_locator(registry: LocatorRegistry, locator: Age
     return sum(1 for num, _ref in parent.episode_file_refs if int(num) == number) > 1
 
 
+def _supplemental_special_marker_without_hard_extra_repairs(
+    registry: LocatorRegistry,
+    feedback_units: list[dict[str, object]],
+) -> list[dict[str, object]]:
+    repairs: list[dict[str, object]] = []
+    for unit in feedback_units:
+        if not isinstance(unit, dict) or unit.get("outcome") != "supplemental":
+            continue
+        for raw_local in list(unit.get("local") or []):
+            locator, issue = registry.resolve(str(raw_local))
+            if issue or locator is None or locator.kind != "local":
+                continue
+            parent = _parent_local_locator(registry, locator)
+            category = parent.locator.rsplit("/", 1)[-1]
+            if category != "special-marker" or parent.episode_file_refs or len(parent.file_refs) < 2:
+                continue
+            if _has_concrete_non_owning_reason(
+                unit.get("unit"),
+                unit.get("reason"),
+                parent.title,
+                " ".join(parent.markers),
+                " ".join(parent.representative_labels[:4]),
+            ):
+                continue
+            if _has_contextual_packaging_extra_reason(parent, unit.get("unit"), unit.get("reason")):
+                continue
+            candidate_targets = _target_locators_from_value(unit.get("support"), limit=6)
+            repairs.append(
+                {
+                    "issue": "supplemental_special_marker_without_hard_extra_reason",
+                    "unit": unit.get("unit"),
+                    "local": parent.locator,
+                    "file_count": len(parent.file_refs),
+                    "representative_labels": list(parent.representative_labels[:6]),
+                    "current_reason": unit.get("reason"),
+                    "manual_review_candidate_submit_shape": [
+                        {
+                            "local": parent.locator,
+                            "outcome": "manual_review",
+                            "manual_review_candidate_targets": candidate_targets,
+                            "confidence": "low",
+                            "reason": (
+                                "Special-marker bundle remains a localized title/target-surface evidence gap; "
+                                "keep it for human review instead of clearing it as supplemental."
+                            ),
+                        }
+                    ],
+                    "required": (
+                        "A multi-file special-marker bundle cannot be cleared as supplemental from broad bonus/SP/theater "
+                        "wording alone. Use a hard non-owner reason such as CM/menu/preview/duplicate/packaging, map a "
+                        "visible owner if ownership closes, or use manual_review for localized uncertainty."
+                    ),
+                }
+            )
+            break
+        if len(repairs) >= 8:
+            break
+    return repairs[:8]
+
+
 def _duplicate_number_variant_key(registry: LocatorRegistry, raw_locator: object) -> tuple[str, int] | None:
     locator, issue = registry.resolve(str(raw_locator or ""))
     if issue or locator is None or locator.kind != "local":
@@ -13753,6 +14681,17 @@ def _numbered_special_exclusion_repairs(
                     ),
                 }
             ]
+            fail_closed_submit_shape = [
+                {
+                    "local": locator.locator,
+                    "outcome": "fail_closed",
+                    "confidence": "low",
+                    "reason": (
+                        "Numbered SP target ownership remains package-blocking after same-series target-side "
+                        "evidence, negative target-absence support, and local duration/title evidence are exhausted."
+                    ),
+                }
+            ]
             if (
                 not same_count_subjects
                 and negative_evidence_support_candidates
@@ -13830,6 +14769,7 @@ def _numbered_special_exclusion_repairs(
                         [],
                     ),
                     "manual_review_candidate_submit_shape": manual_review_candidate_submit_shape,
+                    "fail_closed_submit_shape": fail_closed_submit_shape,
                     "required": (
                         "The current supplemental/target_absent/non_bangumi outcome for this numbered SP group is "
                         "not mechanically acceptable without target-side support or negative target-absence evidence. "
@@ -14271,6 +15211,21 @@ def _manual_review_strong_non_regular_mapping_repairs(
             for contradiction_unit in contradiction_units
         ):
             return None
+        if any(
+            _manual_review_candidate_has_strong_resolution_uncertainty(
+                contradiction_unit,
+                target=candidate.get("target_subject"),
+                target_subject=candidate.get("target_subject"),
+            )
+            and any(
+                _local_locator_exact_match(unit_local, shape.get("local"))
+                for unit_local in _repair_local_values(contradiction_unit.get("local"))
+                for shape in suggested_shape
+                if isinstance(shape, dict)
+            )
+            for contradiction_unit in contradiction_units
+        ):
+            return None
         multi_version_shape = (
             suggested_shape
             if any("/variant/" in str(row.get("local") or "") for row in suggested_shape)
@@ -14296,7 +15251,7 @@ def _manual_review_strong_non_regular_mapping_repairs(
                 "are exposed for comparison when present. Do not preserve the saved manual-review placeholder. Use "
                 "repair_strategy=revise_saved_rows and submit the suggested mapped rows if you agree this evidence "
                 "closes ownership; only keep manual_review by splitting exact unresolved locators and naming a "
-                "concrete post-upgrade contradiction. The fixed layer is rejecting the unresolved placeholder, not "
+                "specific unresolved title/count/duration/target-surface/variant evidence gap. The fixed layer is rejecting the unresolved placeholder, not "
                 "assigning the target automatically."
             ),
         }
@@ -14987,14 +15942,16 @@ def _manual_review_duplicate_variant_repairs(
         ]
         if not explicit_review_targets:
             continue
-        if _manual_review_keeps_target_ownership_ambiguous(unit):
-            continue
+        target_ownership_ambiguous = _manual_review_keeps_target_ownership_ambiguous(unit)
         for raw_local in list(unit.get("local") or []):
             locator, issue = registry.resolve(str(raw_local))
             if issue or locator is None or locator.kind != "local":
                 continue
             parent_locator = _parent_local_locator(registry, locator)
             if not _is_non_regular_numbered_locator(registry, parent_locator):
+                continue
+            broad_duplicate_unit = locator.locator == parent_locator.locator or len(locator.file_refs) > 1
+            if target_ownership_ambiguous and not broad_duplicate_unit:
                 continue
             episode_numbers = [int(num) for num, _ref in parent_locator.episode_file_refs]
             unique_episode_count = len(set(episode_numbers))
@@ -15041,6 +15998,11 @@ def _manual_review_duplicate_variant_repairs(
             ]
             if not candidate_targets:
                 continue
+            multi_version_shape = _duplicate_variant_multi_version_submit_shape(
+                parent_locator,
+                duplicate_variant_locators,
+                candidate_targets[0],
+            )
             repairs.append(
                 {
                     "issue": "manual_review_duplicate_variant_should_split",
@@ -15061,11 +16023,8 @@ def _manual_review_duplicate_variant_repairs(
                         }
                         for target in candidate_targets[:6]
                     ],
-                    "multi_version_submit_shape": _duplicate_variant_multi_version_submit_shape(
-                        parent_locator,
-                        duplicate_variant_locators,
-                        candidate_targets[0],
-                    ),
+                    "multi_version_submit_shape": multi_version_shape,
+                    "suggested_submit_shape": multi_version_shape,
                     "required": (
                         "This numbered non-regular local group has duplicate filename variants, but its unique "
                         "episode-number count matches a visible candidate target. Do not keep the whole group in "
@@ -16293,6 +17252,25 @@ def _excluded_visible_title_pairing_repairs(
             ]
             if not pairing_options:
                 continue
+            suggested_submit_shape = _local_slice_mapping_options_from_title_pairings(
+                pairing_options,
+                limit=8,
+            )
+            manual_review_candidate_submit_shape = _manual_review_candidate_submit_shape_from_pairings(
+                pairing_options,
+                limit=8,
+            )
+            fail_closed_submit_shape = [
+                {
+                    "local": locator.locator,
+                    "outcome": "fail_closed",
+                    "confidence": "low",
+                    "reason": (
+                        "Exact local title-tail pairing remains package-blocking after visible target candidates "
+                        "are compared and rejected with concrete contradictions."
+                    ),
+                }
+            ]
             if unit.get("outcome") == "fail_closed" and _fail_closed_reason_addresses_visible_pairing(
                 unit,
                 pairing_options,
@@ -16308,6 +17286,9 @@ def _excluded_visible_title_pairing_repairs(
                     "local_title": locator.title,
                     "representative_labels": list(locator.representative_labels[:4]),
                     "local_target_title_pairing_options": pairing_options[:8],
+                    "suggested_submit_shape": suggested_submit_shape[:8],
+                    "manual_review_candidate_submit_shape": manual_review_candidate_submit_shape[:8],
+                    "fail_closed_submit_shape": fail_closed_submit_shape,
                     "required": (
                         "This main/movie-like local locator is being excluded or fail_closed, but visible target evidence contains "
                         "visible title-tail pairing candidates for it. Map one pairing if semantically correct, "
@@ -16585,6 +17566,34 @@ def _excluded_title_tail_unresolved_after_search_repairs(
                     "concrete alias or fail_closed this exact local locator with the remaining evidence gap."
                 )
             )
+            candidate_targets = [
+                str(item.get("target") or item.get("target_subject") or "").strip()
+                for item in source_query_bridge_targets
+                if isinstance(item, dict) and str(item.get("target") or item.get("target_subject") or "").strip()
+            ][:4]
+            manual_review_candidate_submit_shape = [
+                {
+                    "local": locator.locator,
+                    "outcome": "manual_review",
+                    "manual_review_candidate_targets": candidate_targets,
+                    "confidence": "low",
+                    "reason": (
+                        "Searched title-tail still lacks a direct visible title bridge; source-query/related "
+                        "candidate provenance remains unresolved for this exact local locator."
+                    ),
+                }
+            ] if candidate_targets else []
+            fail_closed_submit_shape = [
+                {
+                    "local": locator.locator,
+                    "outcome": "fail_closed",
+                    "confidence": "low",
+                    "reason": (
+                        "Exact title-tail owner remains unresolved after searched hints and listed bridge/search "
+                        "frontier are exhausted; no safe Bangumi ownership or exclusion can be chosen."
+                    ),
+                }
+            ]
             repairs.append(
                 {
                     "issue": issue_code,
@@ -16600,6 +17609,8 @@ def _excluded_title_tail_unresolved_after_search_repairs(
                     "root_owner_search_queries_to_try": root_frontier_queries[:8],
                     "visible_target_title_tokens": sorted(visible_target_tokens)[:32],
                     "visible_source_query_bridge_targets": source_query_bridge_targets,
+                    "manual_review_candidate_submit_shape": manual_review_candidate_submit_shape,
+                    "fail_closed_submit_shape": fail_closed_submit_shape,
                     "required": required,
                 }
             )
@@ -17396,6 +18407,10 @@ def _submit_tool(
         registry,
         feedback_units,
     )
+    supplemental_special_marker_repairs = _supplemental_special_marker_without_hard_extra_repairs(
+        registry,
+        feedback_units,
+    )
     numbered_special_exclusion_repairs = _numbered_special_exclusion_repairs(
         registry,
         feedback_units,
@@ -17556,6 +18571,14 @@ def _submit_tool(
             _issue(
                 str(repair.get("unit") or "package"),
                 "supplemental_main_episodes_without_concrete_extra_reason",
+                json.dumps(repair, ensure_ascii=False),
+            )
+        )
+    for repair in supplemental_special_marker_repairs:
+        issues.append(
+            _issue(
+                str(repair.get("unit") or "package"),
+                "supplemental_special_marker_without_hard_extra_reason",
                 json.dumps(repair, ensure_ascii=False),
             )
         )
@@ -17734,6 +18757,7 @@ def _submit_tool(
             "excluded_singleton_visible_subject_candidate": excluded_singleton_subject_repairs,
             "excluded_main_locator_with_mapped_title_sibling": excluded_main_sibling_repairs,
             "supplemental_main_episodes_without_concrete_extra_reason": supplemental_main_episode_repairs,
+            "supplemental_special_marker_without_hard_extra_reason": supplemental_special_marker_repairs,
             "numbered_special_exclusion_needs_target_evidence": numbered_special_exclusion_repairs,
             "mapped_numbered_special_related_count_needs_stronger_evidence": mapped_numbered_special_related_count_repairs,
             "manual_review_evidence_upgrade_required": manual_review_evidence_upgrade_repairs,
@@ -17801,6 +18825,10 @@ def _submit_tool(
         if supplemental_main_episode_repairs:
             repair_hints.append(
                 "Do not clear main/main-episodes locators as supplemental without a concrete extra/duplicate/recap/packaging reason."
+            )
+        if supplemental_special_marker_repairs:
+            repair_hints.append(
+                "Do not clear multi-file special-marker bundles as supplemental from broad bonus/SP/theater wording alone; use hard non-owner evidence or manual_review."
             )
         if numbered_special_exclusion_repairs:
             repair_hints.append(
@@ -17921,6 +18949,7 @@ def _submit_tool(
                 "excluded_singleton_visible_subject_repairs": excluded_singleton_subject_repairs,
                 "excluded_main_mapped_sibling_repairs": excluded_main_sibling_repairs,
                 "supplemental_main_episode_repairs": supplemental_main_episode_repairs,
+                "supplemental_special_marker_repairs": supplemental_special_marker_repairs,
                 "numbered_special_exclusion_repairs": numbered_special_exclusion_repairs,
                 "mapped_numbered_special_related_count_repairs": mapped_numbered_special_related_count_repairs,
                 "manual_review_evidence_upgrade_repairs": manual_review_evidence_upgrade_repairs,
@@ -17966,6 +18995,28 @@ def _submit_tool(
                 "The fixed layer will only recheck locators, coverage, duplicate targets, and accounting."
             ),
         }
+        agenda_for_projection = _repair_agenda_from_submit_feedback(feedback, repeated=False)
+        projected_session = HumanCaseSession(
+            case_id=str(workspace.header.case_id or ""),
+            resolution_ledger=ResolutionLedger(rows=[]),
+        )
+        projected_choice_rows = _ledger_patch_rows_from_submit_shapes(
+            projected_session,
+            _ledger_choice_submit_shape_rows_from_repair(agenda_for_projection, limit=24),
+            limit=24,
+        )
+        suggested_rows = _suggested_ledger_patch_rows_from_repair(projected_session, agenda_for_projection, limit=12)
+        manual_review_rows = _manual_review_candidate_ledger_patch_rows_from_repair(
+            projected_session,
+            agenda_for_projection,
+            limit=12,
+        )
+        if projected_choice_rows:
+            feedback["ledger_choice_patch_rows"] = projected_choice_rows
+        if suggested_rows:
+            feedback["suggested_ledger_patch_rows"] = suggested_rows
+        if manual_review_rows:
+            feedback["manual_review_candidate_ledger_patch_rows"] = manual_review_rows
         return SubmitCompileResult(False, None, verifier, feedback, mapped_file_count, excluded_file_count, manual_review_file_count)
 
     if fail_closed_units:
@@ -18171,7 +19222,8 @@ candidate_must_address, mapped, manual_review, target_absent, supplemental,
 fail_closed. For candidate_must_address or any row with visible candidate debt,
 put candidates in must_address_candidates and discharge each candidate by one
 of four concrete actions: map the row to that target, keep that target in
-manual_review_candidate_targets, reject it with a concrete contradiction, or
+manual_review_candidate_targets with a specific unresolved title/count/duration/
+target-surface/variant evidence gap, reject it with a concrete contradiction, or
 fail_closed with a blocker. When all rows are terminal, the fixed layer compiles
 the ledger into the final package and reuses the existing submit verifier.
 Do not hand-roll a final package with submit. Patch rows in the resolution
@@ -18230,7 +19282,7 @@ For recap/movie/feature parent rows, when exact local episode slices carry
 distinctive title labels and each slice has a visible one-item recap/movie
 target pairing, prefer mapped exact-slice rows once ownership closes. Keep
 manual_review only for the exact slice whose visible pairing still has a
-concrete contradiction or unresolved post-upgrade evidence gap; do not leave a
+localized contradiction or unresolved post-upgrade evidence gap; do not leave a
 broad parent review row just because the parent locator was too coarse.
 The local locator category is a filename/packaging clue. Treat special-marker,
 previews, packaging-extras, CM/Menu/NCOP/NCED/PV style groups as separate work
@@ -18311,11 +19363,19 @@ closure, with same-count competitors exposed when present. Use revise_saved_rows
 suggested_submit_shape if you judge ownership closed. When CASE_STATE exposes
 suggested_ledger_patch_rows, prefer those row-shaped templates over inventing
 local rows yourself; they use local:// locators and row_id hints, not LF refs.
+When CASE_STATE exposes manual_review_candidate_ledger_patch_rows, those are
+the exact candidate-bearing manual_review alternatives for the same local
+slices when ownership remains localized uncertainty.
+When CASE_STATE exposes ledger_choice_patch_rows, those are copyable terminal
+row choices projected from the latest verifier repair: mapped rows, exact
+candidate-bearing manual_review rows, and exact fail_closed rows. Pick the row
+choice that matches your semantic judgment; the fixed layer is not choosing it.
 Keep manual_review only
-for exact unresolved locators and name the concrete post-upgrade contradiction
-that remains after local duration/title/subtitle evidence is considered. A vague
-"still ambiguous" candidate-bearing manual_review does not discharge this repair
-when the exposed evidence loop is already strong.
+for exact unresolved locators, put the visible candidate in
+manual_review_candidate_targets, and name the localized evidence gap that remains
+after local duration/title/subtitle evidence is considered. Broad "still
+ambiguous" parent review rows do not discharge this repair when the exposed
+evidence loop is already strong.
 Do not cite "target surface was not directly inspected" or a prior mechanical
 target-surface miss as a semantic contradiction to a strong suggested shape. If
 a target_surface_action is open, inspect it; otherwise patch the suggested
@@ -18462,6 +19522,11 @@ def _turn_tail(desk: dict[str, object], session: HumanCaseSession, *, max_turns:
                         "blocking_units",
                         "ledger_terminal_repair_rows",
                         "repair_frontier",
+                        "suggested_ledger_patch_rows",
+                        "must_address_suggested_ledger_patch_rows",
+                        "manual_review_candidate_ledger_patch_rows",
+                        "ledger_choice_patch_rows",
+                        *SUBMIT_REPAIR_GROUP_KEYS,
                         "row_rejection_counts",
                         "repeat_rejection_warning",
                         "required_next_action",
@@ -18505,6 +19570,11 @@ def _turn_tail(desk: dict[str, object], session: HumanCaseSession, *, max_turns:
                         "diagnostic_target_surface_actions",
                         "rejected_or_noisy_actions",
                         "repair_frontier",
+                        "suggested_ledger_patch_rows",
+                        "must_address_suggested_ledger_patch_rows",
+                        "manual_review_candidate_ledger_patch_rows",
+                        "ledger_choice_patch_rows",
+                        *SUBMIT_REPAIR_GROUP_KEYS,
                         "recovery_no_high_quality_action",
                         "repeat_rejection_warning",
                         "case_resolution_goal",
@@ -18653,6 +19723,16 @@ def _turn_tail(desk: dict[str, object], session: HumanCaseSession, *, max_turns:
         latest_repair_observation,
         limit=12,
     )
+    manual_review_candidate_ledger_patch_rows = _manual_review_candidate_ledger_patch_rows_from_repair(
+        session,
+        latest_repair_observation,
+        limit=12,
+    )
+    ledger_choice_patch_rows = _ledger_choice_patch_rows_from_repair(
+        session,
+        latest_repair_observation,
+        limit=24,
+    )
     repair_search_queries = _repair_search_queries_to_try(latest_repair_observation)
     forced_finalization = (
         budget_pressure
@@ -18715,17 +19795,19 @@ def _turn_tail(desk: dict[str, object], session: HumanCaseSession, *, max_turns:
                     strong_suggested_ledger_patch_rows or suggested_ledger_patch_rows
                 )[:12],
                 "must_address_suggested_ledger_patch_rows": strong_suggested_ledger_patch_rows[:12],
+                "manual_review_candidate_ledger_patch_rows": manual_review_candidate_ledger_patch_rows[:12],
+                "ledger_choice_patch_rows": ledger_choice_patch_rows[:24],
                 "saved_work_unit_count": saved_count,
                 "must_account_locator_count": must_account_count,
                 "finalization_guard_issue": repair_finalization_guard.get("issue") if repair_finalization_guard else "",
                 "instruction": (
-                    "Strong suggested ledger patch rows are open. The next tool call should be patch_ledger with repair_strategy=revise_saved_rows: apply every must_address_suggested_ledger_patch_rows template you semantically accept by copying row_id/local/status/target exactly, or patch exact manual_review/fail_closed rows that name the suggested target and concrete post-upgrade contradiction. Do not spend another turn preserving broad manual_review/supplemental rows."
+                    "Strong suggested ledger patch rows are open. The next tool call should be patch_ledger with repair_strategy=revise_saved_rows: apply every must_address_suggested_ledger_patch_rows template you semantically accept by copying row_id/local/status/target exactly, or copy manual_review_candidate_ledger_patch_rows when ownership remains localized uncertainty, or fail_closed rows with a concrete blocker. Do not spend another turn preserving broad manual_review/supplemental rows."
                     if strong_suggested_ledger_patch_rows and not evidence_upgrade_action_open and not target_surface_action_open
                     else
                     "A submit repair agenda is open, remaining turns are limited, and suggested_submit_shape rows are visible. "
                     "The next tool call must be patch_ledger with repair_strategy=revise_saved_rows: use suggested_ledger_patch_rows "
-                    "as row templates if you agree the upgraded evidence closes ownership, or patch an exact manual_review/fail_closed row that names the "
-                    "suggested target and concrete post-upgrade contradiction."
+                    "as row templates if you agree the upgraded evidence closes ownership, or copy manual_review_candidate_ledger_patch_rows with "
+                    "a specific localized evidence gap, or fail_closed with a concrete blocker."
                     if forced_finalization and suggested_submit_shape_rows
                     else
                     "A repair agenda is open and remaining turns are limited. The next tool call must be patch_ledger. "
@@ -19232,7 +20314,14 @@ def _compact_repair_field(key: str, value: object) -> object:
         return _compact_repair_payload(value, list_limit=4, text_limit=220)
     if key == "local_episode_split_options":
         return _compact_repair_payload(value, list_limit=8, text_limit=220)
-    if key in {"multi_version_submit_shape", "suggested_submit_shape", "manual_review_candidate_submit_shape", "duplicate_episode_variant_locators"}:
+    if key in {
+        "multi_version_submit_shape",
+        "suggested_submit_shape",
+        "manual_review_candidate_submit_shape",
+        "fail_closed_submit_shape",
+        "ledger_choice_submit_shape",
+        "duplicate_episode_variant_locators",
+    }:
         return _compact_repair_payload(value, list_limit=12, text_limit=240)
     if key in {
         "terminal_repair_options",
@@ -19325,12 +20414,17 @@ def _compact_submit_feedback_for_audit(feedback: dict[str, object]) -> dict[str,
                     "unassigned_target_candidates",
                     "negative_target_absence_support_candidates",
                     "negative_target_absence_submit_shape",
-                    "target_count",
-                    "expected_target_count",
-                    "available_action",
-                    "search_queries_to_try",
-                    "unbridged_title_tail_tokens",
-                    "searched_query_hints",
+                "target_count",
+                "expected_target_count",
+                "available_action",
+                "search_queries_to_try",
+                "suggested_submit_shape",
+                "multi_version_submit_shape",
+                "manual_review_candidate_submit_shape",
+                "fail_closed_submit_shape",
+                "ledger_choice_submit_shape",
+                "unbridged_title_tail_tokens",
+                "searched_query_hints",
                     "row_rejection_count",
                     "row_rejection_issue_codes",
                     "rejected_patch_status",
@@ -19359,30 +20453,7 @@ def _compact_submit_feedback_for_audit(feedback: dict[str, object]) -> dict[str,
                 "duplicate_local_locator_hints": package.get("duplicate_local_locator_hints"),
                 "duplicate_target_details": package.get("duplicate_target_details"),
                 "duplicate_target_repair_units": package.get("duplicate_target_repair_units"),
-                "fail_closed_mapped_sibling_repairs": package.get("fail_closed_mapped_sibling_repairs"),
-                "excluded_slice_mapped_sibling_repairs": package.get("excluded_slice_mapped_sibling_repairs"),
-                "fail_closed_count_matched_target_sibling_repairs": package.get("fail_closed_count_matched_target_sibling_repairs"),
-                "excluded_count_matched_uninspected_subject_repairs": package.get("excluded_count_matched_uninspected_subject_repairs"),
-                "excluded_singleton_visible_subject_repairs": package.get("excluded_singleton_visible_subject_repairs"),
-                "singleton_target_alias_repairs": package.get("singleton_target_alias_repairs"),
-                "mapped_target_title_bridge_repairs": package.get("mapped_target_title_bridge_repairs"),
-                "mapped_numbered_special_related_count_repairs": package.get("mapped_numbered_special_related_count_repairs"),
-                "manual_review_evidence_upgrade_repairs": package.get("manual_review_evidence_upgrade_repairs"),
-                "manual_review_strong_non_regular_mapping_repairs": package.get("manual_review_strong_non_regular_mapping_repairs"),
-                "manual_review_visible_slice_pairing_repairs": package.get("manual_review_visible_slice_pairing_repairs"),
-                "mapped_slice_manual_sibling_repairs": package.get("mapped_slice_manual_sibling_repairs"),
-                "mapped_title_season_mismatch_repairs": package.get("mapped_title_season_mismatch_repairs"),
-                "excluded_main_mapped_sibling_repairs": package.get("excluded_main_mapped_sibling_repairs"),
-                "supplemental_main_episode_repairs": package.get("supplemental_main_episode_repairs"),
-                "numbered_special_exclusion_repairs": package.get("numbered_special_exclusion_repairs"),
-                "fail_closed_negative_target_absence_repairs": package.get("fail_closed_negative_target_absence_repairs"),
-                "excluded_title_tail_search_repairs": package.get("excluded_title_tail_search_repairs"),
-                "excluded_visible_title_pairing_repairs": package.get("excluded_visible_title_pairing_repairs"),
-                "excluded_title_tail_unresolved_repairs": package.get("excluded_title_tail_unresolved_repairs"),
-                "fail_closed_slice_pairing_repairs": package.get("fail_closed_slice_pairing_repairs"),
-                "fail_closed_title_tail_bridge_repairs": package.get("fail_closed_title_tail_bridge_repairs"),
-                "excluded_singleton_unassigned_target_repairs": package.get("excluded_singleton_unassigned_target_repairs"),
-                "fail_closed_singleton_unassigned_target_repairs": package.get("fail_closed_singleton_unassigned_target_repairs"),
+                **{key: package.get(key) for key in SUBMIT_REPAIR_GROUP_KEYS},
                 "unit_mechanical_checklist": package.get("unit_mechanical_checklist"),
                 "mechanical_repair_hints": package.get("mechanical_repair_hints"),
                 "ledger_terminal_repair_rows": package.get("ledger_terminal_repair_rows"),
@@ -19440,6 +20511,8 @@ def _repair_agenda_from_submit_feedback(feedback: dict[str, object], *, repeated
             "multi_version_submit_shape",
             "suggested_submit_shape",
             "manual_review_candidate_submit_shape",
+            "fail_closed_submit_shape",
+            "ledger_choice_submit_shape",
             "strong_mapping_candidates",
             "evidence_upgrade_options",
             "non_regular_evidence_closure",
@@ -19594,6 +20667,7 @@ def _repair_agenda_from_submit_feedback(feedback: dict[str, object], *, repeated
         multi_version_shape: list[dict[str, object]] = []
         suggested_submit_shape: list[dict[str, object]] = []
         manual_review_candidate_shape: list[dict[str, object]] = []
+        fail_closed_shape: list[dict[str, object]] = []
         duplicate_variant_locators: list[dict[str, object]] = []
         duplicate_variant_targets: list[dict[str, object]] = []
         if isinstance(raw_issues, list):
@@ -19606,6 +20680,8 @@ def _repair_agenda_from_submit_feedback(feedback: dict[str, object], *, repeated
                 suggested_submit_shape.extend(_repair_dict_items(raw_suggested_shape))
                 raw_manual_review_shape = issue_item.get("manual_review_candidate_submit_shape")
                 manual_review_candidate_shape.extend(_repair_dict_items(raw_manual_review_shape))
+                raw_fail_closed_shape = issue_item.get("fail_closed_submit_shape")
+                fail_closed_shape.extend(_repair_dict_items(raw_fail_closed_shape))
                 raw_variants = issue_item.get("duplicate_episode_variant_locators")
                 duplicate_variant_locators.extend(_repair_dict_items(raw_variants))
                 raw_targets = issue_item.get("candidate_targets")
@@ -19666,6 +20742,22 @@ def _repair_agenda_from_submit_feedback(feedback: dict[str, object], *, repeated
             if deduped_shape:
                 row["manual_review_candidate_submit_shape"] = _compact_repair_field(
                     "manual_review_candidate_submit_shape",
+                    deduped_shape,
+                )
+        if fail_closed_shape and not row.get("fail_closed_submit_shape"):
+            seen_rows: set[str] = set()
+            deduped_shape: list[dict[str, object]] = []
+            for item in fail_closed_shape:
+                local = str(item.get("local") or "")
+                if not local or local in seen_rows:
+                    continue
+                seen_rows.add(local)
+                deduped_shape.append(item)
+                if len(deduped_shape) >= 12:
+                    break
+            if deduped_shape:
+                row["fail_closed_submit_shape"] = _compact_repair_field(
+                    "fail_closed_submit_shape",
                     deduped_shape,
                 )
         if duplicate_variant_locators and not row.get("duplicate_episode_variant_locators"):
@@ -19863,6 +20955,9 @@ def _repair_agenda_from_submit_feedback(feedback: dict[str, object], *, repeated
     excluded_main_mapped_sibling_repairs = package.get("excluded_main_mapped_sibling_repairs")
     if isinstance(excluded_main_mapped_sibling_repairs, list):
         excluded_main_mapped_sibling_repairs = excluded_main_mapped_sibling_repairs[:6]
+    supplemental_special_marker_repairs = package.get("supplemental_special_marker_repairs")
+    if isinstance(supplemental_special_marker_repairs, list):
+        supplemental_special_marker_repairs = supplemental_special_marker_repairs[:6]
     numbered_special_exclusion_repairs = package.get("numbered_special_exclusion_repairs")
     if isinstance(numbered_special_exclusion_repairs, list):
         numbered_special_exclusion_repairs = numbered_special_exclusion_repairs[:6]
@@ -19995,6 +21090,7 @@ def _repair_agenda_from_submit_feedback(feedback: dict[str, object], *, repeated
         "manual_review_duplicate_variant_repairs": manual_review_duplicate_variant_repairs or [],
         "mapped_title_season_mismatch_repairs": mapped_title_season_mismatch_repairs or [],
         "excluded_main_mapped_sibling_repairs": excluded_main_mapped_sibling_repairs or [],
+        "supplemental_special_marker_repairs": supplemental_special_marker_repairs or [],
         "numbered_special_exclusion_repairs": numbered_special_exclusion_repairs or [],
         "fail_closed_negative_target_absence_repairs": fail_closed_negative_target_absence_repairs or [],
         "excluded_title_tail_search_repairs": excluded_title_tail_search_repairs or [],
@@ -20095,6 +21191,8 @@ def _repair_agenda_from_submit_feedback(feedback: dict[str, object], *, repeated
             "post-upgrade contradiction. If manual_review_visible_slice_pairing_repairs is non-empty, split the broad "
             "parent manual_review into exact local episode slices and resolve the listed title-pairing candidates; "
             "for exact slices, keep manual_review only with manual_review_candidate_targets and concrete ambiguity. "
+            "If supplemental_special_marker_repairs is non-empty, change the listed multi-file special-marker bundle "
+            "to manual_review unless you have hard CM/menu/preview/duplicate/packaging non-owner evidence. "
             "If mapped_slice_manual_sibling_repairs is non-empty, a mapped slice target is still cited by a sibling "
             "manual_review row; resolve that same-parent ownership conflict before resubmitting. "
             "If mapped_title_season_mismatch_repairs is non-empty, the selected target has an explicit season suffix "
@@ -20722,9 +21820,46 @@ def run_human_case_agent(
                                 session.submit_rejection_issue_counts[str(key)] = (
                                     session.submit_rejection_issue_counts.get(str(key), 0) + int(value or 0)
                                 )
+                        compiled_repair_agenda = _repair_agenda_from_submit_feedback(compiled_feedback, repeated=False)
+                        compiled_suggested_rows = _suggested_ledger_patch_rows_from_repair(
+                            session,
+                            compiled_repair_agenda,
+                            limit=12,
+                        )
+                        compiled_strong_rows = _strong_suggested_ledger_patch_rows_from_repair(
+                            session,
+                            compiled_repair_agenda,
+                            limit=12,
+                        )
+                        compiled_manual_rows = _manual_review_candidate_ledger_patch_rows_from_repair(
+                            session,
+                            compiled_repair_agenda,
+                            limit=12,
+                        )
+                        compiled_choice_rows = _ledger_choice_patch_rows_from_repair(
+                            session,
+                            compiled_repair_agenda,
+                            limit=24,
+                        )
                         output = {
                             **output,
                             "accepted": False,
+                            "issue_counts": issue_counts,
+                            "blocking_units": compiled_repair_agenda.get("blocking_units") or [],
+                            "diagnostic_units": compiled_repair_agenda.get("diagnostic_units") or [],
+                            "repair_frontier": compiled_repair_agenda.get("repair_frontier") or [],
+                            "blocking_target_surface_actions": compiled_repair_agenda.get("blocking_target_surface_actions") or [],
+                            "diagnostic_target_surface_actions": compiled_repair_agenda.get("diagnostic_target_surface_actions") or [],
+                            "rejected_or_noisy_actions": compiled_repair_agenda.get("rejected_or_noisy_actions") or [],
+                            "suggested_ledger_patch_rows": (compiled_strong_rows or compiled_suggested_rows)[:12],
+                            "must_address_suggested_ledger_patch_rows": compiled_strong_rows[:12],
+                            "manual_review_candidate_ledger_patch_rows": compiled_manual_rows[:12],
+                            "ledger_choice_patch_rows": compiled_choice_rows[:24],
+                            **{
+                                key: compiled_repair_agenda.get(key)
+                                for key in SUBMIT_REPAIR_GROUP_KEYS
+                                if compiled_repair_agenda.get(key)
+                            },
                             "required_next_action": (
                                 "Patch the ledger rows named by compiled_submit_feedback; do not resubmit a whole package."
                             ),
@@ -20741,7 +21876,7 @@ def run_human_case_agent(
                             session,
                             cognitive_workspace=_workspace_with_submit_rejection(
                                 session.cognitive_workspace,
-                                _repair_agenda_from_submit_feedback(compiled_feedback, repeated=False),
+                                compiled_repair_agenda,
                                 repeated=False,
                             ),
                         )

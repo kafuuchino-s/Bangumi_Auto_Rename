@@ -4,8 +4,10 @@ import json
 
 from src.rename.case_agent.human_case_agent import (
     AgentLocator,
+    CaseCognitiveWorkspace,
     HUMAN_CASE_AGENT_INSTRUCTIONS,
     HumanCaseSession,
+    InvestigationAgendaItem,
     InspectToolArgs,
     LocatorRegistry,
     PackageResolution,
@@ -14,8 +16,11 @@ from src.rename.case_agent.human_case_agent import (
     ResolutionLedgerCandidateDebt,
     ResolutionLedgerRow,
     ResolutionWorkUnit,
+    SUBMIT_REPAIR_GROUP_KEYS,
     SearchToolArgs,
     SubmitToolArgs,
+    REPAIR_FRONTIER_SOURCE_KEYS,
+    _active_repair_agenda_for_prompt,
     _inspect_tool,
     _register_existing_targets,
     _local_target_title_pairing_options,
@@ -36,7 +41,9 @@ from src.rename.case_agent.human_case_agent import (
     _search_tool,
     _subject_card_from_api,
     _subject_with_search_query_provenance,
+    _ledger_choice_patch_rows_from_repair,
     _suggested_ledger_patch_rows_from_repair,
+    _strong_suggested_submit_shape_rows_from_repair,
     _strong_suggested_ledger_patch_rows_from_repair,
     _patch_ledger_tool,
     _submit_tool,
@@ -45,6 +52,7 @@ from src.rename.case_agent.human_case_agent import (
     _terminal_fail_closed_contract_guard_output,
     _target_surface_actions_from_repair,
     _target_non_regular_mapping_support_details,
+    _turn_tail,
     _visible_source_query_bridge_targets,
     build_human_case_desk,
     human_case_tool_definitions,
@@ -90,6 +98,40 @@ def _two_episode_workspace() -> CaseEvidenceWorkspace:
         bangumi_items=[
             BangumiItemCard(ref="BE1", subject_ref="BS1", sort=1, ep=1, title="Episode 1"),
             BangumiItemCard(ref="BE2", subject_ref="BS1", sort=2, ep=2, title="Episode 2"),
+        ],
+    )
+
+
+def _special_marker_bundle_workspace(case_id: str = "CASE-SPECIAL-MARKER-BUNDLE") -> CaseEvidenceWorkspace:
+    return CaseEvidenceWorkspace.from_cards(
+        header=CaseHeader(case_id=case_id),
+        budget=CaseBudget(max_judge_rounds=4),
+        contract=CaseContract(
+            main_file_refs=["LF1", "LF2", "LF3", "LF4"],
+            allowed_file_refs=["LF1", "LF2", "LF3", "LF4"],
+            visible_target_refs=["BE1"],
+        ),
+        local_files=[
+            LocalFileCard(
+                ref=f"LF{index}",
+                path=f"Pack/SPs/[Group] Franchise Special Theater Manners [{label}].mkv",
+                is_main=True,
+            )
+            for index, label in enumerate(["A1B2C3D4", "B2C3D4E5", "C3D4E5F6", "D4E5F6A7"], start=1)
+        ],
+        bangumi_subjects=[
+            BangumiSubjectCard(
+                ref="BS1",
+                subject_id=81,
+                title="Franchise Specials",
+                name="Franchise Specials",
+                name_cn="Franchise Specials",
+                eps=1,
+                total_episodes=1,
+            )
+        ],
+        bangumi_items=[
+            BangumiItemCard(ref="BE1", subject_ref="BS1", sort=1, ep=1, title="Special 1"),
         ],
     )
 
@@ -168,7 +210,7 @@ def test_resolution_ledger_manual_review_candidate_discharges_debt():
                 row_id="LR1",
                 local=[local],
                 status="manual_review",
-                reason="The candidate remains useful for human replay but ownership is not accepted.",
+                reason="Episode title evidence remains unresolved; keep candidate for human replay.",
                 manual_review_candidate_targets=[target],
                 must_address_candidates=[
                     ResolutionLedgerCandidateDebt(target=target, source="visible same-title candidate")
@@ -235,6 +277,48 @@ def test_candidate_debt_feedback_preserves_candidate_shapes_for_frontier():
     assert target in candidate_unit["manual_review_candidate_submit_shape"][0]["manual_review_candidate_targets"]
     assert frontier[0]["suggested_submit_shape"][0]["local"] == f"{local}/episodes/1-2"
     assert frontier[0]["high_quality_next_actions"][0].startswith("patch suggested_submit_shape rows")
+
+
+def test_strong_candidate_debt_feedback_exposes_exact_manual_review_shape():
+    workspace = _two_episode_workspace()
+    desk, registry = build_human_case_desk(workspace)
+    _register_existing_targets(workspace, registry)
+    local = desk["local_locators"][0]["locator"]
+    exact_local = f"{local}/episodes/1-2"
+    target = f"{registry.subject_locator_by_id[1]}/episodes/1-2"
+    ledger = ResolutionLedger(
+        rows=[
+            ResolutionLedgerRow(
+                row_id="LR1",
+                local=[local],
+                status="manual_review",
+                reason="Broad parent review that does not carry the exact candidate.",
+                must_address_candidates=[
+                    ResolutionLedgerCandidateDebt(
+                        target=target,
+                        source="manual_review_strong_non_regular_mapping_should_revise",
+                        mapped_outcome="mapped_special_or_ova",
+                        support=[exact_local],
+                        reason="visible strong candidate must be addressed",
+                    )
+                ],
+            )
+        ]
+    )
+
+    issues, row_summaries = _validate_resolution_ledger(
+        registry,
+        ledger,
+        main_refs=list(workspace.contract.main_file_refs),
+        require_terminal=True,
+    )
+    units = _ledger_validation_units_from_issues(issues, row_summaries)
+
+    candidate_unit = next(unit for unit in units if unit["unit"] == "LR1")
+    manual_shape = candidate_unit["manual_review_candidate_submit_shape"][0]
+    assert manual_shape["local"] == exact_local
+    assert manual_shape["manual_review_candidate_targets"] == [target]
+    assert "unresolved" in manual_shape["reason"]
 
 
 def test_manual_review_slice_pairing_frontier_searches_before_low_confidence_review_shape():
@@ -617,6 +701,134 @@ def test_resolution_ledger_compile_runs_submit_semantic_repairs_for_numbered_sp_
     assert result.feedback["package"]["issue_counts"]["numbered_special_exclusion_needs_target_evidence"] == 1
     repair = result.feedback["package"]["numbered_special_exclusion_repairs"][0]
     assert repair["same_count_visible_subjects"][0]["target"] == registry.subject_locator_by_id[72]
+
+
+def test_resolution_ledger_rejects_broad_supplemental_for_unnumbered_special_marker_bundle():
+    workspace = _special_marker_bundle_workspace("CASE-LEDGER-SPECIAL-MARKER-SUPPLEMENTAL-REPAIR")
+    desk, registry = build_human_case_desk(workspace)
+    _register_existing_targets(workspace, registry)
+    local = desk["local_locators"][0]["locator"]
+    local_locator = registry.locators[local]
+    support_target = registry.subject_locator_by_id[81]
+    ledger = ResolutionLedger(
+        rows=[
+            ResolutionLedgerRow(
+                row_id="LR1",
+                local=[local],
+                status="supplemental",
+                support=[support_target],
+                reason="Treat the theater special bundle as broad bonus SP material.",
+            )
+        ],
+        summary="terminal ledger",
+    )
+
+    result = _compile_resolution_ledger_to_submit_result(workspace, registry, ledger)
+    agenda = _repair_agenda_from_submit_feedback(result.feedback, repeated=False)
+    frontier = _repair_frontier_rows_from_agenda(agenda)
+    session = HumanCaseSession(case_id=workspace.header.case_id, resolution_ledger=ledger)
+    suggested_rows = _suggested_ledger_patch_rows_from_repair(session, result.feedback)
+
+    assert local.endswith("/special-marker")
+    assert not local_locator.episode_file_refs
+    assert result.accepted is False
+    assert result.feedback["package"]["issue_counts"]["supplemental_special_marker_without_hard_extra_reason"] == 1
+    repair = result.feedback["package"]["supplemental_special_marker_repairs"][0]
+    shape = repair["manual_review_candidate_submit_shape"][0]
+    assert repair["local"] == local
+    assert shape["local"] == local
+    assert shape["outcome"] == "manual_review"
+    assert shape["manual_review_candidate_targets"] == [support_target]
+    assert frontier[0]["manual_review_candidate_submit_shape"][0]["local"] == local
+    assert suggested_rows[0]["status"] == "manual_review"
+    assert suggested_rows[0]["manual_review_candidate_targets"] == [support_target]
+
+
+def test_patch_ledger_guard_requires_special_marker_manual_review_template():
+    workspace = _special_marker_bundle_workspace("CASE-LEDGER-SPECIAL-MARKER-PATCH-GUARD")
+    desk, registry = build_human_case_desk(workspace)
+    _register_existing_targets(workspace, registry)
+    local = desk["local_locators"][0]["locator"]
+    support_target = registry.subject_locator_by_id[81]
+    repair = {
+        "accepted": False,
+        "package": {
+            "issue_counts": {"supplemental_special_marker_without_hard_extra_reason": 1},
+            "supplemental_special_marker_repairs": [
+                {
+                    "unit": "LR1",
+                    "local": local,
+                    "issue": "supplemental_special_marker_without_hard_extra_reason",
+                    "manual_review_candidate_submit_shape": [
+                        {
+                            "local": local,
+                            "outcome": "manual_review",
+                            "manual_review_candidate_targets": [support_target],
+                            "confidence": "low",
+                            "reason": "Special-marker bundle has localized title/target-surface uncertainty.",
+                        }
+                    ],
+                }
+            ],
+        },
+    }
+    session = HumanCaseSession(
+        case_id=workspace.header.case_id,
+        resolution_ledger=ResolutionLedger(
+            rows=[ResolutionLedgerRow(row_id="LR1", local=[local], status="supplemental", reason="pending")]
+        ),
+        observations=[{"tool": "patch_ledger", "output": {"compiled_submit_feedback": repair}}],
+    )
+
+    session, output, complete = _patch_ledger_tool(
+        registry,
+        session,
+        PatchLedgerToolArgs(
+            rows=[
+                ResolutionLedgerRow(
+                    row_id="LR1",
+                    local=[local],
+                    status="supplemental",
+                    reason="Still only broad theater bonus material.",
+                )
+            ],
+            repair_strategy="revise_saved_rows",
+        ),
+        main_refs=list(workspace.contract.main_file_refs),
+    )
+
+    assert complete is False
+    assert output["accepted"] is False
+    assert output["issue"] == "patch_ledger_suggested_shape_unaddressed"
+    assert output["suggested_ledger_patch_rows"][0]["status"] == "manual_review"
+    assert output["suggested_ledger_patch_rows"][0]["manual_review_candidate_targets"] == [support_target]
+    assert session.resolution_ledger.rows[0].status == "supplemental"
+
+
+def test_resolution_ledger_allows_special_marker_supplemental_with_hard_non_owner_reason():
+    workspace = _special_marker_bundle_workspace("CASE-LEDGER-SPECIAL-MARKER-HARD-EXTRA")
+    desk, registry = build_human_case_desk(workspace)
+    _register_existing_targets(workspace, registry)
+    local = desk["local_locators"][0]["locator"]
+    ledger = ResolutionLedger(
+        rows=[
+            ResolutionLedgerRow(
+                row_id="LR1",
+                local=[local],
+                status="supplemental",
+                reason="CM/menu preview clips from disc packaging, not a Bangumi-owned story item.",
+            )
+        ],
+        summary="terminal ledger",
+    )
+
+    result = _compile_resolution_ledger_to_submit_result(workspace, registry, ledger)
+
+    assert result.accepted is True
+    assert "package" not in result.feedback or (
+        "supplemental_special_marker_without_hard_extra_reason"
+        not in result.feedback.get("package", {}).get("issue_counts", {})
+    )
 
 
 def test_resolution_ledger_canonicalizes_mapped_target_before_candidate_debt_check():
@@ -1555,7 +1767,49 @@ def test_mapped_row_discharges_manual_review_candidate_debt_when_target_matches(
     ]
 
 
-def test_resolution_ledger_strong_repair_candidate_debt_needs_concrete_manual_review():
+def test_resolution_ledger_strong_repair_candidate_debt_allows_exact_candidate_manual_review():
+    workspace = _two_episode_workspace()
+    desk, registry = build_human_case_desk(workspace)
+    _register_existing_targets(workspace, registry)
+    local = desk["local_locators"][0]["locator"]
+    target = f"{registry.subject_locator_by_id[1]}/episodes/1-2"
+    ledger = ResolutionLedger(
+        rows=[
+            ResolutionLedgerRow(
+                row_id="LR1",
+                local=[f"{local}/episodes/1-2"],
+                status="manual_review",
+                manual_review_candidate_targets=[target],
+                reason="Episode title/count evidence remains unresolved after inspect.",
+                must_address_candidates=[
+                    ResolutionLedgerCandidateDebt(
+                        target=target,
+                        source="manual_review_strong_non_regular_mapping_should_revise",
+                        mapped_outcome="mapped_regular_span",
+                        support=[f"{local}/episodes/1-2"],
+                        reason="full visible same-count repair",
+                    )
+                ],
+            )
+        ]
+    )
+
+    issues, _rows = _validate_resolution_ledger(
+        registry,
+        ledger,
+        main_refs=list(workspace.contract.main_file_refs),
+        require_terminal=True,
+    )
+
+    assert not [
+        issue
+        for issue in issues
+        if issue["issue"].startswith("ledger_candidate_")
+        or issue["issue"] == "ledger_strong_candidate_manual_review_requires_contradiction"
+    ]
+
+
+def test_resolution_ledger_candidate_manual_review_rejects_vague_uncertainty():
     workspace = _two_episode_workspace()
     desk, registry = build_human_case_desk(workspace)
     _register_existing_targets(workspace, registry)
@@ -1568,7 +1822,7 @@ def test_resolution_ledger_strong_repair_candidate_debt_needs_concrete_manual_re
                 local=[local],
                 status="manual_review",
                 manual_review_candidate_targets=[target],
-                reason="Still uncertain without a concrete contradiction.",
+                reason="Still ambiguous from current evidence.",
                 must_address_candidates=[
                     ResolutionLedgerCandidateDebt(
                         target=target,
@@ -1590,12 +1844,12 @@ def test_resolution_ledger_strong_repair_candidate_debt_needs_concrete_manual_re
     )
 
     assert any(
-        issue["issue"] == "ledger_strong_candidate_manual_review_requires_contradiction"
+        issue["issue"] == "ledger_candidate_debt_open"
         for issue in issues
     )
 
 
-def test_resolution_ledger_mapped_discharge_blocker_stays_strong_for_manual_review():
+def test_resolution_ledger_mapped_discharge_blocker_allows_candidate_manual_review():
     workspace = _two_episode_workspace()
     desk, registry = build_human_case_desk(workspace)
     _register_existing_targets(workspace, registry)
@@ -1605,10 +1859,10 @@ def test_resolution_ledger_mapped_discharge_blocker_stays_strong_for_manual_revi
         rows=[
             ResolutionLedgerRow(
                 row_id="LR1",
-                local=[local],
+                local=[f"{local}/episodes/1-2"],
                 status="manual_review",
                 manual_review_candidate_targets=[target],
-                reason="Still unresolved from current evidence.",
+                reason="Target episode range evidence remains unresolved after inspect.",
                 must_address_candidates=[
                     ResolutionLedgerCandidateDebt(
                         target=target,
@@ -1616,7 +1870,7 @@ def test_resolution_ledger_mapped_discharge_blocker_stays_strong_for_manual_revi
                         mapped_outcome="mapped_regular_span",
                         discharge="manual_review",
                         blocker="ledger_candidate_mapped_discharge_mismatch",
-                        support=[local],
+                        support=[f"{local}/episodes/1-2"],
                         reason="Visible repair agenda asked for a mapped discharge.",
                     )
                 ],
@@ -1631,10 +1885,12 @@ def test_resolution_ledger_mapped_discharge_blocker_stays_strong_for_manual_revi
         require_terminal=True,
     )
 
-    assert any(
-        issue["issue"] == "ledger_strong_candidate_manual_review_requires_contradiction"
+    assert not [
+        issue
         for issue in issues
-    )
+        if issue["issue"].startswith("ledger_candidate_")
+        or issue["issue"] == "ledger_strong_candidate_manual_review_requires_contradiction"
+    ]
 
 
 def test_resolution_ledger_manual_review_discharge_missing_target_keeps_mapped_shape():
@@ -1682,14 +1938,14 @@ def test_resolution_ledger_manual_review_discharge_missing_target_keeps_mapped_s
                 "target": target,
                 "outcome": "mapped_special_or_ova",
                 "reason": (
-                    "Map this strong candidate debt, or keep manual_review only with a concrete "
-                    "post-upgrade contradiction."
+                    "Map this candidate if ownership is closed, or carry it in "
+                    "manual_review_candidate_targets with localized uncertainty."
                 ),
             }
         ]
 
 
-def test_resolution_ledger_fail_closed_sibling_blocker_stays_strong_for_manual_review():
+def test_resolution_ledger_fail_closed_sibling_blocker_allows_candidate_manual_review():
     workspace = _two_episode_workspace()
     desk, registry = build_human_case_desk(workspace)
     _register_existing_targets(workspace, registry)
@@ -1702,7 +1958,7 @@ def test_resolution_ledger_fail_closed_sibling_blocker_stays_strong_for_manual_r
                 local=[f"{local}/episode/1"],
                 status="manual_review",
                 manual_review_candidate_targets=[target],
-                reason="Convert fail_closed to manual_review only to avoid sibling conflict.",
+                reason="Sibling episode ownership conflict remains unresolved after mapped-neighbor review.",
                 must_address_candidates=[
                     ResolutionLedgerCandidateDebt(
                         target=target,
@@ -1725,10 +1981,12 @@ def test_resolution_ledger_fail_closed_sibling_blocker_stays_strong_for_manual_r
         require_terminal=True,
     )
 
-    assert any(
-        issue["issue"] == "ledger_strong_candidate_manual_review_requires_contradiction"
+    assert not [
+        issue
         for issue in issues
-    )
+        if issue["issue"].startswith("ledger_candidate_")
+        or issue["issue"] == "ledger_strong_candidate_manual_review_requires_contradiction"
+    ]
 
 
 def test_resolution_ledger_strong_numbered_candidate_reject_needs_concrete_contradiction():
@@ -3845,7 +4103,7 @@ def test_numbered_non_regular_direct_sp_query_does_not_promote_plain_main_subjec
                         local=[local_locator],
                         outcome="manual_review",
                         manual_review_candidate_targets=[main_subject, direct_short_subject],
-                        reason="Review visible same-count direct query candidates.",
+                        reason="Same-count direct query candidate ownership remains ambiguous after title/count review.",
                     )
                 ]
             )
@@ -3853,10 +4111,10 @@ def test_numbered_non_regular_direct_sp_query_does_not_promote_plain_main_subjec
     )
 
     assert result.accepted is False
+    assert result.feedback["package"]["issue_counts"]["manual_review_strong_non_regular_mapping_should_revise"] == 1
     repair = result.feedback["package"]["manual_review_strong_non_regular_mapping_repairs"][0]
     assert repair["target_subject"] == direct_short_subject
     assert main_subject not in repair["non_regular_evidence_closure"]["same_count_target_candidates"]
-    assert all(row["target"].startswith(direct_short_subject) for row in repair["suggested_submit_shape"])
 
 
 def test_manual_review_strong_candidate_normalizes_span_review_hint_to_subject():
@@ -3935,10 +4193,10 @@ def test_manual_review_strong_candidate_normalizes_span_review_hint_to_subject()
     )
 
     assert result.accepted is False
+    assert result.feedback["package"]["issue_counts"]["manual_review_strong_non_regular_mapping_should_revise"] == 1
     repair = result.feedback["package"]["manual_review_strong_non_regular_mapping_repairs"][0]
     assert repair["target_subject"] == direct_short_subject
     assert main_subject not in repair["non_regular_evidence_closure"]["same_count_target_candidates"]
-    assert all(row["target"].startswith(direct_short_subject) for row in repair["suggested_submit_shape"])
 
 
 def test_numbered_non_regular_distinct_direct_query_can_upgrade_when_duration_unique():
@@ -4111,7 +4369,7 @@ def test_manual_review_prioritizes_direct_same_count_non_regular_candidate_for_u
         f"{direct_same_count_subject}/episodes/1-3"
     )
 
-    addressed_manual_result = _submit_tool(
+    broad_addressed_manual_result = _submit_tool(
         workspace,
         registry,
         SubmitToolArgs(
@@ -4138,13 +4396,42 @@ def test_manual_review_prioritizes_direct_same_count_non_regular_candidate_for_u
         },
     )
 
-    assert addressed_manual_result.accepted is False
-    assert addressed_manual_result.feedback["package"]["issue_counts"][
+    assert broad_addressed_manual_result.accepted is False
+    assert broad_addressed_manual_result.feedback["package"]["issue_counts"][
         "manual_review_strong_non_regular_mapping_should_revise"
     ] == 1
-    strong_repair = addressed_manual_result.feedback["package"]["manual_review_strong_non_regular_mapping_repairs"][0]
-    assert strong_repair["target_subject"] == direct_same_count_subject
-    assert strong_repair["suggested_submit_shape"][0]["target"] == f"{direct_same_count_subject}/episodes/1-3"
+    broad_repair = broad_addressed_manual_result.feedback["package"]["manual_review_strong_non_regular_mapping_repairs"][0]
+    assert broad_repair["suggested_submit_shape"][0]["target"] == f"{direct_same_count_subject}/episodes/1-3"
+
+    addressed_manual_result = _submit_tool(
+        workspace,
+        registry,
+        SubmitToolArgs(
+            resolution=PackageResolution(
+                work_units=[
+                    ResolutionWorkUnit(
+                        unit_label="sp-direct-same-count-review-addressed-exact",
+                        local=[f"{local_locator}/episodes/1-3"],
+                        outcome="manual_review",
+                        manual_review_candidate_targets=[f"{direct_same_count_subject}/episodes/1-3"],
+                        confidence="low",
+                        reason=(
+                            "The exact SP01-SP03 slice has a duration/title evidence conflict against the visible "
+                            "same-count target, so ownership remains unresolved after upgrade."
+                        ),
+                    )
+                ]
+            )
+        ),
+        inspected_locators={
+            f"{local_locator}/episode/1",
+            f"{local_locator}/episode/2",
+            f"{local_locator}/episode/3",
+        },
+    )
+
+    assert addressed_manual_result.accepted is True
+    assert addressed_manual_result.feedback["manual_review_file_count"] == 3
 
     contradictory_manual_result = _submit_tool(
         workspace,
@@ -4435,7 +4722,7 @@ def test_duplicate_numbered_variant_locator_can_accept_same_episode_multi_versio
         f"{local_locator}/episode/3",
     ]
 
-    ambiguous_manual_result = _submit_tool(
+    broad_ambiguous_manual_result = _submit_tool(
         workspace,
         registry,
         SubmitToolArgs(
@@ -4452,6 +4739,57 @@ def test_duplicate_numbered_variant_locator_can_accept_same_episode_multi_versio
                             "prove whether these SP files own the related short subject."
                         ),
                     )
+                ]
+            )
+        ),
+        inspected_locators={f"{local_locator}/episode/2/variant/1"},
+    )
+
+    assert broad_ambiguous_manual_result.accepted is False
+    assert broad_ambiguous_manual_result.feedback["package"]["issue_counts"][
+        "manual_review_duplicate_variant_should_split"
+    ] == 1
+    broad_duplicate_repair = broad_ambiguous_manual_result.feedback["package"]["manual_review_duplicate_variant_repairs"][0]
+    assert broad_duplicate_repair["suggested_submit_shape"] == broad_duplicate_repair["multi_version_submit_shape"]
+
+    ambiguous_manual_result = _submit_tool(
+        workspace,
+        registry,
+        SubmitToolArgs(
+            resolution=PackageResolution(
+                work_units=[
+                    ResolutionWorkUnit(
+                        unit_label="sp-duplicate-target-ambiguous-review-1",
+                        local=[f"{local_locator}/episode/1"],
+                        outcome="manual_review",
+                        manual_review_candidate_targets=[f"{subject_locator}/episode/1"],
+                        confidence="low",
+                        reason="Exact local SP01 target ownership remains ambiguous after upgraded local title evidence.",
+                    ),
+                    ResolutionWorkUnit(
+                        unit_label="sp-duplicate-target-ambiguous-review-2a",
+                        local=[f"{local_locator}/episode/2/variant/1"],
+                        outcome="manual_review",
+                        manual_review_candidate_targets=[f"{subject_locator}/episode/2"],
+                        confidence="low",
+                        reason="Exact local SP02 variant 1 target ownership remains ambiguous after duration evidence.",
+                    ),
+                    ResolutionWorkUnit(
+                        unit_label="sp-duplicate-target-ambiguous-review-2b",
+                        local=[f"{local_locator}/episode/2/variant/2"],
+                        outcome="manual_review",
+                        manual_review_candidate_targets=[f"{subject_locator}/episode/2"],
+                        confidence="low",
+                        reason="Exact local SP02 variant 2 target ownership remains ambiguous after duration evidence.",
+                    ),
+                    ResolutionWorkUnit(
+                        unit_label="sp-duplicate-target-ambiguous-review-3",
+                        local=[f"{local_locator}/episode/3"],
+                        outcome="manual_review",
+                        manual_review_candidate_targets=[f"{subject_locator}/episode/3"],
+                        confidence="low",
+                        reason="Exact local SP03 target ownership remains ambiguous after upgraded local title evidence.",
+                    ),
                 ]
             )
         ),
@@ -4833,7 +5171,7 @@ def test_ledger_missing_duplicate_variant_exposes_complete_multi_version_shape()
     assert [row["row_id"] for row in suggested] == ["LR1", "LR1_split_2", "LR1_split_3", "LR1_split_4"]
 
 
-def test_patch_ledger_overlap_suggested_shape_guard_requires_template_discharge():
+def test_patch_ledger_overlap_suggested_shape_guard_allows_exact_candidate_manual_review():
     workspace = CaseEvidenceWorkspace.from_cards(
         header=CaseHeader(case_id="CASE-OVERLAP-SUGGESTED-SHAPE-GUARD"),
         budget=CaseBudget(max_judge_rounds=4),
@@ -4893,7 +5231,82 @@ def test_patch_ledger_overlap_suggested_shape_guard_requires_template_discharge(
                     local=[local_locator],
                     status="manual_review",
                     manual_review_candidate_targets=[subject],
-                    reason="Still generally ambiguous without addressing the visible split template.",
+                    reason="Target episode surface remains uninspected, so ownership is unresolved.",
+                )
+            ],
+            repair_strategy="revise_saved_rows",
+        ),
+        main_refs=list(workspace.contract.main_file_refs),
+    )
+
+    assert complete is True
+    assert output["accepted"] is True
+    assert session.resolution_ledger.rows[0].status == "manual_review"
+    assert session.resolution_ledger.rows[0].manual_review_candidate_targets == [subject]
+
+
+def test_patch_ledger_overlap_suggested_shape_guard_rejects_broad_candidate_manual_review():
+    workspace = CaseEvidenceWorkspace.from_cards(
+        header=CaseHeader(case_id="CASE-OVERLAP-SUGGESTED-SHAPE-BROAD-REVIEW"),
+        budget=CaseBudget(max_judge_rounds=4),
+        contract=CaseContract(
+            main_file_refs=["LF1", "LF2", "LF3"],
+            allowed_file_refs=["LF1", "LF2", "LF3"],
+            visible_target_refs=["BE1", "BE2"],
+        ),
+        local_files=[
+            LocalFileCard(ref="LF1", path="Pack/SPs/[Group] Play Play Stars [SP01].mkv", is_main=True),
+            LocalFileCard(ref="LF2", path="Pack/SPs/[Group] Play Play Stars [SP02].mkv", is_main=True),
+            LocalFileCard(ref="LF3", path="Pack/SPs/[Group] Play Play Stars [SP03].mkv", is_main=True),
+        ],
+        bangumi_subjects=[
+            BangumiSubjectCard(ref="BS1", subject_id=391, title="Play Play Stars", eps=2, total_episodes=2),
+        ],
+        bangumi_items=[
+            BangumiItemCard(ref="BE1", subject_ref="BS1", sort=1, ep=1, title="Short 1"),
+            BangumiItemCard(ref="BE2", subject_ref="BS1", sort=2, ep=2, title="Short 2"),
+        ],
+    )
+    desk, registry = build_human_case_desk(workspace)
+    _register_existing_targets(workspace, registry)
+    local_locator = desk["local_locators"][0]["locator"]
+    subject = registry.subject_locator_by_id[391]
+    shape = [
+        {
+            "local": f"{local_locator}/episodes/1-2",
+            "target": f"{subject}/episodes/1-2",
+            "outcome": "mapped_special_or_ova",
+            "reason": "visible split template from overlap repair",
+        }
+    ]
+    session = HumanCaseSession(
+        case_id=workspace.header.case_id,
+        resolution_ledger=ResolutionLedger(
+            rows=[ResolutionLedgerRow(row_id="LR1", local=[local_locator], status="manual_review", reason="pending")]
+        ),
+        observations=[
+            {
+                "tool": "patch_ledger",
+                "output": {
+                    "accepted": False,
+                    "issue_counts": {"ledger_coverage_overlap": 1},
+                    "repair_frontier": [{"multi_version_submit_shape": shape}],
+                },
+            }
+        ],
+    )
+
+    session, output, complete = _patch_ledger_tool(
+        registry,
+        session,
+        PatchLedgerToolArgs(
+            rows=[
+                ResolutionLedgerRow(
+                    row_id="LR1",
+                    local=[local_locator],
+                    status="manual_review",
+                    manual_review_candidate_targets=[subject],
+                    reason="This broad parent still contains an extra unresolved SP03 file.",
                 )
             ],
             repair_strategy="revise_saved_rows",
@@ -5068,10 +5481,10 @@ def test_patch_ledger_must_address_strong_suggested_shape():
             rows=[
                 ResolutionLedgerRow(
                     row_id="LR1",
-                    local=[local],
+                    local=[f"{local}/episodes/1-2"],
                     status="manual_review",
                     manual_review_candidate_targets=[target],
-                    reason="Still ambiguous from current evidence.",
+                    reason="Target episode range evidence remains unresolved after inspect.",
                 )
             ],
             repair_strategy="revise_saved_rows",
@@ -5079,12 +5492,10 @@ def test_patch_ledger_must_address_strong_suggested_shape():
         main_refs=list(workspace.contract.main_file_refs),
     )
 
-    assert complete is False
-    assert output["accepted"] is False
-    assert output["issue"] == "patch_ledger_suggested_shape_unaddressed"
-    assert output["suggested_ledger_patch_rows"][0]["local"] == [f"{local}/episodes/1-2"]
-    assert {row["status"] for row in output["suggested_ledger_patch_rows"]} == {"mapped"}
+    assert complete is True
+    assert output["accepted"] is True
     assert session.resolution_ledger.rows[0].status == "manual_review"
+    assert session.resolution_ledger.rows[0].manual_review_candidate_targets == [target]
 
 
 def test_nested_package_manual_review_shape_becomes_ledger_patch_row_and_guard():
@@ -5225,6 +5636,20 @@ def test_patch_ledger_strong_suggested_shape_guard_rejects_unrelated_patch():
     assert output["accepted"] is False
     assert output["issue"] == "patch_ledger_suggested_shape_unaddressed"
     assert output["unaddressed_suggested_shapes"][0]["issue"] == "patch_ledger_suggested_shape_not_patched"
+    manual_shape = output["unaddressed_suggested_shapes"][0]["manual_review_candidate_submit_shape"][0]
+    assert manual_shape["local"] == f"{strong_local}/episodes/1-2"
+    assert manual_shape["manual_review_candidate_targets"] == [strong_target]
+    manual_patch_row = output["manual_review_candidate_ledger_patch_rows"][0]
+    assert manual_patch_row["row_id"] == "LR1"
+    assert manual_patch_row["local"] == [f"{strong_local}/episodes/1-2"]
+    assert manual_patch_row["status"] == "manual_review"
+    assert manual_patch_row["manual_review_candidate_targets"] == [strong_target]
+    assert "unresolved" in manual_patch_row["reason"]
+    persisted_rows = _suggested_ledger_patch_rows_from_repair(session, output)
+    assert any(
+        row["status"] == "manual_review" and row["manual_review_candidate_targets"] == [strong_target]
+        for row in persisted_rows
+    )
     assert session.resolution_ledger.rows[1].status == "open"
 
 
@@ -5370,7 +5795,7 @@ def test_patch_ledger_guard_suggested_rows_become_persistent_candidate_debt():
                     local=[f"{local}/episodes/1-2"],
                     status="manual_review",
                     manual_review_candidate_targets=[target],
-                    reason="Still ambiguous without a concrete contradiction.",
+                    reason="Target episode range evidence remains unresolved after inspect.",
                 )
             ],
             repair_strategy="revise_saved_rows",
@@ -5378,10 +5803,161 @@ def test_patch_ledger_guard_suggested_rows_become_persistent_candidate_debt():
         main_refs=list(workspace.contract.main_file_refs),
     )
 
-    assert complete is False
-    assert output["accepted"] is False
-    assert output["issue_counts"]["ledger_strong_candidate_manual_review_requires_contradiction"] == 1
-    assert output["must_address_suggested_ledger_patch_rows"][0]["target"] == target
+    assert complete is True
+    assert output["accepted"] is True
+    assert output["ledger"]["rows"][0]["must_address_candidates"][0]["target"] == target
+
+
+def test_unaddressed_suggested_shapes_project_to_frontier_choices():
+    workspace = _two_episode_workspace()
+    desk, registry = build_human_case_desk(workspace)
+    _register_existing_targets(workspace, registry)
+    local = desk["local_locators"][0]["locator"]
+    target = f"{registry.subject_locator_by_id[1]}/episodes/1-2"
+    repair = {
+        "accepted": False,
+        "issue": "patch_ledger_suggested_shape_unaddressed",
+        "issue_counts": {"patch_ledger_suggested_shape_unaddressed": 1},
+        "blocking_units": [
+            {
+                "unit": local,
+                "local": [local],
+                "issue": "patch_ledger_suggested_shape_unaddressed",
+            }
+        ],
+        "unaddressed_suggested_shapes": [
+            {
+                "local_parent": local,
+                "issue": "patch_ledger_suggested_shape_unaddressed",
+                "suggested_submit_shape": [
+                    {
+                        "local": f"{local}/episodes/1-2",
+                        "target": target,
+                        "outcome": "mapped_special_or_ova",
+                        "reason": "map if ownership closes",
+                    }
+                ],
+                "manual_review_candidate_submit_shape": [
+                    {
+                        "local": f"{local}/episodes/1-2",
+                        "outcome": "manual_review",
+                        "manual_review_candidate_targets": [target],
+                        "confidence": "low",
+                        "reason": "title/count evidence remains unresolved",
+                    }
+                ],
+            }
+        ],
+    }
+
+    frontier = _repair_frontier_rows_from_agenda(repair)
+    choice_rows = _ledger_choice_patch_rows_from_repair(
+        HumanCaseSession(
+            case_id=workspace.header.case_id,
+            resolution_ledger=ResolutionLedger(
+                rows=[ResolutionLedgerRow(row_id="LR1", local=[local], status="manual_review")]
+            ),
+        ),
+        repair,
+    )
+
+    assert frontier[0]["blocker"] == "patch_ledger_suggested_shape_unaddressed"
+    assert frontier[0]["suggested_submit_shape"][0]["target"] == target
+    assert frontier[0]["manual_review_candidate_submit_shape"][0]["manual_review_candidate_targets"] == [target]
+    assert {row["status"] for row in choice_rows} == {"mapped", "manual_review"}
+
+
+def test_active_repair_agenda_exposes_manual_choice_rows_for_unaddressed_shapes():
+    workspace = _two_episode_workspace()
+    desk, registry = build_human_case_desk(workspace)
+    _register_existing_targets(workspace, registry)
+    local = desk["local_locators"][0]["locator"]
+    target = f"{registry.subject_locator_by_id[1]}/episodes/1-2"
+    session = HumanCaseSession(
+        case_id=workspace.header.case_id,
+        resolution_ledger=ResolutionLedger(
+            rows=[ResolutionLedgerRow(row_id="LR1", local=[local], status="manual_review")]
+        ),
+        cognitive_workspace=CaseCognitiveWorkspace(
+            investigation_agenda=[
+                InvestigationAgendaItem(
+                    agenda_id="REPAIR-1-unaddressed",
+                    status="open",
+                    locators=[local],
+                    blocking_issue="patch_ledger_suggested_shape_unaddressed",
+                    next_action="copy a ledger row choice",
+                    closure_condition="candidate debt is discharged",
+                )
+            ]
+        ),
+        observations=[
+            {
+                "tool": "patch_ledger",
+                "output": {
+                    "accepted": False,
+                    "issue": "patch_ledger_suggested_shape_unaddressed",
+                    "issue_counts": {"patch_ledger_suggested_shape_unaddressed": 1},
+                    "blocking_units": [
+                        {
+                            "unit": local,
+                            "local": [local],
+                            "issue": "patch_ledger_suggested_shape_unaddressed",
+                        }
+                    ],
+                    "suggested_ledger_patch_rows": [
+                        {
+                            "row_id": "LR1",
+                            "local": [f"{local}/episodes/1-2"],
+                            "status": "mapped",
+                            "mapped_outcome": "mapped_special_or_ova",
+                            "target": target,
+                            "reason": "map if ownership closes",
+                        }
+                    ],
+                    "manual_review_candidate_ledger_patch_rows": [
+                        {
+                            "row_id": "LR1",
+                            "local": [f"{local}/episodes/1-2"],
+                            "status": "manual_review",
+                            "manual_review_candidate_targets": [target],
+                            "confidence": "low",
+                            "reason": "title/count evidence remains unresolved",
+                        }
+                    ],
+                    "unaddressed_suggested_shapes": [
+                        {
+                            "local_parent": local,
+                            "issue": "patch_ledger_suggested_shape_unaddressed",
+                            "suggested_submit_shape": [
+                                {
+                                    "local": f"{local}/episodes/1-2",
+                                    "target": target,
+                                    "outcome": "mapped_special_or_ova",
+                                    "reason": "map if ownership closes",
+                                }
+                            ],
+                            "manual_review_candidate_submit_shape": [
+                                {
+                                    "local": f"{local}/episodes/1-2",
+                                    "outcome": "manual_review",
+                                    "manual_review_candidate_targets": [target],
+                                    "confidence": "low",
+                                    "reason": "title/count evidence remains unresolved",
+                                }
+                            ],
+                        }
+                    ],
+                },
+            }
+        ],
+    )
+
+    agenda = _active_repair_agenda_for_prompt(session)
+
+    assert agenda
+    assert agenda[0]["repair_frontier"]["suggested_submit_shape"][0]["target"] == target
+    choice_statuses = {row["status"] for row in agenda[0]["ledger_choice_patch_rows"]}
+    assert choice_statuses == {"mapped", "manual_review"}
 
 
 def test_patch_ledger_must_address_nested_compiled_feedback_shape():
@@ -5434,10 +6010,10 @@ def test_patch_ledger_must_address_nested_compiled_feedback_shape():
             rows=[
                 ResolutionLedgerRow(
                     row_id="LR1",
-                    local=[local],
+                    local=[f"{local}/episodes/1-2"],
                     status="manual_review",
                     manual_review_candidate_targets=[target],
-                    reason="Still ambiguous from current evidence.",
+                    reason="Target episode range evidence remains unresolved after inspect.",
                 )
             ],
             repair_strategy="revise_saved_rows",
@@ -5445,11 +6021,10 @@ def test_patch_ledger_must_address_nested_compiled_feedback_shape():
         main_refs=list(workspace.contract.main_file_refs),
     )
 
-    assert complete is False
-    assert output["accepted"] is False
-    assert output["issue"] == "patch_ledger_suggested_shape_unaddressed"
-    assert output["suggested_ledger_patch_rows"][0]["local"] == [f"{local}/episodes/1-2"]
+    assert complete is True
+    assert output["accepted"] is True
     assert session.resolution_ledger.rows[0].status == "manual_review"
+    assert session.resolution_ledger.rows[0].manual_review_candidate_targets == [target]
 
 
 def test_patch_ledger_must_address_numbered_special_suggested_shape():
@@ -5622,6 +6197,190 @@ def test_suggested_ledger_patch_rows_preserve_split_row_id_from_issue():
     assert rows[0]["target"] == target
 
 
+def test_turn_tail_preserves_manual_review_candidate_ledger_patch_rows():
+    workspace = _two_episode_workspace()
+    desk, registry = build_human_case_desk(workspace)
+    _register_existing_targets(workspace, registry)
+    local = desk["local_locators"][0]["locator"]
+    target = f"{registry.subject_locator_by_id[1]}/episodes/1-2"
+    manual_patch_row = {
+        "row_id": "LR1",
+        "local": [f"{local}/episodes/1-2"],
+        "status": "manual_review",
+        "manual_review_candidate_targets": [target],
+        "reason": "Target title evidence remains unresolved for this exact slice.",
+        "confidence": "low",
+    }
+    mapped_patch_row = {
+        "row_id": "LR1",
+        "local": [f"{local}/episodes/1-2"],
+        "status": "mapped",
+        "mapped_outcome": "mapped_special_or_ova",
+        "target": target,
+        "reason": "visible candidate debt",
+        "confidence": "high",
+    }
+    session = HumanCaseSession(
+        case_id=workspace.header.case_id,
+        resolution_ledger=ResolutionLedger(
+            rows=[ResolutionLedgerRow(row_id="LR1", local=[local], status="manual_review")]
+        ),
+        observations=[
+            {
+                "tool": "patch_ledger",
+                "output": {
+                    "accepted": False,
+                    "issue_counts": {"ledger_candidate_debt_open": 1},
+                    "ledger": {"status_counts": {"manual_review": 1}, "rows": []},
+                    "suggested_ledger_patch_rows": [mapped_patch_row],
+                    "must_address_suggested_ledger_patch_rows": [mapped_patch_row],
+                    "manual_review_candidate_ledger_patch_rows": [manual_patch_row],
+                    "required_next_action": "copy the candidate discharge rows",
+                },
+            }
+        ],
+    )
+
+    tail = _turn_tail({"resolution_contract": {"must_account_locator_count": 2}}, session, max_turns=10)
+    latest_output = tail["case_memory"]["latest_submit_repair"]["output"]
+    turn_budget = tail["case_memory"]["turn_budget"]
+    assert latest_output["manual_review_candidate_ledger_patch_rows"] == [manual_patch_row]
+    assert turn_budget["manual_review_candidate_ledger_patch_rows"] == [manual_patch_row]
+
+
+def test_turn_tail_exposes_unified_ledger_choice_patch_rows():
+    workspace = _two_episode_workspace()
+    desk, registry = build_human_case_desk(workspace)
+    _register_existing_targets(workspace, registry)
+    local = desk["local_locators"][0]["locator"]
+    target = f"{registry.subject_locator_by_id[1]}/episodes/1-2"
+    session = HumanCaseSession(
+        case_id=workspace.header.case_id,
+        resolution_ledger=ResolutionLedger(
+            rows=[ResolutionLedgerRow(row_id="LR1", local=[local], status="manual_review")]
+        ),
+        observations=[
+            {
+                "tool": "submit",
+                "output": {
+                    "accepted": False,
+                    "issue_counts": {"excluded_title_tail_unresolved_after_search": 1},
+                    "repair_frontier": [
+                        {
+                            "blocker": "excluded_title_tail_unresolved_after_search",
+                            "local": [local],
+                            "manual_review_candidate_submit_shape": [
+                                {
+                                    "local": local,
+                                    "outcome": "manual_review",
+                                    "manual_review_candidate_targets": [target],
+                                    "reason": "Target title surface remains unresolved for this exact locator.",
+                                }
+                            ],
+                            "fail_closed_submit_shape": [
+                                {
+                                    "local": local,
+                                    "outcome": "fail_closed",
+                                    "reason": "Exact locator remains unresolved after exhausted bridge evidence.",
+                                }
+                            ],
+                        }
+                    ],
+                },
+            }
+        ],
+    )
+
+    tail = _turn_tail({"resolution_contract": {"must_account_locator_count": 2}}, session, max_turns=10)
+    rows = tail["case_memory"]["turn_budget"]["ledger_choice_patch_rows"]
+
+    assert [row["status"] for row in rows] == ["manual_review", "fail_closed"]
+    assert rows[0]["row_id"] == "LR1"
+    assert rows[0]["manual_review_candidate_targets"] == [target]
+
+
+def test_repair_frontier_source_keys_cover_submit_repair_buckets():
+    assert set(SUBMIT_REPAIR_GROUP_KEYS).issubset(set(REPAIR_FRONTIER_SOURCE_KEYS))
+
+
+def test_ledger_choice_rows_keep_mapped_and_manual_review_options_for_same_local():
+    workspace = _two_episode_workspace()
+    desk, registry = build_human_case_desk(workspace)
+    _register_existing_targets(workspace, registry)
+    local = desk["local_locators"][0]["locator"]
+    target = f"{registry.subject_locator_by_id[1]}/episodes/1-2"
+    session = HumanCaseSession(
+        case_id=workspace.header.case_id,
+        resolution_ledger=ResolutionLedger(rows=[ResolutionLedgerRow(row_id="LR1", local=[local], status="open")]),
+    )
+    repair = {
+        "repair_frontier": [
+            {
+                "blocker": "manual_review_strong_non_regular_mapping_should_revise",
+                "suggested_submit_shape": [
+                    {
+                        "local": f"{local}/episodes/1-2",
+                        "target": target,
+                        "outcome": "mapped_special_or_ova",
+                        "reason": "strong mapped choice",
+                    }
+                ],
+                "manual_review_candidate_submit_shape": [
+                    {
+                        "local": f"{local}/episodes/1-2",
+                        "outcome": "manual_review",
+                        "manual_review_candidate_targets": [target],
+                        "reason": "exact unresolved target choice",
+                    }
+                ],
+            }
+        ]
+    }
+
+    rows = _ledger_choice_patch_rows_from_repair(session, repair)
+
+    assert [row["status"] for row in rows[:2]] == ["mapped", "manual_review"]
+    assert rows[0]["local"] == [f"{local}/episodes/1-2"]
+    assert rows[1]["local"] == [f"{local}/episodes/1-2"]
+
+
+def test_strong_suggested_shape_recovers_from_row_shaped_candidate_debt():
+    repair = {
+        "accepted": False,
+        "issue_counts": {"ledger_candidate_debt_open": 1},
+        "must_address_suggested_ledger_patch_rows": [
+            {
+                "row_id": "LR0",
+                "local": ["local://pack/special-marker/episodes/1-2"],
+                "status": "mapped",
+                "mapped_outcome": "mapped_special_or_ova",
+                "target": "target://bangumi/1-short/episodes/1-13",
+                "reason": "stale broad candidate debt",
+            },
+            {
+                "row_id": "LR1",
+                "local": ["local://pack/special-marker/episodes/1-2"],
+                "status": "mapped",
+                "mapped_outcome": "mapped_special_or_ova",
+                "target": "target://bangumi/1-short/episodes/1-2",
+                "reason": "visible candidate debt",
+            }
+        ],
+    }
+
+    rows = _strong_suggested_submit_shape_rows_from_repair(repair)
+
+    assert rows == [
+        {
+            "local": "local://pack/special-marker/episodes/1-2",
+            "target": "target://bangumi/1-short/episodes/1-2",
+            "outcome": "mapped_special_or_ova",
+            "reason": "visible candidate debt",
+            "row_id": "LR1",
+        }
+    ]
+
+
 def test_patch_ledger_imports_suggested_shape_as_candidate_debt():
     workspace = _two_episode_workspace()
     desk, registry = build_human_case_desk(workspace)
@@ -5675,6 +6434,9 @@ def test_patch_ledger_imports_suggested_shape_as_candidate_debt():
     assert complete is False
     assert output["accepted"] is False
     assert output["issue_counts"]["ledger_candidate_debt_open"] == 1
+    manual_patch_row = output["manual_review_candidate_ledger_patch_rows"][0]
+    assert manual_patch_row["local"] == [f"{local}/episodes/1-2"]
+    assert manual_patch_row["manual_review_candidate_targets"] == [target]
 
 
 def test_patch_ledger_saves_valid_slice_when_only_remaining_issue_is_coverage_missing():
@@ -5715,6 +6477,191 @@ def test_patch_ledger_saves_valid_slice_when_only_remaining_issue_is_coverage_mi
     assert output["save_issue_counts"] == {"ledger_coverage_missing": 1}
     assert session.resolution_ledger.rows[0].local == [f"{local}/episode/2"]
     assert session.resolution_ledger.rows[0].status == "mapped"
+
+
+def test_patch_ledger_projection_preserves_save_issue_suggested_rows():
+    workspace = _two_episode_workspace()
+    desk, registry = build_human_case_desk(workspace)
+    _register_existing_targets(workspace, registry)
+    local = desk["local_locators"][0]["locator"]
+    target = f"{registry.subject_locator_by_id[1]}/episodes/1-2"
+    output = {
+        "accepted": True,
+        "partial": True,
+        "issue_counts": {"ledger_coverage_missing": 1},
+        "issues": [
+            {
+                "issue": "ledger_coverage_missing",
+                "file_refs": ["LF1"],
+            }
+        ],
+        "save_issues": [
+            {
+                "issue": "ledger_candidate_debt_open",
+                "row_id": "LR1",
+                "candidate_target": target,
+                "suggested_submit_shape": [
+                    {
+                        "local": f"{local}/episodes/1-2",
+                        "target": target,
+                        "outcome": "mapped_special_or_ova",
+                        "reason": "saved candidate debt still needs a row choice",
+                    }
+                ],
+            }
+        ],
+    }
+    session = HumanCaseSession(
+        case_id=workspace.header.case_id,
+        resolution_ledger=ResolutionLedger(rows=[ResolutionLedgerRow(row_id="LR1", local=[local], status="open")]),
+    )
+
+    rows = _suggested_ledger_patch_rows_from_repair(session, output)
+
+    assert rows[0]["row_id"] == "LR1"
+    assert rows[0]["local"] == [f"{local}/episodes/1-2"]
+    assert rows[0]["target"] == target
+
+
+def test_patch_ledger_coverage_missing_guard_requires_visible_missing_shape():
+    workspace = _two_episode_workspace()
+    desk, registry = build_human_case_desk(workspace)
+    _register_existing_targets(workspace, registry)
+    local = desk["local_locators"][0]["locator"]
+    target = f"{registry.subject_locator_by_id[1]}/episode/1"
+    existing_target = f"{registry.subject_locator_by_id[1]}/episode/2"
+    missing_shape = {
+        "local": f"{local}/episode/1",
+        "target": target,
+        "outcome": "mapped_explicit_item",
+        "reason": "Visible title-pairing candidate for the missing local slice.",
+    }
+    session = HumanCaseSession(
+        case_id=workspace.header.case_id,
+        resolution_ledger=ResolutionLedger(
+            rows=[
+                ResolutionLedgerRow(
+                    row_id="LR2",
+                    local=[f"{local}/episode/2"],
+                    status="mapped",
+                    mapped_outcome="mapped_explicit_item",
+                    target=existing_target,
+                    reason="Second slice is already resolved.",
+                )
+            ]
+        ),
+        observations=[
+            {
+                "tool": "patch_ledger",
+                "output": {
+                    "accepted": False,
+                    "issue_counts": {"ledger_coverage_missing": 1},
+                    "repair_frontier": [
+                        {
+                            "local": [],
+                            "blocker": "ledger_coverage_missing",
+                            "suggested_submit_shape": [missing_shape],
+                        }
+                    ],
+                },
+            }
+        ],
+    )
+
+    session, output, complete = _patch_ledger_tool(
+        registry,
+        session,
+        PatchLedgerToolArgs(
+            rows=[
+                ResolutionLedgerRow(
+                    row_id="LR2",
+                    local=[f"{local}/episode/2"],
+                    status="mapped",
+                    mapped_outcome="mapped_explicit_item",
+                    target=existing_target,
+                    reason="Repeat the already resolved slice instead of covering the missing one.",
+                )
+            ],
+            repair_strategy="revise_saved_rows",
+        ),
+        main_refs=list(workspace.contract.main_file_refs),
+    )
+
+    assert complete is False
+    assert output["accepted"] is False
+    assert output["issue"] == "patch_ledger_suggested_shape_unaddressed"
+    assert output["suggested_ledger_patch_rows"][0]["local"] == [f"{local}/episode/1"]
+    assert output["suggested_ledger_patch_rows"][0]["target"] == target
+
+
+def test_patch_ledger_coverage_missing_guard_allows_exact_candidate_manual_review():
+    workspace = _two_episode_workspace()
+    desk, registry = build_human_case_desk(workspace)
+    _register_existing_targets(workspace, registry)
+    local = desk["local_locators"][0]["locator"]
+    target = f"{registry.subject_locator_by_id[1]}/episode/1"
+    existing_target = f"{registry.subject_locator_by_id[1]}/episode/2"
+    missing_shape = {
+        "local": f"{local}/episode/1",
+        "target": target,
+        "outcome": "mapped_explicit_item",
+        "reason": "Visible title-pairing candidate for the missing local slice.",
+    }
+    session = HumanCaseSession(
+        case_id=workspace.header.case_id,
+        resolution_ledger=ResolutionLedger(
+            rows=[
+                ResolutionLedgerRow(
+                    row_id="LR2",
+                    local=[f"{local}/episode/2"],
+                    status="mapped",
+                    mapped_outcome="mapped_explicit_item",
+                    target=existing_target,
+                    reason="Second slice is already resolved.",
+                )
+            ]
+        ),
+        observations=[
+            {
+                "tool": "patch_ledger",
+                "output": {
+                    "accepted": False,
+                    "issue_counts": {"ledger_coverage_missing": 1},
+                    "repair_frontier": [
+                        {
+                            "local": [],
+                            "blocker": "ledger_coverage_missing",
+                            "suggested_submit_shape": [missing_shape],
+                        }
+                    ],
+                },
+            }
+        ],
+    )
+
+    session, output, complete = _patch_ledger_tool(
+        registry,
+        session,
+        PatchLedgerToolArgs(
+            rows=[
+                ResolutionLedgerRow(
+                    row_id="LR1",
+                    local=[f"{local}/episode/1"],
+                    status="manual_review",
+                    manual_review_candidate_targets=[target],
+                    reason="Target episode title surface remains unresolved after inspecting the missing slice.",
+                )
+            ],
+            repair_strategy="revise_saved_rows",
+        ),
+        main_refs=list(workspace.contract.main_file_refs),
+    )
+
+    assert complete is True
+    assert output["accepted"] is True
+    assert {row.row_id for row in session.resolution_ledger.rows} == {"LR1", "LR2"}
+    assert session.resolution_ledger.rows[1].status == "manual_review"
+    assert session.resolution_ledger.rows[1].manual_review_candidate_targets == [target]
 
 
 def test_patch_ledger_mapped_row_discharges_imported_suggested_debt():
@@ -5774,7 +6721,58 @@ def test_patch_ledger_mapped_row_discharges_imported_suggested_debt():
     assert output["ledger"]["rows"][0]["must_address_candidates"][0]["target"] == target
 
 
-def test_patch_ledger_preserves_strong_debt_across_replaced_manual_row():
+def test_patch_ledger_preserved_strong_debt_is_discharged_by_candidate_manual_review():
+    workspace = _two_episode_workspace()
+    desk, registry = build_human_case_desk(workspace)
+    _register_existing_targets(workspace, registry)
+    local = desk["local_locators"][0]["locator"]
+    target = f"{registry.subject_locator_by_id[1]}/episodes/1-2"
+    session = HumanCaseSession(
+        case_id=workspace.header.case_id,
+        resolution_ledger=ResolutionLedger(
+            rows=[
+                ResolutionLedgerRow(
+                    row_id="LR1",
+                    local=[local],
+                    status="candidate_must_address",
+                    must_address_candidates=[
+                        ResolutionLedgerCandidateDebt(
+                            target=target,
+                            source="manual_review_strong_non_regular_mapping_should_revise",
+                            mapped_outcome="mapped_special_or_ova",
+                            support=[f"{local}/episodes/1-2"],
+                            reason="strong local duration/count closure",
+                        )
+                    ],
+                )
+            ]
+        ),
+    )
+
+    session, output, complete = _patch_ledger_tool(
+        registry,
+        session,
+        PatchLedgerToolArgs(
+            rows=[
+                ResolutionLedgerRow(
+                    row_id="LR1",
+                    local=[f"{local}/episodes/1-2"],
+                    status="manual_review",
+                    manual_review_candidate_targets=[target],
+                    reason="Duration/title evidence remains unresolved after inspect.",
+                )
+            ],
+            repair_strategy="revise_saved_rows",
+        ),
+        main_refs=list(workspace.contract.main_file_refs),
+    )
+
+    assert complete is True
+    assert output["accepted"] is True
+    assert output["ledger"]["rows"][0]["manual_review_candidate_targets"] == [target]
+
+
+def test_patch_ledger_rejects_broad_strong_debt_manual_review_without_concrete_anchor():
     workspace = _two_episode_workspace()
     desk, registry = build_human_case_desk(workspace)
     _register_existing_targets(workspace, registry)
@@ -5812,7 +6810,7 @@ def test_patch_ledger_preserves_strong_debt_across_replaced_manual_row():
                     local=[local],
                     status="manual_review",
                     manual_review_candidate_targets=[target],
-                    reason="Still low confidence without a concrete contradiction.",
+                    reason="The visible same-count target remains unresolved after inspection.",
                 )
             ],
             repair_strategy="revise_saved_rows",
@@ -5822,9 +6820,8 @@ def test_patch_ledger_preserves_strong_debt_across_replaced_manual_row():
 
     assert complete is False
     assert output["accepted"] is False
-    assert output["issue_counts"]["ledger_strong_candidate_manual_review_requires_contradiction"] == 1
-    assert output["must_address_suggested_ledger_patch_rows"][0]["target"] == target
-    assert session.resolution_ledger.rows[0].status == "candidate_must_address"
+    assert output["issue_counts"]["ledger_candidate_debt_open"] == 1
+    assert output["suggested_ledger_patch_rows"][0]["target"] == target
 
 
 def test_patch_ledger_preserved_strong_debt_is_discharged_by_mapping():
@@ -5914,10 +6911,10 @@ def test_patch_ledger_generic_candidate_debt_allows_candidate_manual_review():
             rows=[
                 ResolutionLedgerRow(
                     row_id="LR1",
-                    local=[local],
+                    local=[f"{local}/episodes/1-2"],
                     status="manual_review",
                     manual_review_candidate_targets=[target],
-                    reason="Candidate remains localized uncertainty.",
+                    reason="Target episode range evidence remains unresolved after inspect.",
                 )
             ],
             repair_strategy="revise_saved_rows",
@@ -5930,7 +6927,7 @@ def test_patch_ledger_generic_candidate_debt_allows_candidate_manual_review():
     assert output["ledger"]["rows"][0]["manual_review_candidate_targets"] == [target]
 
 
-def test_patch_ledger_repair_frontier_strong_blocker_debt_stays_strong():
+def test_patch_ledger_repair_frontier_strong_blocker_debt_allows_exact_candidate_manual_review():
     workspace = _two_episode_workspace()
     desk, registry = build_human_case_desk(workspace)
     _register_existing_targets(workspace, registry)
@@ -5971,10 +6968,10 @@ def test_patch_ledger_repair_frontier_strong_blocker_debt_stays_strong():
             rows=[
                 ResolutionLedgerRow(
                     row_id="LR1",
-                    local=[local],
+                    local=[f"{local}/episodes/1-2"],
                     status="manual_review",
                     manual_review_candidate_targets=[target],
-                    reason="Candidate remains localized uncertainty.",
+                    reason="Target episode range evidence remains unresolved after inspect.",
                 )
             ],
             repair_strategy="revise_saved_rows",
@@ -5982,10 +6979,104 @@ def test_patch_ledger_repair_frontier_strong_blocker_debt_stays_strong():
         main_refs=list(workspace.contract.main_file_refs),
     )
 
-    assert complete is False
-    assert output["accepted"] is False
-    assert output["issue"] == "patch_ledger_suggested_shape_unaddressed"
-    assert output["suggested_ledger_patch_rows"][0]["target"] == target
+    assert complete is True
+    assert output["accepted"] is True
+    assert output["ledger"]["rows"][0]["manual_review_candidate_targets"] == [target]
+
+
+def test_patch_ledger_rejection_preserves_repair_buckets_and_choice_rows():
+    workspace = CaseEvidenceWorkspace.from_cards(
+        header=CaseHeader(case_id="CASE-COMPILED-REPAIR-PERSISTS"),
+        budget=CaseBudget(max_judge_rounds=4),
+        contract=CaseContract(
+            main_file_refs=["LF1", "LF2"],
+            allowed_file_refs=["LF1", "LF2"],
+            visible_target_refs=["BE1", "BE2"],
+        ),
+        local_files=[
+            LocalFileCard(ref="LF1", path="Pack/Movie Pack [01(First Arc)].mkv", is_main=True),
+            LocalFileCard(ref="LF2", path="Pack/Movie Pack [02(Second Arc)].mkv", is_main=True),
+        ],
+        bangumi_subjects=[
+            BangumiSubjectCard(
+                ref="BS1",
+                subject_id=601,
+                title="Movie Pack First Arc",
+                name="Movie Pack First Arc",
+                name_cn="Movie Pack First Arc",
+                eps=1,
+                total_episodes=1,
+            ),
+            BangumiSubjectCard(
+                ref="BS2",
+                subject_id=602,
+                title="Movie Pack Second Arc",
+                name="Movie Pack Second Arc",
+                name_cn="Movie Pack Second Arc",
+                eps=1,
+                total_episodes=1,
+            ),
+        ],
+        bangumi_items=[
+            BangumiItemCard(ref="BE1", subject_ref="BS1", sort=1, ep=1, title="First Arc"),
+            BangumiItemCard(ref="BE2", subject_ref="BS2", sort=1, ep=1, title="Second Arc"),
+        ],
+    )
+    desk, registry = build_human_case_desk(workspace)
+    _register_existing_targets(workspace, registry)
+    local = desk["local_locators"][0]["locator"]
+    first_target = f"{registry.subject_locator_by_id[601]}/episode/1"
+    session = HumanCaseSession(
+        case_id=workspace.header.case_id,
+        resolution_ledger=ResolutionLedger(
+            rows=[ResolutionLedgerRow(row_id="LR1", local=[local], status="open")]
+        ),
+    )
+
+    session, output, complete = _patch_ledger_tool(
+        registry,
+        session,
+        PatchLedgerToolArgs(
+            rows=[
+                ResolutionLedgerRow(
+                    row_id="LR1",
+                    local=[f"{local}/episode/1"],
+                    status="mapped",
+                    mapped_outcome="mapped_explicit_item",
+                    target=first_target,
+                    reason="First slice maps cleanly.",
+                ),
+                ResolutionLedgerRow(
+                    row_id="LR2",
+                    local=[f"{local}/episode/2"],
+                    status="supplemental",
+                    reason="Leftover second slice without hard non-owner reason.",
+                )
+            ],
+            repair_strategy="revise_saved_rows",
+        ),
+        main_refs=list(workspace.contract.main_file_refs),
+    )
+    submit_result = _compile_resolution_ledger_to_submit_result(workspace, registry, session.resolution_ledger)
+    compiled_agenda = _repair_agenda_from_submit_feedback(submit_result.feedback, repeated=False)
+    output = {
+        **output,
+        "accepted": False,
+        "issue_counts": submit_result.feedback["package"]["issue_counts"],
+        "repair_frontier": compiled_agenda["repair_frontier"],
+        **{
+            key: compiled_agenda.get(key)
+            for key in ("excluded_slice_mapped_sibling_repairs",)
+            if compiled_agenda.get(key)
+        },
+    }
+    output["ledger_choice_patch_rows"] = _ledger_choice_patch_rows_from_repair(session, output)
+
+    assert complete is True
+    assert submit_result.accepted is False
+    assert output["excluded_slice_mapped_sibling_repairs"]
+    assert output["repair_frontier"]
+    assert output["ledger_choice_patch_rows"]
 
 
 def test_ledger_duplicate_target_exposes_manual_review_candidate_shape():
@@ -6845,6 +7936,9 @@ def test_fail_closed_parent_with_visible_slice_pairings_requires_split_granulari
     repair = result.feedback["package"]["fail_closed_slice_pairing_repairs"][0]
     assert repair["local_slice_mapping_options"]
     assert repair["local_slice_mapping_options"][0]["local"].startswith(f"{parent}/episode/")
+    assert repair["suggested_submit_shape"][0]["local"].startswith(f"{parent}/episode/")
+    assert result.feedback["suggested_ledger_patch_rows"][0]["status"] == "mapped"
+    assert result.feedback["ledger_choice_patch_rows"]
 
 
 def test_fail_closed_title_tail_bridge_requires_inspection_before_terminal_blocker():
@@ -8115,6 +9209,73 @@ def test_episode_slice_tail_repair_does_not_inherit_sibling_title_tokens():
     assert "kishi" not in tokens
     assert any("Akai Hana" in hint for hint in repairs[0]["searched_query_hints"])
     assert not any("Aoi Kishi" in hint for hint in repairs[0]["searched_query_hints"])
+
+
+def test_title_tail_unresolved_repair_projects_terminal_row_choices():
+    workspace = CaseEvidenceWorkspace.from_cards(
+        header=CaseHeader(case_id="CASE-TITLE-TAIL-ROW-CHOICES"),
+        budget=CaseBudget(max_judge_rounds=4),
+        contract=CaseContract(main_file_refs=["LF1"], allowed_file_refs=["LF1"]),
+        local_files=[
+            LocalFileCard(ref="LF1", path="Pack/[Group] FRANCHISE Companion Stars.mkv", is_main=True),
+        ],
+        bangumi_subjects=[
+            BangumiSubjectCard(
+                ref="BS1",
+                subject_id=501,
+                title="Companion Stars Side Story",
+                name="Companion Stars Side Story",
+                name_cn="Companion Stars Side Story",
+                eps=1,
+                total_episodes=1,
+                search_query_ref="Companion Stars",
+            )
+        ],
+        bangumi_items=[BangumiItemCard(ref="BE1", subject_ref="BS1", sort=1, ep=1, title="Episode 1")],
+    )
+    desk, registry = build_human_case_desk(workspace)
+    _register_existing_targets(workspace, registry)
+    local = desk["local_locators"][0]["locator"]
+    locator, issue = registry.resolve(local)
+    assert issue is None
+    searched = {
+        variant.casefold()
+        for query in _query_hints_for_locator(locator, limit=8)
+        for variant in _search_query_variants(query)
+    }
+
+    repairs = _excluded_title_tail_unresolved_after_search_repairs(
+        registry,
+        [{"unit": "companion-stars", "outcome": "supplemental", "local": [local]}],
+        searched_query_variant_keys=searched,
+    )
+
+    assert repairs
+    repair = repairs[0]
+    assert repair["manual_review_candidate_submit_shape"][0]["local"] == local
+    assert repair["manual_review_candidate_submit_shape"][0]["manual_review_candidate_targets"] == [
+        "target://bangumi/501-companion-stars-side-story/episode/1"
+    ]
+    assert repair["fail_closed_submit_shape"][0]["local"] == local
+    agenda = _repair_agenda_from_submit_feedback(
+        {
+            "package": {
+                "issue_counts": {"excluded_title_tail_unresolved_after_search": 1},
+                "excluded_title_tail_unresolved_repairs": repairs,
+            },
+            "units": [],
+        },
+        repeated=False,
+    )
+    frontier = _repair_frontier_rows_from_agenda(agenda)
+    assert frontier[0]["manual_review_candidate_submit_shape"][0]["local"] == local
+    assert frontier[0]["fail_closed_submit_shape"][0]["local"] == local
+    session = HumanCaseSession(
+        case_id=workspace.header.case_id,
+        resolution_ledger=ResolutionLedger(rows=[ResolutionLedgerRow(row_id="LR1", local=[local], status="open")]),
+    )
+    rows = _ledger_choice_patch_rows_from_repair(session, agenda)
+    assert [row["status"] for row in rows] == ["manual_review", "fail_closed"]
 
 
 def test_fail_closed_singleton_gets_visible_title_tail_pairing_repair():
