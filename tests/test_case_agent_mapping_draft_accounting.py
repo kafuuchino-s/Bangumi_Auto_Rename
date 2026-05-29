@@ -18,7 +18,7 @@ def _dossier() -> CaseDossier:
     return CaseDossier(local_files=local_files, local_span_cards=local_spans, bangumi_span_cards=bangumi_spans, bangumi_items=bangumi_items, contract=contract)
 
 
-def test_normalize_legacy_ops():
+def test_normalize_patch_alias_ops():
     assert normalize_mapping_patch_op(MappingDraftPatch(op='propose_span_mapping')).op == 'map_to_bangumi'
     assert normalize_mapping_patch_op(MappingDraftPatch(op='propose_explicit_mapping')).op == 'map_to_bangumi'
     assert normalize_mapping_patch_op(MappingDraftPatch(op='mark_unresolved')).op == 'needs_more_evidence'
@@ -94,7 +94,7 @@ def test_span_local_ref_resolves_file_count():
     assert accounting.mapped_file_count == 2
 
 
-def test_legacy_propose_span_mapping_applies_as_mapping():
+def test_propose_span_mapping_alias_applies_as_mapping():
     dossier = _dossier()
     draft = build_initial_mapping_draft(dossier)
     updated, issues = apply_mapping_patches(draft, [MappingDraftPatch(op='propose_span_mapping', local_ref='LS1', target_span_ref='BS1', reason='mapped')], dossier)

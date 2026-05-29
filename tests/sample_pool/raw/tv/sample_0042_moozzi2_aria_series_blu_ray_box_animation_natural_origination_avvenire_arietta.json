@@ -3,59 +3,199 @@
   "files": [
     {
       "path": "[Moozzi2] Aria The Animation BD-BOX - TV + Avvenire EP.01/[Moozzi2] Aria The Animation - 01 (BD 1440x1080 x.264 Flac).mkv",
-      "size": 909370599
+      "size": 909370599,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1462.585,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1440x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Animation BD-BOX - TV + Avvenire EP.01/[Moozzi2] Aria The Animation - 02 (BD 1440x1080 x.264 Flac).mkv",
-      "size": 733595124
+      "size": 733595124,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1463.421,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1440x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Animation BD-BOX - TV + Avvenire EP.01/[Moozzi2] Aria The Animation - 03 (BD 1440x1080 x.264 Flac).mkv",
-      "size": 642264409
+      "size": 642264409,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1462.411,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1440x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Animation BD-BOX - TV + Avvenire EP.01/[Moozzi2] Aria The Animation - 04 (BD 1440x1080 x.264 Flac).mkv",
-      "size": 611825417
+      "size": 611825417,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1463.465,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1440x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Animation BD-BOX - TV + Avvenire EP.01/[Moozzi2] Aria The Animation - 05 (BD 1440x1080 x.264 Flac).mkv",
-      "size": 694842844
+      "size": 694842844,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1463.432,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1440x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Animation BD-BOX - TV + Avvenire EP.01/[Moozzi2] Aria The Animation - 06 (BD 1440x1080 x.264 Flac).mkv",
-      "size": 577205092
+      "size": 577205092,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1463.499,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1440x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Animation BD-BOX - TV + Avvenire EP.01/[Moozzi2] Aria The Animation - 07 (BD 1440x1080 x.264 Flac).mkv",
-      "size": 709041228
+      "size": 709041228,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1462.495,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1440x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Animation BD-BOX - TV + Avvenire EP.01/[Moozzi2] Aria The Animation - 08 (BD 1440x1080 x.264 Flac).mkv",
-      "size": 598010652
+      "size": 598010652,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1462.665,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1440x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Animation BD-BOX - TV + Avvenire EP.01/[Moozzi2] Aria The Animation - 09 (BD 1440x1080 x.264 Flac).mkv",
-      "size": 538274689
+      "size": 538274689,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1462.497,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1440x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Animation BD-BOX - TV + Avvenire EP.01/[Moozzi2] Aria The Animation - 10 (BD 1440x1080 x.264 Flac).mkv",
-      "size": 683943024
+      "size": 683943024,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1463.431,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1440x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Animation BD-BOX - TV + Avvenire EP.01/[Moozzi2] Aria The Animation - 11 (BD 1440x1080 x.264 Flac).mkv",
-      "size": 727887205
+      "size": 727887205,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1461.592,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1440x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Animation BD-BOX - TV + Avvenire EP.01/[Moozzi2] Aria The Animation - 12 (BD 1440x1080 x.264 Flac).mkv",
-      "size": 658541462
+      "size": 658541462,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1462.464,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1440x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Animation BD-BOX - TV + Avvenire EP.01/[Moozzi2] Aria The Animation - 13 END (BD 1440x1080 x.264 Flac).mkv",
-      "size": 613948925
+      "size": 613948925,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1447.446,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1440x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Animation BD-BOX - TV + Avvenire EP.01/[Moozzi2] Aria The Avvenire - 01 (BD 1920x1080 x.264 3Audio).mkv",
-      "size": 1104987532
+      "size": 1104987532,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 994.752,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 3,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Animation BD-BOX - TV + Avvenire EP.01/EXTRA/[Moozzi2] Aria The Animation [SP00] Menu - 01 - [ Avvenire Vol.01 ].png",
@@ -71,19 +211,59 @@
     },
     {
       "path": "[Moozzi2] Aria The Animation BD-BOX - TV + Avvenire EP.01/EXTRA/[Moozzi2] Aria The Animation [SP01] TV-Spot - 01 (BD 1440x1080 x.264 Flac).mkv",
-      "size": 7093569
+      "size": 7093569,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 16.02,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1440x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Animation BD-BOX - TV + Avvenire EP.01/EXTRA/[Moozzi2] Aria The Animation [SP01] TV-Spot - 02 (BD 1440x1080 x.264 Flac).mkv",
-      "size": 8298650
+      "size": 8298650,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 31.035,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1440x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Animation BD-BOX - TV + Avvenire EP.01/EXTRA/[Moozzi2] Aria The Animation [SP01] TV-Spot - 03 (BD 1440x1080 x.264 Flac).mkv",
-      "size": 7552696
+      "size": 7552696,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 16.02,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1440x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Animation BD-BOX - TV + Avvenire EP.01/EXTRA/[Moozzi2] Aria The Animation [SP01] TV-Spot - 04 (BD 1440x1080 x.264 Flac).mkv",
-      "size": 7476374
+      "size": 7476374,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 17.02,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1440x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Animation BD-BOX - TV + Avvenire EP.01/EXTRA/[Moozzi2] Aria The Animation [SP02] BD-BOX Scans/Digipack1E.png",
@@ -159,175 +339,605 @@
     },
     {
       "path": "[Moozzi2] Aria The Animation BD-BOX - TV + Avvenire EP.01/EXTRA/[Moozzi2] Aria The Avvenire [SP00] TV-Spot (BD 1920x1080 x.264 Flac).mkv",
-      "size": 11390914
+      "size": 11390914,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 17.02,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Animation BD-BOX - TV + Avvenire EP.01/EXTRA/[Moozzi2] Aria The Avvenire [SP01] NCED (BD 1920x1080 x.264 DTS-HDMA).mkv",
-      "size": 113701975
+      "size": 113701975,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 138.144,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Animation BD-BOX - TV + Avvenire EP.01/EXTRA/[Moozzi2] Aria The Avvenire [SP02] Visual Commentary (BD 1920x1080 x.264 Flac).mkv",
-      "size": 672275022
+      "size": 672275022,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 933.435,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Animation BD-BOX - TV + Avvenire EP.01/EXTRA/[Moozzi2] Aria The Avvenire [SP03] Cast & Staff Conference (BD 1920x1080 x.264 Flac).mkv",
-      "size": 1728897961
+      "size": 1728897961,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 2231.9,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Animation BD-BOX - TV + Avvenire EP.01/EXTRA/[Moozzi2] Aria The Avvenire [SP04] First Day Theater Greeting (BD 1920x1080 x.264 Flac).mkv",
-      "size": 1232264221
+      "size": 1232264221,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1351.35,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Natural BD-BOX - TV + Avvenire EP.02 + Arietta/[Moozzi2] Aria The Arietta OVA (BD 1920x1080 x.264 FLACx3).mkv",
-      "size": 1188615070
+      "size": 1188615070,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1831.03,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 3,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Natural BD-BOX - TV + Avvenire EP.02 + Arietta/[Moozzi2] Aria The Avvenire - 02 (BD 1920x1080 x.264 3Audio).mkv",
-      "size": 1271670334
+      "size": 1271670334,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1213.216,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 3,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Natural BD-BOX - TV + Avvenire EP.02 + Arietta/[Moozzi2] Aria The Natural - 01 (BD 1440x1080 x.264 Flac).mkv",
-      "size": 624697484
+      "size": 624697484,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1431.135,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1440x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Natural BD-BOX - TV + Avvenire EP.02 + Arietta/[Moozzi2] Aria The Natural - 02 (BD 1440x1080 x.264 Flac).mkv",
-      "size": 737761506
+      "size": 737761506,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.021,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1440x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Natural BD-BOX - TV + Avvenire EP.02 + Arietta/[Moozzi2] Aria The Natural - 03 (BD 1440x1080 x.264 Flac).mkv",
-      "size": 567254852
+      "size": 567254852,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1452.086,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1440x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Natural BD-BOX - TV + Avvenire EP.02 + Arietta/[Moozzi2] Aria The Natural - 04 (BD 1440x1080 x.264 Flac).mkv",
-      "size": 665959426
+      "size": 665959426,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1452.087,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1440x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Natural BD-BOX - TV + Avvenire EP.02 + Arietta/[Moozzi2] Aria The Natural - 05 (BD 1440x1080 x.264 Flac).mkv",
-      "size": 737016058
+      "size": 737016058,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.017,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1440x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Natural BD-BOX - TV + Avvenire EP.02 + Arietta/[Moozzi2] Aria The Natural - 06 (BD 1440x1080 x.264 Flac).mkv",
-      "size": 634986775
+      "size": 634986775,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1450.985,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1440x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Natural BD-BOX - TV + Avvenire EP.02 + Arietta/[Moozzi2] Aria The Natural - 07 (BD 1440x1080 x.264 Flac).mkv",
-      "size": 641515318
+      "size": 641515318,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1450.95,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1440x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Natural BD-BOX - TV + Avvenire EP.02 + Arietta/[Moozzi2] Aria The Natural - 08 (BD 1440x1080 x.264 Flac).mkv",
-      "size": 718929724
+      "size": 718929724,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.953,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1440x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Natural BD-BOX - TV + Avvenire EP.02 + Arietta/[Moozzi2] Aria The Natural - 09 (BD 1440x1080 x.264 Flac).mkv",
-      "size": 568409636
+      "size": 568409636,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1450.951,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1440x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Natural BD-BOX - TV + Avvenire EP.02 + Arietta/[Moozzi2] Aria The Natural - 10 (BD 1440x1080 x.264 Flac).mkv",
-      "size": 724755657
+      "size": 724755657,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.024,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1440x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Natural BD-BOX - TV + Avvenire EP.02 + Arietta/[Moozzi2] Aria The Natural - 11 (BD 1440x1080 x.264 Flac).mkv",
-      "size": 621096173
+      "size": 621096173,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1449.95,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1440x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Natural BD-BOX - TV + Avvenire EP.02 + Arietta/[Moozzi2] Aria The Natural - 12 (BD 1440x1080 x.264 Flac).mkv",
-      "size": 594624412
+      "size": 594624412,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1450.951,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1440x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Natural BD-BOX - TV + Avvenire EP.02 + Arietta/[Moozzi2] Aria The Natural - 13 (BD 1440x1080 x.264 Flac).mkv",
-      "size": 664302326
+      "size": 664302326,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1450.95,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1440x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Natural BD-BOX - TV + Avvenire EP.02 + Arietta/[Moozzi2] Aria The Natural - 14 (BD 1440x1080 x.264 Flac).mkv",
-      "size": 554908973
+      "size": 554908973,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.033,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1440x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Natural BD-BOX - TV + Avvenire EP.02 + Arietta/[Moozzi2] Aria The Natural - 15 (BD 1440x1080 x.264 Flac).mkv",
-      "size": 698243986
+      "size": 698243986,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1450.953,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1440x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Natural BD-BOX - TV + Avvenire EP.02 + Arietta/[Moozzi2] Aria The Natural - 16 (BD 1440x1080 x.264 Flac).mkv",
-      "size": 682757155
+      "size": 682757155,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1449.95,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1440x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Natural BD-BOX - TV + Avvenire EP.02 + Arietta/[Moozzi2] Aria The Natural - 17 (BD 1440x1080 x.264 Flac).mkv",
-      "size": 615057066
+      "size": 615057066,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1450.899,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1440x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Natural BD-BOX - TV + Avvenire EP.02 + Arietta/[Moozzi2] Aria The Natural - 18 (BD 1440x1080 x.264 Flac).mkv",
-      "size": 711679154
+      "size": 711679154,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1450.952,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1440x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Natural BD-BOX - TV + Avvenire EP.02 + Arietta/[Moozzi2] Aria The Natural - 19 (BD 1440x1080 x.264 Flac).mkv",
-      "size": 634192135
+      "size": 634192135,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1450.951,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1440x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Natural BD-BOX - TV + Avvenire EP.02 + Arietta/[Moozzi2] Aria The Natural - 20 (BD 1440x1080 x.264 Flac).mkv",
-      "size": 589503442
+      "size": 589503442,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1450.908,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1440x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Natural BD-BOX - TV + Avvenire EP.02 + Arietta/[Moozzi2] Aria The Natural - 21 (BD 1440x1080 x.264 Flac).mkv",
-      "size": 542907225
+      "size": 542907225,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.155,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1440x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Natural BD-BOX - TV + Avvenire EP.02 + Arietta/[Moozzi2] Aria The Natural - 22 (BD 1440x1080 x.264 Flac).mkv",
-      "size": 727281587
+      "size": 727281587,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.088,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1440x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Natural BD-BOX - TV + Avvenire EP.02 + Arietta/[Moozzi2] Aria The Natural - 23 (BD 1440x1080 x.264 Flac).mkv",
-      "size": 627204173
+      "size": 627204173,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.018,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1440x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Natural BD-BOX - TV + Avvenire EP.02 + Arietta/[Moozzi2] Aria The Natural - 24 (BD 1440x1080 x.264 Flac).mkv",
-      "size": 616333419
+      "size": 616333419,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.089,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1440x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Natural BD-BOX - TV + Avvenire EP.02 + Arietta/[Moozzi2] Aria The Natural - 25 (BD 1440x1080 x.264 Flac).mkv",
-      "size": 621249810
+      "size": 621249810,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.088,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1440x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Natural BD-BOX - TV + Avvenire EP.02 + Arietta/[Moozzi2] Aria The Natural - 26 END (BD 1440x1080 x.264 Flac).mkv",
-      "size": 667441256
+      "size": 667441256,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1435.705,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1440x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Natural BD-BOX - TV + Avvenire EP.02 + Arietta/EXTRA/[Moozzi2] Aria The Arietta OVA [SP01] CM - 01 (BD 1920x1080 x.264 Flac).mkv",
-      "size": 50346664
+      "size": 50346664,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 86.255,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Natural BD-BOX - TV + Avvenire EP.02 + Arietta/EXTRA/[Moozzi2] Aria The Arietta OVA [SP01] CM - 02 (BD 1920x1080 x.264 Flac).mkv",
-      "size": 5410554
+      "size": 5410554,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 16.02,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Natural BD-BOX - TV + Avvenire EP.02 + Arietta/EXTRA/[Moozzi2] Aria The Avvenire [SP01] Preview - 01 (BD 1920x1080 x.264 DTS-HDMA).mkv",
-      "size": 29638577
+      "size": 29638577,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 33.035,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Natural BD-BOX - TV + Avvenire EP.02 + Arietta/EXTRA/[Moozzi2] Aria The Avvenire [SP01] Preview - 02 (BD 1920x1080 x.264 DTS-HDMA).mkv",
-      "size": 83665042
+      "size": 83665042,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.096,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Natural BD-BOX - TV + Avvenire EP.02 + Arietta/EXTRA/[Moozzi2] Aria The Avvenire [SP01] Preview - 03 (BD 1920x1080 x.264 DTS-HDMA).mkv",
-      "size": 31451562
+      "size": 31451562,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 31.04,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Natural BD-BOX - TV + Avvenire EP.02 + Arietta/EXTRA/[Moozzi2] Aria The Avvenire [SP02] Sound Novel - 01 (BD 1920x1080 x.264 Flac).mkv",
-      "size": 1130114095
+      "size": 1130114095,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 906.035,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Natural BD-BOX - TV + Avvenire EP.02 + Arietta/EXTRA/[Moozzi2] Aria The Avvenire [SP02] Sound Novel - 02 (BD 1920x1080 x.264 Flac).mkv",
-      "size": 1070269460
+      "size": 1070269460,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 895.27,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Natural BD-BOX - TV + Avvenire EP.02 + Arietta/EXTRA/[Moozzi2] Aria The Avvenire [SP03] Visual Commentary (BD 1920x1080 x.264 Flac).mkv",
-      "size": 784672979
+      "size": 784672979,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1258.925,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Natural BD-BOX - TV + Avvenire EP.02 + Arietta/EXTRA/[Moozzi2] Aria The Avvenire [SP04] Cast & Staff Conference (BD 1920x1080 x.264 Flac).mkv",
-      "size": 1577363707
+      "size": 1577363707,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 2374.04,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Natural BD-BOX - TV + Avvenire EP.02 + Arietta/EXTRA/[Moozzi2] Aria The Avvenire [SP05] Thanksgiving Theater Greeting (BD 1920x1080 x.264 Flac).mkv",
-      "size": 2205911358
+      "size": 2205911358,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1343.01,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Natural BD-BOX - TV + Avvenire EP.02 + Arietta/EXTRA/[Moozzi2] Aria The Natural [SP00] Menu - 01 - [ Avvenire Vol.02 ].png",
@@ -355,27 +965,87 @@
     },
     {
       "path": "[Moozzi2] Aria The Natural BD-BOX - TV + Avvenire EP.02 + Arietta/EXTRA/[Moozzi2] Aria The Natural [SP01] Long PV (BD 1440x1080 x.264 Flac).mkv",
-      "size": 185865967
+      "size": 185865967,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 309.31,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1440x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Natural BD-BOX - TV + Avvenire EP.02 + Arietta/EXTRA/[Moozzi2] Aria The Natural [SP02] TV-SPOT - 01 (BD 1440x1080 x.264 Flac).mkv",
-      "size": 18520430
+      "size": 18520430,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 32.035,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1440x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Natural BD-BOX - TV + Avvenire EP.02 + Arietta/EXTRA/[Moozzi2] Aria The Natural [SP02] TV-SPOT - 02 (BD 1440x1080 x.264 Flac).mkv",
-      "size": 8679609
+      "size": 8679609,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 16.02,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1440x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Natural BD-BOX - TV + Avvenire EP.02 + Arietta/EXTRA/[Moozzi2] Aria The Natural [SP02] TV-SPOT - 03 (BD 1440x1080 x.264 Flac).mkv",
-      "size": 23435541
+      "size": 23435541,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 31.035,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1440x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Natural BD-BOX - TV + Avvenire EP.02 + Arietta/EXTRA/[Moozzi2] Aria The Natural [SP02] TV-SPOT - 04 (BD 1440x1080 x.264 Flac).mkv",
-      "size": 13593487
+      "size": 13593487,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 16.02,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1440x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Natural BD-BOX - TV + Avvenire EP.02 + Arietta/EXTRA/[Moozzi2] Aria The Natural [SP02] TV-SPOT - 05 (BD 1440x1080 x.264 Flac).mkv",
-      "size": 2052323
+      "size": 2052323,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 21.025,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1440x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Natural BD-BOX - TV + Avvenire EP.02 + Arietta/EXTRA/[Moozzi2] Aria The Natural [SP03] BD-BOX Scans/Booklet 00 Front.png",
@@ -483,79 +1153,269 @@
     },
     {
       "path": "[Moozzi2] Aria The Origination BD-BOX - TV + Avvenire EP.03/[Moozzi2] Aria The Avvenire - 03 (BD 1920x1080 x.264 3Audio).mkv",
-      "size": 1809137893
+      "size": 1809137893,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1663.712,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 3,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Origination BD-BOX - TV + Avvenire EP.03/[Moozzi2] Aria The Origination - 01 (BD 1920x1080 x.264 Flac).mkv",
-      "size": 826672356
+      "size": 826672356,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1462.992,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Origination BD-BOX - TV + Avvenire EP.03/[Moozzi2] Aria The Origination - 02 (BD 1920x1080 x.264 Flac).mkv",
-      "size": 737558882
+      "size": 737558882,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1462.058,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Origination BD-BOX - TV + Avvenire EP.03/[Moozzi2] Aria The Origination - 03 (BD 1920x1080 x.264 Flac).mkv",
-      "size": 700697021
+      "size": 700697021,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1462.058,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Origination BD-BOX - TV + Avvenire EP.03/[Moozzi2] Aria The Origination - 04 (BD 1920x1080 x.264 Flac).mkv",
-      "size": 738470125
+      "size": 738470125,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1461.991,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Origination BD-BOX - TV + Avvenire EP.03/[Moozzi2] Aria The Origination - 05 (BD 1920x1080 x.264 Flac).mkv",
-      "size": 848375080
+      "size": 848375080,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1461.991,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Origination BD-BOX - TV + Avvenire EP.03/[Moozzi2] Aria The Origination - 05.5 (BD 1920x1080 x.264 Flac).mkv",
-      "size": 727870509
+      "size": 727870509,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1461.995,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Origination BD-BOX - TV + Avvenire EP.03/[Moozzi2] Aria The Origination - 06 (BD 1920x1080 x.264 Flac).mkv",
-      "size": 797759109
+      "size": 797759109,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1462.992,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Origination BD-BOX - TV + Avvenire EP.03/[Moozzi2] Aria The Origination - 07 (BD 1920x1080 x.264 Flac).mkv",
-      "size": 726876178
+      "size": 726876178,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1462.058,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Origination BD-BOX - TV + Avvenire EP.03/[Moozzi2] Aria The Origination - 08 (BD 1920x1080 x.264 Flac).mkv",
-      "size": 836122856
+      "size": 836122856,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1462.058,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Origination BD-BOX - TV + Avvenire EP.03/[Moozzi2] Aria The Origination - 09 (BD 1920x1080 x.264 Flac).mkv",
-      "size": 820311527
+      "size": 820311527,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1461.991,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Origination BD-BOX - TV + Avvenire EP.03/[Moozzi2] Aria The Origination - 10 (BD 1920x1080 x.264 Flac).mkv",
-      "size": 693800000
+      "size": 693800000,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1462.058,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Origination BD-BOX - TV + Avvenire EP.03/[Moozzi2] Aria The Origination - 11 (BD 1920x1080 x.264 Flac).mkv",
-      "size": 741211158
+      "size": 741211158,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1461.057,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Origination BD-BOX - TV + Avvenire EP.03/[Moozzi2] Aria The Origination - 12 (BD 1920x1080 x.264 Flac).mkv",
-      "size": 833969148
+      "size": 833969148,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1483.012,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Origination BD-BOX - TV + Avvenire EP.03/[Moozzi2] Aria The Origination - 13 END (BD 1920x1080 x.264 Flac).mkv",
-      "size": 863459452
+      "size": 863459452,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1471.0,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Origination BD-BOX - TV + Avvenire EP.03/EXTRA/[Moozzi2] Aria The Avvenire OVA [SP01] Sound Novel - 01 (BD 1920x1080 x.264 Flac).mkv",
-      "size": 1243612809
+      "size": 1243612809,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 967.3,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Origination BD-BOX - TV + Avvenire EP.03/EXTRA/[Moozzi2] Aria The Avvenire OVA [SP01] Sound Novel - 02 (BD 1920x1080 x.264 Flac).mkv",
-      "size": 1020223362
+      "size": 1020223362,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 814.315,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Origination BD-BOX - TV + Avvenire EP.03/EXTRA/[Moozzi2] Aria The Avvenire OVA [SP02] Visual Commentary (BD 1920x1080 x.264 Flac).mkv",
-      "size": 1072700326
+      "size": 1072700326,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1662.665,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Origination BD-BOX - TV + Avvenire EP.03/EXTRA/[Moozzi2] Aria The Avvenire OVA [SP03] Cast & Staff Conference (BD 1920x1080 x.264 Flac).mkv",
-      "size": 1476283848
+      "size": 1476283848,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 2319.985,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Origination BD-BOX - TV + Avvenire EP.03/EXTRA/[Moozzi2] Aria The Origination [SP00] Menu - 01 - [ Avvenire Vol.03 ].png",
@@ -575,59 +1435,199 @@
     },
     {
       "path": "[Moozzi2] Aria The Origination BD-BOX - TV + Avvenire EP.03/EXTRA/[Moozzi2] Aria The Origination [SP01] PV - 01 (BD 1920x1080 x.264 Flac).mkv",
-      "size": 47438896
+      "size": 47438896,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 122.125,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Origination BD-BOX - TV + Avvenire EP.03/EXTRA/[Moozzi2] Aria The Origination [SP01] PV - 02 (BD 1440x1080 x.264 Flac).mkv",
-      "size": 15024480
+      "size": 15024480,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 32.035,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1440x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Origination BD-BOX - TV + Avvenire EP.03/EXTRA/[Moozzi2] Aria The Origination [SP01] PV - 03 (BD 1920x1080 x.264 Flac).mkv",
-      "size": 14114978
+      "size": 14114978,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 31.035,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Origination BD-BOX - TV + Avvenire EP.03/EXTRA/[Moozzi2] Aria The Origination [SP01] PV - 04 (BD 1920x1080 x.264 Flac).mkv",
-      "size": 17969734
+      "size": 17969734,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 31.035,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Origination BD-BOX - TV + Avvenire EP.03/EXTRA/[Moozzi2] Aria The Origination [SP01] PV - 05 (BD 1440x1080 x.264 Flac).mkv",
-      "size": 10228943
+      "size": 10228943,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 14.515,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1440x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Origination BD-BOX - TV + Avvenire EP.03/EXTRA/[Moozzi2] Aria The Origination [SP01] PV - 06 (BD 1920x1080 x.264 Flac).mkv",
-      "size": 14434246
+      "size": 14434246,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 16.02,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Origination BD-BOX - TV + Avvenire EP.03/EXTRA/[Moozzi2] Aria The Origination [SP01] PV - 07 (BD 1920x1080 x.264 Flac).mkv",
-      "size": 7760198
+      "size": 7760198,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 16.02,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Origination BD-BOX - TV + Avvenire EP.03/EXTRA/[Moozzi2] Aria The Origination [SP02] Picture Drama - 01 (BD 1920x1080 x.264 Flac).mkv",
-      "size": 198833300
+      "size": 198833300,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 461.465,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Origination BD-BOX - TV + Avvenire EP.03/EXTRA/[Moozzi2] Aria The Origination [SP02] Picture Drama - 02 (BD 1920x1080 x.264 Flac).mkv",
-      "size": 142859289
+      "size": 142859289,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 328.33,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Origination BD-BOX - TV + Avvenire EP.03/EXTRA/[Moozzi2] Aria The Origination [SP02] Picture Drama - 03 (BD 1920x1080 x.264 Flac).mkv",
-      "size": 170975592
+      "size": 170975592,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 419.89,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Origination BD-BOX - TV + Avvenire EP.03/EXTRA/[Moozzi2] Aria The Origination [SP02] Picture Drama - 04 (BD 1920x1080 x.264 Flac).mkv",
-      "size": 196972127
+      "size": 196972127,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 430.5,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Origination BD-BOX - TV + Avvenire EP.03/EXTRA/[Moozzi2] Aria The Origination [SP02] Picture Drama - 05 (BD 1920x1080 x.264 Flac).mkv",
-      "size": 124877954
+      "size": 124877954,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 397.4,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Origination BD-BOX - TV + Avvenire EP.03/EXTRA/[Moozzi2] Aria The Origination [SP02] Picture Drama - 06 (BD 1920x1080 x.264 Flac).mkv",
-      "size": 91803515
+      "size": 91803515,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 333.4,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Origination BD-BOX - TV + Avvenire EP.03/EXTRA/[Moozzi2] Aria The Origination [SP02] Picture Drama - 07 (BD 1920x1080 x.264 Flac).mkv",
-      "size": 116484091
+      "size": 116484091,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 346.48,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Aria The Origination BD-BOX - TV + Avvenire EP.03/EXTRA/[Moozzi2] Aria The Origination [SP03] BD-BOX Scans/Booklet 00 Front.png",
@@ -709,5 +1709,36 @@
       "path": "[Moozzi2] Aria The Origination BD-BOX - TV + Avvenire EP.03/EXTRA/[Moozzi2] Aria The Origination [SP03] BD-BOX Scans/Obi.png",
       "size": 4104746
     }
-  ]
+  ],
+  "local_container_fact_summary": {
+    "container_fact_count": 100,
+    "probe_status_counts": {
+      "available": 100
+    },
+    "duration_seconds_range": [
+      14.515,
+      2374.04
+    ],
+    "duration_seconds_samples": [
+      1462.585,
+      1463.421,
+      1462.411,
+      1463.465,
+      1463.432,
+      1463.499
+    ]
+  },
+  "local_container_fact_source": {
+    "kind": "real_local_media_duration_backfill",
+    "media_root": "H:\\Anime",
+    "probe_media": true,
+    "container_probe": "ffprobe",
+    "embedded_in": "files[].container_facts",
+    "matched_file_count": 177,
+    "matched_video_count": 100,
+    "missing_actual_video_count": 0,
+    "match_stats": {
+      "matched_by_root_path": 177
+    }
+  }
 }

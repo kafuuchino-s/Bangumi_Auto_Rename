@@ -3,7 +3,17 @@
   "files": [
     {
       "path": "[MMZY-Sub&VCB-Studio] Tokyo Ravens [01][Hi10p_1080p][x264_2flac].mkv",
-      "size": 1229198257
+      "size": 1229198257,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1423.425,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[MMZY-Sub&VCB-Studio] Tokyo Ravens [01][Hi10p_1080p][x264_2flac].sc.ass",
@@ -15,7 +25,17 @@
     },
     {
       "path": "[MMZY-Sub&VCB-Studio] Tokyo Ravens [02][Hi10p_1080p][x264_flac].mkv",
-      "size": 1091921164
+      "size": 1091921164,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1422.425,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[MMZY-Sub&VCB-Studio] Tokyo Ravens [02][Hi10p_1080p][x264_flac].sc.ass",
@@ -27,7 +47,17 @@
     },
     {
       "path": "[MMZY-Sub&VCB-Studio] Tokyo Ravens [03][Hi10p_1080p][x264_flac].mkv",
-      "size": 1322083666
+      "size": 1322083666,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1422.425,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[MMZY-Sub&VCB-Studio] Tokyo Ravens [03][Hi10p_1080p][x264_flac].sc.ass",
@@ -39,7 +69,17 @@
     },
     {
       "path": "[MMZY-Sub&VCB-Studio] Tokyo Ravens [04][Hi10p_1080p][x264_2flac].mkv",
-      "size": 1129788073
+      "size": 1129788073,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1423.425,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[MMZY-Sub&VCB-Studio] Tokyo Ravens [04][Hi10p_1080p][x264_2flac].sc.ass",
@@ -51,7 +91,17 @@
     },
     {
       "path": "[MMZY-Sub&VCB-Studio] Tokyo Ravens [05][Hi10p_1080p][x264_flac].mkv",
-      "size": 1002030915
+      "size": 1002030915,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1422.425,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[MMZY-Sub&VCB-Studio] Tokyo Ravens [05][Hi10p_1080p][x264_flac].sc.ass",
@@ -63,7 +113,17 @@
     },
     {
       "path": "[MMZY-Sub&VCB-Studio] Tokyo Ravens [06][Hi10p_1080p][x264_flac].mkv",
-      "size": 924020652
+      "size": 924020652,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1422.425,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[MMZY-Sub&VCB-Studio] Tokyo Ravens [06][Hi10p_1080p][x264_flac].sc.ass",
@@ -75,7 +135,17 @@
     },
     {
       "path": "[MMZY-Sub&VCB-Studio] Tokyo Ravens [07][Hi10p_1080p][x264_flac].mkv",
-      "size": 639378588
+      "size": 639378588,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1423.425,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[MMZY-Sub&VCB-Studio] Tokyo Ravens [07][Hi10p_1080p][x264_flac].sc.ass",
@@ -87,7 +157,17 @@
     },
     {
       "path": "[MMZY-Sub&VCB-Studio] Tokyo Ravens [08][Hi10p_1080p][x264_flac].mkv",
-      "size": 607397389
+      "size": 607397389,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1422.425,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[MMZY-Sub&VCB-Studio] Tokyo Ravens [08][Hi10p_1080p][x264_flac].sc.ass",
@@ -99,7 +179,17 @@
     },
     {
       "path": "[MMZY-Sub&VCB-Studio] Tokyo Ravens [09][Hi10p_1080p][x264_2flac].mkv",
-      "size": 956209987
+      "size": 956209987,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1428.427,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[MMZY-Sub&VCB-Studio] Tokyo Ravens [09][Hi10p_1080p][x264_2flac].sc.ass",
@@ -111,7 +201,17 @@
     },
     {
       "path": "[MMZY-Sub&VCB-Studio] Tokyo Ravens [10][Hi10p_1080p][x264_2flac].mkv",
-      "size": 940475335
+      "size": 940475335,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1423.425,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[MMZY-Sub&VCB-Studio] Tokyo Ravens [10][Hi10p_1080p][x264_2flac].sc.ass",
@@ -123,7 +223,17 @@
     },
     {
       "path": "[MMZY-Sub&VCB-Studio] Tokyo Ravens [11][Hi10p_1080p][x264_flac].mkv",
-      "size": 731439686
+      "size": 731439686,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1422.425,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[MMZY-Sub&VCB-Studio] Tokyo Ravens [11][Hi10p_1080p][x264_flac].sc.ass",
@@ -135,7 +245,17 @@
     },
     {
       "path": "[MMZY-Sub&VCB-Studio] Tokyo Ravens [12][Hi10p_1080p][x264_flac].mkv",
-      "size": 694790955
+      "size": 694790955,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1422.425,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[MMZY-Sub&VCB-Studio] Tokyo Ravens [12][Hi10p_1080p][x264_flac].sc.ass",
@@ -147,7 +267,17 @@
     },
     {
       "path": "[MMZY-Sub&VCB-Studio] Tokyo Ravens [13][Hi10p_1080p][x264_flac].mkv",
-      "size": 1387672926
+      "size": 1387672926,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1423.425,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[MMZY-Sub&VCB-Studio] Tokyo Ravens [13][Hi10p_1080p][x264_flac].sc.ass",
@@ -159,7 +289,17 @@
     },
     {
       "path": "[MMZY-Sub&VCB-Studio] Tokyo Ravens [14][Hi10p_1080p][x264_flac].mkv",
-      "size": 1819139664
+      "size": 1819139664,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1422.425,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[MMZY-Sub&VCB-Studio] Tokyo Ravens [14][Hi10p_1080p][x264_flac].sc.ass",
@@ -171,7 +311,17 @@
     },
     {
       "path": "[MMZY-Sub&VCB-Studio] Tokyo Ravens [15][Hi10p_1080p][x264_2flac].mkv",
-      "size": 1661209326
+      "size": 1661209326,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1422.425,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[MMZY-Sub&VCB-Studio] Tokyo Ravens [15][Hi10p_1080p][x264_2flac].sc.ass",
@@ -183,7 +333,17 @@
     },
     {
       "path": "[MMZY-Sub&VCB-Studio] Tokyo Ravens [16][Hi10p_1080p][x264_flac].mkv",
-      "size": 1196071574
+      "size": 1196071574,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1423.425,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[MMZY-Sub&VCB-Studio] Tokyo Ravens [16][Hi10p_1080p][x264_flac].sc.ass",
@@ -195,7 +355,17 @@
     },
     {
       "path": "[MMZY-Sub&VCB-Studio] Tokyo Ravens [17][Hi10p_1080p][x264_flac].mkv",
-      "size": 1431511930
+      "size": 1431511930,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1422.425,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[MMZY-Sub&VCB-Studio] Tokyo Ravens [17][Hi10p_1080p][x264_flac].sc.ass",
@@ -207,7 +377,17 @@
     },
     {
       "path": "[MMZY-Sub&VCB-Studio] Tokyo Ravens [18][Hi10p_1080p][x264_2flac].mkv",
-      "size": 1477526913
+      "size": 1477526913,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1422.425,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[MMZY-Sub&VCB-Studio] Tokyo Ravens [18][Hi10p_1080p][x264_2flac].sc.ass",
@@ -219,7 +399,17 @@
     },
     {
       "path": "[MMZY-Sub&VCB-Studio] Tokyo Ravens [19][Hi10p_1080p][x264_flac].mkv",
-      "size": 1245752693
+      "size": 1245752693,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1423.425,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[MMZY-Sub&VCB-Studio] Tokyo Ravens [19][Hi10p_1080p][x264_flac].sc.ass",
@@ -231,7 +421,17 @@
     },
     {
       "path": "[MMZY-Sub&VCB-Studio] Tokyo Ravens [20][Hi10p_1080p][x264_flac].mkv",
-      "size": 1477174899
+      "size": 1477174899,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1422.425,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[MMZY-Sub&VCB-Studio] Tokyo Ravens [20][Hi10p_1080p][x264_flac].sc.ass",
@@ -243,7 +443,17 @@
     },
     {
       "path": "[MMZY-Sub&VCB-Studio] Tokyo Ravens [21][Hi10p_1080p][x264_2flac].mkv",
-      "size": 1544706200
+      "size": 1544706200,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1422.925,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[MMZY-Sub&VCB-Studio] Tokyo Ravens [21][Hi10p_1080p][x264_2flac].sc.ass",
@@ -255,7 +465,17 @@
     },
     {
       "path": "[MMZY-Sub&VCB-Studio] Tokyo Ravens [22][Hi10p_1080p][x264_flac].mkv",
-      "size": 1264496851
+      "size": 1264496851,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1423.425,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[MMZY-Sub&VCB-Studio] Tokyo Ravens [22][Hi10p_1080p][x264_flac].sc.ass",
@@ -267,7 +487,17 @@
     },
     {
       "path": "[MMZY-Sub&VCB-Studio] Tokyo Ravens [23][Hi10p_1080p][x264_flac].mkv",
-      "size": 1465602219
+      "size": 1465602219,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1422.425,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[MMZY-Sub&VCB-Studio] Tokyo Ravens [23][Hi10p_1080p][x264_flac].sc.ass",
@@ -279,7 +509,17 @@
     },
     {
       "path": "[MMZY-Sub&VCB-Studio] Tokyo Ravens [24][Hi10p_1080p][x264_2flac].mkv",
-      "size": 1570239247
+      "size": 1570239247,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1603.602,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[MMZY-Sub&VCB-Studio] Tokyo Ravens [24][Hi10p_1080p][x264_2flac].sc.ass",
@@ -1435,55 +1675,185 @@
     },
     {
       "path": "SPs/[MMZY-Sub&VCB-Studio] Tokyo Ravens [Menu01][Hi10p_1080p][x264].mkv",
-      "size": 32914748
+      "size": 32914748,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 61.061,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 0,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[MMZY-Sub&VCB-Studio] Tokyo Ravens [Menu02][Hi10p_1080p][x264].mkv",
-      "size": 45473336
+      "size": 45473336,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 61.061,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 0,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[MMZY-Sub&VCB-Studio] Tokyo Ravens [Menu03][Hi10p_1080p][x264].mkv",
-      "size": 25729762
+      "size": 25729762,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 61.061,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 0,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[MMZY-Sub&VCB-Studio] Tokyo Ravens [Menu04][Hi10p_1080p][x264].mkv",
-      "size": 44824533
+      "size": 44824533,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 61.061,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 0,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[MMZY-Sub&VCB-Studio] Tokyo Ravens [Menu05][Hi10p_1080p][x264].mkv",
-      "size": 27690310
+      "size": 27690310,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 61.061,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 0,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[MMZY-Sub&VCB-Studio] Tokyo Ravens [Menu06][Hi10p_1080p][x264].mkv",
-      "size": 25055022
+      "size": 25055022,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 54.054,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 0,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[MMZY-Sub&VCB-Studio] Tokyo Ravens [Menu07][Hi10p_1080p][x264].mkv",
-      "size": 27164006
+      "size": 27164006,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 61.061,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 0,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[MMZY-Sub&VCB-Studio] Tokyo Ravens [Menu08][Hi10p_1080p][x264].mkv",
-      "size": 33191765
+      "size": 33191765,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 61.064,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 0,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[MMZY-Sub&VCB-Studio] Tokyo Ravens [NCED01][Hi10p_1080p][x264_flac].mkv",
-      "size": 55314219
+      "size": 55314219,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[MMZY-Sub&VCB-Studio] Tokyo Ravens [NCED02][Hi10p_1080p][x264_flac].mkv",
-      "size": 163844275
+      "size": 163844275,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.051,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[MMZY-Sub&VCB-Studio] Tokyo Ravens [NCOP01][Hi10p_1080p][x264_flac].mkv",
-      "size": 126552472
+      "size": 126552472,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.051,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[MMZY-Sub&VCB-Studio] Tokyo Ravens [NCOP02][Hi10p_1080p][x264_flac].mkv",
-      "size": 126972876
+      "size": 126972876,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.051,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[MMZY-Sub&VCB-Studio] Tokyo Ravens [SP01][1080p][BDRemux][h264_flac].mkv",
-      "size": 1453868183
+      "size": 1453868183,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 336.67,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[MMZY-Sub&VCB-Studio] Tokyo Ravens [SP01][1080p][BDRemux][h264_flac].sc.ass",
@@ -1495,7 +1865,17 @@
     },
     {
       "path": "SPs/[MMZY-Sub&VCB-Studio] Tokyo Ravens [SP02][Hi10p_1080p][x264_flac].mkv",
-      "size": 264198019
+      "size": 264198019,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 302.302,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[MMZY-Sub&VCB-Studio] Tokyo Ravens [SP02][Hi10p_1080p][x264_flac].sc.ass",
@@ -1507,7 +1887,17 @@
     },
     {
       "path": "SPs/[MMZY-Sub&VCB-Studio] Tokyo Ravens [SP03][Hi10p_1080p][x264_flac].mkv",
-      "size": 445409175
+      "size": 445409175,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 322.322,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[MMZY-Sub&VCB-Studio] Tokyo Ravens [SP03][Hi10p_1080p][x264_flac].sc.ass",
@@ -1517,5 +1907,36 @@
       "path": "SPs/[MMZY-Sub&VCB-Studio] Tokyo Ravens [SP03][Hi10p_1080p][x264_flac].tc.ass",
       "size": 18778
     }
-  ]
+  ],
+  "local_container_fact_summary": {
+    "container_fact_count": 39,
+    "probe_status_counts": {
+      "available": 39
+    },
+    "duration_seconds_range": [
+      54.054,
+      1603.602
+    ],
+    "duration_seconds_samples": [
+      1423.425,
+      1422.425,
+      1422.425,
+      1423.425,
+      1422.425,
+      1422.425
+    ]
+  },
+  "local_container_fact_source": {
+    "kind": "real_local_media_duration_backfill",
+    "media_root": "H:\\Anime",
+    "probe_media": true,
+    "container_probe": "ffprobe",
+    "embedded_in": "files[].container_facts",
+    "matched_file_count": 379,
+    "matched_video_count": 39,
+    "missing_actual_video_count": 0,
+    "match_stats": {
+      "matched_by_root_path": 379
+    }
+  }
 }

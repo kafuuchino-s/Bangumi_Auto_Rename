@@ -3,51 +3,171 @@
   "files": [
     {
       "path": "[VCB-Studio] Danshi Kokosei no Nichijou [01][Ma10p_1080p][x265_flac].mkv",
-      "size": 539881550
+      "size": 539881550,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1456.038,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Danshi Kokosei no Nichijou [02][Ma10p_1080p][x265_flac].mkv",
-      "size": 409843454
+      "size": 409843454,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1455.997,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Danshi Kokosei no Nichijou [03][Ma10p_1080p][x265_flac].mkv",
-      "size": 478878799
+      "size": 478878799,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1455.871,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Danshi Kokosei no Nichijou [04][Ma10p_1080p][x265_flac].mkv",
-      "size": 523923974
+      "size": 523923974,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1455.959,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Danshi Kokosei no Nichijou [05][Ma10p_1080p][x265_flac].mkv",
-      "size": 558207646
+      "size": 558207646,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1456.08,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Danshi Kokosei no Nichijou [06][Ma10p_1080p][x265_flac].mkv",
-      "size": 585537064
+      "size": 585537064,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1455.955,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Danshi Kokosei no Nichijou [07][Ma10p_1080p][x265_flac].mkv",
-      "size": 770069009
+      "size": 770069009,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1456.08,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Danshi Kokosei no Nichijou [08][Ma10p_1080p][x265_flac].mkv",
-      "size": 507352961
+      "size": 507352961,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1456.04,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Danshi Kokosei no Nichijou [09][Ma10p_1080p][x265_flac].mkv",
-      "size": 853831618
+      "size": 853831618,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1456.08,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Danshi Kokosei no Nichijou [10][Ma10p_1080p][x265_flac].mkv",
-      "size": 535716782
+      "size": 535716782,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1459.004,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Danshi Kokosei no Nichijou [11][Ma10p_1080p][x265_flac].mkv",
-      "size": 670677536
+      "size": 670677536,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1455.955,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Danshi Kokosei no Nichijou [12v2][Ma10p_1080p][x265_flac].mkv",
-      "size": 461749211
+      "size": 461749211,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1441.111,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "CDs/[EAC][120222]「Shiny tale」／Mix Speaker's,Inc. (flac+cue+jpg)(アニメ盤)/BK/IMG_0001.jpg",
@@ -307,15 +427,45 @@
     },
     {
       "path": "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [CM01][Ma10p_1080p][x265_flac].mkv",
-      "size": 23040918
+      "size": 23040918,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 32.035,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [CM02][Ma10p_1080p][x265_flac].mkv",
-      "size": 23081754
+      "size": 23081754,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 32.035,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [Menu01_1v2][Ma10p_1080p][x265_flac].mkv",
-      "size": 16400396
+      "size": 16400396,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 110.069,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [Menu01_2].png",
@@ -323,7 +473,17 @@
     },
     {
       "path": "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [Menu02_1][Ma10p_1080p][x265_flac].mkv",
-      "size": 14348049
+      "size": 14348049,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 123.707,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [Menu02_2].png",
@@ -331,7 +491,17 @@
     },
     {
       "path": "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [Menu03_1][Ma10p_1080p][x265_flac].mkv",
-      "size": 13275479
+      "size": 13275479,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 126.168,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [Menu03_2].png",
@@ -339,7 +509,17 @@
     },
     {
       "path": "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [Menu04_1][Ma10p_1080p][x265_flac].mkv",
-      "size": 20570270
+      "size": 20570270,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 132.875,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [Menu04_2].png",
@@ -347,7 +527,17 @@
     },
     {
       "path": "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [Menu05_1][Ma10p_1080p][x265_flac].mkv",
-      "size": 16861211
+      "size": 16861211,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 145.08,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [Menu05_2].png",
@@ -355,7 +545,17 @@
     },
     {
       "path": "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [Menu06_1][Ma10p_1080p][x265_flac].mkv",
-      "size": 23912794
+      "size": 23912794,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 123.33,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [Menu06_2].png",
@@ -363,75 +563,286 @@
     },
     {
       "path": "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [NCED01][Ma10p_1080p][x265_flac].mkv",
-      "size": 39975111
+      "size": 39975111,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 84.92,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [NCED_Web Broadcasting_1][Ma10p_1080p][x265_flac].mkv",
-      "size": 5356193
+      "size": 5356193,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 54.055,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [NCED_Web Broadcasting_2][Ma10p_1080p][x265_flac].mkv",
-      "size": 52150420
+      "size": 52150420,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 379.555,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [NCOP01][Ma10p_1080p][x265_flac].mkv",
-      "size": 56151255
+      "size": 56151255,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 90.97,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [NCOP_Web Broadcasting][Ma10p_1080p][x265_flac].mkv",
-      "size": 25023479
+      "size": 25023479,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 22.025,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [PV01v2][Ma10p_1080p][x265_flac].mkv",
-      "size": 14035543
+      "size": 14035543,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 24.06,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [PV02][Ma10p_1080p][x265_flac].mkv",
-      "size": 7578540
+      "size": 7578540,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 16.02,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [PV03][Ma10p_1080p][x265_flac].mkv",
-      "size": 7494941
+      "size": 7494941,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 16.02,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [PV04][Ma10p_1080p][x265_flac].mkv",
-      "size": 7484927
+      "size": 7484927,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 16.02,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [PV05][Ma10p_1080p][x265_flac].mkv",
-      "size": 55929128
+      "size": 55929128,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 97.135,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [SP01][Ma10p_1080p][x265_flac].mkv",
-      "size": 25927256
+      "size": 25927256,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 170.045,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [SP02][Ma10p_1080p][x265_flac].mkv",
-      "size": 21717743
+      "size": 21717743,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 110.03,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [SP03][Ma10p_1080p][x265_flac].mkv",
-      "size": 25983366
+      "size": 25983366,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 140.015,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [SP04][Ma10p_1080p][x265_flac].mkv",
-      "size": 47067238
+      "size": 47067238,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 188.066,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [SP05][Ma10p_1080p][x265_flac].mkv",
-      "size": 32428519
+      "size": 32428519,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 147.025,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [SP06][Ma10p_1080p][x265_flac].mkv",
-      "size": 40964126
+      "size": 40964126,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 171.005,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [SP_EP08][Ma10p_1080p][x265_flac].mkv",
-      "size": 51358955
+      "size": 51358955,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 153.115,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Danshi Kokosei no Nichijou [SP_Web Broadcasting][Ma10p_1080p][x265_flac].mkv",
-      "size": 953151540
+      "size": 953151540,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 2445.75,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     }
-  ]
+  ],
+  "local_container_fact_summary": {
+    "container_fact_count": 38,
+    "probe_status_counts": {
+      "available": 38
+    },
+    "duration_seconds_range": [
+      16.02,
+      2445.75
+    ],
+    "duration_seconds_samples": [
+      1456.038,
+      1455.997,
+      1455.871,
+      1455.959,
+      1456.08,
+      1455.955
+    ]
+  },
+  "local_container_fact_source": {
+    "kind": "real_local_media_duration_backfill",
+    "media_root": "H:\\Anime",
+    "probe_media": true,
+    "container_probe": "ffprobe",
+    "embedded_in": "files[].container_facts",
+    "matched_file_count": 108,
+    "matched_video_count": 38,
+    "missing_actual_video_count": 0,
+    "match_stats": {
+      "matched_by_root_path": 108
+    }
+  }
 }

@@ -3,11 +3,31 @@
   "files": [
     {
       "path": "[ANK-Raws] ブラッドラッド (Creditless ED) (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 90081256
+      "size": 90081256,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.01,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] ブラッドラッド (Creditless OP) (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 120255731
+      "size": 120255731,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.93,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] ブラッドラッド 01 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).(Audio commentary).flac",
@@ -15,7 +35,17 @@
     },
     {
       "path": "[ANK-Raws] ブラッドラッド 01 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 1034720290
+      "size": 1034720290,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1477.035,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] ブラッドラッド 02 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).(Audio commentary).flac",
@@ -23,7 +53,17 @@
     },
     {
       "path": "[ANK-Raws] ブラッドラッド 02 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 955403545
+      "size": 955403545,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1476.018,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] ブラッドラッド 03 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).(Audio commentary).flac",
@@ -31,7 +71,17 @@
     },
     {
       "path": "[ANK-Raws] ブラッドラッド 03 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 948537191
+      "size": 948537191,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1477.12,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] ブラッドラッド 04 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).(Audio commentary).flac",
@@ -39,7 +89,17 @@
     },
     {
       "path": "[ANK-Raws] ブラッドラッド 04 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 943844095
+      "size": 943844095,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1476.101,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] ブラッドラッド 05 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).(Audio commentary).flac",
@@ -47,7 +107,17 @@
     },
     {
       "path": "[ANK-Raws] ブラッドラッド 05 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 828657708
+      "size": 828657708,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1477.12,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] ブラッドラッド 06 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).(Audio commentary).flac",
@@ -55,7 +125,17 @@
     },
     {
       "path": "[ANK-Raws] ブラッドラッド 06 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 1142788716
+      "size": 1142788716,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1476.101,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] ブラッドラッド 07 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).(Audio commentary).flac",
@@ -63,7 +143,17 @@
     },
     {
       "path": "[ANK-Raws] ブラッドラッド 07 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 768933512
+      "size": 768933512,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1477.035,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] ブラッドラッド 08 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).(Audio commentary).flac",
@@ -71,71 +161,241 @@
     },
     {
       "path": "[ANK-Raws] ブラッドラッド 08 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 1082794515
+      "size": 1082794515,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1476.018,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] ブラッドラッド 09 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 1068043663
+      "size": 1068043663,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1477.12,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] ブラッドラッド 10 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 923341285
+      "size": 923341285,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1473.056,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] ブラッドラッド 11 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 1193227322
+      "size": 1193227322,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1670.752,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] ブラッドラッド CM01 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 12831506
+      "size": 12831506,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 17.066,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] ブラッドラッド CM02 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 13033429
+      "size": 13033429,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 16.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] ブラッドラッド CM03 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 14142746
+      "size": 14142746,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 16.034,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] ブラッドラッド CM04 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 14290284
+      "size": 14290284,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 16.016,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] ブラッドラッド Info01 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 7768677
+      "size": 7768677,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 17.02,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] ブラッドラッド Info02 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 7799623
+      "size": 7799623,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 17.02,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] ブラッドラッド Info03 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 7863862
+      "size": 7863862,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 17.02,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] ブラッドラッド Info04 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 75383366
+      "size": 75383366,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 84.21,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] ブラッドラッド Info05 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 8421217
+      "size": 8421217,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 17.02,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] ブラッドラッド Info06 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 18492186
+      "size": 18492186,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 17.066,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] ブラッドラッド Info07 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 8810573
+      "size": 8810573,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 16.018,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] ブラッドラッド Info08 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 7934145
+      "size": 7934145,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 17.02,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] ブラッドラッド PV (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 25719407
+      "size": 25719407,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 39.04,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Menu (Vol.1)/00000_1_activated_start.png",
@@ -387,11 +647,31 @@
     },
     {
       "path": "Menu (Vol.1)/Menu 01(Vol.1).mkv",
-      "size": 22889390
+      "size": 22889390,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 43.045,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Menu (Vol.1)/Menu 02(Vol.1).mkv",
-      "size": 18901921
+      "size": 18901921,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 43.045,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Menu (Vol.2)/00000.png",
@@ -651,11 +931,31 @@
     },
     {
       "path": "Menu (Vol.2)/Menu 01(Vol.2).mkv",
-      "size": 21470729
+      "size": 21470729,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 43.045,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Menu (Vol.2)/Menu 02(Vol.2).mkv",
-      "size": 18041607
+      "size": 18041607,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 43.045,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Menu (Vol.3)/00000.png",
@@ -915,11 +1215,31 @@
     },
     {
       "path": "Menu (Vol.3)/Menu 01(Vol.3).mkv",
-      "size": 21442447
+      "size": 21442447,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 43.045,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Menu (Vol.3)/Menu 02(Vol.3).mkv",
-      "size": 18107527
+      "size": 18107527,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 43.045,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Menu (Vol.4)/00000.png",
@@ -1179,11 +1499,31 @@
     },
     {
       "path": "Menu (Vol.4)/Menu 01(Vol.4).mkv",
-      "size": 20994254
+      "size": 20994254,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 43.045,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Menu (Vol.4)/Menu 02(Vol.4).mkv",
-      "size": 17296737
+      "size": 17296737,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 43.045,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Menu (Vol.5)/00000_1_activated_start.png",
@@ -1411,11 +1751,31 @@
     },
     {
       "path": "Menu (Vol.5)/Menu 01(Vol.5).mkv",
-      "size": 20501898
+      "size": 20501898,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 43.045,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Menu (Vol.5)/Menu 02(Vol.5).mkv",
-      "size": 17536609
+      "size": 17536609,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 43.045,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Menu (Vol.EX)/00004_1_activated_start.png",
@@ -1499,7 +1859,17 @@
     },
     {
       "path": "Menu (Vol.EX)/Menu 01(Vol.EX).mkv",
-      "size": 5291256
+      "size": 5291256,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 43.085,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Scan (Vol.1)/IMG_001.bmp",
@@ -1729,5 +2099,36 @@
       "path": "特典CD (Vol.4)/02 Трек02.wav",
       "size": 120462428
     }
-  ]
+  ],
+  "local_container_fact_summary": {
+    "container_fact_count": 37,
+    "probe_status_counts": {
+      "available": 37
+    },
+    "duration_seconds_range": [
+      16.016,
+      1670.752
+    ],
+    "duration_seconds_samples": [
+      92.01,
+      91.93,
+      1477.035,
+      1476.018,
+      1477.12,
+      1476.101
+    ]
+  },
+  "local_container_fact_source": {
+    "kind": "real_local_media_duration_backfill",
+    "media_root": "H:\\Anime",
+    "probe_media": true,
+    "container_probe": "ffprobe",
+    "embedded_in": "files[].container_facts",
+    "matched_file_count": 432,
+    "matched_video_count": 37,
+    "missing_actual_video_count": 0,
+    "match_stats": {
+      "matched_by_root_path": 432
+    }
+  }
 }

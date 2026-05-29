@@ -3,151 +3,552 @@
   "files": [
     {
       "path": "[Snow-Raws] STAR DRIVER 輝きのタクト 第01話(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 1623166978
+      "size": 1623166978,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1455.189,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] STAR DRIVER 輝きのタクト 第02話(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 1670993011
+      "size": 1670993011,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1454.149,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] STAR DRIVER 輝きのタクト 第03話(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 1496281852
+      "size": 1496281852,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1462.127,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] STAR DRIVER 輝きのタクト 第04話(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 1367827593
+      "size": 1367827593,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1455.701,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] STAR DRIVER 輝きのタクト 第05話(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 1561806902
+      "size": 1561806902,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1454.203,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] STAR DRIVER 輝きのタクト 第06話(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 1443488225
+      "size": 1443488225,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1461.585,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] STAR DRIVER 輝きのタクト 第07話(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 1458352155
+      "size": 1458352155,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1455.701,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] STAR DRIVER 輝きのタクト 第08話(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 1598762052
+      "size": 1598762052,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1453.606,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] STAR DRIVER 輝きのタクト 第09話(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 1548440243
+      "size": 1548440243,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1462.127,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] STAR DRIVER 輝きのタクト 第10話(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 1631019922
+      "size": 1631019922,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1455.018,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] STAR DRIVER 輝きのタクト 第11話(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 1558887188
+      "size": 1558887188,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1454.145,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] STAR DRIVER 輝きのタクト 第12話(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 1462287361
+      "size": 1462287361,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1462.294,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] STAR DRIVER 輝きのタクト 第13話(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 1366894231
+      "size": 1366894231,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1456.128,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] STAR DRIVER 輝きのタクト 第14話(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 1395631710
+      "size": 1395631710,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1460.794,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] STAR DRIVER 輝きのタクト 第15話(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 1251853547
+      "size": 1251853547,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1455.53,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] STAR DRIVER 輝きのタクト 第16話(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 1632158078
+      "size": 1632158078,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1454.498,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] STAR DRIVER 輝きのタクト 第17話(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 1626025662
+      "size": 1626025662,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1462.463,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] STAR DRIVER 輝きのタクト 第18話(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 1488107629
+      "size": 1488107629,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1456.128,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] STAR DRIVER 輝きのタクト 第19話(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 1598704698
+      "size": 1598704698,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1453.745,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] STAR DRIVER 輝きのタクト 第20話(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 2521182202
+      "size": 2521182202,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1461.585,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] STAR DRIVER 輝きのタクト 第21話(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 1799823577
+      "size": 1799823577,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1455.189,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] STAR DRIVER 輝きのタクト 第22話(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 1224377905
+      "size": 1224377905,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1454.149,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] STAR DRIVER 輝きのタクト 第23話(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 1474601155
+      "size": 1474601155,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1462.127,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] STAR DRIVER 輝きのタクト 第24話(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 1391175358
+      "size": 1391175358,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1438.037,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] STAR DRIVER 輝きのタクト 第25話(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 1960345696
+      "size": 1960345696,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1464.88,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "映像特典/[Snow-Raws] STAR DRIVER 輝きのタクト ED(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 332863735
+      "size": 332863735,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 285.285,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "映像特典/[Snow-Raws] STAR DRIVER 輝きのタクト MENU01(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 61427356
+      "size": 61427356,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 80.08,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "映像特典/[Snow-Raws] STAR DRIVER 輝きのタクト MENU02(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 54264138
+      "size": 54264138,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 80.08,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "映像特典/[Snow-Raws] STAR DRIVER 輝きのタクト MENU03(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 49122862
+      "size": 49122862,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 80.08,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "映像特典/[Snow-Raws] STAR DRIVER 輝きのタクト MENU04(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 60905338
+      "size": 60905338,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 80.08,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "映像特典/[Snow-Raws] STAR DRIVER 輝きのタクト MENU05(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 39210814
+      "size": 39210814,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 80.08,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "映像特典/[Snow-Raws] STAR DRIVER 輝きのタクト MENU06(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 42038364
+      "size": 42038364,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 80.08,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "映像特典/[Snow-Raws] STAR DRIVER 輝きのタクト MENU07(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 45124953
+      "size": 45124953,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 80.08,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "映像特典/[Snow-Raws] STAR DRIVER 輝きのタクト MENU08(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 37962059
+      "size": 37962059,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 80.08,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "映像特典/[Snow-Raws] STAR DRIVER 輝きのタクト MENU09(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 47005186
+      "size": 47005186,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 80.08,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "映像特典/[Snow-Raws] STAR DRIVER 輝きのタクト OP(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 375903093
+      "size": 375903093,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 341.341,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "映像特典/[Snow-Raws] STAR DRIVER 輝きのタクト PV(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 110631148
+      "size": 110631148,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 88.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     }
-  ]
+  ],
+  "local_container_fact_summary": {
+    "container_fact_count": 37,
+    "probe_status_counts": {
+      "available": 37
+    },
+    "duration_seconds_range": [
+      80.08,
+      1464.88
+    ],
+    "duration_seconds_samples": [
+      1455.189,
+      1454.149,
+      1462.127,
+      1455.701,
+      1454.203,
+      1461.585
+    ]
+  },
+  "local_container_fact_source": {
+    "kind": "real_local_media_duration_backfill",
+    "media_root": "H:\\Anime",
+    "probe_media": true,
+    "container_probe": "ffprobe",
+    "embedded_in": "files[].container_facts",
+    "matched_file_count": 37,
+    "matched_video_count": 37,
+    "missing_actual_video_count": 0,
+    "match_stats": {
+      "matched_by_root_path": 37
+    }
+  }
 }

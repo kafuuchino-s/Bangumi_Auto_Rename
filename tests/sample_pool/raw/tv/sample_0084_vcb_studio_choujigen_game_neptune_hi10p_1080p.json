@@ -3,55 +3,185 @@
   "files": [
     {
       "path": "[VCB-Studio] Choujigen Game Neptune [01][Hi10p_1080p][x264_flac].mkv",
-      "size": 1188247383
+      "size": 1188247383,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1422.425,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Choujigen Game Neptune [02][Hi10p_1080p][x264_2flac].mkv",
-      "size": 1076040619
+      "size": 1076040619,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1422.425,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Choujigen Game Neptune [03][Hi10p_1080p][x264_flac].mkv",
-      "size": 1056376755
+      "size": 1056376755,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1422.425,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Choujigen Game Neptune [04][Hi10p_1080p][x264_2flac].mkv",
-      "size": 1121685232
+      "size": 1121685232,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1422.425,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Choujigen Game Neptune [05][Hi10p_1080p][x264_flac].mkv",
-      "size": 1185527362
+      "size": 1185527362,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1422.255,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Choujigen Game Neptune [06][Hi10p_1080p][x264_2flac].mkv",
-      "size": 955059162
+      "size": 955059162,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1422.59,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Choujigen Game Neptune [07][Hi10p_1080p][x264_2flac].mkv",
-      "size": 1126632897
+      "size": 1126632897,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1422.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Choujigen Game Neptune [08][Hi10p_1080p][x264_flac].mkv",
-      "size": 1032903081
+      "size": 1032903081,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1422.755,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Choujigen Game Neptune [09][Hi10p_1080p][x264_flac].mkv",
-      "size": 1032202064
+      "size": 1032202064,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1422.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Choujigen Game Neptune [10][Hi10p_1080p][x264_2flac].mkv",
-      "size": 1126971361
+      "size": 1126971361,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1422.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Choujigen Game Neptune [11][Hi10p_1080p][x264_flac].mkv",
-      "size": 945298235
+      "size": 945298235,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1422.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Choujigen Game Neptune [12][Hi10p_1080p][x264_2flac].mkv",
-      "size": 1349019858
+      "size": 1349019858,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1407.075,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Choujigen Game Neptune [13][Hi10p_1080p][x264_2flac].mkv",
-      "size": 996962881
+      "size": 996962881,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1422.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "CDs/[EAC][110824] Crest of Knights／彩音 (flac+cue+jpg)/B0053UKEGW.cue",
@@ -1327,99 +1457,370 @@
     },
     {
       "path": "SPs/[VCB-Studio] Choujigen Game Neptune [CM01][Hi10p_1080p][x264_flac].mkv",
-      "size": 18767921
+      "size": 18767921,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 16.02,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Choujigen Game Neptune [CM02][Hi10p_1080p][x264_flac].mkv",
-      "size": 18299769
+      "size": 18299769,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 16.02,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Choujigen Game Neptune [CM03][Hi10p_1080p][x264_flac].mkv",
-      "size": 45533693
+      "size": 45533693,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 31.035,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Choujigen Game Neptune [CM04][Hi10p_1080p][x264_flac].mkv",
-      "size": 23899534
+      "size": 23899534,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 16.02,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Choujigen Game Neptune [CM05][Hi10p_1080p][x264_flac].mkv",
-      "size": 49064949
+      "size": 49064949,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 31.031,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Choujigen Game Neptune [Menu01][Hi10p_1080p][x264_flac].mkv",
-      "size": 174497627
+      "size": 174497627,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 137.971,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Choujigen Game Neptune [Menu02][Hi10p_1080p][x264_flac].mkv",
-      "size": 167477882
+      "size": 167477882,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 137.971,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Choujigen Game Neptune [Menu03][Hi10p_1080p][x264_flac].mkv",
-      "size": 170780320
+      "size": 170780320,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 137.971,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Choujigen Game Neptune [Menu04][Hi10p_1080p][x264_flac].mkv",
-      "size": 178629405
+      "size": 178629405,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 137.971,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Choujigen Game Neptune [Menu05][Hi10p_1080p][x264_flac].mkv",
-      "size": 174827611
+      "size": 174827611,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 137.971,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Choujigen Game Neptune [Menu06][Hi10p_1080p][x264_flac].mkv",
-      "size": 180892749
+      "size": 180892749,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 137.971,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Choujigen Game Neptune [Menu07][Hi10p_1080p][x264_flac].mkv",
-      "size": 149958578
+      "size": 149958578,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 137.971,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Choujigen Game Neptune [NCED01][Hi10p_1080p][x264_flac].mkv",
-      "size": 203951706
+      "size": 203951706,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 267.726,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Choujigen Game Neptune [NCED02][Hi10p_1080p][x264_flac].mkv",
-      "size": 109650807
+      "size": 109650807,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 114.944,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Choujigen Game Neptune [NCED03][Hi10p_1080p][x264_flac].mkv",
-      "size": 103841223
+      "size": 103841223,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.008,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Choujigen Game Neptune [NCED04][Hi10p_1080p][x264_flac].mkv",
-      "size": 122988839
+      "size": 122988839,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 197.825,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Choujigen Game Neptune [NCED05][Hi10p_1080p][x264_flac].mkv",
-      "size": 104138173
+      "size": 104138173,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 115.575,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Choujigen Game Neptune [NCED06][Hi10p_1080p][x264_flac].mkv",
-      "size": 57578550
+      "size": 57578550,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 101.727,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Choujigen Game Neptune [NCOP01][Hi10p_1080p][x264_flac].mkv",
-      "size": 230552331
+      "size": 230552331,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 90.966,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Choujigen Game Neptune [NCOP02][Hi10p_1080p][x264_flac].mkv",
-      "size": 102017278
+      "size": 102017278,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.091,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Choujigen Game Neptune [NCOP03][Hi10p_1080p][x264_flac].mkv",
-      "size": 102037889
+      "size": 102037889,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 90.966,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Choujigen Game Neptune [PV01][Hi10p_1080p][x264_flac].mkv",
-      "size": 129325166
+      "size": 129325166,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 96.81,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Choujigen Game Neptune [PV02][Hi10p_1080p][x264_flac].mkv",
-      "size": 237613427
+      "size": 237613427,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 192.78,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Choujigen Game Neptune [SP][Hi10p_1080p][x264_flac].mkv",
-      "size": 279813219
+      "size": 279813219,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 195.279,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     }
-  ]
+  ],
+  "local_container_fact_summary": {
+    "container_fact_count": 37,
+    "probe_status_counts": {
+      "available": 37
+    },
+    "duration_seconds_range": [
+      16.02,
+      1422.755
+    ],
+    "duration_seconds_samples": [
+      1422.425,
+      1422.425,
+      1422.425,
+      1422.425,
+      1422.255,
+      1422.59
+    ]
+  },
+  "local_container_fact_source": {
+    "kind": "real_local_media_duration_backfill",
+    "media_root": "H:\\Anime",
+    "probe_media": true,
+    "container_probe": "ffprobe",
+    "embedded_in": "files[].container_facts",
+    "matched_file_count": 355,
+    "matched_video_count": 37,
+    "missing_actual_video_count": 0,
+    "match_stats": {
+      "matched_by_root_path": 355
+    }
+  }
 }

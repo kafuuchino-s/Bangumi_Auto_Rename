@@ -19,7 +19,7 @@ def _collect_sample(values: list[str], *, sample_limit: int = 4) -> list[str]:
 def build_local_span_cards(dossier: CaseDossier, *, min_count: int = 24) -> list[LocalSpanCard]:
     """Compatibility shell only.
 
-    Local working spans are produced by LocalStructureAgent. This helper no
+    Local working spans are produced by the Pi Case Agent. This helper no
     longer interprets filename numbers or partitions package semantics.
     """
     main_refs = list(dict.fromkeys(list(getattr(dossier.contract, 'main_file_refs', []) or [])))
@@ -44,7 +44,7 @@ def build_local_span_cards(dossier: CaseDossier, *, min_count: int = 24) -> list
             file_ref_range=[main_refs[0], main_refs[-1]],
             file_ref_samples=_collect_sample(main_refs),
             ordering_basis='path_order',
-            confidence_facts=['compatibility raw local coverage shell; LocalStructureAgent should refine'],
+            confidence_facts=['compatibility raw local coverage shell; Pi Case Agent should refine'],
         ),
     ]
 

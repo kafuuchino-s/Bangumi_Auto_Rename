@@ -7,7 +7,17 @@
     },
     {
       "path": "[SOFCJ-Raws] Death Note - 01 (BDRip 1920x1080 x264 VFR 10bit FLAC).mkv",
-      "size": 1205973201
+      "size": 1205973201,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1366.035,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[SOFCJ-Raws] Death Note - 02 (BDRip 1920x1080 x264 VFR 10bit FLAC).default.chs.ass",
@@ -15,7 +25,17 @@
     },
     {
       "path": "[SOFCJ-Raws] Death Note - 02 (BDRip 1920x1080 x264 VFR 10bit FLAC).mkv",
-      "size": 1253712612
+      "size": 1253712612,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1366.035,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[SOFCJ-Raws] Death Note - 03 (BDRip 1920x1080 x264 VFR 10bit FLAC).default.chs.ass",
@@ -23,7 +43,17 @@
     },
     {
       "path": "[SOFCJ-Raws] Death Note - 03 (BDRip 1920x1080 x264 VFR 10bit FLAC).mkv",
-      "size": 1135109116
+      "size": 1135109116,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1366.035,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[SOFCJ-Raws] Death Note - 04 (BDRip 1920x1080 x264 VFR 10bit FLAC).default.chs.ass",
@@ -31,7 +61,17 @@
     },
     {
       "path": "[SOFCJ-Raws] Death Note - 04 (BDRip 1920x1080 x264 VFR 10bit FLAC).mkv",
-      "size": 1133116257
+      "size": 1133116257,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1366.035,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[SOFCJ-Raws] Death Note - 05 (BDRip 1920x1080 x264 VFR 10bit FLAC).default.chs.ass",
@@ -39,7 +79,17 @@
     },
     {
       "path": "[SOFCJ-Raws] Death Note - 05 (BDRip 1920x1080 x264 VFR 10bit FLAC).mkv",
-      "size": 1072984594
+      "size": 1072984594,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1366.035,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[SOFCJ-Raws] Death Note - 06 (BDRip 1920x1080 x264 VFR 10bit FLAC).default.chs.ass",
@@ -47,7 +97,17 @@
     },
     {
       "path": "[SOFCJ-Raws] Death Note - 06 (BDRip 1920x1080 x264 VFR 10bit FLAC).mkv",
-      "size": 1200033620
+      "size": 1200033620,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1366.03,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[SOFCJ-Raws] Death Note - 07 (BDRip 1920x1080 x264 VFR 10bit FLAC).default.chs.ass",
@@ -55,7 +115,17 @@
     },
     {
       "path": "[SOFCJ-Raws] Death Note - 07 (BDRip 1920x1080 x264 VFR 10bit FLAC).mkv",
-      "size": 1204315055
+      "size": 1204315055,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1366.035,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[SOFCJ-Raws] Death Note - 08 (BDRip 1920x1080 x264 VFR 10bit FLAC).default.chs.ass",
@@ -63,7 +133,17 @@
     },
     {
       "path": "[SOFCJ-Raws] Death Note - 08 (BDRip 1920x1080 x264 VFR 10bit FLAC).mkv",
-      "size": 1277914907
+      "size": 1277914907,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1366.035,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[SOFCJ-Raws] Death Note - 09 (BDRip 1920x1080 x264 VFR 10bit FLAC).default.chs.ass",
@@ -71,7 +151,17 @@
     },
     {
       "path": "[SOFCJ-Raws] Death Note - 09 (BDRip 1920x1080 x264 VFR 10bit FLAC).mkv",
-      "size": 1213311527
+      "size": 1213311527,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1366.035,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[SOFCJ-Raws] Death Note - 10 (BDRip 1920x1080 x264 VFR 10bit FLAC).default.chs.ass",
@@ -79,7 +169,17 @@
     },
     {
       "path": "[SOFCJ-Raws] Death Note - 10 (BDRip 1920x1080 x264 VFR 10bit FLAC).mkv",
-      "size": 1203590868
+      "size": 1203590868,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1366.035,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[SOFCJ-Raws] Death Note - 11 (BDRip 1920x1080 x264 VFR 10bit FLAC).default.chs.ass",
@@ -87,7 +187,17 @@
     },
     {
       "path": "[SOFCJ-Raws] Death Note - 11 (BDRip 1920x1080 x264 VFR 10bit FLAC).mkv",
-      "size": 1229242313
+      "size": 1229242313,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1366.035,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[SOFCJ-Raws] Death Note - 12 (BDRip 1920x1080 x264 VFR 10bit FLAC).default.chs.ass",
@@ -95,7 +205,17 @@
     },
     {
       "path": "[SOFCJ-Raws] Death Note - 12 (BDRip 1920x1080 x264 VFR 10bit FLAC).mkv",
-      "size": 1184295004
+      "size": 1184295004,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1366.03,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[SOFCJ-Raws] Death Note - 13 (BDRip 1920x1080 x264 VFR 10bit FLAC).default.chs.ass",
@@ -103,7 +223,17 @@
     },
     {
       "path": "[SOFCJ-Raws] Death Note - 13 (BDRip 1920x1080 x264 VFR 10bit FLAC).mkv",
-      "size": 1187374078
+      "size": 1187374078,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1366.035,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[SOFCJ-Raws] Death Note - 14 (BDRip 1920x1080 x264 VFR 10bit FLAC).default.chs.ass",
@@ -111,7 +241,17 @@
     },
     {
       "path": "[SOFCJ-Raws] Death Note - 14 (BDRip 1920x1080 x264 VFR 10bit FLAC).mkv",
-      "size": 1062271129
+      "size": 1062271129,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1366.035,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[SOFCJ-Raws] Death Note - 15 (BDRip 1920x1080 x264 VFR 10bit FLAC).default.chs.ass",
@@ -119,7 +259,17 @@
     },
     {
       "path": "[SOFCJ-Raws] Death Note - 15 (BDRip 1920x1080 x264 VFR 10bit FLAC).mkv",
-      "size": 1220405512
+      "size": 1220405512,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1366.035,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[SOFCJ-Raws] Death Note - 16 (BDRip 1920x1080 x264 VFR 10bit FLAC).default.chs.ass",
@@ -127,7 +277,17 @@
     },
     {
       "path": "[SOFCJ-Raws] Death Note - 16 (BDRip 1920x1080 x264 VFR 10bit FLAC).mkv",
-      "size": 1148196309
+      "size": 1148196309,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1366.035,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[SOFCJ-Raws] Death Note - 17 (BDRip 1920x1080 x264 VFR 10bit FLAC).default.chs.ass",
@@ -135,7 +295,17 @@
     },
     {
       "path": "[SOFCJ-Raws] Death Note - 17 (BDRip 1920x1080 x264 VFR 10bit FLAC).mkv",
-      "size": 1690795971
+      "size": 1690795971,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1366.035,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[SOFCJ-Raws] Death Note - 18 (BDRip 1920x1080 x264 VFR 10bit FLAC).default.chs.ass",
@@ -143,7 +313,17 @@
     },
     {
       "path": "[SOFCJ-Raws] Death Note - 18 (BDRip 1920x1080 x264 VFR 10bit FLAC).mkv",
-      "size": 1112245112
+      "size": 1112245112,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1366.03,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[SOFCJ-Raws] Death Note - 19 (BDRip 1920x1080 x264 VFR 10bit FLAC).default.chs.ass",
@@ -151,7 +331,17 @@
     },
     {
       "path": "[SOFCJ-Raws] Death Note - 19 (BDRip 1920x1080 x264 VFR 10bit FLAC).mkv",
-      "size": 1189867089
+      "size": 1189867089,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1366.035,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[SOFCJ-Raws] Death Note - 20 (BDRip 1920x1080 x264 VFR 10bit FLAC).default.chs.ass",
@@ -159,7 +349,17 @@
     },
     {
       "path": "[SOFCJ-Raws] Death Note - 20 (BDRip 1920x1080 x264 VFR 10bit FLAC).mkv",
-      "size": 1824957777
+      "size": 1824957777,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1366.035,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[SOFCJ-Raws] Death Note - 21 (BDRip 1920x1080 x264 VFR 10bit FLAC).default.chs.ass",
@@ -167,7 +367,17 @@
     },
     {
       "path": "[SOFCJ-Raws] Death Note - 21 (BDRip 1920x1080 x264 VFR 10bit FLAC).mkv",
-      "size": 1085933028
+      "size": 1085933028,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1366.035,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[SOFCJ-Raws] Death Note - 22 (BDRip 1920x1080 x264 VFR 10bit FLAC).default.chs.ass",
@@ -175,7 +385,17 @@
     },
     {
       "path": "[SOFCJ-Raws] Death Note - 22 (BDRip 1920x1080 x264 VFR 10bit FLAC).mkv",
-      "size": 1153724556
+      "size": 1153724556,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1366.035,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[SOFCJ-Raws] Death Note - 23 (BDRip 1920x1080 x264 VFR 10bit FLAC).default.chs.ass",
@@ -183,7 +403,17 @@
     },
     {
       "path": "[SOFCJ-Raws] Death Note - 23 (BDRip 1920x1080 x264 VFR 10bit FLAC).mkv",
-      "size": 1259721813
+      "size": 1259721813,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1366.035,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[SOFCJ-Raws] Death Note - 24 (BDRip 1920x1080 x264 VFR 10bit FLAC).default.chs.ass",
@@ -191,7 +421,17 @@
     },
     {
       "path": "[SOFCJ-Raws] Death Note - 24 (BDRip 1920x1080 x264 VFR 10bit FLAC).mkv",
-      "size": 1181299439
+      "size": 1181299439,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1366.03,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[SOFCJ-Raws] Death Note - 25 (BDRip 1920x1080 x264 VFR 10bit FLAC).default.chs.ass",
@@ -199,7 +439,17 @@
     },
     {
       "path": "[SOFCJ-Raws] Death Note - 25 (BDRip 1920x1080 x264 VFR 10bit FLAC).mkv",
-      "size": 1294603928
+      "size": 1294603928,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1366.035,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[SOFCJ-Raws] Death Note - 26 (BDRip 1920x1080 x264 VFR 10bit FLAC).default.chs.ass",
@@ -207,7 +457,17 @@
     },
     {
       "path": "[SOFCJ-Raws] Death Note - 26 (BDRip 1920x1080 x264 VFR 10bit FLAC).mkv",
-      "size": 1290980510
+      "size": 1290980510,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1366.035,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[SOFCJ-Raws] Death Note - 27 (BDRip 1920x1080 x264 VFR 10bit FLAC).default.chs.ass",
@@ -215,7 +475,17 @@
     },
     {
       "path": "[SOFCJ-Raws] Death Note - 27 (BDRip 1920x1080 x264 VFR 10bit FLAC).mkv",
-      "size": 1111877655
+      "size": 1111877655,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1366.035,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[SOFCJ-Raws] Death Note - 28 (BDRip 1920x1080 x264 VFR 10bit FLAC).default.chs.ass",
@@ -223,7 +493,17 @@
     },
     {
       "path": "[SOFCJ-Raws] Death Note - 28 (BDRip 1920x1080 x264 VFR 10bit FLAC).mkv",
-      "size": 1245997334
+      "size": 1245997334,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1366.035,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[SOFCJ-Raws] Death Note - 29 (BDRip 1920x1080 x264 VFR 10bit FLAC).default.chs.ass",
@@ -231,7 +511,17 @@
     },
     {
       "path": "[SOFCJ-Raws] Death Note - 29 (BDRip 1920x1080 x264 VFR 10bit FLAC).mkv",
-      "size": 1208266270
+      "size": 1208266270,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1366.035,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[SOFCJ-Raws] Death Note - 30 (BDRip 1920x1080 x264 VFR 10bit FLAC).default.chs.ass",
@@ -239,7 +529,17 @@
     },
     {
       "path": "[SOFCJ-Raws] Death Note - 30 (BDRip 1920x1080 x264 VFR 10bit FLAC).mkv",
-      "size": 1187095911
+      "size": 1187095911,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1366.03,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[SOFCJ-Raws] Death Note - 31 (BDRip 1920x1080 x264 VFR 10bit FLAC).default.chs.ass",
@@ -247,7 +547,17 @@
     },
     {
       "path": "[SOFCJ-Raws] Death Note - 31 (BDRip 1920x1080 x264 VFR 10bit FLAC).mkv",
-      "size": 1317257493
+      "size": 1317257493,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1366.035,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[SOFCJ-Raws] Death Note - 32 (BDRip 1920x1080 x264 VFR 10bit FLAC).default.chs.ass",
@@ -255,7 +565,17 @@
     },
     {
       "path": "[SOFCJ-Raws] Death Note - 32 (BDRip 1920x1080 x264 VFR 10bit FLAC).mkv",
-      "size": 1314133159
+      "size": 1314133159,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1366.035,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[SOFCJ-Raws] Death Note - 33 (BDRip 1920x1080 x264 VFR 10bit FLAC).default.chs.ass",
@@ -263,7 +583,17 @@
     },
     {
       "path": "[SOFCJ-Raws] Death Note - 33 (BDRip 1920x1080 x264 VFR 10bit FLAC).mkv",
-      "size": 1267006683
+      "size": 1267006683,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1366.035,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[SOFCJ-Raws] Death Note - 34 (BDRip 1920x1080 x264 VFR 10bit FLAC).default.chs.ass",
@@ -271,7 +601,17 @@
     },
     {
       "path": "[SOFCJ-Raws] Death Note - 34 (BDRip 1920x1080 x264 VFR 10bit FLAC).mkv",
-      "size": 1149260385
+      "size": 1149260385,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1366.03,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[SOFCJ-Raws] Death Note - 35 (BDRip 1920x1080 x264 VFR 10bit FLAC).default.chs.ass",
@@ -279,7 +619,17 @@
     },
     {
       "path": "[SOFCJ-Raws] Death Note - 35 (BDRip 1920x1080 x264 VFR 10bit FLAC).mkv",
-      "size": 1181823233
+      "size": 1181823233,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1366.035,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[SOFCJ-Raws] Death Note - 36 (BDRip 1920x1080 x264 VFR 10bit FLAC).default.chs.ass",
@@ -287,7 +637,17 @@
     },
     {
       "path": "[SOFCJ-Raws] Death Note - 36 (BDRip 1920x1080 x264 VFR 10bit FLAC).mkv",
-      "size": 1401336634
+      "size": 1401336634,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1366.035,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[SOFCJ-Raws] Death Note - 37 (BDRip 1920x1080 x264 VFR 10bit FLAC).default.chs.ass",
@@ -295,63 +655,213 @@
     },
     {
       "path": "[SOFCJ-Raws] Death Note - 37 (BDRip 1920x1080 x264 VFR 10bit FLAC).mkv",
-      "size": 1239074452
+      "size": 1239074452,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1352.015,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Creditless OP-ED/[SOFCJ-Raws] Death Note ED - 01 [EP.01-19] (BDRip 1920x1080 x264 10bit FLAC).mkv",
-      "size": 132463078
+      "size": 132463078,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 71.071,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Creditless OP-ED/[SOFCJ-Raws] Death Note ED - 02 [EP.20-36] (BDRip 1920x1080 x264 10bit FLAC).mkv",
-      "size": 94080944
+      "size": 94080944,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 71.071,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Creditless OP-ED/[SOFCJ-Raws] Death Note ED - 03 [EP.37] (BDRip 1920x1080 x264 10bit FLAC).mkv",
-      "size": 120024630
+      "size": 120024630,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 158.16,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Creditless OP-ED/[SOFCJ-Raws] Death Note OP - 01 [EP.01-07] (BDRip 1920x1080 x264 10bit FLAC).mkv",
-      "size": 138392786
+      "size": 138392786,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 81.081,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Creditless OP-ED/[SOFCJ-Raws] Death Note OP - 01 [EP.08-11] (BDRip 1920x1080 x264 10bit FLAC).mkv",
-      "size": 139053422
+      "size": 139053422,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 81.081,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Creditless OP-ED/[SOFCJ-Raws] Death Note OP - 01 [EP.12-19] (BDRip 1920x1080 x264 10bit FLAC).mkv",
-      "size": 139749021
+      "size": 139749021,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 81.081,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Creditless OP-ED/[SOFCJ-Raws] Death Note OP - 02 [EP.20-37] (BDRip 1920x1080 x264 10bit FLAC).mkv",
-      "size": 163685701
+      "size": 163685701,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 81.081,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Menu/[SOFCJ-Raws] Death Note Menu - Vol.01 (BDRip 1920x1080 x264 10bit FLAC).mkv",
-      "size": 20945952
+      "size": 20945952,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 9.51,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Menu/[SOFCJ-Raws] Death Note Menu - Vol.02 (BDRip 1920x1080 x264 10bit FLAC).mkv",
-      "size": 20981005
+      "size": 20981005,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 9.51,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Menu/[SOFCJ-Raws] Death Note Menu - Vol.03 (BDRip 1920x1080 x264 10bit FLAC).mkv",
-      "size": 20943012
+      "size": 20943012,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 9.51,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Menu/[SOFCJ-Raws] Death Note Menu - Vol.04 (BDRip 1920x1080 x264 10bit FLAC).mkv",
-      "size": 20921168
+      "size": 20921168,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 9.51,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Menu/[SOFCJ-Raws] Death Note Menu - Vol.05 (BDRip 1920x1080 x264 10bit FLAC).mkv",
-      "size": 18711688
+      "size": 18711688,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 9.51,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Menu/[SOFCJ-Raws] Death Note Menu - Vol.06 (BDRip 1920x1080 x264 10bit FLAC).mkv",
-      "size": 19231339
+      "size": 19231339,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 9.51,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Menu/[SOFCJ-Raws] Death Note Menu - Vol.07 (BDRip 1920x1080 x264 10bit FLAC).mkv",
-      "size": 19238303
+      "size": 19238303,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 9.51,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Menu/Menu PNG/Vol.1.png",
@@ -381,5 +891,36 @@
       "path": "Menu/Menu PNG/Vol.7.png",
       "size": 50779
     }
-  ]
+  ],
+  "local_container_fact_summary": {
+    "container_fact_count": 51,
+    "probe_status_counts": {
+      "available": 51
+    },
+    "duration_seconds_range": [
+      9.51,
+      1366.035
+    ],
+    "duration_seconds_samples": [
+      1366.035,
+      1366.035,
+      1366.035,
+      1366.035,
+      1366.035,
+      1366.03
+    ]
+  },
+  "local_container_fact_source": {
+    "kind": "real_local_media_duration_backfill",
+    "media_root": "H:\\Anime",
+    "probe_media": true,
+    "container_probe": "ffprobe",
+    "embedded_in": "files[].container_facts",
+    "matched_file_count": 95,
+    "matched_video_count": 51,
+    "missing_actual_video_count": 0,
+    "match_stats": {
+      "matched_by_root_path": 95
+    }
+  }
 }

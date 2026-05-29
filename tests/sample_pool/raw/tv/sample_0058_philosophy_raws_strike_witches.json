@@ -3,51 +3,171 @@
   "files": [
     {
       "path": "[philosophy-raws][Strike Witches][01][BDRIP][Hi10P FLAC][1920X1080].mkv",
-      "size": 1350341223
+      "size": 1350341223,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.993,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 3,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[philosophy-raws][Strike Witches][02][BDRIP][Hi10P FLAC][1920X1080].mkv",
-      "size": 1515894122
+      "size": 1515894122,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.951,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 3,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[philosophy-raws][Strike Witches][03][BDRIP][Hi10P FLAC][1920X1080].mkv",
-      "size": 1211956576
+      "size": 1211956576,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.951,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 3,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[philosophy-raws][Strike Witches][04][BDRIP][Hi10P FLAC][1920X1080].mkv",
-      "size": 1365706395
+      "size": 1365706395,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.951,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 3,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[philosophy-raws][Strike Witches][05][BDRIP][Hi10P FLAC][1920X1080].mkv",
-      "size": 1333308751
+      "size": 1333308751,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.951,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 3,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[philosophy-raws][Strike Witches][06][BDRIP][Hi10P FLAC][1920X1080].mkv",
-      "size": 1238266924
+      "size": 1238266924,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.993,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 3,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[philosophy-raws][Strike Witches][07][BDRIP][Hi10P FLAC][1920X1080].mkv",
-      "size": 1225800511
+      "size": 1225800511,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1452.034,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 3,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[philosophy-raws][Strike Witches][08][BDRIP][Hi10P FLAC][1920X1080].mkv",
-      "size": 1345761513
+      "size": 1345761513,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.993,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 3,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[philosophy-raws][Strike Witches][09][BDRIP][Hi10P FLAC][1920X1080].mkv",
-      "size": 1265317617
+      "size": 1265317617,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.993,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 3,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[philosophy-raws][Strike Witches][10][BDRIP][Hi10P FLAC][1920X1080].mkv",
-      "size": 1238638554
+      "size": 1238638554,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.993,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 3,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[philosophy-raws][Strike Witches][11][BDRIP][Hi10P FLAC][1920X1080].mkv",
-      "size": 1280589314
+      "size": 1280589314,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.993,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 3,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[philosophy-raws][Strike Witches][12][BDRIP][Hi10P FLAC][1920X1080].mkv",
-      "size": 1643290770
+      "size": 1643290770,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.993,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 3,
+        "subtitle_stream_count": 3,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[philosophy-raws][Strike Witches][OVA][DVDRIP][Hi10P FLAC][720x480].default.chs.ass",
@@ -55,195 +175,675 @@
     },
     {
       "path": "[philosophy-raws][Strike Witches][OVA][DVDRIP][Hi10P FLAC][720x480].mkv",
-      "size": 118032225
+      "size": 118032225,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 519.853,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "720x480",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Bonus/[philosophy-raws][Strike Witches][CM01][BDRIP][Hi10P FLAC][1434x930].mkv",
-      "size": 8600546
+      "size": 8600546,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 16.042,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1434x930",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Bonus/[philosophy-raws][Strike Witches][CM02][BDRIP][Hi10P FLAC][1434x930].mkv",
-      "size": 6438034
+      "size": 6438034,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 15.018,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1434x930",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Bonus/[philosophy-raws][Strike Witches][CM03][BDRIP][Hi10P FLAC][1434x930].mkv",
-      "size": 6406442
+      "size": 6406442,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 15.018,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1434x930",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Bonus/[philosophy-raws][Strike Witches][CM04][BDRIP][Hi10P FLAC][1434x930].mkv",
-      "size": 4963124
+      "size": 4963124,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 15.018,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1434x930",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Bonus/[philosophy-raws][Strike Witches][CM05][BDRIP][Hi10P FLAC][1434x930].mkv",
-      "size": 5224568
+      "size": 5224568,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 15.018,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1434x930",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Bonus/[philosophy-raws][Strike Witches][CM06][BDRIP][Hi10P FLAC][1434x930].mkv",
-      "size": 10771414
+      "size": 10771414,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 15.018,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1434x930",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Bonus/[philosophy-raws][Strike Witches][CM07][BDRIP][Hi10P FLAC][1434x930].mkv",
-      "size": 15590188
+      "size": 15590188,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 30.037,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1434x930",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Bonus/[philosophy-raws][Strike Witches][CM08][BDRIP][Hi10P FLAC][1434x930].mkv",
-      "size": 11272462
+      "size": 11272462,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 30.037,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1434x930",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Bonus/[philosophy-raws][Strike Witches][CM09][BDRIP][Hi10P FLAC][1434x930].mkv",
-      "size": 16244854
+      "size": 16244854,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 60.06,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1434x930",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Bonus/[philosophy-raws][Strike Witches][CM10][BDRIP][Hi10P FLAC][1434x930].mkv",
-      "size": 10311252
+      "size": 10311252,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 30.037,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1434x930",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Bonus/[philosophy-raws][Strike Witches][CM11][BDRIP][Hi10P FLAC][1434x930].mkv",
-      "size": 10805997
+      "size": 10805997,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 31.031,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1434x930",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Bonus/[philosophy-raws][Strike Witches][Live SP][BDRIP][Hi10P FLAC][1920X1080].mkv",
-      "size": 1317528251
+      "size": 1317528251,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 785.785,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Bonus/[philosophy-raws][Strike Witches][Live][BDRIP][Hi10P FLAC][1920X1080].mkv",
-      "size": 10276302989
+      "size": 10276302989,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 8921.915,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Bonus/[philosophy-raws][Strike Witches][MENU][BDRIP][Hi10P FLAC][1920X1080].mkv",
-      "size": 129120213
+      "size": 129120213,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 70.592,
+        "container_format": "matroska,webm",
+        "video_stream_count": 2,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Bonus/[philosophy-raws][Strike Witches][NCED01][BDRIP][Hi10P FLAC][1920X1080].mkv",
-      "size": 396352380
+      "size": 396352380,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.969,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 11,
+        "subtitle_stream_count": 1,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Bonus/[philosophy-raws][Strike Witches][NCED02][BDRIP][Hi10P FLAC][1920X1080].mkv",
-      "size": 51700538
+      "size": 51700538,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 97.024,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Bonus/[philosophy-raws][Strike Witches][NCED03][BDRIP][Hi10P FLAC][1920X1080].mkv",
-      "size": 51766748
+      "size": 51766748,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 95.971,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Bonus/[philosophy-raws][Strike Witches][NCED04][BDRIP][Hi10P FLAC][1920X1080].mkv",
-      "size": 52145689
+      "size": 52145689,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 96.0,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Bonus/[philosophy-raws][Strike Witches][NCED05][BDRIP][Hi10P FLAC][1920X1080].mkv",
-      "size": 52162903
+      "size": 52162903,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 95.971,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Bonus/[philosophy-raws][Strike Witches][NCED06][BDRIP][Hi10P FLAC][1920X1080].mkv",
-      "size": 52181834
+      "size": 52181834,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 96.0,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Bonus/[philosophy-raws][Strike Witches][NCED07][BDRIP][Hi10P FLAC][1920X1080].mkv",
-      "size": 52066343
+      "size": 52066343,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 96.0,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Bonus/[philosophy-raws][Strike Witches][NCED08][BDRIP][Hi10P FLAC][1920X1080].mkv",
-      "size": 52362491
+      "size": 52362491,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 95.971,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Bonus/[philosophy-raws][Strike Witches][NCED09][BDRIP][Hi10P FLAC][1920X1080].mkv",
-      "size": 52126502
+      "size": 52126502,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 96.0,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Bonus/[philosophy-raws][Strike Witches][NCED10][BDRIP][Hi10P FLAC][1920X1080].mkv",
-      "size": 52361459
+      "size": 52361459,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 95.971,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Bonus/[philosophy-raws][Strike Witches][NCED11][BDRIP][Hi10P FLAC][1920X1080].mkv",
-      "size": 52117907
+      "size": 52117907,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 96.0,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Bonus/[philosophy-raws][Strike Witches][NCED12][BDRIP][Hi10P FLAC][1920X1080].mkv",
-      "size": 145869233
+      "size": 145869233,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 346.513,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Bonus/[philosophy-raws][Strike Witches][NCOP][BDRIP][Hi10P FLAC][1920X1080].mkv",
-      "size": 123086598
+      "size": 123086598,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.926,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 1,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Bonus/[philosophy-raws][Strike Witches][PV01][BDRIP][Hi10P FLAC][1432x936].mkv",
-      "size": 8999316
+      "size": 8999316,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 16.042,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1432x936",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Bonus/[philosophy-raws][Strike Witches][PV02][BDRIP][Hi10P FLAC][1432x936].mkv",
-      "size": 8961691
+      "size": 8961691,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 15.018,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1432x936",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Bonus/[philosophy-raws][Strike Witches][PV03][BDRIP][Hi10P FLAC][1432x936].mkv",
-      "size": 6807300
+      "size": 6807300,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 15.018,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1432x936",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Bonus/[philosophy-raws][Strike Witches][PV04][BDRIP][Hi10P FLAC][1432x936].mkv",
-      "size": 9329723
+      "size": 9329723,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 15.018,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1432x936",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Bonus/[philosophy-raws][Strike Witches][PV05][BDRIP][Hi10P FLAC][1432x936].mkv",
-      "size": 9212591
+      "size": 9212591,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 15.018,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1432x936",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Bonus/[philosophy-raws][Strike Witches][PV06][BDRIP][Hi10P FLAC][1432x936].mkv",
-      "size": 6816818
+      "size": 6816818,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 15.018,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1432x936",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Bonus/[philosophy-raws][Strike Witches][PV07][BDRIP][Hi10P FLAC][1432x936].mkv",
-      "size": 5274101
+      "size": 5274101,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 15.018,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1432x936",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Bonus/[philosophy-raws][Strike Witches][PV08][BDRIP][Hi10P FLAC][1432x936].mkv",
-      "size": 8139249
+      "size": 8139249,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 15.018,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1432x936",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Bonus/[philosophy-raws][Strike Witches][PV09][BDRIP][Hi10P FLAC][1432x936].mkv",
-      "size": 5458109
+      "size": 5458109,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 15.018,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1432x936",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Bonus/[philosophy-raws][Strike Witches][PV10][BDRIP][Hi10P FLAC][1432x936].mkv",
-      "size": 5276809
+      "size": 5276809,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 15.018,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1432x936",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Bonus/[philosophy-raws][Strike Witches][PV11][BDRIP][Hi10P FLAC][1432x936].mkv",
-      "size": 6530609
+      "size": 6530609,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 15.018,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1432x936",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Bonus/[philosophy-raws][Strike Witches][PV12][BDRIP][Hi10P FLAC][1432x936].mkv",
-      "size": 5377483
+      "size": 5377483,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 15.018,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1432x936",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Bonus/[philosophy-raws][Strike Witches][PV13][BDRIP][Hi10P FLAC][1432x936].mkv",
-      "size": 4755086
+      "size": 4755086,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 15.018,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1432x936",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Bonus/[philosophy-raws][Strike Witches][PV14][BDRIP][Hi10P FLAC][1432x936].mkv",
-      "size": 6571199
+      "size": 6571199,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 15.018,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1432x936",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Bonus/[philosophy-raws][Strike Witches][PV15][BDRIP][Hi10P FLAC][1432x936].mkv",
-      "size": 7002659
+      "size": 7002659,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 15.018,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1432x936",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Bonus/[philosophy-raws][Strike Witches][PV16][BDRIP][Hi10P FLAC][1432x936].mkv",
-      "size": 6951723
+      "size": 6951723,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 15.018,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1432x936",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Bonus/[philosophy-raws][Strike Witches][PV17][BDRIP][Hi10P FLAC][1432x936].mkv",
-      "size": 6115206
+      "size": 6115206,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 15.018,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1432x936",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Bonus/[philosophy-raws][Strike Witches][PV18][BDRIP][Hi10P FLAC][1432x936].mkv",
-      "size": 8259735
+      "size": 8259735,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 16.016,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1432x936",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Bonus/[philosophy-raws][Strike Witches][SP1][DVDRIP][Hi10P FLAC][720x480].mkv",
-      "size": 49990525
+      "size": 49990525,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 763.095,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "720x480",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Bonus/[philosophy-raws][Strike Witches][SP2][DVDRIP][Hi10P FLAC][720x480].mkv",
-      "size": 37051912
+      "size": 37051912,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 175.648,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "720x480",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "CDs/A Little Peaceful Days/STRIKE WITCHES ストライクウィッチーズ あなたとできること A Little Peaceful Days 限定版 付属CD.cue",
@@ -1273,5 +1873,36 @@
       "path": "Scans/Vol.6/ブックレット表紙.jpg",
       "size": 2220491
     }
-  ]
+  ],
+  "local_container_fact_summary": {
+    "container_fact_count": 60,
+    "probe_status_counts": {
+      "available": 60
+    },
+    "duration_seconds_range": [
+      15.018,
+      8921.915
+    ],
+    "duration_seconds_samples": [
+      1451.993,
+      1451.951,
+      1451.951,
+      1451.951,
+      1451.951,
+      1451.993
+    ]
+  },
+  "local_container_fact_source": {
+    "kind": "real_local_media_duration_backfill",
+    "media_root": "H:\\Anime",
+    "probe_media": true,
+    "container_probe": "ffprobe",
+    "embedded_in": "files[].container_facts",
+    "matched_file_count": 318,
+    "matched_video_count": 60,
+    "missing_actual_video_count": 0,
+    "match_stats": {
+      "matched_by_root_path": 318
+    }
+  }
 }

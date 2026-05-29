@@ -10,8 +10,6 @@ from .models import (
     BangumiRelationCard,
     BangumiSubjectCard,
     CaseBudget,
-    CaseBriefingOutput,
-    CaseResolutionLedger,
     CaseContract,
     CaseDossier,
     BoundedCaseDossier,
@@ -22,14 +20,12 @@ from .models import (
     ProvenanceCard,
     QueryCard,
     EvidenceBatchResult,
-    InvestigationNotebook,
     VerifierIssue,
     VisibleRefCatalog,
 )
 from .span_builder import build_bangumi_span_cards, compact_span_card
 from .salience import build_salience_overview
 from ..local_fact_surface import compact_file_fact_for_card
-from .notebook import compact_case_briefing, compact_investigation_notebook
 
 
 def _dedupe_preserve_order(values: Iterable[str]) -> list[str]:
@@ -183,9 +179,6 @@ def build_case_dossier(
     previous_hypotheses=None,
     evidence_results=None,
     verifier_issues=None,
-    case_briefing: CaseBriefingOutput | None = None,
-    investigation_notebook: InvestigationNotebook | None = None,
-    case_resolution_ledger: CaseResolutionLedger | None = None,
 ) -> CaseDossier:
     query_cards_final = query_cards or build_query_cards_from_local_cards(local_files, local_clusters)
     contract_final = contract or build_default_contract(local_files, bangumi_items)
@@ -222,9 +215,6 @@ def build_case_dossier(
         verifier_issues=[] if verifier_issues is None else verifier_issues,
         local_span_cards=[],
         bangumi_span_cards=bangumi_span_cards,
-        case_briefing=case_briefing,
-        investigation_notebook=investigation_notebook or InvestigationNotebook(),
-        case_resolution_ledger=case_resolution_ledger,
     )
 
 
@@ -322,7 +312,7 @@ def build_bounded_case_dossier(dossier: CaseDossier, *, title_cue_limit: int = 5
         'raw_order_summary': {
             'count': len(main_files),
             'main_file_refs': list(dossier.contract.main_file_refs[:10]),
-            'note': 'raw local order only; filename numbering is interpreted by LocalStructureAgent',
+            'note': 'raw local order only; filename numbering is interpreted by the Pi Case Agent',
         },
     }
     groups: dict[str, dict[str, object]] = {}
@@ -356,11 +346,7 @@ def build_bounded_case_dossier(dossier: CaseDossier, *, title_cue_limit: int = 5
         previous_hypotheses=list(_get_value(dossier, 'previous_hypotheses')),
         previous_evidence_results=previous_evidence_results,
         verifier_issues=list(_get_value(dossier, 'verifier_issues')),
-        case_briefing=_get_value(dossier, 'case_briefing', None),
-        investigation_notebook=_get_value(dossier, 'investigation_notebook', InvestigationNotebook()),
-        case_resolution_ledger=_get_value(dossier, 'case_resolution_ledger', None),
     ))
-    ledger = _get_value(dossier, 'case_resolution_ledger', None)
     return BoundedCaseDossier(
         counts=counts,
         primary_title_cues=primary_title_cues,
@@ -385,9 +371,6 @@ def build_bounded_case_dossier(dossier: CaseDossier, *, title_cue_limit: int = 5
         header=header,
         budget=budget,
         local_span_cards=[card.model_dump(mode='json') for card in local_span_cards],
-        case_briefing=compact_case_briefing(_get_value(dossier, 'case_briefing', None)),
-        investigation_notebook=compact_investigation_notebook(_get_value(dossier, 'investigation_notebook', InvestigationNotebook())),
-        case_resolution_ledger=ledger.model_dump(mode='json') if hasattr(ledger, 'model_dump') else {},
     )
 
 

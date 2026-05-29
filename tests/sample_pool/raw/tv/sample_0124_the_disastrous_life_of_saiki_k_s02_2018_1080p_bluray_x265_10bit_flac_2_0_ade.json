@@ -3,99 +3,370 @@
   "files": [
     {
       "path": "The.Disastrous.Life.of.Saiki.K.S02E01.2018.1080p.BluRay.x265.10bit.FLAC.2.0-ADE.mkv",
-      "size": 681053879
+      "size": 681053879,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1431.26,
+        "container_format": "matroska,webm",
+        "video_stream_count": 2,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 2,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "The.Disastrous.Life.of.Saiki.K.S02E02.2018.1080p.BluRay.x265.10bit.FLAC.2.0-ADE.mkv",
-      "size": 900537783
+      "size": 900537783,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1431.69,
+        "container_format": "matroska,webm",
+        "video_stream_count": 2,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 2,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "The.Disastrous.Life.of.Saiki.K.S02E03.2018.1080p.BluRay.x265.10bit.FLAC.2.0-ADE.mkv",
-      "size": 913063517
+      "size": 913063517,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1431.015,
+        "container_format": "matroska,webm",
+        "video_stream_count": 2,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 2,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "The.Disastrous.Life.of.Saiki.K.S02E04.2018.1080p.BluRay.x265.10bit.FLAC.2.0-ADE.mkv",
-      "size": 1162768540
+      "size": 1162768540,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1431.015,
+        "container_format": "matroska,webm",
+        "video_stream_count": 2,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 2,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "The.Disastrous.Life.of.Saiki.K.S02E05.2018.1080p.BluRay.x265.10bit.FLAC.2.0-ADE.mkv",
-      "size": 1025243481
+      "size": 1025243481,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1431.015,
+        "container_format": "matroska,webm",
+        "video_stream_count": 2,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 2,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "The.Disastrous.Life.of.Saiki.K.S02E06.2018.1080p.BluRay.x265.10bit.FLAC.2.0-ADE.mkv",
-      "size": 880430109
+      "size": 880430109,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1431.015,
+        "container_format": "matroska,webm",
+        "video_stream_count": 2,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 2,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "The.Disastrous.Life.of.Saiki.K.S02E07.2018.1080p.BluRay.x265.10bit.FLAC.2.0-ADE.mkv",
-      "size": 949242746
+      "size": 949242746,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1431.51,
+        "container_format": "matroska,webm",
+        "video_stream_count": 2,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 2,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "The.Disastrous.Life.of.Saiki.K.S02E08.2018.1080p.BluRay.x265.10bit.FLAC.2.0-ADE.mkv",
-      "size": 991704363
+      "size": 991704363,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1431.015,
+        "container_format": "matroska,webm",
+        "video_stream_count": 2,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 2,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "The.Disastrous.Life.of.Saiki.K.S02E09.2018.1080p.BluRay.x265.10bit.FLAC.2.0-ADE.mkv",
-      "size": 969104059
+      "size": 969104059,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1432.01,
+        "container_format": "matroska,webm",
+        "video_stream_count": 2,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 2,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "The.Disastrous.Life.of.Saiki.K.S02E10.2018.1080p.BluRay.x265.10bit.FLAC.2.0-ADE.mkv",
-      "size": 813931575
+      "size": 813931575,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1431.015,
+        "container_format": "matroska,webm",
+        "video_stream_count": 2,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 2,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "The.Disastrous.Life.of.Saiki.K.S02E11.2018.1080p.BluRay.x265.10bit.FLAC.2.0-ADE.mkv",
-      "size": 942872695
+      "size": 942872695,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1431.66,
+        "container_format": "matroska,webm",
+        "video_stream_count": 2,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 2,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "The.Disastrous.Life.of.Saiki.K.S02E12.2018.1080p.BluRay.x265.10bit.FLAC.2.0-ADE.mkv",
-      "size": 1222965138
+      "size": 1222965138,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1431.015,
+        "container_format": "matroska,webm",
+        "video_stream_count": 2,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 2,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "The.Disastrous.Life.of.Saiki.K.S02E13.2018.1080p.BluRay.x265.10bit.FLAC.2.0-ADE.mkv",
-      "size": 892267040
+      "size": 892267040,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1431.015,
+        "container_format": "matroska,webm",
+        "video_stream_count": 2,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 2,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "The.Disastrous.Life.of.Saiki.K.S02E14.2018.1080p.BluRay.x265.10bit.FLAC.2.0-ADE.mkv",
-      "size": 1016150954
+      "size": 1016150954,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1431.015,
+        "container_format": "matroska,webm",
+        "video_stream_count": 2,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 2,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "The.Disastrous.Life.of.Saiki.K.S02E15.2018.1080p.BluRay.x265.10bit.FLAC.2.0-ADE.mkv",
-      "size": 869084687
+      "size": 869084687,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1431.015,
+        "container_format": "matroska,webm",
+        "video_stream_count": 2,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 2,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "The.Disastrous.Life.of.Saiki.K.S02E16.2018.1080p.BluRay.x265.10bit.FLAC.2.0-ADE.mkv",
-      "size": 1257381931
+      "size": 1257381931,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1431.015,
+        "container_format": "matroska,webm",
+        "video_stream_count": 2,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 2,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "The.Disastrous.Life.of.Saiki.K.S02E17.2018.1080p.BluRay.x265.10bit.FLAC.2.0-ADE.mkv",
-      "size": 969376769
+      "size": 969376769,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1431.015,
+        "container_format": "matroska,webm",
+        "video_stream_count": 2,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 2,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "The.Disastrous.Life.of.Saiki.K.S02E18.2018.1080p.BluRay.x265.10bit.FLAC.2.0-ADE.mkv",
-      "size": 1226907539
+      "size": 1226907539,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1431.44,
+        "container_format": "matroska,webm",
+        "video_stream_count": 2,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 2,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "The.Disastrous.Life.of.Saiki.K.S02E19.2018.1080p.BluRay.x265.10bit.FLAC.2.0-ADE.mkv",
-      "size": 1088230453
+      "size": 1088230453,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1431.72,
+        "container_format": "matroska,webm",
+        "video_stream_count": 2,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 2,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "The.Disastrous.Life.of.Saiki.K.S02E20.2018.1080p.BluRay.x265.10bit.FLAC.2.0-ADE.mkv",
-      "size": 935599281
+      "size": 935599281,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1431.015,
+        "container_format": "matroska,webm",
+        "video_stream_count": 2,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 2,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "The.Disastrous.Life.of.Saiki.K.S02E21.2018.1080p.BluRay.x265.10bit.FLAC.2.0-ADE.mkv",
-      "size": 964906442
+      "size": 964906442,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1431.015,
+        "container_format": "matroska,webm",
+        "video_stream_count": 2,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 2,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "The.Disastrous.Life.of.Saiki.K.S02E22.2018.1080p.BluRay.x265.10bit.FLAC.2.0-ADE.mkv",
-      "size": 1328146982
+      "size": 1328146982,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1431.9,
+        "container_format": "matroska,webm",
+        "video_stream_count": 2,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 2,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "The.Disastrous.Life.of.Saiki.K.S02E23.2018.1080p.BluRay.x265.10bit.FLAC.2.0-ADE.mkv",
-      "size": 889716249
+      "size": 889716249,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1431.17,
+        "container_format": "matroska,webm",
+        "video_stream_count": 2,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 2,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "The.Disastrous.Life.of.Saiki.K.S02E24.2018.1080p.BluRay.x265.10bit.FLAC.2.0-ADE.mkv",
-      "size": 1228495854
+      "size": 1228495854,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1444.99,
+        "container_format": "matroska,webm",
+        "video_stream_count": 2,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 2,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     }
-  ]
+  ],
+  "local_container_fact_summary": {
+    "container_fact_count": 24,
+    "probe_status_counts": {
+      "available": 24
+    },
+    "duration_seconds_range": [
+      1431.015,
+      1444.99
+    ],
+    "duration_seconds_samples": [
+      1431.26,
+      1431.69,
+      1431.015,
+      1431.015,
+      1431.015,
+      1431.015
+    ]
+  },
+  "local_container_fact_source": {
+    "kind": "real_local_media_duration_backfill",
+    "media_root": "H:\\Anime",
+    "probe_media": true,
+    "container_probe": "ffprobe",
+    "embedded_in": "files[].container_facts",
+    "matched_file_count": 24,
+    "matched_video_count": 24,
+    "missing_actual_video_count": 0,
+    "match_stats": {
+      "matched_by_root_path": 24
+    }
+  }
 }

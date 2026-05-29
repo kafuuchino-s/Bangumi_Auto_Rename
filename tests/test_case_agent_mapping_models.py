@@ -1,9 +1,6 @@
 from src.rename.case_agent.models import (
-    CandidateComparison,
-    Finding,
     MappingDraftAccounting,
     MappingDraft,
-    MappingDraftEditorOutput,
     MappingDraftPatch,
     MappingDraftRow,
 )
@@ -13,7 +10,6 @@ def test_mapping_models_default_values_can_be_constructed():
     row = MappingDraftRow()
     draft = MappingDraft()
     patch = MappingDraftPatch()
-    output = MappingDraftEditorOutput()
 
     assert row.local_ref_kind == 'file'
     assert row.selected_target_kind == 'none'
@@ -23,11 +19,6 @@ def test_mapping_models_default_values_can_be_constructed():
     assert draft.rows == []
     assert draft.version == 0
     assert patch.op == 'mark_unresolved'
-    assert output.patches == []
-    assert output.candidate_comparisons == []
-    assert output.findings == []
-    assert output.fail_closed_reasons == []
-    assert output.self_checks == []
 
 
 def test_invalid_enum_values_are_rejected():
@@ -48,7 +39,7 @@ def test_invalid_enum_values_are_rejected():
             assert 'literal_error' in str(exc) or 'extra_forbidden' in str(exc)
 
 
-def test_mapping_draft_patch_supports_new_ops_and_legacy_ops():
+def test_mapping_draft_patch_supports_current_ops_and_aliases():
     for op in [
         'map_to_bangumi',
         'mark_non_bangumi_or_supplemental',
@@ -80,25 +71,8 @@ def test_mapping_draft_accounting_defaults_and_strict_schema():
     assert getattr(MappingDraftAccounting, 'model_config').get('extra') == 'forbid'
 
 
-def test_mapping_draft_editor_output_serializes_all_list_fields():
-    output = MappingDraftEditorOutput(
-        patches=[MappingDraftPatch(local_ref='F1')],
-        candidate_comparisons=[CandidateComparison(left_ref='A', right_ref='B')],
-        findings=[Finding(ref='FN1')],
-        fail_closed_reasons=[],
-        self_checks=[],
-    )
-
-    dumped = output.model_dump()
-    assert dumped['patches'][0]['local_ref'] == 'F1'
-    assert dumped['candidate_comparisons'][0]['left_ref'] == 'A'
-    assert dumped['findings'][0]['ref'] == 'FN1'
-    assert dumped['fail_closed_reasons'] == []
-    assert dumped['self_checks'] == []
-
-
 def test_mapping_models_use_strict_schema_without_open_dicts():
-    for model in [MappingDraftRow, MappingDraft, MappingDraftPatch, MappingDraftEditorOutput]:
+    for model in [MappingDraftRow, MappingDraft, MappingDraftPatch]:
         schema = model.model_json_schema()
         assert schema.get('additionalProperties') is False
         assert getattr(model, 'model_config').get('extra') == 'forbid'

@@ -76,9 +76,9 @@ def expand_mapping_draft(dossier: CaseDossier, draft: MappingDraft) -> tuple[lis
     main_file_refs = set(getattr(getattr(dossier, 'contract', None), 'main_file_refs', []) or [])
 
     for row in draft.rows:
-        # Keep legacy compatibility for drafts that only populated status/mapping_mode.
-        legacy_span_mapping = row.disposition == 'open' and row.status == 'proposed' and row.mapping_mode == 'span_by_index'
-        if row.disposition != 'map_to_bangumi' and not legacy_span_mapping:
+        # Accept the compact row shape used by draft patch aliases.
+        alias_span_mapping = row.disposition == 'open' and row.status == 'proposed' and row.mapping_mode == 'span_by_index'
+        if row.disposition != 'map_to_bangumi' and not alias_span_mapping:
             if row.disposition == 'non_bangumi_or_supplemental':
                 policy_issues = supplemental_row_policy_issues(dossier, row)
                 if policy_issues:

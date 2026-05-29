@@ -103,6 +103,8 @@ class LocalContainerFacts:
     video_stream_count: int | None = None
     audio_stream_count: int | None = None
     subtitle_stream_count: int | None = None
+    chapter_count: int | None = None
+    chapter_durations_seconds: list[float] = field(default_factory=list)
     resolution: str = ''
     probe_error_class: str = ''
 
@@ -285,6 +287,8 @@ def compact_file_fact_for_card(file_fact: LocalFileFact | Mapping[str, object] |
             'video_stream_count': container.get('video_stream_count'),
             'audio_stream_count': container.get('audio_stream_count'),
             'subtitle_stream_count': container.get('subtitle_stream_count'),
+            'chapter_count': container.get('chapter_count'),
+            'chapter_durations_seconds': list(container.get('chapter_durations_seconds') or [])[:12],
             'resolution': container.get('resolution', ''),
             'probe_error_class': container.get('probe_error_class', ''),
         },
@@ -318,6 +322,7 @@ def compact_file_fact_summary(file_fact: LocalFileFact | Mapping[str, object] | 
     return {
         'probe_status': container.get('probe_status', ''),
         'duration_seconds': container.get('duration_seconds'),
+        'chapter_count': container.get('chapter_count'),
         'resolution': container.get('resolution', ''),
         'external_subtitle_count': len(list(subtitle.get('external_subtitle_refs') or [])),
         'subtitle_language_markers': list(subtitle.get('language_markers') or [])[:4],
@@ -548,6 +553,7 @@ def _probe_media_file_ffprobe(file_path: Path) -> tuple[dict[str, object] | None
                 'json',
                 '-show_format',
                 '-show_streams',
+                '-show_chapters',
                 str(file_path),
             ],
             check=False,
@@ -567,6 +573,7 @@ def _probe_media_file_ffprobe(file_path: Path) -> tuple[dict[str, object] | None
     except json.JSONDecodeError:
         return None, 'ffprobe_invalid_json'
     streams = [item for item in payload.get('streams') or [] if isinstance(item, dict)]
+    chapters = [item for item in payload.get('chapters') or [] if isinstance(item, dict)]
     format_info = payload.get('format') if isinstance(payload.get('format'), dict) else {}
     video_streams = [item for item in streams if item.get('codec_type') == 'video']
     audio_streams = [item for item in streams if item.get('codec_type') == 'audio']
@@ -584,6 +591,8 @@ def _probe_media_file_ffprobe(file_path: Path) -> tuple[dict[str, object] | None
         'video_stream_count': len(video_streams),
         'audio_stream_count': len(audio_streams),
         'subtitle_stream_count': len(subtitle_streams),
+        'chapter_count': len(chapters),
+        'chapter_durations_seconds': _chapter_durations(chapters),
     }
     if duration_seconds is not None:
         info['duration'] = duration_seconds / 60.0
@@ -619,8 +628,25 @@ def _container_facts_from_probe(info: Mapping[str, object], suffix: str) -> Loca
         video_stream_count=_int_or_none(info.get('video_stream_count')) or (1 if (width or height or info.get('video_codec') or duration_seconds is not None) else None),
         audio_stream_count=_int_or_none(info.get('audio_stream_count')) or (1 if (info.get('audio_codec') or info.get('audio_channels')) else None),
         subtitle_stream_count=_int_or_none(info.get('subtitle_stream_count')),
+        chapter_count=_int_or_none(info.get('chapter_count')),
+        chapter_durations_seconds=[
+            round(float(item), 3)
+            for item in (info.get('chapter_durations_seconds') or [])
+            if _float_or_none(item) is not None
+        ],
         resolution=resolution,
     )
+
+
+def _chapter_durations(chapters: list[dict[str, object]]) -> list[float]:
+    durations: list[float] = []
+    for chapter in chapters:
+        start = _float_or_none(chapter.get('start_time'))
+        end = _float_or_none(chapter.get('end_time'))
+        if start is None or end is None or end < start:
+            continue
+        durations.append(round(end - start, 3))
+    return durations
 
 
 def _safe_stat_size(file_path: Path) -> int | None:

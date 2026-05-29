@@ -3,95 +3,356 @@
   "files": [
     {
       "path": "[VCB-Studio] ARIA The AVVENIRE Capitolo Version [01][Ma10p_1080p][x265_flac_2aac].mkv",
-      "size": 1179600203
+      "size": 1179600203,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 994.752,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 3,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] ARIA The AVVENIRE Capitolo Version [02][Ma10p_1080p][x265_flac_2aac].mkv",
-      "size": 1374520162
+      "size": 1374520162,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1213.226,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 3,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] ARIA The AVVENIRE Capitolo Version [03][Ma10p_1080p][x265_flac_2aac].mkv",
-      "size": 1839389173
+      "size": 1839389173,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1663.722,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 3,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] ARIA The AVVENIRE Capitolo Version [Discussion01][Ma10p_1080p][x265_aac].mkv",
-      "size": 1574334406
+      "size": 1574334406,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 2232.004,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] ARIA The AVVENIRE Capitolo Version [Discussion02][Ma10p_1080p][x265_aac].mkv",
-      "size": 1387205389
+      "size": 1387205389,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 2374.088,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] ARIA The AVVENIRE Capitolo Version [Discussion03][Ma10p_1080p][x265_aac].mkv",
-      "size": 1679836998
+      "size": 1679836998,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 2320.084,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] ARIA The AVVENIRE Capitolo Version [Menu01][Ma10p_1080p][x265].mkv",
-      "size": 28481843
+      "size": 28481843,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 60.06,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 0,
+        "subtitle_stream_count": 29,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] ARIA The AVVENIRE Capitolo Version [Menu02][Ma10p_1080p][x265].mkv",
-      "size": 32442837
+      "size": 32442837,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 60.06,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 0,
+        "subtitle_stream_count": 35,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] ARIA The AVVENIRE Capitolo Version [Menu03][Ma10p_1080p][x265].mkv",
-      "size": 28964008
+      "size": 28964008,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 60.06,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 0,
+        "subtitle_stream_count": 29,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] ARIA The AVVENIRE Capitolo Version [NCED][Ma10p_1080p][x265_flac].mkv",
-      "size": 140434844
+      "size": 140434844,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 138.144,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] ARIA The AVVENIRE Capitolo Version [PV01][Ma10p_1080p][x265_flac].mkv",
-      "size": 28384468
+      "size": 28384468,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 33.035,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] ARIA The AVVENIRE Capitolo Version [PV02][Ma10p_1080p][x265_flac].mkv",
-      "size": 76046589
+      "size": 76046589,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.096,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] ARIA The AVVENIRE Capitolo Version [PV03][Ma10p_1080p][x265_flac].mkv",
-      "size": 29771548
+      "size": 29771548,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 31.04,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] ARIA The AVVENIRE Capitolo Version [Sound Novel 01][Ma10p_1080p][x265_flac].mkv",
-      "size": 1364271272
+      "size": 1364271272,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 906.035,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] ARIA The AVVENIRE Capitolo Version [Sound Novel 02][Ma10p_1080p][x265_flac].mkv",
-      "size": 1311504278
+      "size": 1311504278,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 895.27,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] ARIA The AVVENIRE Capitolo Version [Sound Novel 03][Ma10p_1080p][x265_flac].mkv",
-      "size": 1488556234
+      "size": 1488556234,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 967.3,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] ARIA The AVVENIRE Capitolo Version [Sound Novel 04][Ma10p_1080p][x265_flac].mkv",
-      "size": 1204778409
+      "size": 1204778409,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 814.315,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] ARIA The AVVENIRE Capitolo Version [Stage Greeting 01][Ma10p_1080p][x265_aac].mkv",
-      "size": 763396899
+      "size": 763396899,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1351.36,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] ARIA The AVVENIRE Capitolo Version [Stage Greeting 02][Ma10p_1080p][x265_aac].mkv",
-      "size": 1224813717
+      "size": 1224813717,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1343.018,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] ARIA The AVVENIRE Capitolo Version [TV-SPOT][Ma10p_1080p][x265_flac].mkv",
-      "size": 13332017
+      "size": 13332017,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 17.02,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] ARIA The AVVENIRE Capitolo Version [Visual Commentary 01][Ma10p_1080p][x265_aac].mkv",
-      "size": 546548483
+      "size": 546548483,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 933.449,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] ARIA The AVVENIRE Capitolo Version [Visual Commentary 02][Ma10p_1080p][x265_aac].mkv",
-      "size": 639991341
+      "size": 639991341,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1258.957,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] ARIA The AVVENIRE Capitolo Version [Visual Commentary 03][Ma10p_1080p][x265_aac].mkv",
-      "size": 1201153887
+      "size": 1201153887,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1662.727,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     }
-  ]
+  ],
+  "local_container_fact_summary": {
+    "container_fact_count": 23,
+    "probe_status_counts": {
+      "available": 23
+    },
+    "duration_seconds_range": [
+      17.02,
+      2374.088
+    ],
+    "duration_seconds_samples": [
+      994.752,
+      1213.226,
+      1663.722,
+      2232.004,
+      2374.088,
+      2320.084
+    ]
+  },
+  "local_container_fact_source": {
+    "kind": "real_local_media_duration_backfill",
+    "media_root": "H:\\Anime",
+    "probe_media": true,
+    "container_probe": "ffprobe",
+    "embedded_in": "files[].container_facts",
+    "matched_file_count": 23,
+    "matched_video_count": 23,
+    "missing_actual_video_count": 0,
+    "match_stats": {
+      "matched_by_root_path": 23
+    }
+  }
 }

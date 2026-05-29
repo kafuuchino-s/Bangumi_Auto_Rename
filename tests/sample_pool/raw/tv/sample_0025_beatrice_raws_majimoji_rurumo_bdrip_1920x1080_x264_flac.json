@@ -7,7 +7,17 @@
     },
     {
       "path": "[Beatrice-Raws] Majimoji Rurumo 01 [BDRip 1920x1080 x264 FLAC].mkv",
-      "size": 800562540
+      "size": 800562540,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1417.085,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Beatrice-Raws] Majimoji Rurumo 02 [BDRip 1920x1080 x264 FLAC].default.chi.zh-cn.ass",
@@ -15,7 +25,17 @@
     },
     {
       "path": "[Beatrice-Raws] Majimoji Rurumo 02 [BDRip 1920x1080 x264 FLAC].mkv",
-      "size": 900885469
+      "size": 900885469,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1416.0,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Beatrice-Raws] Majimoji Rurumo 03 [BDRip 1920x1080 x264 FLAC].default.chi.zh-cn.ass",
@@ -23,7 +43,17 @@
     },
     {
       "path": "[Beatrice-Raws] Majimoji Rurumo 03 [BDRip 1920x1080 x264 FLAC].mkv",
-      "size": 844589940
+      "size": 844589940,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1417.0,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Beatrice-Raws] Majimoji Rurumo 04 [BDRip 1920x1080 x264 FLAC].default.chi.zh-cn.ass",
@@ -31,7 +61,17 @@
     },
     {
       "path": "[Beatrice-Raws] Majimoji Rurumo 04 [BDRip 1920x1080 x264 FLAC].mkv",
-      "size": 878160016
+      "size": 878160016,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1416.0,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Beatrice-Raws] Majimoji Rurumo 05 [BDRip 1920x1080 x264 FLAC].default.chi.zh-cn.ass",
@@ -39,7 +79,17 @@
     },
     {
       "path": "[Beatrice-Raws] Majimoji Rurumo 05 [BDRip 1920x1080 x264 FLAC].mkv",
-      "size": 874727694
+      "size": 874727694,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1417.0,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Beatrice-Raws] Majimoji Rurumo 06 [BDRip 1920x1080 x264 FLAC].default.chi.zh-cn.ass",
@@ -47,7 +97,17 @@
     },
     {
       "path": "[Beatrice-Raws] Majimoji Rurumo 06 [BDRip 1920x1080 x264 FLAC].mkv",
-      "size": 1184412938
+      "size": 1184412938,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1416.0,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Beatrice-Raws] Majimoji Rurumo 07 [BDRip 1920x1080 x264 FLAC].default.chi.zh-cn.ass",
@@ -55,7 +115,17 @@
     },
     {
       "path": "[Beatrice-Raws] Majimoji Rurumo 07 [BDRip 1920x1080 x264 FLAC].mkv",
-      "size": 958685612
+      "size": 958685612,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1417.045,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Beatrice-Raws] Majimoji Rurumo 08 [BDRip 1920x1080 x264 FLAC].default.chi.zh-cn.ass",
@@ -63,7 +133,17 @@
     },
     {
       "path": "[Beatrice-Raws] Majimoji Rurumo 08 [BDRip 1920x1080 x264 FLAC].mkv",
-      "size": 955951848
+      "size": 955951848,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1416.04,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Beatrice-Raws] Majimoji Rurumo 09 [BDRip 1920x1080 x264 FLAC].default.chi.zh-cn.ass",
@@ -71,7 +151,17 @@
     },
     {
       "path": "[Beatrice-Raws] Majimoji Rurumo 09 [BDRip 1920x1080 x264 FLAC].mkv",
-      "size": 687834242
+      "size": 687834242,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1416.96,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Beatrice-Raws] Majimoji Rurumo 10 [BDRip 1920x1080 x264 FLAC].default.chi.zh-cn.ass",
@@ -79,7 +169,17 @@
     },
     {
       "path": "[Beatrice-Raws] Majimoji Rurumo 10 [BDRip 1920x1080 x264 FLAC].mkv",
-      "size": 995606618
+      "size": 995606618,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1416.0,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Beatrice-Raws] Majimoji Rurumo 11 [BDRip 1920x1080 x264 FLAC].default.chi.zh-cn.ass",
@@ -87,7 +187,17 @@
     },
     {
       "path": "[Beatrice-Raws] Majimoji Rurumo 11 [BDRip 1920x1080 x264 FLAC].mkv",
-      "size": 851954685
+      "size": 851954685,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1417.045,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Beatrice-Raws] Majimoji Rurumo 12 [BDRip 1920x1080 x264 FLAC].default.chi.zh-cn.ass",
@@ -95,55 +205,185 @@
     },
     {
       "path": "[Beatrice-Raws] Majimoji Rurumo 12 [BDRip 1920x1080 x264 FLAC].mkv",
-      "size": 728285560
+      "size": 728285560,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1416.04,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "BD menu/[Beatrice-Raws] Majimoji Rurumo (BD menu Vol 1) 01 [BDRip 1920x1080 x264 FLAC].mkv",
-      "size": 33643882
+      "size": 33643882,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 89.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "BD menu/[Beatrice-Raws] Majimoji Rurumo (BD menu Vol 1) 02 [BDRip 1920x1080 x264 FLAC].mkv",
-      "size": 34087730
+      "size": 34087730,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 89.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "BD menu/[Beatrice-Raws] Majimoji Rurumo (BD menu Vol 2) 01 [BDRip 1920x1080 x264 FLAC].mkv",
-      "size": 34541467
+      "size": 34541467,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 89.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "BD menu/[Beatrice-Raws] Majimoji Rurumo (BD menu Vol 2) 02 [BDRip 1920x1080 x264 FLAC].mkv",
-      "size": 35032106
+      "size": 35032106,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 89.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "BD menu/[Beatrice-Raws] Majimoji Rurumo (BD menu Vol 3) 01 [BDRip 1920x1080 x264 FLAC].mkv",
-      "size": 35846614
+      "size": 35846614,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 89.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "BD menu/[Beatrice-Raws] Majimoji Rurumo (BD menu Vol 3) 02 [BDRip 1920x1080 x264 FLAC].mkv",
-      "size": 35835112
+      "size": 35835112,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 89.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "BD menu/[Beatrice-Raws] Majimoji Rurumo (BD menu Vol 4) 01 [BDRip 1920x1080 x264 FLAC].mkv",
-      "size": 34894099
+      "size": 34894099,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 89.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "BD menu/[Beatrice-Raws] Majimoji Rurumo (BD menu Vol 4) 02 [BDRip 1920x1080 x264 FLAC].mkv",
-      "size": 35132738
+      "size": 35132738,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 89.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "BD menu/[Beatrice-Raws] Majimoji Rurumo (BD menu Vol 5) 01 [BDRip 1920x1080 x264 FLAC].mkv",
-      "size": 34790910
+      "size": 34790910,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 89.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "BD menu/[Beatrice-Raws] Majimoji Rurumo (BD menu Vol 5) 02 [BDRip 1920x1080 x264 FLAC].mkv",
-      "size": 34879081
+      "size": 34879081,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 89.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "BD menu/[Beatrice-Raws] Majimoji Rurumo (BD menu Vol 6) 01 [BDRip 1920x1080 x264 FLAC].mkv",
-      "size": 35962832
+      "size": 35962832,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 89.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "BD menu/[Beatrice-Raws] Majimoji Rurumo (BD menu Vol 6) 02 [BDRip 1920x1080 x264 FLAC].mkv",
-      "size": 36620111
+      "size": 36620111,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 89.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Comments/[Beatrice-Raws] Majimoji Rurumo 01 [BDRip 1920x1080 x264 FLAC].Audio Commentary.mka",
@@ -195,31 +435,132 @@
     },
     {
       "path": "NC/[Beatrice-Raws] Majimoji Rurumo (Creditless ED) [BDRip 1920x1080 x264 FLAC].mkv",
-      "size": 54052509
+      "size": 54052509,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 90.966,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "NC/[Beatrice-Raws] Majimoji Rurumo (Creditless OP) [BDRip 1920x1080 x264 FLAC].mkv",
-      "size": 82886008
+      "size": 82886008,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.05,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "PV & CM/[Beatrice-Raws] Majimoji Rurumo (BD&DVD CM) [BDRip 1920x1080 x264 FLAC].mkv",
-      "size": 12972714
+      "size": 12972714,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 16.016,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "PV & CM/[Beatrice-Raws] Majimoji Rurumo (CM 01) [BDRip 1920x1080 x264 FLAC].mkv",
-      "size": 16615477
+      "size": 16615477,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 16.016,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "PV & CM/[Beatrice-Raws] Majimoji Rurumo (CM 02) [BDRip 1920x1080 x264 FLAC].mkv",
-      "size": 16967616
+      "size": 16967616,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 16.016,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "PV & CM/[Beatrice-Raws] Majimoji Rurumo (PV 01) [BDRip 1920x1080 x264 FLAC].mkv",
-      "size": 40270053
+      "size": 40270053,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 46.046,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "PV & CM/[Beatrice-Raws] Majimoji Rurumo (PV 02) [BDRip 1920x1080 x264 FLAC].mkv",
-      "size": 106831027
+      "size": 106831027,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 62.062,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     }
-  ]
+  ],
+  "local_container_fact_summary": {
+    "container_fact_count": 31,
+    "probe_status_counts": {
+      "available": 31
+    },
+    "duration_seconds_range": [
+      16.016,
+      1417.085
+    ],
+    "duration_seconds_samples": [
+      1417.085,
+      1416.0,
+      1417.0,
+      1416.0,
+      1417.0,
+      1416.0
+    ]
+  },
+  "local_container_fact_source": {
+    "kind": "real_local_media_duration_backfill",
+    "media_root": "H:\\Anime",
+    "probe_media": true,
+    "container_probe": "ffprobe",
+    "embedded_in": "files[].container_facts",
+    "matched_file_count": 55,
+    "matched_video_count": 31,
+    "missing_actual_video_count": 0,
+    "match_stats": {
+      "matched_by_root_path": 55
+    }
+  }
 }

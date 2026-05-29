@@ -7,7 +7,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger 2nd Season [Ma10p_1080p]/[VCB-Studio] World Trigger 2nd Season [01][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1363176573
+      "size": 1363176573,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1391.232,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger 2nd Season [Ma10p_1080p]/[VCB-Studio] World Trigger 2nd Season [02][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -15,7 +25,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger 2nd Season [Ma10p_1080p]/[VCB-Studio] World Trigger 2nd Season [02][Ma10p_1080p][x265_flac].mkv",
-      "size": 1288783671
+      "size": 1288783671,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1391.225,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger 2nd Season [Ma10p_1080p]/[VCB-Studio] World Trigger 2nd Season [03][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -23,7 +43,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger 2nd Season [Ma10p_1080p]/[VCB-Studio] World Trigger 2nd Season [03][Ma10p_1080p][x265_flac].mkv",
-      "size": 1740070170
+      "size": 1740070170,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1391.225,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger 2nd Season [Ma10p_1080p]/[VCB-Studio] World Trigger 2nd Season [04][Ma10p_1080p][x265_flac_aac].default.chi.zh-cn.ass",
@@ -31,7 +61,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger 2nd Season [Ma10p_1080p]/[VCB-Studio] World Trigger 2nd Season [04][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1432643769
+      "size": 1432643769,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1391.317,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger 2nd Season [Ma10p_1080p]/[VCB-Studio] World Trigger 2nd Season [05][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -39,7 +79,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger 2nd Season [Ma10p_1080p]/[VCB-Studio] World Trigger 2nd Season [05][Ma10p_1080p][x265_flac].mkv",
-      "size": 1340498256
+      "size": 1340498256,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1391.185,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger 2nd Season [Ma10p_1080p]/[VCB-Studio] World Trigger 2nd Season [06][Ma10p_1080p][x265_flac_aac].default.chi.zh-cn.ass",
@@ -47,7 +97,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger 2nd Season [Ma10p_1080p]/[VCB-Studio] World Trigger 2nd Season [06][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1465541989
+      "size": 1465541989,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1391.146,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger 2nd Season [Ma10p_1080p]/[VCB-Studio] World Trigger 2nd Season [07][Ma10p_1080p][x265_flac_aac].default.chi.zh-cn.ass",
@@ -55,7 +115,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger 2nd Season [Ma10p_1080p]/[VCB-Studio] World Trigger 2nd Season [07][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1357991413
+      "size": 1357991413,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1391.232,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger 2nd Season [Ma10p_1080p]/[VCB-Studio] World Trigger 2nd Season [08][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -63,7 +133,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger 2nd Season [Ma10p_1080p]/[VCB-Studio] World Trigger 2nd Season [08][Ma10p_1080p][x265_flac].mkv",
-      "size": 1331426929
+      "size": 1331426929,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1391.225,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger 2nd Season [Ma10p_1080p]/[VCB-Studio] World Trigger 2nd Season [09][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -71,7 +151,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger 2nd Season [Ma10p_1080p]/[VCB-Studio] World Trigger 2nd Season [09][Ma10p_1080p][x265_flac].mkv",
-      "size": 1259597306
+      "size": 1259597306,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1376.335,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger 2nd Season [Ma10p_1080p]/[VCB-Studio] World Trigger 2nd Season [10][Ma10p_1080p][x265_flac_aac].default.chi.zh-cn.ass",
@@ -79,7 +169,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger 2nd Season [Ma10p_1080p]/[VCB-Studio] World Trigger 2nd Season [10][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1295370398
+      "size": 1295370398,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1376.256,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger 2nd Season [Ma10p_1080p]/[VCB-Studio] World Trigger 2nd Season [11][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -87,7 +187,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger 2nd Season [Ma10p_1080p]/[VCB-Studio] World Trigger 2nd Season [11][Ma10p_1080p][x265_flac].mkv",
-      "size": 1361882645
+      "size": 1361882645,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1376.21,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger 2nd Season [Ma10p_1080p]/[VCB-Studio] World Trigger 2nd Season [12][Ma10p_1080p][x265_flac_aac].default.chi.zh-cn.ass",
@@ -95,7 +205,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger 2nd Season [Ma10p_1080p]/[VCB-Studio] World Trigger 2nd Season [12][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1336777161
+      "size": 1336777161,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1376.213,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger 2nd Season [Ma10p_1080p]/CDs/[210120] ｢STILL DREAMING｣／TOMORROW X TOGETHER (flac)/01. Intro DREAMING.flac",
@@ -155,7 +275,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger 2nd Season [Ma10p_1080p]/SPs/[VCB-Studio] World Trigger 2nd Season [Event][Ma10p_1080p][x265_aac].mkv",
-      "size": 734560480
+      "size": 734560480,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1754.666,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger 2nd Season [Ma10p_1080p]/SPs/[VCB-Studio] World Trigger 2nd Season [Menu01].png",
@@ -175,15 +305,45 @@
     },
     {
       "path": "[VCB-Studio] World Trigger 2nd Season [Ma10p_1080p]/SPs/[VCB-Studio] World Trigger 2nd Season [NCED][Ma10p_1080p][x265_flac].mkv",
-      "size": 109041477
+      "size": 109041477,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger 2nd Season [Ma10p_1080p]/SPs/[VCB-Studio] World Trigger 2nd Season [NCOP][Ma10p_1080p][x265_flac].mkv",
-      "size": 122177125
+      "size": 122177125,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger 2nd Season [Ma10p_1080p]/SPs/[VCB-Studio] World Trigger 2nd Season [SP][Ma10p_1080p][x265_flac].mkv",
-      "size": 109967119
+      "size": 109967119,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 122.122,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger 3rd Season [Ma10p_1080p]/[VCB-Studio] World Trigger 3rd Season [01][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -191,7 +351,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger 3rd Season [Ma10p_1080p]/[VCB-Studio] World Trigger 3rd Season [01][Ma10p_1080p][x265_flac].mkv",
-      "size": 1277816283
+      "size": 1277816283,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1391.185,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger 3rd Season [Ma10p_1080p]/[VCB-Studio] World Trigger 3rd Season [02][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -199,7 +369,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger 3rd Season [Ma10p_1080p]/[VCB-Studio] World Trigger 3rd Season [02][Ma10p_1080p][x265_flac].mkv",
-      "size": 1057848497
+      "size": 1057848497,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1391.265,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger 3rd Season [Ma10p_1080p]/[VCB-Studio] World Trigger 3rd Season [03][Ma10p_1080p][x265_flac_aac].default.chi.zh-cn.ass",
@@ -207,7 +387,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger 3rd Season [Ma10p_1080p]/[VCB-Studio] World Trigger 3rd Season [03][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1270431901
+      "size": 1270431901,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1391.274,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger 3rd Season [Ma10p_1080p]/[VCB-Studio] World Trigger 3rd Season [04][Ma10p_1080p][x265_flac_aac].default.chi.zh-cn.ass",
@@ -215,7 +405,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger 3rd Season [Ma10p_1080p]/[VCB-Studio] World Trigger 3rd Season [04][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1334052785
+      "size": 1334052785,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1391.189,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger 3rd Season [Ma10p_1080p]/[VCB-Studio] World Trigger 3rd Season [05][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -223,7 +423,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger 3rd Season [Ma10p_1080p]/[VCB-Studio] World Trigger 3rd Season [05][Ma10p_1080p][x265_flac].mkv",
-      "size": 1412718216
+      "size": 1412718216,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1391.185,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger 3rd Season [Ma10p_1080p]/[VCB-Studio] World Trigger 3rd Season [06][Ma10p_1080p][x265_flac_aac].default.chi.zh-cn.ass",
@@ -231,7 +441,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger 3rd Season [Ma10p_1080p]/[VCB-Studio] World Trigger 3rd Season [06][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1198378178
+      "size": 1198378178,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1391.189,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger 3rd Season [Ma10p_1080p]/[VCB-Studio] World Trigger 3rd Season [07][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -239,7 +459,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger 3rd Season [Ma10p_1080p]/[VCB-Studio] World Trigger 3rd Season [07][Ma10p_1080p][x265_flac].mkv",
-      "size": 1144411077
+      "size": 1144411077,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1391.182,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger 3rd Season [Ma10p_1080p]/[VCB-Studio] World Trigger 3rd Season [08][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -247,7 +477,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger 3rd Season [Ma10p_1080p]/[VCB-Studio] World Trigger 3rd Season [08][Ma10p_1080p][x265_flac].mkv",
-      "size": 1076289022
+      "size": 1076289022,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1391.14,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger 3rd Season [Ma10p_1080p]/[VCB-Studio] World Trigger 3rd Season [09][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -255,7 +495,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger 3rd Season [Ma10p_1080p]/[VCB-Studio] World Trigger 3rd Season [09][Ma10p_1080p][x265_flac].mkv",
-      "size": 1046759983
+      "size": 1046759983,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1391.185,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger 3rd Season [Ma10p_1080p]/[VCB-Studio] World Trigger 3rd Season [10][Ma10p_1080p][x265_flac_aac].default.chi.zh-cn.ass",
@@ -263,7 +513,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger 3rd Season [Ma10p_1080p]/[VCB-Studio] World Trigger 3rd Season [10][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1113584541
+      "size": 1113584541,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1391.36,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger 3rd Season [Ma10p_1080p]/[VCB-Studio] World Trigger 3rd Season [11][Ma10p_1080p][x265_flac_aac].default.chi.zh-cn.ass",
@@ -271,7 +531,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger 3rd Season [Ma10p_1080p]/[VCB-Studio] World Trigger 3rd Season [11][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1304412845
+      "size": 1304412845,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1391.232,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger 3rd Season [Ma10p_1080p]/[VCB-Studio] World Trigger 3rd Season [12][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -279,7 +549,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger 3rd Season [Ma10p_1080p]/[VCB-Studio] World Trigger 3rd Season [12][Ma10p_1080p][x265_flac].mkv",
-      "size": 1344359333
+      "size": 1344359333,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1376.25,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger 3rd Season [Ma10p_1080p]/[VCB-Studio] World Trigger 3rd Season [13][Ma10p_1080p][x265_flac_aac].default.chi.zh-cn.ass",
@@ -287,7 +567,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger 3rd Season [Ma10p_1080p]/[VCB-Studio] World Trigger 3rd Season [13][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1473765362
+      "size": 1473765362,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1376.341,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger 3rd Season [Ma10p_1080p]/[VCB-Studio] World Trigger 3rd Season [14][Ma10p_1080p][x265_flac_aac].default.chi.zh-cn.ass",
@@ -295,7 +585,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger 3rd Season [Ma10p_1080p]/[VCB-Studio] World Trigger 3rd Season [14][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1305508014
+      "size": 1305508014,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1376.042,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger 3rd Season [Ma10p_1080p]/CDs/[211017] ｢タイムファクター｣／神はサイコロを振らない (flac)/01. タイムファクター.flac",
@@ -583,11 +883,31 @@
     },
     {
       "path": "[VCB-Studio] World Trigger 3rd Season [Ma10p_1080p]/SPs/[VCB-Studio] World Trigger 3rd Season [NCED][Ma10p_1080p][x265_flac].mkv",
-      "size": 78509090
+      "size": 78509090,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger 3rd Season [Ma10p_1080p]/SPs/[VCB-Studio] World Trigger 3rd Season [NCOP][Ma10p_1080p][x265_flac].mkv",
-      "size": 186285904
+      "size": 186285904,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [01][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -595,7 +915,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [01][Ma10p_1080p][x265_flac].mkv",
-      "size": 1262760836
+      "size": 1262760836,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1379.215,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [02][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -603,7 +933,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [02][Ma10p_1080p][x265_flac].mkv",
-      "size": 1143006163
+      "size": 1143006163,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1378.254,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [03][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -611,7 +951,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [03][Ma10p_1080p][x265_flac].mkv",
-      "size": 1179005369
+      "size": 1179005369,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1376.21,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [04][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -619,7 +969,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [04][Ma10p_1080p][x265_flac].mkv",
-      "size": 1271936027
+      "size": 1271936027,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1374.291,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [05][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -627,7 +987,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [05][Ma10p_1080p][x265_flac].mkv",
-      "size": 1102650690
+      "size": 1102650690,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1373.206,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [06][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -635,7 +1005,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [06][Ma10p_1080p][x265_flac].mkv",
-      "size": 1266612064
+      "size": 1266612064,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1371.12,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [07][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -643,7 +1023,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [07][Ma10p_1080p][x265_flac].mkv",
-      "size": 1060084586
+      "size": 1060084586,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1374.21,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [08][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -651,7 +1041,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [08][Ma10p_1080p][x265_flac].mkv",
-      "size": 1194144767
+      "size": 1194144767,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1373.249,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [09][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -659,7 +1059,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [09][Ma10p_1080p][x265_flac].mkv",
-      "size": 1013052585
+      "size": 1013052585,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1376.502,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [10][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -667,7 +1077,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [10][Ma10p_1080p][x265_flac].mkv",
-      "size": 1068666818
+      "size": 1068666818,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1378.296,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [11][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -675,7 +1095,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [11][Ma10p_1080p][x265_flac].mkv",
-      "size": 1091480944
+      "size": 1091480944,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1428.681,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [12][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -683,7 +1113,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [12][Ma10p_1080p][x265_flac].mkv",
-      "size": 1060079024
+      "size": 1060079024,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1375.709,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [13][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -691,7 +1131,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [13][Ma10p_1080p][x265_flac].mkv",
-      "size": 1078110178
+      "size": 1078110178,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1378.215,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [14][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -699,7 +1149,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [14][Ma10p_1080p][x265_flac].mkv",
-      "size": 1086682553
+      "size": 1086682553,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1377.711,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [15][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -707,7 +1167,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [15][Ma10p_1080p][x265_flac].mkv",
-      "size": 1226995167
+      "size": 1226995167,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1346.18,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [16][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -715,7 +1185,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [16][Ma10p_1080p][x265_flac].mkv",
-      "size": 1380723417
+      "size": 1380723417,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1348.64,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [17][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -723,7 +1203,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [17][Ma10p_1080p][x265_flac].mkv",
-      "size": 1355886462
+      "size": 1355886462,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1348.226,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [18][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -731,7 +1221,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [18][Ma10p_1080p][x265_flac].mkv",
-      "size": 1315053401
+      "size": 1315053401,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1376.209,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [19][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -739,7 +1239,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [19][Ma10p_1080p][x265_flac].mkv",
-      "size": 1217811211
+      "size": 1217811211,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1384.26,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [20][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -747,7 +1257,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [20][Ma10p_1080p][x265_flac].mkv",
-      "size": 1256352510
+      "size": 1256352510,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1383.217,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [21][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -755,7 +1275,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [21][Ma10p_1080p][x265_flac].mkv",
-      "size": 1191940261
+      "size": 1191940261,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1366.242,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [22][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -763,7 +1293,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [22][Ma10p_1080p][x265_flac].mkv",
-      "size": 1507411899
+      "size": 1507411899,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1384.217,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [23][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -771,7 +1311,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [23][Ma10p_1080p][x265_flac].mkv",
-      "size": 1341218594
+      "size": 1341218594,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1383.299,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [24][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -779,7 +1329,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [24][Ma10p_1080p][x265_flac].mkv",
-      "size": 1536465065
+      "size": 1536465065,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1381.255,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [25][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -787,7 +1347,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [25][Ma10p_1080p][x265_flac].mkv",
-      "size": 1534708068
+      "size": 1534708068,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1384.26,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [26][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -795,7 +1365,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [26][Ma10p_1080p][x265_flac].mkv",
-      "size": 1510647985
+      "size": 1510647985,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1383.177,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [27][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -803,7 +1383,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [27][Ma10p_1080p][x265_flac].mkv",
-      "size": 1660060465
+      "size": 1660060465,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1381.13,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [28][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -811,7 +1401,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [28][Ma10p_1080p][x265_flac].mkv",
-      "size": 1397473055
+      "size": 1397473055,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1384.22,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [29][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -819,7 +1419,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [29][Ma10p_1080p][x265_flac].mkv",
-      "size": 1425251786
+      "size": 1425251786,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1383.174,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [30][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -827,7 +1437,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [30][Ma10p_1080p][x265_flac].mkv",
-      "size": 1410426578
+      "size": 1410426578,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1356.146,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [31][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -835,7 +1455,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [31][Ma10p_1080p][x265_flac].mkv",
-      "size": 1455797100
+      "size": 1455797100,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1359.195,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [32][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -843,7 +1473,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [32][Ma10p_1080p][x265_flac].mkv",
-      "size": 1549549292
+      "size": 1549549292,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1358.149,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [33][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -851,7 +1491,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [33][Ma10p_1080p][x265_flac].mkv",
-      "size": 1638145127
+      "size": 1638145127,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1366.241,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [34][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -859,7 +1509,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [34][Ma10p_1080p][x265_flac].mkv",
-      "size": 1499166450
+      "size": 1499166450,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1384.26,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [35][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -867,7 +1527,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [35][Ma10p_1080p][x265_flac].mkv",
-      "size": 1512917898
+      "size": 1512917898,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1383.217,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [36][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -875,7 +1545,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [36][Ma10p_1080p][x265_flac].mkv",
-      "size": 1238327534
+      "size": 1238327534,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1381.173,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [37][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -883,7 +1563,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [37][Ma10p_1080p][x265_flac].mkv",
-      "size": 1315637218
+      "size": 1315637218,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1384.22,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [38][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -891,7 +1581,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [38][Ma10p_1080p][x265_flac].mkv",
-      "size": 1222118772
+      "size": 1222118772,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1383.175,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [39][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -899,7 +1599,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [39][Ma10p_1080p][x265_flac].mkv",
-      "size": 1285465844
+      "size": 1285465844,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1381.255,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [40][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -907,7 +1617,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [40][Ma10p_1080p][x265_flac].mkv",
-      "size": 1529965836
+      "size": 1529965836,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1384.135,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [41][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -915,7 +1635,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [41][Ma10p_1080p][x265_flac].mkv",
-      "size": 1484800076
+      "size": 1484800076,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1383.177,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [42][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -923,7 +1653,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [42][Ma10p_1080p][x265_flac].mkv",
-      "size": 1086650845
+      "size": 1086650845,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1361.234,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [43][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -931,7 +1671,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [43][Ma10p_1080p][x265_flac].mkv",
-      "size": 1342233658
+      "size": 1342233658,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1364.2,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [44][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -939,7 +1689,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [44][Ma10p_1080p][x265_flac].mkv",
-      "size": 1519089017
+      "size": 1519089017,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1363.279,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [45][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -947,7 +1707,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [45][Ma10p_1080p][x265_flac].mkv",
-      "size": 1469285440
+      "size": 1469285440,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1381.171,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [46][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -955,7 +1725,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [46][Ma10p_1080p][x265_flac].mkv",
-      "size": 1555625612
+      "size": 1555625612,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1384.095,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [47][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -963,7 +1743,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [47][Ma10p_1080p][x265_flac].mkv",
-      "size": 1386680846
+      "size": 1386680846,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1383.174,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [48][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -971,7 +1761,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [48][Ma10p_1080p][x265_flac].mkv",
-      "size": 1322168342
+      "size": 1322168342,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1381.215,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [49][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -979,7 +1779,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [49][Ma10p_1080p][x265_flac].mkv",
-      "size": 1491589304
+      "size": 1491589304,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1364.24,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [50][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -987,7 +1797,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [50][Ma10p_1080p][x265_flac].mkv",
-      "size": 1274951214
+      "size": 1274951214,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1363.157,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [51][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -995,7 +1815,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [51][Ma10p_1080p][x265_flac].mkv",
-      "size": 1353202039
+      "size": 1353202039,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1363.239,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [52][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -1003,7 +1833,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [52][Ma10p_1080p][x265_flac].mkv",
-      "size": 1316718638
+      "size": 1316718638,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1363.28,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [53][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -1011,7 +1851,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [53][Ma10p_1080p][x265_flac].mkv",
-      "size": 1396027518
+      "size": 1396027518,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1363.156,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [54][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -1019,7 +1869,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [54][Ma10p_1080p][x265_flac].mkv",
-      "size": 1501201161
+      "size": 1501201161,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1381.255,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [55][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -1027,7 +1887,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [55][Ma10p_1080p][x265_flac].mkv",
-      "size": 1672174167
+      "size": 1672174167,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1384.175,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [56][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -1035,7 +1905,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [56][Ma10p_1080p][x265_flac].mkv",
-      "size": 1296669006
+      "size": 1296669006,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1383.176,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [57][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -1043,7 +1923,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [57][Ma10p_1080p][x265_flac].mkv",
-      "size": 1315476273
+      "size": 1315476273,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1383.257,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [58][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -1051,7 +1941,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [58][Ma10p_1080p][x265_flac].mkv",
-      "size": 1473092199
+      "size": 1473092199,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1383.175,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [59][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -1059,7 +1959,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [59][Ma10p_1080p][x265_flac].mkv",
-      "size": 1408147972
+      "size": 1408147972,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1383.217,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [60][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -1067,7 +1977,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [60][Ma10p_1080p][x265_flac].mkv",
-      "size": 1331594172
+      "size": 1331594172,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1381.213,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [61][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -1075,7 +1995,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [61][Ma10p_1080p][x265_flac].mkv",
-      "size": 1371282611
+      "size": 1371282611,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1364.24,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [62][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -1083,7 +2013,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [62][Ma10p_1080p][x265_flac].mkv",
-      "size": 1342031263
+      "size": 1342031263,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1363.157,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [63][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -1091,7 +2031,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [63][Ma10p_1080p][x265_flac].mkv",
-      "size": 1481792073
+      "size": 1481792073,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1363.199,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [64][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -1099,7 +2049,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [64][Ma10p_1080p][x265_flac].mkv",
-      "size": 1485127549
+      "size": 1485127549,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1363.113,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [65][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -1107,7 +2067,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [65][Ma10p_1080p][x265_flac].mkv",
-      "size": 1396653652
+      "size": 1396653652,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1363.197,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [66][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -1115,7 +2085,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [66][Ma10p_1080p][x265_flac].mkv",
-      "size": 1169183059
+      "size": 1169183059,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1381.214,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [67][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -1123,7 +2103,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [67][Ma10p_1080p][x265_flac].mkv",
-      "size": 1357053935
+      "size": 1357053935,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1384.135,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [68][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -1131,7 +2121,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [68][Ma10p_1080p][x265_flac].mkv",
-      "size": 1461124667
+      "size": 1461124667,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1383.257,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [69][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -1139,7 +2139,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [69][Ma10p_1080p][x265_flac].mkv",
-      "size": 1642047418
+      "size": 1642047418,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1368.12,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [70][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -1147,7 +2157,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [70][Ma10p_1080p][x265_flac].mkv",
-      "size": 1466219866
+      "size": 1466219866,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1383.176,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [71][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -1155,7 +2175,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [71][Ma10p_1080p][x265_flac].mkv",
-      "size": 1435527128
+      "size": 1435527128,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1383.26,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [72][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -1163,7 +2193,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [72][Ma10p_1080p][x265_flac].mkv",
-      "size": 1335327826
+      "size": 1335327826,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1383.133,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [73][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -1171,7 +2211,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/[VCB-Studio] World Trigger [73][Ma10p_1080p][x265_flac].mkv",
-      "size": 1195492940
+      "size": 1195492940,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1366.073,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/CDs/[141105] ｢GIRIGIRI／笑顔の理由。｣／ソナーポケット (flac+webp)/01. GIRIGIRI.flac",
@@ -1547,75 +2597,255 @@
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/SPs/[VCB-Studio] World Trigger [Cast Talk 01_1][Ma10p_720p][x265_ac3].mkv",
-      "size": 549216418
+      "size": 549216418,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1464.529,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/SPs/[VCB-Studio] World Trigger [Cast Talk 01_2][Ma10p_720p][x265_ac3].mkv",
-      "size": 233861547
+      "size": 233861547,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 706.672,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/SPs/[VCB-Studio] World Trigger [Cast Talk 02_1][Ma10p_720p][x265_ac3].mkv",
-      "size": 567962621
+      "size": 567962621,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1611.576,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/SPs/[VCB-Studio] World Trigger [Cast Talk 02_2][Ma10p_720p][x265_ac3].mkv",
-      "size": 209543698
+      "size": 209543698,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 571.404,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/SPs/[VCB-Studio] World Trigger [Cast Talk 03_1][Ma10p_720p][x265_ac3].mkv",
-      "size": 510229496
+      "size": 510229496,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 2257.522,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/SPs/[VCB-Studio] World Trigger [Cast Talk 03_2][Ma10p_720p][x265_ac3].mkv",
-      "size": 198741288
+      "size": 198741288,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 609.775,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/SPs/[VCB-Studio] World Trigger [Cast Talk 04_1][Ma10p_720p][x265_ac3].mkv",
-      "size": 548778855
+      "size": 548778855,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 2234.499,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/SPs/[VCB-Studio] World Trigger [Cast Talk 04_2][Ma10p_720p][x265_ac3].mkv",
-      "size": 285327681
+      "size": 285327681,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 725.157,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/SPs/[VCB-Studio] World Trigger [Cast Talk 05_1][Ma10p_720p][x265_ac3].mkv",
-      "size": 441027376
+      "size": 441027376,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1676.441,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/SPs/[VCB-Studio] World Trigger [Cast Talk 05_2][Ma10p_720p][x265_ac3].mkv",
-      "size": 250802332
+      "size": 250802332,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 647.113,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/SPs/[VCB-Studio] World Trigger [Cast Talk 06_1][Ma10p_720p][x265_ac3].mkv",
-      "size": 344638357
+      "size": 344638357,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1331.063,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/SPs/[VCB-Studio] World Trigger [Cast Talk 06_2][Ma10p_720p][x265_ac3].mkv",
-      "size": 266323718
+      "size": 266323718,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 741.14,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/SPs/[VCB-Studio] World Trigger [Cast Talk 07_1][Ma10p_720p][x265_ac3].mkv",
-      "size": 565209555
+      "size": 565209555,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1780.845,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/SPs/[VCB-Studio] World Trigger [Cast Talk 07_2][Ma10p_720p][x265_ac3].mkv",
-      "size": 177978769
+      "size": 177978769,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 479.946,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/SPs/[VCB-Studio] World Trigger [Cast Talk 08_1][Ma10p_720p][x265_ac3].mkv",
-      "size": 627735806
+      "size": 627735806,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 2369.634,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/SPs/[VCB-Studio] World Trigger [Cast Talk 08_2][Ma10p_720p][x265_ac3].mkv",
-      "size": 319469216
+      "size": 319469216,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 792.425,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/SPs/[VCB-Studio] World Trigger [Cast Talk Extra Part1][Ma10p_720p][x265_ac3].mkv",
-      "size": 935797701
+      "size": 935797701,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 4898.393,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/SPs/[VCB-Studio] World Trigger [Cast Talk Extra Part2][Ma10p_720p][x265_ac3].mkv",
-      "size": 1016382920
+      "size": 1016382920,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 5259.387,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/SPs/[VCB-Studio] World Trigger [Character&Accessory Setting Gallery 01].7z",
@@ -1643,27 +2873,87 @@
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/SPs/[VCB-Studio] World Trigger [Game PV 01][Ma10p_1080p][x265_flac].mkv",
-      "size": 198781535
+      "size": 198781535,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 95.095,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/SPs/[VCB-Studio] World Trigger [Game PV 02][Ma10p_1080p][x265_flac].mkv",
-      "size": 182165581
+      "size": 182165581,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 80.08,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/SPs/[VCB-Studio] World Trigger [Game PV 03][Ma10p_1080p][x265_flac].mkv",
-      "size": 195487534
+      "size": 195487534,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 97.065,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/SPs/[VCB-Studio] World Trigger [Game PV 04][Ma10p_1080p][x265_flac].mkv",
-      "size": 380344908
+      "size": 380344908,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 241.241,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/SPs/[VCB-Studio] World Trigger [Game PV 05][Ma10p_1080p][x265_flac].mkv",
-      "size": 59872693
+      "size": 59872693,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 32.032,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/SPs/[VCB-Studio] World Trigger [Game PV 06][Ma10p_1080p][x265_flac].mkv",
-      "size": 368372958
+      "size": 368372958,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 231.231,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/SPs/[VCB-Studio] World Trigger [Illustration Gallery 01].7z",
@@ -1687,75 +2977,255 @@
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/SPs/[VCB-Studio] World Trigger [Jump Super Stage][Ma10p_720p][x265_ac3].mkv",
-      "size": 417622449
+      "size": 417622449,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 2015.079,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/SPs/[VCB-Studio] World Trigger [Menu01][Ma10p_1080p][x265_flac].mkv",
-      "size": 43047194
+      "size": 43047194,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 115.574,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 3,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/SPs/[VCB-Studio] World Trigger [Menu02][Ma10p_1080p][x265_flac].mkv",
-      "size": 43067088
+      "size": 43067088,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 115.574,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 3,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/SPs/[VCB-Studio] World Trigger [Menu03][Ma10p_1080p][x265_flac].mkv",
-      "size": 43267521
+      "size": 43267521,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 115.574,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 3,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/SPs/[VCB-Studio] World Trigger [Menu04][Ma10p_1080p][x265_flac].mkv",
-      "size": 42836026
+      "size": 42836026,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 115.574,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 3,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/SPs/[VCB-Studio] World Trigger [Menu05][Ma10p_1080p][x265_flac].mkv",
-      "size": 44107613
+      "size": 44107613,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 115.574,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 3,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/SPs/[VCB-Studio] World Trigger [Menu06][Ma10p_1080p][x265_flac].mkv",
-      "size": 45107850
+      "size": 45107850,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 115.574,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 3,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/SPs/[VCB-Studio] World Trigger [Menu07][Ma10p_1080p][x265_flac].mkv",
-      "size": 45157964
+      "size": 45157964,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 115.574,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 3,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/SPs/[VCB-Studio] World Trigger [Menu08][Ma10p_1080p][x265_flac].mkv",
-      "size": 45512627
+      "size": 45512627,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 115.574,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 3,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/SPs/[VCB-Studio] World Trigger [Menu09][Ma10p_1080p][x265_flac].mkv",
-      "size": 45742559
+      "size": 45742559,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 115.574,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 3,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/SPs/[VCB-Studio] World Trigger [Menu10][Ma10p_1080p][x265_flac].mkv",
-      "size": 44779913
+      "size": 44779913,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 115.574,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 3,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/SPs/[VCB-Studio] World Trigger [Menu11][Ma10p_1080p][x265_flac].mkv",
-      "size": 44299918
+      "size": 44299918,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 115.574,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 3,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/SPs/[VCB-Studio] World Trigger [Menu12][Ma10p_1080p][x265_flac].mkv",
-      "size": 45741639
+      "size": 45741639,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 115.574,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 3,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/SPs/[VCB-Studio] World Trigger [Menu13][Ma10p_1080p][x265_flac].mkv",
-      "size": 44561682
+      "size": 44561682,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 115.574,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 3,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/SPs/[VCB-Studio] World Trigger [Menu14][Ma10p_1080p][x265_flac].mkv",
-      "size": 44281684
+      "size": 44281684,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 115.574,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 3,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/SPs/[VCB-Studio] World Trigger [Menu15][Ma10p_1080p][x265_flac].mkv",
-      "size": 44387022
+      "size": 44387022,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 115.574,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 3,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/SPs/[VCB-Studio] World Trigger [Menu16][Ma10p_1080p][x265_flac].mkv",
-      "size": 44752741
+      "size": 44752741,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 115.574,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 3,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/SPs/[VCB-Studio] World Trigger [Menu17_1][Ma10p_1080p][x265_flac].mkv",
-      "size": 45305758
+      "size": 45305758,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 115.574,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 3,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/SPs/[VCB-Studio] World Trigger [Menu17_2].png",
@@ -1763,7 +3233,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/SPs/[VCB-Studio] World Trigger [Menu18_1][Ma10p_1080p][x265_flac].mkv",
-      "size": 43103229
+      "size": 43103229,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 115.574,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 3,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/SPs/[VCB-Studio] World Trigger [Menu18_2].png",
@@ -1771,7 +3251,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/SPs/[VCB-Studio] World Trigger [Menu19_1][Ma10p_1080p][x265_flac].mkv",
-      "size": 44873157
+      "size": 44873157,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 115.574,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 3,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/SPs/[VCB-Studio] World Trigger [Menu19_2].png",
@@ -1779,7 +3269,17 @@
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/SPs/[VCB-Studio] World Trigger [Menu20_1][Ma10p_1080p][x265_flac].mkv",
-      "size": 44845891
+      "size": 44845891,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 115.574,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 3,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/SPs/[VCB-Studio] World Trigger [Menu20_2].png",
@@ -1855,15 +3355,76 @@
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/SPs/[VCB-Studio] World Trigger [NCOP01][Ma10p_1080p][x265_flac].mkv",
-      "size": 129057565
+      "size": 129057565,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.095,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/SPs/[VCB-Studio] World Trigger [NCOP02][Ma10p_1080p][x265_flac].mkv",
-      "size": 121833317
+      "size": 121833317,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] World Trigger [Ma10p_1080p]/SPs/[VCB-Studio] World Trigger [Shinjuku Night Event][Ma10p_720p][x265_ac3].mkv",
-      "size": 930461940
+      "size": 930461940,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 2853.283,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     }
-  ]
+  ],
+  "local_container_fact_summary": {
+    "container_fact_count": 153,
+    "probe_status_counts": {
+      "available": 153
+    },
+    "duration_seconds_range": [
+      32.032,
+      5259.387
+    ],
+    "duration_seconds_samples": [
+      1391.232,
+      1391.225,
+      1391.225,
+      1391.317,
+      1391.185,
+      1391.146
+    ]
+  },
+  "local_container_fact_source": {
+    "kind": "real_local_media_duration_backfill",
+    "media_root": "H:\\Anime",
+    "probe_media": true,
+    "container_probe": "ffprobe",
+    "embedded_in": "files[].container_facts",
+    "matched_file_count": 466,
+    "matched_video_count": 153,
+    "missing_actual_video_count": 0,
+    "match_stats": {
+      "matched_by_root_path": 466
+    }
+  }
 }

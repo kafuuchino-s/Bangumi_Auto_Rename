@@ -142,7 +142,7 @@ def build_local_package_projection(local_evidence_summary: dict[str, Any] | None
                 _basename(item.get('relative_path') or item.get('name'))
                 for item in main_files
             ], 12),
-            'note': 'raw filenames only; ordinal and episode-like tokens are interpreted by LocalStructureAgent',
+            'note': 'raw filenames only; ordinal and episode-like tokens are interpreted by the Pi Case Agent',
         },
         'raw_bracket_text_samples': raw_bracket_text_samples,
         'raw_path_text_samples': raw_path_text_samples[:20],
@@ -182,7 +182,7 @@ def build_local_package_projection(local_evidence_summary: dict[str, Any] | None
                         _basename(item.get('relative_path') or item.get('name'))
                         for item in main_files
                     ], 4),
-                    'note': 'raw filenames only; ordinal and episode-like tokens are interpreted by LocalStructureAgent',
+                    'note': 'raw filenames only; ordinal and episode-like tokens are interpreted by the Pi Case Agent',
                 },
                 'raw_bracket_text_samples': raw_bracket_text_samples[:3],
                 'raw_path_text_samples': raw_path_text_samples[:5],

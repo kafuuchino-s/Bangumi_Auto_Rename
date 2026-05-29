@@ -33,7 +33,7 @@ Web UI / qBittorrent webhook
 
 核心模块：
 
-- `case_planner.py`: case planning phase，决定 one case / split / request evidence / fail closed。
+- `pi_runner.py` / `pi_tools.py`: Pi runtime bridge and bounded tool surface，负责自由调查、case-run artifacts、Bangumi evidence、最终 submit/fail_closed gate。
 - `workspace.py`: 可见 local refs、Bangumi refs、query cards 和合同。
 - `evidence_broker.py` + `broker_*.py`: broker-driven Bangumi 取证。
 - `mapping_draft.py`: 工作草稿和 accounting。

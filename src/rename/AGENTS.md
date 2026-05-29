@@ -9,7 +9,7 @@
 | Task | Location | Notes |
 | --- | --- | --- |
 | 主入口 | `process.py` | `Rename.process()` / `_process()` |
-| Local→Bangumi Case Agent | `case_agent/` | planning、evidence broker、MappingDraft、AssignmentExpander、Verifier、audit |
+| Local→Bangumi Case Agent | `case_agent/` | Pi runner/tools、evidence broker、MappingDraft、AssignmentExpander、Verifier、audit |
 | 本地事实 | `local_evidence.py` | 本地包文件、主视频候选、补充文件事实 |
 | Bangumi API | `src/bangumi/` | broker-driven evidence source |
 | 标题清洗 | `cleaner.py` | 低风险 deterministic 预处理 |
@@ -27,6 +27,6 @@
 ## Change Checklist
 
 - 改入口路由：看 `process.py` 和 `case_agent/local_bangumi_entry.py`。
-- 改判定语义：看 `case_agent/orchestrator.py`、`case_agent/verifier.py`、`case_agent/mapping_draft.py`。
+- 改判定语义：看 `case_agent/pi_runner.py`、`case_agent/pi_tools.py`、`case_agent/verifier.py`、`case_agent/mapping_draft.py`。
 - 改取证能力：看 `case_agent/evidence_broker.py` 和 `case_agent/broker_*.py`。
 - 改样本回归：保留 `tests/sample_pool/raw`，不要恢复旧 `generated / manifest / anchors` harness。

@@ -7,7 +7,17 @@
     },
     {
       "path": "[AI-Raws] ばらかもん #01 (BD HEVC 1920x1080 FLAC)[5FAA5D07].mkv",
-      "size": 1071739599
+      "size": 1071739599,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1373.21,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[AI-Raws] ばらかもん #02 (BD HEVC 1920x1080 FLAC)[18DA0909].default.chs.ass",
@@ -15,7 +25,17 @@
     },
     {
       "path": "[AI-Raws] ばらかもん #02 (BD HEVC 1920x1080 FLAC)[18DA0909].mkv",
-      "size": 1043695069
+      "size": 1043695069,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1372.705,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[AI-Raws] ばらかもん #03 (BD HEVC 1920x1080 FLAC)[059BD5B1].default.chs.ass",
@@ -23,7 +43,17 @@
     },
     {
       "path": "[AI-Raws] ばらかもん #03 (BD HEVC 1920x1080 FLAC)[059BD5B1].mkv",
-      "size": 1083766784
+      "size": 1083766784,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1372.205,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[AI-Raws] ばらかもん #04 (BD HEVC 1920x1080 FLAC)[0A5CCECB].default.chs.ass",
@@ -31,7 +61,17 @@
     },
     {
       "path": "[AI-Raws] ばらかもん #04 (BD HEVC 1920x1080 FLAC)[0A5CCECB].mkv",
-      "size": 1074469230
+      "size": 1074469230,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1373.04,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[AI-Raws] ばらかもん #05 (BD HEVC 1920x1080 FLAC)[D1A5F9D1].default.chs.ass",
@@ -39,7 +79,17 @@
     },
     {
       "path": "[AI-Raws] ばらかもん #05 (BD HEVC 1920x1080 FLAC)[D1A5F9D1].mkv",
-      "size": 1202820427
+      "size": 1202820427,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1373.04,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[AI-Raws] ばらかもん #06 (BD HEVC 1920x1080 FLAC)[06C6A681].default.chs.ass",
@@ -47,7 +97,17 @@
     },
     {
       "path": "[AI-Raws] ばらかもん #06 (BD HEVC 1920x1080 FLAC)[06C6A681].mkv",
-      "size": 1123920555
+      "size": 1123920555,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1371.245,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[AI-Raws] ばらかもん #07 (BD HEVC 1920x1080 FLAC)[9282682C].default.chs.ass",
@@ -55,7 +115,17 @@
     },
     {
       "path": "[AI-Raws] ばらかもん #07 (BD HEVC 1920x1080 FLAC)[9282682C].mkv",
-      "size": 1015682838
+      "size": 1015682838,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1372.205,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[AI-Raws] ばらかもん #08 (BD HEVC 1920x1080 FLAC)[47FE967A].default.chs.ass",
@@ -63,7 +133,17 @@
     },
     {
       "path": "[AI-Raws] ばらかもん #08 (BD HEVC 1920x1080 FLAC)[47FE967A].mkv",
-      "size": 1107267346
+      "size": 1107267346,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1373.21,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[AI-Raws] ばらかもん #09 (BD HEVC 1920x1080 FLAC)[4049F37C].default.chs.ass",
@@ -71,7 +151,17 @@
     },
     {
       "path": "[AI-Raws] ばらかもん #09 (BD HEVC 1920x1080 FLAC)[4049F37C].mkv",
-      "size": 1070823052
+      "size": 1070823052,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1372.205,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[AI-Raws] ばらかもん #10 (BD HEVC 1920x1080 FLAC)[DB49119C].default.chs.ass",
@@ -79,7 +169,17 @@
     },
     {
       "path": "[AI-Raws] ばらかもん #10 (BD HEVC 1920x1080 FLAC)[DB49119C].mkv",
-      "size": 1069800212
+      "size": 1069800212,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1396.228,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[AI-Raws] ばらかもん #11 (BD HEVC 1920x1080 FLAC)[66B2C3AF].default.chs.ass",
@@ -87,7 +187,17 @@
     },
     {
       "path": "[AI-Raws] ばらかもん #11 (BD HEVC 1920x1080 FLAC)[66B2C3AF].mkv",
-      "size": 888363985
+      "size": 888363985,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1372.04,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[AI-Raws] ばらかもん #12 (BD HEVC 1920x1080 FLAC)[24F92624].default.chs.ass",
@@ -95,19 +205,59 @@
     },
     {
       "path": "[AI-Raws] ばらかもん #12 (BD HEVC 1920x1080 FLAC)[24F92624].mkv",
-      "size": 1038967060
+      "size": 1038967060,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1371.04,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[AI-Raws] ばらかもん PV・CM集 (BD HEVC 1920x1080 FLAC)[4FCB7688].mkv",
-      "size": 251672819
+      "size": 251672819,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 264.6,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[AI-Raws] ばらかもん おのせんせい／はらすずこの五島ばらか旅#01 (BD HEVC 1920x1080 FLAC)[3ACF37ED].mkv",
-      "size": 4196479124
+      "size": 4196479124,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 3986.985,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[AI-Raws] ばらかもん おのせんせい／はらすずこの五島ばらか旅#02 (BD HEVC 1920x1080 FLAC)[F81E846C].mkv",
-      "size": 3785041126
+      "size": 3785041126,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 3535.532,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[AI-Raws] ばらかもん みじかもん #00 (BD HEVC 1920x1080 FLAC)[3A3550EB].default.chs.ass",
@@ -115,7 +265,17 @@
     },
     {
       "path": "[AI-Raws] ばらかもん みじかもん #00 (BD HEVC 1920x1080 FLAC)[3A3550EB].mkv",
-      "size": 78020107
+      "size": 78020107,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 132.156,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[AI-Raws] ばらかもん みじかもん #01 (BD HEVC 1920x1080 FLAC)[487DF5DB].default.chs.ass",
@@ -123,7 +283,17 @@
     },
     {
       "path": "[AI-Raws] ばらかもん みじかもん #01 (BD HEVC 1920x1080 FLAC)[487DF5DB].mkv",
-      "size": 51854449
+      "size": 51854449,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 98.461,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[AI-Raws] ばらかもん みじかもん #02 (BD HEVC 1920x1080 FLAC)[B5564E4E].default.chs.ass",
@@ -131,7 +301,17 @@
     },
     {
       "path": "[AI-Raws] ばらかもん みじかもん #02 (BD HEVC 1920x1080 FLAC)[B5564E4E].mkv",
-      "size": 62457005
+      "size": 62457005,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 100.436,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[AI-Raws] ばらかもん みじかもん #03 (BD HEVC 1920x1080 FLAC)[B8CD4D16].default.chs.ass",
@@ -139,7 +319,17 @@
     },
     {
       "path": "[AI-Raws] ばらかもん みじかもん #03 (BD HEVC 1920x1080 FLAC)[B8CD4D16].mkv",
-      "size": 52262421
+      "size": 52262421,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 95.095,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[AI-Raws] ばらかもん みじかもん #04 (BD HEVC 1920x1080 FLAC)[59AA8B86].default.chs.ass",
@@ -147,7 +337,17 @@
     },
     {
       "path": "[AI-Raws] ばらかもん みじかもん #04 (BD HEVC 1920x1080 FLAC)[59AA8B86].mkv",
-      "size": 54047544
+      "size": 54047544,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 125.626,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[AI-Raws] ばらかもん みじかもん #05 (BD HEVC 1920x1080 FLAC)[E5760FAC].default.chs.ass",
@@ -155,7 +355,17 @@
     },
     {
       "path": "[AI-Raws] ばらかもん みじかもん #05 (BD HEVC 1920x1080 FLAC)[E5760FAC].mkv",
-      "size": 67405478
+      "size": 67405478,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 122.814,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[AI-Raws] ばらかもん みじかもん #06 (BD HEVC 1920x1080 FLAC)[CE7534EB].default.chs.ass",
@@ -163,7 +373,17 @@
     },
     {
       "path": "[AI-Raws] ばらかもん みじかもん #06 (BD HEVC 1920x1080 FLAC)[CE7534EB].mkv",
-      "size": 94258675
+      "size": 94258675,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 114.448,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[AI-Raws] ばらかもん みじかもん #07 (BD HEVC 1920x1080 FLAC)[2E003B7B].default.chs.ass",
@@ -171,7 +391,17 @@
     },
     {
       "path": "[AI-Raws] ばらかもん みじかもん #07 (BD HEVC 1920x1080 FLAC)[2E003B7B].mkv",
-      "size": 88195386
+      "size": 88195386,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 120.468,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[AI-Raws] ばらかもん みじかもん #08 (BD HEVC 1920x1080 FLAC)[828F4DFE].default.chs.ass",
@@ -179,7 +409,17 @@
     },
     {
       "path": "[AI-Raws] ばらかもん みじかもん #08 (BD HEVC 1920x1080 FLAC)[828F4DFE].mkv",
-      "size": 39258408
+      "size": 39258408,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 106.796,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[AI-Raws] ばらかもん みじかもん #09 (BD HEVC 1920x1080 FLAC)[A23982CF].default.chs.ass",
@@ -187,7 +427,17 @@
     },
     {
       "path": "[AI-Raws] ばらかもん みじかもん #09 (BD HEVC 1920x1080 FLAC)[A23982CF].mkv",
-      "size": 62941110
+      "size": 62941110,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 158.743,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[AI-Raws] ばらかもん みじかもん #10 (BD HEVC 1920x1080 FLAC)[68B1F5A9].default.chs.ass",
@@ -195,7 +445,17 @@
     },
     {
       "path": "[AI-Raws] ばらかもん みじかもん #10 (BD HEVC 1920x1080 FLAC)[68B1F5A9].mkv",
-      "size": 70754454
+      "size": 70754454,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 139.813,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[AI-Raws] ばらかもん みじかもん #11 (BD HEVC 1920x1080 FLAC)[4A2FBCFC].default.chs.ass",
@@ -203,7 +463,17 @@
     },
     {
       "path": "[AI-Raws] ばらかもん みじかもん #11 (BD HEVC 1920x1080 FLAC)[4A2FBCFC].mkv",
-      "size": 65534984
+      "size": 65534984,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 143.163,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[AI-Raws] ばらかもん みじかもん #12 (BD HEVC 1920x1080 FLAC)[EF193E3D].default.chs.ass",
@@ -211,15 +481,76 @@
     },
     {
       "path": "[AI-Raws] ばらかもん みじかもん #12 (BD HEVC 1920x1080 FLAC)[EF193E3D].mkv",
-      "size": 112627335
+      "size": 112627335,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 162.497,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[AI-Raws] ばらかもん ノンクレジットED (BD HEVC 1920x1080 FLAC)[17770B6D].mkv",
-      "size": 178187777
+      "size": 178187777,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[AI-Raws] ばらかもん ノンクレジットOP (BD HEVC 1920x1080 FLAC)[7354858A].mkv",
-      "size": 97612437
+      "size": 97612437,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.091,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     }
-  ]
+  ],
+  "local_container_fact_summary": {
+    "container_fact_count": 30,
+    "probe_status_counts": {
+      "available": 30
+    },
+    "duration_seconds_range": [
+      91.09,
+      3986.985
+    ],
+    "duration_seconds_samples": [
+      1373.21,
+      1372.705,
+      1372.205,
+      1373.04,
+      1373.04,
+      1371.245
+    ]
+  },
+  "local_container_fact_source": {
+    "kind": "real_local_media_duration_backfill",
+    "media_root": "H:\\Anime",
+    "probe_media": true,
+    "container_probe": "ffprobe",
+    "embedded_in": "files[].container_facts",
+    "matched_file_count": 55,
+    "matched_video_count": 30,
+    "missing_actual_video_count": 0,
+    "match_stats": {
+      "matched_by_root_path": 55
+    }
+  }
 }

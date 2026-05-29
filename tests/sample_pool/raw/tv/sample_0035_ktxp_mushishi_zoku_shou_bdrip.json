@@ -3,7 +3,17 @@
   "files": [
     {
       "path": "[KTXP][Mushishi Tokubetsu Hen_Hihamu Kage][BDrip][x264_2flac][Hi10p][1080p].mkv",
-      "size": 2304584703
+      "size": 2304584703,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 2667.665,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[KTXP][Mushishi Tokubetsu Hen_Hihamu Kage][BDrip][x264_2flac][Hi10p][1080p][sc].ass",
@@ -15,7 +25,17 @@
     },
     {
       "path": "[KTXP][Mushishi Zoku Shou][Vol.1][BDrip]/[KTXP][Mushishi Zoku Shou][01][BDrip][x264_2flac][Hi10p][1080p].mkv",
-      "size": 1461326930
+      "size": 1461326930,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1426.55,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[KTXP][Mushishi Zoku Shou][Vol.1][BDrip]/[KTXP][Mushishi Zoku Shou][01][BDrip][x264_2flac][Hi10p][1080p][sc].ass",
@@ -27,7 +47,17 @@
     },
     {
       "path": "[KTXP][Mushishi Zoku Shou][Vol.1][BDrip]/[KTXP][Mushishi Zoku Shou][02][BDrip][x264_2flac][Hi10p][1080p].mkv",
-      "size": 1389431402
+      "size": 1389431402,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1426.175,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[KTXP][Mushishi Zoku Shou][Vol.1][BDrip]/[KTXP][Mushishi Zoku Shou][02][BDrip][x264_2flac][Hi10p][1080p][sc].ass",
@@ -39,7 +69,17 @@
     },
     {
       "path": "[KTXP][Mushishi Zoku Shou][Vol.1][BDrip]/[KTXP][Mushishi Zoku Shou][03][BDrip][x264_2flac][Hi10p][1080p].mkv",
-      "size": 1753709582
+      "size": 1753709582,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1426.008,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[KTXP][Mushishi Zoku Shou][Vol.1][BDrip]/[KTXP][Mushishi Zoku Shou][03][BDrip][x264_2flac][Hi10p][1080p][sc].ass",
@@ -51,7 +91,17 @@
     },
     {
       "path": "[KTXP][Mushishi Zoku Shou][Vol.1][BDrip]/[KTXP][Mushishi Zoku Shou][04][BDrip][x264_2flac][Hi10p][1080p].mkv",
-      "size": 1299985151
+      "size": 1299985151,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1426.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[KTXP][Mushishi Zoku Shou][Vol.1][BDrip]/[KTXP][Mushishi Zoku Shou][04][BDrip][x264_2flac][Hi10p][1080p][sc].ass",
@@ -67,7 +117,17 @@
     },
     {
       "path": "[KTXP][Mushishi Zoku Shou][Vol.2][BDrip]/[KTXP][Mushishi Zoku Shou][05][BDrip][x264_2flac][Hi10p][1080p].mkv",
-      "size": 1386158423
+      "size": 1386158423,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1426.05,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[KTXP][Mushishi Zoku Shou][Vol.2][BDrip]/[KTXP][Mushishi Zoku Shou][05][BDrip][x264_2flac][Hi10p][1080p][sc].ass",
@@ -79,7 +139,17 @@
     },
     {
       "path": "[KTXP][Mushishi Zoku Shou][Vol.2][BDrip]/[KTXP][Mushishi Zoku Shou][06][BDrip][x264_2flac][Hi10p][1080p].mkv",
-      "size": 1334370608
+      "size": 1334370608,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1426.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[KTXP][Mushishi Zoku Shou][Vol.2][BDrip]/[KTXP][Mushishi Zoku Shou][06][BDrip][x264_2flac][Hi10p][1080p][sc].ass",
@@ -91,7 +161,17 @@
     },
     {
       "path": "[KTXP][Mushishi Zoku Shou][Vol.2][BDrip]/[KTXP][Mushishi Zoku Shou][07][BDrip][x264_2flac][Hi10p][1080p].mkv",
-      "size": 1540272847
+      "size": 1540272847,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1426.175,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[KTXP][Mushishi Zoku Shou][Vol.2][BDrip]/[KTXP][Mushishi Zoku Shou][07][BDrip][x264_2flac][Hi10p][1080p][sc].ass",
@@ -103,7 +183,17 @@
     },
     {
       "path": "[KTXP][Mushishi Zoku Shou][Vol.2][BDrip]/[KTXP][Mushishi Zoku Shou][08][BDrip][x264_2flac][Hi10p][1080p].mkv",
-      "size": 1434601885
+      "size": 1434601885,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1426.05,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[KTXP][Mushishi Zoku Shou][Vol.2][BDrip]/[KTXP][Mushishi Zoku Shou][08][BDrip][x264_2flac][Hi10p][1080p][sc].ass",
@@ -119,7 +209,17 @@
     },
     {
       "path": "[KTXP][Mushishi Zoku Shou][Vol.3][BDrip]/[KTXP][Mushishi Tokubetsu Hen_Odoro no Michi][BDrip][x264_2flac][Hi10p][1080p].mkv",
-      "size": 2399854034
+      "size": 2399854034,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 2841.172,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[KTXP][Mushishi Zoku Shou][Vol.3][BDrip]/[KTXP][Mushishi Tokubetsu Hen_Odoro no Michi][BDrip][x264_2flac][Hi10p][1080p][sc].ass",
@@ -131,7 +231,17 @@
     },
     {
       "path": "[KTXP][Mushishi Zoku Shou][Vol.3][BDrip]/[KTXP][Mushishi Zoku Shou][09][BDrip][x264_2flac][Hi10p][1080p].mkv",
-      "size": 1611986640
+      "size": 1611986640,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1426.175,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[KTXP][Mushishi Zoku Shou][Vol.3][BDrip]/[KTXP][Mushishi Zoku Shou][09][BDrip][x264_2flac][Hi10p][1080p][sc].ass",
@@ -143,7 +253,17 @@
     },
     {
       "path": "[KTXP][Mushishi Zoku Shou][Vol.3][BDrip]/[KTXP][Mushishi Zoku Shou][10][BDrip][x264_2flac][Hi10p][1080p].mkv",
-      "size": 1845211942
+      "size": 1845211942,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1426.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[KTXP][Mushishi Zoku Shou][Vol.3][BDrip]/[KTXP][Mushishi Zoku Shou][10][BDrip][x264_2flac][Hi10p][1080p][sc].ass",
@@ -159,7 +279,17 @@
     },
     {
       "path": "[KTXP][Mushishi Zoku Shou][Vol.4][BDrip]/[KTXP][Mushishi Zoku Shou][11][BDrip][x264_2flac][Hi10p][1080p].mkv",
-      "size": 1345917601
+      "size": 1345917601,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1427.051,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[KTXP][Mushishi Zoku Shou][Vol.4][BDrip]/[KTXP][Mushishi Zoku Shou][11][BDrip][x264_2flac][Hi10p][1080p][sc].ass",
@@ -171,7 +301,17 @@
     },
     {
       "path": "[KTXP][Mushishi Zoku Shou][Vol.4][BDrip]/[KTXP][Mushishi Zoku Shou][12][BDrip][x264_2flac][Hi10p][1080p].mkv",
-      "size": 1087423090
+      "size": 1087423090,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1422.129,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[KTXP][Mushishi Zoku Shou][Vol.4][BDrip]/[KTXP][Mushishi Zoku Shou][12][BDrip][x264_2flac][Hi10p][1080p][sc].ass",
@@ -183,7 +323,17 @@
     },
     {
       "path": "[KTXP][Mushishi Zoku Shou][Vol.4][BDrip]/[KTXP][Mushishi Zoku Shou][13][BDrip][x264_2flac][Hi10p][1080p].mkv",
-      "size": 1076758841
+      "size": 1076758841,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1422.004,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[KTXP][Mushishi Zoku Shou][Vol.4][BDrip]/[KTXP][Mushishi Zoku Shou][13][BDrip][x264_2flac][Hi10p][1080p][sc].ass",
@@ -195,7 +345,17 @@
     },
     {
       "path": "[KTXP][Mushishi Zoku Shou][Vol.4][BDrip]/[KTXP][Mushishi Zoku Shou][14][BDrip][x264_2flac][Hi10p][1080p].mkv",
-      "size": 1264639516
+      "size": 1264639516,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1427.093,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[KTXP][Mushishi Zoku Shou][Vol.4][BDrip]/[KTXP][Mushishi Zoku Shou][14][BDrip][x264_2flac][Hi10p][1080p][sc].ass",
@@ -211,7 +371,17 @@
     },
     {
       "path": "[KTXP][Mushishi Zoku Shou][Vol.5][BDrip]/[KTXP][Mushishi Zoku Shou][15][BDrip][x264_2flac][Hi10p][1080p].mkv",
-      "size": 1150964360
+      "size": 1150964360,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1426.05,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[KTXP][Mushishi Zoku Shou][Vol.5][BDrip]/[KTXP][Mushishi Zoku Shou][15][BDrip][x264_2flac][Hi10p][1080p][sc].ass",
@@ -223,7 +393,17 @@
     },
     {
       "path": "[KTXP][Mushishi Zoku Shou][Vol.5][BDrip]/[KTXP][Mushishi Zoku Shou][16][BDrip][x264_2flac][Hi10p][1080p].mkv",
-      "size": 1319098711
+      "size": 1319098711,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1426.05,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[KTXP][Mushishi Zoku Shou][Vol.5][BDrip]/[KTXP][Mushishi Zoku Shou][16][BDrip][x264_2flac][Hi10p][1080p][sc].ass",
@@ -235,7 +415,17 @@
     },
     {
       "path": "[KTXP][Mushishi Zoku Shou][Vol.5][BDrip]/[KTXP][Mushishi Zoku Shou][17][BDrip][x264_2flac][Hi10p][1080p].mkv",
-      "size": 1250369920
+      "size": 1250369920,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1422.004,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[KTXP][Mushishi Zoku Shou][Vol.5][BDrip]/[KTXP][Mushishi Zoku Shou][17][BDrip][x264_2flac][Hi10p][1080p][sc].ass",
@@ -247,7 +437,17 @@
     },
     {
       "path": "[KTXP][Mushishi Zoku Shou][Vol.5][BDrip]/[KTXP][Mushishi Zoku Shou][18][BDrip][x264_2flac][Hi10p][1080p].mkv",
-      "size": 1291483036
+      "size": 1291483036,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1426.05,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[KTXP][Mushishi Zoku Shou][Vol.5][BDrip]/[KTXP][Mushishi Zoku Shou][18][BDrip][x264_2flac][Hi10p][1080p][sc].ass",
@@ -263,7 +463,17 @@
     },
     {
       "path": "[KTXP][Mushishi Zoku Shou][Vol.6][BDrip]/[KTXP][Mushishi Tokubetsu Hen_Suzu no Shizuku][BDrip][x264_flac_dtshdma_aac][Hi10p][1080p].mkv",
-      "size": 3421591526
+      "size": 3421591526,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 2827.838,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 3,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[KTXP][Mushishi Zoku Shou][Vol.6][BDrip]/[KTXP][Mushishi Tokubetsu Hen_Suzu no Shizuku][BDrip][x264_flac_dtshdma_aac][Hi10p][1080p][sc].ass",
@@ -275,7 +485,17 @@
     },
     {
       "path": "[KTXP][Mushishi Zoku Shou][Vol.6][BDrip]/[KTXP][Mushishi Zoku Shou][19][BDrip][x264_2flac][Hi10p][1080p].mkv",
-      "size": 1313049762
+      "size": 1313049762,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1426.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[KTXP][Mushishi Zoku Shou][Vol.6][BDrip]/[KTXP][Mushishi Zoku Shou][19][BDrip][x264_2flac][Hi10p][1080p][sc].ass",
@@ -287,7 +507,17 @@
     },
     {
       "path": "[KTXP][Mushishi Zoku Shou][Vol.6][BDrip]/[KTXP][Mushishi Zoku Shou][20][BDrip][x264_2flac][Hi10p][1080p].mkv",
-      "size": 1241681596
+      "size": 1241681596,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1422.088,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[KTXP][Mushishi Zoku Shou][Vol.6][BDrip]/[KTXP][Mushishi Zoku Shou][20][BDrip][x264_2flac][Hi10p][1080p][sc].ass",
@@ -305,5 +535,36 @@
       "path": "Fonts.rar",
       "size": 20171691
     }
-  ]
+  ],
+  "local_container_fact_summary": {
+    "container_fact_count": 23,
+    "probe_status_counts": {
+      "available": 23
+    },
+    "duration_seconds_range": [
+      1422.004,
+      2841.172
+    ],
+    "duration_seconds_samples": [
+      2667.665,
+      1426.55,
+      1426.175,
+      1426.008,
+      1426.092,
+      1426.05
+    ]
+  },
+  "local_container_fact_source": {
+    "kind": "real_local_media_duration_backfill",
+    "media_root": "H:\\Anime",
+    "probe_media": true,
+    "container_probe": "ffprobe",
+    "embedded_in": "files[].container_facts",
+    "matched_file_count": 76,
+    "matched_video_count": 23,
+    "missing_actual_video_count": 0,
+    "match_stats": {
+      "matched_by_root_path": 76
+    }
+  }
 }

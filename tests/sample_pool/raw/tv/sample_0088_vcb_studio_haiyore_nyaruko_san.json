@@ -3,7 +3,17 @@
   "files": [
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san [01][Ma10p_1080p][x265_flac].mkv",
-      "size": 991566599
+      "size": 991566599,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1436.105,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san [01][Ma10p_1080p][x265_flac].SumiSora.sc.ass",
@@ -11,7 +21,17 @@
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san [02][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1204928911
+      "size": 1204928911,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1442.111,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san [02][Ma10p_1080p][x265_flac_aac].SumiSora.sc.ass",
@@ -19,7 +39,17 @@
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san [03][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1013450065
+      "size": 1013450065,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1436.117,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san [03][Ma10p_1080p][x265_flac_aac].SumiSora.sc.ass",
@@ -27,7 +57,17 @@
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san [04][Ma10p_1080p][x265_flac].mkv",
-      "size": 886228090
+      "size": 886228090,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1442.108,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san [04][Ma10p_1080p][x265_flac].SumiSora.sc.ass",
@@ -35,7 +75,17 @@
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san [05][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1022862425
+      "size": 1022862425,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1436.117,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san [05][Ma10p_1080p][x265_flac_aac].SumiSora.sc.ass",
@@ -43,7 +93,17 @@
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san [06][Ma10p_1080p][x265_flac].mkv",
-      "size": 942507021
+      "size": 942507021,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1442.108,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san [06][Ma10p_1080p][x265_flac].SumiSora.sc.ass",
@@ -51,7 +111,17 @@
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san [07][Ma10p_1080p][x265_flac].mkv",
-      "size": 809904845
+      "size": 809904845,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1436.105,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san [07][Ma10p_1080p][x265_flac].SumiSora.sc.ass",
@@ -59,7 +129,17 @@
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san [08][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 945014809
+      "size": 945014809,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1442.112,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san [08][Ma10p_1080p][x265_flac_aac].SumiSora.sc.ass",
@@ -67,7 +147,17 @@
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san [09][Ma10p_1080p][x265_flac].mkv",
-      "size": 938477181
+      "size": 938477181,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1436.105,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san [09][Ma10p_1080p][x265_flac].SumiSora.sc.ass",
@@ -75,7 +165,17 @@
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san [10][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1147533841
+      "size": 1147533841,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1442.112,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san [10][Ma10p_1080p][x265_flac_aac].SumiSora.sc.ass",
@@ -83,7 +183,17 @@
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san [11][Ma10p_1080p][x265_flac].mkv",
-      "size": 945265055
+      "size": 945265055,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1436.105,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san [11][Ma10p_1080p][x265_flac].SumiSora.sc.ass",
@@ -91,7 +201,17 @@
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san [12][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1202122129
+      "size": 1202122129,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1427.093,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san [12][Ma10p_1080p][x265_flac_aac].SumiSora.sc.ass",
@@ -99,7 +219,17 @@
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san [OVA][Ma10p_1080p][x265_flac].mkv",
-      "size": 821845690
+      "size": 821845690,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 884.885,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san [OVA][Ma10p_1080p][x265_flac].白月.sc.ass",
@@ -495,31 +625,101 @@
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san [Advice][Ma10p_1080p][x265_flac].mkv",
-      "size": 16523363
+      "size": 16523363,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 38.007,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san [CM01][Ma10p_1080p][x265_flac].mkv",
-      "size": 21104452
+      "size": 21104452,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 17.02,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san [CM02][Ma10p_1080p][x265_flac].mkv",
-      "size": 38716230
+      "size": 38716230,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 31.031,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san [CM03 OP_DVD][Ma10p_720p][x265_flac].mkv",
-      "size": 11623555
+      "size": 11623555,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 17.017,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san [CM04 OP_DVD][Ma10p_720p][x265_flac].mkv",
-      "size": 20727893
+      "size": 20727893,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 32.032,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san [CM05 ED_DVD][Ma10p_720p][x265_flac].mkv",
-      "size": 10727663
+      "size": 10727663,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 17.017,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san [CM06 ED_DVD][Ma10p_720p][x265_flac].mkv",
-      "size": 19379534
+      "size": 19379534,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 32.032,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san [Gallery].zip",
@@ -527,7 +727,17 @@
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san [IV][Ma10p_576p][x265_aac].mkv",
-      "size": 426293133
+      "size": 426293133,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1770.468,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1024x576",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san [Menu ED_DVD].png",
@@ -663,35 +873,115 @@
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san [NCED][Ma10p_1080p][x265_flac].mkv",
-      "size": 96430992
+      "size": 96430992,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.095,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san [NCOP][Ma10p_1080p][x265_flac].mkv",
-      "size": 88178936
+      "size": 88178936,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.095,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san [PV01 OP_DVD][Ma10p_720p][x265_flac].mkv",
-      "size": 69800941
+      "size": 69800941,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 176.176,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san [PV02 OP_DVD][Ma10p_720p][x265_flac].mkv",
-      "size": 57570003
+      "size": 57570003,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 106.899,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san [PV03 ED_DVD][Ma10p_720p][x265_flac].mkv",
-      "size": 49657306
+      "size": 49657306,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 93.594,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san [PV04 SP_DVD][Ma10p_720p][x265_flac].mkv",
-      "size": 4638361
+      "size": 4638361,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 17.184,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san [SP OP_DVD][Ma10p_720p][x265_flac].mkv",
-      "size": 66407719
+      "size": 66407719,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san F [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san F [Ma10p_1080p][x265_flac].mkv",
-      "size": 1378738074
+      "size": 1378738074,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1677.676,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san F [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san F [Ma10p_1080p][x265_flac].SumiSora.sc.ass",
@@ -859,7 +1149,17 @@
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san F [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san & Haiyore! Nyaruko-san W [Summary][Ma10p_1080p][x265_flac].mkv",
-      "size": 1317326059
+      "size": 1317326059,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1806.805,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san F [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san F [Menu].flac",
@@ -871,27 +1171,87 @@
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san F [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san F [NCED][Ma10p_1080p][x265_flac].mkv",
-      "size": 147847600
+      "size": 147847600,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.091,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san F [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san F [NCOP][Ma10p_1080p][x265_flac].mkv",
-      "size": 118815201
+      "size": 118815201,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.091,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san F [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san F [PV01][Ma10p_1080p][x265_flac].mkv",
-      "size": 23769685
+      "size": 23769685,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 16.06,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san F [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san F [PV02][Ma10p_1080p][x265_flac].mkv",
-      "size": 235434464
+      "size": 235434464,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 127.836,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san F [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san F [Trailer][Ma10p_1080p][x265_flac].mkv",
-      "size": 77472561
+      "size": 77472561,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 73.157,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san W [01][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1182818210
+      "size": 1182818210,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1466.154,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san W [01][Ma10p_1080p][x265_flac_aac].SumiSora.sc.ass",
@@ -899,7 +1259,17 @@
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san W [02][Ma10p_1080p][x265_flac].mkv",
-      "size": 1254723264
+      "size": 1254723264,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1466.01,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san W [02][Ma10p_1080p][x265_flac].SumiSora.sc.ass",
@@ -907,7 +1277,17 @@
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san W [03][Ma10p_1080p][x265_flac].mkv",
-      "size": 1472169419
+      "size": 1472169419,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1466.135,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san W [03][Ma10p_1080p][x265_flac].SumiSora.sc.ass",
@@ -915,7 +1295,17 @@
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san W [04][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1057961930
+      "size": 1057961930,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1465.984,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san W [04][Ma10p_1080p][x265_flac_aac].SumiSora.sc.ass",
@@ -923,7 +1313,17 @@
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san W [05][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1069312248
+      "size": 1069312248,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1466.154,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san W [05][Ma10p_1080p][x265_flac_aac].SumiSora.sc.ass",
@@ -931,7 +1331,17 @@
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san W [06][Ma10p_1080p][x265_flac].mkv",
-      "size": 1028357735
+      "size": 1028357735,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1466.01,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san W [06][Ma10p_1080p][x265_flac].SumiSora.sc.ass",
@@ -939,7 +1349,17 @@
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san W [07][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1215986983
+      "size": 1215986983,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1466.474,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san W [07][Ma10p_1080p][x265_flac_aac].SumiSora.sc.ass",
@@ -947,7 +1367,17 @@
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san W [08][Ma10p_1080p][x265_flac].mkv",
-      "size": 1190339165
+      "size": 1190339165,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1465.925,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san W [08][Ma10p_1080p][x265_flac].SumiSora.sc.ass",
@@ -955,7 +1385,17 @@
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san W [09][Ma10p_1080p][x265_flac].mkv",
-      "size": 1327471022
+      "size": 1327471022,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1466.135,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san W [09][Ma10p_1080p][x265_flac].SumiSora.sc.ass",
@@ -963,7 +1403,17 @@
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san W [10][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1178958799
+      "size": 1178958799,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1465.941,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san W [10][Ma10p_1080p][x265_flac_aac].SumiSora.sc.ass",
@@ -971,7 +1421,17 @@
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san W [11][Ma10p_1080p][x265_flac].mkv",
-      "size": 1239851102
+      "size": 1239851102,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1465.965,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san W [11][Ma10p_1080p][x265_flac].SumiSora.sc.ass",
@@ -979,7 +1439,17 @@
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san W [12][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1197259799
+      "size": 1197259799,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1452.458,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san W [12][Ma10p_1080p][x265_flac_aac].SumiSora.sc.ass",
@@ -987,7 +1457,17 @@
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san W [OVA][Ma10p_1080p][x265_flac].mkv",
-      "size": 833337396
+      "size": 833337396,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 924.925,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/[VCB-Studio] Haiyore! Nyaruko-san W [OVA][Ma10p_1080p][x265_flac].SumiSora.sc.ass",
@@ -1779,27 +2259,87 @@
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san W [Advice][Ma10p_1080p][x265_flac].mkv",
-      "size": 12100675
+      "size": 12100675,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 39.04,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san W [CM01][Ma10p_1080p][x265_flac].mkv",
-      "size": 30226263
+      "size": 30226263,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 16.06,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san W [CM02 OP_DVD][Ma10p_720p][x265_flac].mkv",
-      "size": 9973898
+      "size": 9973898,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 16.267,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san W [CM03 ED01_DVD][Ma10p_720p][x265_flac].mkv",
-      "size": 9739665
+      "size": 9739665,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 16.267,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san W [CM04 ED02_DVD][Ma10p_720p][x265_flac].mkv",
-      "size": 8998568
+      "size": 8998568,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 17.017,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san W [CM05 ED03_DVD][Ma10p_720p][x265_flac].mkv",
-      "size": 9582241
+      "size": 9582241,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 16.308,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san W [Gallery].zip",
@@ -1807,7 +2347,17 @@
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san W [IV][Ma10p_576p][x265_aac].mkv",
-      "size": 557444519
+      "size": 557444519,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 2139.504,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1024x576",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san W [Menu Best_Album_DVD].png",
@@ -1863,39 +2413,129 @@
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san W [NCED01][Ma10p_1080p][x265_flac].mkv",
-      "size": 116376746
+      "size": 116376746,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.425,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san W [NCED02][Ma10p_1080p][x265_flac].mkv",
-      "size": 227108587
+      "size": 227108587,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.76,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san W [NCED03][Ma10p_1080p][x265_flac].mkv",
-      "size": 97156821
+      "size": 97156821,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.887,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san W [NCED04][Ma10p_1080p][x265_flac].mkv",
-      "size": 188617707
+      "size": 188617707,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 90.299,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san W [NCED05][Ma10p_1080p][x265_flac].mkv",
-      "size": 127983683
+      "size": 127983683,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.095,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san W [NCED06][Ma10p_1080p][x265_flac].mkv",
-      "size": 80974799
+      "size": 80974799,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.093,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san W [NCED07][Ma10p_1080p][x265_flac].mkv",
-      "size": 131470661
+      "size": 131470661,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 100.102,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san W [NCOP][Ma10p_1080p][x265_flac].mkv",
-      "size": 146244800
+      "size": 146244800,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.095,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Haiyore! Nyaruko-san W [Ma10p_1080p]/SPs/[VCB-Studio] Haiyore! Nyaruko-san W [PV OP_DVD][Ma10p_720p][x265_flac].mkv",
-      "size": 91724805
+      "size": 91724805,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 212.504,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/[VCB-Studio] Haiyoru! Nyaruani 2 [01-12][Ma10p_720p][x265_2ac3].ass",
@@ -1903,7 +2543,17 @@
     },
     {
       "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/[VCB-Studio] Haiyoru! Nyaruani 2 [01-12][Ma10p_720p][x265_2ac3].mkv",
-      "size": 558553121
+      "size": 558553121,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 2972.96,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/[VCB-Studio] Haiyoru! Nyaruani [01-09][Ma10p_720p][x265_2ac3].ass",
@@ -1911,7 +2561,17 @@
     },
     {
       "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/[VCB-Studio] Haiyoru! Nyaruani [01-09][Ma10p_720p][x265_2ac3].mkv",
-      "size": 126854105
+      "size": 126854105,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1115.328,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/CDs/[091023] 這いよれ！ニャル子さん (flac+webp)/CLUB HOBi 特典ディスク (flac)/ドラマCD 這いよれ！ニャル子さんを10倍楽しく聴く方法！？ おかわり.cue",
@@ -2387,7 +3047,17 @@
     },
     {
       "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/SPs/[VCB-Studio] Haiyoru! Nyaruani 2 [NCED][Ma10p_720p][x265_ac3].mkv",
-      "size": 20413884
+      "size": 20413884,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.591,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/SPs/[VCB-Studio] Haiyoru! Nyaruani [Menu01].png",
@@ -2407,7 +3077,48 @@
     },
     {
       "path": "[VCB-Studio] Haiyoru! Nyaruani [Ma10p_720p]/SPs/[VCB-Studio] Haiyoru! Nyaruani [SP01-02][Ma10p_720p][x265_ac3].mkv",
-      "size": 21466520
+      "size": 21466520,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 167.167,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     }
-  ]
+  ],
+  "local_container_fact_summary": {
+    "container_fact_count": 68,
+    "probe_status_counts": {
+      "available": 68
+    },
+    "duration_seconds_range": [
+      16.06,
+      2972.96
+    ],
+    "duration_seconds_samples": [
+      1436.105,
+      1442.111,
+      1436.117,
+      1442.108,
+      1436.117,
+      1442.108
+    ]
+  },
+  "local_container_fact_source": {
+    "kind": "real_local_media_duration_backfill",
+    "media_root": "H:\\Anime",
+    "probe_media": true,
+    "container_probe": "ffprobe",
+    "embedded_in": "files[].container_facts",
+    "matched_file_count": 602,
+    "matched_video_count": 68,
+    "missing_actual_video_count": 0,
+    "match_stats": {
+      "matched_by_root_path": 602
+    }
+  }
 }

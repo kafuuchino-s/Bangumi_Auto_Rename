@@ -7,7 +7,17 @@
     },
     {
       "path": "Gekijouban Nanatsu no Taizai ~Tenkuu no Torawarebito~/[ReinForce] Gekijouban Nanatsu no Taizai ~Tenkuu no Torawarebito~ (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 5898605148
+      "size": 5898605148,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 5954.95,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Gekijouban Nanatsu no Taizai ~Tenkuu no Torawarebito~/Extra/Gekijouban Nanatsu no Taizai ~Tenkuu no Torawarebito~ DTS-HD MA 5.1.mka",
@@ -15,7 +25,17 @@
     },
     {
       "path": "Gekijouban Nanatsu no Taizai ~Tenkuu no Torawarebito~/Extra/Menu.mkv",
-      "size": 244550263
+      "size": 244550263,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 71.075,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "OAD/[ReinForce] Nanatsu no Taizai OAD 1 (DVDRip 852x480 x264 FLAC).default.chs.ass",
@@ -23,7 +43,17 @@
     },
     {
       "path": "OAD/[ReinForce] Nanatsu no Taizai OAD 1 (DVDRip 852x480 x264 FLAC).mkv",
-      "size": 376378358
+      "size": 376378358,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1450.116,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "852x480",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "OAD/[ReinForce] Nanatsu no Taizai OAD 2 (DVDRip 852x480 x264 FLAC).default.chs.ass",
@@ -31,7 +61,17 @@
     },
     {
       "path": "OAD/[ReinForce] Nanatsu no Taizai OAD 2 (DVDRip 852x480 x264 FLAC).mkv",
-      "size": 301332812
+      "size": 301332812,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1450.082,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "852x480",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "OAD/[ReinForce] Nanatsu no Taizai OAD 3 (DVDRip 852x480 x264 FLAC).default.chs.ass",
@@ -39,7 +79,17 @@
     },
     {
       "path": "OAD/[ReinForce] Nanatsu no Taizai OAD 3 (DVDRip 852x480 x264 FLAC).mkv",
-      "size": 380364346
+      "size": 380364346,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1477.226,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "852x480",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "OAD/Menu/Menu.flac",
@@ -71,7 +121,17 @@
     },
     {
       "path": "S1/[ReinForce] Nanatsu no Taizai - 01 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 1845398150
+      "size": 1845398150,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1469.135,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S1/[ReinForce] Nanatsu no Taizai - 02 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -79,7 +139,17 @@
     },
     {
       "path": "S1/[ReinForce] Nanatsu no Taizai - 02 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 1820247368
+      "size": 1820247368,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1470.14,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S1/[ReinForce] Nanatsu no Taizai - 03 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -87,7 +157,17 @@
     },
     {
       "path": "S1/[ReinForce] Nanatsu no Taizai - 03 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 2243643813
+      "size": 2243643813,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1470.14,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S1/[ReinForce] Nanatsu no Taizai - 04 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -95,7 +175,17 @@
     },
     {
       "path": "S1/[ReinForce] Nanatsu no Taizai - 04 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 1707275519
+      "size": 1707275519,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1469.135,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S1/[ReinForce] Nanatsu no Taizai - 05 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -103,7 +193,17 @@
     },
     {
       "path": "S1/[ReinForce] Nanatsu no Taizai - 05 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 1849309227
+      "size": 1849309227,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1469.135,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S1/[ReinForce] Nanatsu no Taizai - 06 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -111,7 +211,17 @@
     },
     {
       "path": "S1/[ReinForce] Nanatsu no Taizai - 06 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 1861211110
+      "size": 1861211110,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1470.14,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S1/[ReinForce] Nanatsu no Taizai - 07 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -119,7 +229,17 @@
     },
     {
       "path": "S1/[ReinForce] Nanatsu no Taizai - 07 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 1548115968
+      "size": 1548115968,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1470.14,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S1/[ReinForce] Nanatsu no Taizai - 08 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -127,7 +247,17 @@
     },
     {
       "path": "S1/[ReinForce] Nanatsu no Taizai - 08 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 1528693083
+      "size": 1528693083,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1469.135,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S1/[ReinForce] Nanatsu no Taizai - 09 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -135,7 +265,17 @@
     },
     {
       "path": "S1/[ReinForce] Nanatsu no Taizai - 09 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 1623842626
+      "size": 1623842626,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1470.14,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S1/[ReinForce] Nanatsu no Taizai - 10 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -143,7 +283,17 @@
     },
     {
       "path": "S1/[ReinForce] Nanatsu no Taizai - 10 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 1741393743
+      "size": 1741393743,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1470.14,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S1/[ReinForce] Nanatsu no Taizai - 11 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -151,7 +301,17 @@
     },
     {
       "path": "S1/[ReinForce] Nanatsu no Taizai - 11 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 1884687361
+      "size": 1884687361,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1470.14,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S1/[ReinForce] Nanatsu no Taizai - 12 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -159,7 +319,17 @@
     },
     {
       "path": "S1/[ReinForce] Nanatsu no Taizai - 12 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 1952082222
+      "size": 1952082222,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1470.14,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S1/[ReinForce] Nanatsu no Taizai - 13 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -167,7 +337,17 @@
     },
     {
       "path": "S1/[ReinForce] Nanatsu no Taizai - 13 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 1938998589
+      "size": 1938998589,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1470.14,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S1/[ReinForce] Nanatsu no Taizai - 14 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -175,7 +355,17 @@
     },
     {
       "path": "S1/[ReinForce] Nanatsu no Taizai - 14 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 1697616036
+      "size": 1697616036,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1470.14,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S1/[ReinForce] Nanatsu no Taizai - 15 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -183,7 +373,17 @@
     },
     {
       "path": "S1/[ReinForce] Nanatsu no Taizai - 15 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 2086437909
+      "size": 2086437909,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1470.14,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S1/[ReinForce] Nanatsu no Taizai - 16 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -191,7 +391,17 @@
     },
     {
       "path": "S1/[ReinForce] Nanatsu no Taizai - 16 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 1726551179
+      "size": 1726551179,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1455.125,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S1/[ReinForce] Nanatsu no Taizai - 17 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -199,7 +409,17 @@
     },
     {
       "path": "S1/[ReinForce] Nanatsu no Taizai - 17 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 1854944873
+      "size": 1854944873,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1455.125,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S1/[ReinForce] Nanatsu no Taizai - 18 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -207,7 +427,17 @@
     },
     {
       "path": "S1/[ReinForce] Nanatsu no Taizai - 18 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 1732424805
+      "size": 1732424805,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1455.125,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S1/[ReinForce] Nanatsu no Taizai - 19 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -215,7 +445,17 @@
     },
     {
       "path": "S1/[ReinForce] Nanatsu no Taizai - 19 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 1848206681
+      "size": 1848206681,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1455.125,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S1/[ReinForce] Nanatsu no Taizai - 20 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -223,7 +463,17 @@
     },
     {
       "path": "S1/[ReinForce] Nanatsu no Taizai - 20 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 2040490064
+      "size": 2040490064,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1455.125,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S1/[ReinForce] Nanatsu no Taizai - 21 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -231,7 +481,17 @@
     },
     {
       "path": "S1/[ReinForce] Nanatsu no Taizai - 21 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 1700054227
+      "size": 1700054227,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1455.125,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S1/[ReinForce] Nanatsu no Taizai - 22 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -239,7 +499,17 @@
     },
     {
       "path": "S1/[ReinForce] Nanatsu no Taizai - 22 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 1969710130
+      "size": 1969710130,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1455.125,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S1/[ReinForce] Nanatsu no Taizai - 23 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -247,7 +517,17 @@
     },
     {
       "path": "S1/[ReinForce] Nanatsu no Taizai - 23 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 1867499434
+      "size": 1867499434,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1455.125,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S1/[ReinForce] Nanatsu no Taizai - 24 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -255,43 +535,143 @@
     },
     {
       "path": "S1/[ReinForce] Nanatsu no Taizai - 24 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 1904163304
+      "size": 1904163304,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1439.105,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S1/Extra/BD Menu/BD Menu Vol.1.mkv",
-      "size": 102007556
+      "size": 102007556,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 185.185,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S1/Extra/BD Menu/BD Menu Vol.2.mkv",
-      "size": 90450508
+      "size": 90450508,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 185.185,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S1/Extra/BD Menu/BD Menu Vol.3.mkv",
-      "size": 98452812
+      "size": 98452812,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 185.185,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S1/Extra/BD Menu/BD Menu Vol.4.mkv",
-      "size": 94002722
+      "size": 94002722,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 185.185,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S1/Extra/BD Menu/BD Menu Vol.5.mkv",
-      "size": 86903083
+      "size": 86903083,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 185.185,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S1/Extra/BD Menu/BD Menu Vol.6.mkv",
-      "size": 90849927
+      "size": 90849927,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 185.185,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S1/Extra/BD Menu/BD Menu Vol.7.mkv",
-      "size": 95124892
+      "size": 95124892,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 185.185,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S1/Extra/BD Menu/BD Menu Vol.8.mkv",
-      "size": 82571674
+      "size": 82571674,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 185.185,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S1/Extra/BD Menu/BD Menu Vol.9.mkv",
-      "size": 114149895
+      "size": 114149895,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 185.185,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S1/Extra/CD/CD Vol.1/オリジナルドラマCD 「迷え！七つの大罪学園！SP」.cue",
@@ -403,19 +783,59 @@
     },
     {
       "path": "S1/Extra/Creditless/[ReinForce] Nanatsu no Taizai - ED1 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 142590428
+      "size": 142590428,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S1/Extra/Creditless/[ReinForce] Nanatsu no Taizai - ED2 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 170199656
+      "size": 170199656,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.091,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S1/Extra/Creditless/[ReinForce] Nanatsu no Taizai - OP1 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 123806967
+      "size": 123806967,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.091,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S1/Extra/Creditless/[ReinForce] Nanatsu no Taizai - OP2 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 170277954
+      "size": 170277954,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.091,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 01 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -423,7 +843,17 @@
     },
     {
       "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 01 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 1269992435
+      "size": 1269992435,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1469.135,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 02 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -431,7 +861,17 @@
     },
     {
       "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 02 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 1322363542
+      "size": 1322363542,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1469.135,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 03 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -439,7 +879,17 @@
     },
     {
       "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 03 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 1372181059
+      "size": 1372181059,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1469.135,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 04 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -447,7 +897,17 @@
     },
     {
       "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 04 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 1400832560
+      "size": 1400832560,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1469.135,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 05 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -455,7 +915,17 @@
     },
     {
       "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 05 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 1473442937
+      "size": 1473442937,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1469.135,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 06 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -463,7 +933,17 @@
     },
     {
       "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 06 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 1145850355
+      "size": 1145850355,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1469.135,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 07 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -471,7 +951,17 @@
     },
     {
       "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 07 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 1222331757
+      "size": 1222331757,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1469.135,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 08 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -479,7 +969,17 @@
     },
     {
       "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 08 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 1398265423
+      "size": 1398265423,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1469.135,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 09 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -487,7 +987,17 @@
     },
     {
       "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 09 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 1248338177
+      "size": 1248338177,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1468.095,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 10 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -495,7 +1005,17 @@
     },
     {
       "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 10 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 1292066950
+      "size": 1292066950,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1469.135,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 11 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -503,7 +1023,17 @@
     },
     {
       "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 11 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 1170968080
+      "size": 1170968080,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1469.135,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 12 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -511,7 +1041,17 @@
     },
     {
       "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 12 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 1242598509
+      "size": 1242598509,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1469.135,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 13 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -519,7 +1059,17 @@
     },
     {
       "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 13 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 1269705967
+      "size": 1269705967,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1469.135,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 14 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -527,7 +1077,17 @@
     },
     {
       "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 14 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 1263266700
+      "size": 1263266700,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1469.135,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 15 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -535,7 +1095,17 @@
     },
     {
       "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 15 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 1221172154
+      "size": 1221172154,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1469.135,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 16 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -543,7 +1113,17 @@
     },
     {
       "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 16 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 1209092194
+      "size": 1209092194,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1469.135,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 17 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -551,7 +1131,17 @@
     },
     {
       "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 17 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 1195711727
+      "size": 1195711727,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1454.12,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 18 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -559,7 +1149,17 @@
     },
     {
       "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 18 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 1266056111
+      "size": 1266056111,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1454.12,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 19 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -567,7 +1167,17 @@
     },
     {
       "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 19 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 1289764802
+      "size": 1289764802,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1454.12,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 20 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -575,7 +1185,17 @@
     },
     {
       "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 20 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 1188353929
+      "size": 1188353929,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1454.12,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 21 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -583,7 +1203,17 @@
     },
     {
       "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 21 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 1121619919
+      "size": 1121619919,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1454.12,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 22 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -591,7 +1221,17 @@
     },
     {
       "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 22 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 1589575255
+      "size": 1589575255,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1454.12,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 23 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -599,7 +1239,17 @@
     },
     {
       "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 23 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 1414912314
+      "size": 1414912314,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1544.21,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 24 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -607,7 +1257,17 @@
     },
     {
       "path": "S2/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu 24 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 1121742832
+      "size": 1121742832,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1454.12,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S2/Extra/CD/CD1/澤野弘之 - ORIGINAL SOUND TRACK VOL.1.cue",
@@ -719,107 +1379,367 @@
     },
     {
       "path": "S2/Extra/Creditless/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu ED (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 77174966
+      "size": 77174966,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.091,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S2/Extra/Creditless/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu ED2 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 80707037
+      "size": 80707037,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.091,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S2/Extra/Creditless/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu OP (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 132134509
+      "size": 132134509,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.091,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S2/Extra/Creditless/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu OP2 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 122223249
+      "size": 122223249,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.091,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S2/Extra/Creditless/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu OP3 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 99807813
+      "size": 99807813,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.095,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S2/Extra/Creditless/[ReinForce] Nanatsu no Taizai Imashime no Fukkatsu OP3v2 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 102103898
+      "size": 102103898,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.091,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S2/Extra/Menu/Vol 1.mkv",
-      "size": 67995228
+      "size": 67995228,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 185.185,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S2/Extra/Menu/Vol 2.mkv",
-      "size": 67091301
+      "size": 67091301,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 185.185,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S2/Extra/Menu/Vol 3.mkv",
-      "size": 85016442
+      "size": 85016442,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 185.185,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S2/Extra/Menu/Vol 4.mkv",
-      "size": 75315919
+      "size": 75315919,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 185.185,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S2/Extra/Menu/Vol 5.mkv",
-      "size": 65161073
+      "size": 65161073,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 185.185,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S2/Extra/Menu/Vol 6.mkv",
-      "size": 66256824
+      "size": 66256824,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 185.185,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S2/Extra/Menu/Vol 7.mkv",
-      "size": 82050259
+      "size": 82050259,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 185.185,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S2/Extra/Menu/Vol 8.mkv",
-      "size": 66800066
+      "size": 66800066,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 185.185,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S2/Extra/Menu/Vol 9.mkv",
-      "size": 66582989
+      "size": 66582989,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 185.185,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S2/Extra/PV/PV01.mkv",
-      "size": 66231787
+      "size": 66231787,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 31.035,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S2/Extra/PV/PV02.mkv",
-      "size": 32135739
+      "size": 32135739,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 31.035,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S2/Extra/PV/PV03.mkv",
-      "size": 37316122
+      "size": 37316122,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 31.035,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S2/Extra/PV/PV04.mkv",
-      "size": 30620233
+      "size": 30620233,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 31.035,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S2/Extra/PV/PV05.mkv",
-      "size": 31119064
+      "size": 31119064,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 31.035,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S2/Extra/PV/PV06.mkv",
-      "size": 31328266
+      "size": 31328266,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 31.035,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S2/Extra/PV/PV07.mkv",
-      "size": 35319561
+      "size": 35319561,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 31.035,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S2/Extra/PV/PV08.mkv",
-      "size": 38758898
+      "size": 38758898,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 31.035,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S2/Extra/PV/PV09.mkv",
-      "size": 31141658
+      "size": 31141658,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 31.035,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S2/Extra/PV/PV10.mkv",
-      "size": 32387674
+      "size": 32387674,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 31.035,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S2/Extra/PV/PV11.mkv",
-      "size": 35216313
+      "size": 35216313,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 31.031,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 01 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -827,7 +1747,17 @@
     },
     {
       "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 01 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 2535140104
+      "size": 2535140104,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.242,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 02 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -835,7 +1765,17 @@
     },
     {
       "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 02 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 2444934213
+      "size": 2444934213,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.075,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 03 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -843,7 +1783,17 @@
     },
     {
       "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 03 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 2359247704
+      "size": 2359247704,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.409,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 04 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -851,7 +1801,17 @@
     },
     {
       "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 04 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 2639786553
+      "size": 2639786553,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.075,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 05 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -859,7 +1819,17 @@
     },
     {
       "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 05 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 2430155097
+      "size": 2430155097,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.075,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 06 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -867,7 +1837,17 @@
     },
     {
       "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 06 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 2274973087
+      "size": 2274973087,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.075,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 07 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -875,7 +1855,17 @@
     },
     {
       "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 07 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 2427931353
+      "size": 2427931353,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.075,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 08 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -883,7 +1873,17 @@
     },
     {
       "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 08 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 2295840203
+      "size": 2295840203,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.075,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 09 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -891,7 +1891,17 @@
     },
     {
       "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 09 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 2433164068
+      "size": 2433164068,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.575,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 10 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -899,7 +1909,17 @@
     },
     {
       "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 10 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 2617983766
+      "size": 2617983766,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.075,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 11 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -907,7 +1927,17 @@
     },
     {
       "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 11 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 2669133836
+      "size": 2669133836,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.242,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 12 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -915,7 +1945,17 @@
     },
     {
       "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 12 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 2581698754
+      "size": 2581698754,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.409,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 13 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -923,7 +1963,17 @@
     },
     {
       "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 13 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 2622226171
+      "size": 2622226171,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1450.95,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 14 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -931,7 +1981,17 @@
     },
     {
       "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 14 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 2260268624
+      "size": 2260268624,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1450.95,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 15 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -939,7 +1999,17 @@
     },
     {
       "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 15 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 2520168947
+      "size": 2520168947,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1450.95,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 16 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -947,7 +2017,17 @@
     },
     {
       "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 16 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 2420728738
+      "size": 2420728738,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1450.995,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 17 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -955,7 +2035,17 @@
     },
     {
       "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 17 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 2731760213
+      "size": 2731760213,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1450.91,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 18 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -963,7 +2053,17 @@
     },
     {
       "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 18 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 2317262352
+      "size": 2317262352,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1450.95,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 19 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -971,7 +2071,17 @@
     },
     {
       "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 19 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 2374250750
+      "size": 2374250750,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1450.95,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 20 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -979,7 +2089,17 @@
     },
     {
       "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 20 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 2290419047
+      "size": 2290419047,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1450.95,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 21 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -987,7 +2107,17 @@
     },
     {
       "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 21 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 2235343773
+      "size": 2235343773,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1450.95,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 22 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -995,7 +2125,17 @@
     },
     {
       "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 22 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 2438648496
+      "size": 2438648496,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1450.95,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 23 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -1003,7 +2143,17 @@
     },
     {
       "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 23 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 2576110576
+      "size": 2576110576,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1450.95,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 24 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -1011,23 +2161,73 @@
     },
     {
       "path": "S3/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ 24 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 2606006606
+      "size": 2606006606,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1421.045,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S3/Extra/Creditless/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ ED1 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 200547931
+      "size": 200547931,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.095,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S3/Extra/Creditless/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ ED2 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 235190744
+      "size": 235190744,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.095,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S3/Extra/Creditless/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ OP1 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 215669898
+      "size": 215669898,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.095,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S3/Extra/Creditless/[ReinForce] Nanatsu no Taizai ~Kamigami no Gekirin~ OP2 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 263094189
+      "size": 263094189,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.095,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S3/Extra/Menu/Menu.flac",
@@ -1111,7 +2311,17 @@
     },
     {
       "path": "S3/Extra/SP DVD 「ホーク塗り絵」.mkv",
-      "size": 287877418
+      "size": 287877418,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1575.574,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "852x480",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 01 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -1119,7 +2329,17 @@
     },
     {
       "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 01 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 2580824377
+      "size": 2580824377,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1450.95,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 02 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -1127,7 +2347,17 @@
     },
     {
       "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 02 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 2446590006
+      "size": 2446590006,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1450.95,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 03 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -1135,7 +2365,17 @@
     },
     {
       "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 03 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 2807166482
+      "size": 2807166482,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1450.95,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 04 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -1143,7 +2383,17 @@
     },
     {
       "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 04 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 2663659711
+      "size": 2663659711,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1450.991,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 05 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -1151,7 +2401,17 @@
     },
     {
       "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 05 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 2328872499
+      "size": 2328872499,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1450.91,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 06 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -1159,7 +2419,17 @@
     },
     {
       "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 06 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 2399685397
+      "size": 2399685397,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1450.995,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 07 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -1167,7 +2437,17 @@
     },
     {
       "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 07 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 2568859909
+      "size": 2568859909,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1450.87,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 08 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -1175,7 +2455,17 @@
     },
     {
       "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 08 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 2209308324
+      "size": 2209308324,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1450.991,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 09 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -1183,7 +2473,17 @@
     },
     {
       "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 09 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 2366023586
+      "size": 2366023586,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1450.91,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 10 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -1191,7 +2491,17 @@
     },
     {
       "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 10 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 2306475659
+      "size": 2306475659,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1450.95,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 11 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -1199,7 +2509,17 @@
     },
     {
       "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 11 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 2479264131
+      "size": 2479264131,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1450.95,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 12 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -1207,7 +2527,17 @@
     },
     {
       "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 12 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 2782144172
+      "size": 2782144172,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1450.95,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 13 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -1215,7 +2545,17 @@
     },
     {
       "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 13 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 1913453187
+      "size": 1913453187,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1450.95,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 14 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -1223,7 +2563,17 @@
     },
     {
       "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 14 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 2195514335
+      "size": 2195514335,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1450.95,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 15 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -1231,7 +2581,17 @@
     },
     {
       "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 15 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 2513526503
+      "size": 2513526503,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1450.95,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 16 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -1239,7 +2599,17 @@
     },
     {
       "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 16 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 2837223986
+      "size": 2837223986,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1450.91,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 17 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -1247,7 +2617,17 @@
     },
     {
       "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 17 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 2702506272
+      "size": 2702506272,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1450.91,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 18 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -1255,7 +2635,17 @@
     },
     {
       "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 18 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 2424645744
+      "size": 2424645744,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1450.95,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 19 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -1263,7 +2653,17 @@
     },
     {
       "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 19 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 2640332643
+      "size": 2640332643,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1450.91,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 20 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -1271,7 +2671,17 @@
     },
     {
       "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 20 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 2506262570
+      "size": 2506262570,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1450.95,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 21 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -1279,7 +2689,17 @@
     },
     {
       "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 21 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 2105580487
+      "size": 2105580487,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1450.95,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 22 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -1287,7 +2707,17 @@
     },
     {
       "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 22 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 2083477567
+      "size": 2083477567,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1450.95,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 23 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -1295,7 +2725,17 @@
     },
     {
       "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 23 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 2415621615
+      "size": 2415621615,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1450.95,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 24 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -1303,7 +2743,17 @@
     },
     {
       "path": "S4/[ReinForce] Nanatsu no Taizai Funnu no Shimpan 24 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 2329131297
+      "size": 2329131297,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1421.005,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S4/Extra/CD/01. TSADS-FP1.flac",
@@ -1359,19 +2809,59 @@
     },
     {
       "path": "S4/Extra/Creditless/[ReinForce] Nanatsu no Taizai Funnu no Shimpan ED1 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 162734257
+      "size": 162734257,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.095,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S4/Extra/Creditless/[ReinForce] Nanatsu no Taizai Funnu no Shimpan ED2 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 175876070
+      "size": 175876070,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.095,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S4/Extra/Creditless/[ReinForce] Nanatsu no Taizai Funnu no Shimpan OP1 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 210358882
+      "size": 210358882,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.095,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S4/Extra/Creditless/[ReinForce] Nanatsu no Taizai Funnu no Shimpan OP2 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 183688865
+      "size": 183688865,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.095,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "S4/Extra/Menu/Disc 1.flac",
@@ -1395,7 +2885,17 @@
     },
     {
       "path": "Seisen no Shirushi/[ReinForce] Nanatsu no Taizai ~Seisen no Shirushi~ 01 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 1431254185
+      "size": 1431254185,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1454.12,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Seisen no Shirushi/[ReinForce] Nanatsu no Taizai ~Seisen no Shirushi~ 02 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -1403,7 +2903,17 @@
     },
     {
       "path": "Seisen no Shirushi/[ReinForce] Nanatsu no Taizai ~Seisen no Shirushi~ 02 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 1596895387
+      "size": 1596895387,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1455.125,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Seisen no Shirushi/[ReinForce] Nanatsu no Taizai ~Seisen no Shirushi~ 03 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -1411,7 +2921,17 @@
     },
     {
       "path": "Seisen no Shirushi/[ReinForce] Nanatsu no Taizai ~Seisen no Shirushi~ 03 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 1277119247
+      "size": 1277119247,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1455.125,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Seisen no Shirushi/[ReinForce] Nanatsu no Taizai ~Seisen no Shirushi~ 04 (BDRip 1920x1080 x264 FLAC).default.chs.ass",
@@ -1419,15 +2939,45 @@
     },
     {
       "path": "Seisen no Shirushi/[ReinForce] Nanatsu no Taizai ~Seisen no Shirushi~ 04 (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 1190239149
+      "size": 1190239149,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1439.105,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Seisen no Shirushi/Extra/[ReinForce] Nanatsu no Taizai ~Seisen no Shirushi~ ED (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 87005964
+      "size": 87005964,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.091,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Seisen no Shirushi/Extra/[ReinForce] Nanatsu no Taizai ~Seisen no Shirushi~ OP (BDRip 1920x1080 x264 FLAC).mkv",
-      "size": 125407173
+      "size": 125407173,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.091,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Seisen no Shirushi/Extra/CD/01. CD Track 01.wav",
@@ -1453,5 +3003,36 @@
       "path": "Seisen no Shirushi/Extra/Menu/Menu.flac",
       "size": 19038351
     }
-  ]
+  ],
+  "local_container_fact_summary": {
+    "container_fact_count": 155,
+    "probe_status_counts": {
+      "available": 155
+    },
+    "duration_seconds_range": [
+      31.031,
+      5954.95
+    ],
+    "duration_seconds_samples": [
+      5954.95,
+      71.075,
+      1450.116,
+      1450.082,
+      1477.226,
+      1469.135
+    ]
+  },
+  "local_container_fact_source": {
+    "kind": "real_local_media_duration_backfill",
+    "media_root": "H:\\Anime",
+    "probe_media": true,
+    "container_probe": "ffprobe",
+    "embedded_in": "files[].container_facts",
+    "matched_file_count": 363,
+    "matched_video_count": 155,
+    "missing_actual_video_count": 0,
+    "match_stats": {
+      "matched_by_root_path": 363
+    }
+  }
 }

@@ -11,7 +11,17 @@
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Gekijouban Kimetsu no Yaiba Mugen Ressha Hen [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Gekijouban Kimetsu no Yaiba Mugen Ressha Hen [Ma10p_1080p][x265_flac].mkv",
-      "size": 7128289810
+      "size": 7128289810,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 7008.001,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 2,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Gekijouban Kimetsu no Yaiba Mugen Ressha Hen [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Gekijouban Kimetsu no Yaiba Mugen Ressha Hen [Ma10p_1080p][x265_flac].sc.ass",
@@ -167,59 +177,199 @@
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Gekijouban Kimetsu no Yaiba Mugen Ressha Hen [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Gekijouban Kimetsu no Yaiba Mugen Ressha Hen [Character CM Inosuke][Ma10p_1080p][x265_flac].mkv",
-      "size": 26073033
+      "size": 26073033,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 16.976,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Gekijouban Kimetsu no Yaiba Mugen Ressha Hen [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Gekijouban Kimetsu no Yaiba Mugen Ressha Hen [Character CM Nezuko][Ma10p_1080p][x265_flac].mkv",
-      "size": 15589674
+      "size": 15589674,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 16.976,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Gekijouban Kimetsu no Yaiba Mugen Ressha Hen [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Gekijouban Kimetsu no Yaiba Mugen Ressha Hen [Character CM Rengoku][Ma10p_1080p][x265_flac].mkv",
-      "size": 30305817
+      "size": 30305817,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 16.976,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Gekijouban Kimetsu no Yaiba Mugen Ressha Hen [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Gekijouban Kimetsu no Yaiba Mugen Ressha Hen [Character CM Tanjiro][Ma10p_1080p][x265_flac].mkv",
-      "size": 25619103
+      "size": 25619103,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 16.976,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Gekijouban Kimetsu no Yaiba Mugen Ressha Hen [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Gekijouban Kimetsu no Yaiba Mugen Ressha Hen [Character CM Zenitsu][Ma10p_1080p][x265_flac].mkv",
-      "size": 17432617
+      "size": 17432617,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 16.976,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Gekijouban Kimetsu no Yaiba Mugen Ressha Hen [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Gekijouban Kimetsu no Yaiba Mugen Ressha Hen [CM01(15 sec)][Ma10p_1080p][x265_flac].mkv",
-      "size": 37050189
+      "size": 37050189,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 17.017,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Gekijouban Kimetsu no Yaiba Mugen Ressha Hen [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Gekijouban Kimetsu no Yaiba Mugen Ressha Hen [CM01(30 sec)][Ma10p_1080p][x265_flac].mkv",
-      "size": 67842990
+      "size": 67842990,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 32.032,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Gekijouban Kimetsu no Yaiba Mugen Ressha Hen [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Gekijouban Kimetsu no Yaiba Mugen Ressha Hen [CM02(15 sec)][Ma10p_1080p][x265_flac].mkv",
-      "size": 29421114
+      "size": 29421114,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 17.017,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Gekijouban Kimetsu no Yaiba Mugen Ressha Hen [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Gekijouban Kimetsu no Yaiba Mugen Ressha Hen [CM02(30 sec)][Ma10p_1080p][x265_flac].mkv",
-      "size": 63618081
+      "size": 63618081,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 32.032,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Gekijouban Kimetsu no Yaiba Mugen Ressha Hen [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Gekijouban Kimetsu no Yaiba Mugen Ressha Hen [CM03][Ma10p_1080p][x265_flac].mkv",
-      "size": 21584974
+      "size": 21584974,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 17.017,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Gekijouban Kimetsu no Yaiba Mugen Ressha Hen [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Gekijouban Kimetsu no Yaiba Mugen Ressha Hen [CM04][Ma10p_1080p][x265_flac].mkv",
-      "size": 27639113
+      "size": 27639113,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 17.017,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Gekijouban Kimetsu no Yaiba Mugen Ressha Hen [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Gekijouban Kimetsu no Yaiba Mugen Ressha Hen [Event][Ma10p_576p][x265_ac3].mkv",
-      "size": 425707826
+      "size": 425707826,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1350.349,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1024x576",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Gekijouban Kimetsu no Yaiba Mugen Ressha Hen [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Gekijouban Kimetsu no Yaiba Mugen Ressha Hen [IV][Ma10p_576p][x265_ac3].mkv",
-      "size": 268181033
+      "size": 268181033,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1378.61,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1024x576",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Gekijouban Kimetsu no Yaiba Mugen Ressha Hen [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Gekijouban Kimetsu no Yaiba Mugen Ressha Hen [Menu][Ma10p_1080p][x265_flac].mkv",
-      "size": 106600434
+      "size": 106600434,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 60.06,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Gekijouban Kimetsu no Yaiba Mugen Ressha Hen [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Gekijouban Kimetsu no Yaiba Mugen Ressha Hen [MenuSP].ac3",
@@ -239,35 +389,115 @@
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Gekijouban Kimetsu no Yaiba Mugen Ressha Hen [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Gekijouban Kimetsu no Yaiba Mugen Ressha Hen [SP][Ma10p_720p][x265_ac3].mkv",
-      "size": 31899777
+      "size": 31899777,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 170.17,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Gekijouban Kimetsu no Yaiba Mugen Ressha Hen [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Gekijouban Kimetsu no Yaiba Mugen Ressha Hen [Teaser 01][Ma10p_1080p][x265_flac].mkv",
-      "size": 40165937
+      "size": 40165937,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 32.032,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Gekijouban Kimetsu no Yaiba Mugen Ressha Hen [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Gekijouban Kimetsu no Yaiba Mugen Ressha Hen [Teaser 02][Ma10p_1080p][x265_flac].mkv",
-      "size": 139919457
+      "size": 139919457,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 96.93,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Gekijouban Kimetsu no Yaiba Mugen Ressha Hen [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Gekijouban Kimetsu no Yaiba Mugen Ressha Hen [Theaters Trailer 01][Ma10p_1080p][x265_flac].mkv",
-      "size": 132697636
+      "size": 132697636,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.051,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Gekijouban Kimetsu no Yaiba Mugen Ressha Hen [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Gekijouban Kimetsu no Yaiba Mugen Ressha Hen [Theaters Trailer 02][Ma10p_1080p][x265_flac].mkv",
-      "size": 122273495
+      "size": 122273495,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 82.082,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Gekijouban Kimetsu no Yaiba Mugen Ressha Hen [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Gekijouban Kimetsu no Yaiba Mugen Ressha Hen [Trailer01][Ma10p_1080p][x265_flac].mkv",
-      "size": 151464583
+      "size": 151464583,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Gekijouban Kimetsu no Yaiba Mugen Ressha Hen [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Gekijouban Kimetsu no Yaiba Mugen Ressha Hen [Trailer02][Ma10p_1080p][x265_flac].mkv",
-      "size": 171245104
+      "size": 171245104,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [01][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 2293812822
+      "size": 2293812822,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1421.098,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [01][Ma10p_1080p][x265_flac_aac].sc.ass",
@@ -279,7 +509,17 @@
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [02][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1195905785
+      "size": 1195905785,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1421.098,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [02][Ma10p_1080p][x265_flac_aac].sc.ass",
@@ -291,7 +531,17 @@
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [03][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1390760294
+      "size": 1390760294,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1421.098,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [03][Ma10p_1080p][x265_flac_aac].sc.ass",
@@ -303,7 +553,17 @@
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [04][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1146545071
+      "size": 1146545071,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1421.098,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [04][Ma10p_1080p][x265_flac_aac].sc.ass",
@@ -315,7 +575,17 @@
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [05][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1323737631
+      "size": 1323737631,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1421.098,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [05][Ma10p_1080p][x265_flac_aac].sc.ass",
@@ -327,7 +597,17 @@
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [06][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1104465559
+      "size": 1104465559,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1421.098,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [06][Ma10p_1080p][x265_flac_aac].sc.ass",
@@ -339,7 +619,17 @@
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [07][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1245570581
+      "size": 1245570581,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1421.098,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [07][Ma10p_1080p][x265_flac_aac].sc.ass",
@@ -351,7 +641,17 @@
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [08][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1354044012
+      "size": 1354044012,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1421.098,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [08][Ma10p_1080p][x265_flac_aac].sc.ass",
@@ -363,7 +663,17 @@
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [09][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 2213076073
+      "size": 2213076073,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1421.098,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [09][Ma10p_1080p][x265_flac_aac].sc.ass",
@@ -375,7 +685,17 @@
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [10][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1923677227
+      "size": 1923677227,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1421.098,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [10][Ma10p_1080p][x265_flac_aac].sc.ass",
@@ -387,7 +707,17 @@
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [11][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1286292390
+      "size": 1286292390,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1421.098,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [11][Ma10p_1080p][x265_flac_aac].sc.ass",
@@ -399,7 +729,17 @@
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [12][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1220771432
+      "size": 1220771432,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1421.098,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [12][Ma10p_1080p][x265_flac_aac].sc.ass",
@@ -411,7 +751,17 @@
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [13][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1609055624
+      "size": 1609055624,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1421.098,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [13][Ma10p_1080p][x265_flac_aac].sc.ass",
@@ -423,7 +773,17 @@
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [14][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1280872430
+      "size": 1280872430,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1421.098,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [14][Ma10p_1080p][x265_flac_aac].sc.ass",
@@ -435,7 +795,17 @@
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [15][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1227569199
+      "size": 1227569199,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1421.098,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [15][Ma10p_1080p][x265_flac_aac].sc.ass",
@@ -447,7 +817,17 @@
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [16][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1308877925
+      "size": 1308877925,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1421.098,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [16][Ma10p_1080p][x265_flac_aac].sc.ass",
@@ -459,7 +839,17 @@
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [17][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1379435722
+      "size": 1379435722,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1421.098,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [17][Ma10p_1080p][x265_flac_aac].sc.ass",
@@ -471,7 +861,17 @@
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [18][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1298081363
+      "size": 1298081363,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1421.098,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [18][Ma10p_1080p][x265_flac_aac].sc.ass",
@@ -483,7 +883,17 @@
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [19][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1231360115
+      "size": 1231360115,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1421.098,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [19][Ma10p_1080p][x265_flac_aac].sc.ass",
@@ -495,7 +905,17 @@
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [20][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1220486187
+      "size": 1220486187,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1421.098,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [20][Ma10p_1080p][x265_flac_aac].sc.ass",
@@ -507,7 +927,17 @@
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [21][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1206070784
+      "size": 1206070784,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1421.098,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [21][Ma10p_1080p][x265_flac_aac].sc.ass",
@@ -519,7 +949,17 @@
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [22][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1043608988
+      "size": 1043608988,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1421.098,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [22][Ma10p_1080p][x265_flac_aac].sc.ass",
@@ -531,7 +971,17 @@
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [23][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1053056964
+      "size": 1053056964,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1421.098,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [23][Ma10p_1080p][x265_flac_aac].sc.ass",
@@ -543,7 +993,17 @@
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [24][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1183703187
+      "size": 1183703187,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1421.098,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [24][Ma10p_1080p][x265_flac_aac].sc.ass",
@@ -555,7 +1015,17 @@
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [25][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1231094409
+      "size": 1231094409,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1421.098,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [25][Ma10p_1080p][x265_flac_aac].sc.ass",
@@ -567,7 +1037,17 @@
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [26][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1098359943
+      "size": 1098359943,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1421.098,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [26][Ma10p_1080p][x265_flac_aac].sc.ass",
@@ -2347,127 +2827,437 @@
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [CM01][Ma10p_1080p][x265_flac].mkv",
-      "size": 15025414
+      "size": 15025414,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 17.017,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [CM02][Ma10p_1080p][x265_flac].mkv",
-      "size": 17079182
+      "size": 17079182,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 17.017,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [CM03][Ma10p_1080p][x265_flac].mkv",
-      "size": 22145778
+      "size": 22145778,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 17.017,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Demon PV 01][Ma10p_1080p][x265_flac].mkv",
-      "size": 29636714
+      "size": 29636714,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 57.057,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Demon PV 02][Ma10p_1080p][x265_flac].mkv",
-      "size": 19289777
+      "size": 19289777,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 37.037,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Demon PV 03][Ma10p_1080p][x265_flac].mkv",
-      "size": 121176456
+      "size": 121176456,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 112.112,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Event][Ma10p_1080p][x265_aac].mkv",
-      "size": 1082609342
+      "size": 1082609342,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1307.306,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Hashira PV][Ma10p_1080p][x265_flac].mkv",
-      "size": 154776134
+      "size": 154776134,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 112.363,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Menu01][Ma10p_1080p][x265_flac].mkv",
-      "size": 48914022
+      "size": 48914022,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 33.535,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Menu02][Ma10p_1080p][x265_flac].mkv",
-      "size": 43502617
+      "size": 43502617,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 33.535,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Menu03][Ma10p_1080p][x265_flac].mkv",
-      "size": 37805374
+      "size": 37805374,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 33.535,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Menu04][Ma10p_1080p][x265_flac].mkv",
-      "size": 54120795
+      "size": 54120795,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 33.535,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Menu05][Ma10p_1080p][x265_flac].mkv",
-      "size": 37686528
+      "size": 37686528,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 33.535,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Menu06][Ma10p_1080p][x265_flac].mkv",
-      "size": 46987236
+      "size": 46987236,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 33.535,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Menu07][Ma10p_1080p][x265_flac].mkv",
-      "size": 43169654
+      "size": 43169654,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 33.535,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Menu08][Ma10p_1080p][x265_flac].mkv",
-      "size": 49726588
+      "size": 49726588,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 33.535,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Menu09][Ma10p_1080p][x265_flac].mkv",
-      "size": 51314450
+      "size": 51314450,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 33.535,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Menu10][Ma10p_1080p][x265_flac].mkv",
-      "size": 38433354
+      "size": 38433354,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 33.535,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Menu11][Ma10p_1080p][x265_flac].mkv",
-      "size": 38937305
+      "size": 38937305,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 33.535,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Movie Teaser][Ma10p_1080p][x265_flac].mkv",
-      "size": 27613876
+      "size": 27613876,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 32.032,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [NCED][Ma10p_1080p][x265_flac].mkv",
-      "size": 87102830
+      "size": 87102830,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.091,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [NCED_EP19][Ma10p_1080p][x265_flac].mkv",
-      "size": 92334990
+      "size": 92334990,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 104.271,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [NCOP][Ma10p_1080p][x265_flac].mkv",
-      "size": 164719526
+      "size": 164719526,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.091,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [NCOP_EP23][Ma10p_1080p][x265_flac].mkv",
-      "size": 164215114
+      "size": 164215114,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.091,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [PV01][Ma10p_1080p][x265_flac].mkv",
-      "size": 206874103
+      "size": 206874103,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 177.177,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [PV02][Ma10p_1080p][x265_flac].mkv",
-      "size": 78685086
+      "size": 78685086,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 99.058,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [PV03][Ma10p_1080p][x265_flac].mkv",
-      "size": 111879432
+      "size": 111879432,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.135,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Special PV 01][Ma10p_1080p][x265_flac].mkv",
-      "size": 33586822
+      "size": 33586822,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 37.037,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Special PV 02][Ma10p_1080p][x265_flac].mkv",
-      "size": 20373412
+      "size": 20373412,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 32.032,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [Teaser][Ma10p_1080p][x265_flac].mkv",
-      "size": 23403198
+      "size": 23403198,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 26.986,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Mugen Ressha Hen [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [27][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1251477729
+      "size": 1251477729,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1578.41,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Mugen Ressha Hen [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [27][Ma10p_1080p][x265_flac_aac].sc.ass",
@@ -2479,7 +3269,17 @@
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Mugen Ressha Hen [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [28][Ma10p_1080p][x265_flac].mkv",
-      "size": 1428691299
+      "size": 1428691299,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1377.005,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Mugen Ressha Hen [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [28][Ma10p_1080p][x265_flac].sc.ass",
@@ -2491,7 +3291,17 @@
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Mugen Ressha Hen [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [29][Ma10p_1080p][x265_flac].mkv",
-      "size": 1762853815
+      "size": 1762853815,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1506.215,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Mugen Ressha Hen [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [29][Ma10p_1080p][x265_flac].sc.ass",
@@ -2503,7 +3313,17 @@
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Mugen Ressha Hen [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [30][Ma10p_1080p][x265_flac].mkv",
-      "size": 1805957510
+      "size": 1805957510,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1422.005,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Mugen Ressha Hen [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [30][Ma10p_1080p][x265_flac].sc.ass",
@@ -2515,7 +3335,17 @@
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Mugen Ressha Hen [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [31][Ma10p_1080p][x265_flac].mkv",
-      "size": 1726606642
+      "size": 1726606642,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1302.095,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Mugen Ressha Hen [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [31][Ma10p_1080p][x265_flac].sc.ass",
@@ -2527,7 +3357,17 @@
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Mugen Ressha Hen [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [32][Ma10p_1080p][x265_flac].mkv",
-      "size": 1501150228
+      "size": 1501150228,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1421.965,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Mugen Ressha Hen [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [32][Ma10p_1080p][x265_flac].sc.ass",
@@ -2539,7 +3379,17 @@
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Mugen Ressha Hen [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [33][Ma10p_1080p][x265_flac].mkv",
-      "size": 1190007282
+      "size": 1190007282,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1591.966,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Mugen Ressha Hen [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [33][Ma10p_1080p][x265_flac].sc.ass",
@@ -2843,51 +3693,171 @@
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Mugen Ressha Hen [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Mugen Ressha Hen [CM01][Ma10p_1080p][x265_flac].mkv",
-      "size": 22038021
+      "size": 22038021,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 16.016,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Mugen Ressha Hen [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Mugen Ressha Hen [CM02][Ma10p_1080p][x265_flac].mkv",
-      "size": 29004132
+      "size": 29004132,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 16.016,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Mugen Ressha Hen [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Mugen Ressha Hen [CM03][Ma10p_1080p][x265_flac].mkv",
-      "size": 23087724
+      "size": 23087724,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 16.016,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Mugen Ressha Hen [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Mugen Ressha Hen [CM04][Ma10p_1080p][x265_flac].mkv",
-      "size": 28226849
+      "size": 28226849,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 16.016,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Mugen Ressha Hen [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Mugen Ressha Hen [Menu01][Ma10p_1080p][x265_flac].mkv",
-      "size": 63651671
+      "size": 63651671,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 42.042,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Mugen Ressha Hen [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Mugen Ressha Hen [Menu02][Ma10p_1080p][x265_flac].mkv",
-      "size": 110469018
+      "size": 110469018,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 60.06,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Mugen Ressha Hen [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Mugen Ressha Hen [Menu03][Ma10p_1080p][x265_flac].mkv",
-      "size": 111725695
+      "size": 111725695,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 60.06,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Mugen Ressha Hen [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Mugen Ressha Hen [MenuITA01][Ma10p_1080p][x265_flac].mkv",
-      "size": 31061797
+      "size": 31061797,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 123.335,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Mugen Ressha Hen [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Mugen Ressha Hen [MenuITA02][Ma10p_1080p][x265_flac].mkv",
-      "size": 31181462
+      "size": 31181462,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 123.335,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Mugen Ressha Hen [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Mugen Ressha Hen [NCED][Ma10p_1080p][x265_flac].mkv",
-      "size": 151401921
+      "size": 151401921,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.091,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Mugen Ressha Hen [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Mugen Ressha Hen [NCOP][Ma10p_1080p][x265_flac].mkv",
-      "size": 197808335
+      "size": 197808335,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.091,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [34][Ma10p_1080p][x265_flac].mkv",
-      "size": 2835183980
+      "size": 2835183980,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 2813.895,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [34][Ma10p_1080p][x265_flac].sc.ass",
@@ -2899,7 +3869,17 @@
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [35][Ma10p_1080p][x265_flac].mkv",
-      "size": 1237952042
+      "size": 1237952042,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1422.005,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [35][Ma10p_1080p][x265_flac].sc.ass",
@@ -2911,7 +3891,17 @@
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [36][Ma10p_1080p][x265_flac].mkv",
-      "size": 1781153911
+      "size": 1781153911,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1422.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [36][Ma10p_1080p][x265_flac].sc.ass",
@@ -2923,7 +3913,17 @@
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [37][Ma10p_1080p][x265_flac].mkv",
-      "size": 1042474802
+      "size": 1042474802,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1422.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [37][Ma10p_1080p][x265_flac].sc.ass",
@@ -2935,7 +3935,17 @@
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [38][Ma10p_1080p][x265_flac].mkv",
-      "size": 1253712154
+      "size": 1253712154,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1422.05,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [38][Ma10p_1080p][x265_flac].sc.ass",
@@ -2947,7 +3957,17 @@
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [39][Ma10p_1080p][x265_flac].mkv",
-      "size": 1799254961
+      "size": 1799254961,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1422.05,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [39][Ma10p_1080p][x265_flac].sc.ass",
@@ -2959,7 +3979,17 @@
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [40][Ma10p_1080p][x265_flac].mkv",
-      "size": 1375286807
+      "size": 1375286807,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1422.05,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [40][Ma10p_1080p][x265_flac].sc.ass",
@@ -2971,7 +4001,17 @@
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [41][Ma10p_1080p][x265_flac].mkv",
-      "size": 1486044787
+      "size": 1486044787,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1422.05,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [41][Ma10p_1080p][x265_flac].sc.ass",
@@ -2983,7 +4023,17 @@
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [42][Ma10p_1080p][x265_flac].mkv",
-      "size": 2696473608
+      "size": 2696473608,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1422.05,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [42][Ma10p_1080p][x265_flac].sc.ass",
@@ -2995,7 +4045,17 @@
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [43][Ma10p_1080p][x265_flac].mkv",
-      "size": 2147715141
+      "size": 2147715141,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1422.05,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [43][Ma10p_1080p][x265_flac].sc.ass",
@@ -3007,7 +4067,17 @@
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [44][Ma10p_1080p][x265_flac].mkv",
-      "size": 1854830404
+      "size": 1854830404,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1947.99,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [Ma10p_1080p]/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba [44][Ma10p_1080p][x265_flac].sc.ass",
@@ -3227,123 +4297,454 @@
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [CM01][Ma10p_1080p][x265_flac].mkv",
-      "size": 19885138
+      "size": 19885138,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 17.017,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [CM02][Ma10p_1080p][x265_flac].mkv",
-      "size": 33439445
+      "size": 33439445,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 17.017,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [EP01 Review Avant][Ma10p_1080p][x265_flac].mkv",
-      "size": 116619018
+      "size": 116619018,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 49.967,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [EP11 Information Avant][Ma10p_1080p][x265_flac].mkv",
-      "size": 72330890
+      "size": 72330890,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 32.032,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [EP11 Review Avant][Ma10p_1080p][x265_flac].mkv",
-      "size": 130385316
+      "size": 130385316,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 50.97,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [IV01][Ma10p_1080p][x265_aac].mkv",
-      "size": 1139039978
+      "size": 1139039978,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 2916.65,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [IV02][Ma10p_1080p][x265_aac].mkv",
-      "size": 1187282664
+      "size": 1187282664,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 3028.949,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [IV03][Ma10p_1080p][x265_aac].mkv",
-      "size": 1854250764
+      "size": 1854250764,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 3044.522,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [Katanakaji no Sato Hen PV][Ma10p_1080p][x265_flac].mkv",
-      "size": 43468076
+      "size": 43468076,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 41.96,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [Kimetsu Enroku 01][Ma10p_1080p][x265_aac].mkv",
-      "size": 556536779
+      "size": 556536779,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1663.68,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [Kimetsu Enroku 02][Ma10p_1080p][x265_aac].mkv",
-      "size": 370556419
+      "size": 370556419,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1630.634,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [Kimetsu Enroku 03][Ma10p_1080p][x265_aac].mkv",
-      "size": 360810352
+      "size": 360810352,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1834.837,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [Kimetsu Enroku 04][Ma10p_1080p][x265_aac].mkv",
-      "size": 395305822
+      "size": 395305822,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1893.909,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [Kimetsu Enroku 05][Ma10p_1080p][x265_aac].mkv",
-      "size": 483003576
+      "size": 483003576,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1858.858,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [Kimetsu Enroku 06][Ma10p_1080p][x265_aac].mkv",
-      "size": 412099103
+      "size": 412099103,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1752.768,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [Menu01][Ma10p_1080p][x265_flac].mkv",
-      "size": 63579446
+      "size": 63579446,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 37.037,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [Menu02][Ma10p_1080p][x265_flac].mkv",
-      "size": 51751636
+      "size": 51751636,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 37.037,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [Menu03][Ma10p_1080p][x265_flac].mkv",
-      "size": 54540087
+      "size": 54540087,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 37.037,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [Menu04][Ma10p_1080p][x265_flac].mkv",
-      "size": 56512572
+      "size": 56512572,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 37.037,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [Menu05][Ma10p_1080p][x265_flac].mkv",
-      "size": 64140240
+      "size": 64140240,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 37.037,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [Menu06][Ma10p_1080p][x265_flac].mkv",
-      "size": 75018811
+      "size": 75018811,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 37.037,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [MenuITA01][Ma10p_1080p][x265_flac].mkv",
-      "size": 31286875
+      "size": 31286875,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 123.335,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [MenuITA02][Ma10p_1080p][x265_flac].mkv",
-      "size": 31806877
+      "size": 31806877,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 123.335,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [MenuITA03][Ma10p_1080p][x265_flac].mkv",
-      "size": 29052866
+      "size": 29052866,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 123.335,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [NCED][Ma10p_1080p][x265_flac].mkv",
-      "size": 127418040
+      "size": 127418040,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.091,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [NCOP][Ma10p_1080p][x265_flac].mkv",
-      "size": 184538909
+      "size": 184538909,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.091,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [New Characte PV][Ma10p_1080p][x265_flac].mkv",
-      "size": 24055990
+      "size": 24055990,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 33.367,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [Promotion Reel][Ma10p_1080p][x265_flac].mkv",
-      "size": 569173758
+      "size": 569173758,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 301.051,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [PV01][Ma10p_1080p][x265_flac].mkv",
-      "size": 117607478
+      "size": 117607478,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 87.671,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [Ma10p_1080p]/SPs/[BeanSub&FZSD&VCB-Studio] Kimetsu no Yaiba Yuukaku Hen [PV02][Ma10p_1080p][x265_flac].mkv",
-      "size": 157911537
+      "size": 157911537,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 71.905,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     }
-  ]
+  ],
+  "local_container_fact_summary": {
+    "container_fact_count": 137,
+    "probe_status_counts": {
+      "available": 137
+    },
+    "duration_seconds_range": [
+      16.016,
+      7008.001
+    ],
+    "duration_seconds_samples": [
+      7008.001,
+      16.976,
+      16.976,
+      16.976,
+      16.976,
+      16.976
+    ]
+  },
+  "local_container_fact_source": {
+    "kind": "real_local_media_duration_backfill",
+    "media_root": "H:\\Anime",
+    "probe_media": true,
+    "container_probe": "ffprobe",
+    "embedded_in": "files[].container_facts",
+    "matched_file_count": 836,
+    "matched_video_count": 137,
+    "missing_actual_video_count": 0,
+    "match_stats": {
+      "matched_by_root_path": 836
+    }
+  }
 }

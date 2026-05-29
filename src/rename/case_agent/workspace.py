@@ -10,16 +10,13 @@ from .models import (
     BangumiRelationCard,
     BangumiSubjectCard,
     CaseBudget,
-    CaseBriefingOutput,
     CaseContract,
     CaseDossier,
     CaseHeader,
-    CaseResolutionLedger,
     CandidateComparison,
     EvidencePlan,
     EvidenceBatchResult,
     EvidenceRequestResult,
-    InvestigationNotebook,
     LocalClusterCard,
     LocalFileCard,
     LocalSpanCard,
@@ -27,11 +24,9 @@ from .models import (
     MappingDraftPatch,
     ProvenanceCard,
     QueryCard,
-    RecordedSplitPlanRow,
     VerifierIssue,
     VisibleRefCatalog,
 )
-from .recorded_split_plan import latest_recorded_split_plan_rows
 from .span_builder import build_bangumi_span_cards, compact_span_card
 
 
@@ -61,9 +56,6 @@ class CaseEvidenceWorkspace:
     mapping_draft_patches: list[MappingDraftPatch] = field(default_factory=list)
     mapping_draft_candidate_comparisons: list[CandidateComparison] = field(default_factory=list)
     plan_state: EvidencePlan = field(default_factory=EvidencePlan)
-    case_briefing: CaseBriefingOutput | None = None
-    investigation_notebook: InvestigationNotebook = field(default_factory=InvestigationNotebook)
-    case_resolution_ledger: CaseResolutionLedger | None = None
 
     @classmethod
     def from_cards(
@@ -86,9 +78,6 @@ class CaseEvidenceWorkspace:
         mapping_draft: MappingDraft | None = None,
         mapping_draft_patches: Sequence[MappingDraftPatch] = (),
         mapping_draft_candidate_comparisons: Sequence[CandidateComparison] = (),
-        case_briefing: CaseBriefingOutput | None = None,
-        investigation_notebook: InvestigationNotebook | None = None,
-        case_resolution_ledger: CaseResolutionLedger | None = None,
         previous_hypotheses: Sequence = (),
         previous_evidence_results: Sequence[EvidenceBatchResult] = (),
         verifier_issues: Sequence[VerifierIssue] = (),
@@ -125,9 +114,6 @@ class CaseEvidenceWorkspace:
             mapping_draft_patches=list(mapping_draft_patches),
             mapping_draft_candidate_comparisons=list(mapping_draft_candidate_comparisons),
             plan_state=plan_state or EvidencePlan(),
-            case_briefing=case_briefing,
-            investigation_notebook=investigation_notebook or InvestigationNotebook(),
-            case_resolution_ledger=case_resolution_ledger,
         )
 
     def visible_refs(self) -> VisibleRefCatalog:
@@ -213,9 +199,6 @@ class CaseEvidenceWorkspace:
             mapping_draft=self.mapping_draft,
             mapping_draft_patches=self.mapping_draft_patches,
             mapping_draft_candidate_comparisons=self.mapping_draft_candidate_comparisons,
-            case_briefing=self.case_briefing,
-            investigation_notebook=self.investigation_notebook,
-            case_resolution_ledger=self.case_resolution_ledger,
             previous_hypotheses=self.previous_hypotheses,
             previous_evidence_results=[*self.previous_evidence_results, *[rr for rr in evidence_results if isinstance(rr, EvidenceBatchResult)]],
             verifier_issues=self.verifier_issues,
@@ -269,9 +252,6 @@ class CaseEvidenceWorkspace:
             mapping_draft=self.mapping_draft,
             mapping_draft_patches=self.mapping_draft_patches,
             mapping_draft_candidate_comparisons=self.mapping_draft_candidate_comparisons,
-            case_briefing=self.case_briefing,
-            investigation_notebook=self.investigation_notebook,
-            case_resolution_ledger=self.case_resolution_ledger,
             previous_hypotheses=self.previous_hypotheses,
             previous_evidence_results=[*self.previous_evidence_results, *[rr for rr in evidence_results if isinstance(rr, EvidenceBatchResult)]],
             verifier_issues=self.verifier_issues,
@@ -300,9 +280,6 @@ class CaseEvidenceWorkspace:
             mapping_draft=draft,
             mapping_draft_patches=self.mapping_draft_patches,
             mapping_draft_candidate_comparisons=self.mapping_draft_candidate_comparisons,
-            case_briefing=self.case_briefing,
-            investigation_notebook=self.investigation_notebook,
-            case_resolution_ledger=self.case_resolution_ledger,
             previous_hypotheses=self.previous_hypotheses,
             previous_evidence_results=self.previous_evidence_results,
             verifier_issues=self.verifier_issues,
@@ -348,9 +325,6 @@ class CaseEvidenceWorkspace:
             mapping_draft=self.mapping_draft,
             mapping_draft_patches=self.mapping_draft_patches,
             mapping_draft_candidate_comparisons=self.mapping_draft_candidate_comparisons,
-            case_briefing=self.case_briefing,
-            investigation_notebook=self.investigation_notebook,
-            case_resolution_ledger=self.case_resolution_ledger,
             previous_hypotheses=self.previous_hypotheses,
             previous_evidence_results=self.previous_evidence_results,
             verifier_issues=self.verifier_issues,
@@ -376,7 +350,6 @@ class CaseEvidenceWorkspace:
         for batch in self.previous_evidence_results:
             for rr in getattr(batch, 'request_results', []) or []:
                 bangumi_span_cards.extend(list(getattr(rr, 'bangumi_span_cards', []) or []))
-        recorded_split_plan_rows: list[RecordedSplitPlanRow] = latest_recorded_split_plan_rows(self.judge_request_audits)
         dossier = CaseDossier(
             header=self.header,
             budget=self.budget,
@@ -404,10 +377,6 @@ class CaseEvidenceWorkspace:
             bangumi_span_cards=bangumi_span_cards or build_bangumi_span_cards(bangumi_items=list(self.bangumi_items)),
             plan_state=self.plan_state,
             round_context=round_context,
-            case_briefing=self.case_briefing,
-            investigation_notebook=self.investigation_notebook,
-            case_resolution_ledger=self.case_resolution_ledger,
-            recorded_split_plan_rows=recorded_split_plan_rows,
         )
         return dossier
 
@@ -430,9 +399,6 @@ class CaseEvidenceWorkspace:
             mapping_draft=self.mapping_draft,
             mapping_draft_patches=self.mapping_draft_patches,
             mapping_draft_candidate_comparisons=self.mapping_draft_candidate_comparisons,
-            case_briefing=self.case_briefing,
-            investigation_notebook=self.investigation_notebook,
-            case_resolution_ledger=self.case_resolution_ledger,
             previous_hypotheses=self.previous_hypotheses,
             previous_evidence_results=self.previous_evidence_results,
             verifier_issues=self.verifier_issues,

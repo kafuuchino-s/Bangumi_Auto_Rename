@@ -181,7 +181,6 @@ def test_summarize_case_agent_process_exposes_phase_g_counts() -> None:
         'action_policy_allowed': ['request_evidence'],
         'action_policy_disallowed': ['fail_closed'],
         'action_policy_final_opportunity': True,
-        'notebook_compact_counts': {'rounds': 1},
         'issue_router_issue_counts': {'count': 0},
     })
     assert summary['surface_ledger_count'] == 3
@@ -368,8 +367,6 @@ def test_summarize_case_agent_process_reads_menu_audit_fields() -> None:
                 'selected_menu_request_ids': ['R1'],
                 'unknown_menu_request_ids': ['UX'],
                 'resolved_menu_request_count': 2,
-                'legacy_raw_request_count': 3,
-                'normalized_legacy_request_count': 1,
             }
         ],
     })
@@ -379,8 +376,6 @@ def test_summarize_case_agent_process_reads_menu_audit_fields() -> None:
     assert summary['selected_menu_request_ids'] == ['R1']
     assert summary['unknown_menu_request_ids'] == ['UX']
     assert summary['resolved_menu_request_count'] == 2
-    assert summary['legacy_raw_request_count'] == 3
-    assert summary['normalized_legacy_request_count'] == 1
 
 
 def test_summarize_case_agent_process_prefers_case_judge_request_audits_rounds() -> None:

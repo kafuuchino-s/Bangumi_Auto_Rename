@@ -45,16 +45,12 @@ def _counter_add_dict(counter: Counter[str], values: dict[str, Any] | None) -> N
             continue
 
 
-def _latest_mapping_intent_audit(audits: list[dict[str, Any]]) -> dict[str, Any]:
+def _latest_submit_rejection(audits: list[dict[str, Any]]) -> dict[str, Any]:
     for audit in reversed(audits):
-        if audit.get("note") == "orchestrator_mapping_intents_result":
-            return audit
-    return {}
-
-
-def _latest_finish_rejection(audits: list[dict[str, Any]]) -> dict[str, Any]:
-    for audit in reversed(audits):
-        if audit.get("note") == "orchestrator_tool_output_rejected" and audit.get("tool_name") == "finish_case":
+        if audit.get("note") != "pi_case_agent_tool_call" or audit.get("tool_name") != "submit_mapping_draft":
+            continue
+        summary = audit.get("result_summary") if isinstance(audit.get("result_summary"), dict) else {}
+        if summary.get("accepted") is False:
             return audit
     return {}
 
@@ -62,10 +58,11 @@ def _latest_finish_rejection(audits: list[dict[str, Any]]) -> dict[str, Any]:
 def _rejection_counter(audits: list[dict[str, Any]]) -> Counter[str]:
     counter: Counter[str] = Counter()
     for audit in audits:
-        if audit.get("note") != "orchestrator_tool_output_rejected":
+        if audit.get("note") != "pi_case_agent_tool_call" or bool(audit.get("accepted")):
             continue
         tool_name = str(audit.get("tool_name") or "unknown")
-        reason = str(audit.get("reason") or "unknown")
+        summary = audit.get("result_summary") if isinstance(audit.get("result_summary"), dict) else {}
+        reason = str(summary.get("status") or summary.get("error") or "rejected")
         counter[f"{tool_name}:{reason}"] += 1
     return counter
 
@@ -74,42 +71,36 @@ def _sample_row(path: Path) -> dict[str, Any]:
     payload = _load_json(path)
     snapshot = _snapshot(payload)
     audits = _audits(snapshot)
-    intent = _latest_mapping_intent_audit(audits)
-    finish_rejection = _latest_finish_rejection(audits)
-    finish_gate = finish_rejection.get("finish_gate") if isinstance(finish_rejection.get("finish_gate"), dict) else {}
-    open_rows = finish_rejection.get("open_rows") if isinstance(finish_rejection.get("open_rows"), list) else intent.get("open_rows")
-    if not isinstance(open_rows, list):
-        open_rows = []
+    submit_rejection = _latest_submit_rejection(audits)
+    submit_summary = submit_rejection.get("result_summary") if isinstance(submit_rejection.get("result_summary"), dict) else {}
     return {
         "sample": path.stem,
         "status": str(snapshot.get("status") or payload.get("status") or "unknown"),
         "summary": str(snapshot.get("summary") or payload.get("summary") or ""),
         "main_file_count": snapshot.get("main_file_count") or snapshot.get("contract_main_file_count"),
         "mapped_file_count": snapshot.get("mapped_file_count"),
+        "mapped_target_episode_count": snapshot.get("mapped_target_episode_count"),
+        "single_file_multi_episode_count": snapshot.get("single_file_multi_episode_count"),
         "excluded_file_count": snapshot.get("excluded_file_count"),
+        "resolved_unmapped_file_count": snapshot.get("resolved_unmapped_file_count") or snapshot.get("excluded_file_count"),
         "unresolved_count": snapshot.get("unresolved_count"),
         "accepted_contract_ok": snapshot.get("accepted_contract_ok"),
         "final_verifier_passed": snapshot.get("final_verifier_passed"),
-        "turn_count": snapshot.get("orchestrator_turn_count"),
+        "case_agent_mode": snapshot.get("case_agent_mode"),
+        "pi_run_dir": snapshot.get("pi_run_dir"),
+        "pi_provider": snapshot.get("pi_provider"),
+        "pi_model": snapshot.get("pi_model"),
+        "turn_count": (snapshot.get("pi_runtime_result") or {}).get("runner_result", {}).get("turn_count") if isinstance(snapshot.get("pi_runtime_result"), dict) else None,
         "tool_rejection_count": snapshot.get("tool_rejection_count"),
-        "tool_counts": snapshot.get("orchestrator_tool_call_counts") if isinstance(snapshot.get("orchestrator_tool_call_counts"), dict) else {},
-        "tool_sequence_tail": list(snapshot.get("orchestrator_tool_sequence") or [])[-10:],
+        "tool_counts": snapshot.get("pi_tool_call_counts") if isinstance(snapshot.get("pi_tool_call_counts"), dict) else {},
+        "tool_sequence_tail": list(snapshot.get("pi_tool_sequence") or [])[-10:],
         "ai_call_counts_by_stage": snapshot.get("ai_call_counts_by_stage") if isinstance(snapshot.get("ai_call_counts_by_stage"), dict) else {},
-        "legacy_subagent_call_count": snapshot.get("legacy_subagent_call_count"),
         "bangumi_span_count": snapshot.get("bangumi_span_count"),
         "detail_equivalent_target_span_count": snapshot.get("detail_equivalent_target_span_count"),
-        "latest_intent_status": intent.get("status"),
-        "latest_intent_compiled_patch_count": intent.get("compiled_patch_count"),
-        "latest_intent_blocked_count": intent.get("blocked_intent_count"),
-        "latest_intent_blocked_issue_codes": intent.get("blocked_intent_issue_codes") or [],
-        "latest_intent_patch_issue_codes": intent.get("patch_issue_codes") or [],
-        "latest_intent_requested_evidence": intent.get("requested_evidence") or [],
-        "latest_finish_rejection_reason": finish_rejection.get("reason"),
-        "remaining_target_side_request_count": finish_gate.get("remaining_target_side_executable_request_count"),
-        "remaining_target_side_request_ids": finish_gate.get("remaining_target_side_executable_request_ids") or [],
-        "durable_draft_evidence_intent_count": finish_gate.get("durable_draft_evidence_intent_count"),
-        "no_new_evidence_preconditions_ok": finish_gate.get("no_new_evidence_preconditions_ok"),
-        "open_rows": open_rows[:4],
+        "latest_submit_rejection_status": submit_summary.get("status"),
+        "latest_submit_rejection_summary": submit_summary.get("summary"),
+        "latest_submit_verifier_passed": submit_summary.get("verifier_passed"),
+        "latest_submit_verifier_issue_count": submit_summary.get("verifier_issue_count"),
         "rejection_counts": dict(_rejection_counter(audits)),
     }
 
@@ -132,7 +123,7 @@ def _print_text(summary: dict[str, Any], rows: list[dict[str, Any]], *, show_ope
         print(
             "ai: "
             f"total={runner.get('ai_call_count_total')} attempts={runner.get('ai_attempt_count_estimate_total')} "
-            f"legacy={runner.get('legacy_subagent_call_count_total')} tools={runner.get('orchestrator_tool_call_counts')}"
+            f"tools={runner.get('pi_tool_call_counts')}"
         )
     print(f"derived_counts: {summary['derived_counts']}")
     print(f"summary_counts: {summary['summary_counts']}")
@@ -143,33 +134,19 @@ def _print_text(summary: dict[str, Any], rows: list[dict[str, Any]], *, show_ope
     for row in rows:
         print(
             f"- {row['sample']}: {row['status']} / {row['summary']} "
-            f"mapped={row['mapped_file_count']} excluded={row['excluded_file_count']} unresolved={row['unresolved_count']} "
-            f"turns={row['turn_count']} rejected={row['tool_rejection_count']}"
+            f"mapped={row['mapped_file_count']} resolved_unmapped={row['resolved_unmapped_file_count']} "
+            f"excluded_compat={row['excluded_file_count']} unresolved={row['unresolved_count']} "
+            f"mode={row['case_agent_mode']} turns={row['turn_count']} rejected={row['tool_rejection_count']}"
+            f" pi_model={row.get('pi_provider')}/{row.get('pi_model')}"
         )
-        print(
-            "  latest_intent: "
-            f"status={row['latest_intent_status']} compiled={row['latest_intent_compiled_patch_count']} "
-            f"blocked={row['latest_intent_blocked_count']} blocked_issues={row['latest_intent_blocked_issue_codes']} "
-            f"patch_issues={row['latest_intent_patch_issue_codes']} requested={row['latest_intent_requested_evidence']}"
-        )
-        if row.get("latest_finish_rejection_reason"):
+        if row.get("latest_submit_rejection_status"):
             print(
-                "  finish_rejection: "
-                f"{row['latest_finish_rejection_reason']} target_requests={row['remaining_target_side_request_count']} "
-                f"ids=[{_format_list(list(row['remaining_target_side_request_ids']))}] "
-                f"durable_intents={row['durable_draft_evidence_intent_count']} "
-                f"no_new_ok={row['no_new_evidence_preconditions_ok']}"
+                "  submit_rejection: "
+                f"status={row['latest_submit_rejection_status']} summary={row['latest_submit_rejection_summary']} "
+                f"verifier_passed={row['latest_submit_verifier_passed']} "
+                f"issues={row['latest_submit_verifier_issue_count']}"
             )
         print(f"  tool_tail: {' > '.join(row['tool_sequence_tail'])}")
-        if show_open_rows and row.get("open_rows"):
-            for open_row in row["open_rows"]:
-                print(
-                    "  open_row: "
-                    f"{open_row.get('row_ref')} {open_row.get('local_ref')} "
-                    f"status={open_row.get('status')} disposition={open_row.get('disposition')} "
-                    f"candidates={open_row.get('candidate_target_refs')} requested={open_row.get('requested_request_types')} "
-                    f"next={open_row.get('recommended_next')}"
-                )
 
 
 def summarize_run(run_dir: Path) -> dict[str, Any]:

@@ -7,7 +7,17 @@
     },
     {
       "path": "[VCB-Studio] CROSS ANGE Tenshi to Ryuu no Rondo [01][Ma10p_1080p][x265_flac].mkv",
-      "size": 1740715669
+      "size": 1740715669,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1421.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] CROSS ANGE Tenshi to Ryuu no Rondo [02][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -15,7 +25,17 @@
     },
     {
       "path": "[VCB-Studio] CROSS ANGE Tenshi to Ryuu no Rondo [02][Ma10p_1080p][x265_flac].mkv",
-      "size": 1556255861
+      "size": 1556255861,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1421.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] CROSS ANGE Tenshi to Ryuu no Rondo [03][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -23,7 +43,17 @@
     },
     {
       "path": "[VCB-Studio] CROSS ANGE Tenshi to Ryuu no Rondo [03][Ma10p_1080p][x265_flac].mkv",
-      "size": 1748379395
+      "size": 1748379395,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1427.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] CROSS ANGE Tenshi to Ryuu no Rondo [04][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -31,7 +61,17 @@
     },
     {
       "path": "[VCB-Studio] CROSS ANGE Tenshi to Ryuu no Rondo [04][Ma10p_1080p][x265_flac].mkv",
-      "size": 1363796790
+      "size": 1363796790,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1421.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] CROSS ANGE Tenshi to Ryuu no Rondo [05][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -39,7 +79,17 @@
     },
     {
       "path": "[VCB-Studio] CROSS ANGE Tenshi to Ryuu no Rondo [05][Ma10p_1080p][x265_flac].mkv",
-      "size": 1455151124
+      "size": 1455151124,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1421.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] CROSS ANGE Tenshi to Ryuu no Rondo [06][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -47,7 +97,17 @@
     },
     {
       "path": "[VCB-Studio] CROSS ANGE Tenshi to Ryuu no Rondo [06][Ma10p_1080p][x265_flac].mkv",
-      "size": 1221053921
+      "size": 1221053921,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1427.093,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] CROSS ANGE Tenshi to Ryuu no Rondo [07][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -55,7 +115,17 @@
     },
     {
       "path": "[VCB-Studio] CROSS ANGE Tenshi to Ryuu no Rondo [07][Ma10p_1080p][x265_flac].mkv",
-      "size": 1634473867
+      "size": 1634473867,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1421.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] CROSS ANGE Tenshi to Ryuu no Rondo [08][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -63,7 +133,17 @@
     },
     {
       "path": "[VCB-Studio] CROSS ANGE Tenshi to Ryuu no Rondo [08][Ma10p_1080p][x265_flac].mkv",
-      "size": 1355865454
+      "size": 1355865454,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1421.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] CROSS ANGE Tenshi to Ryuu no Rondo [09][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -71,7 +151,17 @@
     },
     {
       "path": "[VCB-Studio] CROSS ANGE Tenshi to Ryuu no Rondo [09][Ma10p_1080p][x265_flac].mkv",
-      "size": 1456668410
+      "size": 1456668410,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1427.093,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] CROSS ANGE Tenshi to Ryuu no Rondo [10][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -79,7 +169,17 @@
     },
     {
       "path": "[VCB-Studio] CROSS ANGE Tenshi to Ryuu no Rondo [10][Ma10p_1080p][x265_flac].mkv",
-      "size": 1208738030
+      "size": 1208738030,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1421.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] CROSS ANGE Tenshi to Ryuu no Rondo [11][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -87,7 +187,17 @@
     },
     {
       "path": "[VCB-Studio] CROSS ANGE Tenshi to Ryuu no Rondo [11][Ma10p_1080p][x265_flac].mkv",
-      "size": 1771567791
+      "size": 1771567791,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1421.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] CROSS ANGE Tenshi to Ryuu no Rondo [12][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -95,7 +205,17 @@
     },
     {
       "path": "[VCB-Studio] CROSS ANGE Tenshi to Ryuu no Rondo [12][Ma10p_1080p][x265_flac].mkv",
-      "size": 1379390676
+      "size": 1379390676,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1427.093,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] CROSS ANGE Tenshi to Ryuu no Rondo [13][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -103,7 +223,17 @@
     },
     {
       "path": "[VCB-Studio] CROSS ANGE Tenshi to Ryuu no Rondo [13][Ma10p_1080p][x265_flac].mkv",
-      "size": 1770996296
+      "size": 1770996296,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1421.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] CROSS ANGE Tenshi to Ryuu no Rondo [14][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -111,7 +241,17 @@
     },
     {
       "path": "[VCB-Studio] CROSS ANGE Tenshi to Ryuu no Rondo [14][Ma10p_1080p][x265_flac].mkv",
-      "size": 1816383845
+      "size": 1816383845,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1421.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] CROSS ANGE Tenshi to Ryuu no Rondo [15][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -119,7 +259,17 @@
     },
     {
       "path": "[VCB-Studio] CROSS ANGE Tenshi to Ryuu no Rondo [15][Ma10p_1080p][x265_flac].mkv",
-      "size": 1470993460
+      "size": 1470993460,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1427.093,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] CROSS ANGE Tenshi to Ryuu no Rondo [16][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -127,7 +277,17 @@
     },
     {
       "path": "[VCB-Studio] CROSS ANGE Tenshi to Ryuu no Rondo [16][Ma10p_1080p][x265_flac].mkv",
-      "size": 2111006455
+      "size": 2111006455,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1421.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] CROSS ANGE Tenshi to Ryuu no Rondo [17][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -135,7 +295,17 @@
     },
     {
       "path": "[VCB-Studio] CROSS ANGE Tenshi to Ryuu no Rondo [17][Ma10p_1080p][x265_flac].mkv",
-      "size": 1943869667
+      "size": 1943869667,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1421.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] CROSS ANGE Tenshi to Ryuu no Rondo [18][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -143,7 +313,17 @@
     },
     {
       "path": "[VCB-Studio] CROSS ANGE Tenshi to Ryuu no Rondo [18][Ma10p_1080p][x265_flac].mkv",
-      "size": 1405499362
+      "size": 1405499362,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1427.093,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] CROSS ANGE Tenshi to Ryuu no Rondo [19][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -151,7 +331,17 @@
     },
     {
       "path": "[VCB-Studio] CROSS ANGE Tenshi to Ryuu no Rondo [19][Ma10p_1080p][x265_flac].mkv",
-      "size": 1498159194
+      "size": 1498159194,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1421.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] CROSS ANGE Tenshi to Ryuu no Rondo [20][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -159,7 +349,17 @@
     },
     {
       "path": "[VCB-Studio] CROSS ANGE Tenshi to Ryuu no Rondo [20][Ma10p_1080p][x265_flac].mkv",
-      "size": 1380390548
+      "size": 1380390548,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1421.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] CROSS ANGE Tenshi to Ryuu no Rondo [21][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -167,7 +367,17 @@
     },
     {
       "path": "[VCB-Studio] CROSS ANGE Tenshi to Ryuu no Rondo [21][Ma10p_1080p][x265_flac].mkv",
-      "size": 1822738087
+      "size": 1822738087,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1427.093,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] CROSS ANGE Tenshi to Ryuu no Rondo [22][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -175,7 +385,17 @@
     },
     {
       "path": "[VCB-Studio] CROSS ANGE Tenshi to Ryuu no Rondo [22][Ma10p_1080p][x265_flac].mkv",
-      "size": 1560666880
+      "size": 1560666880,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1455.79,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] CROSS ANGE Tenshi to Ryuu no Rondo [23][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -183,7 +403,17 @@
     },
     {
       "path": "[VCB-Studio] CROSS ANGE Tenshi to Ryuu no Rondo [23][Ma10p_1080p][x265_flac].mkv",
-      "size": 1838285653
+      "size": 1838285653,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1421.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] CROSS ANGE Tenshi to Ryuu no Rondo [24][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -191,7 +421,17 @@
     },
     {
       "path": "[VCB-Studio] CROSS ANGE Tenshi to Ryuu no Rondo [24][Ma10p_1080p][x265_flac].mkv",
-      "size": 2217143375
+      "size": 2217143375,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1421.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] CROSS ANGE Tenshi to Ryuu no Rondo [25][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -199,7 +439,17 @@
     },
     {
       "path": "[VCB-Studio] CROSS ANGE Tenshi to Ryuu no Rondo [25][Ma10p_1080p][x265_flac].mkv",
-      "size": 2279347480
+      "size": 2279347480,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1427.093,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "CDs/[141015] ｢禁断のレジスタンス｣／水樹奈々 (flac+webp)/01. 禁断のレジスタンス.flac",
@@ -491,51 +741,171 @@
     },
     {
       "path": "SPs/[VCB-Studio] CROSS ANGE Tenshi to Ryuu no Rondo [Cast Talk][Ma10p_1080p][x265_aac].mkv",
-      "size": 1335998598
+      "size": 1335998598,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1356.736,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] CROSS ANGE Tenshi to Ryuu no Rondo [Festival Event][Ma10p_1080p][x265_aac].mkv",
-      "size": 11578550432
+      "size": 11578550432,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 9802.176,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] CROSS ANGE Tenshi to Ryuu no Rondo [Interview][Ma10p_1080p][x265_aac].mkv",
-      "size": 1691794768
+      "size": 1691794768,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1816.832,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] CROSS ANGE Tenshi to Ryuu no Rondo [Menu01][Ma10p_1080p][x265_flac].mkv",
-      "size": 63118147
+      "size": 63118147,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 45.045,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 15,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] CROSS ANGE Tenshi to Ryuu no Rondo [Menu02][Ma10p_1080p][x265_flac].mkv",
-      "size": 52190422
+      "size": 52190422,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 45.045,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 15,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] CROSS ANGE Tenshi to Ryuu no Rondo [Menu03][Ma10p_1080p][x265_flac].mkv",
-      "size": 54190821
+      "size": 54190821,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 45.045,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 15,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] CROSS ANGE Tenshi to Ryuu no Rondo [Menu04][Ma10p_1080p][x265_flac].mkv",
-      "size": 50630469
+      "size": 50630469,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 45.045,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 15,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] CROSS ANGE Tenshi to Ryuu no Rondo [Menu05][Ma10p_1080p][x265_flac].mkv",
-      "size": 46514901
+      "size": 46514901,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 45.045,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 15,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] CROSS ANGE Tenshi to Ryuu no Rondo [Menu06][Ma10p_1080p][x265_flac].mkv",
-      "size": 57883249
+      "size": 57883249,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 45.045,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 15,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] CROSS ANGE Tenshi to Ryuu no Rondo [Menu07][Ma10p_1080p][x265_flac].mkv",
-      "size": 55094872
+      "size": 55094872,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 45.045,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 15,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] CROSS ANGE Tenshi to Ryuu no Rondo [Menu08][Ma10p_1080p][x265_flac].mkv",
-      "size": 58072691
+      "size": 58072691,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 45.045,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 18,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] CROSS ANGE Tenshi to Ryuu no Rondo [Menu08_Extra1][Ma10p_1080p][x265_flac].mkv",
-      "size": 210160574
+      "size": 210160574,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 613.615,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] CROSS ANGE Tenshi to Ryuu no Rondo [Menu08_Extra2].png",
@@ -543,55 +913,216 @@
     },
     {
       "path": "SPs/[VCB-Studio] CROSS ANGE Tenshi to Ryuu no Rondo [MV Collection][Ma10p_1080p][x265_flac].mkv",
-      "size": 2116023831
+      "size": 2116023831,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1047.046,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] CROSS ANGE Tenshi to Ryuu no Rondo [NCED01(Long Ver.)][Ma10p_1080p][x265_flac].mkv",
-      "size": 171965433
+      "size": 171965433,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 98.682,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] CROSS ANGE Tenshi to Ryuu no Rondo [NCED01(Short Ver.)][Ma10p_1080p][x265_flac].mkv",
-      "size": 125706273
+      "size": 125706273,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 82.082,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] CROSS ANGE Tenshi to Ryuu no Rondo [NCED02(Long Ver.)][Ma10p_1080p][x265_flac].mkv",
-      "size": 410562718
+      "size": 410562718,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 163.54,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] CROSS ANGE Tenshi to Ryuu no Rondo [NCED02(Short Ver.)][Ma10p_1080p][x265_flac].mkv",
-      "size": 363006010
+      "size": 363006010,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 103.896,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] CROSS ANGE Tenshi to Ryuu no Rondo [NCOP01][Ma10p_1080p][x265_flac].mkv",
-      "size": 192144114
+      "size": 192144114,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] CROSS ANGE Tenshi to Ryuu no Rondo [NCOP02][Ma10p_1080p][x265_flac].mkv",
-      "size": 192898889
+      "size": 192898889,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] CROSS ANGE Tenshi to Ryuu no Rondo [PV01][Ma10p_1080p][x265_flac].mkv",
-      "size": 102802888
+      "size": 102802888,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 89.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] CROSS ANGE Tenshi to Ryuu no Rondo [PV02][Ma10p_1080p][x265_flac].mkv",
-      "size": 107728152
+      "size": 107728152,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 106.106,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] CROSS ANGE Tenshi to Ryuu no Rondo [SPOT01][Ma10p_1080p][x265_flac].mkv",
-      "size": 23359623
+      "size": 23359623,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 16.016,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] CROSS ANGE Tenshi to Ryuu no Rondo [SPOT02][Ma10p_1080p][x265_flac].mkv",
-      "size": 23299759
+      "size": 23299759,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 16.016,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] CROSS ANGE Tenshi to Ryuu no Rondo [SPOT03][Ma10p_1080p][x265_flac].mkv",
-      "size": 32843941
+      "size": 32843941,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 31.031,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] CROSS ANGE Tenshi to Ryuu no Rondo [SPOT04][Ma10p_1080p][x265_flac].mkv",
-      "size": 32737818
+      "size": 32737818,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 31.031,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     }
-  ]
+  ],
+  "local_container_fact_summary": {
+    "container_fact_count": 50,
+    "probe_status_counts": {
+      "available": 50
+    },
+    "duration_seconds_range": [
+      16.016,
+      9802.176
+    ],
+    "duration_seconds_samples": [
+      1421.09,
+      1421.09,
+      1427.092,
+      1421.09,
+      1421.09,
+      1427.093
+    ]
+  },
+  "local_container_fact_source": {
+    "kind": "real_local_media_duration_backfill",
+    "media_root": "H:\\Anime",
+    "probe_media": true,
+    "container_probe": "ffprobe",
+    "embedded_in": "files[].container_facts",
+    "matched_file_count": 148,
+    "matched_video_count": 50,
+    "missing_actual_video_count": 0,
+    "match_stats": {
+      "matched_by_root_path": 148
+    }
+  }
 }

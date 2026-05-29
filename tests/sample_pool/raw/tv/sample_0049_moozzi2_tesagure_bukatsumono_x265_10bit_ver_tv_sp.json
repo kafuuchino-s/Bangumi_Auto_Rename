@@ -3,7 +3,17 @@
   "files": [
     {
       "path": "[Moozzi2] Tesagure! Bukatsumono - 01 (BD 1920x1080 x.265-10Bit FLACx3).mkv",
-      "size": 747578279
+      "size": 747578279,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 661.665,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 3,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Tesagure! Bukatsumono - 01 (BD 1920x1080 x.265-10Bit FLACx3).sc.ass",
@@ -15,7 +25,17 @@
     },
     {
       "path": "[Moozzi2] Tesagure! Bukatsumono - 02 (BD 1920x1080 x.265-10Bit FLACx3).mkv",
-      "size": 678220722
+      "size": 678220722,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 661.665,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 3,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Tesagure! Bukatsumono - 02 (BD 1920x1080 x.265-10Bit FLACx3).sc.ass",
@@ -27,7 +47,17 @@
     },
     {
       "path": "[Moozzi2] Tesagure! Bukatsumono - 03 (BD 1920x1080 x.265-10Bit FLACx3).mkv",
-      "size": 767822836
+      "size": 767822836,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 661.665,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 3,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Tesagure! Bukatsumono - 03 (BD 1920x1080 x.265-10Bit FLACx3).sc.ass",
@@ -39,7 +69,17 @@
     },
     {
       "path": "[Moozzi2] Tesagure! Bukatsumono - 04 (BD 1920x1080 x.265-10Bit FLACx3).mkv",
-      "size": 622733840
+      "size": 622733840,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 661.665,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 3,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Tesagure! Bukatsumono - 04 (BD 1920x1080 x.265-10Bit FLACx3).sc.ass",
@@ -51,7 +91,17 @@
     },
     {
       "path": "[Moozzi2] Tesagure! Bukatsumono - 05 (BD 1920x1080 x.265-10Bit FLACx3).mkv",
-      "size": 813272199
+      "size": 813272199,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 661.665,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 3,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Tesagure! Bukatsumono - 05 (BD 1920x1080 x.265-10Bit FLACx3).sc.ass",
@@ -63,7 +113,17 @@
     },
     {
       "path": "[Moozzi2] Tesagure! Bukatsumono - 06 (BD 1920x1080 x.265-10Bit FLACx3).mkv",
-      "size": 817082648
+      "size": 817082648,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 661.665,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 3,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Tesagure! Bukatsumono - 06 (BD 1920x1080 x.265-10Bit FLACx3).sc.ass",
@@ -75,7 +135,17 @@
     },
     {
       "path": "[Moozzi2] Tesagure! Bukatsumono - 07 (BD 1920x1080 x.265-10Bit FLACx3).mkv",
-      "size": 758145819
+      "size": 758145819,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 661.665,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 3,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Tesagure! Bukatsumono - 07 (BD 1920x1080 x.265-10Bit FLACx3).sc.ass",
@@ -87,7 +157,17 @@
     },
     {
       "path": "[Moozzi2] Tesagure! Bukatsumono - 08 (BD 1920x1080 x.265-10Bit FLACx3).mkv",
-      "size": 753550333
+      "size": 753550333,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 661.665,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 3,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Tesagure! Bukatsumono - 08 (BD 1920x1080 x.265-10Bit FLACx3).sc.ass",
@@ -99,7 +179,17 @@
     },
     {
       "path": "[Moozzi2] Tesagure! Bukatsumono - 09 (BD 1920x1080 x.265-10Bit FLACx3).mkv",
-      "size": 790767908
+      "size": 790767908,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 661.665,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 3,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Tesagure! Bukatsumono - 09 (BD 1920x1080 x.265-10Bit FLACx3).sc.ass",
@@ -111,7 +201,17 @@
     },
     {
       "path": "[Moozzi2] Tesagure! Bukatsumono - 10 (BD 1920x1080 x.265-10Bit FLACx3).mkv",
-      "size": 779860565
+      "size": 779860565,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 661.665,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 3,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Tesagure! Bukatsumono - 10 (BD 1920x1080 x.265-10Bit FLACx3).sc.ass",
@@ -123,7 +223,17 @@
     },
     {
       "path": "[Moozzi2] Tesagure! Bukatsumono - 11 (BD 1920x1080 x.265-10Bit FLACx3).mkv",
-      "size": 879064012
+      "size": 879064012,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 661.665,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 3,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Tesagure! Bukatsumono - 11 (BD 1920x1080 x.265-10Bit FLACx3).sc.ass",
@@ -135,7 +245,17 @@
     },
     {
       "path": "[Moozzi2] Tesagure! Bukatsumono - 12 END (BD 1920x1080 x.265-10Bit FLACx3).mkv",
-      "size": 691121313
+      "size": 691121313,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 661.665,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 3,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Moozzi2] Tesagure! Bukatsumono - 12 END (BD 1920x1080 x.265-10Bit FLACx3).sc.ass",
@@ -147,119 +267,409 @@
     },
     {
       "path": "EXTRA/[Moozzi2] Tesagure! Bukatsumono [SP00] Menu - 01 (BD 1920x1080 x.265-10Bit Flac).mkv",
-      "size": 8064969
+      "size": 8064969,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 70.075,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "EXTRA/[Moozzi2] Tesagure! Bukatsumono [SP00] Menu - 02 (BD 1920x1080 x.265-10Bit Flac).mkv",
-      "size": 8897808
+      "size": 8897808,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 70.075,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "EXTRA/[Moozzi2] Tesagure! Bukatsumono [SP00] Menu - 03 (BD 1920x1080 x.265-10Bit Flac).mkv",
-      "size": 8396673
+      "size": 8396673,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 70.075,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "EXTRA/[Moozzi2] Tesagure! Bukatsumono [SP01] NCOP (BD 1920x1080 x.265-10Bit Flac).mkv",
-      "size": 73542217
+      "size": 73542217,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 56.06,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "EXTRA/[Moozzi2] Tesagure! Bukatsumono [SP02] NCED [ EP.12 ] (BD 1920x1080 x.265-10Bit Flac).mkv",
-      "size": 31796461
+      "size": 31796461,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 47.05,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "EXTRA/[Moozzi2] Tesagure! Bukatsumono [SP03] Yokoku - 01 [ EP.02 ] (BD 1920x1080 x.265-10Bit Flac).mkv",
-      "size": 20882163
+      "size": 20882163,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 47.05,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "EXTRA/[Moozzi2] Tesagure! Bukatsumono [SP03] Yokoku - 02 [ EP.03 ] (BD 1920x1080 x.265-10Bit Flac).mkv",
-      "size": 41735979
+      "size": 41735979,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.095,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "EXTRA/[Moozzi2] Tesagure! Bukatsumono [SP03] Yokoku - 03 [ EP.04 ] (BD 1920x1080 x.265-10Bit Flac).mkv",
-      "size": 35739272
+      "size": 35739272,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.76,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "EXTRA/[Moozzi2] Tesagure! Bukatsumono [SP03] Yokoku - 04 [ EP.05 ] (BD 1920x1080 x.265-10Bit Flac).mkv",
-      "size": 29152023
+      "size": 29152023,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 81.085,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "EXTRA/[Moozzi2] Tesagure! Bukatsumono [SP03] Yokoku - 05 [ EP.06 ] (BD 1920x1080 x.265-10Bit Flac).mkv",
-      "size": 26690502
+      "size": 26690502,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 79.415,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "EXTRA/[Moozzi2] Tesagure! Bukatsumono [SP03] Yokoku - 06 [ EP.07 ] (BD 1920x1080 x.265-10Bit Flac).mkv",
-      "size": 44212839
+      "size": 44212839,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 115.87,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "EXTRA/[Moozzi2] Tesagure! Bukatsumono [SP03] Yokoku - 07 [ EP.08 ] (BD 1920x1080 x.265-10Bit Flac).mkv",
-      "size": 39442002
+      "size": 39442002,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 76.495,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "EXTRA/[Moozzi2] Tesagure! Bukatsumono [SP03] Yokoku - 08 [ EP.09 ] (BD 1920x1080 x.265-10Bit Flac).mkv",
-      "size": 55880740
+      "size": 55880740,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 141.185,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "EXTRA/[Moozzi2] Tesagure! Bukatsumono [SP03] Yokoku - 09 [ EP.10 ] (BD 1920x1080 x.265-10Bit Flac).mkv",
-      "size": 36211755
+      "size": 36211755,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 90.97,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "EXTRA/[Moozzi2] Tesagure! Bukatsumono [SP03] Yokoku - 10 [ EP.11 ] (BD 1920x1080 x.265-10Bit Flac).mkv",
-      "size": 32800873
+      "size": 32800873,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 77.33,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "EXTRA/[Moozzi2] Tesagure! Bukatsumono [SP03] Yokoku - 11 [ EP.12 ] (BD 1920x1080 x.265-10Bit Flac).mkv",
-      "size": 57564652
+      "size": 57564652,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 126.13,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "EXTRA/[Moozzi2] Tesagure! Bukatsumono [SP04] Cast Talk - 01 (BD 1920x1080 x.265-10Bit Flac).mkv",
-      "size": 74061283
+      "size": 74061283,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 774.775,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "EXTRA/[Moozzi2] Tesagure! Bukatsumono [SP04] Cast Talk - 02 (BD 1920x1080 x.265-10Bit Flac).mkv",
-      "size": 79175938
+      "size": 79175938,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 828.83,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "EXTRA/[Moozzi2] Tesagure! Bukatsumono [SP04] Cast Talk - 03 (BD 1920x1080 x.265-10Bit Flac).mkv",
-      "size": 59490691
+      "size": 59490691,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 759.76,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "EXTRA/[Moozzi2] Tesagure! Bukatsumono [SP04] Cast Talk - 04 (BD 1920x1080 x.265-10Bit Flac).mkv",
-      "size": 71752667
+      "size": 71752667,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 911.915,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "EXTRA/[Moozzi2] Tesagure! Bukatsumono [SP04] Cast Talk - 05 (BD 1920x1080 x.265-10Bit Flac).mkv",
-      "size": 57417233
+      "size": 57417233,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 728.73,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "EXTRA/[Moozzi2] Tesagure! Bukatsumono [SP04] Cast Talk - 06 (BD 1920x1080 x.265-10Bit Flac).mkv",
-      "size": 60481956
+      "size": 60481956,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 751.755,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "EXTRA/[Moozzi2] Tesagure! Bukatsumono [SP04] Cast Talk - 07 (BD 1920x1080 x.265-10Bit Flac).mkv",
-      "size": 72550753
+      "size": 72550753,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 766.77,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "EXTRA/[Moozzi2] Tesagure! Bukatsumono [SP04] Cast Talk - 08 (BD 1920x1080 x.265-10Bit Flac).mkv",
-      "size": 104819819
+      "size": 104819819,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1118.12,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "EXTRA/[Moozzi2] Tesagure! Bukatsumono [SP04] Cast Talk - 09 (BD 1920x1080 x.265-10Bit Flac).mkv",
-      "size": 96087355
+      "size": 96087355,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 924.925,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "EXTRA/[Moozzi2] Tesagure! Bukatsumono [SP04] Cast Talk - 10 (BD 1920x1080 x.265-10Bit Flac).mkv",
-      "size": 86759140
+      "size": 86759140,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 840.84,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "EXTRA/[Moozzi2] Tesagure! Bukatsumono [SP04] Cast Talk - 11 (BD 1920x1080 x.265-10Bit Flac).mkv",
-      "size": 114410980
+      "size": 114410980,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1184.185,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "EXTRA/[Moozzi2] Tesagure! Bukatsumono [SP04] Cast Talk - 12 (BD 1920x1080 x.265-10Bit Flac).mkv",
-      "size": 101953810
+      "size": 101953810,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1061.06,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "EXTRA/[Moozzi2] Tesagure! Bukatsumono [SP04] Cast Talk - 13 (BD 1920x1080 x.265-10Bit Flac).mkv",
-      "size": 115451957
+      "size": 115451957,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1203.205,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "EXTRA/[Moozzi2] Tesagure! Bukatsumono [SP05] Bonus CD/[SP05] Bonus CD - 01.rar",
@@ -273,5 +683,36 @@
       "path": "EXTRA/[Moozzi2] Tesagure! Bukatsumono [SP05] Bonus CD/[SP05] Bonus CD - 03.rar",
       "size": 512683156
     }
-  ]
+  ],
+  "local_container_fact_summary": {
+    "container_fact_count": 41,
+    "probe_status_counts": {
+      "available": 41
+    },
+    "duration_seconds_range": [
+      47.05,
+      1203.205
+    ],
+    "duration_seconds_samples": [
+      661.665,
+      661.665,
+      661.665,
+      661.665,
+      661.665,
+      661.665
+    ]
+  },
+  "local_container_fact_source": {
+    "kind": "real_local_media_duration_backfill",
+    "media_root": "H:\\Anime",
+    "probe_media": true,
+    "container_probe": "ffprobe",
+    "embedded_in": "files[].container_facts",
+    "matched_file_count": 68,
+    "matched_video_count": 41,
+    "missing_actual_video_count": 0,
+    "match_stats": {
+      "matched_by_root_path": 68
+    }
+  }
 }

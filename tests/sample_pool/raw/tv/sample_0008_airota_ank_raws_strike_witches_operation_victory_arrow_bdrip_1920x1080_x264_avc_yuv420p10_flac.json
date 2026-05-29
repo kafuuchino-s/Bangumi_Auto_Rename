@@ -3,19 +3,59 @@
   "files": [
     {
       "path": "[Airota&ANK-Raws] Strike Witches Operation Victory Arrow (Creditless ED1) (BDrip 1920x1080 x264 AVC-YUV420P10 FLAC).mkv",
-      "size": 49272466
+      "size": 49272466,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.095,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Airota&ANK-Raws] Strike Witches Operation Victory Arrow (Creditless ED2) (BDrip 1920x1080 x264 AVC-YUV420P10 FLAC).mkv",
-      "size": 113416223
+      "size": 113416223,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.094,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Airota&ANK-Raws] Strike Witches Operation Victory Arrow (Creditless ED3) (BDrip 1920x1080 x264 AVC-YUV420P10 FLAC).mkv",
-      "size": 59210755
+      "size": 59210755,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.095,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Airota&ANK-Raws] Strike Witches Operation Victory Arrow (Creditless OP) (BDrip 1920x1080 x264 AVC-YUV420P10 FLAC).mkv",
-      "size": 115270881
+      "size": 115270881,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.095,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Airota&ANK-Raws] Strike Witches Operation Victory Arrow 01 (BDrip 1920x1080 x264 AVC-YUV420P10 FLAC).ass",
@@ -27,7 +67,17 @@
     },
     {
       "path": "[Airota&ANK-Raws] Strike Witches Operation Victory Arrow 01 (BDrip 1920x1080 x264 AVC-YUV420P10 FLAC).mkv",
-      "size": 1221028882
+      "size": 1221028882,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1714.715,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Airota&ANK-Raws] Strike Witches Operation Victory Arrow 02 (BDrip 1920x1080 x264 AVC-YUV420P10 FLAC).ass",
@@ -39,7 +89,17 @@
     },
     {
       "path": "[Airota&ANK-Raws] Strike Witches Operation Victory Arrow 02 (BDrip 1920x1080 x264 AVC-YUV420P10 FLAC).mkv",
-      "size": 1123155195
+      "size": 1123155195,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1546.545,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Airota&ANK-Raws] Strike Witches Operation Victory Arrow 03 (BDrip 1920x1080 x264 AVC-YUV420P10 FLAC).ass",
@@ -51,51 +111,171 @@
     },
     {
       "path": "[Airota&ANK-Raws] Strike Witches Operation Victory Arrow 03 (BDrip 1920x1080 x264 AVC-YUV420P10 FLAC).mkv",
-      "size": 975824002
+      "size": 975824002,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1855.855,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Airota&ANK-Raws] Strike Witches Operation Victory Arrow CM01 (BDrip 1920x1080 x264 AVC-YUV420P10 FLAC).mkv",
-      "size": 100158064
+      "size": 100158064,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 76.08,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Airota&ANK-Raws] Strike Witches Operation Victory Arrow CM02 (BDrip 1920x1080 x264 AVC-YUV420P10 FLAC).mkv",
-      "size": 18806147
+      "size": 18806147,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 17.02,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Airota&ANK-Raws] Strike Witches Operation Victory Arrow CM03 (BDrip 1920x1080 x264 AVC-YUV420P10 FLAC).mkv",
-      "size": 14756448
+      "size": 14756448,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 42.045,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Airota&ANK-Raws] Strike Witches Operation Victory Arrow CM04 (BDrip 1920x1080 x264 AVC-YUV420P10 FLAC).mkv",
-      "size": 43877173
+      "size": 43877173,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.095,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Airota&ANK-Raws] Strike Witches Operation Victory Arrow CM05 (BDrip 1920x1080 x264 AVC-YUV420P10 FLAC).mkv",
-      "size": 22271734
+      "size": 22271734,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.095,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Airota&ANK-Raws] Strike Witches Operation Victory Arrow Info01 (BDrip 1920x1080 x264 AVC-YUV420P10 FLAC).mkv",
-      "size": 27158325
+      "size": 27158325,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 17.02,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Airota&ANK-Raws] Strike Witches Operation Victory Arrow Info02 (BDrip 1920x1080 x264 AVC-YUV420P10 FLAC).mkv",
-      "size": 8518763
+      "size": 8518763,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 17.02,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Airota&ANK-Raws] Strike Witches Operation Victory Arrow Info03 (BDrip 1920x1080 x264 AVC-YUV420P10 FLAC).mkv",
-      "size": 25552597
+      "size": 25552597,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.095,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Airota&ANK-Raws] Strike Witches Operation Victory Arrow Info04 (BDrip 1920x1080 x264 AVC-YUV420P10 FLAC).mkv",
-      "size": 32827219
+      "size": 32827219,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.095,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Airota&ANK-Raws] Strike Witches Operation Victory Arrow PV01 (BDrip 1920x1080 x264 AVC-YUV420P10 FLAC).mkv",
-      "size": 49964183
+      "size": 49964183,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 43.045,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Airota&ANK-Raws] Strike Witches Operation Victory Arrow PV02 (BDrip 1920x1080 x264 AVC-YUV420P10 FLAC).mkv",
-      "size": 26247966
+      "size": 26247966,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.095,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Fonts.rar",
@@ -103,27 +283,87 @@
     },
     {
       "path": "Menu 01(OVA1).mkv",
-      "size": 97502669
+      "size": 97502669,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 90.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Menu 01(OVA2).mkv",
-      "size": 39251914
+      "size": 39251914,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 90.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Menu 01(OVA3).mkv",
-      "size": 35250427
+      "size": 35250427,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.095,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Menu 02(OVA1).mkv",
-      "size": 97954571
+      "size": 97954571,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 90.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Menu 02(OVA2).mkv",
-      "size": 30598636
+      "size": 30598636,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 90.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Menu 02(OVA3).mkv",
-      "size": 31354283
+      "size": 31354283,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.095,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Scan (OVA1)/BOOKLET_BACK.png",
@@ -253,5 +493,36 @@
       "path": "特典CD (OVA3)/特典CD.wav",
       "size": 193141580
     }
-  ]
+  ],
+  "local_container_fact_summary": {
+    "container_fact_count": 24,
+    "probe_status_counts": {
+      "available": 24
+    },
+    "duration_seconds_range": [
+      17.02,
+      1855.855
+    ],
+    "duration_seconds_samples": [
+      92.095,
+      92.094,
+      92.095,
+      92.095,
+      1714.715,
+      1546.545
+    ]
+  },
+  "local_container_fact_source": {
+    "kind": "real_local_media_duration_backfill",
+    "media_root": "H:\\Anime",
+    "probe_media": true,
+    "container_probe": "ffprobe",
+    "embedded_in": "files[].container_facts",
+    "matched_file_count": 63,
+    "matched_video_count": 24,
+    "missing_actual_video_count": 0,
+    "match_stats": {
+      "matched_by_root_path": 63
+    }
+  }
 }

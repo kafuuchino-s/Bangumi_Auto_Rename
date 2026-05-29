@@ -11,7 +11,17 @@
     },
     {
       "path": "[VCB-Studio] Psycho-Pass Sinners of the System [01][Ma10p_1080p][x265_flac].mkv",
-      "size": 5016820961
+      "size": 5016820961,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 3605.61,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 1,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Psycho-Pass Sinners of the System [02][Ma10p_1080p][x265_flac].chs.ass",
@@ -23,7 +33,17 @@
     },
     {
       "path": "[VCB-Studio] Psycho-Pass Sinners of the System [02][Ma10p_1080p][x265_flac].mkv",
-      "size": 3804347193
+      "size": 3804347193,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 3604.608,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 1,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Psycho-Pass Sinners of the System [03][Ma10p_1080p][x265_flac].chs.ass",
@@ -35,7 +55,17 @@
     },
     {
       "path": "[VCB-Studio] Psycho-Pass Sinners of the System [03][Ma10p_1080p][x265_flac].mkv",
-      "size": 6655162803
+      "size": 6655162803,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 4061.066,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 1,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "CDs/[190403] Theme Song／中野雅之 [24bit_48kHz] (flac)/01. abnormalize - Remixed by 中野雅之(BOOM BOOM SATELLITES).flac",
@@ -83,79 +113,300 @@
     },
     {
       "path": "SPs/[VCB-Studio] Psycho-Pass Sinners of the System [IV01][Ma10p_720p][x265_aac].mkv",
-      "size": 323822768
+      "size": 323822768,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 389.781,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Psycho-Pass Sinners of the System [IV02][Ma10p_720p][x265_aac].mkv",
-      "size": 639510265
+      "size": 639510265,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1433.877,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Psycho-Pass Sinners of the System [IV03][Ma10p_720p][x265_aac].mkv",
-      "size": 934257652
+      "size": 934257652,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1705.109,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Psycho-Pass Sinners of the System [IV04][Ma10p_720p][x265_aac].mkv",
-      "size": 719262213
+      "size": 719262213,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1139.05,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Psycho-Pass Sinners of the System [IV05][Ma10p_720p][x265_aac].mkv",
-      "size": 330085722
+      "size": 330085722,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1779.37,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Psycho-Pass Sinners of the System [IV06][Ma10p_720p][x265_aac].mkv",
-      "size": 283252268
+      "size": 283252268,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1413.184,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Psycho-Pass Sinners of the System [IV07][Ma10p_720p][x265_aac].mkv",
-      "size": 442528240
+      "size": 442528240,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1293.248,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Psycho-Pass Sinners of the System [IV08][Ma10p_720p][x265_aac].mkv",
-      "size": 415386718
+      "size": 415386718,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1394.176,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Psycho-Pass Sinners of the System [IV09][Ma10p_720p][x265_aac].mkv",
-      "size": 746297474
+      "size": 746297474,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1953.642,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Psycho-Pass Sinners of the System [Memorial Note][Ma10p_1080p][x265].mkv",
-      "size": 98124
+      "size": 98124,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 8.008,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 0,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Psycho-Pass Sinners of the System [Menu01_01][Ma10p_1080p][x265_flac].mkv",
-      "size": 114614732
+      "size": 114614732,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 65.579,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Psycho-Pass Sinners of the System [Menu01_02][Ma10p_1080p][x265_flac].mkv",
-      "size": 14842701
+      "size": 14842701,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 34.208,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Psycho-Pass Sinners of the System [Menu01_03][Ma10p_1080p][x265_flac].mkv",
-      "size": 13304203
+      "size": 13304203,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 34.208,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Psycho-Pass Sinners of the System [Menu02_01][Ma10p_1080p][x265_flac].mkv",
-      "size": 106562411
+      "size": 106562411,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 65.494,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Psycho-Pass Sinners of the System [Menu02_02][Ma10p_1080p][x265_flac].mkv",
-      "size": 18351220
+      "size": 18351220,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 34.208,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Psycho-Pass Sinners of the System [Menu02_03][Ma10p_1080p][x265_flac].mkv",
-      "size": 10761581
+      "size": 10761581,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 34.208,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Psycho-Pass Sinners of the System [Menu03_01][Ma10p_1080p][x265_flac].mkv",
-      "size": 116298826
+      "size": 116298826,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 65.579,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Psycho-Pass Sinners of the System [Menu03_02][Ma10p_1080p][x265_flac].mkv",
-      "size": 21165104
+      "size": 21165104,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 34.208,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Psycho-Pass Sinners of the System [Menu03_03][Ma10p_1080p][x265_flac].mkv",
-      "size": 11066118
+      "size": 11066118,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 34.208,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     }
-  ]
+  ],
+  "local_container_fact_summary": {
+    "container_fact_count": 22,
+    "probe_status_counts": {
+      "available": 22
+    },
+    "duration_seconds_range": [
+      8.008,
+      4061.066
+    ],
+    "duration_seconds_samples": [
+      3605.61,
+      3604.608,
+      4061.066,
+      389.781,
+      1433.877,
+      1705.109
+    ]
+  },
+  "local_container_fact_source": {
+    "kind": "real_local_media_duration_backfill",
+    "media_root": "H:\\Anime",
+    "probe_media": true,
+    "container_probe": "ffprobe",
+    "embedded_in": "files[].container_facts",
+    "matched_file_count": 39,
+    "matched_video_count": 22,
+    "missing_actual_video_count": 0,
+    "match_stats": {
+      "matched_by_root_path": 39
+    }
+  }
 }

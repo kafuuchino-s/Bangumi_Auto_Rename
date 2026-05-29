@@ -3,19 +3,59 @@
   "files": [
     {
       "path": "[ANK-Raws] 普通の女子校生が【ろこどる】やってみた。 (Creditless ED) (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 69214734
+      "size": 69214734,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.095,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] 普通の女子校生が【ろこどる】やってみた。 (Creditless ED2) (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 73843838
+      "size": 73843838,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.095,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] 普通の女子校生が【ろこどる】やってみた。 (Creditless ED3) (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 76826946
+      "size": 76826946,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.095,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] 普通の女子校生が【ろこどる】やってみた。 (Creditless OP) (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 86404680
+      "size": 86404680,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.095,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] 普通の女子校生が【ろこどる】やってみた。 01 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).(Audio commentary).flac",
@@ -27,7 +67,17 @@
     },
     {
       "path": "[ANK-Raws] 普通の女子校生が【ろこどる】やってみた。 01 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 945933694
+      "size": 945933694,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1456.665,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] 普通の女子校生が【ろこどる】やってみた。 02 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).(Audio commentary).flac",
@@ -39,7 +89,17 @@
     },
     {
       "path": "[ANK-Raws] 普通の女子校生が【ろこどる】やってみた。 02 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 955410745
+      "size": 955410745,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.745,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] 普通の女子校生が【ろこどる】やってみた。 03 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).(Audio commentary).flac",
@@ -51,7 +111,17 @@
     },
     {
       "path": "[ANK-Raws] 普通の女子校生が【ろこどる】やってみた。 03 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 781377488
+      "size": 781377488,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1460.755,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] 普通の女子校生が【ろこどる】やってみた。 04 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).(Audio commentary).flac",
@@ -63,7 +133,17 @@
     },
     {
       "path": "[ANK-Raws] 普通の女子校生が【ろこどる】やってみた。 04 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 918136161
+      "size": 918136161,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.705,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] 普通の女子校生が【ろこどる】やってみた。 05 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).(Audio commentary).flac",
@@ -75,7 +155,17 @@
     },
     {
       "path": "[ANK-Raws] 普通の女子校生が【ろこどる】やってみた。 05 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 834595872
+      "size": 834595872,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1460.755,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] 普通の女子校生が【ろこどる】やってみた。 06 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).(Audio commentary).flac",
@@ -87,7 +177,17 @@
     },
     {
       "path": "[ANK-Raws] 普通の女子校生が【ろこどる】やってみた。 06 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 879389608
+      "size": 879389608,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.745,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] 普通の女子校生が【ろこどる】やってみた。 07 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).(Audio commentary).flac",
@@ -99,7 +199,17 @@
     },
     {
       "path": "[ANK-Raws] 普通の女子校生が【ろこどる】やってみた。 07 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 798959056
+      "size": 798959056,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1460.71,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] 普通の女子校生が【ろこどる】やってみた。 08 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).(Audio commentary).flac",
@@ -111,7 +221,17 @@
     },
     {
       "path": "[ANK-Raws] 普通の女子校生が【ろこどる】やってみた。 08 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 801674473
+      "size": 801674473,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.705,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] 普通の女子校生が【ろこどる】やってみた。 09 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).(Audio commentary).flac",
@@ -123,7 +243,17 @@
     },
     {
       "path": "[ANK-Raws] 普通の女子校生が【ろこどる】やってみた。 09 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 829319428
+      "size": 829319428,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1460.67,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] 普通の女子校生が【ろこどる】やってみた。 10 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).(Audio commentary).flac",
@@ -135,7 +265,17 @@
     },
     {
       "path": "[ANK-Raws] 普通の女子校生が【ろこどる】やってみた。 10 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 938735558
+      "size": 938735558,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.745,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] 普通の女子校生が【ろこどる】やってみた。 11 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).(Audio commentary).flac",
@@ -147,7 +287,17 @@
     },
     {
       "path": "[ANK-Raws] 普通の女子校生が【ろこどる】やってみた。 11 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 833540389
+      "size": 833540389,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1460.755,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] 普通の女子校生が【ろこどる】やってみた。 12 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).(Audio commentary).flac",
@@ -159,23 +309,73 @@
     },
     {
       "path": "[ANK-Raws] 普通の女子校生が【ろこどる】やってみた。 12 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 908036340
+      "size": 908036340,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1456.96,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] 普通の女子校生が【ろこどる】やってみた。 CM+Info (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 277573026
+      "size": 277573026,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 220.22,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] 普通の女子校生が【ろこどる】やってみた。 CM01 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 86766411
+      "size": 86766411,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 103.105,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] 普通の女子校生が【ろこどる】やってみた。 Info01 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 90273360
+      "size": 90273360,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 136.14,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] 普通の女子校生が【ろこどる】やってみた。 Info02 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 527254143
+      "size": 527254143,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 374.375,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] 普通の女子校生が【ろこどる】やってみた。 OVA (BDrip 1920x1080 HEVC-YUV420P10 FLAC).ass",
@@ -183,35 +383,115 @@
     },
     {
       "path": "[ANK-Raws] 普通の女子校生が【ろこどる】やってみた。 OVA (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 858933372
+      "size": 858933372,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1426.885,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Menu (Vol.1).mkv",
-      "size": 35750694
+      "size": 35750694,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 282.324,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Menu (Vol.2).mkv",
-      "size": 36235077
+      "size": 36235077,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 282.285,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Menu (Vol.3).mkv",
-      "size": 34991361
+      "size": 34991361,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 282.285,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Menu (Vol.4).mkv",
-      "size": 35535884
+      "size": 35535884,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 282.285,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Menu (Vol.5).mkv",
-      "size": 37980445
+      "size": 37980445,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 282.285,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Menu (Vol.6).mkv",
-      "size": 35678283
+      "size": 35678283,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 282.285,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Menu (Vol.7).mkv",
-      "size": 36537404
+      "size": 36537404,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 282.285,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Scan (Vol.1)/01.png",
@@ -877,5 +1157,36 @@
       "path": "Web Download/Awa2G_WAV.zip",
       "size": 284841089
     }
-  ]
+  ],
+  "local_container_fact_summary": {
+    "container_fact_count": 28,
+    "probe_status_counts": {
+      "available": 28
+    },
+    "duration_seconds_range": [
+      92.095,
+      1460.755
+    ],
+    "duration_seconds_samples": [
+      92.095,
+      92.095,
+      92.095,
+      92.095,
+      1456.665,
+      1451.745
+    ]
+  },
+  "local_container_fact_source": {
+    "kind": "real_local_media_duration_backfill",
+    "media_root": "H:\\Anime",
+    "probe_media": true,
+    "container_probe": "ffprobe",
+    "embedded_in": "files[].container_facts",
+    "matched_file_count": 219,
+    "matched_video_count": 28,
+    "missing_actual_video_count": 0,
+    "match_stats": {
+      "matched_by_root_path": 219
+    }
+  }
 }

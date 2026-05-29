@@ -11,7 +11,17 @@
     },
     {
       "path": "[VCB-Studio] PSYCHO-PASS [01][Hi10p_1080p][x264_flac].mkv",
-      "size": 1317513737
+      "size": 1317513737,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1373.372,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] PSYCHO-PASS [02][Hi10p_1080p][x264_flac].chs.ass",
@@ -23,7 +33,17 @@
     },
     {
       "path": "[VCB-Studio] PSYCHO-PASS [02][Hi10p_1080p][x264_flac].mkv",
-      "size": 1328642922
+      "size": 1328642922,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1371.12,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] PSYCHO-PASS [03][Hi10p_1080p][x264_flac].chs.ass",
@@ -35,7 +55,17 @@
     },
     {
       "path": "[VCB-Studio] PSYCHO-PASS [03][Hi10p_1080p][x264_flac].mkv",
-      "size": 1416685169
+      "size": 1416685169,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1373.372,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] PSYCHO-PASS [04][Hi10p_1080p][x264_flac].chs.ass",
@@ -47,7 +77,17 @@
     },
     {
       "path": "[VCB-Studio] PSYCHO-PASS [04][Hi10p_1080p][x264_flac].mkv",
-      "size": 1624900890
+      "size": 1624900890,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1372.371,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] PSYCHO-PASS [05][Hi10p_1080p][x264_flac].chs.ass",
@@ -59,7 +99,17 @@
     },
     {
       "path": "[VCB-Studio] PSYCHO-PASS [05][Hi10p_1080p][x264_flac].mkv",
-      "size": 1456839428
+      "size": 1456839428,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1371.037,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] PSYCHO-PASS [06][Hi10p_1080p][x264_flac].chs.ass",
@@ -71,7 +121,17 @@
     },
     {
       "path": "[VCB-Studio] PSYCHO-PASS [06][Hi10p_1080p][x264_flac].mkv",
-      "size": 1466320157
+      "size": 1466320157,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1373.372,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] PSYCHO-PASS [07][Hi10p_1080p][x264_flac].chs.ass",
@@ -83,7 +143,17 @@
     },
     {
       "path": "[VCB-Studio] PSYCHO-PASS [07][Hi10p_1080p][x264_flac].mkv",
-      "size": 1420048482
+      "size": 1420048482,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1372.371,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] PSYCHO-PASS [08][Hi10p_1080p][x264_flac].chs.ass",
@@ -95,7 +165,17 @@
     },
     {
       "path": "[VCB-Studio] PSYCHO-PASS [08][Hi10p_1080p][x264_flac].mkv",
-      "size": 1389188014
+      "size": 1389188014,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1371.203,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] PSYCHO-PASS [09][Hi10p_1080p][x264_flac].chs.ass",
@@ -107,7 +187,17 @@
     },
     {
       "path": "[VCB-Studio] PSYCHO-PASS [09][Hi10p_1080p][x264_flac].mkv",
-      "size": 1447328085
+      "size": 1447328085,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1373.372,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] PSYCHO-PASS [10][Hi10p_1080p][x264_flac].chs.ass",
@@ -119,7 +209,17 @@
     },
     {
       "path": "[VCB-Studio] PSYCHO-PASS [10][Hi10p_1080p][x264_flac].mkv",
-      "size": 1644655677
+      "size": 1644655677,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1372.371,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] PSYCHO-PASS [11][Hi10p_1080p][x264_flac].chs.ass",
@@ -131,7 +231,17 @@
     },
     {
       "path": "[VCB-Studio] PSYCHO-PASS [11][Hi10p_1080p][x264_flac].mkv",
-      "size": 1600496671
+      "size": 1600496671,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1371.037,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] PSYCHO-PASS [12][Hi10p_1080p][x264_flac].chs.ass",
@@ -143,7 +253,17 @@
     },
     {
       "path": "[VCB-Studio] PSYCHO-PASS [12][Hi10p_1080p][x264_flac].mkv",
-      "size": 1436601208
+      "size": 1436601208,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1373.372,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] PSYCHO-PASS [13][Hi10p_1080p][x264_flac].chs.ass",
@@ -155,7 +275,17 @@
     },
     {
       "path": "[VCB-Studio] PSYCHO-PASS [13][Hi10p_1080p][x264_flac].mkv",
-      "size": 958574184
+      "size": 958574184,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1370.912,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] PSYCHO-PASS [14][Hi10p_1080p][x264_flac].chs.ass",
@@ -167,7 +297,17 @@
     },
     {
       "path": "[VCB-Studio] PSYCHO-PASS [14][Hi10p_1080p][x264_flac].mkv",
-      "size": 1131877053
+      "size": 1131877053,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1373.372,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] PSYCHO-PASS [15][Hi10p_1080p][x264_flac].chs.ass",
@@ -179,7 +319,17 @@
     },
     {
       "path": "[VCB-Studio] PSYCHO-PASS [15][Hi10p_1080p][x264_flac].mkv",
-      "size": 1201943653
+      "size": 1201943653,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1372.371,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] PSYCHO-PASS [16][Hi10p_1080p][x264_flac].chs.ass",
@@ -191,7 +341,17 @@
     },
     {
       "path": "[VCB-Studio] PSYCHO-PASS [16][Hi10p_1080p][x264_flac].mkv",
-      "size": 1255028856
+      "size": 1255028856,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1371.037,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] PSYCHO-PASS [17][Hi10p_1080p][x264_flac].chs.ass",
@@ -203,7 +363,17 @@
     },
     {
       "path": "[VCB-Studio] PSYCHO-PASS [17][Hi10p_1080p][x264_flac].mkv",
-      "size": 1045821484
+      "size": 1045821484,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1373.372,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] PSYCHO-PASS [18][Hi10p_1080p][x264_flac].chs.ass",
@@ -215,7 +385,17 @@
     },
     {
       "path": "[VCB-Studio] PSYCHO-PASS [18][Hi10p_1080p][x264_flac].mkv",
-      "size": 1010579261
+      "size": 1010579261,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1372.371,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] PSYCHO-PASS [19][Hi10p_1080p][x264_flac].chs.ass",
@@ -227,7 +407,17 @@
     },
     {
       "path": "[VCB-Studio] PSYCHO-PASS [19][Hi10p_1080p][x264_flac].mkv",
-      "size": 1022534579
+      "size": 1022534579,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1370.912,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] PSYCHO-PASS [20][Hi10p_1080p][x264_flac].chs.ass",
@@ -239,7 +429,17 @@
     },
     {
       "path": "[VCB-Studio] PSYCHO-PASS [20][Hi10p_1080p][x264_flac].mkv",
-      "size": 999659084
+      "size": 999659084,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1373.372,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] PSYCHO-PASS [21][Hi10p_1080p][x264_flac].chs.ass",
@@ -251,7 +451,17 @@
     },
     {
       "path": "[VCB-Studio] PSYCHO-PASS [21][Hi10p_1080p][x264_flac].mkv",
-      "size": 1205896700
+      "size": 1205896700,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1372.371,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] PSYCHO-PASS [22][Hi10p_1080p][x264_flac].chs.ass",
@@ -263,7 +473,17 @@
     },
     {
       "path": "[VCB-Studio] PSYCHO-PASS [22][Hi10p_1080p][x264_flac].mkv",
-      "size": 1277145932
+      "size": 1277145932,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1371.08,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] PSYCHO-PASS II [01][Hi10p_1080p][x264_flac].chs.ass",
@@ -271,7 +491,17 @@
     },
     {
       "path": "[VCB-Studio] PSYCHO-PASS II [01][Hi10p_1080p][x264_flac].mkv",
-      "size": 1352624359
+      "size": 1352624359,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1342.01,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] PSYCHO-PASS II [02][Hi10p_1080p][x264_flac].chs.ass",
@@ -279,7 +509,17 @@
     },
     {
       "path": "[VCB-Studio] PSYCHO-PASS II [02][Hi10p_1080p][x264_flac].mkv",
-      "size": 1257745474
+      "size": 1257745474,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1341.01,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] PSYCHO-PASS II [03][Hi10p_1080p][x264_flac].chs.ass",
@@ -287,7 +527,17 @@
     },
     {
       "path": "[VCB-Studio] PSYCHO-PASS II [03][Hi10p_1080p][x264_flac].mkv",
-      "size": 1063415280
+      "size": 1063415280,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1341.846,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] PSYCHO-PASS II [04][Hi10p_1080p][x264_flac].chs.ass",
@@ -295,7 +545,17 @@
     },
     {
       "path": "[VCB-Studio] PSYCHO-PASS II [04][Hi10p_1080p][x264_flac].mkv",
-      "size": 1195489502
+      "size": 1195489502,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1341.215,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] PSYCHO-PASS II [05][Hi10p_1080p][x264_flac].chs.ass",
@@ -303,7 +563,17 @@
     },
     {
       "path": "[VCB-Studio] PSYCHO-PASS II [05][Hi10p_1080p][x264_flac].mkv",
-      "size": 1162700471
+      "size": 1162700471,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1342.051,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] PSYCHO-PASS II [06][Hi10p_1080p][x264_flac].chs.ass",
@@ -311,7 +581,17 @@
     },
     {
       "path": "[VCB-Studio] PSYCHO-PASS II [06][Hi10p_1080p][x264_flac].mkv",
-      "size": 1415555186
+      "size": 1415555186,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1341.01,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] PSYCHO-PASS II [07][Hi10p_1080p][x264_flac].chs.ass",
@@ -319,7 +599,17 @@
     },
     {
       "path": "[VCB-Studio] PSYCHO-PASS II [07][Hi10p_1080p][x264_flac].mkv",
-      "size": 1231104884
+      "size": 1231104884,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1341.845,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] PSYCHO-PASS II [08][Hi10p_1080p][x264_flac].chs.ass",
@@ -327,7 +617,17 @@
     },
     {
       "path": "[VCB-Studio] PSYCHO-PASS II [08][Hi10p_1080p][x264_flac].mkv",
-      "size": 1170141292
+      "size": 1170141292,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1341.175,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] PSYCHO-PASS II [09][Hi10p_1080p][x264_flac].chs.ass",
@@ -335,7 +635,17 @@
     },
     {
       "path": "[VCB-Studio] PSYCHO-PASS II [09][Hi10p_1080p][x264_flac].mkv",
-      "size": 1290186438
+      "size": 1290186438,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1342.05,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] PSYCHO-PASS II [10][Hi10p_1080p][x264_flac].chs.ass",
@@ -343,7 +653,17 @@
     },
     {
       "path": "[VCB-Studio] PSYCHO-PASS II [10][Hi10p_1080p][x264_flac].mkv",
-      "size": 1245085547
+      "size": 1245085547,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1340.635,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] PSYCHO-PASS II [11][Hi10p_1080p][x264_flac].chs.ass",
@@ -351,7 +671,17 @@
     },
     {
       "path": "[VCB-Studio] PSYCHO-PASS II [11][Hi10p_1080p][x264_flac].mkv",
-      "size": 1332137925
+      "size": 1332137925,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1341.385,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] PSYCHO-PASS The Movie [Hi10p_1080p][x264_flac].chs.ass",
@@ -363,7 +693,17 @@
     },
     {
       "path": "[VCB-Studio] PSYCHO-PASS The Movie [Hi10p_1080p][x264_flac].mkv",
-      "size": 8847286508
+      "size": 8847286508,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 6821.815,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "CDs/[EAC][121114] 「abnormalize」[期间生産限定盤]／凛として時雨 (flac+webp+jpg)/[期间生産限定盤] BK/01.webp",
@@ -1507,87 +1847,297 @@
     },
     {
       "path": "Previews/[VCB-Studio] PSYCHO-PASS [Preview02][Hi10p_1080p][x264_flac].mkv",
-      "size": 13657112
+      "size": 13657112,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 17.02,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Previews/[VCB-Studio] PSYCHO-PASS [Preview03][Hi10p_1080p][x264_flac].mkv",
-      "size": 12789283
+      "size": 12789283,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 17.02,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Previews/[VCB-Studio] PSYCHO-PASS [Preview04][Hi10p_1080p][x264_flac].mkv",
-      "size": 13275653
+      "size": 13275653,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 17.02,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Previews/[VCB-Studio] PSYCHO-PASS [Preview05][Hi10p_1080p][x264_flac].mkv",
-      "size": 9581845
+      "size": 9581845,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 17.02,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Previews/[VCB-Studio] PSYCHO-PASS [Preview06][Hi10p_1080p][x264_flac].mkv",
-      "size": 9602113
+      "size": 9602113,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 17.02,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Previews/[VCB-Studio] PSYCHO-PASS [Preview07][Hi10p_1080p][x264_flac].mkv",
-      "size": 9549127
+      "size": 9549127,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 17.02,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Previews/[VCB-Studio] PSYCHO-PASS [Preview08][Hi10p_1080p][x264_flac].mkv",
-      "size": 11919706
+      "size": 11919706,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 17.02,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Previews/[VCB-Studio] PSYCHO-PASS [Preview09][Hi10p_1080p][x264_flac].mkv",
-      "size": 12527343
+      "size": 12527343,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 17.02,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Previews/[VCB-Studio] PSYCHO-PASS [Preview10][Hi10p_1080p][x264_flac].mkv",
-      "size": 8342231
+      "size": 8342231,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 17.02,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Previews/[VCB-Studio] PSYCHO-PASS [Preview11][Hi10p_1080p][x264_flac].mkv",
-      "size": 10382471
+      "size": 10382471,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 17.02,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Previews/[VCB-Studio] PSYCHO-PASS [Preview12][Hi10p_1080p][x264_flac].mkv",
-      "size": 10626621
+      "size": 10626621,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 17.02,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Previews/[VCB-Studio] PSYCHO-PASS [Preview13][Hi10p_1080p][x264_flac].mkv",
-      "size": 12158059
+      "size": 12158059,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 17.02,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Previews/[VCB-Studio] PSYCHO-PASS [Preview14][Hi10p_1080p][x264_flac].mkv",
-      "size": 9503679
+      "size": 9503679,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 17.02,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Previews/[VCB-Studio] PSYCHO-PASS [Preview15][Hi10p_1080p][x264_flac].mkv",
-      "size": 18125734
+      "size": 18125734,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 17.02,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Previews/[VCB-Studio] PSYCHO-PASS [Preview16][Hi10p_1080p][x264_flac].mkv",
-      "size": 13005039
+      "size": 13005039,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 17.02,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Previews/[VCB-Studio] PSYCHO-PASS [Preview17][Hi10p_1080p][x264_flac].mkv",
-      "size": 11291050
+      "size": 11291050,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 17.02,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Previews/[VCB-Studio] PSYCHO-PASS [Preview18][Hi10p_1080p][x264_flac].mkv",
-      "size": 10785932
+      "size": 10785932,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 17.02,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Previews/[VCB-Studio] PSYCHO-PASS [Preview19][Hi10p_1080p][x264_flac].mkv",
-      "size": 9648905
+      "size": 9648905,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 17.02,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Previews/[VCB-Studio] PSYCHO-PASS [Preview20][Hi10p_1080p][x264_flac].mkv",
-      "size": 10115381
+      "size": 10115381,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 17.02,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Previews/[VCB-Studio] PSYCHO-PASS [Preview21][Hi10p_1080p][x264_flac].mkv",
-      "size": 10048468
+      "size": 10048468,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 17.02,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Previews/[VCB-Studio] PSYCHO-PASS [Preview22][Hi10p_1080p][x264_flac].mkv",
-      "size": 9296715
+      "size": 9296715,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 17.02,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "readme about WebP.txt",
@@ -5215,75 +5765,255 @@
     },
     {
       "path": "SPs/[VCB-Studio] PSYCHO-PASS [Menu01][Hi10p_1080p][x264_flac].mkv",
-      "size": 222040704
+      "size": 222040704,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 55.1,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] PSYCHO-PASS [Menu02][Hi10p_1080p][x264_flac].mkv",
-      "size": 222016303
+      "size": 222016303,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 55.1,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] PSYCHO-PASS [Menu03][Hi10p_1080p][x264_flac].mkv",
-      "size": 222027607
+      "size": 222027607,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 55.1,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] PSYCHO-PASS [Menu04][Hi10p_1080p][x264_flac].mkv",
-      "size": 222020401
+      "size": 222020401,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 55.1,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] PSYCHO-PASS [Menu05][Hi10p_1080p][x264_flac].mkv",
-      "size": 227831538
+      "size": 227831538,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 50.05,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] PSYCHO-PASS [Menu06][Hi10p_1080p][x264_flac].mkv",
-      "size": 227831272
+      "size": 227831272,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 50.05,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] PSYCHO-PASS [Menu07][Hi10p_1080p][x264_flac].mkv",
-      "size": 227830298
+      "size": 227830298,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 50.05,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] PSYCHO-PASS [Menu08][Hi10p_1080p][x264_flac].mkv",
-      "size": 227831865
+      "size": 227831865,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 50.05,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] PSYCHO-PASS [NCED01][Hi10p_1080p][x264_flac].mkv",
-      "size": 200942598
+      "size": 200942598,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.096,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] PSYCHO-PASS [NCED02][Hi10p_1080p][x264_flac].mkv",
-      "size": 65484284
+      "size": 65484284,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.096,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] PSYCHO-PASS [NCED03][Hi10p_1080p][x264_flac].mkv",
-      "size": 410558535
+      "size": 410558535,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 93.093,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] PSYCHO-PASS [NCED04][Hi10p_1080p][x264_flac].mkv",
-      "size": 44197159
+      "size": 44197159,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 104.438,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] PSYCHO-PASS [NCOP01][Hi10p_1080p][x264_flac].mkv",
-      "size": 334147347
+      "size": 334147347,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.096,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] PSYCHO-PASS [NCOP02][Hi10p_1080p][x264_flac].mkv",
-      "size": 435818099
+      "size": 435818099,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.096,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] PSYCHO-PASS [NCOP03][Hi10p_1080p][x264_flac].mkv",
-      "size": 108915980
+      "size": 108915980,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.096,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] PSYCHO-PASS [PV01][Hi10p_1080p][x264_flac].mkv",
-      "size": 453391064
+      "size": 453391064,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 77.08,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] PSYCHO-PASS [PV02][Hi10p_1080p][x264_flac].mkv",
-      "size": 143571120
+      "size": 143571120,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 87.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] PSYCHO-PASS [PV03][Hi10p_1080p][x264_flac].mkv",
-      "size": 39274113
+      "size": 39274113,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 59.06,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] PSYCHO-PASS [SP01][Hi10p_1080p][x264_flac].ass",
@@ -5291,7 +6021,17 @@
     },
     {
       "path": "SPs/[VCB-Studio] PSYCHO-PASS [SP01][Hi10p_1080p][x264_flac].mkv",
-      "size": 90550809
+      "size": 90550809,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 861.865,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] PSYCHO-PASS II [IV01][Ma10p_1080p][x265_aac].ass",
@@ -5299,87 +6039,328 @@
     },
     {
       "path": "SPs/[VCB-Studio] PSYCHO-PASS II [IV01][Ma10p_1080p][x265_aac].mkv",
-      "size": 1571892055
+      "size": 1571892055,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 2010.025,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] PSYCHO-PASS II [Menu01][Hi10p_1080p][x264_flac].mkv",
-      "size": 85495307
+      "size": 85495307,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 41.045,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] PSYCHO-PASS II [Menu02][Hi10p_1080p][x264_flac].mkv",
-      "size": 87145214
+      "size": 87145214,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 41.045,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] PSYCHO-PASS II [Menu03][Hi10p_1080p][x264_flac].mkv",
-      "size": 85542707
+      "size": 85542707,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 41.045,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] PSYCHO-PASS II [Menu04][Hi10p_1080p][x264_flac].mkv",
-      "size": 87185338
+      "size": 87185338,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 41.045,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] PSYCHO-PASS II [Menu05][Hi10p_1080p][x264_flac].mkv",
-      "size": 86313594
+      "size": 86313594,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 41.045,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] PSYCHO-PASS II [NCED01][BDRemux_1080p][x264_flac].mkv",
-      "size": 445666781
+      "size": 445666781,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.095,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] PSYCHO-PASS II [NCOP01][BDRemux_1080p][x264_flac].mkv",
-      "size": 439367132
+      "size": 439367132,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.095,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] PSYCHO-PASS The Movie [CM01][Hi10p_1080p][x264_flac].mkv",
-      "size": 77830491
+      "size": 77830491,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 39.273,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] PSYCHO-PASS The Movie [CM02][Hi10p_1080p][x264_flac].mkv",
-      "size": 107961845
+      "size": 107961845,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 68.075,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] PSYCHO-PASS The Movie [CM03][Hi10p_1080p][x264_flac].mkv",
-      "size": 30478033
+      "size": 30478033,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 18.018,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] PSYCHO-PASS The Movie [CM04][Hi10p_1080p][x264_flac].mkv",
-      "size": 28600149
+      "size": 28600149,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 18.018,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] PSYCHO-PASS The Movie [CM05][Hi10p_1080p][x264_flac].mkv",
-      "size": 23030349
+      "size": 23030349,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 18.018,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] PSYCHO-PASS The Movie [CM06][Hi10p_1080p][x264_flac].mkv",
-      "size": 24667006
+      "size": 24667006,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 18.018,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] PSYCHO-PASS The Movie [CM07][Hi10p_1080p][x264_flac].mkv",
-      "size": 19388634
+      "size": 19388634,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 18.018,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] PSYCHO-PASS The Movie [CM08][Hi10p_1080p][x264_flac].mkv",
-      "size": 19615386
+      "size": 19615386,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 18.018,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] PSYCHO-PASS The Movie [CM09][Hi10p_1080p][x264_flac].mkv",
-      "size": 158527862
+      "size": 158527862,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 117.117,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Psycho-Pass The Movie [Menu01][Hi10p_1080p][x264_flac].mkv",
-      "size": 81984091
+      "size": 81984091,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 60.06,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Psycho-Pass The Movie [Menu02][Hi10p_1080p][x264_flac].mkv",
-      "size": 11943636
+      "size": 11943636,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 30.03,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Psycho-Pass The Movie [Menu03][Hi10p_1080p][x264_flac].mkv",
-      "size": 6382051
+      "size": 6382051,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 30.03,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] PSYCHO-PASS The Movie [SPECIAL DISC][Hi10p_1080p][x264_aac].mkv",
-      "size": 3158224538
+      "size": 3158224538,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 4458.473,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 1,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     }
-  ]
+  ],
+  "local_container_fact_summary": {
+    "container_fact_count": 95,
+    "probe_status_counts": {
+      "available": 95
+    },
+    "duration_seconds_range": [
+      17.02,
+      6821.815
+    ],
+    "duration_seconds_samples": [
+      1373.372,
+      1371.12,
+      1373.372,
+      1372.371,
+      1371.037,
+      1373.372
+    ]
+  },
+  "local_container_fact_source": {
+    "kind": "real_local_media_duration_backfill",
+    "media_root": "H:\\Anime",
+    "probe_media": true,
+    "container_probe": "ffprobe",
+    "embedded_in": "files[].container_facts",
+    "matched_file_count": 1345,
+    "matched_video_count": 95,
+    "missing_actual_video_count": 0,
+    "match_stats": {
+      "matched_by_root_path": 1345
+    }
+  }
 }

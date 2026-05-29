@@ -7,7 +7,17 @@
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第01話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 189205175
+      "size": 189205175,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 231.735,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第02話 (BD 1920x1080 HEVC-YUV420P10 FLAC).ass",
@@ -15,7 +25,17 @@
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第02話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 86041619
+      "size": 86041619,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 141.145,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第03話 (BD 1920x1080 HEVC-YUV420P10 FLAC).ass",
@@ -23,7 +43,17 @@
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第03話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 127822418
+      "size": 127822418,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 171.175,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第04話 (BD 1920x1080 HEVC-YUV420P10 FLAC).ass",
@@ -31,7 +61,17 @@
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第04話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 94688987
+      "size": 94688987,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 141.145,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第05話 (BD 1920x1080 HEVC-YUV420P10 FLAC).ass",
@@ -39,7 +79,17 @@
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第05話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 84059308
+      "size": 84059308,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 141.145,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第06話 (BD 1920x1080 HEVC-YUV420P10 FLAC).ass",
@@ -47,7 +97,17 @@
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第06話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 103694267
+      "size": 103694267,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 141.145,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第07話 (BD 1920x1080 HEVC-YUV420P10 FLAC).ass",
@@ -55,7 +115,17 @@
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第07話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 105193387
+      "size": 105193387,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 141.145,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第08話 (BD 1920x1080 HEVC-YUV420P10 FLAC).ass",
@@ -63,7 +133,17 @@
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第08話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 105641175
+      "size": 105641175,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 141.145,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第09話 (BD 1920x1080 HEVC-YUV420P10 FLAC).ass",
@@ -71,7 +151,17 @@
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第09話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 94783202
+      "size": 94783202,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 141.145,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第10話 (BD 1920x1080 HEVC-YUV420P10 FLAC).ass",
@@ -79,7 +169,17 @@
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第10話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 90772696
+      "size": 90772696,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 141.145,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第11話 (BD 1920x1080 HEVC-YUV420P10 FLAC).ass",
@@ -87,7 +187,17 @@
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第11話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 92204539
+      "size": 92204539,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 141.145,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第12話 (BD 1920x1080 HEVC-YUV420P10 FLAC).ass",
@@ -95,7 +205,17 @@
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第12話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 102212033
+      "size": 102212033,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 141.145,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第13話 (BD 1920x1080 HEVC-YUV420P10 FLAC).ass",
@@ -103,7 +223,17 @@
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第13話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 97715943
+      "size": 97715943,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 141.145,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第14話 (BD 1920x1080 HEVC-YUV420P10 FLAC).ass",
@@ -111,7 +241,17 @@
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第14話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 68465884
+      "size": 68465884,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 141.145,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第15話 (BD 1920x1080 HEVC-YUV420P10 FLAC).ass",
@@ -119,7 +259,17 @@
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第15話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 97457415
+      "size": 97457415,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 141.145,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第16話 (BD 1920x1080 HEVC-YUV420P10 FLAC).ass",
@@ -127,7 +277,17 @@
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第16話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 92429244
+      "size": 92429244,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 141.145,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第17話 (BD 1920x1080 HEVC-YUV420P10 FLAC).ass",
@@ -135,7 +295,17 @@
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第17話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 91899938
+      "size": 91899938,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 141.145,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第18話 (BD 1920x1080 HEVC-YUV420P10 FLAC).ass",
@@ -143,7 +313,17 @@
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第18話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 88335533
+      "size": 88335533,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 141.145,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第19話 (BD 1920x1080 HEVC-YUV420P10 FLAC).ass",
@@ -151,7 +331,17 @@
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第19話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 94381802
+      "size": 94381802,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 141.145,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第20話 (BD 1920x1080 HEVC-YUV420P10 FLAC).ass",
@@ -159,7 +349,17 @@
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第20話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 61523631
+      "size": 61523631,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 81.085,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第21話 (BD 1920x1080 HEVC-YUV420P10 FLAC).ass",
@@ -167,7 +367,17 @@
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第21話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 108177441
+      "size": 108177441,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 141.145,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第22話 (BD 1920x1080 HEVC-YUV420P10 FLAC).ass",
@@ -175,7 +385,17 @@
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第22話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 98085295
+      "size": 98085295,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 141.145,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第23話 (BD 1920x1080 HEVC-YUV420P10 FLAC).ass",
@@ -183,7 +403,17 @@
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第23話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 103642805
+      "size": 103642805,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 141.145,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第24話 (BD 1920x1080 HEVC-YUV420P10 FLAC).ass",
@@ -191,7 +421,17 @@
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第24話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 117578292
+      "size": 117578292,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 141.145,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第25話 (BD 1920x1080 HEVC-YUV420P10 FLAC).ass",
@@ -199,7 +439,17 @@
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第25話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 100915483
+      "size": 100915483,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 141.145,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第26話 (BD 1920x1080 HEVC-YUV420P10 FLAC).ass",
@@ -207,7 +457,17 @@
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第26話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 108324998
+      "size": 108324998,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 141.145,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第27話 (BD 1920x1080 HEVC-YUV420P10 FLAC).ass",
@@ -215,7 +475,17 @@
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第27話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 99263941
+      "size": 99263941,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 141.145,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第28話 (BD 1920x1080 HEVC-YUV420P10 FLAC).ass",
@@ -223,7 +493,17 @@
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第28話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 84694904
+      "size": 84694904,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 141.145,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第29話 (BD 1920x1080 HEVC-YUV420P10 FLAC).ass",
@@ -231,7 +511,17 @@
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第29話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 115643342
+      "size": 115643342,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 171.175,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第30話 (BD 1920x1080 HEVC-YUV420P10 FLAC).ass",
@@ -239,7 +529,17 @@
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第30話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 98401632
+      "size": 98401632,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 141.145,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第31話 (BD 1920x1080 HEVC-YUV420P10 FLAC).ass",
@@ -247,7 +547,17 @@
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第31話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 100002187
+      "size": 100002187,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 141.145,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第32話 (BD 1920x1080 HEVC-YUV420P10 FLAC).ass",
@@ -255,7 +565,17 @@
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第32話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 101094790
+      "size": 101094790,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 141.145,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第33話 (BD 1920x1080 HEVC-YUV420P10 FLAC).ass",
@@ -263,7 +583,17 @@
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第33話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 88656554
+      "size": 88656554,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 141.145,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第34話 (BD 1920x1080 HEVC-YUV420P10 FLAC).ass",
@@ -271,7 +601,17 @@
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第34話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 103508894
+      "size": 103508894,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 141.145,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第35話 (BD 1920x1080 HEVC-YUV420P10 FLAC).ass",
@@ -279,7 +619,17 @@
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第35話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 97262892
+      "size": 97262892,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 141.145,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第36話 (BD 1920x1080 HEVC-YUV420P10 FLAC).ass",
@@ -287,7 +637,17 @@
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第36話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 90112044
+      "size": 90112044,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 141.145,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第37話 (BD 1920x1080 HEVC-YUV420P10 FLAC).ass",
@@ -295,7 +655,17 @@
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第37話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 96730231
+      "size": 96730231,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 141.145,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第38話 (BD 1920x1080 HEVC-YUV420P10 FLAC).ass",
@@ -303,7 +673,17 @@
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第38話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 91653245
+      "size": 91653245,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 141.145,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第39話 (BD 1920x1080 HEVC-YUV420P10 FLAC).ass",
@@ -311,7 +691,17 @@
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第39話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 85889762
+      "size": 85889762,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 141.145,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第40話 (BD 1920x1080 HEVC-YUV420P10 FLAC).ass",
@@ -319,7 +709,17 @@
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第40話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 98603757
+      "size": 98603757,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 141.145,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第41話 (BD 1920x1080 HEVC-YUV420P10 FLAC).ass",
@@ -327,7 +727,17 @@
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第41話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 108600763
+      "size": 108600763,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 141.145,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第42話 (BD 1920x1080 HEVC-YUV420P10 FLAC).ass",
@@ -335,7 +745,17 @@
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第42話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 90551100
+      "size": 90551100,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 141.145,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第43話 (BD 1920x1080 HEVC-YUV420P10 FLAC).ass",
@@ -343,7 +763,17 @@
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第43話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 92026081
+      "size": 92026081,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 141.145,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第44話 (BD 1920x1080 HEVC-YUV420P10 FLAC).ass",
@@ -351,7 +781,17 @@
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第44話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 112040632
+      "size": 112040632,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 171.175,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第45話 (BD 1920x1080 HEVC-YUV420P10 FLAC).ass",
@@ -359,7 +799,17 @@
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第45話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 191108403
+      "size": 191108403,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 411.415,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第46話 (BD 1920x1080 HEVC-YUV420P10 FLAC).ass",
@@ -367,7 +817,17 @@
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第46話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 107384970
+      "size": 107384970,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 141.145,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第47話 (BD 1920x1080 HEVC-YUV420P10 FLAC).ass",
@@ -375,7 +835,17 @@
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第47話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 97641814
+      "size": 97641814,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 141.145,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第48話 (BD 1920x1080 HEVC-YUV420P10 FLAC).ass",
@@ -383,7 +853,17 @@
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第48話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 99424980
+      "size": 99424980,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 141.145,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第49話 (BD 1920x1080 HEVC-YUV420P10 FLAC).ass",
@@ -391,7 +871,17 @@
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第49話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 109274947
+      "size": 109274947,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 141.145,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第50話 (BD 1920x1080 HEVC-YUV420P10 FLAC).ass",
@@ -399,7 +889,17 @@
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第50話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 128965369
+      "size": 128965369,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 171.175,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第51話 (BD 1920x1080 HEVC-YUV420P10 FLAC).ass",
@@ -407,7 +907,17 @@
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第51話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 117577129
+      "size": 117577129,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 141.145,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第52話 (BD 1920x1080 HEVC-YUV420P10 FLAC).ass",
@@ -415,7 +925,17 @@
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第52話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 102924105
+      "size": 102924105,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 141.145,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第53話 (BD 1920x1080 HEVC-YUV420P10 FLAC).ass",
@@ -423,7 +943,17 @@
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第53話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 89591863
+      "size": 89591863,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 141.145,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第54話 (BD 1920x1080 HEVC-YUV420P10 FLAC).ass",
@@ -431,7 +961,17 @@
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第54話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 104435172
+      "size": 104435172,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 141.145,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第55話 (BD 1920x1080 HEVC-YUV420P10 FLAC).ass",
@@ -439,7 +979,17 @@
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第55話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 103146978
+      "size": 103146978,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 141.145,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第56話 (BD 1920x1080 HEVC-YUV420P10 FLAC).ass",
@@ -447,7 +997,17 @@
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第56話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 103680673
+      "size": 103680673,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 141.145,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第57話 (BD 1920x1080 HEVC-YUV420P10 FLAC).ass",
@@ -455,7 +1015,17 @@
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第57話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 95729024
+      "size": 95729024,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 141.145,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第58話 (BD 1920x1080 HEVC-YUV420P10 FLAC).ass",
@@ -463,7 +1033,17 @@
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第58話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 90267692
+      "size": 90267692,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 141.145,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第59話 (BD 1920x1080 HEVC-YUV420P10 FLAC).ass",
@@ -471,7 +1051,17 @@
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第59話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 109880231
+      "size": 109880231,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 141.145,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第60話 (BD 1920x1080 HEVC-YUV420P10 FLAC).ass",
@@ -479,7 +1069,17 @@
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第60話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 108666121
+      "size": 108666121,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 141.145,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第61話 (BD 1920x1080 HEVC-YUV420P10 FLAC).ass",
@@ -487,7 +1087,17 @@
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第61話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 120511519
+      "size": 120511519,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 141.145,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第62話 (BD 1920x1080 HEVC-YUV420P10 FLAC).ass",
@@ -495,7 +1105,17 @@
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第62話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 116998791
+      "size": 116998791,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 141.145,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第63話 (BD 1920x1080 HEVC-YUV420P10 FLAC).ass",
@@ -503,7 +1123,17 @@
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第63話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 121749411
+      "size": 121749411,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 141.145,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第64話 (BD 1920x1080 HEVC-YUV420P10 FLAC).ass",
@@ -511,7 +1141,17 @@
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第64話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 107121556
+      "size": 107121556,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 141.145,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第65話 (BD 1920x1080 HEVC-YUV420P10 FLAC).ass",
@@ -519,7 +1159,17 @@
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第65話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 68422349
+      "size": 68422349,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 81.085,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第66話 (BD 1920x1080 HEVC-YUV420P10 FLAC).ass",
@@ -527,7 +1177,17 @@
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第66話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 112478606
+      "size": 112478606,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 171.175,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第67話 (BD 1920x1080 HEVC-YUV420P10 FLAC).ass",
@@ -535,7 +1195,17 @@
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第67話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 112521668
+      "size": 112521668,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 141.145,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第68話 (BD 1920x1080 HEVC-YUV420P10 FLAC).ass",
@@ -543,7 +1213,17 @@
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第68話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 100827442
+      "size": 100827442,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 141.145,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第69話 (BD 1920x1080 HEVC-YUV420P10 FLAC).ass",
@@ -551,7 +1231,17 @@
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第69話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 90412441
+      "size": 90412441,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 141.145,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第70話 (BD 1920x1080 HEVC-YUV420P10 FLAC).ass",
@@ -559,7 +1249,17 @@
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第70話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 102959378
+      "size": 102959378,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 141.145,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第71話 (BD 1920x1080 HEVC-YUV420P10 FLAC).ass",
@@ -567,7 +1267,17 @@
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第71話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 107516683
+      "size": 107516683,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 141.145,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第72話 (BD 1920x1080 HEVC-YUV420P10 FLAC).ass",
@@ -575,7 +1285,17 @@
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第72話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 102166088
+      "size": 102166088,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 141.145,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第73話 (BD 1920x1080 HEVC-YUV420P10 FLAC).ass",
@@ -583,7 +1303,17 @@
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第73話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 90896948
+      "size": 90896948,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 141.145,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第74話 (BD 1920x1080 HEVC-YUV420P10 FLAC).ass",
@@ -591,11 +1321,62 @@
     },
     {
       "path": "[Snow-Raws] ぷちます!! プチプチ・アイドルマスター 第74話 (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 155964366
+      "size": 155964366,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 185.69,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "映像特典/[Snow-Raws] ぷちます!! プチプチ・アイドルマスター MENU (BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 213112528
+      "size": 213112528,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 137.475,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     }
-  ]
+  ],
+  "local_container_fact_summary": {
+    "container_fact_count": 75,
+    "probe_status_counts": {
+      "available": 75
+    },
+    "duration_seconds_range": [
+      81.085,
+      411.415
+    ],
+    "duration_seconds_samples": [
+      231.735,
+      141.145,
+      171.175,
+      141.145,
+      141.145,
+      141.145
+    ]
+  },
+  "local_container_fact_source": {
+    "kind": "real_local_media_duration_backfill",
+    "media_root": "H:\\Anime",
+    "probe_media": true,
+    "container_probe": "ffprobe",
+    "embedded_in": "files[].container_facts",
+    "matched_file_count": 149,
+    "matched_video_count": 75,
+    "missing_actual_video_count": 0,
+    "match_stats": {
+      "matched_by_root_path": 149
+    }
+  }
 }

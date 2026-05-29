@@ -6,6 +6,7 @@ import multiprocessing as mp
 import os
 import sys
 import time
+from collections import Counter
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from queue import Empty
 from dataclasses import asdict, is_dataclass, replace
@@ -27,7 +28,7 @@ from src.rename.utils import VIDEO_SUFFIX
 
 
 SAMPLE_WORKER_COUNT = 20
-SAMPLE_PROVIDER_NO_RESPONSE_RETRIES = 1
+SAMPLE_PROVIDER_NO_RESPONSE_RETRIES = 2
 CASE_AGENT_PROGRESS_ENV_VAR = "LOCAL_BANGUMI_CASE_AGENT_PROGRESS_PATH"
 ALLOWED_FAIL_CLOSED_SUMMARIES = {
     "budget_exhausted",
@@ -43,11 +44,6 @@ ALLOWED_FAIL_CLOSED_SUMMARIES = {
     "provider_failure",
 }
 AI_CALL_STAGE_BY_NAME = {
-    "call_local_structure_agent": "local_structure",
-    "call_case_briefing_agent": "case_briefing",
-    "call_case_planner": "case_planner",
-    "call_query_composer": "query_composer",
-    "call_mapping_draft_editor": "mapping_draft_editor",
     "call_case_judge": "case_judge",
 }
 
@@ -72,6 +68,93 @@ def _load_raw_sample(path: Path) -> dict[str, Any]:
     if not isinstance(payload, dict):
         raise ValueError(f"raw sample must be a JSON object: {path}")
     return payload
+
+
+def _container_facts_by_relative_path(raw_files: list[Any]) -> dict[str, dict[str, Any]]:
+    facts: dict[str, dict[str, Any]] = {}
+    for item in raw_files:
+        if not isinstance(item, dict):
+            continue
+        relative_path = str(item.get("path") or item.get("relative_path") or "").replace("\\", "/").strip()
+        container_facts = item.get("container_facts")
+        if relative_path and isinstance(container_facts, dict):
+            facts[relative_path] = _json_safe(container_facts)
+    return facts
+
+
+def _sample_missing_fact_summary(files: list[dict[str, Any]]) -> dict[str, Any]:
+    by_class = Counter()
+    by_status = Counter()
+    by_reason = Counter()
+    for item in files:
+        for missing in item.get("missing_facts") or []:
+            if not isinstance(missing, dict):
+                continue
+            by_class[str(missing.get("fact_class") or "")] += 1
+            by_status[str(missing.get("status") or "")] += 1
+            by_reason[str(missing.get("reason") or "")] += 1
+    return {
+        "by_class": dict(sorted((key, value) for key, value in by_class.items() if key)),
+        "by_status": dict(sorted((key, value) for key, value in by_status.items() if key)),
+        "by_reason": dict(sorted((key, value) for key, value in by_reason.items() if key)),
+    }
+
+
+def _apply_sample_container_facts(fact_surface: Any, raw_files: list[Any]) -> Any:
+    container_by_rel = _container_facts_by_relative_path(raw_files)
+    if not container_by_rel:
+        return fact_surface
+
+    surface = _json_safe(fact_surface)
+    if not isinstance(surface, dict):
+        return fact_surface
+    files = [item for item in surface.get("files") or [] if isinstance(item, dict)]
+    for item in files:
+        relative_path = str(item.get("relative_path") or "").replace("\\", "/").strip()
+        container_facts = container_by_rel.get(relative_path)
+        if not container_facts:
+            continue
+        item["container_facts"] = container_facts
+        missing_facts = [
+            dict(missing)
+            for missing in item.get("missing_facts") or []
+            if isinstance(missing, dict) and missing.get("fact_class") not in {"container_facts", "duration_facts"}
+        ]
+        probe_status = str(container_facts.get("probe_status") or "")
+        if probe_status == "available":
+            if container_facts.get("duration_seconds") is None:
+                missing_facts.append(
+                    {
+                        "fact_class": "duration_facts",
+                        "status": "available",
+                        "reason": "duration_unavailable",
+                        "attempted": True,
+                        "source": "sample_duration_backfill",
+                        "locator_ref": item.get("file_id") or "",
+                    }
+                )
+        elif probe_status:
+            missing_facts.append(
+                {
+                    "fact_class": "container_facts",
+                    "status": probe_status,
+                    "reason": container_facts.get("probe_error_class") or probe_status,
+                    "attempted": probe_status not in {"not_attempted", "unsupported"},
+                    "source": "sample_duration_backfill",
+                    "locator_ref": item.get("file_id") or "",
+                }
+            )
+        subtitle_count = container_facts.get("subtitle_stream_count")
+        if subtitle_count:
+            subtitle_facts = item.get("subtitle_facts") if isinstance(item.get("subtitle_facts"), dict) else {}
+            embedded = list(subtitle_facts.get("embedded_track_summary") or [])
+            if not embedded:
+                embedded.append({"track_count": subtitle_count, "source": "container_probe"})
+            subtitle_facts["embedded_track_summary"] = embedded
+            item["subtitle_facts"] = subtitle_facts
+        item["missing_facts"] = missing_facts
+    surface["missing_fact_summary"] = _sample_missing_fact_summary(files)
+    return surface
 
 
 def local_evidence_from_raw_sample(path: Path) -> LocalEvidence:
@@ -124,6 +207,7 @@ def local_evidence_from_raw_sample(path: Path) -> LocalEvidence:
         if isinstance(embedded_fact_surface, dict)
         else build_local_fact_surface(evidence)
     )
+    fact_surface = _apply_sample_container_facts(fact_surface, raw_files)
     return replace(evidence, fact_surface=fact_surface)
 
 
@@ -230,6 +314,7 @@ def _accepted_contract_ok(snapshot: dict[str, Any]) -> bool:
     accounted = int(snapshot.get("accounted_for_count") or 0)
     mapped = int(snapshot.get("mapped_file_count") or 0)
     excluded = int(snapshot.get("excluded_file_count") or 0)
+    resolved_unmapped = int(snapshot.get("resolved_unmapped_file_count") or excluded)
     manual_review = int(snapshot.get("manual_review_file_count") or 0)
     unresolved = int(snapshot.get("unresolved_count") or 0)
     open_count = int(snapshot.get("open_file_count") or 0)
@@ -238,7 +323,7 @@ def _accepted_contract_ok(snapshot: dict[str, Any]) -> bool:
     return (
         main_count > 0
         and accounted == main_count
-        and mapped + excluded + manual_review == main_count
+        and mapped + resolved_unmapped + manual_review == main_count
         and unresolved == 0
         and open_count == 0
         and needs_more == 0
@@ -249,8 +334,6 @@ def _accepted_contract_ok(snapshot: dict[str, Any]) -> bool:
 
 
 def _strict_row_ok(row: dict[str, Any]) -> bool:
-    if bool(row.get("briefing_memory_lost")):
-        return False
     status = str(row.get("status") or "")
     if status == "dry_build":
         return True
@@ -274,23 +357,21 @@ def _case_agent_ai_call_stats(snapshot: dict[str, Any]) -> dict[str, Any]:
     call_counts_by_stage: dict[str, int] = {}
     attempt_counts_by_stage: dict[str, int] = {}
     retry_counts_by_stage: dict[str, int] = {}
-    orchestrator_usage_total_tokens = 0
-    orchestrator_usage_input_tokens = 0
-    orchestrator_usage_output_tokens = 0
-    orchestrator_provider_cached_input_tokens = 0
-    orchestrator_max_turn_input_tokens = 0
-    orchestrator_min_cached_input_ratio_after_first_turn = 0.0
-    orchestrator_low_cached_turn_count_after_first_turn = 0
+    pi_usage_total_tokens = 0
+    pi_usage_input_tokens = 0
+    pi_usage_output_tokens = 0
+    pi_provider_cached_input_tokens = 0
+    pi_max_turn_input_tokens = 0
+    pi_low_cached_turn_count_after_first_turn = 0
     cached_ratios_after_first_turn: list[float] = []
     cached_ratio_samples: list[dict[str, Any]] = []
     call_count = 0
     retry_count = 0
-    legacy_subagent_call_count = 0
     for audit in audits:
         if not isinstance(audit, dict):
             continue
-        if audit.get("note") == "orchestrator_agent_called":
-            stage = "orchestrator_agent"
+        if audit.get("note") == "pi_case_agent_session_summary":
+            stage = "pi_case_agent"
             retries = int(audit.get("provider_retry_count") or 0)
             call_count += 1
             retry_count += retries
@@ -304,16 +385,16 @@ def _case_agent_ai_call_stats(snapshot: dict[str, Any]) -> dict[str, Any]:
             total_tokens = int(usage.get("total_tokens") or (input_tokens + output_tokens))
             details = usage.get("input_tokens_details") if isinstance(usage.get("input_tokens_details"), dict) else usage.get("prompt_tokens_details")
             cached_tokens = int((details or {}).get("cached_tokens") or (details or {}).get("cache_read_input_tokens") or 0) if isinstance(details, dict) else 0
-            orchestrator_usage_input_tokens += input_tokens
-            orchestrator_usage_output_tokens += output_tokens
-            orchestrator_usage_total_tokens += total_tokens
-            orchestrator_provider_cached_input_tokens += cached_tokens
-            orchestrator_max_turn_input_tokens = max(orchestrator_max_turn_input_tokens, input_tokens)
+            pi_usage_input_tokens += input_tokens
+            pi_usage_output_tokens += output_tokens
+            pi_usage_total_tokens += total_tokens
+            pi_provider_cached_input_tokens += cached_tokens
+            pi_max_turn_input_tokens = max(pi_max_turn_input_tokens, input_tokens)
             if int(audit.get("turn_count") or 0) >= 2 and input_tokens:
                 ratio = cached_tokens / input_tokens
                 cached_ratios_after_first_turn.append(ratio)
                 if ratio < 0.25:
-                    orchestrator_low_cached_turn_count_after_first_turn += 1
+                    pi_low_cached_turn_count_after_first_turn += 1
                 if len(cached_ratio_samples) < 24:
                     cached_ratio_samples.append({
                         "turn": int(audit.get("turn_count") or 0),
@@ -333,8 +414,6 @@ def _case_agent_ai_call_stats(snapshot: dict[str, Any]) -> dict[str, Any]:
         call_name = str(audit.get("call_name") or "").strip()
         if not call_name or call_name == "LocalPackageAnalysis":
             continue
-        if call_name in {"call_query_composer", "call_mapping_draft_editor", "call_case_judge"}:
-            legacy_subagent_call_count += 1
         stage = AI_CALL_STAGE_BY_NAME.get(call_name, call_name.removeprefix("call_") or "unknown")
         retries = int(audit.get("provider_retry_count") or 0)
         call_count += 1
@@ -350,20 +429,19 @@ def _case_agent_ai_call_stats(snapshot: dict[str, Any]) -> dict[str, Any]:
         "ai_call_counts_by_stage": call_counts_by_stage,
         "ai_attempt_counts_by_stage": attempt_counts_by_stage,
         "ai_provider_retry_counts_by_stage": retry_counts_by_stage,
-        "legacy_subagent_call_count": legacy_subagent_call_count,
-        "orchestrator_usage_total_tokens": orchestrator_usage_total_tokens,
-        "orchestrator_usage_input_tokens": orchestrator_usage_input_tokens,
-        "orchestrator_usage_output_tokens": orchestrator_usage_output_tokens,
-        "orchestrator_provider_cached_input_tokens": orchestrator_provider_cached_input_tokens,
-        "orchestrator_provider_cached_input_ratio": (
-            orchestrator_provider_cached_input_tokens / orchestrator_usage_input_tokens
-            if orchestrator_usage_input_tokens
+        "pi_usage_total_tokens": pi_usage_total_tokens,
+        "pi_usage_input_tokens": pi_usage_input_tokens,
+        "pi_usage_output_tokens": pi_usage_output_tokens,
+        "pi_provider_cached_input_tokens": pi_provider_cached_input_tokens,
+        "pi_provider_cached_input_ratio": (
+            pi_provider_cached_input_tokens / pi_usage_input_tokens
+            if pi_usage_input_tokens
             else 0.0
         ),
-        "orchestrator_min_cached_input_ratio_after_first_turn": min(cached_ratios_after_first_turn) if cached_ratios_after_first_turn else 0.0,
-        "orchestrator_low_cached_turn_count_after_first_turn": orchestrator_low_cached_turn_count_after_first_turn,
-        "orchestrator_cached_input_ratio_samples": cached_ratio_samples,
-        "orchestrator_max_turn_input_tokens": orchestrator_max_turn_input_tokens,
+        "pi_min_cached_input_ratio_after_first_turn": min(cached_ratios_after_first_turn) if cached_ratios_after_first_turn else 0.0,
+        "pi_low_cached_turn_count_after_first_turn": pi_low_cached_turn_count_after_first_turn,
+        "pi_cached_input_ratio_samples": cached_ratio_samples,
+        "pi_max_turn_input_tokens": pi_max_turn_input_tokens,
     }
 
 
@@ -374,27 +452,11 @@ def _tool_rejection_reason_counts(snapshot: dict[str, Any]) -> dict[str, int]:
         if not isinstance(audit, dict):
             continue
         note = str(audit.get("note") or "")
-        if note == "human_case_agent_tool_rejected":
-            reason = str(audit.get("reason") or audit.get("issue") or "unknown")
-            counts[reason] = int(counts.get(reason) or 0) + 1
+        if note != "pi_case_agent_tool_call" or bool(audit.get("accepted")):
             continue
-        if note != "orchestrator_tool_selected" or bool(audit.get("accepted")):
-            continue
-        reason = str(audit.get("reason") or "unknown")
+        summary = audit.get("result_summary") if isinstance(audit.get("result_summary"), dict) else {}
+        reason = str(summary.get("error") or summary.get("status") or "tool_rejected")
         counts[reason] = int(counts.get(reason) or 0) + 1
-    session_summary = next(
-        (
-            audit
-            for audit in reversed(audits)
-            if isinstance(audit, dict) and audit.get("note") == "orchestrator_agent_session_summary"
-        ),
-        {},
-    )
-    if isinstance(session_summary, dict):
-        total = int(session_summary.get("tool_rejection_count") or 0)
-        missing = total - sum(counts.values())
-        if missing > 0:
-            counts["tool_output_rejected"] = int(counts.get("tool_output_rejected") or 0) + missing
     return counts
 
 
@@ -405,20 +467,20 @@ def _sample_row(sample_path: Path, result: dict[str, Any], elapsed_ms: int) -> d
     ai_stats = _case_agent_ai_call_stats(snapshot) if isinstance(snapshot, dict) else {}
     rejection_reason_counts = _tool_rejection_reason_counts(snapshot) if isinstance(snapshot, dict) else {}
     audits = snapshot.get("case_judge_request_audits") if isinstance(snapshot, dict) and isinstance(snapshot.get("case_judge_request_audits"), list) else []
-    session_summary = next(
+    pi_session_summary = next(
         (
             audit
             for audit in reversed(audits)
-            if isinstance(audit, dict) and audit.get("note") == "orchestrator_agent_session_summary"
+            if isinstance(audit, dict) and audit.get("note") == "pi_case_agent_session_summary"
         ),
         {},
     )
-    session_summary = session_summary if isinstance(session_summary, dict) else {}
+    pi_session_summary = pi_session_summary if isinstance(pi_session_summary, dict) else {}
 
     def sample_value(key: str) -> Any:
         if isinstance(snapshot, dict) and snapshot.get(key) is not None:
             return snapshot.get(key)
-        return session_summary.get(key)
+        return pi_session_summary.get(key)
 
     summary_value = snapshot.get("summary") or result.get("summary") if isinstance(snapshot, dict) else result.get("summary")
     return {
@@ -430,71 +492,48 @@ def _sample_row(sample_path: Path, result: dict[str, Any], elapsed_ms: int) -> d
         "main_file_count": snapshot.get("main_file_count") or snapshot.get("contract_main_file_count") if isinstance(snapshot, dict) else None,
         "assignment_intent_count": snapshot.get("assignment_intent_count") if isinstance(snapshot, dict) else None,
         "mapped_file_count": snapshot.get("mapped_file_count") if isinstance(snapshot, dict) else None,
+        "mapped_target_episode_count": snapshot.get("mapped_target_episode_count") if isinstance(snapshot, dict) else None,
+        "single_file_multi_episode_count": snapshot.get("single_file_multi_episode_count") if isinstance(snapshot, dict) else None,
         "excluded_file_count": snapshot.get("excluded_file_count") if isinstance(snapshot, dict) else None,
+        "resolved_unmapped_file_count": snapshot.get("resolved_unmapped_file_count") if isinstance(snapshot, dict) else None,
         "manual_review_file_count": snapshot.get("manual_review_file_count") if isinstance(snapshot, dict) else None,
         "unresolved_count": snapshot.get("unresolved_count") if isinstance(snapshot, dict) else None,
         "final_verifier_passed": snapshot.get("final_verifier_passed") if isinstance(snapshot, dict) else None,
         "case_agent_mode": snapshot.get("case_agent_mode") if isinstance(snapshot, dict) else None,
-        "legacy_orchestrator_main_path_used": snapshot.get("legacy_orchestrator_main_path_used") if isinstance(snapshot, dict) else None,
-        "semantic_subagent_call_count": snapshot.get("semantic_subagent_call_count") if isinstance(snapshot, dict) else None,
+        "pi_run_dir": snapshot.get("pi_run_dir") if isinstance(snapshot, dict) else pi_session_summary.get("pi_run_dir"),
+        "pi_case_id": snapshot.get("pi_case_id") if isinstance(snapshot, dict) else pi_session_summary.get("pi_case_id"),
+        "pi_provider": snapshot.get("pi_provider") if isinstance(snapshot, dict) else pi_session_summary.get("pi_provider"),
+        "pi_model": snapshot.get("pi_model") if isinstance(snapshot, dict) else pi_session_summary.get("pi_model"),
+        "pi_runtime_returncode": snapshot.get("pi_runtime_returncode") if isinstance(snapshot, dict) else pi_session_summary.get("runtime_returncode"),
+        "pi_tool_trace_count": snapshot.get("pi_tool_trace_count") if isinstance(snapshot, dict) else pi_session_summary.get("tool_trace_count"),
+        "pi_tool_call_counts": snapshot.get("pi_tool_call_counts") if isinstance(snapshot, dict) else pi_session_summary.get("pi_tool_call_counts"),
+        "pi_tool_sequence": snapshot.get("pi_tool_sequence") if isinstance(snapshot, dict) else pi_session_summary.get("pi_tool_sequence"),
+        "pi_turn_count": (
+            (snapshot.get("pi_runtime_result") or {}).get("runner_result", {}).get("turn_count")
+            if isinstance(snapshot, dict) and isinstance(snapshot.get("pi_runtime_result"), dict)
+            else None
+        ),
         "first_turn_estimated_tokens": snapshot.get("first_turn_estimated_tokens") if isinstance(snapshot, dict) else None,
         "agent_facing_locator_count": snapshot.get("agent_facing_locator_count") if isinstance(snapshot, dict) else None,
         "submit_rejection_count": snapshot.get("submit_rejection_count") if isinstance(snapshot, dict) else None,
         "submit_rejection_issue_counts": snapshot.get("submit_rejection_issue_counts") if isinstance(snapshot, dict) else None,
-        "human_case_saved_work_unit_count": snapshot.get("human_case_saved_work_unit_count") if isinstance(snapshot, dict) else None,
-        "human_case_draft_revision_count": snapshot.get("human_case_draft_revision_count") if isinstance(snapshot, dict) else None,
-        "attention_focus_change_count": snapshot.get("attention_focus_change_count") if isinstance(snapshot, dict) else None,
-        "agenda_open_count": snapshot.get("agenda_open_count") if isinstance(snapshot, dict) else None,
-        "agenda_closed_count": snapshot.get("agenda_closed_count") if isinstance(snapshot, dict) else None,
         "noise_candidate_count": snapshot.get("noise_candidate_count") if isinstance(snapshot, dict) else None,
         "stall_warning_count": snapshot.get("stall_warning_count") if isinstance(snapshot, dict) else None,
         "no_progress_escape_count": snapshot.get("no_progress_escape_count") if isinstance(snapshot, dict) else None,
-        "recovery_frontier_switch_count": snapshot.get("recovery_frontier_switch_count") if isinstance(snapshot, dict) else None,
-        "exact_fail_closed_after_frontier_exhausted_count": snapshot.get("exact_fail_closed_after_frontier_exhausted_count") if isinstance(snapshot, dict) else None,
-        "weak_related_blocking_action_count": snapshot.get("weak_related_blocking_action_count") if isinstance(snapshot, dict) else None,
-        "case_resolution_goal_status": sample_value("case_resolution_goal_status"),
-        "case_resolution_goal_strategy_counts": sample_value("case_resolution_goal_strategy_counts"),
-        "case_resolution_goal_progress_count": sample_value("case_resolution_goal_progress_count"),
         "same_blocker_strategy_change_required_count": sample_value("same_blocker_strategy_change_required_count"),
-        "case_resolution_goal_terminal_rejection_count": sample_value("case_resolution_goal_terminal_rejection_count"),
         "obvious_terminal_fail_closed_count": sample_value("obvious_terminal_fail_closed_count")
         or (1 if summary_value == "obvious_terminal_fail_closed" else 0),
-        "repair_strategy_missing_count": sample_value("repair_strategy_missing_count"),
         "high_quality_candidate_count_by_turn": snapshot.get("high_quality_candidate_count_by_turn") if isinstance(snapshot, dict) else None,
         "diagnostic_candidate_count_by_turn": snapshot.get("diagnostic_candidate_count_by_turn") if isinstance(snapshot, dict) else None,
         "noisy_candidate_count_by_turn": snapshot.get("noisy_candidate_count_by_turn") if isinstance(snapshot, dict) else None,
         "blocking_action_count_by_turn": snapshot.get("blocking_action_count_by_turn") if isinstance(snapshot, dict) else None,
-        "manual_vs_agent_divergence_point": snapshot.get("manual_vs_agent_divergence_point") if isinstance(snapshot, dict) else None,
         "resolution_readiness_summary": snapshot.get("resolution_readiness_summary") if isinstance(snapshot, dict) else None,
-        "case_understanding_applied": snapshot.get("case_understanding_applied") if isinstance(snapshot, dict) else None,
-        "briefing_memory_lost": snapshot.get("briefing_memory_lost") if isinstance(snapshot, dict) else None,
-        "case_planning_action": snapshot.get("case_planning_action") if isinstance(snapshot, dict) else None,
-        "split_child_case_count": snapshot.get("split_child_case_count") if isinstance(snapshot, dict) else None,
-        "split_child_statuses": snapshot.get("split_child_statuses") if isinstance(snapshot, dict) else None,
         "summary": summary_value,
-        "orchestrator_turn_count": snapshot.get("orchestrator_turn_count") if isinstance(snapshot, dict) else None,
-        "orchestrator_tool_call_counts": snapshot.get("orchestrator_tool_call_counts") if isinstance(snapshot, dict) else None,
-        "orchestrator_tool_sequence": snapshot.get("orchestrator_tool_sequence") if isinstance(snapshot, dict) else None,
-        "case_resolution_ledger_row_count": snapshot.get("case_resolution_ledger_row_count") if isinstance(snapshot, dict) else None,
-        "ledger_outcome_counts": snapshot.get("ledger_outcome_counts") if isinstance(snapshot, dict) else None,
-        "ledger_blocked_row_count": snapshot.get("ledger_blocked_row_count") if isinstance(snapshot, dict) else None,
-        "ledger_compiled_patch_count": snapshot.get("ledger_compiled_patch_count") if isinstance(snapshot, dict) else None,
-        "ledger_requested_evidence_count": snapshot.get("ledger_requested_evidence_count") if isinstance(snapshot, dict) else None,
-        "root_orchestrator_turn_count": snapshot.get("root_orchestrator_turn_count") if isinstance(snapshot, dict) else None,
-        "root_orchestrator_tool_call_counts": snapshot.get("root_orchestrator_tool_call_counts") if isinstance(snapshot, dict) else None,
-        "root_orchestrator_tool_sequence": snapshot.get("root_orchestrator_tool_sequence") if isinstance(snapshot, dict) else None,
         "tool_rejection_count": snapshot.get("tool_rejection_count") if isinstance(snapshot, dict) else None,
         "tool_rejection_reason_counts": rejection_reason_counts,
         "near_turn_limit_unhealthy_count": snapshot.get("near_turn_limit_unhealthy_count") if isinstance(snapshot, dict) else None,
         "stall_suspected_count": snapshot.get("stall_suspected_count") if isinstance(snapshot, dict) else None,
         "compact_count": snapshot.get("compact_count") if isinstance(snapshot, dict) else None,
-        "orchestrator_session_mode": snapshot.get("orchestrator_session_mode") if isinstance(snapshot, dict) else None,
-        "orchestrator_provider_session_enabled": snapshot.get("orchestrator_provider_session_enabled") if isinstance(snapshot, dict) else None,
-        "orchestrator_http_session_id": snapshot.get("orchestrator_http_session_id") if isinstance(snapshot, dict) else None,
-        "orchestrator_prompt_cache_key": snapshot.get("orchestrator_prompt_cache_key") if isinstance(snapshot, dict) else None,
-        "orchestrator_prompt_cache_retention": snapshot.get("orchestrator_prompt_cache_retention") if isinstance(snapshot, dict) else None,
-        "orchestrator_stable_prefix_estimated_tokens": snapshot.get("orchestrator_stable_prefix_estimated_tokens") if isinstance(snapshot, dict) else None,
-        "orchestrator_turn_tail_estimated_tokens": snapshot.get("orchestrator_turn_tail_estimated_tokens") if isinstance(snapshot, dict) else None,
         **ai_stats,
     }
 
@@ -507,7 +546,22 @@ def _is_provider_no_response_result(result: dict[str, Any]) -> bool:
     if error_kind == "provider_no_response":
         return True
     errors = snapshot.get("errors") if isinstance(snapshot.get("errors"), list) else result.get("errors")
-    return any("provider_no_response" in str(item) or "no response" in str(item).casefold() for item in list(errors or []))
+    if any("provider_no_response" in str(item) or "no response" in str(item).casefold() for item in list(errors or [])):
+        return True
+    if error_kind != "pi_runtime_failed":
+        return False
+    if str(snapshot.get("status") or result.get("status") or "") != "fail_closed":
+        return False
+    if str(snapshot.get("summary") or result.get("summary") or "") != "budget_exhausted":
+        return False
+    runtime = snapshot.get("pi_runtime_result") if isinstance(snapshot.get("pi_runtime_result"), dict) else {}
+    runner_result = runtime.get("runner_result") if isinstance(runtime.get("runner_result"), dict) else {}
+    if runner_result.get("final_result_present") is not False:
+        return False
+    tool_sequence = list(snapshot.get("pi_tool_sequence") or [])
+    tool_counts = snapshot.get("pi_tool_call_counts") if isinstance(snapshot.get("pi_tool_call_counts"), dict) else {}
+    # Pi produced no useful action; the single fail_closed is Python's auto-finalizer.
+    return tool_sequence in ([], ["fail_closed"]) and set(tool_counts).issubset({"fail_closed"})
 
 
 def _write_sample_result(sample: Path, output_dir: Path, result: dict[str, Any]) -> None:
@@ -563,8 +617,8 @@ def _row_with_partial_progress(row: dict[str, Any], progress_path: Path) -> dict
         **row,
         "partial_progress_path": progress_path.as_posix(),
         "partial_progress_phase": progress.get("phase"),
-        "partial_orchestrator_turn_count": session.get("orchestrator_turn_count"),
-        "partial_orchestrator_tool_sequence": session.get("orchestrator_tool_sequence"),
+        "partial_pi_turn_count": session.get("pi_turn_count") or progress.get("pi_turn_count"),
+        "partial_pi_tool_sequence": session.get("pi_tool_sequence") or progress.get("pi_tool_sequence"),
         "partial_tool_rejection_count": session.get("tool_rejection_count"),
         "partial_progress_case_id": progress.get("case_id"),
     }
@@ -593,6 +647,7 @@ def _run_mapping_sample_uncapped(
     sample: Path,
     output_dir: Path,
     max_rounds: int | None = None,
+    pi_timeout_seconds: int | None = None,
 ) -> dict[str, Any]:
     started = time.time()
     retry_reasons: list[str] = []
@@ -616,11 +671,15 @@ def _run_mapping_sample_uncapped(
                 sample,
                 output_dir,
                 phase="case_agent_mapping_started",
-                extra={"attempt": attempt + 1, "max_rounds": max_rounds},
+                extra={
+                    "attempt": attempt + 1,
+                    "max_rounds": max_rounds,
+                    "pi_timeout_seconds": pi_timeout_seconds,
+                },
             )
             overrides: dict[str, Any] = {}
-            if max_rounds is not None:
-                overrides['rename_local_bangumi_case_agent_audit_max_rounds'] = max(1, int(max_rounds))
+            if pi_timeout_seconds is not None and int(pi_timeout_seconds or 0) > 0:
+                overrides['rename_local_bangumi_pi_timeout_seconds'] = max(1, int(pi_timeout_seconds or 0))
             if overrides:
                 with cm.temporary_config(overrides):
                     result = run_local_bangumi_case_agent_mapping(
@@ -690,12 +749,13 @@ def _run_mapping_sample_process_entry(
     sample: str,
     output_dir: str,
     max_rounds: int | None,
+    pi_timeout_seconds: int | None,
 ) -> None:
     progress_path = _progress_path_for_sample(Path(sample), Path(output_dir))
     previous_progress_path = os.environ.get(CASE_AGENT_PROGRESS_ENV_VAR)
     os.environ[CASE_AGENT_PROGRESS_ENV_VAR] = progress_path.as_posix()
     try:
-        row = _run_mapping_sample_uncapped(Path(sample), Path(output_dir), max_rounds)
+        row = _run_mapping_sample_uncapped(Path(sample), Path(output_dir), max_rounds, pi_timeout_seconds)
         queue.put({"ok": True, "row": row})
     except BaseException as exc:
         queue.put({"ok": False, "error": str(exc)})
@@ -719,9 +779,10 @@ def _run_mapping_sample(
     started = time.time()
     queue: mp.Queue = mp.Queue(maxsize=1)
     progress_path = _progress_path_for_sample(sample, output_dir)
+    pi_timeout_seconds = max(1, timeout - 15) if timeout > 20 else timeout
     process = mp.Process(
         target=_run_mapping_sample_process_entry,
-        args=(queue, sample.as_posix(), output_dir.as_posix(), max_rounds),
+        args=(queue, sample.as_posix(), output_dir.as_posix(), max_rounds, pi_timeout_seconds),
     )
     process.start()
     deadline = started + timeout
@@ -833,11 +894,11 @@ def _run_mapping_sample(
     }
 
 
-def _run_in_parallel(samples: list[Path], worker, *args: Any) -> list[dict[str, Any]]:
+def _run_in_parallel(samples: list[Path], worker, *args: Any, worker_count: int = SAMPLE_WORKER_COUNT) -> list[dict[str, Any]]:
     if len(samples) == 1:
         return [worker(samples[0], *args)]
     indexed_rows: dict[int, dict[str, Any]] = {}
-    with ThreadPoolExecutor(max_workers=SAMPLE_WORKER_COUNT) as executor:
+    with ThreadPoolExecutor(max_workers=max(1, int(worker_count or 1))) as executor:
         futures = {
             executor.submit(worker, sample, *args): index
             for index, sample in enumerate(samples)
@@ -855,8 +916,9 @@ def main() -> int:
     parser.add_argument("--sample", action="append", default=[], help="Substring filter; can be repeated.")
     parser.add_argument("--limit", type=int, default=None)
     parser.add_argument("--offset", type=int, default=0, help="Skip this many selected samples before applying --limit.")
-    parser.add_argument("--max-rounds", type=int, default=None, help="Temporarily override Case Agent max rounds for audit runs.")
+    parser.add_argument("--max-rounds", type=int, default=None, help="Legacy no-op; Pi native mode is bounded by sample timeout.")
     parser.add_argument("--sample-timeout-seconds", type=int, default=0, help="Terminate a sample run that exceeds this wall-clock limit. 0 disables the timeout.")
+    parser.add_argument("--workers", type=int, default=SAMPLE_WORKER_COUNT, help="Number of samples to run concurrently. Use 1 for sequential smoke matrices.")
     parser.add_argument("--dry-build", action="store_true", help="Only build LocalEvidence from raw samples; do not call AI/Bangumi.")
     args = parser.parse_args()
 
@@ -884,7 +946,7 @@ def main() -> int:
 
     rows: list[dict[str, Any]] = []
     if args.dry_build:
-        rows = _run_in_parallel(samples, _dry_build_row)
+        rows = _run_in_parallel(samples, _dry_build_row, worker_count=args.workers)
     else:
         ai_client = AIClient()
         if not ai_client.is_available():
@@ -898,6 +960,7 @@ def main() -> int:
             output_dir,
             args.max_rounds,
             args.sample_timeout_seconds,
+            worker_count=args.workers,
         )
     if sample_metadata_by_key:
         for row in rows:
@@ -931,8 +994,8 @@ def main() -> int:
     ai_call_counts_by_stage: dict[str, int] = {}
     ai_attempt_counts_by_stage: dict[str, int] = {}
     ai_provider_retry_counts_by_stage: dict[str, int] = {}
-    orchestrator_tool_call_counts: dict[str, int] = {}
-    orchestrator_session_mode_counts: dict[str, int] = {}
+    pi_tool_call_counts: dict[str, int] = {}
+    pi_session_mode_counts: dict[str, int] = {}
     tool_rejection_reason_counts: dict[str, int] = {}
     for row in rows:
         for key, value in (row.get("ai_call_counts_by_stage") if isinstance(row.get("ai_call_counts_by_stage"), dict) else {}).items():
@@ -941,20 +1004,20 @@ def main() -> int:
             _add_count(ai_attempt_counts_by_stage, str(key), int(value or 0))
         for key, value in (row.get("ai_provider_retry_counts_by_stage") if isinstance(row.get("ai_provider_retry_counts_by_stage"), dict) else {}).items():
             _add_count(ai_provider_retry_counts_by_stage, str(key), int(value or 0))
-        for key, value in (row.get("orchestrator_tool_call_counts") if isinstance(row.get("orchestrator_tool_call_counts"), dict) else {}).items():
-            _add_count(orchestrator_tool_call_counts, str(key), int(value or 0))
+        for key, value in (row.get("pi_tool_call_counts") if isinstance(row.get("pi_tool_call_counts"), dict) else {}).items():
+            _add_count(pi_tool_call_counts, str(key), int(value or 0))
         for key, value in (row.get("tool_rejection_reason_counts") if isinstance(row.get("tool_rejection_reason_counts"), dict) else {}).items():
             _add_count(tool_rejection_reason_counts, str(key), int(value or 0))
-        _add_count(orchestrator_session_mode_counts, str(row.get("orchestrator_session_mode") or "unknown"))
-    total_input_tokens = sum(int(row.get("orchestrator_usage_input_tokens") or 0) for row in rows)
-    total_cached_input_tokens = sum(int(row.get("orchestrator_provider_cached_input_tokens") or 0) for row in rows)
+        _add_count(pi_session_mode_counts, str(row.get("case_agent_mode") or "unknown"))
+    total_input_tokens = sum(int(row.get("pi_usage_input_tokens") or 0) for row in rows)
+    total_cached_input_tokens = sum(int(row.get("pi_provider_cached_input_tokens") or 0) for row in rows)
     summary = {
         "ok": not strict_failures,
         "raw_root": raw_root.as_posix(),
         "sample_list": args.sample_list.as_posix() if args.sample_list is not None else "",
         "output_dir": output_dir.as_posix(),
         "sample_count": len(rows),
-        "worker_count": SAMPLE_WORKER_COUNT,
+        "worker_count": max(1, int(args.workers or 1)),
         "counts": counts,
         "summary_counts": summary_counts,
         "sample_list_bucket_counts": _count_rows_by_metadata(rows, sample_metadata_by_key, "bucket") if sample_metadata_by_key else {},
@@ -964,41 +1027,27 @@ def main() -> int:
         "ai_call_count_total": sum(int(row.get("ai_call_count") or 0) for row in rows),
         "ai_attempt_count_estimate_total": sum(int(row.get("ai_attempt_count_estimate") or 0) for row in rows),
         "ai_provider_retry_count_total": sum(int(row.get("ai_provider_retry_count") or 0) for row in rows),
-        "legacy_subagent_call_count_total": sum(int(row.get("legacy_subagent_call_count") or 0) for row in rows),
-        "case_understanding_applied_count": sum(1 for row in rows if bool(row.get("case_understanding_applied"))),
         "ai_call_counts_by_stage": ai_call_counts_by_stage,
         "ai_attempt_counts_by_stage": ai_attempt_counts_by_stage,
         "ai_provider_retry_counts_by_stage": ai_provider_retry_counts_by_stage,
-        "orchestrator_turn_count_total": sum(int(row.get("orchestrator_turn_count") or 0) for row in rows),
-        "orchestrator_tool_call_counts": orchestrator_tool_call_counts,
-        "orchestrator_session_mode_counts": orchestrator_session_mode_counts,
-        "orchestrator_usage_total_tokens": sum(int(row.get("orchestrator_usage_total_tokens") or 0) for row in rows),
-        "orchestrator_usage_input_tokens": total_input_tokens,
-        "orchestrator_usage_output_tokens": sum(int(row.get("orchestrator_usage_output_tokens") or 0) for row in rows),
-        "orchestrator_provider_cached_input_tokens": total_cached_input_tokens,
-        "orchestrator_provider_cached_input_ratio": (total_cached_input_tokens / total_input_tokens) if total_input_tokens else 0.0,
-        "orchestrator_min_cached_input_ratio_after_first_turn": min([float(row.get("orchestrator_min_cached_input_ratio_after_first_turn") or 0.0) for row in rows] or [0.0]),
-        "orchestrator_low_cached_turn_count_after_first_turn": sum(int(row.get("orchestrator_low_cached_turn_count_after_first_turn") or 0) for row in rows),
-        "orchestrator_stable_prefix_estimated_tokens": max([int(row.get("orchestrator_stable_prefix_estimated_tokens") or 0) for row in rows] or [0]),
-        "orchestrator_turn_tail_estimated_tokens": max([int(row.get("orchestrator_turn_tail_estimated_tokens") or 0) for row in rows] or [0]),
-        "orchestrator_max_turn_input_tokens": max([int(row.get("orchestrator_max_turn_input_tokens") or 0) for row in rows] or [0]),
-        "orchestrator_provider_session_enabled_count": sum(1 for row in rows if bool(row.get("orchestrator_provider_session_enabled"))),
-        "orchestrator_http_history_replay_count": sum(1 for row in rows if str(row.get("orchestrator_session_mode") or "") == "http_history_replay"),
-        "orchestrator_prompt_cache_key_count": sum(1 for row in rows if bool(row.get("orchestrator_prompt_cache_key"))),
+        "pi_turn_count_total": sum(int(row.get("pi_turn_count") or 0) for row in rows),
+        "pi_tool_call_counts": pi_tool_call_counts,
+        "pi_session_mode_counts": pi_session_mode_counts,
+        "pi_usage_total_tokens": sum(int(row.get("pi_usage_total_tokens") or 0) for row in rows),
+        "pi_usage_input_tokens": total_input_tokens,
+        "pi_usage_output_tokens": sum(int(row.get("pi_usage_output_tokens") or 0) for row in rows),
+        "pi_provider_cached_input_tokens": total_cached_input_tokens,
+        "pi_provider_cached_input_ratio": (total_cached_input_tokens / total_input_tokens) if total_input_tokens else 0.0,
+        "pi_min_cached_input_ratio_after_first_turn": min([float(row.get("pi_min_cached_input_ratio_after_first_turn") or 0.0) for row in rows] or [0.0]),
+        "pi_low_cached_turn_count_after_first_turn": sum(int(row.get("pi_low_cached_turn_count_after_first_turn") or 0) for row in rows),
+        "pi_max_turn_input_tokens": max([int(row.get("pi_max_turn_input_tokens") or 0) for row in rows] or [0]),
         "tool_rejection_count_total": sum(int(row.get("tool_rejection_count") or 0) for row in rows),
         "tool_rejection_reason_counts": tool_rejection_reason_counts,
-        "attention_focus_change_count_total": sum(int(row.get("attention_focus_change_count") or 0) for row in rows),
-        "agenda_open_count_total": sum(int(row.get("agenda_open_count") or 0) for row in rows),
-        "agenda_closed_count_total": sum(int(row.get("agenda_closed_count") or 0) for row in rows),
         "noise_candidate_count_total": sum(int(row.get("noise_candidate_count") or 0) for row in rows),
         "stall_warning_count_total": sum(int(row.get("stall_warning_count") or 0) for row in rows),
         "no_progress_escape_count_total": sum(int(row.get("no_progress_escape_count") or 0) for row in rows),
-        "weak_related_blocking_action_count_total": sum(int(row.get("weak_related_blocking_action_count") or 0) for row in rows),
-        "case_resolution_goal_progress_count_total": sum(int(row.get("case_resolution_goal_progress_count") or 0) for row in rows),
         "same_blocker_strategy_change_required_count_total": sum(int(row.get("same_blocker_strategy_change_required_count") or 0) for row in rows),
-        "case_resolution_goal_terminal_rejection_count_total": sum(int(row.get("case_resolution_goal_terminal_rejection_count") or 0) for row in rows),
         "obvious_terminal_fail_closed_count_total": sum(int(row.get("obvious_terminal_fail_closed_count") or 0) for row in rows),
-        "repair_strategy_missing_count_total": sum(int(row.get("repair_strategy_missing_count") or 0) for row in rows),
         "compact_count_total": sum(int(row.get("compact_count") or 0) for row in rows),
         "strict_failure_count": len(strict_failures),
         "strict_failures": strict_failures,

@@ -3,7 +3,17 @@
   "files": [
     {
       "path": "[AI-Raws] 鬼滅の刃 柱稽古編 #1 (BD HEVC 1920x1080 FLAC)[C8ABED9A].mkv",
-      "size": 2650223564
+      "size": 2650223564,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 2936.935,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[AI-Raws] 鬼滅の刃 柱稽古編 #1 (BD HEVC 1920x1080 FLAC)[C8ABED9A].sc.ass",
@@ -15,7 +25,17 @@
     },
     {
       "path": "[AI-Raws] 鬼滅の刃 柱稽古編 #2 (BD HEVC 1920x1080 FLAC)[349823AF].mkv",
-      "size": 962749834
+      "size": 962749834,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1422.05,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[AI-Raws] 鬼滅の刃 柱稽古編 #2 (BD HEVC 1920x1080 FLAC)[349823AF].sc.ass",
@@ -27,7 +47,17 @@
     },
     {
       "path": "[AI-Raws] 鬼滅の刃 柱稽古編 #3 (BD HEVC 1920x1080 FLAC)[0DB0757B].mkv",
-      "size": 1312487238
+      "size": 1312487238,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1422.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[AI-Raws] 鬼滅の刃 柱稽古編 #3 (BD HEVC 1920x1080 FLAC)[0DB0757B].sc.ass",
@@ -39,7 +69,17 @@
     },
     {
       "path": "[AI-Raws] 鬼滅の刃 柱稽古編 #4 (BD HEVC 1920x1080 FLAC)[8DE7E57F].mkv",
-      "size": 1205114244
+      "size": 1205114244,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1421.965,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[AI-Raws] 鬼滅の刃 柱稽古編 #4 (BD HEVC 1920x1080 FLAC)[8DE7E57F].sc.ass",
@@ -51,7 +91,17 @@
     },
     {
       "path": "[AI-Raws] 鬼滅の刃 柱稽古編 #5 (BD HEVC 1920x1080 FLAC)[E338B361].mkv",
-      "size": 1585494452
+      "size": 1585494452,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1422.005,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[AI-Raws] 鬼滅の刃 柱稽古編 #5 (BD HEVC 1920x1080 FLAC)[E338B361].sc.ass",
@@ -63,7 +113,17 @@
     },
     {
       "path": "[AI-Raws] 鬼滅の刃 柱稽古編 #6 (BD HEVC 1920x1080 FLAC)[918382F0].mkv",
-      "size": 1425184579
+      "size": 1425184579,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1422.05,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[AI-Raws] 鬼滅の刃 柱稽古編 #6 (BD HEVC 1920x1080 FLAC)[918382F0].sc.ass",
@@ -75,7 +135,17 @@
     },
     {
       "path": "[AI-Raws] 鬼滅の刃 柱稽古編 #7 (BD HEVC 1920x1080 FLAC)[A22ABA73].mkv",
-      "size": 1999243150
+      "size": 1999243150,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1917.045,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[AI-Raws] 鬼滅の刃 柱稽古編 #7 (BD HEVC 1920x1080 FLAC)[A22ABA73].sc.ass",
@@ -87,7 +157,17 @@
     },
     {
       "path": "[AI-Raws] 鬼滅の刃 柱稽古編 #8 (BD HEVC 1920x1080 FLAC)[0BFF3E95].mkv",
-      "size": 2908623465
+      "size": 2908623465,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 2430.015,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[AI-Raws] 鬼滅の刃 柱稽古編 #8 (BD HEVC 1920x1080 FLAC)[0BFF3E95].sc.ass",
@@ -99,27 +179,87 @@
     },
     {
       "path": "[AI-Raws] 鬼滅の刃 柱稽古編 #8振り返りアバン (BD HEVC 1920x1080 FLAC)[12FB768A].mkv",
-      "size": 66472647
+      "size": 66472647,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 51.051,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[AI-Raws] 鬼滅の刃 柱稽古編 PV・CM集 (BD HEVC 1920x1080 FLAC)[DD7C0A67].mkv",
-      "size": 1363234253
+      "size": 1363234253,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1117.535,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[AI-Raws] 鬼滅の刃 柱稽古編 ノンクレジットED (BD HEVC 1920x1080 FLAC)[4231C1B5].mkv",
-      "size": 175730387
+      "size": 175730387,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[AI-Raws] 鬼滅の刃 柱稽古編 ノンクレジットED (BD HEVC 3840x2160 FLAC)[8808A759].mkv",
-      "size": 398343324
+      "size": 398343324,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "3840x2160",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[AI-Raws] 鬼滅の刃 柱稽古編 ノンクレジットOP (BD HEVC 1920x1080 FLAC)[A15074EE].mkv",
-      "size": 161386579
+      "size": 161386579,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[AI-Raws] 鬼滅の刃 柱稽古編 ノンクレジットOP (BD HEVC 3840x2160 FLAC)[2FA9B08E].mkv",
-      "size": 381026104
+      "size": 381026104,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "3840x2160",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[AI-Raws] 鬼滅の刃 柱稽古編 特典CD (flac).rar",
@@ -127,67 +267,258 @@
     },
     {
       "path": "Extras/[AI-Raws] 鬼滅の刃 柱稽古編 ワールドツアー上映 舞台挨拶ダイジエスト シンガポール (BD HEVC 1920x1080 FLAC)[7FF8CE45].mkv",
-      "size": 248124358
+      "size": 248124358,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 261.93,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Extras/[AI-Raws] 鬼滅の刃 柱稽古編 ワールドツアー上映 舞台挨拶ダイジエスト ジャカルタ (BD HEVC 1920x1080 FLAC)[03120514].mkv",
-      "size": 210055237
+      "size": 210055237,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 253.255,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Extras/[AI-Raws] 鬼滅の刃 柱稽古編 ワールドツアー上映 舞台挨拶ダイジエスト ソウル (BD HEVC 1920x1080 FLAC)[78D86FC8].mkv",
-      "size": 326270489
+      "size": 326270489,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 419.586,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Extras/[AI-Raws] 鬼滅の刃 柱稽古編 ワールドツアー上映 舞台挨拶ダイジエスト ニューヨーク (BD HEVC 1920x1080 FLAC)[E92B1A94].mkv",
-      "size": 343917580
+      "size": 343917580,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 421.255,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Extras/[AI-Raws] 鬼滅の刃 柱稽古編 ワールドツアー上映 舞台挨拶ダイジエスト バンコク (BD HEVC 1920x1080 FLAC)[F72BE16A].mkv",
-      "size": 314433973
+      "size": 314433973,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 265.265,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Extras/[AI-Raws] 鬼滅の刃 柱稽古編 ワールドツアー上映 舞台挨拶ダイジエスト パリ (BD HEVC 1920x1080 FLAC)[EDAD21EC].mkv",
-      "size": 428503232
+      "size": 428503232,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 526.86,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Extras/[AI-Raws] 鬼滅の刃 柱稽古編 ワールドツアー上映 舞台挨拶ダイジエスト ムンバイ (BD HEVC 1920x1080 FLAC)[33A09994].mkv",
-      "size": 280591945
+      "size": 280591945,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 310.31,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Extras/[AI-Raws] 鬼滅の刃 柱稽古編 ワールドツアー上映 舞台挨拶ダイジエスト メキシコシティ (BD HEVC 1920x1080 FLAC)[57AFF2F2].mkv",
-      "size": 341517162
+      "size": 341517162,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 368.535,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Extras/[AI-Raws] 鬼滅の刃 柱稽古編 ワールドツアー上映 舞台挨拶ダイジエスト ロンドン (BD HEVC 1920x1080 FLAC)[819B4203].mkv",
-      "size": 220861902
+      "size": 220861902,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 269.27,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Extras/[AI-Raws] 鬼滅の刃 柱稽古編 ワールドツアー上映 舞台挨拶ダイジエスト 台北 (BD HEVC 1920x1080 FLAC)[DA968A4F].mkv",
-      "size": 436647661
+      "size": 436647661,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 484.985,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Extras/[AI-Raws] 鬼滅の刃 柱稽古編 ワールドツアー上映 舞台挨拶ダイジエスト 東京 (BD HEVC 1920x1080 FLAC)[ABEC7E53].mkv",
-      "size": 1548072596
+      "size": 1548072596,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1533.532,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Extras/[AI-Raws] 鬼滅の刃 柱稽古編 ワールドツアー上映 舞台挨拶ダイジエスト 香港 (BD HEVC 1920x1080 FLAC)[51946236].mkv",
-      "size": 116851367
+      "size": 116851367,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 152.32,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Extras/[AI-Raws] 鬼滅の刃 柱稽古編 鬼滅演録 #1 (BD HEVC 1920x1080 FLAC)[4878DD45].mkv",
-      "size": 863215858
+      "size": 863215858,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1832.831,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Extras/[AI-Raws] 鬼滅の刃 柱稽古編 鬼滅演録 #2 (BD HEVC 1920x1080 FLAC)[F8624F7B].mkv",
-      "size": 928664219
+      "size": 928664219,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 2122.12,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Extras/[AI-Raws] 鬼滅の刃 柱稽古編 鬼滅演録 #3 (BD HEVC 1920x1080 FLAC)[865CA02D].mkv",
-      "size": 652951936
+      "size": 652951936,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1664.665,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Extras/[AI-Raws] 鬼滅の刃 柱稽古編 鬼滅演録 #4 (BD HEVC 1920x1080 FLAC)[6F897811].mkv",
-      "size": 703780277
+      "size": 703780277,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1576.575,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     }
-  ]
+  ],
+  "local_container_fact_summary": {
+    "container_fact_count": 30,
+    "probe_status_counts": {
+      "available": 30
+    },
+    "duration_seconds_range": [
+      51.051,
+      2936.935
+    ],
+    "duration_seconds_samples": [
+      2936.935,
+      1422.05,
+      1422.09,
+      1421.965,
+      1422.005,
+      1422.05
+    ]
+  },
+  "local_container_fact_source": {
+    "kind": "real_local_media_duration_backfill",
+    "media_root": "H:\\Anime",
+    "probe_media": true,
+    "container_probe": "ffprobe",
+    "embedded_in": "files[].container_facts",
+    "matched_file_count": 47,
+    "matched_video_count": 30,
+    "missing_actual_video_count": 0,
+    "match_stats": {
+      "matched_by_root_path": 47
+    }
+  }
 }

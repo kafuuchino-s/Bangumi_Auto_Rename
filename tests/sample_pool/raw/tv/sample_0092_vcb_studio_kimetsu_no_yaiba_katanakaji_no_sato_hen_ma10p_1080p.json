@@ -3,7 +3,17 @@
   "files": [
     {
       "path": "[VCB-Studio] Kimetsu no Yaiba [45][Ma10p_1080p][x265_flac].mkv",
-      "size": 2558619193
+      "size": 2558619193,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 2967.175,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Kimetsu no Yaiba [45][Ma10p_1080p][x265_flac].sc.ass",
@@ -15,7 +25,17 @@
     },
     {
       "path": "[VCB-Studio] Kimetsu no Yaiba [46][Ma10p_1080p][x265_flac].mkv",
-      "size": 1051904583
+      "size": 1051904583,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1437.105,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Kimetsu no Yaiba [46][Ma10p_1080p][x265_flac].sc.ass",
@@ -27,7 +47,17 @@
     },
     {
       "path": "[VCB-Studio] Kimetsu no Yaiba [47][Ma10p_1080p][x265_flac].mkv",
-      "size": 1235956918
+      "size": 1235956918,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1437.065,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Kimetsu no Yaiba [47][Ma10p_1080p][x265_flac].sc.ass",
@@ -39,7 +69,17 @@
     },
     {
       "path": "[VCB-Studio] Kimetsu no Yaiba [48][Ma10p_1080p][x265_flac].mkv",
-      "size": 1468434810
+      "size": 1468434810,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1437.065,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Kimetsu no Yaiba [48][Ma10p_1080p][x265_flac].sc.ass",
@@ -51,7 +91,17 @@
     },
     {
       "path": "[VCB-Studio] Kimetsu no Yaiba [49][Ma10p_1080p][x265_flac].mkv",
-      "size": 1386789091
+      "size": 1386789091,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1437.065,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Kimetsu no Yaiba [49][Ma10p_1080p][x265_flac].sc.ass",
@@ -63,7 +113,17 @@
     },
     {
       "path": "[VCB-Studio] Kimetsu no Yaiba [50][Ma10p_1080p][x265_flac].mkv",
-      "size": 1520806719
+      "size": 1520806719,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1422.05,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Kimetsu no Yaiba [50][Ma10p_1080p][x265_flac].sc.ass",
@@ -75,7 +135,17 @@
     },
     {
       "path": "[VCB-Studio] Kimetsu no Yaiba [51][Ma10p_1080p][x265_flac].mkv",
-      "size": 1449550031
+      "size": 1449550031,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1437.02,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Kimetsu no Yaiba [51][Ma10p_1080p][x265_flac].sc.ass",
@@ -87,7 +157,17 @@
     },
     {
       "path": "[VCB-Studio] Kimetsu no Yaiba [52][Ma10p_1080p][x265_flac].mkv",
-      "size": 1239127068
+      "size": 1239127068,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1452.08,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Kimetsu no Yaiba [52][Ma10p_1080p][x265_flac].sc.ass",
@@ -99,7 +179,17 @@
     },
     {
       "path": "[VCB-Studio] Kimetsu no Yaiba [53][Ma10p_1080p][x265_flac].mkv",
-      "size": 1338540846
+      "size": 1338540846,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1422.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Kimetsu no Yaiba [53][Ma10p_1080p][x265_flac].sc.ass",
@@ -111,7 +201,17 @@
     },
     {
       "path": "[VCB-Studio] Kimetsu no Yaiba [54][Ma10p_1080p][x265_flac].mkv",
-      "size": 1624273054
+      "size": 1624273054,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1437.105,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Kimetsu no Yaiba [54][Ma10p_1080p][x265_flac].sc.ass",
@@ -123,7 +223,17 @@
     },
     {
       "path": "[VCB-Studio] Kimetsu no Yaiba [55][Ma10p_1080p][x265_flac].mkv",
-      "size": 4066959862
+      "size": 4066959862,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 3120.955,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Kimetsu no Yaiba [55][Ma10p_1080p][x265_flac].sc.ass",
@@ -851,115 +961,426 @@
     },
     {
       "path": "SPs/[VCB-Studio] Kimetsu no Yaiba Katanakaji no Sato Hen [EP11 Notice Avant][Ma10p_1080p][x265_flac].mkv",
-      "size": 55313353
+      "size": 55313353,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 27.027,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Kimetsu no Yaiba Katanakaji no Sato Hen [Game Anime][Ma10p_1080p][x265_flac].mkv",
-      "size": 394802675
+      "size": 394802675,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 328.287,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Kimetsu no Yaiba Katanakaji no Sato Hen [IV01][Ma10p_1080p][x265_aac].mkv",
-      "size": 879837269
+      "size": 879837269,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 847.85,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Kimetsu no Yaiba Katanakaji no Sato Hen [IV02][Ma10p_1080p][x265_aac].mkv",
-      "size": 1284340751
+      "size": 1284340751,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1180.181,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Kimetsu no Yaiba Katanakaji no Sato Hen [IV03][Ma10p_1080p][x265_aac].mkv",
-      "size": 931033686
+      "size": 931033686,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1083.093,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Kimetsu no Yaiba Katanakaji no Sato Hen [IV04][Ma10p_1080p][x265_aac].mkv",
-      "size": 219516325
+      "size": 219516325,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 468.373,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Kimetsu no Yaiba Katanakaji no Sato Hen [IV05][Ma10p_1080p][x265_aac].mkv",
-      "size": 266288620
+      "size": 266288620,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 504.405,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Kimetsu no Yaiba Katanakaji no Sato Hen [IV06][Ma10p_1080p][x265_aac].mkv",
-      "size": 337993803
+      "size": 337993803,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 300.97,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Kimetsu no Yaiba Katanakaji no Sato Hen [IV07][Ma10p_1080p][x265_aac].mkv",
-      "size": 129567812
+      "size": 129567812,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 263.189,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Kimetsu no Yaiba Katanakaji no Sato Hen [IV08][Ma10p_1080p][x265_aac].mkv",
-      "size": 214971932
+      "size": 214971932,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 486.869,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Kimetsu no Yaiba Katanakaji no Sato Hen [Kimetsu Enroku 01][Ma10p_1080p][x265_aac].mkv",
-      "size": 409711922
+      "size": 409711922,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1843.842,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Kimetsu no Yaiba Katanakaji no Sato Hen [Kimetsu Enroku 02][Ma10p_1080p][x265_aac].mkv",
-      "size": 397277811
+      "size": 397277811,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1798.805,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Kimetsu no Yaiba Katanakaji no Sato Hen [Kimetsu Enroku 03][Ma10p_1080p][x265_aac].mkv",
-      "size": 600632239
+      "size": 600632239,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1728.727,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Kimetsu no Yaiba Katanakaji no Sato Hen [Kimetsu Enroku 04][Ma10p_1080p][x265_aac].mkv",
-      "size": 374936522
+      "size": 374936522,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1698.709,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Kimetsu no Yaiba Katanakaji no Sato Hen [Kimetsu Enroku 05][Ma10p_1080p][x265_aac].mkv",
-      "size": 369514866
+      "size": 369514866,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1754.773,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Kimetsu no Yaiba Katanakaji no Sato Hen [Kimetsu Enroku 06][Ma10p_1080p][x265_aac].mkv",
-      "size": 470947469
+      "size": 470947469,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1950.954,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Kimetsu no Yaiba Katanakaji no Sato Hen [Menu01][Ma10p_1080p][x265_flac].mkv",
-      "size": 65784462
+      "size": 65784462,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 39.04,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Kimetsu no Yaiba Katanakaji no Sato Hen [Menu02][Ma10p_1080p][x265_flac].mkv",
-      "size": 59016111
+      "size": 59016111,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 39.04,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Kimetsu no Yaiba Katanakaji no Sato Hen [Menu03][Ma10p_1080p][x265_flac].mkv",
-      "size": 66905112
+      "size": 66905112,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 39.04,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Kimetsu no Yaiba Katanakaji no Sato Hen [Menu04][Ma10p_1080p][x265_flac].mkv",
-      "size": 61072974
+      "size": 61072974,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 39.04,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Kimetsu no Yaiba Katanakaji no Sato Hen [Menu05][Ma10p_1080p][x265_flac].mkv",
-      "size": 67490843
+      "size": 67490843,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 39.04,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Kimetsu no Yaiba Katanakaji no Sato Hen [Menu06][Ma10p_1080p][x265_flac].mkv",
-      "size": 66468933
+      "size": 66468933,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 39.04,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Kimetsu no Yaiba Katanakaji no Sato Hen [MenuITA01][Ma10p_1080p][x265_flac].mkv",
-      "size": 26026557
+      "size": 26026557,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 89.26,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Kimetsu no Yaiba Katanakaji no Sato Hen [MenuITA02][Ma10p_1080p][x265_flac].mkv",
-      "size": 25854387
+      "size": 25854387,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 89.26,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Kimetsu no Yaiba Katanakaji no Sato Hen [MenuITA03][Ma10p_1080p][x265_flac].mkv",
-      "size": 27390749
+      "size": 27390749,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 89.26,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Kimetsu no Yaiba Katanakaji no Sato Hen [NCED][Ma10p_1080p][x265_flac].mkv",
-      "size": 51018250
+      "size": 51018250,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.053,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Kimetsu no Yaiba Katanakaji no Sato Hen [NCOP][Ma10p_1080p][x265_flac].mkv",
-      "size": 142689311
+      "size": 142689311,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.968,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Kimetsu no Yaiba Katanakaji no Sato Hen [PV & CM Collection][Ma10p_1080p][x265_flac].mkv",
-      "size": 1080114856
+      "size": 1080114856,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 576.868,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     }
-  ]
+  ],
+  "local_container_fact_summary": {
+    "container_fact_count": 39,
+    "probe_status_counts": {
+      "available": 39
+    },
+    "duration_seconds_range": [
+      27.027,
+      3120.955
+    ],
+    "duration_seconds_samples": [
+      2967.175,
+      1437.105,
+      1437.065,
+      1437.065,
+      1437.065,
+      1422.05
+    ]
+  },
+  "local_container_fact_source": {
+    "kind": "real_local_media_duration_backfill",
+    "media_root": "H:\\Anime",
+    "probe_media": true,
+    "container_probe": "ffprobe",
+    "embedded_in": "files[].container_facts",
+    "matched_file_count": 240,
+    "matched_video_count": 39,
+    "missing_actual_video_count": 0,
+    "match_stats": {
+      "matched_by_root_path": 240
+    }
+  }
 }

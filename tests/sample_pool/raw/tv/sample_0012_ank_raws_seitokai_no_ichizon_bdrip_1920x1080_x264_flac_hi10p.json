@@ -3,123 +3,423 @@
   "files": [
     {
       "path": "[ANK-Raws] Seitokai no Ichizon (Creditless ED1) (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
-      "size": 116044094
+      "size": 116044094,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 98.098,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] Seitokai no Ichizon (Creditless ED10) (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
-      "size": 114912379
+      "size": 114912379,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 97.097,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] Seitokai no Ichizon (Creditless ED11) (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
-      "size": 115391866
+      "size": 115391866,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 97.097,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] Seitokai no Ichizon (Creditless ED12) (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
-      "size": 115345477
+      "size": 115345477,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 97.097,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] Seitokai no Ichizon (Creditless ED2) (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
-      "size": 116081653
+      "size": 116081653,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 97.097,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] Seitokai no Ichizon (Creditless ED3) (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
-      "size": 114808995
+      "size": 114808995,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 97.097,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] Seitokai no Ichizon (Creditless ED4) (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
-      "size": 114892597
+      "size": 114892597,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 97.097,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] Seitokai no Ichizon (Creditless ED5) (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
-      "size": 115209120
+      "size": 115209120,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 97.097,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] Seitokai no Ichizon (Creditless ED6) (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
-      "size": 115972574
+      "size": 115972574,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 97.097,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] Seitokai no Ichizon (Creditless ED7) (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
-      "size": 114621346
+      "size": 114621346,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 97.097,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] Seitokai no Ichizon (Creditless ED8) (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
-      "size": 116247324
+      "size": 116247324,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 97.097,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] Seitokai no Ichizon (Creditless ED9) (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
-      "size": 115681356
+      "size": 115681356,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 97.097,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] Seitokai no Ichizon (Creditless OP) (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
-      "size": 153344741
+      "size": 153344741,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 98.1,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] Seitokai no Ichizon - 01 (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
-      "size": 1174941066
+      "size": 1174941066,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1465.965,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] Seitokai no Ichizon - 02 (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
-      "size": 1236542118
+      "size": 1236542118,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1465.965,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] Seitokai no Ichizon - 03 (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
-      "size": 1309864934
+      "size": 1309864934,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1466.007,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] Seitokai no Ichizon - 04 (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
-      "size": 1229525525
+      "size": 1229525525,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1466.048,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] Seitokai no Ichizon - 05 (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
-      "size": 1104473775
+      "size": 1104473775,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1466.007,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] Seitokai no Ichizon - 06 (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
-      "size": 1245490664
+      "size": 1245490664,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1466.007,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] Seitokai no Ichizon - 07 (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
-      "size": 1237828868
+      "size": 1237828868,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1466.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] Seitokai no Ichizon - 08 (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
-      "size": 1176499043
+      "size": 1176499043,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1466.007,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] Seitokai no Ichizon - 09 (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
-      "size": 1073190301
+      "size": 1073190301,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1466.007,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] Seitokai no Ichizon - 10 (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
-      "size": 1183563361
+      "size": 1183563361,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1466.007,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] Seitokai no Ichizon - 11 (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
-      "size": 1224005331
+      "size": 1224005331,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1466.007,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] Seitokai no Ichizon - 12 (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
-      "size": 1165049065
+      "size": 1165049065,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1450.992,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] Seitokai no Ichizon - CM (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
-      "size": 49724885
+      "size": 49724885,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 72.075,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] Seitokai no Ichizon - Info (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
-      "size": 19753489
+      "size": 19753489,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 28.03,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] Seitokai no Ichizon - PV (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
-      "size": 379987733
+      "size": 379987733,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 359.36,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Menu 01.mkv",
-      "size": 3521243
+      "size": 3521243,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 4.004,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 0,
+        "subtitle_stream_count": 0,
+        "resolution": "960x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Menu 02.mkv",
-      "size": 3556300
+      "size": 3556300,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 4.004,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 0,
+        "subtitle_stream_count": 0,
+        "resolution": "960x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Scan/IMG_0018.jpg",
@@ -165,5 +465,36 @@
       "path": "特典CD/Image.cue",
       "size": 1326
     }
-  ]
+  ],
+  "local_container_fact_summary": {
+    "container_fact_count": 30,
+    "probe_status_counts": {
+      "available": 30
+    },
+    "duration_seconds_range": [
+      4.004,
+      1466.09
+    ],
+    "duration_seconds_samples": [
+      98.098,
+      97.097,
+      97.097,
+      97.097,
+      97.097,
+      97.097
+    ]
+  },
+  "local_container_fact_source": {
+    "kind": "real_local_media_duration_backfill",
+    "media_root": "H:\\Anime",
+    "probe_media": true,
+    "container_probe": "ffprobe",
+    "embedded_in": "files[].container_facts",
+    "matched_file_count": 41,
+    "matched_video_count": 30,
+    "missing_actual_video_count": 0,
+    "match_stats": {
+      "matched_by_root_path": 41
+    }
+  }
 }
