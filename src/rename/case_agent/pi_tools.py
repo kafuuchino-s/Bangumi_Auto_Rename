@@ -62,6 +62,8 @@ _TECH_NUMERIC_TOKENS = {
 }
 _REVIEW_LONG_EXCLUDED_SECONDS = 15 * 60
 _REVIEW_OBVIOUS_EXTRA_RE = re.compile(r'(?i)(?:^|[/\[\]\s_-])iv\d{1,3}(?:$|[/\[\]\s_-])')
+_REVIEW_SUPPLEMENTAL_DIR_RE = re.compile(r'(?i)^(?:SPs?|Specials?|Bonus|Extras?)$')
+_REVIEW_BRACKETED_BARE_IV_RE = re.compile(r'(?i)\[\s*IV\s*\]')
 _REVIEW_OBVIOUS_EXTRA_TERMS = [
     'after talk',
     'audio commentary',
@@ -260,7 +262,19 @@ def _looks_like_obvious_extra_for_review(source_path: str, reason: str) -> bool:
     text = f'{source_path} {reason}'.casefold()
     if _REVIEW_OBVIOUS_EXTRA_RE.search(text):
         return True
+    if _looks_like_supplemental_dir_bracketed_iv(source_path):
+        return True
     return any(term.casefold() in text for term in _REVIEW_OBVIOUS_EXTRA_TERMS)
+
+
+def _looks_like_supplemental_dir_bracketed_iv(source_path: str) -> bool:
+    path = _norm_path(source_path)
+    parts = [part for part in path.split('/') if part]
+    if len(parts) < 2:
+        return False
+    if not any(_REVIEW_SUPPLEMENTAL_DIR_RE.fullmatch(part) for part in parts[:-1]):
+        return False
+    return bool(_REVIEW_BRACKETED_BARE_IV_RE.search(parts[-1]))
 
 
 def _prefix_group_summary(cards: list[Any], *, limit: int = 8) -> list[dict[str, Any]]:
@@ -1013,6 +1027,11 @@ class PiCaseToolState:
         )
 
     def _parse_recipe_payload(self, organize_recipe: dict[str, Any] | None) -> tuple[OrganizeRecipeDraft | None, str]:
+        if isinstance(organize_recipe, str):
+            try:
+                organize_recipe = json.loads(organize_recipe)
+            except (json.JSONDecodeError, TypeError) as exc:
+                return None, f'invalid OrganizeRecipeDraft payload: not valid JSON string: {exc}'
         payload = dict(organize_recipe or {})
         if 'organize_recipe' in payload and isinstance(payload.get('organize_recipe'), dict):
             payload = dict(payload['organize_recipe'])
@@ -1022,6 +1041,11 @@ class PiCaseToolState:
             return None, f'invalid OrganizeRecipeDraft payload: {exc}'
 
     def _parse_recipe_params_payload(self, recipe_params: dict[str, Any] | None) -> tuple[OrganizeRecipeDraft | None, str]:
+        if isinstance(recipe_params, str):
+            try:
+                recipe_params = json.loads(recipe_params)
+            except (json.JSONDecodeError, TypeError) as exc:
+                return None, f'invalid OrganizeRecipeParams payload: not valid JSON string: {exc}'
         payload = dict(recipe_params or {})
         if 'recipe_params' in payload and isinstance(payload.get('recipe_params'), dict):
             payload = dict(payload['recipe_params'])
@@ -1061,16 +1085,29 @@ class PiCaseToolState:
         episode_type = _episode_type_from_params(rule, target)
         if episode_id > 0:
             episode_type = self._recipe_episode_type_for_episode_id(episode_id, subject_id=subject_id) or episode_type
+        filename_regex = (
+            _source_pattern_to_regex(source_pattern)
+            if source_pattern
+            else _string_or_default(_first_present(rule, select, keys=('filename_regex', 'regex')), '')
+        )
+        episode_range = _episode_range_from_params(rule, episode)
+        episode_offset = _episode_offset_from_params(rule, episode)
+        episode_number_field = _episode_number_field_from_params(rule, episode)
+        if source_pattern and not exact_paths and disposition in {'', 'map_to_bangumi'} and not episode_id:
+            episode_range, episode_offset = self._normalize_shifted_sequence_params(
+                filename_regex=filename_regex,
+                subject_id=subject_id,
+                episode_type=episode_type,
+                episode_range=episode_range,
+                episode_offset=episode_offset,
+                episode_number_field=episode_number_field,
+            )
         return {
             'name': _string_or_default(rule.get('name'), f'rule_{index}'),
             'source_unit': _source_unit_from_params(rule, index=index),
             'select': {
                 'path_glob': _string_or_default(_first_present(rule, select, keys=('path_glob', 'glob')), '**/*.mkv'),
-                'filename_regex': (
-                    _source_pattern_to_regex(source_pattern)
-                    if source_pattern
-                    else _string_or_default(_first_present(rule, select, keys=('filename_regex', 'regex')), '')
-                ),
+                'filename_regex': filename_regex,
                 'exact_paths': [self._canonicalize_exact_path(path) for path in exact_paths],
                 'exclude_regex': _string_or_default(_first_present(rule, select, keys=('exclude_regex', 'exclude')), ''),
             },
@@ -1084,13 +1121,91 @@ class PiCaseToolState:
             },
             'episode': {
                 'capture': _string_or_default(_first_present(rule, episode, keys=('episode_capture', 'capture')), 'ep'),
-                'offset': _episode_offset_from_params(rule, episode),
-                'range': _episode_range_from_params(rule, episode),
-                'number_field': _episode_number_field_from_params(rule, episode),
+                'offset': episode_offset,
+                'range': episode_range,
+                'number_field': episode_number_field,
             },
             'disposition': disposition or 'map_to_bangumi',
             'reason': _string_or_default(rule.get('reason'), ''),
         }
+
+    def _normalize_shifted_sequence_params(
+        self,
+        *,
+        filename_regex: str,
+        subject_id: int,
+        episode_type: str,
+        episode_range: str,
+        episode_offset: str,
+        episode_number_field: str,
+    ) -> tuple[str, str]:
+        offset_delta = _simple_episode_offset_delta(episode_offset)
+        if offset_delta is None or offset_delta == 0:
+            return episode_range, episode_offset
+        target_numbers = _episode_range_numbers(episode_range)
+        if not target_numbers:
+            return episode_range, episode_offset
+        raw_numbers = self._matching_source_pattern_episode_numbers(filename_regex)
+        if not raw_numbers or not _is_contiguous_numbers(raw_numbers):
+            return episode_range, episode_offset
+        if set(raw_numbers) & set(target_numbers):
+            return episode_range, episode_offset
+        inverted_target_numbers = [number - offset_delta for number in raw_numbers]
+        if sorted(inverted_target_numbers) != sorted(target_numbers):
+            return episode_range, episode_offset
+        if not self._has_exposed_target_numbers(
+            subject_id=subject_id,
+            numbers=target_numbers,
+            episode_type=episode_type,
+            episode_number_field=episode_number_field,
+        ):
+            return episode_range, episode_offset
+        return _numbers_to_episode_range(raw_numbers), _numeric_offset_to_expr(-offset_delta)
+
+    def _matching_source_pattern_episode_numbers(self, filename_regex: str) -> list[int]:
+        if not filename_regex:
+            return []
+        try:
+            regex = re.compile(str(filename_regex or '').replace('(?<', '(?P<'), re.IGNORECASE)
+        except re.error:
+            return []
+        numbers: list[int] = []
+        for path in self._visible_main_paths():
+            match = regex.search(path.rsplit('/', 1)[-1]) or regex.search(path)
+            if match is None:
+                continue
+            raw_value = match.groupdict().get('ep') if 'ep' in match.groupdict() else (match.group(1) if match.groups() else None)
+            try:
+                numbers.append(int(str(raw_value).lstrip('0') or '0'))
+            except (TypeError, ValueError):
+                return []
+        return sorted(set(numbers))
+
+    def _has_exposed_target_numbers(
+        self,
+        *,
+        subject_id: int,
+        numbers: list[int],
+        episode_type: str,
+        episode_number_field: str,
+    ) -> bool:
+        if subject_id <= 0 or not numbers:
+            return False
+        wanted = set(numbers)
+        visible: set[int] = set()
+        for card in self.workspace.bangumi_items:
+            if self._subject_id_for_item(card) != subject_id:
+                continue
+            if not _episode_type_matches_recipe(card, episode_type):
+                continue
+            value = getattr(card, 'ep', 0) if str(episode_number_field or 'sort') == 'ep' else getattr(card, 'sort', 0)
+            try:
+                number = int(value or 0)
+            except (TypeError, ValueError):
+                continue
+            if number > 0:
+                visible.add(number)
+        return wanted.issubset(visible)
 
     def _recipe_episode_type_for_episode_id(self, episode_id: int, *, subject_id: int = 0) -> str:
         episode_id = int(episode_id or 0)
@@ -1863,6 +1978,69 @@ def _numeric_offset_to_expr(value: int) -> str:
     if value > 0:
         return f'EP+{value}'
     return f'EP{value}'
+
+
+def _simple_episode_offset_delta(expr: str) -> int | None:
+    text = str(expr or '').replace(' ', '').upper()
+    if text == 'EP':
+        return 0
+    match = re.fullmatch(r'EP([+-]\d+)', text)
+    if not match:
+        return None
+    return int(match.group(1))
+
+
+def _episode_range_numbers(spec: str) -> list[int]:
+    numbers: list[int] = []
+    for part in [item.strip() for item in str(spec or '').split(',') if item.strip()]:
+        if '-' in part:
+            left_text, right_text = part.split('-', 1)
+            try:
+                left = int(left_text)
+                right = int(right_text)
+            except ValueError:
+                return []
+            if right < left:
+                return []
+            numbers.extend(range(left, right + 1))
+        else:
+            try:
+                numbers.append(int(part))
+            except ValueError:
+                return []
+    return list(dict.fromkeys(numbers))
+
+
+def _is_contiguous_numbers(numbers: list[int]) -> bool:
+    if not numbers:
+        return False
+    ordered = sorted(set(numbers))
+    return ordered == list(range(ordered[0], ordered[-1] + 1))
+
+
+def _numbers_to_episode_range(numbers: list[int]) -> str:
+    ordered = sorted(set(numbers))
+    if not ordered:
+        return ''
+    if len(ordered) == 1:
+        return str(ordered[0])
+    return f'{ordered[0]}-{ordered[-1]}'
+
+
+def _episode_type_matches_recipe(card: BangumiItemCard, expected: str) -> bool:
+    expected = str(expected or 'unknown')
+    if expected in {'', 'unknown'}:
+        return True
+    item_type = str(getattr(card, 'type', '') or '').casefold()
+    item_kind = str(getattr(card, 'kind', '') or '').casefold()
+    item_item_kind = str(getattr(card, 'item_kind', '') or '').casefold()
+    if expected in {'main', 'regular'}:
+        return item_type in {'0', 'regular', 'main', ''} and item_item_kind in {'episode', ''}
+    if expected in {'special', 'sp', 'ova', 'oad'}:
+        return item_type not in {'0', 'regular', 'main'} or item_kind in {'special', expected} or item_item_kind == 'special'
+    if expected == 'movie':
+        return item_item_kind == 'movie' or item_kind == 'movie'
+    return True
 
 
 def _parse_error_repair_hints(error: str, visible_paths: list[str]) -> list[str]:

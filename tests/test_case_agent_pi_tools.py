@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -245,6 +246,43 @@ def test_pi_validate_organize_recipe_does_not_finalize(tmp_path):
     assert len(state.compiled_plan.assignments) == 2
 
 
+def test_pi_validate_organize_recipe_accepts_json_string_payload(tmp_path):
+    state = PiCaseToolState(workspace=_workspace(), bangumi_client=_BangumiClient(), run_dir=tmp_path / 'run', repo_root=tmp_path)
+
+    result = state.handle_tool('validate_organize_recipe', {'organize_recipe': json.dumps(_accepted_recipe())})
+
+    assert result['accepted'] is True
+    assert state.final_result is None
+    assert state.compiled_plan is not None
+    assert len(state.compiled_plan.assignments) == 2
+
+
+def test_pi_validate_organize_recipe_params_accepts_json_string_payload(tmp_path):
+    state = PiCaseToolState(workspace=_workspace(), bangumi_client=_BangumiClient(), run_dir=tmp_path / 'run', repo_root=tmp_path)
+    recipe_params = {
+        'summary': 'map two exact files',
+        'rules': [
+            {
+                'name': 'tv episodes',
+                'source_pattern': 'ep{ep}.mkv',
+                'subject_id': 100,
+                'media_kind': 'tv',
+                'episode_type': 'regular',
+                'episode_range': '1-2',
+                'disposition': 'map_to_bangumi',
+                'reason': 'semantic params identify a numbered TV run',
+            },
+        ],
+    }
+
+    result = state.handle_tool('validate_organize_recipe_params', {'recipe_params': json.dumps(recipe_params)})
+
+    assert result['accepted'] is True
+    assert state.final_result is None
+    assert state.compiled_plan is not None
+    assert len(state.compiled_plan.assignments) == 2
+
+
 def test_pi_validate_review_warns_for_long_supplemental_until_targeted_lookup(tmp_path):
     workspace = CaseEvidenceWorkspace.from_cards(
         header=CaseHeader(case_id='test'),
@@ -302,6 +340,121 @@ def test_pi_validate_review_warns_for_long_supplemental_until_targeted_lookup(tm
     assert any('find_bangumi_targets_for_local_file' in hint for hint in warning['repair_hints'])
     assert accepted['accepted'] is True
     assert accepted['review_warnings'] == []
+
+
+def test_pi_validate_review_allows_bracketed_iv_in_supplemental_dir(tmp_path):
+    workspace = CaseEvidenceWorkspace.from_cards(
+        header=CaseHeader(case_id='test'),
+        budget=CaseBudget(),
+        contract=CaseContract(main_file_refs=['LF1', 'LF2']),
+        local_files=[
+            LocalFileCard(
+                ref='LF1',
+                path='Movie.mkv',
+                is_main=True,
+                container_facts={'probe_status': 'available', 'duration_seconds': 7200.0},
+                fact_summary={'duration_seconds': 7200.0},
+            ),
+            LocalFileCard(
+                ref='LF2',
+                path='SPs/Movie [IV].mkv',
+                is_main=True,
+                container_facts={'probe_status': 'available', 'duration_seconds': 1378.61},
+                fact_summary={'duration_seconds': 1378.61},
+            ),
+        ],
+        bangumi_items=[
+            BangumiItemCard(
+                ref='episode:1001',
+                item_kind='episode',
+                episode_id=1001,
+                type='0',
+                sort=1,
+                ep=1,
+                subject_ref='subject:100',
+                title='Movie',
+            )
+        ],
+    )
+    state = PiCaseToolState(workspace=workspace, bangumi_client=_BangumiClient(), run_dir=tmp_path / 'run', repo_root=tmp_path)
+
+    result = state.handle_tool(
+        'validate_organize_recipe_params',
+        {
+            'recipe_params': {
+                'rules': [
+                    {'name': 'movie', 'exact_paths': ['Movie.mkv'], 'subject_id': 100, 'media_kind': 'tv', 'episode_id': 1001},
+                    {
+                        'name': 'interview',
+                        'exact_paths': ['SPs/Movie [IV].mkv'],
+                        'disposition': 'non_bangumi_or_supplemental',
+                        'reason': 'Covered as a supplemental file in the SPs directory.',
+                    },
+                ],
+            }
+        },
+    )
+
+    assert result['accepted'] is True
+    assert result['review_warnings'] == []
+
+
+def test_pi_validate_review_does_not_treat_bare_iv_title_as_obvious_extra(tmp_path):
+    workspace = CaseEvidenceWorkspace.from_cards(
+        header=CaseHeader(case_id='test'),
+        budget=CaseBudget(),
+        contract=CaseContract(main_file_refs=['LF1', 'LF2']),
+        local_files=[
+            LocalFileCard(
+                ref='LF1',
+                path='Overlord IV - 01.mkv',
+                is_main=True,
+                container_facts={'probe_status': 'available', 'duration_seconds': 1440.0},
+                fact_summary={'duration_seconds': 1440.0},
+            ),
+            LocalFileCard(
+                ref='LF2',
+                path='Overlord IV - 02.mkv',
+                is_main=True,
+                container_facts={'probe_status': 'available', 'duration_seconds': 1440.0},
+                fact_summary={'duration_seconds': 1440.0},
+            ),
+        ],
+        bangumi_items=[
+            BangumiItemCard(
+                ref='episode:1001',
+                item_kind='episode',
+                episode_id=1001,
+                type='0',
+                sort=1,
+                ep=1,
+                subject_ref='subject:100',
+                title='Episode 1',
+            )
+        ],
+    )
+    state = PiCaseToolState(workspace=workspace, bangumi_client=_BangumiClient(), run_dir=tmp_path / 'run', repo_root=tmp_path)
+
+    result = state.handle_tool(
+        'validate_organize_recipe_params',
+        {
+            'recipe_params': {
+                'rules': [
+                    {'name': 'episode', 'exact_paths': ['Overlord IV - 01.mkv'], 'subject_id': 100, 'media_kind': 'tv', 'episode_id': 1001},
+                    {
+                        'name': 'excluded',
+                        'exact_paths': ['Overlord IV - 02.mkv'],
+                        'disposition': 'non_bangumi_or_supplemental',
+                        'reason': 'No supported target.',
+                    },
+                ],
+            }
+        },
+    )
+
+    assert result['accepted'] is False
+    assert result['status'] == 'review'
+    assert result['review_warnings'][0]['source_path'] == 'Overlord IV - 02.mkv'
 
 
 def test_pi_validate_organize_recipe_hydrates_declared_subject_targets(tmp_path):
@@ -415,6 +568,53 @@ def test_pi_validate_organize_recipe_params_can_match_sequence_by_bangumi_ep(tmp
     assert result['organize_recipe']['rules'][0]['episode']['number_field'] == 'ep'
     assert [item['target']['sort'] for item in result['compiled_plan']['assignments']] == [14, 15]
     assert [item['target']['ep'] for item in result['compiled_plan']['assignments']] == [1, 2]
+
+
+def test_pi_validate_organize_recipe_params_normalizes_inverted_shifted_range(tmp_path):
+    files = [
+        _File(f'f{number}', f'Show [{number}].mkv', f'Show Later/Show [{number}].mkv')
+        for number in range(34, 45)
+    ]
+    local = SimpleNamespace(source_path='tests/sample', files=files)
+    workspace = _build_workspace(local_evidence=local, bangumi_contexts=[{
+        'context': {
+            'episode_structure': {
+                'subject_id': 328195,
+                'title': 'Later Subject',
+                'episodes': [
+                    {'episode_id': 32819500 + index, 'title': f'Episode {index}', 'sort': index, 'ep': index, 'kind': 'regular'}
+                    for index in range(1, 12)
+                ],
+            },
+        },
+    }])
+    state = PiCaseToolState(workspace=workspace, bangumi_client=_BangumiClient(), run_dir=tmp_path / 'run', repo_root=tmp_path)
+
+    result = state.handle_tool(
+        'validate_organize_recipe_params',
+        {
+            'recipe_params': {
+                'rules': [
+                    {
+                        'name': 'later subject',
+                        'source_pattern': 'Show Later/Show [{ep}].mkv',
+                        'subject_id': 328195,
+                        'media_kind': 'tv',
+                        'episode_type': 'regular',
+                        'episode_range': '1-11',
+                        'episode_offset': 33,
+                    }
+                ],
+            }
+        },
+    )
+
+    assert result['accepted'] is True
+    rule = result['organize_recipe']['rules'][0]
+    assert rule['episode']['range'] == '34-44'
+    assert rule['episode']['offset'] == 'EP-33'
+    assert result['accounting']['matched_path_count'] == 11
+    assert [item['target']['sort'] for item in result['compiled_plan']['assignments']] == list(range(1, 12))
 
 
 def test_pi_validate_organize_recipe_params_accepts_subject_level_movie_rule(tmp_path):
