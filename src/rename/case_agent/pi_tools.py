@@ -277,6 +277,28 @@ def _looks_like_supplemental_dir_bracketed_iv(source_path: str) -> bool:
     return bool(_REVIEW_BRACKETED_BARE_IV_RE.search(parts[-1]))
 
 
+def _review_sequence_key_and_number(source_path: str) -> tuple[tuple[str, str, str], int] | None:
+    path = _norm_path(source_path)
+    if not path:
+        return None
+    parent, basename = path.rsplit('/', 1) if '/' in path else ('', path)
+    stem = basename.rsplit('.', 1)[0] if '.' in basename else basename
+    for token in _locator_tokens(stem):
+        number_text = str(token.get('number') or '')
+        if not number_text or '.' in number_text:
+            continue
+        try:
+            number = int(number_text)
+        except ValueError:
+            continue
+        start = int(token.get('start') or 0)
+        end = int(token.get('end') or 0)
+        prefix = re.sub(r'\s+', ' ', stem[:start]).strip().casefold()
+        suffix = re.sub(r'\s+', ' ', stem[end:]).strip().casefold()
+        return (parent.casefold(), prefix, suffix), number
+    return None
+
+
 def _prefix_group_summary(cards: list[Any], *, limit: int = 8) -> list[dict[str, Any]]:
     buckets: dict[str, list[Any]] = {}
     for card in cards:
@@ -1362,11 +1384,14 @@ class PiCaseToolState:
         warnings: list[dict[str, Any]] = []
         local_by_path = self._local_card_by_path()
         targeted_paths = self._targeted_evidence_paths()
+        sequence_targeted_paths = self._sequence_targeted_review_paths(plan, targeted_paths)
         for assignment in plan.assignments:
             if assignment.disposition != 'non_bangumi_or_supplemental':
                 continue
             source_path = _norm_path(assignment.source_path)
             if not source_path or source_path in targeted_paths:
+                continue
+            if source_path in sequence_targeted_paths:
                 continue
             local = local_by_path.get(source_path)
             duration = _duration_seconds_for_card(local)
@@ -1383,6 +1408,30 @@ class PiCaseToolState:
                 'repair_hint': f'For {source_path}, call find_bangumi_targets_for_local_file with this exact source_path, or map it if Bangumi evidence appears. If the targeted lookup still exposes no supportable anime target, validate the same supplemental rule again.',
             })
         return warnings
+
+    def _sequence_targeted_review_paths(self, plan: CompiledOrganizePlan, targeted_paths: set[str]) -> set[str]:
+        by_rule_and_sequence: dict[tuple[str, tuple[str, str, str]], list[tuple[str, int]]] = {}
+        for assignment in plan.assignments:
+            if assignment.disposition != 'non_bangumi_or_supplemental':
+                continue
+            source_path = _norm_path(assignment.source_path)
+            sequence = _review_sequence_key_and_number(source_path)
+            if source_path and sequence is not None:
+                sequence_key, number = sequence
+                by_rule_and_sequence.setdefault((str(assignment.rule_name or ''), sequence_key), []).append((source_path, number))
+
+        covered: set[str] = set()
+        for members in by_rule_and_sequence.values():
+            if len(members) < 2:
+                continue
+            paths = [path for path, _number in members]
+            if not any(path in targeted_paths for path in paths):
+                continue
+            numbers = [number for _path, number in members]
+            if len(set(numbers)) != len(numbers) or not _is_contiguous_numbers(numbers):
+                continue
+            covered.update(paths)
+        return covered
 
     def _resolve_local_file_path(self, source_path: str) -> tuple[Any | None, str, str]:
         normalized_path = _norm_path(source_path)

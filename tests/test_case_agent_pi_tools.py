@@ -457,6 +457,71 @@ def test_pi_validate_review_does_not_treat_bare_iv_title_as_obvious_extra(tmp_pa
     assert result['review_warnings'][0]['source_path'] == 'Overlord IV - 02.mkv'
 
 
+def test_pi_validate_review_accepts_targeted_representative_for_supplemental_sequence(tmp_path):
+    workspace = CaseEvidenceWorkspace.from_cards(
+        header=CaseHeader(case_id='test'),
+        budget=CaseBudget(),
+        contract=CaseContract(main_file_refs=['LF1', 'LF2', 'LF3', 'LF4']),
+        local_files=[
+            LocalFileCard(
+                ref='LF1',
+                path='ep1.mkv',
+                is_main=True,
+                container_facts={'probe_status': 'available', 'duration_seconds': 1440.0},
+                fact_summary={'duration_seconds': 1440.0},
+            ),
+            *[
+                LocalFileCard(
+                    ref=f'LF{index + 1}',
+                    path=f'SPs/Side Story {index:02}.mkv',
+                    is_main=True,
+                    container_facts={'probe_status': 'available', 'duration_seconds': 1800.0},
+                    fact_summary={'duration_seconds': 1800.0},
+                )
+                for index in range(1, 4)
+            ],
+        ],
+        bangumi_items=[
+            BangumiItemCard(
+                ref='episode:1001',
+                item_kind='episode',
+                episode_id=1001,
+                type='0',
+                sort=1,
+                ep=1,
+                subject_ref='subject:100',
+                title='Episode 1',
+            )
+        ],
+    )
+    state = PiCaseToolState(workspace=workspace, bangumi_client=_BangumiClient(), run_dir=tmp_path / 'run', repo_root=tmp_path)
+    recipe_params = {
+        'rules': [
+            {'name': 'episode', 'exact_paths': ['ep1.mkv'], 'subject_id': 100, 'media_kind': 'tv', 'episode_id': 1001},
+            {
+                'name': 'side-story-sequence',
+                'source_pattern': 'SPs/Side Story {ep:02}.mkv',
+                'disposition': 'non_bangumi_or_supplemental',
+                'reason': 'Same named supplemental sequence with no supportable target.',
+            },
+        ]
+    }
+
+    warning = state.handle_tool('validate_organize_recipe_params', {'recipe_params': recipe_params})
+    state.handle_tool('find_bangumi_targets_for_local_file', {'source_path': 'SPs/Side Story 01.mkv', 'max_subjects': 1, 'max_episode_cards': 2})
+    accepted = state.handle_tool('validate_organize_recipe_params', {'recipe_params': recipe_params})
+
+    assert warning['accepted'] is False
+    assert warning['status'] == 'review'
+    assert [item['source_path'] for item in warning['review_warnings']] == [
+        'SPs/Side Story 01.mkv',
+        'SPs/Side Story 02.mkv',
+        'SPs/Side Story 03.mkv',
+    ]
+    assert accepted['accepted'] is True
+    assert accepted['review_warnings'] == []
+
+
 def test_pi_validate_organize_recipe_hydrates_declared_subject_targets(tmp_path):
     local = SimpleNamespace(source_path='tests/sample', files=[_File('f1', 'ep1.mkv', 'ep1.mkv'), _File('f2', 'ep2.mkv', 'ep2.mkv')])
     state = PiCaseToolState(
