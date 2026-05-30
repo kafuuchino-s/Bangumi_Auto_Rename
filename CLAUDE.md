@@ -117,6 +117,7 @@ Web UI / qBittorrent webhook
 
 - Case Agent 当前 backend 为 `pi`，通过 `src/rename/case_agent/pi_runner.py` 调度
 - Pi runner 启动 Node.js sidecar (`tools/pi_case_agent_runner.mjs`)，依赖 `@earendil-works/pi-coding-agent`（见 `package.json`）
+- 默认执行路径是 Node sidecar 直接调用 Pi SDK/core (`createAgentSession`)；`rename_local_bangumi_pi_command` 仅作为显式 runtime command override，不是默认 CLI 路径
 - Pi tools 在 `src/rename/case_agent/pi_tools.py` 中注册，提供 Bangumi evidence 查询等工具
 
 ### AI-first + strict

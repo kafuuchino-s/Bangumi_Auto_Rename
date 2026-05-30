@@ -33,7 +33,7 @@ Web UI / qBittorrent webhook
 
 核心模块：
 
-- `pi_runner.py` / `pi_tools.py`: Pi runtime bridge and bounded tool surface，负责自由调查、case-run artifacts、Bangumi evidence、最终 submit/fail_closed gate。
+- `pi_runner.py` / `pi_tools.py`: Pi runtime bridge and bounded tool surface，负责自由调查、case-run artifacts、Bangumi evidence、最终 submit/fail_closed gate。默认 runtime 是 `tools/pi_case_agent_runner.mjs` 通过 `@earendil-works/pi-coding-agent` SDK/core 创建 session；配置项 `rename_local_bangumi_pi_command` 只用于显式覆盖 runtime command。
 - `workspace.py`: 可见 local refs、Bangumi refs、query cards 和合同。
 - `evidence_broker.py` + `broker_*.py`: broker-driven Bangumi 取证。
 - `mapping_draft.py`: 工作草稿和 accounting。
