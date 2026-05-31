@@ -12,5 +12,8 @@ def test_local_bangumi_case_agent_defaults_are_present():
     assert CONFIG_DEFAULT['rename_local_bangumi_pi_timeout_seconds'] == 300
     assert CONFIG_DEFAULT['rename_local_bangumi_pi_command'] == ''
     assert CONFIG_DEFAULT['rename_local_bangumi_case_agent_snapshot_debug'] is False
+    assert CONFIG_DEFAULT['rename_bgm_to_tmdb_product_pipeline_enabled'] is False
+    assert CONFIG_DEFAULT['rename_bgm_to_tmdb_execute_enabled'] is False
+    assert CONFIG_DEFAULT['rename_bgm_to_tmdb_pi_command'] == ''
 
     assert 'rename_llm_planning_view_enabled' not in CONFIG_DEFAULT

@@ -38,6 +38,7 @@ class BgmToTmdbBridgeRunResult:
     errors: list[str] = field(default_factory=list)
     bridge_draft: BgmToTmdbMappingDraft | None = None
     recipe_params: BgmToTmdbRecipeParams | None = None
+    tmdb_legal_graph: TmdbLegalGraph | None = None
     verified_plan: VerifiedBgmToTmdbPlan | None = None
     final_verifier_result: CaseVerifierResult | None = None
     raw_runtime_result: dict[str, Any] = field(default_factory=dict)
@@ -150,6 +151,7 @@ def run_bgm_to_tmdb_bridge_agent(
         errors=errors,
         bridge_draft=bridge_draft or state.bridge_draft,
         recipe_params=recipe_params or state.recipe_params,
+        tmdb_legal_graph=state.legal_graph,
         verified_plan=verified_plan or state.verified_plan,
         final_verifier_result=final_verifier_result or state.bridge_verifier_result,
         raw_runtime_result=runtime,

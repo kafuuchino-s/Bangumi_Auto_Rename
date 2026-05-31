@@ -48,6 +48,9 @@ CONFIG_DEFAULT = {
     "rename_local_bangumi_pi_timeout_seconds": 300,
     "rename_local_bangumi_pi_command": "",
     "rename_local_bangumi_case_agent_snapshot_debug": False,
+    "rename_bgm_to_tmdb_product_pipeline_enabled": False,
+    "rename_bgm_to_tmdb_execute_enabled": False,
+    "rename_bgm_to_tmdb_pi_command": "",
     "log_level": "INFO",  # 日志等级
     "queue_max_workers": 1,  # 队列并行处理数
     # 字幕同步（ffsubsync）配置
@@ -125,6 +128,9 @@ CN_MAP = {
     "rename_local_bangumi_case_agent_max_issue_response_rounds": "🧭 Case Agent 最大修正轮数",
     "rename_local_bangumi_case_agent_max_requests_per_batch": "🧭 Case Agent 每批最大证据请求",
     "rename_local_bangumi_case_agent_snapshot_debug": "🧭 Case Agent snapshot 调试详情",
+    "rename_bgm_to_tmdb_product_pipeline_enabled": "🧭 启用 BGM→TMDB 产品链路",
+    "rename_bgm_to_tmdb_execute_enabled": "🧭 执行 BGM→TMDB 迁移",
+    "rename_bgm_to_tmdb_pi_command": "🧭 BGM→TMDB Pi 运行命令覆盖",
     "log_level": "📝 日志等级",
     "queue_max_workers": "🔢 队列并行数（建议1-5）",
     "subtitle_sync_enabled": "🎯 启用字幕自动对齐(ffsubsync)",
