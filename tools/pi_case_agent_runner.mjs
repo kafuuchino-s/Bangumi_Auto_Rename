@@ -559,11 +559,13 @@ async function waitForFinalResultWithNudge(session, promptDone) {
     finalWait = hardWait;
   }
   let repairAttempt = 0;
-  while (!finalWait.payload?.final_result && repairAttempt < 3) {
+  const maxRepairAttempts = 6;
+  while (!finalWait.payload?.final_result && repairAttempt < maxRepairAttempts) {
     const remainingMs = Math.max(0, totalBudgetMs - (Date.now() - startedAt));
     if (remainingMs < 20_000) break;
     const verifierLines = await readLatestVerifierNudgeLines();
     const progressLines = await readRunnerProgressNudgeLines();
+    const attemptNumber = repairAttempt + 1;
     const repairText = [
       "Final repair loop: no final result exists, but wall-clock budget remains.",
       ...progressLines,
@@ -572,6 +574,7 @@ async function waitForFinalResultWithNudge(session, promptDone) {
       "Act only on the latest verifier/review feedback above.",
       "If the latest result has review_warnings, resolve only those warnings: call the exact targeted evidence tool named in repair_hint, then validate the same params again.",
       "For large packages, keep broad supplemental groups compact with path_glob/filename_regex selectors; use exact_paths only for irregular exceptions or the long file named by a review warning.",
+      "For duplicate_target across adjacent numbered files with the same filename template, repair the affected exact rules into one source_pattern sequence/range or assign distinct exposed episode_id values that match the file numbers; do not fail_closed for that mechanical duplicate before validating the repaired params.",
       `If validate returns accepted=true with no review_warnings, submit the same params immediately. A submit result with \`status: "review"\` is not final; repair the warning and resubmit.`,
       "Do not manually convert params into a raw OrganizeRecipeDraft during review repair; raw tools are for debugging already-generated JSON only.",
       "Do not call fail_closed for uncertainty about a subset while plausible direct lookup/search candidates exist for that subset; validate the conservative candidate recipe first.",
@@ -584,7 +587,7 @@ async function waitForFinalResultWithNudge(session, promptDone) {
       .catch((error) => ({ ok: false, error: error?.stack || error?.message || String(error) }));
     const repairWait = await waitForFinalResultOrIdle(session, repairDone, { waitMs: Math.min(120_000, remainingMs) });
     nudgeAttempts.push({
-      phase: `final_repair_${repairAttempt + 1}`,
+      phase: `final_repair_${attemptNumber}`,
       wait_iterations: repairWait.waitIterations,
       wait_timeout_ms: repairWait.wait_timeout_ms,
       idle_drained: repairWait.idle_drained,
@@ -593,6 +596,20 @@ async function waitForFinalResultWithNudge(session, promptDone) {
       final_result_present: Boolean(repairWait.payload?.final_result),
     });
     finalWait = repairWait;
+    const remainingAfterRepairMs = Math.max(0, totalBudgetMs - (Date.now() - startedAt));
+    if (!finalWait.payload?.final_result && !finalWait.idle_drained && remainingAfterRepairMs >= 20_000) {
+      const settleWait = await waitForFinalResultOrIdle(session, repairDone, { waitMs: Math.min(120_000, remainingAfterRepairMs) });
+      nudgeAttempts.push({
+        phase: `final_repair_${attemptNumber}_settle`,
+        wait_iterations: settleWait.waitIterations,
+        wait_timeout_ms: settleWait.wait_timeout_ms,
+        idle_drained: settleWait.idle_drained,
+        prompt_settled: settleWait.prompt_settled,
+        prompt_error: settleWait.prompt_error,
+        final_result_present: Boolean(settleWait.payload?.final_result),
+      });
+      finalWait = settleWait;
+    }
     repairAttempt += 1;
   }
   return { ...finalWait, nudge_attempts: nudgeAttempts };

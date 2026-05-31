@@ -324,7 +324,10 @@ def test_node_runner_registers_goal_retry_recipe_tools_without_mapping_draft():
     assert 'If you already know the anime subject_id and episode rows, call validate_organize_recipe_params immediately' in text
     assert 'phase: "hard_finish"' in text
     assert 'Final repair loop: no final result exists, but wall-clock budget remains.' in text
-    assert 'phase: `final_repair_${repairAttempt + 1}`' in text
+    assert 'maxRepairAttempts = 6' in text
+    assert 'phase: `final_repair_${attemptNumber}`' in text
+    assert 'phase: `final_repair_${attemptNumber}_settle`' in text
+    assert 'For duplicate_target across adjacent numbered files' in text
     assert 'A submit result with \\`status: "review"\\` is not final' in text
     assert 'do not hand-write or translate a raw OrganizeRecipeDraft' in text
     assert 'do not switch to raw submit_organize_recipe' in text

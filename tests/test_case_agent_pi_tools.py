@@ -259,6 +259,7 @@ def test_pi_submit_organize_recipe_rejects_duplicate_target_and_can_retry(tmp_pa
     assert set(duplicate_issue['related_refs']) == {'ep1.mkv', 'ep2.mkv'}
     assert 'episode:1001' in duplicate_issue['message']
     assert any('Duplicate Bangumi target episode:1001' in hint for hint in rejected['repair_hints'])
+    assert any('adjacent numbered files' in hint for hint in rejected['repair_hints'])
     assert any('movie or one-file exact rules' in hint for hint in rejected['repair_hints'])
     assert accepted['accepted'] is True
     assert state.final_result['status'] == 'accepted'
