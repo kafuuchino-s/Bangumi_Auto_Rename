@@ -19,6 +19,7 @@ def test_tmdb_bridge_skill_teaches_recipe_first_contract_and_valid_params_shape(
     assert 'movie:<tmdb_id>' in text
     assert 'Names are semantic evidence' not in text
     assert 'TMDB names are semantic evidence, not output identity' in text
+    assert 'recap/summary/CM/bonus-title searches' in text
 
     example = re.search(r'```json\s*(\{.*?\})\s*```', text, re.DOTALL)
     assert example is not None

@@ -220,6 +220,7 @@ def test_node_sidecar_uses_pi_core_bridge_tools_and_read_only_native_tools() -> 
     assert 'validate_bgm_to_tmdb_bridge_recipe_params' in text
     assert 'submit_bgm_to_tmdb_bridge_recipe_params' in text
     assert 'Do not hand-write per-source TMDB node mappings' in text
+    assert 'do not keep searching recap/summary/CM/bonus title variants' in text
     assert 'streamingBehavior: "followUp"' in text
     assert 'submit_bgm_to_tmdb_bridge' in text
     assert 'tmdb-bridge-contract' in text

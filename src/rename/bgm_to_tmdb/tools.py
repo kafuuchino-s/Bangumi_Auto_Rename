@@ -46,6 +46,9 @@ class BgmToTmdbBridgeToolState:
     final_result: dict[str, Any] | None = None
     last_invalid_submission: dict[str, Any] | None = None
     submit_rejection_count: int = 0
+    search_call_count: int = 0
+    search_budget_limit: int = 16
+    search_budget_soft_limit: int = 8
 
     def __post_init__(self) -> None:
         self.run_dir.mkdir(parents=True, exist_ok=True)
@@ -118,6 +121,25 @@ class BgmToTmdbBridgeToolState:
         query = str(query or '').strip()
         if not query:
             return {'ok': False, 'accepted': False, 'error': 'query is required'}
+        self.search_call_count += 1
+        search_budget = self._search_budget_payload()
+        if self.search_call_count > self.search_budget_limit:
+            return {
+                'ok': False,
+                'accepted': False,
+                'status': 'search_budget_exceeded',
+                'error': 'search_tmdb_candidates budget exceeded; stop broad search and validate current recipe params or fail_closed with the exact missing TMDB legal nodes.',
+                'query': query,
+                'media_type': str(media_type or 'multi'),
+                'candidate_count': 0,
+                'candidates': [],
+                'search_budget': search_budget,
+                'repair_hints': [
+                    'Do not keep searching recap/summary/CM/bonus-title variants.',
+                    'If plausible TMDB refs are already hydrated, call validate_bgm_to_tmdb_bridge_recipe_params now.',
+                    'If validation cannot cover a BGM mapped assignment because TMDB has no legal node, call fail_closed with that missing node evidence.',
+                ],
+            }
         media_type = str(media_type or 'multi').strip().casefold()
         limit = max(1, min(20, int(max_candidates or 6)))
         year_value = int(year or 0) or None
@@ -137,13 +159,21 @@ class BgmToTmdbBridgeToolState:
             for candidate in raw_candidates[:limit]
             if isinstance(candidate, dict)
         ]
-        return {
+        result = {
             'ok': True,
             'query': query,
             'media_type': media_type,
             'candidate_count': len(candidates),
             'candidates': candidates,
+            'search_budget': search_budget,
         }
+        if self.search_call_count >= self.search_budget_soft_limit:
+            result['search_budget_warning'] = 'Search budget is getting high; stop broad search after this evidence pass and validate recipe params or fail_closed.'
+            result['repair_hints'] = [
+                'Prefer validate_bgm_to_tmdb_bridge_recipe_params over more title variant searches.',
+                'For recap/summary/CM/package extras, fail closed if TMDB does not expose a concrete legal node.',
+            ]
+        return result
 
     def tool_get_tmdb_legal_graph(self, tmdb_refs: list[str] | None = None) -> dict[str, Any]:
         refs = _dedupe_nonempty([str(ref or '').strip() for ref in (tmdb_refs or [])])
@@ -484,6 +514,8 @@ class BgmToTmdbBridgeToolState:
                 'final_tools': ['validate_bgm_to_tmdb_bridge_recipe_params', 'submit_bgm_to_tmdb_bridge_recipe_params', 'validate_bgm_to_tmdb_bridge', 'submit_bgm_to_tmdb_bridge', 'fail_closed'],
                 'tmdb_tools': ['search_tmdb_candidates', 'get_tmdb_legal_graph'],
                 'primary_workflow': 'Use recipe params for normal TV/movie/special/span/supplemental groups. Raw node mappings are debug fallback only.',
+                'search_policy': 'Search enough to identify plausible TMDB refs, then validate. Do not exhaust turns searching recap/summary/CM/bonus variants when TMDB exposes no legal node.',
+                'search_budget': self._search_budget_payload(),
                 'dry_run_only': True,
             },
         }
@@ -588,6 +620,14 @@ class BgmToTmdbBridgeToolState:
             summary['verifier_passed'] = verifier.get('passed')
             summary['verifier_issue_count'] = len(verifier.get('issues') or [])
         return summary
+
+    def _search_budget_payload(self) -> dict[str, int]:
+        return {
+            'used': int(self.search_call_count),
+            'soft_limit': int(self.search_budget_soft_limit),
+            'hard_limit': int(self.search_budget_limit),
+            'remaining': max(0, int(self.search_budget_limit) - int(self.search_call_count)),
+        }
 
     def _merge_legal_graph(self, candidates: list[TmdbCandidateCard]) -> None:
         merged = self.legal_graph.candidate_map()

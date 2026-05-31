@@ -22,6 +22,8 @@ TMDB names are semantic evidence, not output identity. Use `display_title`, `ori
 5. Repair only the targeted rule named by the verifier. Do not restart broad search unless the verifier asks for missing TMDB evidence.
 6. After validation returns `accepted:true`, call `submit_bgm_to_tmdb_bridge_recipe_params` with the same params.
 
+Search is for finding plausible TMDB refs, not for exhaustively proving every recap/summary/CM/bonus title. After a plausible series/movie candidate is found and hydrated, validate a recipe. If validation shows a mapped Bangumi special has no concrete TMDB legal node, fail closed with that exact missing-node evidence instead of searching more title variants.
+
 Raw `validate_bgm_to_tmdb_bridge` and `submit_bgm_to_tmdb_bridge` are debug/fallback tools only. Use them for exact edge cases or inspecting generated JSON, not as the normal path.
 
 ## Recipe Params Shape
@@ -77,5 +79,6 @@ Raw `validate_bgm_to_tmdb_bridge` and `submit_bgm_to_tmdb_bridge` are debug/fall
 - Do not map two source paths to the same compiled TMDB legal node unless a future contract explicitly adds multi-part support.
 - Do not map supplemental, non-Bangumi, needs-more-evidence, or fail-closed BGM assignments to TMDB nodes.
 - If validation returns `review`, add concrete semantic evidence or fail closed. Review is not accepted.
+- Do not spend the turn budget on repeated recap/summary/CM/bonus-title searches. Once TMDB legal graph lacks the needed node, fail closed rather than searching variants of the same missing item.
 
 If evidence is insufficient to choose between TMDB candidates, fail closed with the conflicting IDs/titles and the exact missing evidence instead of guessing.

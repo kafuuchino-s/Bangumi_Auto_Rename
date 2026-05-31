@@ -200,6 +200,7 @@ const recipeParamsQuickReference = [
   "Target refs are tv:<id> or movie:<id>. Python hydrates the TMDB legal graph and compiles these params into tv:<id>:SxxEyy or movie:<id> nodes.",
   "TMDB titles, original names, aliases, overviews, years, and URL slugs are semantic evidence. They are not target IDs.",
   "Raw bridge_draft node mappings are debug fallback only for exact edge cases.",
+  "Search policy: after plausible TMDB refs are found and hydrated, validate recipe params. Do not keep searching recap/summary/CM/bonus-title variants; if TMDB exposes no legal node, fail_closed with that missing-node evidence.",
 ].join("\n");
 
 const bridgeDraftQuickReference = [
@@ -302,6 +303,7 @@ async function waitForFinalResultWithNudge(session, promptDone) {
             "No final BGM-to-TMDB bridge result exists yet.",
             "Use tools now: get context if needed, search TMDB candidates, validate_bgm_to_tmdb_bridge_recipe_params, then submit_bgm_to_tmdb_bridge_recipe_params or fail_closed.",
             "Do not hand-write per-source TMDB node mappings for normal episode sequences.",
+            "If you already hydrated plausible TMDB refs, stop broad searching and validate or fail_closed; do not search recap/summary/CM variants repeatedly.",
             "Do not write files, edit code, or print JSON as prose.",
           ].join("\n"),
           { expandPromptTemplates: true, source: "api", streamingBehavior: "followUp" },
@@ -340,6 +342,7 @@ Use get_bgm_to_tmdb_bridge_context for the accepted BGM assignments and current 
 Use search_tmdb_candidates to find possible TMDB IDs. Recipe validation hydrates declared TMDB refs automatically; call get_tmdb_legal_graph only when you need detailed season cards before drafting.
 ${recipeParamsQuickReference}
 Validate early with validate_bgm_to_tmdb_bridge_recipe_params. After it is accepted, submit the same params with submit_bgm_to_tmdb_bridge_recipe_params and then call goal_complete.
+If plausible TMDB refs have been found and hydrated, do not keep searching recap/summary/CM/bonus title variants. Validate current recipe params; if a mapped BGM assignment has no concrete TMDB legal node, fail closed with that exact missing-node evidence.
 Use raw validate_bgm_to_tmdb_bridge/submit_bgm_to_tmdb_bridge only as debug fallback.
 If TMDB evidence is insufficient or contradictory, call fail_closed with concrete related refs, then goal_complete.
 Do not use native tools to edit, write, move, copy, link, rename, or inspect old run artifacts for answers.

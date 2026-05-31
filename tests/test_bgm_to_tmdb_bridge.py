@@ -826,6 +826,32 @@ def test_tool_state_searches_and_hydrates_tmdb_graph_with_fake_search(tmp_path) 
     assert state.legal_graph.legal_node_map()['movie:1234'].title == 'The Movie'
 
 
+def test_tool_state_search_budget_blocks_broad_search_loop(tmp_path) -> None:
+    bridge_input = compile_bgm_to_tmdb_input(
+        CompiledOrganizePlan(assignments=[_assignment('E01.mkv', sort=1, ep=1)]),
+        source_path='Show',
+    )
+    state = BgmToTmdbBridgeToolState(
+        bridge_input=bridge_input,
+        legal_graph=build_tmdb_legal_graph([]),
+        run_dir=tmp_path,
+        tmdb_search=_FakeTmdbSearch(),
+        search_budget_limit=2,
+        search_budget_soft_limit=1,
+    )
+
+    first = state.handle_tool('search_tmdb_candidates', {'query': 'Show'})
+    second = state.handle_tool('search_tmdb_candidates', {'query': 'Show recap'})
+    blocked = state.handle_tool('search_tmdb_candidates', {'query': 'Show recap summary'})
+
+    assert first['ok'] is True
+    assert first['search_budget_warning'].startswith('Search budget')
+    assert second['search_budget']['remaining'] == 0
+    assert blocked['ok'] is False
+    assert blocked['status'] == 'search_budget_exceeded'
+    assert 'validate_bgm_to_tmdb_bridge_recipe_params' in blocked['repair_hints'][1]
+
+
 def test_tool_state_fail_closed_is_final_result(tmp_path) -> None:
     bridge_input = compile_bgm_to_tmdb_input(
         CompiledOrganizePlan(assignments=[_assignment('E01.mkv', sort=1, ep=1)]),
