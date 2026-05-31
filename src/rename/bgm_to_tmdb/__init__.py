@@ -38,11 +38,23 @@ from .recipe import (
     compile_bgm_to_tmdb_recipe_params,
     declared_tmdb_refs,
 )
+from .rename_plan import (
+    BGM_TO_TMDB_RENAME_PLAN_STAGE,
+    TmdbRenameDestination,
+    TmdbRenamePlan,
+    TmdbRenamePlanItem,
+    TmdbRenamePlanRoots,
+    compile_verified_bgm_to_tmdb_rename_plan,
+    run_bgm_to_tmdb_rename_plan_dry_run,
+    verify_bgm_to_tmdb_rename_plan,
+    write_bgm_to_tmdb_rename_plan_artifacts,
+)
 from .tools import BgmToTmdbBridgeToolState
 from .verifier import verify_and_compile_bgm_to_tmdb_plan, verify_bgm_to_tmdb_draft
 
 __all__ = [
     'BGM_TO_TMDB_BRIDGE_RESULT_STAGE',
+    'BGM_TO_TMDB_RENAME_PLAN_STAGE',
     'BgmAssignmentRef',
     'BgmTargetRef',
     'BgmTargetSpanRef',
@@ -54,6 +66,10 @@ __all__ = [
     'BgmToTmdbRecipeRule',
     'BgmToTmdbTmdbTarget',
     'TmdbCandidateCard',
+    'TmdbRenameDestination',
+    'TmdbRenamePlan',
+    'TmdbRenamePlanItem',
+    'TmdbRenamePlanRoots',
     'TmdbLegalGraph',
     'TmdbLegalNode',
     'TmdbSeasonCard',
@@ -67,6 +83,7 @@ __all__ = [
     'build_tmdb_tv_candidate_card',
     'compile_bgm_to_tmdb_input',
     'compile_bgm_to_tmdb_recipe_params',
+    'compile_verified_bgm_to_tmdb_rename_plan',
     'compile_and_verify_bgm_to_tmdb_recipe_params',
     'declared_tmdb_refs',
     'extract_accepted_compiled_plan_payload',
@@ -77,7 +94,10 @@ __all__ = [
     'tmdb_ref',
     'tv_legal_node_id',
     'run_bgm_to_tmdb_bridge_dry_run',
+    'run_bgm_to_tmdb_rename_plan_dry_run',
     'run_bgm_to_tmdb_bridge_agent',
     'verify_and_compile_bgm_to_tmdb_plan',
     'verify_bgm_to_tmdb_draft',
+    'verify_bgm_to_tmdb_rename_plan',
+    'write_bgm_to_tmdb_rename_plan_artifacts',
 ]

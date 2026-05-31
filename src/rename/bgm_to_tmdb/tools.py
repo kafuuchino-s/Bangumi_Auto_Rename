@@ -275,6 +275,7 @@ class BgmToTmdbBridgeToolState:
             'final_action': 'submit_bgm_to_tmdb_bridge_recipe_params',
             'recipe_params': params.model_dump(mode='json'),
             'bridge_draft': compile_result.bridge_draft.model_dump(mode='json'),
+            'tmdb_legal_graph': self.legal_graph.model_dump(mode='json'),
             'verified_plan': verified_plan.model_dump(mode='json'),
             'final_verifier_result': final_verifier_result.model_dump(mode='json'),
             'review_warnings': compile_result.review_warnings,
@@ -579,6 +580,10 @@ class BgmToTmdbBridgeToolState:
             verifier_payload['rule_match_counts'] = rule_match_counts
         (artifacts_dir / 'bgm_to_tmdb_bridge_verifier_result.json').write_text(
             json.dumps(verifier_payload, ensure_ascii=False, indent=2, sort_keys=True),
+            encoding='utf-8',
+        )
+        (artifacts_dir / 'bgm_to_tmdb_legal_graph.json').write_text(
+            json.dumps(self.legal_graph.model_dump(mode='json'), ensure_ascii=False, indent=2, sort_keys=True),
             encoding='utf-8',
         )
         if verified_plan is not None:
