@@ -4,7 +4,6 @@ import json
 import os
 import secrets
 import shlex
-import shutil
 import subprocess
 import threading
 import time
@@ -95,17 +94,6 @@ def _safe_case_id(value: str) -> str:
     text = ''.join(ch if ch.isalnum() or ch in '-_.' else '-' for ch in str(value or 'case'))
     text = '-'.join(part for part in text.split('-') if part)
     return (text or 'case')[:80]
-
-
-def _resolve_pi_cli_command(configured: str = '') -> str:
-    configured = str(configured or '').strip()
-    if configured:
-        return configured
-    local_bin = REPO_ROOT / 'node_modules' / '.bin' / ('pi.cmd' if os.name == 'nt' else 'pi')
-    if local_bin.exists():
-        return str(local_bin)
-    found = shutil.which('pi')
-    return found or ''
 
 
 def _pi_api_from_config(value: str) -> str:
@@ -347,7 +335,7 @@ def run_pi_case_agent(
 ) -> PiCaseAgentRunResult:
     timeout_seconds = _config_int('rename_local_bangumi_pi_timeout_seconds', 300, minimum=1)
     configured_command = _config_str('rename_local_bangumi_pi_command', '')
-    pi_cli_command = _resolve_pi_cli_command(configured_command)
+    runtime_command_override = str(configured_command or '').strip()
     root = _case_root()
     root.mkdir(parents=True, exist_ok=True)
     case_id = _safe_case_id(str(getattr(workspace.header, 'case_id', '') or 'local-bangumi'))
@@ -360,7 +348,7 @@ def run_pi_case_agent(
         source_path=source_path,
     )
     runtime_model_config = _prepare_pi_runtime_model_config(run_dir)
-    case_input = state.case_input(pi_command=pi_cli_command, timeout_seconds=timeout_seconds)
+    case_input = state.case_input(pi_command=runtime_command_override, timeout_seconds=timeout_seconds)
     if runtime_model_config is not None:
         case_input.update({
             'pi_provider': runtime_model_config.provider,
@@ -467,7 +455,7 @@ def run_pi_case_agent(
         tool_call_counts=dict(trace_summary['tool_call_counts']),
         tool_sequence=list(trace_summary['tool_sequence']),
         submit_rejection_count=state.submit_rejection_count,
-        pi_command=pi_cli_command,
+        pi_command=runtime_command_override,
         pi_provider=runtime_model_config.provider if runtime_model_config is not None else '',
         pi_model=runtime_model_config.model if runtime_model_config is not None else '',
         pi_base_url=runtime_model_config.base_url if runtime_model_config is not None else '',

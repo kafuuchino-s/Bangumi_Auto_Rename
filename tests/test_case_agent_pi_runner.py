@@ -85,7 +85,27 @@ def test_pi_runner_fake_runtime_accepts_organize_recipe(tmp_path):
     assert 'max_turns' not in case_input
     assert case_input['runtime_policy']['turn_cap_enabled'] is False
     assert case_input['runtime_policy']['turn_count_is_audit_only'] is True
+    assert case_input['pi_command'] == 'fake-pi'
     assert case_input['scratch_paths']['organize_recipe'].endswith('artifacts\\organize_recipe.json') or case_input['scratch_paths']['organize_recipe'].endswith('artifacts/organize_recipe.json')
+
+
+def test_pi_runner_default_core_runtime_does_not_report_cli_command(tmp_path):
+    def fake_runtime(state):
+        case_input = json.loads((state.run_dir / 'case_input.json').read_text(encoding='utf-8'))
+        assert case_input['pi_command'] == ''
+        return {
+            'ok': True,
+            'returncode': 0,
+            'argv': ['node', 'tools/pi_case_agent_runner.mjs'],
+            'tool_result': state.handle_tool('submit_organize_recipe', {'organize_recipe': _recipe(), 'summary': 'done'}),
+        }
+
+    with cm.temporary_config({'rename_local_bangumi_pi_case_root': str(tmp_path), 'rename_local_bangumi_pi_command': ''}):
+        result = run_pi_case_agent(workspace=_workspace(), bangumi_client=object(), source_path='tests/sample', runtime_invoker=fake_runtime)
+
+    assert result.ok is True
+    assert result.pi_command == ''
+    assert result.runtime_command == ['node', 'tools/pi_case_agent_runner.mjs']
 
 
 def test_pi_runner_fake_runtime_goal_complete_without_final_is_invalid(tmp_path):

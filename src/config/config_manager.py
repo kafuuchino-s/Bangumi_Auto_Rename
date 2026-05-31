@@ -120,7 +120,7 @@ CN_MAP = {
     "rename_local_bangumi_pi_case_root": "🧭 Pi Case Agent 运行目录",
     "rename_local_bangumi_pi_max_turns": "🧭 Pi Case Agent 最大轮数（兼容保留，不生效）",
     "rename_local_bangumi_pi_timeout_seconds": "🧭 Pi Case Agent 超时秒数",
-    "rename_local_bangumi_pi_command": "🧭 Pi Case Agent 命令",
+    "rename_local_bangumi_pi_command": "🧭 Pi Case Agent 运行命令覆盖（默认 core）",
     "rename_local_bangumi_case_agent_max_evidence_batches": "🧭 Case Agent 最大证据批次",
     "rename_local_bangumi_case_agent_max_issue_response_rounds": "🧭 Case Agent 最大修正轮数",
     "rename_local_bangumi_case_agent_max_requests_per_batch": "🧭 Case Agent 每批最大证据请求",
