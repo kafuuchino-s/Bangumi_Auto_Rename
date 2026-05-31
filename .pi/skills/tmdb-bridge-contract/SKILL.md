@@ -40,7 +40,9 @@ Preferred evidence ladder: anchor search -> hydrated TMDB legal graph -> season/
 
 ## Episode Title Alignment
 
-When the series title, translated title, or slug is ambiguous, use episode titles as the next strongest evidence layer before choosing a TMDB ref or season. Read BGM `episode_title_cards_sample` from the subject card, then hydrate plausible TMDB refs and compare those BGM titles with TMDB legal-node episode titles in the candidate's seasons.
+When the series title, translated title, or slug is ambiguous, episode titles are usually the next strongest evidence layer before choosing a TMDB ref or season. Read BGM `episode_title_cards_sample` from the subject card, then compare those BGM titles with the TMDB legal-node episode titles shown in the hydrated candidate's seasons.
+
+The fixed layer tries to present one TMDB evidence view that aligns with the BGM assignment/source evidence, so Pi can keep recipe params language-agnostic. Compare the visible TMDB season/episode titles, order, and counts with the visible BGM cards. If a title view looks clearly off while the series anchor is otherwise strong, recipe validation or a targeted graph refresh can surface a better aligned view before declaring the BGM node absent.
 
 Use this pattern:
 

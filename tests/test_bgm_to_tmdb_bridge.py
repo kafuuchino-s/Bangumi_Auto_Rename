@@ -936,6 +936,35 @@ def test_tool_state_searches_and_hydrates_tmdb_graph_with_fake_search(tmp_path) 
     assert state.legal_graph.legal_node_map()['movie:1234'].title == 'The Movie'
 
 
+def test_tool_state_hydrates_one_bgm_aligned_tmdb_episode_title_view(tmp_path) -> None:
+    bridge_input = compile_bgm_to_tmdb_input(
+        CompiledOrganizePlan(assignments=[
+            _assignment(
+                'SPs/Kyoukai Senjou no Horizon - \u6975\u6771\u306a\u308b\u307b\u3069\u8b1b\u5ea7 [01].mkv',
+                episode_type='special',
+                sort=1,
+                ep=1,
+                title='\u6781\u4e1c\u539f\u6765\u5982\u6b64\u8bb2\u5ea7\u5176\u2460',
+            )
+        ]),
+        source_path='Kyoukai Senjou no Horizon',
+    )
+    state = BgmToTmdbBridgeToolState(
+        bridge_input=bridge_input,
+        legal_graph=build_tmdb_legal_graph([]),
+        run_dir=tmp_path,
+        tmdb_search=_LanguageAlignedFakeTmdbSearch(),
+    )
+
+    hydrated = state.handle_tool('get_tmdb_legal_graph', {'tmdb_refs': ['tv:57528']})
+
+    assert hydrated['ok'] is True
+    node = state.legal_graph.legal_node_map()['tv:57528:S00E05']
+    assert '\u6975\u6771' in node.title
+    assert '\u8b1b\u5ea7' in node.title
+    assert node.title != '\u8001\u5e08\u7684\u6559\u8bad 1'
+
+
 def test_tool_state_search_guidance_warns_without_blocking_broad_search(tmp_path) -> None:
     bridge_input = compile_bgm_to_tmdb_input(
         CompiledOrganizePlan(assignments=[_assignment('E01.mkv', sort=1, ep=1)]),
@@ -1050,6 +1079,7 @@ def _assignment(
     sort: int | None = 1,
     ep: int | None = 1,
     target_span: CompiledTargetSpan | None = None,
+    title: str | None = None,
 ) -> CompiledOrganizeAssignment:
     return CompiledOrganizeAssignment(
         source_path=source_path,
@@ -1061,7 +1091,7 @@ def _assignment(
             episode_type=episode_type,
             sort=sort,
             ep=ep,
-            title=f'Bangumi {ep or sort or 1}',
+            title=title or f'Bangumi {ep or sort or 1}',
         ),
         target_span=target_span or CompiledTargetSpan(),
         reason='accepted BGM mapping',
@@ -1159,3 +1189,46 @@ class _FakeTmdbSearch:
 
     def _tmdb_movie_translations(self, tmdb_id: int):
         return {}
+
+
+class _LanguageAlignedFakeTmdbSearch:
+    def get_tv_info_by_id(self, tmdb_id: int):
+        assert tmdb_id == 57528
+        return self._tmdb_tv_info(tmdb_id, language='zh-CN')
+
+    def _tmdb_tv_info(self, tmdb_id: int, *, language: str = 'zh-CN'):
+        assert tmdb_id == 57528
+        return {
+            'id': 57528,
+            'name': 'Kyoukai Senjou no Horizon',
+            'original_name': '\u5883\u754c\u7dda\u4e0a\u306e\u30db\u30e9\u30a4\u30be\u30f3',
+            'first_air_date': '2011-10-02',
+            'seasons': [
+                {'season_number': 0, 'name': 'Specials', 'episode_count': 1},
+            ],
+        }
+
+    def _tmdb_season_info(self, tmdb_id: int, season_number: int, *, language: str = 'zh-CN'):
+        assert tmdb_id == 57528
+        assert season_number == 0
+        names = {
+            'zh-CN': '\u8001\u5e08\u7684\u6559\u8bad 1',
+            'zh-TW': '\u300e\u5883\u754c\u7dda\u4e0a\u7684\u5730\u5e73\u7dda \u6975\u6771 \u539f\u4f86\u5982\u6b64\u8b1b\u5ea7\u300f\u5176\u2460',
+            'ja-JP': '\u300e\u5883\u754c\u7dda\u4e0a\u306e\u30db\u30e9\u30a4\u30be\u30f3 \u6975\u6771\u306a\u308b\u307b\u3069\u8b1b\u5ea7\u300f \u5176\u306e\u2460',
+            'en-US': "Sensei's Lesson 1",
+        }
+        return {
+            'season_number': 0,
+            'name': 'Specials',
+            'episode_count': 1,
+            'episodes': [
+                {
+                    'episode_number': 5,
+                    'name': names.get(language, names['zh-CN']),
+                    'episode_type': 'special',
+                }
+            ],
+        }
+
+    def enrich_tv_alias_metadata(self, tv_info):
+        return tv_info

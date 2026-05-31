@@ -202,7 +202,7 @@ const recipeParamsQuickReference = [
   "When a BGM-mapped episode/special is real in Bangumi but TMDB exposes no matching legal node, cover it with tmdb_absent_group. Do not fail the whole case for that node.",
   "TMDB titles, original names, aliases, overviews, years, and URL slugs are semantic evidence. They are not target IDs.",
   "For multi-season franchise packages, search one strong series/franchise anchor first and treat its hydrated legal graph as the strongest next evidence layer before deciding whether more title searches are useful.",
-  "If series title evidence is ambiguous, compare BGM episode_title_cards_sample with hydrated TMDB legal-node episode titles. Mention episode-title/order/count evidence in the rule reason.",
+  "If series title evidence is ambiguous, compare BGM episode_title_cards_sample with the visible hydrated TMDB legal-node episode titles. Python tries to present one BGM-aligned TMDB evidence view, so recipe params can stay language-agnostic.",
   "Raw bridge_draft node mappings are debug fallback only for exact edge cases.",
   "Search policy: after plausible TMDB refs are found and hydrated, validate recipe params. Do not keep searching season/OVA/recap/summary/CM/bonus-title variants when the hydrated graph already carries enough legal-node evidence.",
 ].join("\n");
@@ -308,7 +308,7 @@ async function waitForFinalResultWithNudge(session, promptDone) {
             "Use tools now: get context if needed, search TMDB candidates, validate_bgm_to_tmdb_bridge_recipe_params, then submit_bgm_to_tmdb_bridge_recipe_params or fail_closed.",
             "Do not hand-write per-source TMDB node mappings for normal episode sequences.",
             "For multi-season franchise packages, after one anchor search finds a plausible result, use its hydrated legal graph as the next evidence layer before deciding whether individual season or OVA/OAD searches are useful.",
-            "When titles are ambiguous, compare BGM episode_title_cards_sample against hydrated TMDB episode titles before choosing the season.",
+            "When titles are ambiguous, compare BGM episode_title_cards_sample against the visible hydrated TMDB episode titles before choosing the season.",
             "If you already hydrated plausible TMDB refs, stop broad searching and validate. Use tmdb_absent_group for BGM nodes that TMDB does not expose; do not search recap/summary/CM variants repeatedly.",
             "Do not write files, edit code, or print JSON as prose.",
           ].join("\n"),
@@ -348,7 +348,7 @@ Use get_bgm_to_tmdb_bridge_context for the accepted BGM assignments and current 
 Use search_tmdb_candidates to find possible TMDB IDs. Recipe validation hydrates declared TMDB refs automatically; call get_tmdb_legal_graph only when you need detailed season cards before drafting.
 ${recipeParamsQuickReference}
 For multi-season franchise packages, after one anchor search finds a plausible result, use its hydrated legal graph as the next evidence layer before deciding whether individual season/OVA/OAD/special searches are useful. Use the hydrated season cards, season 0 cards, aliases, and episode titles to decide whether more searches are necessary.
-When series title evidence is unclear, use BGM episode_title_cards_sample and hydrated TMDB legal-node episode titles as the decisive semantic cross-check for the season/range.
+When series title evidence is unclear, use BGM episode_title_cards_sample and the visible hydrated TMDB legal-node episode titles as the decisive semantic cross-check for the season/range. Python tries to present one BGM-aligned TMDB evidence view, so recipe params can stay language-agnostic.
 Validate early with validate_bgm_to_tmdb_bridge_recipe_params. After it is accepted, submit the same params with submit_bgm_to_tmdb_bridge_recipe_params and then call goal_complete.
 If plausible TMDB refs have been found and hydrated, do not keep searching recap/summary/CM/bonus title variants. Validate current recipe params; if a mapped BGM assignment has no concrete TMDB legal node after targeted season-0/episode-title checks, use tmdb_absent_group for that assignment and keep the rest accepted.
 Use raw validate_bgm_to_tmdb_bridge/submit_bgm_to_tmdb_bridge only as debug fallback.

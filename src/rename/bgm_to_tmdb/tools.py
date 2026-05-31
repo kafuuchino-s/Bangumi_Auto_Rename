@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import json
 import time
+import unicodedata
+from copy import deepcopy
 from dataclasses import asdict, dataclass, field, is_dataclass
 from pathlib import Path
 from typing import Any
@@ -316,12 +318,10 @@ class BgmToTmdbBridgeToolState:
                 errors.append(f'invalid tmdb_ref: {ref}')
                 continue
             if media_type == 'tv':
-                tv_info = self.tmdb_search.get_tv_info_by_id(tmdb_id)
+                tv_info = self._get_bgm_aligned_tv_info(tmdb_id)
                 if not tv_info:
                     errors.append(f'tv:{tmdb_id} details not found')
                     continue
-                tv_info = self.tmdb_search.fill_season_info(tv_info)
-                tv_info = self.tmdb_search.enrich_tv_alias_metadata(tv_info)
                 candidates.append(build_tmdb_tv_candidate_card(tv_info))
             else:
                 movie_info = self.tmdb_search.get_movie_info_by_id(tmdb_id)
@@ -345,6 +345,66 @@ class BgmToTmdbBridgeToolState:
             'candidate_count': len(candidates),
             'tmdb_legal_graph': self.legal_graph.model_dump(mode='json'),
         }
+
+    def _get_bgm_aligned_tv_info(self, tmdb_id: int) -> dict[str, Any] | None:
+        best_info: dict[str, Any] | None = None
+        best_score = (-1, -1)
+        for language in _bgm_aligned_tmdb_language_order(self.bridge_input):
+            tv_info = self._fetch_tv_info_in_language(tmdb_id, language)
+            if not tv_info:
+                continue
+            score = _score_tmdb_tv_alignment(tv_info, self.bridge_input)
+            if score > best_score:
+                best_info = tv_info
+                best_score = score
+        if best_info is not None:
+            return best_info
+
+        tv_info = _safe_call(getattr(self.tmdb_search, 'get_tv_info_by_id', None), tmdb_id)
+        if not isinstance(tv_info, dict) or not tv_info:
+            return None
+        tv_info = _safe_call(getattr(self.tmdb_search, 'fill_season_info', None), tv_info) or tv_info
+        return self._enrich_tv_alias_metadata(tv_info)
+
+    def _fetch_tv_info_in_language(self, tmdb_id: int, language: str) -> dict[str, Any] | None:
+        tv_info = _safe_call(getattr(self.tmdb_search, '_tmdb_tv_info', None), tmdb_id, language=language)
+        if not isinstance(tv_info, dict) or not tv_info:
+            tv_info = _safe_call(getattr(self.tmdb_search, 'get_tv_info_by_id', None), tmdb_id)
+        if not isinstance(tv_info, dict) or not tv_info:
+            return None
+        tv_info = deepcopy(tv_info)
+
+        seasons = tv_info.get('seasons')
+        if not isinstance(seasons, list) or not seasons:
+            fallback_info = _safe_call(getattr(self.tmdb_search, 'get_tv_info_by_id', None), tmdb_id)
+            if isinstance(fallback_info, dict) and isinstance(fallback_info.get('seasons'), list):
+                tv_info['seasons'] = deepcopy(fallback_info['seasons'])
+                seasons = tv_info['seasons']
+
+        if isinstance(seasons, list) and seasons:
+            hydrated_seasons: list[dict[str, Any]] = []
+            season_fetcher = getattr(self.tmdb_search, '_tmdb_season_info', None)
+            for season in seasons:
+                if not isinstance(season, dict):
+                    continue
+                season_payload = deepcopy(season)
+                season_number = _int_or_none(season_payload.get('season_number'))
+                if season_number is not None and callable(season_fetcher):
+                    detailed = _safe_call(season_fetcher, tmdb_id, season_number, language=language)
+                    if isinstance(detailed, dict) and detailed:
+                        season_payload.update(deepcopy(detailed))
+                        season_payload.setdefault('season_number', season_number)
+                        season_payload['_episodes_loaded'] = bool(season_payload.get('episodes'))
+                hydrated_seasons.append(season_payload)
+            tv_info['seasons'] = hydrated_seasons
+        elif callable(getattr(self.tmdb_search, 'fill_season_info', None)):
+            tv_info = _safe_call(getattr(self.tmdb_search, 'fill_season_info', None), tv_info) or tv_info
+
+        return self._enrich_tv_alias_metadata(tv_info)
+
+    def _enrich_tv_alias_metadata(self, tv_info: dict[str, Any]) -> dict[str, Any]:
+        enriched = _safe_call(getattr(self.tmdb_search, 'enrich_tv_alias_metadata', None), tv_info)
+        return enriched if isinstance(enriched, dict) and enriched else tv_info
 
     def tool_validate_bgm_to_tmdb_bridge(self, bridge_draft: dict[str, Any] | str | None = None) -> dict[str, Any]:
         draft, error = self._parse_bridge_draft_payload(bridge_draft)
@@ -510,7 +570,7 @@ class BgmToTmdbBridgeToolState:
                 ],
                 'search_policy': 'Search enough to identify plausible TMDB refs, then validate. Prefer anchor-first hydration over searching every season/special title. Do not exhaust turns searching recap/summary/CM/bonus variants when TMDB exposes no legal node.',
                 'franchise_anchor_policy': 'For multi-season franchise packages, search one strong franchise/series anchor, hydrate it, and compare season/S00/episode cards before doing separate season, OVA, OAD, or special title searches.',
-                'episode_title_policy': 'When series title evidence is ambiguous, compare BGM episode_title_cards_sample with hydrated TMDB legal-node episode titles. Episode titles guide the semantic choice but cannot bypass legal node validation.',
+                'episode_title_policy': 'When series title evidence is ambiguous, compare BGM episode_title_cards_sample with the hydrated TMDB legal-node episode titles shown in this context. The fixed layer presents one BGM-aligned TMDB evidence view when it can, so recipe params can stay language-agnostic and focus on visible title/order/count alignment.',
                 'search_guidance': self._search_guidance_payload(),
                 'dry_run_only': True,
             },
@@ -833,11 +893,176 @@ def _year_from_date(value: str) -> int | None:
     return int(match.group(1)) if match else None
 
 
-def _safe_call(func: Any, *args: Any) -> Any:
+def _int_or_none(value: Any) -> int | None:
     try:
-        return func(*args)
+        if value is None or value == '':
+            return None
+        return int(value)
+    except (TypeError, ValueError):
+        return None
+
+
+def _safe_call(func: Any, *args: Any, **kwargs: Any) -> Any:
+    if not callable(func):
+        return None
+    try:
+        return func(*args, **kwargs)
     except Exception:
         return None
+
+
+def _bgm_aligned_tmdb_language_order(bridge_input: BgmToTmdbInput) -> list[str]:
+    evidence = ' '.join(_bgm_alignment_texts(bridge_input))
+    if _contains_japanese_kana(evidence):
+        order = ['ja-JP', 'zh-TW', 'zh-CN', 'en-US']
+    elif _contains_cjk(evidence):
+        order = ['zh-CN', 'zh-TW', 'ja-JP', 'en-US']
+    else:
+        order = ['en-US', 'ja-JP', 'zh-CN', 'zh-TW']
+    return _dedupe_nonempty(order)
+
+
+def _score_tmdb_tv_alignment(tv_info: dict[str, Any], bridge_input: BgmToTmdbInput) -> tuple[int, int]:
+    evidence = _bgm_alignment_texts(bridge_input)
+    if not evidence:
+        return (0, 0)
+    episode_scores: list[int] = []
+    all_scores: list[int] = []
+    for title in _tmdb_tv_alignment_titles(tv_info, include_series=True):
+        score = max((_text_alignment_score(title, item) for item in evidence), default=0)
+        if score:
+            all_scores.append(score)
+    for title in _tmdb_tv_alignment_titles(tv_info, include_series=False):
+        score = max((_text_alignment_score(title, item) for item in evidence), default=0)
+        if score:
+            episode_scores.append(score)
+    return (sum(sorted(episode_scores, reverse=True)[:8]), sum(sorted(all_scores, reverse=True)[:12]))
+
+
+def _tmdb_tv_alignment_titles(tv_info: dict[str, Any], *, include_series: bool) -> list[str]:
+    titles: list[str] = []
+    if include_series:
+        titles.extend([
+            str(tv_info.get('name') or ''),
+            str(tv_info.get('title') or ''),
+            str(tv_info.get('original_name') or ''),
+            str(tv_info.get('original_title') or ''),
+        ])
+        titles.extend(_list_texts(tv_info.get('_metadata_alias_titles')))
+    for season in tv_info.get('seasons') or []:
+        if not isinstance(season, dict):
+            continue
+        if include_series:
+            titles.append(str(season.get('name') or ''))
+        for episode in season.get('episodes') or []:
+            if not isinstance(episode, dict):
+                continue
+            titles.extend([
+                str(episode.get('name') or ''),
+                str(episode.get('title') or ''),
+            ])
+    return _dedupe_nonempty(titles)
+
+
+def _bgm_alignment_texts(bridge_input: BgmToTmdbInput) -> list[str]:
+    values = [bridge_input.source_path]
+    for assignment in bridge_input.assignments:
+        if not assignment.is_mapped_bangumi:
+            continue
+        values.extend([
+            assignment.source_path,
+            assignment.target.title,
+            assignment.reason,
+        ])
+    return _dedupe_nonempty([str(value or '') for value in values])
+
+
+def _text_alignment_score(left: str, right: str) -> int:
+    left_norm = _normalize_alignment_text(left)
+    right_norm = _normalize_alignment_text(right)
+    if not left_norm or not right_norm:
+        return 0
+    short, long = sorted([left_norm, right_norm], key=len)
+    score = 0
+    if len(short) >= 4 and short in long:
+        score += len(short) + 8
+    left_words = set(_alignment_words(left_norm))
+    right_words = set(_alignment_words(right_norm))
+    score += len(left_words & right_words) * 4
+    left_chars = {char for char in left_norm if char.isalnum() or _is_cjk_or_kana(char)}
+    right_chars = {char for char in right_norm if char.isalnum() or _is_cjk_or_kana(char)}
+    common_chars = len(left_chars & right_chars)
+    if common_chars >= 3:
+        score += common_chars * 2
+    elif common_chars:
+        score += common_chars
+    return score
+
+
+def _normalize_alignment_text(value: str) -> str:
+    normalized = unicodedata.normalize('NFKC', str(value or '')).casefold()
+    normalized = normalized.translate(_CJK_ALIGNMENT_TRANSLATION)
+    return ''.join(char for char in normalized if char.isalnum() or _is_cjk_or_kana(char))
+
+
+def _alignment_words(value: str) -> list[str]:
+    import re
+
+    return [word for word in re.findall(r'[a-z0-9]+', value) if len(word) >= 2]
+
+
+def _contains_japanese_kana(value: str) -> bool:
+    return any('\u3040' <= char <= '\u30ff' or '\u31f0' <= char <= '\u31ff' for char in str(value or ''))
+
+
+def _contains_cjk(value: str) -> bool:
+    return any('\u4e00' <= char <= '\u9fff' for char in str(value or ''))
+
+
+def _is_cjk_or_kana(char: str) -> bool:
+    return (
+        '\u3040' <= char <= '\u30ff'
+        or '\u31f0' <= char <= '\u31ff'
+        or '\u3400' <= char <= '\u9fff'
+        or '\uf900' <= char <= '\ufaff'
+    )
+
+
+_CJK_ALIGNMENT_TRANSLATION = str.maketrans({
+    '極': '极',
+    '東': '东',
+    '來': '来',
+    '講': '讲',
+    '線': '线',
+    '區': '区',
+    '總': '总',
+    '話': '话',
+    '號': '号',
+    '學': '学',
+    '戰': '战',
+    '艦': '舰',
+    '國': '国',
+    '廣': '广',
+    '畫': '画',
+    '終': '终',
+    '體': '体',
+    '聲': '声',
+    '劇': '剧',
+    '員': '员',
+    '錄': '录',
+    '長': '长',
+    '門': '门',
+    '間': '间',
+    '後': '后',
+    '龍': '龙',
+    '與': '与',
+    '對': '对',
+    '異': '异',
+    '雙': '双',
+    '鬥': '斗',
+    '舊': '旧',
+    '臺': '台',
+})
 
 
 def _json_safe(value: Any) -> Any:
@@ -888,6 +1113,12 @@ def _span_range_label(start: int | None, end: int | None) -> str:
     if end is None:
         return str(int(start))
     return str(int(start)) if int(start) == int(end) else f'{int(start)}-{int(end)}'
+
+
+def _list_texts(value: Any) -> list[str]:
+    if not isinstance(value, list):
+        return []
+    return [str(item).strip() for item in value if str(item or '').strip()]
 
 
 def _dedupe_nonempty(values: list[str]) -> list[str]:
