@@ -304,7 +304,7 @@ async function waitForFinalResultWithNudge(session, promptDone) {
             "Do not hand-write per-source TMDB node mappings for normal episode sequences.",
             "Do not write files, edit code, or print JSON as prose.",
           ].join("\n"),
-          { expandPromptTemplates: true, source: "api" },
+          { expandPromptTemplates: true, source: "api", streamingBehavior: "followUp" },
         )
         .then(() => ({ ok: true }))
         .catch((error) => ({ ok: false, error: error?.stack || error?.message || String(error) }));

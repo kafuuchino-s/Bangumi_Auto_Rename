@@ -129,7 +129,7 @@ def run_bgm_to_tmdb_bridge_agent(
     ok = bool(final.get('ok')) if final else False
     summary = str(final.get('summary') or runtime.get('error') or 'Pi BGM-to-TMDB bridge runtime ended without a final submit/fail_closed result.')
     errors: list[str] = []
-    if not runtime.get('ok'):
+    if not runtime.get('ok') and not ok:
         errors.append('error_kind=pi_runtime_failed')
         if runtime.get('error'):
             errors.append(str(runtime.get('error')))

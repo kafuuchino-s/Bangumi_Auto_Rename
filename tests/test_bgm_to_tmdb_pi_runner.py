@@ -65,6 +65,25 @@ def test_pi_runner_auto_finalizes_accepted_validation(tmp_path) -> None:
     assert result.tool_call_counts['submit_bgm_to_tmdb_bridge_recipe_params'] == 1
 
 
+def test_pi_runner_auto_finalized_acceptance_does_not_report_runtime_error(tmp_path) -> None:
+    def fake_runtime(state: BgmToTmdbBridgeToolState) -> dict[str, Any]:
+        result = state.handle_tool('validate_bgm_to_tmdb_bridge_recipe_params', {'recipe_params': _recipe_params()})
+        return {'ok': False, 'returncode': 1, 'argv': ['fake'], 'tool_results': [result]}
+
+    with cm.temporary_config({'rename_local_bangumi_pi_case_root': str(tmp_path / 'pi')}):
+        result = run_bgm_to_tmdb_bridge_agent(
+            compiled_plan=_plan(),
+            artifact_path='accepted.json',
+            sample_id='sample_validate_only_runtime_error',
+            initial_legal_graph=_graph(),
+            runtime_invoker=fake_runtime,
+        )
+
+    assert result.status == 'accepted'
+    assert result.raw_runtime_result['post_runtime_auto_finalization']['accepted'] is True
+    assert result.errors == []
+
+
 def test_pi_runner_no_final_result_fails_closed(tmp_path) -> None:
     def fake_runtime(state: BgmToTmdbBridgeToolState) -> dict[str, Any]:
         return {'ok': True, 'returncode': 0, 'argv': ['fake'], 'tool_results': []}
@@ -201,6 +220,7 @@ def test_node_sidecar_uses_pi_core_bridge_tools_and_read_only_native_tools() -> 
     assert 'validate_bgm_to_tmdb_bridge_recipe_params' in text
     assert 'submit_bgm_to_tmdb_bridge_recipe_params' in text
     assert 'Do not hand-write per-source TMDB node mappings' in text
+    assert 'streamingBehavior: "followUp"' in text
     assert 'submit_bgm_to_tmdb_bridge' in text
     assert 'tmdb-bridge-contract' in text
 

@@ -384,7 +384,12 @@ def _strict_row_ok(row: dict[str, Any]) -> bool:
     if status == 'dry_build':
         return bool(row.get('ok'))
     if status == 'accepted':
-        return bool(row.get('ok')) and bool(row.get('verified_plan_present')) and bool(row.get('final_verifier_passed'))
+        return (
+            bool(row.get('ok'))
+            and bool(row.get('verified_plan_present'))
+            and bool(row.get('final_verifier_passed'))
+            and not list(row.get('errors') or [])
+        )
     if status == 'fail_closed':
         return bool(row.get('ok')) and str(row.get('final_action') or '') == 'fail_closed'
     return False
