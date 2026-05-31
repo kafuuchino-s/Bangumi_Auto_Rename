@@ -8,6 +8,7 @@ from .models import (
     BgmToTmdbInput,
     BgmToTmdbMapping,
     BgmToTmdbMappingDraft,
+    MOVIE_LEGAL_NODE_RE,
     TmdbLegalGraph,
     VerifiedBgmToTmdbPlan,
     normalize_source_path,
@@ -41,11 +42,15 @@ def verify_and_compile_bgm_to_tmdb_plan(
         for mapping in draft.mappings
     ]
     target_count = sum(len(mapping.tmdb_legal_node_ids) for mapping in mappings)
+    absent_count = sum(1 for mapping in mappings if mapping.disposition == 'tmdb_target_absent')
+    supplemental_count = sum(1 for mapping in mappings if mapping.disposition == 'unmapped_supplemental')
     return (
         VerifiedBgmToTmdbPlan(
             source_path=bridge_input.source_path,
             mappings=mappings,
             tmdb_target_count=target_count,
+            tmdb_absent_count=absent_count,
+            supplemental_count=supplemental_count,
             summary=draft.summary or 'accepted BGM->TMDB bridge dry-run plan',
         ),
         result,
@@ -137,19 +142,32 @@ def _verify_mapping_shape(
     source_path = normalize_source_path(assignment.source_path)
     target_count = len(mapping.tmdb_legal_node_ids)
     if assignment.is_mapped_bangumi:
+        if mapping.disposition == 'tmdb_target_absent':
+            if target_count:
+                issues.append(_issue(
+                    source_path,
+                    'tmdb_absent_mapping_has_targets',
+                    'tmdb_target_absent mappings must not include TMDB legal nodes',
+                    related_refs=[source_path, *mapping.tmdb_legal_node_ids],
+                ))
+            return
         if mapping.disposition != 'map_to_tmdb':
             issues.append(_issue(
                 source_path,
                 'mapped_bangumi_assignment_unmapped',
-                'map_to_bangumi assignments must map to TMDB legal nodes',
+                'map_to_bangumi assignments must either map to TMDB legal nodes or be marked tmdb_target_absent when TMDB has no legal node',
                 related_refs=[source_path],
             ))
-        expected_count = len(assignment.target_span.episode_ids) if assignment.is_span else 1
+            return
+        if assignment.is_span and target_count == 1 and MOVIE_LEGAL_NODE_RE.fullmatch(mapping.tmdb_legal_node_ids[0]):
+            expected_count = 1
+        else:
+            expected_count = len(assignment.target_span.episode_ids) if assignment.is_span else 1
         if target_count != expected_count:
             issues.append(_issue(
                 source_path,
                 'tmdb_target_count_mismatch',
-                'ordinary BGM assignments need one TMDB node; BGM spans must expand to the same number of TMDB nodes',
+                'ordinary BGM assignments need one TMDB node; BGM TV spans must expand to the same number of TMDB nodes; a BGM span may map to one movie node when TMDB models the span as a movie',
                 related_refs=[source_path],
             ))
         duplicates = [node_id for node_id, count in Counter(mapping.tmdb_legal_node_ids).items() if count > 1]

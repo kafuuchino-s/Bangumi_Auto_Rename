@@ -114,7 +114,11 @@ def compile_bgm_to_tmdb_recipe_params(
 
 
 def declared_tmdb_refs(recipe_params: BgmToTmdbRecipeParams) -> list[str]:
-    return _dedupe_nonempty([rule.target_tmdb.tmdb_ref for rule in recipe_params.rules])
+    return _dedupe_nonempty([
+        rule.target_tmdb.tmdb_ref
+        for rule in recipe_params.rules
+        if rule.rule_type != 'tmdb_absent_group'
+    ])
 
 
 def _compile_rule_mappings(
@@ -134,6 +138,18 @@ def _compile_rule_mappings(
                     related_refs=[rule_ref, assignment.source_path],
                 ))
             mappings.append(_mapping(assignment, [], disposition='unmapped_supplemental', reason=rule.reason, confidence=rule.confidence))
+        return mappings
+
+    if rule.rule_type == 'tmdb_absent_group':
+        for assignment in matched:
+            if not assignment.is_mapped_bangumi:
+                issues.append(_issue(
+                    normalize_source_path(assignment.source_path),
+                    'tmdb_absent_rule_selected_supplemental_assignment',
+                    'tmdb_absent_group rules may only cover BGM-mapped assignments whose TMDB legal node is absent',
+                    related_refs=[rule_ref, assignment.source_path],
+                ))
+            mappings.append(_mapping(assignment, [], disposition='tmdb_target_absent', reason=rule.reason, confidence=rule.confidence))
         return mappings
 
     for assignment in matched:
@@ -274,6 +290,9 @@ def _match_assignments(
     if not _selector_has_any_field(selector):
         if rule.rule_type == 'supplemental_group':
             return [assignment for assignment in assignments if not assignment.is_mapped_bangumi], []
+        if rule.rule_type == 'tmdb_absent_group':
+            issues.append(('empty_bgm_selector', 'tmdb_absent_group rules require a targeted BGM selector; do not mark every mapped assignment absent by default', []))
+            return [], issues
         issues.append(('empty_bgm_selector', 'mapped recipe rules require at least one BGM selector field', []))
         return [], issues
 
@@ -463,16 +482,16 @@ def _review_warnings_for_rule(rule: BgmToTmdbRecipeRule, rule_ref: str, matched:
             'severity': 'review',
             'code': 'low_confidence_tmdb_recipe_rule',
             'rule': rule_ref,
-            'message': 'A mapped BGM->TMDB recipe rule is marked Low confidence and needs stronger semantic evidence or fail_closed.',
-            'repair_hint': f'For {rule_ref}, compare TMDB title/original/alias/year/season cards against the BGM subject and raise confidence only with concrete evidence.',
+            'message': 'A BGM->TMDB recipe rule is marked Low confidence and needs stronger semantic evidence or fail_closed.',
+            'repair_hint': f'For {rule_ref}, compare TMDB title/original/alias/year/season/episode-title cards against the BGM subject and raise confidence only with concrete evidence.',
         })
     if not str(rule.reason or '').strip():
         warnings.append({
             'severity': 'review',
             'code': 'missing_tmdb_semantic_reason',
             'rule': rule_ref,
-            'message': 'A mapped BGM->TMDB recipe rule needs a concise semantic reason.',
-            'repair_hint': f'Add one evidence sentence for {rule_ref}, or fail_closed if TMDB evidence is insufficient.',
+            'message': 'A BGM->TMDB recipe rule needs a concise semantic reason.',
+            'repair_hint': f'Add one evidence sentence for {rule_ref}. For tmdb_absent_group, name the missing TMDB legal node boundary and the title/episode-title checks.',
         })
     return warnings
 

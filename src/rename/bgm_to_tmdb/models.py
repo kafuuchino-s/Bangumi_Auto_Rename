@@ -14,12 +14,13 @@ BgmDisposition = Literal[
     'unaligned_fail_closed',
 ]
 TmdbMediaType = Literal['tv', 'movie']
-BridgeMappingDisposition = Literal['map_to_tmdb', 'unmapped_supplemental']
+BridgeMappingDisposition = Literal['map_to_tmdb', 'tmdb_target_absent', 'unmapped_supplemental']
 BgmToTmdbRuleType = Literal[
     'episode_sequence',
     'movie',
     'special_sequence',
     'span',
+    'tmdb_absent_group',
     'supplemental_group',
 ]
 BgmToTmdbNumberField = Literal['sort', 'ep', 'extracted_episode_number']
@@ -298,6 +299,8 @@ class VerifiedBgmToTmdbPlan(BaseModel):
     source_path: str = ''
     mappings: list[BgmToTmdbMapping] = Field(default_factory=list)
     tmdb_target_count: int = 0
+    tmdb_absent_count: int = 0
+    supplemental_count: int = 0
     summary: str = ''
 
     model_config: ClassVar[ConfigDict] = ConfigDict(extra='forbid')

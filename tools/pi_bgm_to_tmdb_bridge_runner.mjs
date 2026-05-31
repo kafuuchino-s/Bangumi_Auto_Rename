@@ -195,16 +195,20 @@ function proxyTool(name, label, description, parameters) {
 
 const recipeParamsQuickReference = [
   "Primary workflow: write compact recipe_params, not one source_path->node mapping per normal episode.",
-  "Minimal recipe_params shape: {\"version\":1,\"summary\":\"...\",\"rules\":[{\"name\":\"main_tv\",\"rule_type\":\"episode_sequence\",\"select_bgm\":{\"bangumi_subject_id\":100,\"episode_type\":\"regular\",\"sort_range\":\"1-26\"},\"target_tmdb\":{\"tmdb_ref\":\"tv:45844\",\"season_number\":1,\"episode_range\":\"1-26\",\"number_field\":\"sort\"},\"confidence\":\"High\",\"reason\":\"TMDB title/original/alias/year/season cards match the Bangumi subject.\"},{\"name\":\"extras\",\"rule_type\":\"supplemental_group\",\"select_bgm\":{},\"confidence\":\"Medium\",\"reason\":\"Accepted BGM plan marks these as supplemental.\"}]}",
-  "Rule types: episode_sequence, movie, special_sequence, span, supplemental_group.",
+  "Minimal recipe_params shape: {\"version\":1,\"summary\":\"...\",\"rules\":[{\"name\":\"main_tv\",\"rule_type\":\"episode_sequence\",\"select_bgm\":{\"bangumi_subject_id\":100,\"episode_type\":\"regular\",\"sort_range\":\"1-26\"},\"target_tmdb\":{\"tmdb_ref\":\"tv:45844\",\"season_number\":1,\"episode_range\":\"1-26\",\"number_field\":\"sort\"},\"confidence\":\"High\",\"reason\":\"TMDB title/original/alias/year/season cards match the Bangumi subject.\"},{\"name\":\"missing_specials\",\"rule_type\":\"tmdb_absent_group\",\"select_bgm\":{\"bangumi_subject_id\":100,\"episode_type\":\"special\",\"sort_range\":\"1-3\"},\"confidence\":\"High\",\"reason\":\"Hydrated TMDB season 0 and episode-title checks expose no legal node for these BGM specials.\"},{\"name\":\"extras\",\"rule_type\":\"supplemental_group\",\"select_bgm\":{},\"confidence\":\"Medium\",\"reason\":\"Accepted BGM plan marks these as supplemental.\"}]}",
+  "Rule types: episode_sequence, movie, special_sequence, span, tmdb_absent_group, supplemental_group.",
   "Target refs are tv:<id> or movie:<id>. Python hydrates the TMDB legal graph and compiles these params into tv:<id>:SxxEyy or movie:<id> nodes.",
+  "A single BGM span may map to one TMDB movie node with a movie rule when TMDB models the whole span as a movie instead of individual TV episodes.",
+  "When a BGM-mapped episode/special is real in Bangumi but TMDB exposes no matching legal node, cover it with tmdb_absent_group. Do not fail the whole case for that node.",
   "TMDB titles, original names, aliases, overviews, years, and URL slugs are semantic evidence. They are not target IDs.",
+  "For multi-season franchise packages, search one strong series/franchise anchor first and treat its hydrated legal graph as the strongest next evidence layer before deciding whether more title searches are useful.",
+  "If series title evidence is ambiguous, compare BGM episode_title_cards_sample with hydrated TMDB legal-node episode titles. Mention episode-title/order/count evidence in the rule reason.",
   "Raw bridge_draft node mappings are debug fallback only for exact edge cases.",
-  "Search policy: after plausible TMDB refs are found and hydrated, validate recipe params. Do not keep searching recap/summary/CM/bonus-title variants; if TMDB exposes no legal node, fail_closed with that missing-node evidence.",
+  "Search policy: after plausible TMDB refs are found and hydrated, validate recipe params. Do not keep searching season/OVA/recap/summary/CM/bonus-title variants when the hydrated graph already carries enough legal-node evidence.",
 ].join("\n");
 
 const bridgeDraftQuickReference = [
-  "Debug/fallback bridge_draft shape: {\"summary\":\"...\",\"mappings\":[{\"source_path\":\"real source path from bridge_input\",\"disposition\":\"map_to_tmdb\",\"tmdb_legal_node_ids\":[\"tv:45844:S01E01\"],\"confidence\":\"High\",\"reason\":\"...\"}]}",
+  "Debug/fallback bridge_draft shape: {\"summary\":\"...\",\"mappings\":[{\"source_path\":\"real source path from bridge_input\",\"disposition\":\"map_to_tmdb\",\"tmdb_legal_node_ids\":[\"tv:45844:S01E01\"],\"confidence\":\"High\",\"reason\":\"...\"},{\"source_path\":\"BGM special missing on TMDB.mkv\",\"disposition\":\"tmdb_target_absent\",\"tmdb_legal_node_ids\":[],\"confidence\":\"High\",\"reason\":\"TMDB season 0 and episode-title checks expose no legal node.\"}]}",
   "Use raw node mappings only when recipe params cannot express a precise edge case or when debugging generated JSON.",
 ].join("\n");
 
@@ -303,7 +307,9 @@ async function waitForFinalResultWithNudge(session, promptDone) {
             "No final BGM-to-TMDB bridge result exists yet.",
             "Use tools now: get context if needed, search TMDB candidates, validate_bgm_to_tmdb_bridge_recipe_params, then submit_bgm_to_tmdb_bridge_recipe_params or fail_closed.",
             "Do not hand-write per-source TMDB node mappings for normal episode sequences.",
-            "If you already hydrated plausible TMDB refs, stop broad searching and validate or fail_closed; do not search recap/summary/CM variants repeatedly.",
+            "For multi-season franchise packages, after one anchor search finds a plausible result, use its hydrated legal graph as the next evidence layer before deciding whether individual season or OVA/OAD searches are useful.",
+            "When titles are ambiguous, compare BGM episode_title_cards_sample against hydrated TMDB episode titles before choosing the season.",
+            "If you already hydrated plausible TMDB refs, stop broad searching and validate. Use tmdb_absent_group for BGM nodes that TMDB does not expose; do not search recap/summary/CM variants repeatedly.",
             "Do not write files, edit code, or print JSON as prose.",
           ].join("\n"),
           { expandPromptTemplates: true, source: "api", streamingBehavior: "followUp" },
@@ -341,10 +347,12 @@ This input already contains an accepted Local-to-Bangumi compiled_plan. Do not r
 Use get_bgm_to_tmdb_bridge_context for the accepted BGM assignments and current TMDB graph.
 Use search_tmdb_candidates to find possible TMDB IDs. Recipe validation hydrates declared TMDB refs automatically; call get_tmdb_legal_graph only when you need detailed season cards before drafting.
 ${recipeParamsQuickReference}
+For multi-season franchise packages, after one anchor search finds a plausible result, use its hydrated legal graph as the next evidence layer before deciding whether individual season/OVA/OAD/special searches are useful. Use the hydrated season cards, season 0 cards, aliases, and episode titles to decide whether more searches are necessary.
+When series title evidence is unclear, use BGM episode_title_cards_sample and hydrated TMDB legal-node episode titles as the decisive semantic cross-check for the season/range.
 Validate early with validate_bgm_to_tmdb_bridge_recipe_params. After it is accepted, submit the same params with submit_bgm_to_tmdb_bridge_recipe_params and then call goal_complete.
-If plausible TMDB refs have been found and hydrated, do not keep searching recap/summary/CM/bonus title variants. Validate current recipe params; if a mapped BGM assignment has no concrete TMDB legal node, fail closed with that exact missing-node evidence.
+If plausible TMDB refs have been found and hydrated, do not keep searching recap/summary/CM/bonus title variants. Validate current recipe params; if a mapped BGM assignment has no concrete TMDB legal node after targeted season-0/episode-title checks, use tmdb_absent_group for that assignment and keep the rest accepted.
 Use raw validate_bgm_to_tmdb_bridge/submit_bgm_to_tmdb_bridge only as debug fallback.
-If TMDB evidence is insufficient or contradictory, call fail_closed with concrete related refs, then goal_complete.
+If global TMDB identity evidence is insufficient or contradictory, call fail_closed with concrete related refs, then goal_complete. Do not fail_closed just because an otherwise identified BGM episode/special lacks a TMDB node; use tmdb_absent_group.
 Do not use native tools to edit, write, move, copy, link, rename, or inspect old run artifacts for answers.
 Available lazy skills:
 /skill:tmdb-bridge-contract: use when bridge draft shape, TMDB ID/node policy, or verifier repair is unclear.
@@ -354,7 +362,7 @@ Try to finish before ${caseInput.runtime_policy?.suggested_finish_before_seconds
 await fs.writeFile(result.instruction_path, instructionText, "utf8");
 
 const goalObjective = `
-Produce verifier-accepted BGM-to-TMDB recipe params for this accepted Local-to-Bangumi compiled plan, or fail closed with concrete evidence gaps. This is dry-run only.
+Produce verifier-accepted BGM-to-TMDB recipe params for this accepted Local-to-Bangumi compiled plan, using tmdb_absent_group for BGM nodes missing from TMDB when needed, or fail closed for global identity ambiguity. This is dry-run only.
 `.trim();
 
 try {

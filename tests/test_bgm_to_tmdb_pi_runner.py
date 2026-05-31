@@ -65,6 +65,50 @@ def test_pi_runner_auto_finalizes_accepted_validation(tmp_path) -> None:
     assert result.tool_call_counts['submit_bgm_to_tmdb_bridge_recipe_params'] == 1
 
 
+def test_pi_runner_accepts_partial_tmdb_absent_plan(tmp_path) -> None:
+    def fake_runtime(state: BgmToTmdbBridgeToolState) -> dict[str, Any]:
+        result = state.handle_tool(
+            'submit_bgm_to_tmdb_bridge_recipe_params',
+            {
+                'recipe_params': {
+                    'summary': 'map main episode and record missing TMDB special',
+                    'rules': [
+                        {
+                            'name': 'main',
+                            'rule_type': 'episode_sequence',
+                            'select_bgm': {'source_paths': ['E01.mkv']},
+                            'target_tmdb': {'tmdb_ref': 'tv:42', 'season_number': 1, 'episode_range': '1'},
+                            'confidence': 'High',
+                            'reason': 'TMDB title and episode title match the BGM regular episode.',
+                        },
+                        {
+                            'name': 'missing_special',
+                            'rule_type': 'tmdb_absent_group',
+                            'select_bgm': {'source_paths': ['SP01.mkv']},
+                            'confidence': 'High',
+                            'reason': 'Hydrated TMDB season 0 and episode-title checks expose no legal node for this BGM special.',
+                        },
+                    ],
+                }
+            },
+        )
+        return {'ok': True, 'returncode': 0, 'argv': ['fake'], 'tool_results': [result]}
+
+    with cm.temporary_config({'rename_local_bangumi_pi_case_root': str(tmp_path / 'pi')}):
+        result = run_bgm_to_tmdb_bridge_agent(
+            compiled_plan=_plan_with_special(),
+            artifact_path='accepted.json',
+            sample_id='sample_partial_absent',
+            initial_legal_graph=_graph(),
+            runtime_invoker=fake_runtime,
+        )
+
+    assert result.status == 'accepted'
+    assert result.verified_plan is not None
+    assert result.verified_plan.tmdb_target_count == 1
+    assert result.verified_plan.tmdb_absent_count == 1
+
+
 def test_pi_runner_auto_finalized_acceptance_does_not_report_runtime_error(tmp_path) -> None:
     def fake_runtime(state: BgmToTmdbBridgeToolState) -> dict[str, Any]:
         result = state.handle_tool('validate_bgm_to_tmdb_bridge_recipe_params', {'recipe_params': _recipe_params()})
@@ -224,6 +268,8 @@ def test_node_sidecar_uses_pi_core_bridge_tools_and_read_only_native_tools() -> 
     assert 'streamingBehavior: "followUp"' in text
     assert 'submit_bgm_to_tmdb_bridge' in text
     assert 'tmdb-bridge-contract' in text
+    assert 'one anchor search' in text
+    assert 'hydrated legal graph as the next evidence layer' in text
 
 
 def _plan() -> CompiledOrganizePlan:
@@ -244,6 +290,26 @@ def _plan() -> CompiledOrganizePlan:
             )
         ]
     )
+
+
+def _plan_with_special() -> CompiledOrganizePlan:
+    plan = _plan()
+    plan.assignments.append(
+        CompiledOrganizeAssignment(
+            source_path='SP01.mkv',
+            disposition='map_to_bangumi',
+            target=CompiledTarget(
+                bangumi_subject_id=100,
+                media_kind='tv',
+                episode_id=201,
+                episode_type='special',
+                sort=1,
+                ep=1,
+                title='Bangumi special 1',
+            ),
+        )
+    )
+    return plan
 
 
 def _graph():

@@ -5,26 +5,51 @@ description: Use when bridging an accepted Local-to-Bangumi compiled plan to TMD
 
 # TMDB Bridge Contract
 
-The final output for this stage is Python-verifier accepted BGM-to-TMDB recipe params submitted with `submit_bgm_to_tmdb_bridge_recipe_params`, or a safe fail-closed result. This stage is dry-run only: do not move, copy, link, rename, or write final media files.
+The final output for this stage is Python-verifier accepted BGM-to-TMDB recipe params submitted with `submit_bgm_to_tmdb_bridge_recipe_params`, or a safe fail-closed result for global ambiguity. This stage is dry-run only: no moving, copying, linking, renaming, or writing final media files.
 
-Use recipe params as the primary workflow. Do not hand-write per-source `source_path -> tv:<id>:SxxEyy` mappings for normal TV episode sequences. Python compiles compact rules into raw node mappings, then the existing verifier checks coverage, duplicates, legal nodes, spans, and supplemental boundaries.
+Use recipe params as the primary workflow. Per-source `source_path -> tv:<id>:SxxEyy` mappings are debug/fallback material for exact edge cases, not the normal TV episode sequence workflow. Python compiles compact rules into raw bridge outcomes, then the existing verifier checks coverage, duplicates, legal nodes, spans, target-absent boundaries, and supplemental boundaries.
 
 Bangumi identity comes from the accepted compiled plan: `source_path`, `bangumi_subject_id`, `episode_id`, `sort`, `ep`, title, media kind, episode type, and span episode IDs. TMDB identity in recipe params is `tmdb_ref` (`tv:<tmdb_id>` or `movie:<tmdb_id>`), plus season/range fields when needed. Compiled legal nodes are `tv:<tmdb_id>:SxxEyy` for TV episodes and `movie:<tmdb_id>` for movies.
 
-TMDB names are semantic evidence, not output identity. Use `display_title`, `original_name`, `original_title`, aliases, year, overview, season cards, episode cards, and URL slug text such as `45844-space-battleship-yamato-2199` to decide whether a TMDB candidate matches the Bangumi plan. The verifier accepts only TMDB IDs and legal nodes after Python compilation.
+TMDB names are semantic evidence, not output identity. Use `display_title`, `original_name`, `original_title`, aliases, year, overview, season cards, episode cards, and URL slug text such as `45844-space-battleship-yamato-2199` to decide whether a TMDB candidate matches the Bangumi plan. The verifier accepts only explicit bridge outcomes: `map_to_tmdb` with TMDB IDs/legal nodes, `tmdb_target_absent` for BGM nodes that TMDB does not expose, or `unmapped_supplemental` for Local-to-Bangumi supplemental files.
 
 ## Workflow
 
-1. Read grouped BGM subject cards and assignments with `get_bgm_to_tmdb_bridge_context`. Accepted Local-to-Bangumi artifacts can be reused directly; do not rerun Local-to-Bangumi.
+1. Read grouped BGM subject cards and assignments with `get_bgm_to_tmdb_bridge_context`. Accepted Local-to-Bangumi artifacts can be reused directly; a Local-to-Bangumi rerun is unnecessary.
 2. Search TMDB candidates by Bangumi/local human titles. Compare candidate cards by ID, title, original name, aliases, year, overview, season names, and episode lists.
-3. Draft compact recipe params. Prefer one rule for a contiguous TV sequence, one rule for a movie, one rule for a special sequence, one span rule for one source covering multiple episodes, and one supplemental rule for extras.
+3. Draft compact recipe params. Prefer one rule for a contiguous TV sequence, one rule for a movie, one rule for a special sequence, one span rule for one source covering multiple episodes, one `tmdb_absent_group` rule for BGM nodes that TMDB lacks, and one supplemental rule for extras.
 4. Call `validate_bgm_to_tmdb_bridge_recipe_params`. Validation hydrates declared `tmdb_ref` values, compiles params to a raw bridge draft, runs the node verifier, and returns repair hints or review warnings.
-5. Repair only the targeted rule named by the verifier. Do not restart broad search unless the verifier asks for missing TMDB evidence.
+5. Keep repairs targeted to the rule named by the verifier. Broad search is useful again only when the verifier asks for missing TMDB evidence.
 6. After validation returns `accepted:true`, call `submit_bgm_to_tmdb_bridge_recipe_params` with the same params.
 
-Search is for finding plausible TMDB refs, not for exhaustively proving every recap/summary/CM/bonus title. After a plausible series/movie candidate is found and hydrated, validate a recipe. If validation shows a mapped Bangumi special has no concrete TMDB legal node, fail closed with that exact missing-node evidence instead of searching more title variants.
+Search is for finding plausible TMDB refs, not for exhaustively proving every recap/summary/CM/bonus title. After a plausible series/movie candidate is found and hydrated, recipe validation is the next stronger evidence layer. If validation shows a mapped Bangumi episode/special has no concrete TMDB legal node, a targeted season-0/episode-title check can justify `tmdb_absent_group` for that BGM node instead of failing the whole case.
 
 Raw `validate_bgm_to_tmdb_bridge` and `submit_bgm_to_tmdb_bridge` are debug/fallback tools only. Use them for exact edge cases or inspecting generated JSON, not as the normal path.
+
+## Franchise Anchor First
+
+For multi-season franchise packages, searching every season, OVA, OAD, and special title first is usually wasteful. Search one strong franchise/series anchor, then treat its hydrated TMDB legal graph as the strongest next evidence layer before deciding whether more searches are useful. Inspect its season cards, season 0 cards, episode titles, aliases, years, and overviews.
+
+Additional title searches are most useful when the hydrated graph does not expose the needed target shape:
+
+- Search a separate movie title when BGM has a movie/span and the series graph does not expose a movie node.
+- Search an OVA/OAD/special title when season 0 cards do not contain a matching title/order/count.
+- Search recap/summary/CM/digest titles after the main graph is anchored; once the graph shows no legal node, `tmdb_absent_group` fits BGM-mapped nodes and `supplemental_group` fits Local-to-Bangumi supplemental files.
+
+Preferred evidence ladder: anchor search -> hydrated TMDB legal graph -> season/episode-card comparison -> recipe validation -> targeted verifier repair. If the first hydrated graph already contains the seasons and S00 specials needed by the BGM subject cards, separate searches for each subject title are unnecessary.
+
+## Episode Title Alignment
+
+When the series title, translated title, or slug is ambiguous, use episode titles as the next strongest evidence layer before choosing a TMDB ref or season. Read BGM `episode_title_cards_sample` from the subject card, then hydrate plausible TMDB refs and compare those BGM titles with TMDB legal-node episode titles in the candidate's seasons.
+
+Use this pattern:
+
+- Regular sequence: compare first, last, and any distinctive middle BGM episode titles against the TMDB season episode titles. If the titles and episode count/order support the same season, submit one `episode_sequence` rule.
+- Season split: if one TMDB series contains multiple seasons, choose the season whose episode title list and count align with the BGM subject, not merely the season number implied by the package name.
+- Special/OVA/OAD: compare the specific BGM special title against TMDB season 0 or other exposed special nodes. If TMDB has the series but no legal node for that special, `tmdb_absent_group` should cover that BGM node without changing the rest of the plan.
+- Movies: episode titles usually do not help; use movie title/original title/aliases/year/runtime evidence and map to `movie:<id>`.
+
+Episode-title matches are semantic evidence for Pi. They still do not override the verifier: the output remains recipe params that compile to exposed `tv:<id>:SxxEyy` / `movie:<id>` legal nodes, or to `tmdb_target_absent` when the checked TMDB graph genuinely lacks the node.
 
 ## Recipe Params Shape
 
@@ -52,6 +77,18 @@ Raw `validate_bgm_to_tmdb_bridge` and `submit_bgm_to_tmdb_bridge` are debug/fall
       "reason": "TMDB candidate 45844 has matching title/original-name/alias evidence and a Season 1 episode list matching the Bangumi regular sequence."
     },
     {
+      "name": "missing_specials",
+      "rule_type": "tmdb_absent_group",
+      "select_bgm": {
+        "bangumi_subject_id": 100,
+        "episode_type": "special",
+        "sort_range": "1-3"
+      },
+      "target_tmdb": {},
+      "confidence": "High",
+      "reason": "The matching TMDB series was hydrated, season 0 and episode-title checks expose no legal nodes for these BGM specials, so they are recorded as TMDB target absent."
+    },
+    {
       "name": "extras",
       "rule_type": "supplemental_group",
       "select_bgm": {},
@@ -68,17 +105,21 @@ Raw `validate_bgm_to_tmdb_bridge` and `submit_bgm_to_tmdb_bridge` are debug/fall
 - `episode_sequence`: BGM regular episode range maps to a TMDB TV season range.
 - `movie`: BGM movie assignment maps to one `movie:<id>` target.
 - `special_sequence`: BGM specials, OVA, or OAD sequence maps to TMDB season 0 or another explicit season.
-- `span`: one BGM assignment covering multiple episodes maps to multiple TMDB TV nodes.
+- `span`: one BGM assignment covering multiple episodes maps to multiple TMDB TV nodes. If TMDB models that whole BGM span as one movie, use a `movie` rule to map the span assignment to the single `movie:<id>` node.
+- `tmdb_absent_group`: BGM-mapped assignments remain present in the verified bridge but are marked `tmdb_target_absent` because TMDB does not expose legal nodes for them.
 - `supplemental_group`: non-Bangumi or supplemental BGM assignments remain unmapped.
 
 ## Contract Rules
 
 - Names, slugs, aliases, overviews, and years are evidence for semantic choice only.
 - Output subjects are IDs and rule fields: `tmdb_ref`, `season_number`, `episode_range`, `episode_offset`, and selectors.
-- Do not output bare `tmdb:SxxEyy`, a title, a URL, or a slug as the target.
-- Do not map two source paths to the same compiled TMDB legal node unless a future contract explicitly adds multi-part support.
-- Do not map supplemental, non-Bangumi, needs-more-evidence, or fail-closed BGM assignments to TMDB nodes.
+- Bare `tmdb:SxxEyy`, titles, URLs, and slugs are invalid targets.
+- Two source paths mapping to the same compiled TMDB legal node is invalid unless a future contract explicitly adds multi-part support.
+- A single BGM span may map to one TMDB movie node when TMDB models the whole span as a movie rather than individual TV episodes.
+- Supplemental, non-Bangumi, needs-more-evidence, and fail-closed BGM assignments remain outside TMDB node mappings.
+- `supplemental_group` is for Local-to-Bangumi supplemental files. For BGM-mapped episodes that TMDB lacks, use `tmdb_absent_group`; it means Bangumi has a node but TMDB does not expose a matching legal node.
 - If validation returns `review`, add concrete semantic evidence or fail closed. Review is not accepted.
-- Do not spend the turn budget on repeated recap/summary/CM/bonus-title searches. Once TMDB legal graph lacks the needed node, fail closed rather than searching variants of the same missing item.
+- Repeated recap/summary/CM/bonus-title searches are usually weaker than targeted checks against the TMDB legal graph. Once the graph lacks the needed BGM-mapped node after targeted checks, use `tmdb_absent_group` rather than searching variants of the same missing item.
+- When BGM and TMDB episode titles are available, use them as stronger evidence than a fuzzy series title and mention the episode-title/order/count evidence in the rule `reason`.
 
-If evidence is insufficient to choose between TMDB candidates, fail closed with the conflicting IDs/titles and the exact missing evidence instead of guessing.
+If evidence is insufficient to choose between TMDB candidates, fail closed with the conflicting IDs/titles and the exact missing evidence instead of guessing. One otherwise identified BGM episode/special lacking a TMDB legal node is better recorded as `tmdb_target_absent` than treated as global failure.

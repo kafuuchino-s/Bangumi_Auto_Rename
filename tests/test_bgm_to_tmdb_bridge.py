@@ -165,6 +165,45 @@ def test_special_maps_to_season_zero_and_supplemental_stays_unmapped() -> None:
     assert verify_bgm_to_tmdb_draft(bridge_input, graph, draft).passed is True
 
 
+def test_mapped_bgm_target_absent_is_accepted_without_tmdb_node() -> None:
+    bridge_input = compile_bgm_to_tmdb_input(
+        CompiledOrganizePlan(
+            assignments=[
+                _assignment('E01.mkv', sort=1, ep=1),
+                _assignment('SP01.mkv', episode_id=201, episode_type='special', sort=1, ep=1),
+            ]
+        ),
+        source_path='Show',
+    )
+    graph = build_tmdb_legal_graph([
+        {
+            'media_type': 'tv',
+            'tmdb_id': 42,
+            'display_title': 'Show',
+            'legal_nodes': [_tv_node(42, 1, 1)],
+        }
+    ])
+    draft = BgmToTmdbMappingDraft(
+        mappings=[
+            BgmToTmdbMapping(source_path='E01.mkv', tmdb_legal_node_ids=['tv:42:S01E01']),
+            BgmToTmdbMapping(
+                source_path='SP01.mkv',
+                disposition='tmdb_target_absent',
+                tmdb_legal_node_ids=[],
+                confidence='High',
+                reason='TMDB season 0 and episode-title checks expose no legal node for this BGM special.',
+            ),
+        ],
+    )
+
+    plan, result = verify_and_compile_bgm_to_tmdb_plan(bridge_input, graph, draft)
+
+    assert result.passed is True
+    assert plan is not None
+    assert plan.tmdb_target_count == 1
+    assert plan.tmdb_absent_count == 1
+
+
 def test_span_bridge_requires_explicit_existing_tmdb_nodes() -> None:
     bridge_input = compile_bgm_to_tmdb_input(
         CompiledOrganizePlan(
@@ -216,6 +255,52 @@ def test_span_bridge_requires_explicit_existing_tmdb_nodes() -> None:
     result = verify_bgm_to_tmdb_draft(bridge_input, graph, missing_one)
     assert result.passed is False
     assert _issue_codes(result) == {'tmdb_target_count_mismatch'}
+
+
+def test_span_bridge_can_map_to_one_tmdb_movie_node() -> None:
+    bridge_input = compile_bgm_to_tmdb_input(
+        CompiledOrganizePlan(
+            assignments=[
+                _assignment(
+                    'Three Part Movie.mkv',
+                    media_kind='movie',
+                    episode_type='regular',
+                    target_span=CompiledTargetSpan(
+                        bangumi_subject_id=100,
+                        media_kind='movie',
+                        episode_ids=[101, 102, 103],
+                        sort_start=1,
+                        sort_end=3,
+                        episode_type='regular',
+                    ),
+                ),
+            ]
+        ),
+        source_path='Three Part Movie',
+    )
+    graph = build_tmdb_legal_graph([
+        {
+            'media_type': 'movie',
+            'tmdb_id': 655431,
+            'display_title': 'PSYCHO-PASS 3 FIRST INSPECTOR',
+            'legal_nodes': [TmdbLegalNode(legal_node_id='movie:655431', media_type='movie', tmdb_id=655431)],
+        }
+    ])
+    draft = BgmToTmdbMappingDraft(
+        mappings=[
+            BgmToTmdbMapping(
+                source_path='Three Part Movie.mkv',
+                tmdb_legal_node_ids=['movie:655431'],
+                reason='TMDB models the three-part BGM span as one movie node.',
+            )
+        ],
+    )
+
+    plan, result = verify_and_compile_bgm_to_tmdb_plan(bridge_input, graph, draft)
+
+    assert result.passed is True
+    assert plan is not None
+    assert plan.tmdb_target_count == 1
 
 
 def test_rejects_unknown_duplicate_and_bare_tmdb_nodes() -> None:
@@ -492,6 +577,7 @@ def test_recipe_movie_special_span_and_supplemental_rules_compile() -> None:
                         episode_type='regular',
                     ),
                 ),
+                _assignment('Missing SP.mkv', bangumi_subject_id=500, media_kind='tv', episode_type='special', sort=1, ep=1),
                 CompiledOrganizeAssignment(
                     source_path='Bonus.mkv',
                     disposition='non_bangumi_or_supplemental',
@@ -548,6 +634,13 @@ def test_recipe_movie_special_span_and_supplemental_rules_compile() -> None:
                 'reason': 'one BGM span covers two TMDB OVA episodes',
             },
             {
+                'name': 'missing_tmdb_special',
+                'rule_type': 'tmdb_absent_group',
+                'select_bgm': {'bangumi_subject_id': 500, 'episode_type': 'special'},
+                'confidence': 'High',
+                'reason': 'hydrated TMDB graph exposes no season 0 legal node matching this BGM special title',
+            },
+            {
                 'name': 'extras',
                 'rule_type': 'supplemental_group',
                 'select_bgm': {},
@@ -564,6 +657,11 @@ def test_recipe_movie_special_span_and_supplemental_rules_compile() -> None:
     assert by_source['Movie.mkv'].tmdb_legal_node_ids == ['movie:900']
     assert by_source['SP01.mkv'].tmdb_legal_node_ids == ['tv:901:S00E01']
     assert by_source['Merged.mkv'].tmdb_legal_node_ids == ['tv:902:S01E01', 'tv:902:S01E02']
+    assert by_source['Missing SP.mkv'].disposition == 'tmdb_target_absent'
+    assert result.verifier_result.passed is True
+    plan, _ = verify_and_compile_bgm_to_tmdb_plan(bridge_input, graph, result.bridge_draft)
+    assert plan is not None
+    assert plan.tmdb_absent_count == 1
     assert by_source['Bonus.mkv'].disposition == 'unmapped_supplemental'
 
 
@@ -675,6 +773,13 @@ def test_recipe_rejects_zero_match_count_mismatch_duplicate_and_supplemental_map
                 'confidence': 'High',
                 'reason': 'unknown subject selector',
             },
+            {
+                'name': 'bad_absent_supplemental',
+                'rule_type': 'tmdb_absent_group',
+                'select_bgm': {'source_paths': ['Bonus.mkv']},
+                'confidence': 'High',
+                'reason': 'supplemental files must not use BGM TMDB-absent outcome',
+            },
         ],
     })
 
@@ -686,6 +791,7 @@ def test_recipe_rejects_zero_match_count_mismatch_duplicate_and_supplemental_map
         'duplicate_tmdb_target',
         'mapped_rule_selected_supplemental_assignment',
         'supplemental_mapped_to_tmdb',
+        'tmdb_absent_rule_selected_supplemental_assignment',
         'zero_bgm_assignment_match',
         'tmdb_episode_range_count_mismatch',
     } <= codes
@@ -794,10 +900,14 @@ def test_tool_state_recipe_params_validate_submit_and_context_cards(tmp_path) ->
     submitted = state.handle_tool('submit_bgm_to_tmdb_bridge_recipe_params', {'recipe_params': params})
 
     assert context['data']['bridge_contract']['primary_workflow'].startswith('Use recipe params')
+    assert 'episode_title_cards_sample' in context['data']['bangumi_subject_cards'][0]
+    assert context['data']['bangumi_subject_cards'][0]['episode_title_cards_sample'][0]['title'] == 'Bangumi 1'
+    assert 'episode_title_policy' in context['data']['bridge_contract']
     assert context['data']['bangumi_subject_cards'][0]['sort_range'] == '1'
     assert validated['accepted'] is True
     assert submitted['accepted'] is True
     assert submitted['verified_plan']['tmdb_target_count'] == 1
+    assert submitted['verified_plan']['tmdb_absent_count'] == 0
     assert (tmp_path / 'artifacts' / 'bgm_to_tmdb_recipe_params.json').exists()
     assert state.tool_summary()['tool_call_counts']['submit_bgm_to_tmdb_bridge_recipe_params'] == 1
 
@@ -826,7 +936,7 @@ def test_tool_state_searches_and_hydrates_tmdb_graph_with_fake_search(tmp_path) 
     assert state.legal_graph.legal_node_map()['movie:1234'].title == 'The Movie'
 
 
-def test_tool_state_search_budget_blocks_broad_search_loop(tmp_path) -> None:
+def test_tool_state_search_guidance_warns_without_blocking_broad_search(tmp_path) -> None:
     bridge_input = compile_bgm_to_tmdb_input(
         CompiledOrganizePlan(assignments=[_assignment('E01.mkv', sort=1, ep=1)]),
         source_path='Show',
@@ -836,20 +946,20 @@ def test_tool_state_search_budget_blocks_broad_search_loop(tmp_path) -> None:
         legal_graph=build_tmdb_legal_graph([]),
         run_dir=tmp_path,
         tmdb_search=_FakeTmdbSearch(),
-        search_budget_limit=2,
-        search_budget_soft_limit=1,
+        search_guidance_soft_limit=1,
     )
 
     first = state.handle_tool('search_tmdb_candidates', {'query': 'Show'})
     second = state.handle_tool('search_tmdb_candidates', {'query': 'Show recap'})
-    blocked = state.handle_tool('search_tmdb_candidates', {'query': 'Show recap summary'})
+    third = state.handle_tool('search_tmdb_candidates', {'query': 'Show recap summary'})
 
     assert first['ok'] is True
-    assert first['search_budget_warning'].startswith('Search budget')
-    assert second['search_budget']['remaining'] == 0
-    assert blocked['ok'] is False
-    assert blocked['status'] == 'search_budget_exceeded'
-    assert 'validate_bgm_to_tmdb_bridge_recipe_params' in blocked['repair_hints'][1]
+    assert 'hydration as the next evidence layer' in first['search_strategy_hints'][0]
+    assert first['search_guidance_warning'].startswith('Search count')
+    assert second['search_guidance']['used'] == 2
+    assert third['ok'] is True
+    assert third['search_guidance']['used'] == 3
+    assert 'validate_bgm_to_tmdb_bridge_recipe_params' in third['repair_hints'][1]
 
 
 def test_tool_state_fail_closed_is_final_result(tmp_path) -> None:

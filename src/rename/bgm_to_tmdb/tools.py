@@ -47,8 +47,7 @@ class BgmToTmdbBridgeToolState:
     last_invalid_submission: dict[str, Any] | None = None
     submit_rejection_count: int = 0
     search_call_count: int = 0
-    search_budget_limit: int = 16
-    search_budget_soft_limit: int = 8
+    search_guidance_soft_limit: int = 8
 
     def __post_init__(self) -> None:
         self.run_dir.mkdir(parents=True, exist_ok=True)
@@ -72,10 +71,11 @@ class BgmToTmdbBridgeToolState:
                 'bridge_verifier_result': str(artifacts_dir / 'bgm_to_tmdb_bridge_verifier_result.json'),
             },
             'case_goal': {
-                'objective': 'Produce a verifier-accepted BGM-to-TMDB bridge draft or fail closed.',
+                'objective': 'Produce verifier-accepted BGM-to-TMDB recipe params or fail closed for global ambiguity.',
                 'done_when': [
                     'validate_bgm_to_tmdb_bridge_recipe_params returns accepted=true',
                     'submit_bgm_to_tmdb_bridge_recipe_params returns accepted=true',
+                    'each accepted BGM assignment has exactly one bridge outcome: map_to_tmdb, tmdb_target_absent, or unmapped_supplemental',
                     'no file move/copy/link/rename operation is performed',
                 ],
             },
@@ -122,24 +122,7 @@ class BgmToTmdbBridgeToolState:
         if not query:
             return {'ok': False, 'accepted': False, 'error': 'query is required'}
         self.search_call_count += 1
-        search_budget = self._search_budget_payload()
-        if self.search_call_count > self.search_budget_limit:
-            return {
-                'ok': False,
-                'accepted': False,
-                'status': 'search_budget_exceeded',
-                'error': 'search_tmdb_candidates budget exceeded; stop broad search and validate current recipe params or fail_closed with the exact missing TMDB legal nodes.',
-                'query': query,
-                'media_type': str(media_type or 'multi'),
-                'candidate_count': 0,
-                'candidates': [],
-                'search_budget': search_budget,
-                'repair_hints': [
-                    'Do not keep searching recap/summary/CM/bonus-title variants.',
-                    'If plausible TMDB refs are already hydrated, call validate_bgm_to_tmdb_bridge_recipe_params now.',
-                    'If validation cannot cover a BGM mapped assignment because TMDB has no legal node, call fail_closed with that missing node evidence.',
-                ],
-            }
+        search_guidance = self._search_guidance_payload()
         media_type = str(media_type or 'multi').strip().casefold()
         limit = max(1, min(20, int(max_candidates or 6)))
         year_value = int(year or 0) or None
@@ -165,13 +148,18 @@ class BgmToTmdbBridgeToolState:
             'media_type': media_type,
             'candidate_count': len(candidates),
             'candidates': candidates,
-            'search_budget': search_budget,
+            'search_guidance': search_guidance,
+            'search_strategy_hints': [
+                'For multi-season franchise packages, once this search returns a plausible series candidate, prefer legal-graph hydration as the next evidence layer before deciding whether additional season/OVA/OAD title searches are useful.',
+                'Use hydrated season cards, season 0 cards, and episode titles to decide whether additional title searches are actually needed.',
+            ],
         }
-        if self.search_call_count >= self.search_budget_soft_limit:
-            result['search_budget_warning'] = 'Search budget is getting high; stop broad search after this evidence pass and validate recipe params or fail_closed.'
+        if self.search_call_count >= self.search_guidance_soft_limit:
+            result['search_guidance_warning'] = 'Search count is getting high; prefer anchor-first hydration and recipe validation over more title variant searches.'
             result['repair_hints'] = [
+                'For multi-season franchise cases, use one plausible series anchor and its hydrated season/episode cards before spending more searches on each season title.',
                 'Prefer validate_bgm_to_tmdb_bridge_recipe_params over more title variant searches.',
-                'For recap/summary/CM/package extras, fail closed if TMDB does not expose a concrete legal node.',
+                'For recap/summary/CM/package extras, use tmdb_absent_group when BGM has a mapped node but TMDB exposes no legal node after targeted checks.',
             ]
         return result
 
@@ -510,12 +498,19 @@ class BgmToTmdbBridgeToolState:
             'bangumi_subject_cards': _subject_cards(self.bridge_input),
             'tmdb_legal_graph': self.legal_graph.model_dump(mode='json'),
             'bridge_contract': {
-                'identity_policy': 'TMDB titles, original names, aliases, and slugs are semantic evidence only; final mappings must use tv:<tmdb_id>:SxxEyy or movie:<tmdb_id> legal nodes.',
+                'identity_policy': 'TMDB titles, original names, aliases, and slugs are semantic evidence only; mapped targets must use tv:<tmdb_id>:SxxEyy or movie:<tmdb_id> legal nodes. BGM assignments that TMDB does not expose may be marked tmdb_target_absent.',
                 'final_tools': ['validate_bgm_to_tmdb_bridge_recipe_params', 'submit_bgm_to_tmdb_bridge_recipe_params', 'validate_bgm_to_tmdb_bridge', 'submit_bgm_to_tmdb_bridge', 'fail_closed'],
                 'tmdb_tools': ['search_tmdb_candidates', 'get_tmdb_legal_graph'],
-                'primary_workflow': 'Use recipe params for normal TV/movie/special/span/supplemental groups. Raw node mappings are debug fallback only.',
-                'search_policy': 'Search enough to identify plausible TMDB refs, then validate. Do not exhaust turns searching recap/summary/CM/bonus variants when TMDB exposes no legal node.',
-                'search_budget': self._search_budget_payload(),
+                'primary_workflow': 'Use recipe params for normal TV/movie/special/span/tmdb_absent/supplemental groups. Raw node mappings are debug fallback only.',
+                'accepted_mapping_outcomes': [
+                    'map_to_tmdb for BGM assignments with exposed TMDB legal nodes',
+                    'tmdb_target_absent for BGM assignments that TMDB does not expose as legal nodes after targeted title/episode-title checks',
+                    'unmapped_supplemental only for Local-to-Bangumi supplemental/non-Bangumi assignments',
+                ],
+                'search_policy': 'Search enough to identify plausible TMDB refs, then validate. Prefer anchor-first hydration over searching every season/special title. Do not exhaust turns searching recap/summary/CM/bonus variants when TMDB exposes no legal node.',
+                'franchise_anchor_policy': 'For multi-season franchise packages, search one strong franchise/series anchor, hydrate it, and compare season/S00/episode cards before doing separate season, OVA, OAD, or special title searches.',
+                'episode_title_policy': 'When series title evidence is ambiguous, compare BGM episode_title_cards_sample with hydrated TMDB legal-node episode titles. Episode titles guide the semantic choice but cannot bypass legal node validation.',
+                'search_guidance': self._search_guidance_payload(),
                 'dry_run_only': True,
             },
         }
@@ -621,12 +616,10 @@ class BgmToTmdbBridgeToolState:
             summary['verifier_issue_count'] = len(verifier.get('issues') or [])
         return summary
 
-    def _search_budget_payload(self) -> dict[str, int]:
+    def _search_guidance_payload(self) -> dict[str, int]:
         return {
             'used': int(self.search_call_count),
-            'soft_limit': int(self.search_budget_soft_limit),
-            'hard_limit': int(self.search_budget_limit),
-            'remaining': max(0, int(self.search_budget_limit) - int(self.search_call_count)),
+            'soft_limit': int(self.search_guidance_soft_limit),
         }
 
     def _merge_legal_graph(self, candidates: list[TmdbCandidateCard]) -> None:
@@ -656,7 +649,13 @@ def _bridge_repair_hints(verifier_result: CaseVerifierResult) -> list[str]:
         elif code == 'supplemental_mapped_to_tmdb':
             hints.append(f'Keep supplemental/non-Bangumi source {issue.ref} as disposition unmapped_supplemental with no TMDB nodes.')
         elif code == 'tmdb_target_count_mismatch':
-            hints.append(f'Check source {issue.ref}: ordinary mappings need one TMDB node, while BGM spans must list every covered TMDB node.')
+            hints.append(f'Check source {issue.ref}: ordinary mappings need one TMDB node, BGM TV spans must list every covered TMDB node, and a BGM span may map to one TMDB movie node when TMDB models the span as a movie. If TMDB lacks the needed node, use a tmdb_absent_group rule instead.')
+        elif code == 'mapped_bangumi_assignment_unmapped':
+            hints.append(f'Map BGM source {issue.ref} to exposed TMDB legal nodes, or cover it with tmdb_absent_group after targeted title/episode-title checks show TMDB lacks the node.')
+        elif code == 'tmdb_absent_mapping_has_targets':
+            hints.append(f'Remove TMDB node IDs from tmdb_target_absent source {issue.ref}; absent mappings are explicit no-node outcomes.')
+        elif code == 'tmdb_absent_rule_selected_supplemental_assignment':
+            hints.append(f'Source {issue.ref} is supplemental/non-Bangumi; cover it with supplemental_group instead of tmdb_absent_group.')
     return _dedupe_nonempty(hints)
 
 
@@ -670,7 +669,7 @@ def _review_warning_hints(review_warnings: list[dict[str, Any]]) -> list[str]:
         code = str(warning.get('code') or '').strip()
         rule = str(warning.get('rule') or '').strip()
         if code == 'low_confidence_tmdb_recipe_rule':
-            hints.append(f'Add concrete TMDB title/original/alias/year/season evidence for {rule}, or fail_closed.')
+            hints.append(f'Add concrete TMDB title/original/alias/year/season/episode-title evidence for {rule}, or fail_closed for global ambiguity.')
         elif code == 'missing_tmdb_semantic_reason':
             hints.append(f'Add one concise semantic evidence sentence for {rule}.')
     return _dedupe_nonempty(hints)
@@ -726,6 +725,7 @@ def _subject_cards(bridge_input: BgmToTmdbInput) -> list[dict[str, Any]]:
                 for assignment in assignments
                 if assignment.target.title
             ])[:8],
+            'episode_title_cards_sample': _episode_title_cards(assignments),
             'source_path_sample': [
                 normalize_source_path(assignment.source_path)
                 for assignment in assignments[:8]
@@ -751,6 +751,24 @@ def _subject_cards(bridge_input: BgmToTmdbInput) -> list[dict[str, Any]]:
                 normalize_source_path(assignment.source_path)
                 for assignment in supplemental[:12]
             ],
+        })
+    return cards
+
+
+def _episode_title_cards(assignments: list[Any], *, limit: int = 16) -> list[dict[str, Any]]:
+    cards: list[dict[str, Any]] = []
+    for assignment in assignments[:limit]:
+        target = assignment.target
+        target_span = assignment.target_span
+        cards.append({
+            'source_path': normalize_source_path(assignment.source_path),
+            'episode_id': int(target.episode_id or 0),
+            'sort': target.sort,
+            'ep': target.ep,
+            'episode_type': str(target_span.episode_type or target.episode_type or ''),
+            'title': str(target.title or ''),
+            'span_episode_ids': [int(item) for item in (target_span.episode_ids or [])],
+            'span_sort_range': _span_range_label(target_span.sort_start, target_span.sort_end),
         })
     return cards
 
@@ -855,6 +873,16 @@ def _range_label(values: list[int]) -> str:
         start = previous = value
     ranges.append(str(start) if start == previous else f'{start}-{previous}')
     return ','.join(ranges)
+
+
+def _span_range_label(start: int | None, end: int | None) -> str:
+    if start is None and end is None:
+        return ''
+    if start is None:
+        return str(int(end)) if end is not None else ''
+    if end is None:
+        return str(int(start))
+    return str(int(start)) if int(start) == int(end) else f'{int(start)}-{int(end)}'
 
 
 def _dedupe_nonempty(values: list[str]) -> list[str]:
