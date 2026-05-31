@@ -169,6 +169,35 @@ def _multi_episode_workspace():
     )
 
 
+def _filename_range_multi_episode_workspace(path: str = 'merged [01-03].mkv'):
+    return CaseEvidenceWorkspace.from_cards(
+        header=CaseHeader(case_id='test'),
+        budget=CaseBudget(),
+        contract=CaseContract(main_file_refs=['LF1']),
+        local_files=[
+            LocalFileCard(
+                ref='LF1',
+                path=path,
+                is_main=True,
+                container_facts={'probe_status': 'available', 'duration_seconds': 0, 'chapter_count': 0},
+            )
+        ],
+        bangumi_items=[
+            BangumiItemCard(
+                ref=f'episode:{1000 + index}',
+                item_kind='episode',
+                episode_id=1000 + index,
+                type='0',
+                sort=index,
+                ep=index,
+                subject_ref='subject:100',
+                title=f'Episode {index}',
+            )
+            for index in range(1, 4)
+        ],
+    )
+
+
 def _accepted_recipe():
     return {
         'version': 1,
@@ -338,6 +367,9 @@ def test_pi_validate_review_warns_for_long_supplemental_until_targeted_lookup(tm
     assert warning['status'] == 'review'
     assert warning['review_warnings'][0]['source_path'] == 'Bonus Main.mkv'
     assert any('find_bangumi_targets_for_local_file' in hint for hint in warning['repair_hints'])
+    warning_keys = list(warning)
+    assert warning_keys.index('review_warnings') < warning_keys.index('compiled_plan')
+    assert warning_keys.index('repair_hints') < warning_keys.index('compiled_plan')
     assert accepted['accepted'] is True
     assert accepted['review_warnings'] == []
 
@@ -827,6 +859,73 @@ def test_pi_validate_organize_recipe_params_accepts_single_file_multi_episode_so
     assert state.final_result is None
 
 
+def test_pi_validate_organize_recipe_params_accepts_single_file_multi_episode_filename_range(tmp_path):
+    state = PiCaseToolState(
+        workspace=_filename_range_multi_episode_workspace(),
+        bangumi_client=_BangumiClient(),
+        run_dir=tmp_path / 'run',
+        repo_root=tmp_path,
+    )
+
+    result = state.handle_tool(
+        'validate_organize_recipe_params',
+        {
+            'recipe_params': {
+                'summary': 'merged file names the full range',
+                'rules': [
+                    {
+                        'name': 'merged ova',
+                        'source_unit': 'single_file_multi_episode',
+                        'exact_paths': ['merged [01-03].mkv'],
+                        'subject_id': 100,
+                        'media_kind': 'ova',
+                        'episode_type': 'regular',
+                        'episode_range': '1-3',
+                        'reason': 'one local file filename explicitly carries the target span [01-03]',
+                    }
+                ],
+            }
+        },
+    )
+
+    assert result['accepted'] is True
+    assert result['compiled_plan']['assignments'][0]['target_span']['episode_ids'] == [1001, 1002, 1003]
+    assert result['accounting']['single_file_multi_episode_count'] == 1
+
+
+def test_pi_validate_organize_recipe_params_rejects_mismatched_single_file_multi_episode_filename_range(tmp_path):
+    state = PiCaseToolState(
+        workspace=_filename_range_multi_episode_workspace(path='merged [01-02].mkv'),
+        bangumi_client=_BangumiClient(),
+        run_dir=tmp_path / 'run',
+        repo_root=tmp_path,
+    )
+
+    result = state.handle_tool(
+        'validate_organize_recipe_params',
+        {
+            'recipe_params': {
+                'summary': 'filename range does not cover the declared target span',
+                'rules': [
+                    {
+                        'name': 'merged ova',
+                        'source_unit': 'single_file_multi_episode',
+                        'exact_paths': ['merged [01-02].mkv'],
+                        'subject_id': 100,
+                        'media_kind': 'ova',
+                        'episode_type': 'regular',
+                        'episode_range': '1-3',
+                        'reason': 'mismatched filename range should not be accepted as evidence',
+                    }
+                ],
+            }
+        },
+    )
+
+    assert result['accepted'] is False
+    assert any(issue['issue_code'] == 'missing_multi_episode_evidence' for issue in result['verifier_result']['issues'])
+
+
 def test_pi_validate_organize_recipe_params_accepts_zero_padded_ep_and_natural_range_aliases(tmp_path):
     local = SimpleNamespace(
         source_path='tests/sample',
@@ -1031,6 +1130,36 @@ def test_pi_submit_organize_recipe_params_accepts_and_finalizes(tmp_path):
     assert result['params_compiled'] is True
     assert state.final_result['status'] == 'accepted'
     assert state.final_result['summary'] == 'accepted via params'
+
+
+def test_pi_submit_organize_recipe_accepts_params_shaped_payload(tmp_path):
+    state = PiCaseToolState(workspace=_workspace(), bangumi_client=_BangumiClient(), run_dir=tmp_path / 'run', repo_root=tmp_path)
+
+    result = state.handle_tool(
+        'submit_organize_recipe',
+        {
+            'organize_recipe': {
+                'summary': 'params accidentally passed to raw submit',
+                'rules': [
+                    {
+                        'name': 'tv episodes',
+                        'source_pattern': 'ep{ep}.mkv',
+                        'subject_id': 100,
+                        'media_kind': 'tv',
+                        'episode_type': 'regular',
+                        'episode_range': '1-2',
+                        'reason': 'semantic params identify a numbered TV run',
+                    }
+                ],
+            },
+            'summary': 'accepted despite raw tool name',
+        },
+    )
+
+    assert result['accepted'] is True
+    assert state.final_result['status'] == 'accepted'
+    assert state.final_result['summary'] == 'accepted despite raw tool name'
+    assert result['accounting']['matched_path_count'] == 2
 
 
 def test_pi_fail_closed_rejects_model_reported_budget_exhausted(tmp_path):

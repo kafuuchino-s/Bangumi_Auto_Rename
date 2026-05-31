@@ -731,11 +731,17 @@ def _compile_single_file_multi_episode_target(
             episode_type=rule.target.episode_type if rule.target.episode_type != 'unknown' else str(getattr(episodes[0], 'item_kind', '') or getattr(episodes[0], 'type', '') or ''),
         )
 
-    if not _single_file_multi_episode_evidence_is_supported(source_file, episodes, expected_count=len(raw_numbers)):
+    if not _single_file_multi_episode_evidence_is_supported(
+        source_file,
+        episodes,
+        expected_count=len(raw_numbers),
+        source_path=source_path,
+        raw_numbers=raw_numbers,
+    ):
         issues.append(_issue(
             source_path,
             'missing_multi_episode_evidence',
-            'single_file_multi_episode needs mechanical support from local chapter count or local duration close to the sum of target episode durations',
+            'single_file_multi_episode needs mechanical support from local chapter count, an explicit filename episode range, or local duration close to the sum of target episode durations',
             related_refs=[source_path],
         ))
     return target_span, issues
@@ -790,12 +796,20 @@ def _single_file_multi_episode_evidence_is_supported(
     episodes: list[BangumiItemCard],
     *,
     expected_count: int,
+    source_path: str = '',
+    raw_numbers: list[int] | None = None,
 ) -> bool:
     container = _source_container_facts(source_file)
     chapter_count = _int_or_none(container.get('chapter_count')) or len([
         item for item in container.get('chapter_durations_seconds') or [] if _float_or_none(item) is not None
     ])
     if expected_count >= 2 and expected_count <= chapter_count <= expected_count + 2:
+        return True
+    if (
+        expected_count >= 2
+        and len(episodes) == expected_count
+        and _source_path_has_declared_episode_range(source_path, raw_numbers or [])
+    ):
         return True
 
     local_duration = _float_or_none(container.get('duration_seconds'))
@@ -809,6 +823,22 @@ def _single_file_multi_episode_evidence_is_supported(
     if target_duration <= 0:
         return False
     return abs(local_duration - target_duration) <= max(180.0, target_duration * 0.15)
+
+
+def _source_path_has_declared_episode_range(source_path: str, raw_numbers: list[int]) -> bool:
+    if len(raw_numbers) < 2:
+        return False
+    start = raw_numbers[0]
+    end = raw_numbers[-1]
+    if start > end or raw_numbers != list(range(start, end + 1)):
+        return False
+    basename = _basename(source_path)
+    for match in re.finditer(r'(?<!\d)(?:[A-Za-z]{0,4})?0*(\d{1,3})\s*[-~]\s*(?:[A-Za-z]{0,4})?0*(\d{1,3})(?!\d)', basename):
+        token_start = int(match.group(1))
+        token_end = int(match.group(2))
+        if token_start == start and token_end == end:
+            return True
+    return False
 
 
 def _source_container_facts(source_file: Any | None) -> dict[str, Any]:

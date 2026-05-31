@@ -891,11 +891,11 @@ class PiCaseToolState:
             'accepted': accepted,
             'status': status,
             'summary': summary,
+            'review_warnings': review_warnings,
+            'repair_hints': all_hints,
+            'accounting': recipe_accounting(plan),
             'verifier_result': verifier_result.model_dump(mode='json'),
             'compiled_plan': plan.model_dump(mode='json'),
-            'accounting': recipe_accounting(plan),
-            'repair_hints': all_hints,
-            'review_warnings': review_warnings,
         }
 
     def tool_validate_organize_recipe_params(self, recipe_params: dict[str, Any] | None = None) -> dict[str, Any]:
@@ -942,11 +942,11 @@ class PiCaseToolState:
                 'accepted': False,
                 'status': 'review' if verifier_result.passed else 'invalid',
                 'summary': summary_text,
+                'review_warnings': review_warnings,
+                'repair_hints': all_hints,
+                'accounting': recipe_accounting(plan),
                 'verifier_result': verifier_result.model_dump(mode='json'),
                 'compiled_plan': plan.model_dump(mode='json'),
-                'accounting': recipe_accounting(plan),
-                'repair_hints': all_hints,
-                'review_warnings': review_warnings,
             }
 
         final_output = CaseJudgeOutput(
@@ -973,12 +973,12 @@ class PiCaseToolState:
             'accepted': True,
             'status': 'accepted',
             'summary': final_output.summary,
+            'review_warnings': review_warnings,
+            'repair_hints': [],
+            'accounting': recipe_accounting(plan),
             'verifier_result': verifier_result.model_dump(mode='json'),
             'compiled_plan': plan.model_dump(mode='json'),
-            'accounting': recipe_accounting(plan),
             'expanded_assignment_count': len(plan.assignments),
-            'repair_hints': [],
-            'review_warnings': review_warnings,
         }
 
     def tool_submit_organize_recipe_params(self, recipe_params: dict[str, Any] | None = None, summary: str = '') -> dict[str, Any]:
@@ -1060,6 +1060,11 @@ class PiCaseToolState:
         try:
             return OrganizeRecipeDraft.model_validate(payload), ''
         except Exception as exc:
+            if _looks_like_recipe_params_payload(payload):
+                recipe, params_error = self._parse_recipe_params_payload(payload)
+                if recipe is not None:
+                    return recipe, ''
+                return None, f'invalid OrganizeRecipeDraft payload: {exc}; also failed as recipe_params: {params_error}'
             return None, f'invalid OrganizeRecipeDraft payload: {exc}'
 
     def _parse_recipe_params_payload(self, recipe_params: dict[str, Any] | None) -> tuple[OrganizeRecipeDraft | None, str]:
@@ -1493,7 +1498,7 @@ class PiCaseToolState:
             elif code == 'invalid_episode_range':
                 hints.append('For source_unit: "single_file_multi_episode", episode_range must name at least two target episode sort numbers, such as "1-3"; apply episode_offset only when the Bangumi sort values restart.')
             elif code == 'missing_multi_episode_evidence':
-                hints.append('A single file covering multiple episodes needs mechanical evidence. Check local container_facts for chapter_count/chapter_durations or compare local duration with the sum of exposed Bangumi episode durations; if those facts are absent or contradictory, fail_closed instead of mapping it to episode 1.')
+                hints.append('A single file covering multiple episodes needs mechanical evidence. Check local container_facts for chapter_count/chapter_durations, an explicit filename episode range such as [01-03] matching episode_range, or local duration close to the sum of exposed Bangumi episode durations; if those facts are absent or contradictory, fail_closed instead of mapping it to episode 1.')
             elif code in {'invalid_filename_regex', 'invalid_exclude_regex', 'invalid_episode_offset', 'invalid_episode_capture', 'episode_locator_miss', 'episode_out_of_range'}:
                 hints.append('Fix the selector/episode expression, then validate again. Use source_pattern only for repeated file groups with a numeric {ep} capture and EP, EP-10, or EP*2-1 offsets. For a single movie/OVA/SP/special file, use exact_paths or source_path instead of source_pattern/episode_range.')
             elif code == 'unresolved_assignment':
@@ -1845,6 +1850,31 @@ _SOURCE_PATTERN_TOKEN_RE = re.compile(r'\{([A-Za-z_][A-Za-z0-9_]*)(?::0?(\d+)d?)
 _LEGAL_MEDIA_KINDS = {'tv', 'movie', 'ova', 'oad', 'sp', 'special', 'unknown'}
 _LEGAL_EPISODE_TYPES = {'main', 'regular', 'special', 'ova', 'oad', 'movie', 'unknown'}
 _LEGAL_SOURCE_UNITS = {'single_file', 'single_file_multi_episode'}
+_PARAMS_RULE_HINT_KEYS = {
+    'bangumi_subject_id',
+    'episode_id',
+    'episode_number_field',
+    'episode_range',
+    'episode_start',
+    'episode_end',
+    'episode_type',
+    'exact_paths',
+    'media_kind',
+    'path',
+    'paths',
+    'range',
+    'range_start',
+    'range_end',
+    'source_path',
+    'source_paths',
+    'source_pattern',
+    'source_template',
+    'subject_id',
+    'target_episode_id',
+    'target_number_field',
+    'target_subject_id',
+}
+_RAW_RECIPE_RULE_KEYS = {'select', 'target', 'episode'}
 _UNSUPPORTED_DISPOSITION_FLAG_HINTS = {
     'non_bangumi_or_supplemental': 'disposition: "non_bangumi_or_supplemental"',
     'supplemental': 'disposition: "non_bangumi_or_supplemental"',
@@ -1861,6 +1891,22 @@ _UNSUPPORTED_SOURCE_UNIT_FLAG_HINTS = {
     'multi_episode_file': 'source_unit: "single_file_multi_episode"',
     'merged': 'source_unit: "single_file_multi_episode"',
 }
+
+
+def _looks_like_recipe_params_payload(payload: dict[str, Any]) -> bool:
+    candidate = payload.get('recipe_params') if isinstance(payload.get('recipe_params'), dict) else payload
+    rules = candidate.get('rules') if isinstance(candidate, dict) else None
+    if not isinstance(rules, list) or not rules:
+        return False
+    saw_params_hint = False
+    for rule in rules:
+        if not isinstance(rule, dict):
+            return False
+        if _RAW_RECIPE_RULE_KEYS.intersection(rule):
+            return False
+        if _PARAMS_RULE_HINT_KEYS.intersection(rule):
+            saw_params_hint = True
+    return saw_params_hint
 
 
 def _source_pattern_from_params(rule: dict[str, Any], select: dict[str, Any]) -> str:

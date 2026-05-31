@@ -326,6 +326,9 @@ def test_node_runner_registers_goal_retry_recipe_tools_without_mapping_draft():
     assert 'Final repair loop: no final result exists, but wall-clock budget remains.' in text
     assert 'phase: `final_repair_${repairAttempt + 1}`' in text
     assert 'A submit result with \\`status: "review"\\` is not final' in text
+    assert 'do not hand-write or translate a raw OrganizeRecipeDraft' in text
+    assert 'do not switch to raw submit_organize_recipe' in text
+    assert 'raw tools are for debugging already-generated JSON only' in text
     assert 'For large packages, do not enumerate dozens of obvious supplemental extras as exact_paths' in text
     assert 'keep broad supplemental groups compact with path_glob/filename_regex selectors' in text
     assert 'related_refs' in text
