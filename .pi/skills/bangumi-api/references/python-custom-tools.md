@@ -26,7 +26,7 @@ Leave `relation_kinds` empty when unsure. Relation strings come from Bangumi and
 
 Use this when a case has unresolved seasons, specials, OVAs, OADs, movies, side stories, or recap-like files after you have at least one plausible anime subject. It recursively expands a bounded related-subject graph and returns compact `relation_subjects`, `subjects`, and `edges`. Filter returned subjects to anime/video-shaped entries; ignore book, manga, novel, music, game, radio, drama CD, soundtrack, and real-person/live/event relations unless the local video evidence explicitly points there.
 
-After an anchor is known, use related subjects as the series map. Fetch episode lists for related anime subjects whose titles, relation labels, dates, or platforms match visible local subgroups. If a matching related subject is still part of the same series but points onward to another season/movie/special, continue graph traversal before trying another broad title query.
+After an anchor is known, use related subjects as the series map. Fetch episode lists for related anime subjects whose titles, relation labels, dates, or platforms match visible local subgroups. If a matching related subject is still part of the same series but points onward to another season/movie/special, another graph traversal can be useful, but validation should remain the main checkpoint once you have enough evidence for a testable recipe.
 
 For a same-folder movie/special collection with many named files from one franchise, one clean anchor search plus `expand_related_graph` should come before per-title broad searches. Build a local title checklist, match it against graph subjects, and search individual missing titles only when the relation graph does not expose them or exposes conflicting possibilities.
 
@@ -36,7 +36,7 @@ One `max_depth` value is only a bounded tool call, not a proof that the series g
 - `next_subject_ids_to_expand`: subject IDs to use as the next `subject_ids` seed when a named local group is still unresolved.
 - `new_related_subject_ids`: mechanically ordered related IDs discovered by this call, not a recommendation.
 
-If `next_subject_ids_to_expand` is non-empty, call `expand_related_graph` again from those IDs before marking a named special/movie/side-story as supplemental. Stop only when the relevant frontier is exhausted within the case budget; if the budget is gone before that, prefer `fail_closed` over a premature supplemental decision.
+If `next_subject_ids_to_expand` is non-empty, call `expand_related_graph` again only for targeted repair or when a specific named local group still has no supportable target. Do not postpone the first params validation just because the frontier is not exhausted. Frontier exhaustion is strongest as final fail-closed or final supplemental evidence.
 
 Read `relation_subjects` first. It is the compact relation index with subject IDs, titles, type, platform, date, and relation labels. Use graph `edges` only when you need to understand how a subject was reached.
 
@@ -76,7 +76,7 @@ This helper intentionally provides no fixed-layer recipe, no readiness flag, and
 
 `validate_organize_recipe_params({ "recipe_params": <params> })`
 
-Use this for hand-authored work. Params are semantic rule fields such as `source_pattern` or `source_template`, `exact_paths` or `source_path`, `source_unit`, `episode_range` or `range`, `episode_offset` or `offset`, `subject_id`, `media_kind`, `episode_type`, `disposition`, and `reason`. Python turns `source_pattern` into escaped recipe regex, treats extra placeholders such as `{a}` as wildcard spans, fills defaults such as `episode_offset: "EP"`, writes `organize_recipe.json`, and returns the generated `organize_recipe` plus verifier issues. Use `source_pattern` only when the local group has an episode token such as `{ep}`; use `exact_paths`/`source_path` for one visible movie, OVA, SP, or special file.
+Use this for hand-authored work and trial checks. Params are semantic rule fields such as `source_pattern` or `source_template`, `exact_paths` or `source_path`, `source_unit`, `episode_range` or `range`, `episode_offset` or `offset`, `subject_id`, `media_kind`, `episode_type`, `disposition`, and `reason`. Python turns `source_pattern` into escaped recipe regex, treats extra placeholders such as `{a}` as wildcard spans, fills defaults such as `episode_offset: "EP"`, writes `organize_recipe.json`, and returns the generated `organize_recipe` plus verifier issues or review warnings. The first trial check does not need to be accepted or warning-free. Invalid/review feedback is part of the repair loop; it does not finalize the case. Use `source_pattern` only when the local group has an episode token such as `{ep}`; use `exact_paths`/`source_path` for one visible movie, OVA, SP, or special file.
 
 For one visible local file that intentionally covers multiple Bangumi episode rows, set `source_unit: "single_file_multi_episode"`, one `exact_paths` entry, and `episode_range`. Do not use boolean aliases such as `merged: true`, and do not collapse the file to the first `episode_id`.
 

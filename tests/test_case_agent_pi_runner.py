@@ -278,10 +278,13 @@ def test_node_runner_registers_goal_retry_recipe_tools_without_mapping_draft():
     assert '@narumitw", "pi-goal"' in text
     assert '@narumitw", "pi-retry"' in text
     assert '"goal_complete"' in text
+    assert '"get_local_recipe_params_scaffold"' in text
     assert '"find_bangumi_targets_for_local_file"' in text
     assert '"expand_related_graph"' in text
     assert '"validate_organize_recipe_params"' in text
+    assert '"validate_organize_recipe_params_patch"' in text
     assert '"submit_organize_recipe_params"' in text
+    assert '"submit_organize_recipe_params_patch"' in text
     assert '"validate_organize_recipe"' in text
     assert '"submit_organize_recipe"' in text
     assert '"submit_recommended_recipe"' not in text
@@ -289,7 +292,24 @@ def test_node_runner_registers_goal_retry_recipe_tools_without_mapping_draft():
     assert 'NATIVE_TOOL_NAMES = ["read", "grep", "find", "ls", "bash", "edit", "write"]' in text
     assert 'PI_RETRY_STALL_TIMEOUT_MS' in text
     assert 'ensureHelperCheckArtifact' in text
+    assert 'case_quick_start' not in text
+    assert 'case_input.local_recipe_skeleton is available as a selector and verifier-repair aid' in text
+    assert 'do not read it at startup as a semantic checklist' in text
+    assert 'early_bangumi_evidence_bundle' not in text
+    assert 'Core loop: infer local groups, expose enough Bangumi evidence for a testable recipe' in text
+    assert 'get_local_recipe_params_scaffold returns local selector/range params stubs' in text
+    assert 'The raw case_input JSON path is a fallback' in text
+    assert 'It does not choose Bangumi targets, media kind, episode type, disposition, or supplemental status.' in text
+    assert 'Validation is the main checkpoint.' in text
+    assert 'Before first validation, keep evidence practical' in text
+    assert 'case_input.context.run_progress and get_case_context().data.run_progress are factual telemetry only' in text
+    assert 'they are not semantic recommendations' in text
     assert 'Before Bangumi search, inspect case_input.local_structure_summary and visible source_path values' in text
+    assert 'When selector construction feels risky, use get_local_recipe_params_scaffold.' in text
+    assert 'fill subject_id, media_kind, episode_type or episode_id, or supplemental disposition from your Bangumi evidence' in text
+    assert 'selector and verifier-repair aid after you have chosen a local group' in text
+    assert 'copy its source_pattern into recipe params' in text
+    assert 'episode_range is the local captured file-number range' in text
     assert 'Treat numbering restarts such as multiple 01 files under different folders' in text
     assert 'Draft the smallest adequate recipe first' in text
     assert 'not a chosen target' in text
@@ -303,18 +323,21 @@ def test_node_runner_registers_goal_retry_recipe_tools_without_mapping_draft():
     assert 'number_field or target_number_field for episode_number_field' in text
     assert 'source_path, or path for one-file rules' in text
     assert 'Do not use rule-shape words such as numbered_run or exact_paths as media_kind.' in text
-    assert 'If this quick reference is insufficient, call validate_organize_recipe_params and use repair_hints.' in text
-    assert 'After one representative lookup per visible local group, validate a params draft' in text
+    assert 'validate_organize_recipe_params is a trial check, not final submission.' in text
+    assert 'invalid/review results are normal contract feedback for repair_hints' in text
+    assert 'validation repair_hints are the contract feedback surface' in text
+    assert 'Trial-check semantic rule parameters' in text
+    assert 'After representative lookups for the active groups, validate a params draft' in text
     assert 'search_bangumi_subjects is already scoped to Bangumi' in text
-    assert 'Once one or more plausible anime subject anchors are known, prefer expand_related_graph before additional broad searches' in text
+    assert 'one bounded expand_related_graph call is often enough to build a testable recipe' in text
     assert 'same-folder movie/special collection with many visible named files' in text
-    assert 'Search individual titles only for names still missing from the graph' in text
-    assert 'expand the Bangumi relation graph layer by layer' in text
+    assert 'Search individual titles only for graph misses, verifier/review feedback, or real conflicts' in text
+    assert 'use confirmed anime subject IDs with subject_types' in text
     assert 'not as proof of completeness' in text
     assert 'traversal_status.next_subject_ids_to_expand' in text
-    assert 'expand again from those subject IDs' in text
+    assert 'not as a reason to postpone first validation' in text
     assert 'exact Bangumi episode_id, draft and validate that mapped rule now' in text
-    assert 'Relation frontier exhaustion is only required before declaring that named group supplemental' in text
+    assert 'Relation frontier exhaustion is only for final fail_closed or final supplemental justification' in text
     assert 'one-file movie-shaped Bangumi subjects' in text
     assert 'recording diaries, interviews, cast/staff talks' in text
     assert 'episode_type shown by Bangumi episode rows' in text
@@ -336,34 +359,48 @@ def test_node_runner_registers_goal_retry_recipe_tools_without_mapping_draft():
     assert 'ignore book/manga/novel/music/game/radio/soundtrack/live-event relations' in text
     assert 'Read relation_subjects first' in text
     assert 'Keep rule reasons short' in text
-    assert 'If no recipe has been validated yet, construct recipe_params now' in text
+    assert 'Run progress fact: no params validation has completed yet. Evidence calls so far:' in text
+    assert 'not a target recommendation or next-step instruction' in text
+    assert 'Progress telemetry is factual only.' in text
     assert 'Repair mode: fix only these verifier issues' in text
     assert 'Hard finish checkpoint: you stopped again without a final accepted recipe or fail_closed result.' in text
     assert 'Progress so far: no custom tool calls were completed' in text
     assert 'Recipe artifact exists:' in text
-    assert 'If you already know the anime subject_id and episode rows, call validate_organize_recipe_params immediately' in text
+    assert 'Use your semantic judgment to choose between validation/submission and fail_closed' in text
     assert 'phase: "hard_finish"' in text
     assert 'Final repair loop: no final result exists, but wall-clock budget remains.' in text
     assert 'maxRepairAttempts = 6' in text
     assert 'phase: `final_repair_${attemptNumber}`' in text
     assert 'phase: `final_repair_${attemptNumber}_settle`' in text
     assert 'For duplicate_target across adjacent numbered files' in text
+    assert 'For duplicate_target caused by local split or variant locators such as _1/_2' in text
+    assert 'exclude only those split/variant paths from the mapped sequence' in text
+    assert 'evidence collection telemetry, not a semantic blocker by itself' in text
     assert 'A submit result with \\`status: "review"\\` is not final' in text
     assert 'do not hand-write or translate a raw OrganizeRecipeDraft' in text
     assert 'do not switch to raw submit_organize_recipe' in text
     assert 'raw tools are for debugging already-generated JSON only' in text
+    assert 'validate_organize_recipe_params_patch is available when only a few rules changed' in text
+    assert 'Patch the latest recipe params from the previous params validate/submit' in text
+    assert 'Repair patch shape after a params validation' in text
     assert 'For large packages, do not enumerate dozens of obvious supplemental extras as exact_paths' in text
     assert 'keep broad supplemental groups compact with path_glob/filename_regex selectors' in text
+    assert 'A related Bangumi special/OVA subject is only candidate evidence' in text
+    assert 'short package SP/bonus groups, a targeted lookup plus missing/contradictory episode rows' in text
+    assert 'missing_target_episode for a special_or_bonus_candidate group' in text
     assert 'related_refs' in text
     assert 'Top repair_hints' in text
-    assert 'enter repair mode: read the reported issues, change only the affected params/rules' in text
+    assert 'repair mode is scoped to the reported issues: change only the affected params/rules' in text
     assert 'Python turns semantic parameters into the full JSON recipe' in text
+    assert 'Case input JSON is available at:' in text
+    assert 'Start from bounded custom-tool facts' in text
+    assert 'not the normal working surface' in text
     assert 'compare the local file number with Bangumi episode sort and ep values' in text
     assert 'episode_number_field:\\"ep\\"' in text
     assert 'Do not print recipe JSON as plain text' in text
     assert 'split that range to a related season/cour/part subject' in text
     assert 'Do not search old run artifacts' in text
-    assert 'disposition:\\"non_bangumi_or_supplemental\\" only after traversal_status.frontier_exhausted is true' in text
+    assert 'For named anime specials/movies, use bounded relation evidence before final supplemental decisions' in text
     assert 'Do not write boolean flags such as non_bangumi_or_supplemental:true' in text
     assert 'exact_paths plus disposition:\\"non_bangumi_or_supplemental\\"' in text
     assert 'Run the bash helper only when debugging a schema/selector problem' in text

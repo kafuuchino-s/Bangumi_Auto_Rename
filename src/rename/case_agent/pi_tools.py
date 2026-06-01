@@ -39,6 +39,10 @@ def _json_safe(value: Any) -> Any:
     return value
 
 
+def _json_clone(value: Any) -> Any:
+    return json.loads(json.dumps(_json_safe(value), ensure_ascii=False))
+
+
 def _counter(values: list[str]) -> dict[str, int]:
     return dict(Counter(value for value in values if value))
 
@@ -56,10 +60,30 @@ _LOCATOR_TOKEN_RE = re.compile(
     r'|((?<![A-Za-z0-9])(?:EP|E)(?=[\s._-]*\d)[\s._-]*\d{1,3}(?:\.\d+)?)'
     r'|((?<![A-Za-z0-9])#?\d{1,3}(?:\.\d+)?(?![A-Za-z0-9]))'
 )
+_SKELETON_LOCATOR_RE = re.compile(
+    r'(?i)'
+    r'(?P<sxe>S(?P<sxe_season>\d{1,2})E(?P<sxe_ep>\d{1,3})(?:v(?P<sxe_version>\d+))?)'
+    r'|(?P<kind_token>(?<![A-Za-z0-9])(?P<kind>SP|SPECIAL|OVA|OAV|OAD|ONA|MOVIE|PART|CD|DVD|DISC|DISK)[\s._-]*(?P<kind_ep>\d{1,4})(?:v(?P<kind_version>\d+))?)'
+    r'|(?P<ep_token>(?<![A-Za-z0-9])(?:EP|E)[\s._-]*(?P<ep_ep>\d{1,3})(?:v(?P<ep_version>\d+))?)'
+    r'|(?P<num_token>(?<![A-Za-z0-9])#?(?P<num_ep>\d{1,3})(?:v(?P<num_version>\d+))?(?:\.\d+)?(?![A-Za-z0-9]))'
+)
 _TECH_NUMERIC_TOKENS = {
     '480', '540', '720', '1080', '1440', '1920', '2160', '264', '265', '266',
     '10bit', '8bit',
 }
+_TECH_VARIATION_RE = re.compile(
+    r'(?i)(?:\d+FLAC|FLACx?\d*|x26[456]|H\.?26[456]|HEVC|AVC|AAC|OPUS|TRUEHD|DTS|'
+    r'1080p|720p|2160p|10bit|8bit|Ma10p|Hi10P|BDRip|BluRay|WEB[-_ ]?DL|WEBRip)'
+)
+_HASH_TOKEN_RE = re.compile(r'(?i)\b[A-F0-9]{6,10}\b')
+_SKELETON_ASSET_GROUP_RE = re.compile(
+    r'(?i)('
+    r'\b(?:asset|art|booklet|cast|credit|design|event|gallery|interview|menu|mv|nc(?:ed|op)|pv|scan|'
+    r'script|setting|trailer)\b|オリジナル|デザイン|設定|設定画|脚本|絵コンテ|原画|特典|'
+    r'イベント|先行|完成披露'
+    r')'
+)
+_SKELETON_EXACT_ANCHOR_RE = re.compile(r'(?i)\b(movie|movies|film|ova|oav|oad|ona|gekijou?ban|eiga)\b|劇場|剧场|映画')
 _REVIEW_LONG_EXCLUDED_SECONDS = 15 * 60
 _REVIEW_OBVIOUS_EXTRA_RE = re.compile(r'(?i)(?:^|[/\[\]\s_-])iv\d{1,3}(?:$|[/\[\]\s_-])')
 _REVIEW_SUPPLEMENTAL_DIR_RE = re.compile(r'(?i)^(?:SPs?|Specials?|Bonus|Extras?)$')
@@ -373,6 +397,377 @@ def _local_structure_summary(cards: list[Any]) -> dict[str, Any]:
     }
 
 
+def _skeleton_locator_tokens(stem_or_name: str) -> list[dict[str, Any]]:
+    tokens: list[dict[str, Any]] = []
+    for match in _SKELETON_LOCATOR_RE.finditer(str(stem_or_name or '')):
+        raw = match.group(0)
+        if match.group('sxe'):
+            number = str(match.group('sxe_ep') or '')
+            version = str(match.group('sxe_version') or '')
+            locator_kind = 's00e' if int(match.group('sxe_season') or 0) == 0 else 'sxe'
+        elif match.group('kind_token'):
+            number = str(match.group('kind_ep') or '')
+            version = str(match.group('kind_version') or '')
+            kind = str(match.group('kind') or '').casefold()
+            locator_kind = 'special' if kind in {'sp', 'special'} else kind
+        elif match.group('ep_token'):
+            number = str(match.group('ep_ep') or '')
+            version = str(match.group('ep_version') or '')
+            locator_kind = 'regular'
+        else:
+            number = str(match.group('num_ep') or '')
+            version = str(match.group('num_version') or '')
+            locator_kind = 'regular'
+        if number.casefold() in _TECH_NUMERIC_TOKENS:
+            continue
+        number_start = match.start() + raw.find(number)
+        number_end = number_start + len(number)
+        tokens.append({
+            'token': raw,
+            'normalized': re.sub(r'\s+', '', raw.upper().replace('_', '').replace('-', '')),
+            'number': number.lstrip('0') or '0',
+            'number_width': len(number),
+            'version_suffix': f'v{version}' if version else '',
+            'locator_kind': locator_kind,
+            'start': match.start(),
+            'end': match.end(),
+            'number_start': number_start,
+            'number_end': number_end,
+        })
+    return tokens
+
+
+def _skeleton_title_hint(prefix: str, fallback: str = '') -> str:
+    text = str(prefix or '').strip(' ._-')
+    text = re.sub(r'^\[[^\]]+\]\s*', '', text)
+    text = re.sub(r'(?i)\[[^\]]*(?:BDRip|BluRay|WEB[-_ ]?DL|WEBRip|x264|x265|HEVC|AVC|FLAC|AAC|Hi10P|Ma10p|10bit|1080p|720p|2160p)[^\]]*\]', ' ', text)
+    text = re.sub(r'(?i)\b(BDRip|BluRay|WEB[-_ ]?DL|WEBRip|x264|x265|HEVC|AVC|FLAC|AAC|Hi10P|Ma10p|10bit|1080p|720p|2160p)\b', ' ', text)
+    text = re.sub(r'\[\s*\]', ' ', text)
+    text = re.sub(r'\s+', ' ', text).strip(' ._-[]')
+    if text:
+        return _compact_text(text)
+    return _compact_text(str(fallback or '').strip(' ._-[]'))
+
+
+def _skeleton_group_key(card: Any) -> tuple[str, str, str]:
+    path = _norm_path(str(getattr(card, 'path', '') or ''))
+    parent = str(getattr(card, 'parent_display', '') or '')
+    if not parent and '/' in path:
+        parent = path.rsplit('/', 1)[0]
+    stem = _stem_for_path(path)
+    tokens = _skeleton_locator_tokens(stem)
+    if tokens:
+        token = tokens[0]
+        prefix = stem[: int(token['start'] or 0)]
+        title = _skeleton_title_hint(prefix, parent)
+        locator_kind = str(token.get('locator_kind') or 'regular')
+    else:
+        title = _skeleton_title_hint(stem, parent)
+        locator_kind = 'unnumbered'
+    return (parent.casefold(), title.casefold(), locator_kind.casefold())
+
+
+def _safe_int(value: Any) -> int | None:
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return None
+
+
+def _path_suffix(path: str) -> str:
+    basename = _norm_path(path).rsplit('/', 1)[-1]
+    if '.' not in basename:
+        return ''
+    return basename.rsplit('.', 1)[-1]
+
+
+def _selector_source_pattern_for_group(members: list[Any]) -> str:
+    if not members:
+        return ''
+    first_path = _norm_path(str(getattr(members[0], 'path', '') or ''))
+    first_stem = _stem_for_path(first_path)
+    first_tokens = _skeleton_locator_tokens(first_stem)
+    if not first_tokens:
+        return ''
+    token = first_tokens[0]
+    basename = first_path.rsplit('/', 1)[-1]
+    stem_start = first_path.rfind(basename)
+    full_number_start = stem_start + int(token.get('number_start') or 0)
+    full_token_end = stem_start + int(token.get('end') or 0)
+    width = int(token.get('number_width') or 0)
+    ep_placeholder = f'{{ep:0{width}}}' if width > 1 else '{ep}'
+    after_token_values: list[str] = []
+    for member in members:
+        path = _norm_path(str(getattr(member, 'path', '') or ''))
+        stem = _stem_for_path(path)
+        tokens = _skeleton_locator_tokens(stem)
+        if not tokens:
+            continue
+        member_basename = path.rsplit('/', 1)[-1]
+        member_stem_start = path.rfind(member_basename)
+        member_token_end = member_stem_start + int(tokens[0].get('end') or 0)
+        after_token_values.append(path[member_token_end:])
+    suffix = f'.{_path_suffix(first_path)}' if _path_suffix(first_path) else ''
+    after = f'*{suffix}' if len(set(after_token_values)) > 1 and suffix else first_path[full_token_end:]
+    return first_path[:full_number_start] + ep_placeholder + '{ver}' + after
+
+
+def _source_pattern_matches(pattern: str, path: str) -> bool:
+    if not pattern:
+        return False
+    try:
+        regex = re.compile(_source_pattern_to_regex(pattern), re.IGNORECASE)
+    except re.error:
+        return False
+    basename = _norm_path(path).rsplit('/', 1)[-1]
+    return bool(regex.search(basename) or regex.search(_norm_path(path)))
+
+
+def _selector_preview_for_group(pattern: str, members: list[Any], all_visible_paths: list[str]) -> dict[str, Any]:
+    group_paths = sorted({_norm_path(str(getattr(member, 'path', '') or '')) for member in members if _norm_path(str(getattr(member, 'path', '') or ''))})
+    matched = sorted(path for path in all_visible_paths if _source_pattern_matches(pattern, path))
+    missing = sorted(set(group_paths) - set(matched))
+    extra = sorted(set(matched) - set(group_paths))
+    safe = bool(group_paths) and not missing and not extra
+    return {
+        'safe': safe,
+        'matched_count': len(matched),
+        'expected_count': len(group_paths),
+        'matched_paths_sample': matched[:12],
+        'missing_paths_sample': missing[:8],
+        'extra_paths_sample': extra[:8],
+    }
+
+
+def _variation_notes_for_group(members: list[Any]) -> list[str]:
+    versions: set[str] = set()
+    tech_tokens_union: set[str] = set()
+    tech_token_sets: set[tuple[str, ...]] = set()
+    hash_count = 0
+    after_locator_values: set[str] = set()
+    for member in members:
+        path = _norm_path(str(getattr(member, 'path', '') or ''))
+        stem = _stem_for_path(path)
+        tokens = _skeleton_locator_tokens(stem)
+        if tokens:
+            version = str(tokens[0].get('version_suffix') or '')
+            if version:
+                versions.add(version)
+            after_locator_values.add(stem[int(tokens[0].get('end') or 0):])
+        member_tech_tokens: set[str] = set()
+        for match in _TECH_VARIATION_RE.finditer(path):
+            member_tech_tokens.add(match.group(0).casefold())
+        if member_tech_tokens:
+            tech_tokens_union.update(member_tech_tokens)
+            tech_token_sets.add(tuple(sorted(member_tech_tokens)))
+        if _HASH_TOKEN_RE.search(path):
+            hash_count += 1
+    notes: list[str] = []
+    if versions:
+        notes.append(f'version suffixes vary or appear: {sorted(versions)[:6]}')
+    if len(tech_token_sets) > 1:
+        notes.append(f'technical tokens vary: {sorted(tech_tokens_union)[:10]}')
+    if hash_count:
+        notes.append('hash/checksum-like tokens appear in filenames')
+    if len(after_locator_values) > 1:
+        notes.append('suffix after episode locator varies; wildcard selector preview is safer than copying one filename suffix')
+    return notes
+
+
+def _local_recipe_skeleton(cards: list[Any]) -> dict[str, Any]:
+    visible_cards = [
+        card for card in cards
+        if bool(getattr(card, 'is_main', False)) and _norm_path(str(getattr(card, 'path', '') or ''))
+    ]
+    buckets: dict[tuple[str, str, str], list[Any]] = {}
+    for card in visible_cards:
+        buckets.setdefault(_skeleton_group_key(card), []).append(card)
+
+    visible_paths = sorted(_norm_path(str(getattr(card, 'path', '') or '')) for card in visible_cards)
+    groups: list[dict[str, Any]] = []
+    diagnostics: list[str] = []
+    for index, (_key, members) in enumerate(sorted(buckets.items(), key=_skeleton_bucket_sort_key), start=1):
+        if index > 40:
+            diagnostics.append('local_recipe_skeleton_group_limit_reached')
+            break
+        paths = [_norm_path(str(getattr(card, 'path', '') or '')) for card in members]
+        basenames = [path.rsplit('/', 1)[-1] for path in paths]
+        folder = str(getattr(members[0], 'parent_display', '') or '')
+        if not folder and '/' in paths[0]:
+            folder = paths[0].rsplit('/', 1)[0]
+        first_stem = _stem_for_path(paths[0])
+        first_tokens = _skeleton_locator_tokens(first_stem)
+        first_token = first_tokens[0] if first_tokens else {}
+        title_prefix = first_stem[: int(first_token.get('start') or 0)] if first_token else first_stem
+        title_hint = _skeleton_title_hint(title_prefix, folder)
+        numbers = [
+            value for value in (_safe_int((_skeleton_locator_tokens(_stem_for_path(path)) or [{}])[0].get('number')) for path in paths)
+            if value is not None
+        ]
+        locator_kind = str(first_token.get('locator_kind') or 'unnumbered')
+        source_pattern = _selector_source_pattern_for_group(members)
+        preview = _selector_preview_for_group(source_pattern, members, visible_paths) if source_pattern else {
+            'safe': False,
+            'matched_count': 0,
+            'expected_count': len(paths),
+            'matched_paths_sample': [],
+            'missing_paths_sample': paths[:8],
+            'extra_paths_sample': [],
+        }
+        numbers_are_unique = len(numbers) == len(set(numbers))
+        source_paths_payload: dict[str, Any] = {
+            'sample': paths[:12],
+            'count': len(paths),
+        }
+        if len(paths) <= 16:
+            source_paths_payload['all'] = paths
+        else:
+            source_paths_payload['omitted_count'] = len(paths) - 12
+        selector_hint: dict[str, Any] = {
+            'recommended_shape': 'source_pattern' if preview.get('safe') and len(paths) > 1 and numbers_are_unique else 'exact_paths_or_split',
+            'source_pattern': source_pattern,
+            'exact_paths': paths if len(paths) <= 8 else paths[:8],
+            'coverage_preview': preview,
+        }
+        boundary_warnings: list[str] = [] if preview.get('safe') or len(paths) == 1 else ['selector_hint_source_pattern_is_not_coverage_safe']
+        if numbers and not numbers_are_unique:
+            boundary_warnings.append('duplicate_episode_numbers_in_group')
+        group = {
+            'group_ref': f'LG{len(groups) + 1}',
+            'group_kind_hint': _local_group_kind_hint(locator_kind, [folder, *basenames], len(paths)),
+            'folder': folder or '.',
+            'title_hint': title_hint,
+            'locator_kind_hint': locator_kind,
+            'source_path_count': len(paths),
+            'source_paths': source_paths_payload,
+            'representative_source_path': paths[0] if paths else '',
+            'number_summary': _numeric_run_summary([str(number) for number in numbers]),
+            'duration_seconds': _duration_summary(members),
+            'content_shape_token_counts': _content_shape_counts([folder, *basenames]),
+            'variation_notes': _variation_notes_for_group(members),
+            'selector_hint': selector_hint,
+            'suggested_title_query': _dedupe_nonempty([title_hint, _query_from_source_path(paths[0]) if paths else ''])[0] if _dedupe_nonempty([title_hint, _query_from_source_path(paths[0]) if paths else '']) else '',
+            'boundary_warnings': boundary_warnings,
+        }
+        groups.append(group)
+    return {
+        'visible_file_count': len(visible_cards),
+        'group_count': len(groups),
+        'groups': groups,
+        'diagnostics': diagnostics,
+        'skeleton_policy': 'Factual local grouping and selector coverage preview only. It does not choose Bangumi subject_id, episode_id, disposition, or supplemental status.',
+    }
+
+
+def _local_recipe_params_scaffold(local_recipe_skeleton: dict[str, Any]) -> dict[str, Any]:
+    groups: list[dict[str, Any]] = []
+    for group in local_recipe_skeleton.get('groups') or []:
+        if not isinstance(group, dict):
+            continue
+        selector_hint = group.get('selector_hint') if isinstance(group.get('selector_hint'), dict) else {}
+        source_paths = group.get('source_paths') if isinstance(group.get('source_paths'), dict) else {}
+        coverage_preview = selector_hint.get('coverage_preview') if isinstance(selector_hint.get('coverage_preview'), dict) else {}
+        number_summary = group.get('number_summary') if isinstance(group.get('number_summary'), dict) else {}
+        integer_ranges = [str(value) for value in (number_summary.get('integer_ranges') or []) if str(value)]
+        source_path_count = int(group.get('source_path_count') or 0)
+        selector_shape = str(selector_hint.get('recommended_shape') or '')
+
+        selector_stub: dict[str, Any] = {}
+        if selector_shape == 'source_pattern' and coverage_preview.get('safe') is True and selector_hint.get('source_pattern'):
+            selector_stub['source_pattern'] = str(selector_hint.get('source_pattern') or '')
+            if integer_ranges:
+                selector_stub['episode_range'] = integer_ranges[0]
+                selector_stub['episode_offset'] = 'EP'
+                selector_stub['episode_number_field'] = 'sort'
+        elif source_path_count == 1 and group.get('representative_source_path'):
+            selector_stub['source_path'] = str(group.get('representative_source_path') or '')
+        elif isinstance(source_paths.get('all'), list):
+            selector_stub['exact_paths'] = [str(path) for path in source_paths.get('all') or [] if str(path)]
+        else:
+            selector_stub['selector_note'] = 'Use exact_paths from this group or split the group before validating; no compact coverage-safe selector exists.'
+            selector_stub['source_paths_sample'] = [str(path) for path in (source_paths.get('sample') or []) if str(path)]
+
+        params_rule_stub = {
+            'name': f"{group.get('group_ref') or 'LG'} {group.get('title_hint') or 'local group'}".strip(),
+            **selector_stub,
+            'reason': 'Fill after choosing Bangumi evidence.',
+        }
+        groups.append({
+            'group_ref': group.get('group_ref'),
+            'group_kind_hint': group.get('group_kind_hint'),
+            'title_hint': group.get('title_hint'),
+            'locator_kind_hint': group.get('locator_kind_hint'),
+            'source_path_count': source_path_count,
+            'representative_source_path': group.get('representative_source_path'),
+            'number_summary': number_summary,
+            'duration_seconds': group.get('duration_seconds'),
+            'boundary_warnings': group.get('boundary_warnings') or [],
+            'variation_notes': group.get('variation_notes') or [],
+            'selector_coverage_safe': bool(coverage_preview.get('safe')),
+            'params_rule_stub': params_rule_stub,
+            'target_fields_for_mapped_rule': [
+                'subject_id or bangumi_subject_id',
+                'media_kind',
+                'episode_type for sequence rules, or episode_id for exact row rules',
+            ],
+            'supplemental_fields_if_evidence_does_not_support_mapping': {
+                'disposition': 'non_bangumi_or_supplemental',
+                'reason': 'short evidence-gap reason',
+            },
+        })
+    return {
+        'visible_file_count': local_recipe_skeleton.get('visible_file_count', 0),
+        'group_count': len(groups),
+        'groups': groups,
+        'scaffold_policy': (
+            'Local selector scaffold only. It copies factual source selectors/ranges from local_recipe_skeleton '
+            'and does not choose Bangumi subject_id, episode_id, media_kind, episode_type, disposition, or supplemental status.'
+        ),
+        'usage_hint': (
+            'Copy a params_rule_stub, fill the target fields from Bangumi evidence or set the supplemental disposition, '
+            'then call validate_organize_recipe_params as a trial check.'
+        ),
+    }
+
+
+def _local_group_kind_hint(locator_kind: str, values: list[str], count: int) -> str:
+    tokens = _content_shape_counts(values)
+    key = str(locator_kind or '').casefold()
+    joined = ' '.join(str(value or '') for value in values)
+    if _SKELETON_ASSET_GROUP_RE.search(joined):
+        return 'asset_or_bonus_candidate'
+    if any(_looks_like_supplemental_folder(str(value or '')) for value in values):
+        return 'special_or_bonus_candidate'
+    if key in {'special', 'ova', 'oav', 'oad', 'ona', 'movie'} or any(token in tokens for token in ('SP', 'SPECIAL', 'OVA', 'OAD', 'MOVIE', 'FILM', 'RECAP', 'BONUS', 'EXTRA')):
+        return 'special_or_bonus_candidate'
+    if key == 'unnumbered' or count <= 1:
+        return 'exact_or_standalone_candidate'
+    return 'numbered_sequence_candidate'
+
+
+def _skeleton_bucket_sort_key(item: tuple[tuple[str, str, str], list[Any]]) -> tuple[int, int, str]:
+    key, members = item
+    paths = [_norm_path(str(getattr(card, 'path', '') or '')) for card in members]
+    basenames = [path.rsplit('/', 1)[-1] for path in paths]
+    folder = str(getattr(members[0], 'parent_display', '') or '') if members else ''
+    if not folder and paths and '/' in paths[0]:
+        folder = paths[0].rsplit('/', 1)[0]
+    locator_kind = key[2] if len(key) >= 3 else ''
+    group_kind = _local_group_kind_hint(locator_kind, [folder, *basenames], len(paths))
+    rank_by_kind = {
+        'numbered_sequence_candidate': 0,
+        'exact_or_standalone_candidate': 1,
+        'special_or_bonus_candidate': 2,
+        'asset_or_bonus_candidate': 3,
+    }
+    return (rank_by_kind.get(group_kind, 4), -len(members), '|'.join(str(part) for part in key))
+
+
+def _looks_like_supplemental_folder(folder: str) -> bool:
+    normalized = _norm_path(folder).rsplit('/', 1)[-1].strip().casefold()
+    return normalized in {'sp', 'sps', 'special', 'specials', 'bonus', 'bonuses', 'extra', 'extras'}
+
+
 @dataclass
 class PiCaseToolState:
     workspace: CaseEvidenceWorkspace
@@ -387,6 +782,9 @@ class PiCaseToolState:
     organize_recipe: OrganizeRecipeDraft | None = None
     compiled_plan: CompiledOrganizePlan | None = None
     recipe_verifier_result: CaseVerifierResult | None = None
+    latest_recipe_params_payload: dict[str, Any] | None = None
+    local_recipe_skeleton_cache: dict[str, Any] | None = None
+    local_recipe_params_scaffold_cache: dict[str, Any] | None = None
     _request_index: int = 0
     _query_index: int = 0
 
@@ -400,11 +798,17 @@ class PiCaseToolState:
 
     def case_input(self, *, pi_command: str = '', timeout_seconds: int = 0) -> dict[str, Any]:
         artifacts_dir = self.run_dir / 'artifacts'
+        local_structure_summary = _local_structure_summary(list(self.workspace.local_files))
+        local_recipe_skeleton = self._local_recipe_skeleton_payload()
+        local_recipe_params_scaffold = self._local_recipe_params_scaffold_payload()
         return {
             'case_id': self.case_id,
             'case_agent_mode': 'pi_case_agent',
             'task_source_path': self.source_path,
-            'local_structure_summary': _local_structure_summary(list(self.workspace.local_files)),
+            'local_structure_summary': local_structure_summary,
+            'local_recipe_skeleton': local_recipe_skeleton,
+            'local_recipe_params_scaffold': local_recipe_params_scaffold,
+            'run_progress': self._run_progress_payload(),
             'visible_source_paths': self._visible_main_paths(),
             'local_identity_policy': 'Only values from visible_source_paths or context.local_files[].source_path may be passed as a tool source_path. task_source_path is the original task/sample path, not a local file identity.',
             'pi_command': pi_command,
@@ -429,14 +833,29 @@ class PiCaseToolState:
                 'done_when': [
                     'organize_recipe scratch artifact is updated by validate or submit; notes.md is optional for complex investigations',
                     'local skill helper has checked the recipe shape',
-                    'validate_organize_recipe returns no blocking issues',
-                    'validate_organize_recipe returns no review_warnings, or you have resolved each warning with targeted evidence and validated again',
+                    'trial validation feedback has been used for any needed repair',
                     'submit_organize_recipe returns accepted=true',
                     'goal_complete is called only after accepted=true',
                 ],
             },
-            'context': self._case_context_payload(detail=True),
+            'tool_semantics': {
+                'validate_organize_recipe_params': 'Trial-check semantic params without finalizing the case. First validation does not need to be accepted; invalid/review feedback is meant for repair.',
+                'get_local_recipe_params_scaffold': 'Return local selector/range params stubs only; Pi must fill Bangumi target or supplemental disposition from evidence.',
+                'submit_organize_recipe_params': 'Finalize only after params validation is accepted and review_warnings are resolved.',
+                'validate_organize_recipe_params_patch': 'Trial-check a small patch against the latest params after a params validation exists.',
+            },
+            'context': self._case_context_payload(detail=True, include_startup_evidence=False),
         }
+
+    def _local_recipe_skeleton_payload(self) -> dict[str, Any]:
+        if self.local_recipe_skeleton_cache is None:
+            self.local_recipe_skeleton_cache = _local_recipe_skeleton(list(self.workspace.local_files))
+        return self.local_recipe_skeleton_cache
+
+    def _local_recipe_params_scaffold_payload(self) -> dict[str, Any]:
+        if self.local_recipe_params_scaffold_cache is None:
+            self.local_recipe_params_scaffold_cache = _local_recipe_params_scaffold(self._local_recipe_skeleton_payload())
+        return self.local_recipe_params_scaffold_cache
 
     def handle_tool(self, name: str, arguments: dict[str, Any] | None = None) -> dict[str, Any]:
         started = time.time()
@@ -464,8 +883,68 @@ class PiCaseToolState:
             fh.write('\n')
         return _json_safe(result)
 
+    def _run_progress_payload(self) -> dict[str, Any]:
+        tool_names = [str(row.get('tool') or '') for row in self.tool_trace]
+        params_validation_tools = {
+            'validate_organize_recipe_params',
+            'validate_organize_recipe_params_patch',
+            'submit_organize_recipe_params',
+            'submit_organize_recipe_params_patch',
+        }
+        raw_validation_tools = {'validate_organize_recipe', 'submit_organize_recipe'}
+        subject_evidence_tools = {
+            'search_bangumi_subjects',
+            'lookup_bangumi_subject',
+            'expand_related_subjects',
+            'expand_related_graph',
+            'find_bangumi_targets_for_local_file',
+        }
+        episode_evidence_tools = {'get_episode_list', 'get_target_window', 'get_target_detail'}
+        return {
+            'tool_call_count': len(tool_names),
+            'params_validation_seen': any(name in params_validation_tools for name in tool_names),
+            'raw_validation_seen': any(name in raw_validation_tools for name in tool_names),
+            'verifier_feedback_available': self.recipe_verifier_result is not None,
+            'recipe_artifact_available': self.organize_recipe is not None,
+            'subject_evidence_call_count': sum(1 for name in tool_names if name in subject_evidence_tools),
+            'episode_evidence_call_count': sum(1 for name in tool_names if name in episode_evidence_tools),
+            'recent_tool_names': tool_names[-8:],
+            'note': 'Progress facts only; these counts are not target recommendations or a next-step instruction.',
+        }
+
     def tool_get_case_context(self, detail: bool = False) -> dict[str, Any]:
         return {'ok': True, 'data': self._case_context_payload(detail=bool(detail))}
+
+    def tool_get_local_recipe_params_scaffold(self, detail: bool = False) -> dict[str, Any]:
+        payload = self._local_recipe_params_scaffold_payload()
+        if detail:
+            return {'ok': True, 'data': payload}
+        compact_groups = []
+        for group in payload.get('groups') or []:
+            if not isinstance(group, dict):
+                continue
+            compact_groups.append({
+                'group_ref': group.get('group_ref'),
+                'group_kind_hint': group.get('group_kind_hint'),
+                'title_hint': group.get('title_hint'),
+                'source_path_count': group.get('source_path_count'),
+                'representative_source_path': group.get('representative_source_path'),
+                'number_summary': group.get('number_summary'),
+                'selector_coverage_safe': group.get('selector_coverage_safe'),
+                'params_rule_stub': group.get('params_rule_stub'),
+                'target_fields_for_mapped_rule': group.get('target_fields_for_mapped_rule'),
+                'supplemental_fields_if_evidence_does_not_support_mapping': group.get('supplemental_fields_if_evidence_does_not_support_mapping'),
+            })
+        return {
+            'ok': True,
+            'data': {
+                'visible_file_count': payload.get('visible_file_count', 0),
+                'group_count': len(compact_groups),
+                'groups': compact_groups,
+                'scaffold_policy': payload.get('scaffold_policy'),
+                'usage_hint': payload.get('usage_hint'),
+            },
+        }
 
     def tool_search_bangumi_subjects(self, query: str, max_subjects: int = 5) -> dict[str, Any]:
         try:
@@ -478,7 +957,7 @@ class PiCaseToolState:
         return {
             'ok': True,
             'subjects': [self._subject_payload(card) for card in subjects],
-            'usage_hint': 'If the local case is a same-franchise bundle with several named movies, OVAs, specials, or side stories, use the returned anime subject IDs as anchors for expand_related_graph before doing per-title broad searches. Direct title search is the fallback for visible titles missing from that relation graph.',
+            'usage_hint': 'Returned anime subject IDs are factual anchors. In same-franchise bundles, relation-graph evidence can compare several named movies, OVAs, specials, or side stories against the local title list; direct title searches are most informative for names absent or conflicting in that graph.',
             'context': self._case_context_payload(detail=False),
         }
 
@@ -552,7 +1031,7 @@ class PiCaseToolState:
             'ok': True,
             'relation_subjects': compact_rows,
             'relations': rows,
-            'usage_hint': 'Use relation_subjects as the series map. Fetch get_episode_list for related anime subjects that match visible local groups; compare local numbering with Bangumi sort/ep, and split local ranges when the first subject does not expose matching rows.',
+            'usage_hint': 'relation_subjects is a compact series map fact surface. Episode rows matter for related anime subjects that match visible local groups; local numbering can then be compared with Bangumi sort/ep and split when one subject lacks the needed rows.',
             'context': self._case_context_payload(detail=False),
         }
 
@@ -692,7 +1171,7 @@ class PiCaseToolState:
             'subjects': nodes,
             'edges': edges,
             'skipped': skipped[:20],
-            'usage_hint': 'Use this recursive relation graph as evidence only. If traversal_status.next_subject_ids_to_expand is non-empty and a named local group is unresolved, expand again from those subject IDs before treating it as supplemental.',
+            'usage_hint': 'This recursive relation graph is evidence only. traversal_status.next_subject_ids_to_expand is a bounded-frontier fact for named local groups that still need relation context; it is not a recommendation.',
             'context': self._case_context_payload(detail=False),
         }
 
@@ -844,7 +1323,7 @@ class PiCaseToolState:
             'queries_used': search_rows,
             'subject_episode_groups': subject_episode_groups,
             'episode_order': 'sort, then ep, then episode_id',
-            'usage_hint': 'Use these as facts only. If a plausible subject is visible or episode_rows_limited is true, do not keep broad-searching because episode rows look truncated; call get_episode_list/get_target_window or draft validate_organize_recipe_params so Python can hydrate declared subject evidence.',
+            'usage_hint': 'Use these as facts only. episode_rows_limited means this compact helper returned a partial row window; declared subject IDs can later be hydrated by evidence or validation tools without treating this helper as a chosen target.',
             'context': self._case_context_payload(detail=False),
         }
 
@@ -906,6 +1385,22 @@ class PiCaseToolState:
         result = self.tool_validate_organize_recipe(organize_recipe=recipe.model_dump(mode='json'))
         result['organize_recipe'] = recipe.model_dump(mode='json')
         result['params_compiled'] = True
+        result['validation_role'] = 'trial_check'
+        result['finalizes_case'] = False
+        result['feedback_semantics'] = 'invalid and review statuses are verifier feedback for repair; accepted validation still requires submit_organize_recipe_params to finish.'
+        self._write_latest_recipe_params_artifact()
+        return result
+
+    def tool_validate_organize_recipe_params_patch(
+        self,
+        recipe_params_patch: dict[str, Any] | None = None,
+        patch: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        merged, error = self._recipe_params_with_patch(recipe_params_patch if recipe_params_patch is not None else patch)
+        if error:
+            return {'ok': False, 'accepted': False, 'error': error, 'repair_hints': _parse_error_repair_hints(error, self._visible_main_paths())}
+        result = self.tool_validate_organize_recipe_params(recipe_params=merged)
+        result['params_patch_applied'] = True
         return result
 
     def tool_submit_organize_recipe(self, organize_recipe: dict[str, Any] | None = None, summary: str = '') -> dict[str, Any]:
@@ -989,6 +1484,20 @@ class PiCaseToolState:
         result = self.tool_submit_organize_recipe(organize_recipe=recipe.model_dump(mode='json'), summary=summary)
         result['organize_recipe'] = recipe.model_dump(mode='json')
         result['params_compiled'] = True
+        self._write_latest_recipe_params_artifact()
+        return result
+
+    def tool_submit_organize_recipe_params_patch(
+        self,
+        recipe_params_patch: dict[str, Any] | None = None,
+        patch: dict[str, Any] | None = None,
+        summary: str = '',
+    ) -> dict[str, Any]:
+        merged, error = self._recipe_params_with_patch(recipe_params_patch if recipe_params_patch is not None else patch)
+        if error:
+            return {'ok': False, 'accepted': False, 'error': error, 'repair_hints': _parse_error_repair_hints(error, self._visible_main_paths())}
+        result = self.tool_submit_organize_recipe_params(recipe_params=merged, summary=summary)
+        result['params_patch_applied'] = True
         return result
 
     def auto_finalize_accepted_validation(self) -> dict[str, Any]:
@@ -1077,10 +1586,47 @@ class PiCaseToolState:
         if 'recipe_params' in payload and isinstance(payload.get('recipe_params'), dict):
             payload = dict(payload['recipe_params'])
         try:
+            self.latest_recipe_params_payload = _json_clone(payload)
             recipe_payload = self._recipe_payload_from_params(payload)
             return OrganizeRecipeDraft.model_validate(recipe_payload), ''
         except Exception as exc:
             return None, f'invalid OrganizeRecipeParams payload: {exc}'
+
+    def _recipe_params_with_patch(self, recipe_params_patch: dict[str, Any] | None) -> tuple[dict[str, Any] | None, str]:
+        if isinstance(recipe_params_patch, str):
+            try:
+                recipe_params_patch = json.loads(recipe_params_patch)
+            except (json.JSONDecodeError, TypeError) as exc:
+                return None, f'invalid OrganizeRecipeParamsPatch payload: not valid JSON string: {exc}'
+        patch = dict(recipe_params_patch or {})
+        if 'recipe_params_patch' in patch and isinstance(patch.get('recipe_params_patch'), dict):
+            patch = dict(patch['recipe_params_patch'])
+        if 'patch' in patch and isinstance(patch.get('patch'), dict):
+            patch = dict(patch['patch'])
+        base = self.latest_recipe_params_payload or self._read_latest_recipe_params_artifact()
+        if not isinstance(base, dict) or not isinstance(base.get('rules'), list) or not base.get('rules'):
+            return None, 'no previous recipe_params are available to patch; call validate_organize_recipe_params first'
+        try:
+            merged = _apply_recipe_params_patch(base, patch)
+        except Exception as exc:
+            return None, f'invalid OrganizeRecipeParamsPatch payload: {exc}'
+        return merged, ''
+
+    def _read_latest_recipe_params_artifact(self) -> dict[str, Any] | None:
+        path = self.run_dir / 'artifacts' / 'recipe_params.json'
+        if not path.exists():
+            return None
+        try:
+            payload = json.loads(path.read_text(encoding='utf-8'))
+        except Exception:
+            return None
+        return payload if isinstance(payload, dict) else None
+
+    def _write_latest_recipe_params_artifact(self) -> None:
+        if not isinstance(self.latest_recipe_params_payload, dict):
+            return
+        path = self.run_dir / 'artifacts' / 'recipe_params.json'
+        path.write_text(json.dumps(_json_safe(self.latest_recipe_params_payload), ensure_ascii=False, indent=2, sort_keys=True), encoding='utf-8')
 
     def _recipe_payload_from_params(self, payload: dict[str, Any]) -> dict[str, Any]:
         rules = payload.get('rules')
@@ -1317,22 +1863,36 @@ class PiCaseToolState:
         self._write_final_result()
         return {'ok': True, 'accepted': True, 'status': 'fail_closed', 'summary': final_output.summary}
 
-    def _case_context_payload(self, *, detail: bool = False) -> dict[str, Any]:
+    def _case_context_payload(self, *, detail: bool = False, include_startup_evidence: bool = True) -> dict[str, Any]:
         dossier = self.workspace.to_dossier(round_context='pi_context')
         bounded = build_bounded_case_dossier(dossier)
+        local_structure_summary = _local_structure_summary(list(self.workspace.local_files))
+        local_recipe_skeleton = self._local_recipe_skeleton_payload()
+        local_recipe_params_scaffold = self._local_recipe_params_scaffold_payload()
         payload = {
             'case_id': self.case_id,
             'task_source_path': self.source_path,
             'counts': bounded.counts,
-            'local_structure_summary': _local_structure_summary(list(self.workspace.local_files)),
+            'run_progress': self._run_progress_payload(),
+            'local_structure_summary': local_structure_summary,
+            'local_recipe_params_scaffold': local_recipe_params_scaffold,
             'local_files': [self._local_file_payload(card, detail=detail) for card in self.workspace.local_files if bool(getattr(card, 'is_main', False))],
             'bangumi_subjects': [self._subject_payload(card) for card in self.workspace.bangumi_subjects],
             'bangumi_episodes': [self._episode_payload(card) for card in self.workspace.bangumi_items[:240]],
             'recipe_contract': {
                 'identity_policy': 'Use real source_path strings for local files and Bangumi subject_id/episode_id/type/sort/ep for targets.',
-                'final_tools': ['validate_organize_recipe_params', 'submit_organize_recipe_params', 'validate_organize_recipe', 'submit_organize_recipe', 'fail_closed'],
+                'final_tools': ['get_local_recipe_params_scaffold', 'validate_organize_recipe_params', 'validate_organize_recipe_params_patch', 'submit_organize_recipe_params', 'submit_organize_recipe_params_patch', 'validate_organize_recipe', 'submit_organize_recipe', 'fail_closed'],
+                'validation_policy': 'validate_organize_recipe_params is a trial/checkpoint tool: it compiles semantic params, hydrates declared evidence when possible, returns verifier issues or review warnings, and does not finalize the case.',
+                'submission_policy': 'submit_organize_recipe_params is the finalization path after accepted validation and resolved review warnings.',
+                'scaffold_policy': 'local_recipe_params_scaffold is local selector/range scaffolding only; Pi must fill Bangumi target fields or supplemental disposition from evidence.',
             },
         }
+        if include_startup_evidence:
+            payload['local_recipe_skeleton'] = local_recipe_skeleton
+        else:
+            payload['startup_evidence_locations'] = {
+                'local_recipe_skeleton': 'case_input.local_recipe_skeleton (selector and verifier-repair aid; not a startup semantic checklist)',
+            }
         if detail:
             payload['last_invalid_submission'] = _json_safe(self.last_invalid_submission)
             payload['current_organize_recipe'] = self.organize_recipe.model_dump(mode='json') if self.organize_recipe is not None else None
@@ -1467,21 +2027,23 @@ class PiCaseToolState:
         for issue in verifier_result.issues:
             code = str(getattr(issue, 'issue_code', '') or '')
             if code == 'zero_match':
-                hints.append(f'Rule matched no visible files. Use exact_paths from visible source_path values or fix selector. Visible source_path sample: {visible_paths[:8]}')
+                hints.append(f'Rule matched no visible files. Use exact_paths from visible source_path values or fix selector. For groups already listed in case_input.local_recipe_skeleton, copy selector_hint.source_pattern exactly instead of hand-writing a regex-like pattern; then set episode_range to the local captured numbers and episode_offset to shift to Bangumi rows if needed. Visible source_path sample: {visible_paths[:8]}')
             elif code == 'unknown_exact_path':
                 hints.append(f'exact_paths must use source_path exactly as shown in case context. Visible source_path sample: {visible_paths[:8]}')
             elif code == 'uncovered_path':
                 related = list(getattr(issue, 'related_refs', []) or [])
-                hints.append(f'Every visible main source_path must be covered exactly once. Add a rule for: {related or visible_paths[:8]}. If this came from a sequence source_pattern that matched only one file, replace changing release tokens such as CRC/hash/checksum/bracket IDs with a wildcard placeholder like {{hash}} or {{a}}, then validate again.')
+                skeleton_hint = self._repair_hint_for_uncovered_paths(related)
+                hints.append(f'Every visible main source_path must be covered exactly once. Add a rule for: {related or visible_paths[:8]}. If this came from a sequence source_pattern that matched only one file, replace changing release tokens such as CRC/hash/checksum/bracket IDs with a wildcard placeholder like {{hash}} or {{a}}, then validate again. {skeleton_hint}'.strip())
             elif code == 'duplicate_coverage':
                 hints.append('A source_path matched more than one rule. Narrow selectors or add exclude_regex so each file is covered once.')
             elif code == 'duplicate_target':
                 related = list(getattr(issue, 'related_refs', []) or [])
                 target = str(getattr(issue, 'ref', '') or 'the same target')
-                hints.append(f'Duplicate Bangumi target {target} is used by these source paths: {related[:6]}. Repair only the affected rules, then validate again. If the affected paths are adjacent numbered files with the same filename template, prefer one source_pattern rule with {{ep}} plus an episode_range/episode_number_field that derives distinct targets from the file numbers. For movie or one-file exact rules, replace the incorrect file with a distinct exposed subject_id/episode_id or fail closed if evidence is insufficient. Only for a true sequence rule should you check whether fixed episode_id/sort/ep was accidentally reused instead of deriving targets from {{ep}}.')
+                hints.append(f'Duplicate Bangumi target {target} is used by these source paths: {related[:6]}. Repair only the affected rules, then validate again. If the affected paths are adjacent numbered files with the same filename template, prefer one source_pattern rule with {{ep}} plus an episode_range/episode_number_field that derives distinct targets from the file numbers. If the duplicate comes from local split/variant locators such as _1/_2, part markers, or version suffixes and no distinct exposed Bangumi target row exists, exclude just those split/variant paths from the mapped sequence and cover them with disposition:"non_bangumi_or_supplemental", then validate a patch; do not fail_closed the whole case for this mechanical duplicate before trying that repair. For movie or one-file exact rules, replace the incorrect file with a distinct exposed subject_id/episode_id or fail closed if evidence is insufficient. Only for a true sequence rule should you check whether fixed episode_id/sort/ep was accidentally reused instead of deriving targets from {{ep}}.')
             elif code == 'missing_target_episode':
                 related = list(getattr(issue, 'related_refs', []) or [])
-                hints.append(f'Target episode is not visible to the verifier for {related[:4] or str(getattr(issue, "ref", "") or "this rule")}. Fetch the smallest missing evidence with find_bangumi_targets_for_local_file, get_episode_list, get_target_window, or get_target_detail, then validate again. For sequence rules, compare the local file number with Bangumi episode sort and ep values: keep episode_number_field:\"sort\" with offset EP when sort matches local numbering; use episode_number_field:\"ep\" when local numbering matches Bangumi ep but sort continues across an earlier season/cour; use arithmetic offsets only when the target number field is correct but shifted. If the chosen subject lacks the needed rows, split to a related season/cour/part subject.')
+                special_bonus_hint = self._repair_hint_for_special_bonus_missing_target(related)
+                hints.append(f'Target episode is not visible to the verifier for {related[:4] or str(getattr(issue, "ref", "") or "this rule")}. Fetch the smallest missing evidence with find_bangumi_targets_for_local_file, get_episode_list, get_target_window, or get_target_detail, then validate again. For sequence rules, compare the local file number with Bangumi episode sort and ep values: keep episode_number_field:\"sort\" with offset EP when sort matches local numbering; use episode_number_field:\"ep\" when local numbering matches Bangumi ep but sort continues across an earlier season/cour; use arithmetic offsets only when the target number field is correct but shifted. If the chosen subject lacks the needed rows, split to a related season/cour/part subject. {special_bonus_hint}'.strip())
             elif code == 'missing_subject_id':
                 hints.append('Mapped rules need target.bangumi_subject_id from Bangumi evidence.')
             elif code == 'unknown_subject_id':
@@ -1504,6 +2066,69 @@ class PiCaseToolState:
             elif code == 'unresolved_assignment':
                 hints.append('Accepted recipes cannot contain needs_more_evidence or unaligned_fail_closed. Either resolve the path or call fail_closed for the whole case.')
         return _dedupe_nonempty(hints)
+
+    def _repair_hint_for_uncovered_paths(self, paths: list[str]) -> str:
+        for path in paths:
+            group = self._local_skeleton_group_for_path(path)
+            if not group:
+                continue
+            selector = group.get('selector_hint') if isinstance(group.get('selector_hint'), dict) else {}
+            source_pattern = str(selector.get('source_pattern') or '')
+            recommended_shape = str(selector.get('recommended_shape') or '')
+            number_ranges = (group.get('number_summary') or {}).get('integer_ranges') if isinstance(group.get('number_summary'), dict) else []
+            warnings = group.get('boundary_warnings') or []
+            parts = [
+                f'Local skeleton group {group.get("group_ref")} ({group.get("title_hint")}) contains this path.',
+                f'recommended_shape={recommended_shape}.',
+            ]
+            if source_pattern:
+                parts.append(f'source_pattern={source_pattern!r}.')
+            if number_ranges:
+                parts.append(f'local number ranges={number_ranges}; episode_range should use these local captured numbers, with episode_offset for target-row shifts.')
+            if warnings:
+                parts.append(f'boundary_warnings={warnings}; duplicate-number variants may need exact supplemental coverage or a selector that includes the variant suffix.')
+            return ' '.join(parts)
+        return ''
+
+    def _repair_hint_for_special_bonus_missing_target(self, paths: list[str]) -> str:
+        for path in paths:
+            group = self._local_skeleton_group_for_path(path)
+            if not group:
+                continue
+            group_kind = str(group.get('group_kind_hint') or '')
+            if group_kind not in {'special_or_bonus_candidate', 'asset_or_bonus_candidate'}:
+                continue
+            selector = group.get('selector_hint') if isinstance(group.get('selector_hint'), dict) else {}
+            source_pattern = str(selector.get('source_pattern') or '')
+            compact_selector = f' with the compact source_pattern {source_pattern!r}' if source_pattern else ' with a compact selector or exact paths'
+            return (
+                f'This path is in local skeleton group {group.get("group_ref")} ({group.get("title_hint")}) '
+                f'marked {group_kind}. A related Bangumi subject alone is not enough to map short SP/bonus files; '
+                'the selected subject must expose matching episode rows by sort/ep/title/count. '
+                f'If targeted episode evidence still does not expose those rows, prefer converting the affected group to '
+                f'disposition:"non_bangumi_or_supplemental"{compact_selector} instead of spending more turns force-mapping it.'
+            )
+        return ''
+
+    def _local_skeleton_group_for_path(self, path: str) -> dict[str, Any] | None:
+        normalized = _norm_path(path)
+        if not normalized:
+            return None
+        for group in self._local_recipe_skeleton_payload().get('groups') or []:
+            if not isinstance(group, dict):
+                continue
+            source_paths = group.get('source_paths') if isinstance(group.get('source_paths'), dict) else {}
+            listed_paths = set()
+            for key in ('all', 'sample'):
+                for item in source_paths.get(key) or []:
+                    listed_paths.add(_norm_path(str(item or '')))
+            if normalized in listed_paths:
+                return group
+            selector = group.get('selector_hint') if isinstance(group.get('selector_hint'), dict) else {}
+            source_pattern = str(selector.get('source_pattern') or '')
+            if source_pattern and _source_pattern_matches(source_pattern, normalized):
+                return group
+        return None
 
     def _hydrate_recipe_target_evidence(self, recipe: OrganizeRecipeDraft) -> None:
         subject_ids = sorted({
@@ -1844,6 +2469,63 @@ def _first_present(*mappings: dict[str, Any], keys: tuple[str, ...]) -> Any:
             if key in mapping:
                 return mapping.get(key)
     return None
+
+
+def _apply_recipe_params_patch(base: dict[str, Any], patch: dict[str, Any]) -> dict[str, Any]:
+    if not isinstance(patch, dict) or not patch:
+        raise ValueError('patch must be a non-empty object')
+    merged = _json_clone(base)
+    rules = [dict(rule) for rule in merged.get('rules') or [] if isinstance(rule, dict)]
+    if not rules:
+        raise ValueError('base recipe_params.rules must be a non-empty array')
+
+    remove_names = set(_coerce_string_list(patch.get('remove_rule_names') or patch.get('remove_rules')))
+    if remove_names:
+        rules = [rule for rule in rules if str(rule.get('name') or '') not in remove_names]
+
+    for replacement in patch.get('replace_rules') or []:
+        if not isinstance(replacement, dict):
+            raise ValueError('replace_rules entries must be objects')
+        name = str(replacement.get('name') or '')
+        if not name:
+            raise ValueError('replace_rules entries need a name')
+        for index, rule in enumerate(rules):
+            if str(rule.get('name') or '') == name:
+                rules[index] = _json_clone(replacement)
+                break
+        else:
+            rules.append(_json_clone(replacement))
+
+    for rule_patch in patch.get('patch_rules') or []:
+        if not isinstance(rule_patch, dict):
+            raise ValueError('patch_rules entries must be objects')
+        name = str(rule_patch.get('name') or '')
+        if not name:
+            raise ValueError('patch_rules entries need a name')
+        target = next((rule for rule in rules if str(rule.get('name') or '') == name), None)
+        if target is None:
+            raise ValueError(f'patch_rules target not found: {name}')
+        updates = rule_patch.get('set') if isinstance(rule_patch.get('set'), dict) else {}
+        direct_updates = {
+            key: value
+            for key, value in rule_patch.items()
+            if key not in {'name', 'set', 'unset', 'remove'}
+        }
+        for key, value in {**direct_updates, **updates}.items():
+            target[key] = _json_clone(value)
+        for key in _coerce_string_list(rule_patch.get('unset') or rule_patch.get('remove')):
+            target.pop(key, None)
+
+    append_rules = patch.get('append_rules') or patch.get('add_rules') or []
+    for rule in append_rules:
+        if not isinstance(rule, dict):
+            raise ValueError('append_rules entries must be objects')
+        rules.append(_json_clone(rule))
+
+    if not rules:
+        raise ValueError('patch removed every rule')
+    merged['rules'] = rules
+    return merged
 
 
 _SOURCE_PATTERN_TOKEN_RE = re.compile(r'\{([A-Za-z_][A-Za-z0-9_]*)(?::0?(\d+)d?)?\}')

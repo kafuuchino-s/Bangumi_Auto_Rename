@@ -80,7 +80,21 @@ Use this file only when `validate_organize_recipe_params` repair hints are not e
 - For a one-file exact rule with `episode_id`, use the Bangumi row's `episode_type` when you know it. If you omit it or provide the wrong type, the params tool canonicalizes it from the exposed episode row when possible. Do not invent `special` merely because `media_kind` is `movie` or `special`.
 - For one visible file that intentionally covers multiple Bangumi episodes, use `source_unit: "single_file_multi_episode"`, exactly one `exact_paths` entry, `subject_id`, `episode_type`, and `episode_range` such as `"1-3"`. Do not include `episode_id`, `sort`, or `ep`; those would collapse the merged file to one target. Python verifies that the range episodes are exposed and that local chapter count or local duration versus target-duration sum mechanically supports the span.
 - Do not write boolean source-unit flags such as `multi_episode: true`, `merged: true`, or `single_file_multi_episode: true`. Use the enum field `source_unit`.
-- `validate_organize_recipe_params` returns the generated `organize_recipe`; use verifier issues to revise params, not to hand-edit repeated JSON fields.
+- `validate_organize_recipe_params` returns the generated `organize_recipe`; it is a trial check and does not finalize the case. Use verifier issues, repair hints, and review warnings to revise params, not to hand-edit repeated JSON fields.
+- After a params validation, `validate_organize_recipe_params_patch` can repair only the changed rules from the latest params. Use `patch_rules` for top-level rule field updates/removals, `append_rules` for new exact supplemental exceptions, `replace_rules` when a rule shape changes, and `remove_rule_names` when a bad rule should disappear.
+
+Example params patch:
+
+```json
+{
+  "patch_rules": [
+    {"name": "TV specials", "set": {"exclude_regex": "SP08_2"}, "unset": ["episode_id"]}
+  ],
+  "append_rules": [
+    {"name": "Duplicate SP08_2", "exact_paths": ["SP08_2.mkv"], "disposition": "non_bangumi_or_supplemental", "reason": "duplicate package segment with no distinct Bangumi target"}
+  ]
+}
+```
 
 ## Raw Recipe Shape
 
@@ -135,7 +149,7 @@ Use raw recipe JSON only for debugging generated JSON.
 - For repeated supplemental groups, prefer `path_glob` plus `filename_regex` to cover the group compactly. This is especially useful for design-material folders, repeated bonus clips, and other non-episode files that share folder/name structure. Keep separate exact rules for suspicious long files that need targeted evidence.
 - Do not write boolean disposition flags such as `non_bangumi_or_supplemental: true`, `supplemental: true`, `exclude: true`, or `unmapped: true`. The params parser rejects them so you can fix the contract error explicitly.
 - Keep each rule `reason` short: one clear evidence sentence is usually enough. Do not write a narrative search log in recipe reasons; use `notes.md` only for complex contradictions or fail-closed reasoning.
-- Do not use `non_bangumi_or_supplemental` for a numbered `SP01` / `SP02` / `S00E01`-style file when the selected Bangumi subject has a matching special episode by sort/order and no contradictory evidence. Map the numbered file to that special, and handle vague bonus files such as Roman-numeral-only files separately.
+- Do not use `non_bangumi_or_supplemental` for a numbered `SP01` / `SP02` / `S00E01`-style file when the selected Bangumi subject has a matching special episode by sort/order and no contradictory evidence. Map the numbered file to that special, and handle vague bonus files such as Roman-numeral-only files separately. If the selected subject or related special subject does not expose matching episode rows, or validation reports `missing_target_episode` after a targeted episode-list/window check, cover the affected SP/bonus group as supplemental with a short evidence-gap reason instead of forcing it onto non-existent rows.
 - Use `exclude_regex` inside a rule only for extra safety; the case input has already hard-filtered obvious OP/ED/PV/Menu-like noise.
 - A rule with zero matches is invalid.
 - A source path may be covered by exactly one rule.
