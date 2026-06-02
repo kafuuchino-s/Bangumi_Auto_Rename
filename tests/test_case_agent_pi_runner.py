@@ -278,6 +278,11 @@ def test_node_runner_registers_goal_retry_recipe_tools_without_mapping_draft():
     assert '@narumitw", "pi-goal"' in text
     assert '@narumitw", "pi-retry"' in text
     assert '"goal_complete"' in text
+    assert '"get_case_overview"' in text
+    assert '"list_local_groups"' in text
+    assert '"get_local_group_detail"' in text
+    assert '"get_local_selector_scaffold"' in text
+    assert '"get_recipe_state"' in text
     assert '"get_local_recipe_params_scaffold"' in text
     assert '"find_bangumi_targets_for_local_file"' in text
     assert '"expand_related_graph"' in text
@@ -293,22 +298,92 @@ def test_node_runner_registers_goal_retry_recipe_tools_without_mapping_draft():
     assert 'PI_RETRY_STALL_TIMEOUT_MS' in text
     assert 'ensureHelperCheckArtifact' in text
     assert 'case_quick_start' not in text
-    assert 'case_input.local_recipe_skeleton is available as a selector and verifier-repair aid' in text
-    assert 'do not read it at startup as a semantic checklist' in text
     assert 'early_bangumi_evidence_bundle' not in text
+    assert 'Working Board' in text
+    assert 'local_group, target evidence, recipe rule, status, and open issue' in text
+    assert 'unknown, anchored, draftable, side_frontier, supplemental_candidate, repairing, accepted' in text
+    assert 'Every tool call should move one board row forward' in text
+    assert 'Call the first validate_organize_recipe_params when every visible local group has either a testable mapped rule or a testable supplemental rule.' in text
+    assert 'If your own reasoning says ready, enough, validate, or submit' in text
+    assert 'After invalid/review feedback, stop broad exploration.' in text
+    assert 'Repair only verifier_result.issues, repair_hints, review_warnings, or repair_mode entries.' in text
+    assert 'Time-boxed Working Board checkpoint: finish through one of three paths.' in text
+    assert 'Path 1: if validation is accepted with no review warnings, submit the same params/recipe now.' in text
+    assert 'Path 2: if verifier issues or review warnings exist, patch only the named rule/path/target and validate again.' in text
+    assert 'Path 3: if a supportable recipe cannot be built after targeted evidence, call fail_closed with the concrete group/reason.' in text
+    assert 'Hard finish Working Board checkpoint' in text
+    assert 'Final Working Board repair loop' in text
+    assert 'maxRepairAttempts = 3' in text
+    assert 'Working Board repair checkpoint' in text
+    assert 'Working Board review checkpoint' in text
+    assert 'Working Board submit path' in text
+    assert 'This is telemetry for your Working Board, not a target recommendation.' in text
+    assert 'Validation debt checkpoint: no trial validation has run after substantial evidence gathering.' in text
+    assert 'Do not call more search, episode, local-detail, or selector tools in response to this checkpoint.' in text
+    assert 'Duplicate local locators, split files, variant suffixes, and uncertain exclude_regex choices should become verifier feedback' in text
+    assert 'If no validation has run yet and one group remains uncertain, include that group as a supplemental test rule and validate.' in text
+    assert 'If mapped target evidence exists but duplicate/split selector handling is uncertain, validate the best mapped rule now' in text
+    assert 'If validation rejects a mapped anime/video frontier rule, repair that mapped rule shape before converting it to supplemental.' in text
+    assert 'the next custom tool must be validate_organize_recipe_params with best-effort mapped/supplemental rules' in text
+    assert 'Budget pressure is not a fail_closed reason.' in text
+    assert 'Do not lower a plausibly mapped OVA/OAD/SP/movie/side-story group to supplemental just to pass validation' in text
+    assert 'Do not call fail_closed with reason budget_exhausted.' in text
+    assert 'For a rejected mapped frontier rule, prefer target/selector repair over supplemental downgrade' in text
+    assert 'For one standalone main-title group, direct Bangumi search can be enough.' in text
+    assert 'search one reliable anchor first, then use expand_related_graph as the series map for the remaining local groups' in text
+    assert 'direct per-group search is a fallback for graph misses or conflicts' in text
+    assert 'keep a side frontier of remaining anime/video-shaped groups' in text
+    assert 'add that subject as a new anchor and continue graph closure' in text
+    assert 'Mechanical accepted is the floor, not the quality target.' in text
+    assert 'Do not downgrade an anime/video frontier group with plausible target evidence to supplemental just to clear a verifier issue' in text
+    assert 'Treat numbered SP/bonus groups as their own board rows.' in text
+    assert 'A missing parent-TV SP list is weak negative evidence for a side-content title' in text
+    assert 'For numbered side-content, prefer the anchor related graph for the local side-title' in text
+    assert 'Only cover as supplemental after targeted title/episode evidence does not fit.' in text
+    assert 'Do not use parent-season searches such as Franchise II or Franchise III as negative evidence for side-title groups.' in text
+    assert 'Graph from the side-title anchor or search the qualified side title itself before supplemental.' in text
+    assert 'Do not use SP as episode_offset' in text
+    assert 'For SP filename sequences, keep SP in source_pattern and use episode_offset:\\"EP\\"' in text
+    assert 'SP filenames and media_kind:\\"sp\\" do not imply episode_type:\\"special\\"' in text
+    assert 'When uncovered_path and duplicate_coverage are in the same local group' in text
+    assert 'When uncovered_path names a sibling of an existing supplemental rule' in text
+    assert 'do not change unrelated mapped movie/OVA/special exact rules just for coverage' in text
+    assert 'duplicate_episode_numbers_in_group' in text
+    assert 'do not include episode_id/sort/ep unless every selected file intentionally maps to the same exact row' in text
+    assert 'If duplicate_target names a multi-file rule that fixed episode_id/sort/ep' in text
+    assert 'exact_paths must be complete visible source_path strings' in text
+    assert 'Supplemental group rules do not need subject_id, episode_id, episode_type, episode_range, or episode_offset.' in text
+    assert 'function effectiveRuntimeBudgetSeconds()' in text
+    assert 'Math.max(finishBeforeSeconds, timeoutSeconds - 5)' in text
+    assert 'Math.min(60_000, Math.floor(totalBudgetMs * 0.25))' in text
+    assert 'Math.min(90_000, remainingMs)' in text
+    assert 'async function readJsonFile' in text
+    assert 'auto-submit after accepted params validation' in text
+    assert 'auto-submit after accepted recipe validation' in text
+    assert 'verifier?.passed !== true || reviewWarnings.length || issues.length' in text
+    assert 'submit_organize_recipe_params_patch' in text
+    assert 'validate_organize_recipe_params_patch' in text
+    assert 'goal_complete immediately after accepted=true' in text
+    return
     assert 'Core loop: infer local groups, expose enough Bangumi evidence for a testable recipe' in text
-    assert 'get_local_recipe_params_scaffold returns local selector/range params stubs' in text
+    assert 'get_case_overview is the map' in text
+    assert 'list_local_groups is the index' in text
+    assert 'get_local_group_detail expands one local group' in text
+    assert 'get_local_selector_scaffold expands selector stubs' in text
+    assert "the reading path is Pi's choice" in text
     assert 'The raw case_input JSON path is a fallback' in text
     assert 'It does not choose Bangumi targets, media kind, episode type, disposition, or supplemental status.' in text
     assert 'Validation is the main checkpoint.' in text
     assert 'Before first validation, keep evidence practical' in text
-    assert 'case_input.context.run_progress and get_case_context().data.run_progress are factual telemetry only' in text
+    assert 'get_case_overview().data.run_progress' in text
+    assert 'get_recipe_state() are factual telemetry only' in text
     assert 'they are not semantic recommendations' in text
-    assert 'Before Bangumi search, inspect case_input.local_structure_summary and visible source_path values' in text
-    assert 'When selector construction feels risky, use get_local_recipe_params_scaffold.' in text
-    assert 'fill subject_id, media_kind, episode_type or episode_id, or supplemental disposition from your Bangumi evidence' in text
-    assert 'selector and verifier-repair aid after you have chosen a local group' in text
-    assert 'copy its source_pattern into recipe params' in text
+    assert 'Before Bangumi search, inspect the overview/local group index' in text
+    assert 'Expand source paths with get_local_group_detail only for groups you choose to inspect.' in text
+    assert 'When selector construction feels risky for a chosen group, use get_local_selector_scaffold' in text
+    assert 'subject_id, media_kind, episode_type or episode_id, and supplemental disposition still come from your Bangumi evidence' in text
+    assert 'selector and verifier-repair aids after you have chosen a local group' in text
+    assert 'use its group_ref shorthand or copy its source_pattern' in text
     assert 'episode_range is the local captured file-number range' in text
     assert 'Treat numbering restarts such as multiple 01 files under different folders' in text
     assert 'Draft the smallest adequate recipe first' in text
@@ -319,6 +394,7 @@ def test_node_runner_registers_goal_retry_recipe_tools_without_mapping_draft():
     assert 'prefer validate_organize_recipe_params' in text
     assert 'zero-padded {ep:02}/{ep:02d}' in text
     assert 'Minimal recipe_params shape:' in text
+    assert 'group_ref/local_group_ref for a local selector shorthand' in text
     assert 'range_start/range_end or episode_start/episode_end' in text
     assert 'number_field or target_number_field for episode_number_field' in text
     assert 'source_path, or path for one-file rules' in text
@@ -328,6 +404,8 @@ def test_node_runner_registers_goal_retry_recipe_tools_without_mapping_draft():
     assert 'validation repair_hints are the contract feedback surface' in text
     assert 'Trial-check semantic rule parameters' in text
     assert 'After representative lookups for the active groups, validate a params draft' in text
+    assert 'main TV/movie representative lookups are not evidence that the SP group lacks a target' in text
+    assert 'Do not mark a numbered SP sequence supplemental just because the main-season lookup did not include SP rows.' in text
     assert 'search_bangumi_subjects is already scoped to Bangumi' in text
     assert 'one bounded expand_related_graph call is often enough to build a testable recipe' in text
     assert 'same-folder movie/special collection with many visible named files' in text
@@ -386,14 +464,14 @@ def test_node_runner_registers_goal_retry_recipe_tools_without_mapping_draft():
     assert 'For large packages, do not enumerate dozens of obvious supplemental extras as exact_paths' in text
     assert 'keep broad supplemental groups compact with path_glob/filename_regex selectors' in text
     assert 'A related Bangumi special/OVA subject is only candidate evidence' in text
-    assert 'short package SP/bonus groups, a targeted lookup plus missing/contradictory episode rows' in text
+    assert 'short package SP/bonus groups, one group-specific targeted lookup plus missing/contradictory episode rows' in text
     assert 'missing_target_episode for a special_or_bonus_candidate group' in text
     assert 'related_refs' in text
     assert 'Top repair_hints' in text
     assert 'repair mode is scoped to the reported issues: change only the affected params/rules' in text
     assert 'Python turns semantic parameters into the full JSON recipe' in text
     assert 'Case input JSON is available at:' in text
-    assert 'Start from bounded custom-tool facts' in text
+    assert 'Use the navigable custom-tool hierarchy rather than expanding every JSON layer at once' in text
     assert 'not the normal working surface' in text
     assert 'compare the local file number with Bangumi episode sort and ep values' in text
     assert 'episode_number_field:\\"ep\\"' in text

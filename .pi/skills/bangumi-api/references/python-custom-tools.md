@@ -2,11 +2,31 @@
 
 All tools return JSON with an `ok` field. On failure, read `error` and retry with narrower IDs, paths, or a different query.
 
-## Case Context
+## Case Navigation
 
-`get_case_context({ "detail": true })`
+`get_case_overview({})`
 
-Returns hard-filtered local files as real `source_path` strings, known Bangumi subjects, known Bangumi episodes, and the recipe contract. Use `detail: false` when you only need a compact refresh.
+Returns the compact case map: counts, local group cards, seen Bangumi evidence counts, recipe state, and navigation handles. It is an overview page, not a semantic route recommendation.
+
+`list_local_groups({ "detail": false })`
+
+Returns the local group index. Use `detail: true` only when you need the expanded fixed local grouping facts. Group cards expose folders, title hints, locator kinds, number ranges, duration summaries, representative paths, and boundary warnings; they do not choose subject IDs, episode IDs, media kind, or supplemental status.
+
+`get_local_group_detail({ "group_ref": "LG1", "detail": true })`
+
+Expands one local group. This is the normal way to read real `source_path` strings and file-level facts for a chosen group. Use `detail: false` for a smaller group page when file-level facts are not needed.
+
+`get_local_selector_scaffold({ "group_ref": "LG1" })`
+
+Returns selector/range params stubs for one group. It copies local selector facts only. Params may use `group_ref` as a local selector shorthand; fill Bangumi target fields or supplemental disposition yourself from evidence.
+
+`get_recipe_state({ "detail": false })`
+
+Returns latest params, verifier, submit, and final-result state. Use `detail: true` for full verifier/params/debug payloads after a validation.
+
+`get_case_context({ "detail": false })`
+
+Returns bounded navigation context for a compact refresh. `detail: true` expands the legacy full debug context for helper/debug use, not normal startup reading.
 
 ## Subject Evidence
 
@@ -26,7 +46,9 @@ Leave `relation_kinds` empty when unsure. Relation strings come from Bangumi and
 
 Use this when a case has unresolved seasons, specials, OVAs, OADs, movies, side stories, or recap-like files after you have at least one plausible anime subject. It recursively expands a bounded related-subject graph and returns compact `relation_subjects`, `subjects`, and `edges`. Filter returned subjects to anime/video-shaped entries; ignore book, manga, novel, music, game, radio, drama CD, soundtrack, and real-person/live/event relations unless the local video evidence explicitly points there.
 
-After an anchor is known, use related subjects as the series map. Fetch episode lists for related anime subjects whose titles, relation labels, dates, or platforms match visible local subgroups. If a matching related subject is still part of the same series but points onward to another season/movie/special, another graph traversal can be useful, but validation should remain the main checkpoint once you have enough evidence for a testable recipe.
+After an anchor is known, use related subjects as the series map. This is the preferred evidence path for multi-season, movie-box, OVA/special-box, and franchise side-content packages: one reliable anchor search, then graph-match the remaining visible local group titles. Fetch episode lists for related anime subjects whose titles, relation labels, dates, or platforms match visible local subgroups. If a matching related subject is still part of the same series but points onward to another season/movie/special, another graph traversal can be useful, but validation should remain the main checkpoint once you have enough evidence for a testable recipe.
+
+Use graph closure for side frontiers. When a related subject explains a remaining local OVA/OAD/SP/mini-anime/movie/recap group, that subject becomes a new anchor. Expand from the new anchor if remaining local groups share its side-title or sequel pattern. Stop closure only when the graph plus targeted title searches add no new plausible anime/video target for the remaining frontier.
 
 For a same-folder movie/special collection with many named files from one franchise, one clean anchor search plus `expand_related_graph` should come before per-title broad searches. Build a local title checklist, match it against graph subjects, and search individual missing titles only when the relation graph does not expose them or exposes conflicting possibilities.
 
@@ -76,7 +98,7 @@ This helper intentionally provides no fixed-layer recipe, no readiness flag, and
 
 `validate_organize_recipe_params({ "recipe_params": <params> })`
 
-Use this for hand-authored work and trial checks. Params are semantic rule fields such as `source_pattern` or `source_template`, `exact_paths` or `source_path`, `source_unit`, `episode_range` or `range`, `episode_offset` or `offset`, `subject_id`, `media_kind`, `episode_type`, `disposition`, and `reason`. Python turns `source_pattern` into escaped recipe regex, treats extra placeholders such as `{a}` as wildcard spans, fills defaults such as `episode_offset: "EP"`, writes `organize_recipe.json`, and returns the generated `organize_recipe` plus verifier issues or review warnings. The first trial check does not need to be accepted or warning-free. Invalid/review feedback is part of the repair loop; it does not finalize the case. Use `source_pattern` only when the local group has an episode token such as `{ep}`; use `exact_paths`/`source_path` for one visible movie, OVA, SP, or special file.
+Use this for hand-authored work and trial checks. Params are semantic rule fields such as `group_ref`, `source_pattern` or `source_template`, `exact_paths` or `source_path`, `source_unit`, `episode_range` or `range`, `episode_offset` or `offset`, `subject_id`, `media_kind`, `episode_type`, `disposition`, and `reason`. Python expands `group_ref` into local selector facts, turns `source_pattern` into escaped recipe regex, treats extra placeholders such as `{a}` as wildcard spans, fills defaults such as `episode_offset: "EP"`, writes `organize_recipe.json`, and returns the generated `organize_recipe` plus verifier issues or review warnings. The first trial check does not need to be accepted or warning-free. Invalid/review feedback is part of the repair loop; it does not finalize the case. Use `group_ref` when the local group card already expresses the selector, `source_pattern` only when the local group has an episode token such as `{ep}`, and `exact_paths`/`source_path` for one visible movie, OVA, SP, or special file.
 
 For one visible local file that intentionally covers multiple Bangumi episode rows, set `source_unit: "single_file_multi_episode"`, one `exact_paths` entry, and `episode_range`. Do not use boolean aliases such as `merged: true`, and do not collapse the file to the first `episode_id`.
 

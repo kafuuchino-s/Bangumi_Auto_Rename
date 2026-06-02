@@ -5,69 +5,95 @@ description: Use when Bangumi evidence is confusing or tool semantics are unclea
 
 # Bangumi API
 
-Use the Python custom tools as the case-scoped Bangumi API. They expose evidence to the recipe verifier; direct public HTTP calls do not.
+Use the Python custom tools as the case-scoped Bangumi evidence API. They expose facts for Pi's semantic choice and for the recipe verifier. Direct public HTTP calls are not part of this workflow.
 
-## Operating Loop
+This skill is about evidence, not recipe orchestration. The organizing loop belongs to `organize-recipe-contract`.
 
-1. Read the visible local universe from `case_input.visible_source_paths` or `get_case_context({"detail": true})`. Use `get_local_recipe_params_scaffold` when the local selector/range shape is the blocker; it is only a local params stub, not a target recommendation.
-2. Infer local groups from folder structure, title qualifiers, content-shape words, and numbering runs.
-3. Use representative title searches to find one or more plausible anime subject anchors.
-4. Once an anchor exists, use `expand_related_graph` as a bounded series map for seasons, cours, specials, OVAs, OADs, movies, side stories, recaps, and alternate versions. One useful graph pass plus matching episode rows is usually enough to draft params and validate.
-5. For a same-folder collection with many named movie/special/OVA files from one franchise, start with an anchor search, then compare one bounded relation graph against the local file-title list. Individual title searches are most useful for graph misses, verifier/review feedback, or real conflicts.
-6. Read `relation_subjects` first, then `edges` if the path through the graph matters. Keep anime/video-shaped nodes and ignore book/music/game/radio/soundtrack/live/event nodes unless the local file explicitly points there.
-7. Fetch `get_episode_list` or `get_target_window` for subjects you are actually using in params, not every related subject.
-8. Before first validation, treat a representative search/lookup for active groups, one bounded graph when it helps, and episode lists/windows for the subjects used in params as a practical evidence set. `run_progress` may show evidence-call counts and whether verifier feedback exists; those are progress facts, not recommendations or target decisions.
-9. Treat params validation as a trial check of the current semantic recipe, not as final submission. The first trial check does not need to be accepted or warning-free. If accepted, submit the same recipe as the final result; if blocked or reviewed, repair only the reported issue with targeted evidence.
-10. Use frontier exhaustion for final `fail_closed` or final supplemental justification, not as a first-validation gate.
+## Evidence Enough
 
-## Subject Rules
+For a local group, Bangumi evidence is usually enough to draft or repair params when you have:
 
-- Match the actual local title, including season/subtitle qualifiers. A franchise root or earlier-season match remains weak when a qualified entry needs its own title evidence.
-- The related-subject graph is evidence, not a verdict. Compare graph node titles, relation labels, dates, platforms, episode rows, and local file names.
-- Episode count alone is not identity evidence.
-- Keep one subject within the episode rows it exposes. Split ranges to related season/cour subjects when the graph and episode lists support that.
-- Bangumi `sort` is the default target number for sequence rules. `ep` may restart while `sort` continues. If local filenames use `01-13` and the selected subject's episode list has `ep` 1-13 but `sort` 14-26, use recipe params with `episode_number_field: "ep"` after confirming the subject identity.
-- Recipe `episode_type` comes from the Bangumi episode row. It may be `regular` for a one-episode movie/special subject and does not need to match `media_kind`.
-- The Python verifier checks mechanical legality and coverage; it does not prove semantic title correctness.
+- a plausible `subject_id` whose title, aliases, relation position, date, or media kind matches the local group;
+- exposed episode rows when the group maps to episode numbers, specials, OVAs, OADs, or a specific `episode_id`;
+- enough sort/ep/title/count evidence to choose `episode_number_field`, `episode_range`, or a one-file exact rule.
+
+Episode count alone is not identity evidence. A franchise root or earlier season remains weak when a qualified local title points to a later season, movie, OVA, special, or side story.
+
+The Python verifier checks mechanical legality and coverage. It does not prove semantic title correctness.
+
+## Tool Use
+
+- `search_bangumi_subjects`: search clean title terms from the local folder/file and known aliases. Queries work best without `Bangumi`, `BGM`, `subject`, or database words.
+- `lookup_bangumi_subject`: fetch details for known subject IDs.
+- `expand_related_graph`: bounded anime relation map from one or more confirmed anchors. Use `subject_types: ["anime"]` and leave `relation_kinds` empty unless you are filtering by a real relation label.
+- `expand_related_subjects`: one-hop relation lookup when you intentionally need one hop.
+- `get_episode_list`: expose episode IDs, `sort`, `ep`, type, title, and duration rows for subjects you plan to use.
+- `get_target_window`: inspect a sort range for a sequence rule.
+- `get_target_detail`: expose exact episode details by ID or subject/sort.
+- `find_bangumi_targets_for_local_file`: compact fact lookup for one visible `source_path`; it returns search results and episode rows, not a chosen target.
+
+Read `relation_subjects` first, then `edges` if the path through the graph matters. Keep anime/video-shaped nodes and ignore book, manga, novel, music, game, radio, soundtrack, live, and event nodes unless the local video evidence explicitly points there.
 
 ## Search Discipline
 
-- `search_bangumi_subjects` is already scoped to Bangumi. Queries work best without `Bangumi`, `BGM`, `subject`, or database words.
-- Search clean title terms from the local folder/file and known aliases.
-- A numbered run usually needs one representative search plus episode evidence, not one search per file.
-- If repeated searches reuse the same franchise/title words without new target evidence, prefer validating a params draft.
-- Repeated broad searches are weak evidence for later episode rows. If a helper result is truncated or a subject ID is plausible, `get_episode_list`, `get_target_window`, or `validate_organize_recipe_params` can expose the needed subject evidence.
-- Direct title search for a special subtitle is most useful when no useful anchor exists yet, a verifier/review warning asks for that exact item, or the current graph clearly missed a named group.
+For one standalone main-title group, direct subject search plus episode evidence is usually enough.
+
+For a multi-season, multi-entry, movie-box, OVA/special-box, or franchise side-content package, prefer the human workflow: search one reliable anchor first, then use `expand_related_graph` from that anchor to find the remaining seasons, movies, OVAs, OADs, specials, and short side entries. This is usually more stable than direct-searching every local group independently.
+
+A numbered run usually needs one representative search plus episode evidence, not one search per file. If repeated searches reuse the same franchise/title words without new target evidence, switch to related-graph evidence, episode tools, or validate a params draft rather than searching the same space again.
+
+One bounded related graph is useful evidence, not proof that the whole franchise is exhausted. Use more graph expansion only for a named conflict, a missing named group, or verifier/review feedback.
+
+For a same-folder movie/special/OVA collection, start from one anchor, compare the bounded relation graph against the local title list, then search individual titles only for graph misses, conflicts, or verifier/review feedback.
+
+## Related Graph Closure
+
+Use related graph closure for packages with non-main local groups:
+
+1. Anchor one or more confirmed anime subjects.
+2. Keep a frontier of remaining local anime/video-shaped groups: OVA, OAD, SP, mini anime, chibi short, recap movie, side story, named special, or movie-like file.
+3. Expand the graph from the current anchors and compare `relation_subjects` with the frontier titles, qualifiers, dates, counts, episode titles, and durations.
+4. For every related subject that explains a frontier group, fetch episode rows, draft a mapped rule, and add that subject to the anchor set.
+5. Repeat from newly mapped side subjects while new anime/video targets explain remaining frontier groups.
+6. Use direct title search for graph misses, conflicts, or a qualified local group still unresolved after the graph pass.
+
+Stop only when a graph/search pass adds no plausible anime/video mapping for the remaining frontier. At that point, supplemental rules are reasonable for the leftovers with a reason that names the closure evidence gap.
+
+Do not treat a verifier issue on a mapped frontier rule as proof that the group is supplemental. First repair the target row type, media kind, episode ID, range/offset, selector, or duplicate/split handling. Supplemental is appropriate after evidence contradicts the target or closure cannot find one.
 
 ## Specials, OVAs, OADs, Movies
 
-- For `Tokubetsu Hen`, `OVA`, `OAD`, `Movie`, `Gekijouban`, `Bangaihen`, side-story subtitles, or long special-looking files, use `expand_related_graph` from confirmed anime subject IDs with `subject_types: ["anime"]`, empty `relation_kinds`, and bounded `max_depth` / `max_subjects`.
-- Treat one graph call as bounded evidence, not a proof that the series graph is complete. Use another graph pass only when a named group remains unresolved and the next anchors are clearly relevant.
-- Prefer current or frontier subject IDs over only the oldest franchise root. The goal is enough anime/video relation evidence for a testable recipe, not exhaustive graph traversal before validation.
-- After a series anchor is confirmed, use the relation graph to find specifically named movies, compilation/remix entries, extra/side-story entries, and alternate versions before doing more broad title searches.
-- If the main TV/movie groups are already anchored and only short SP/bonus groups remain uncertain, validate a complete recipe with those groups conservatively mapped or supplemental from current evidence; use verifier or review feedback to decide whether more targeted episode evidence is needed.
-- Relation labels such as sequel, prequel, side story, special, movie, OVA/OAD, recap, parent, and child are target-identity clues.
-- Long special/movie-shaped files can be one-episode Bangumi subjects. Bangumi may expose their single episode as `episode_type: "regular"`; use the episode row's legal type in the recipe.
-- If a named special/movie/side-story has an exact `episode_id` from `get_episode_list`, a mapped exact-path rule is ready to validate; a still-expandable frontier alone is not a reason to keep exploring.
-- For a movie collection where each visible file title matches a separate movie-shaped Bangumi subject, validate exact-path movie rules with `subject_id` plus `media_kind: "movie"` instead of fetching `get_episode_list` for every one-episode movie subject. Pull episode lists only for non-movie exceptions, multi-row subjects, or verifier blockers.
-- Adjacent package numbers are weak evidence for mapping two differently named movie/special files to the same Bangumi episode. Re-check titles, relation nodes, and exposed episode IDs.
-- Numbered `SP01` / `SP02` / `S00E01` files are candidate special entries. Check `get_episode_list({"episode_scope": "all"})` for matching special rows before treating them as supplemental. A related special/OVA subject is not enough by itself; if targeted episode evidence does not expose rows that resolve by sort/ep/title/count, validate a supplemental rule for the affected SP/bonus group rather than forcing a map.
-- When a mapped SP/OVA/special sequence validates with `duplicate_target` because local files use split or variant locators such as `_1`/`_2`, part markers, or version suffixes, repair the affected paths instead of failing the whole case: use distinct exposed rows if they exist, otherwise exclude those split/variant paths from the mapped sequence and cover them as supplemental exact paths.
-- For a long unnumbered standalone title that is not found in the selected subject's episode list, check the related anime/video graph, then use `find_bangumi_targets_for_local_file` with that exact `source_path` if validation asks for targeted evidence. If no supportable anime subject or episode appears, mark that exact path supplemental with the evidence gap in the reason and validate again.
-- A named special/movie/side-story should not be dismissed casually, but it also should not block first validation indefinitely. If current bounded evidence does not expose a supportable target, validate the best recipe and use review warnings or verifier issues to request the next exact lookup.
-- Companion extras such as recording diaries, interviews, cast/staff talks, travel/location features, making-of, stage greetings, memorial clips, or short bonus documentaries are different from named anime specials/movies/side stories. After the main anime subject is anchored, one clean direct title search or one `find_bangumi_targets_for_local_file` call for the representative companion title is enough before validating them as supplemental, unless the lookup exposes a plausible anime/video target.
+Numbered `SP01`, `SP02`, `Special 1`, or `S00E01` files are candidate special entries, not automatic extras. Map them when exposed rows resolve by sort/ep/title/count. If targeted evidence does not expose compatible rows, validate or repair the affected group as supplemental rather than forcing it onto a non-existent target.
 
-## Tool Notes
+For a numbered side-content group, do not stop at the parent TV subject. A parent season episode list often lacks related mini-anime, chibi shorts, OADs, OVAs, or BD specials. After one franchise anchor is known, check the related graph for the local side-content title, then fetch episode rows for the same-title or related anime/video subject that looks plausible. Direct side-title search is a fallback for graph misses, conflicts, or unresolved qualified groups.
 
-- `find_bangumi_targets_for_local_file`: compact fact lookup for one visible `source_path`; it returns search results and episode rows, not a chosen target. If `episode_rows_limited` is true, fetch the list/window for that subject or validate params instead of searching similar words again.
-- `get_local_recipe_params_scaffold`: local selector/range stubs copied from the fixed local skeleton. Fill Bangumi target or supplemental fields yourself from evidence before validation.
-- `expand_related_graph`: recursive related-subject graph from one or more `subject_id` values. This is the default after you have anchors.
-- `expand_related_subjects`: one-hop relation lookup; useful when you intentionally want one hop.
-- `get_episode_list`: expose episode IDs, sort/ep/type, title, and duration rows. Use the returned recipe `episode_type` for mapping.
-- `get_target_window`: inspect a sort range for sequence mapping.
-- `validate_organize_recipe_params` / `submit_organize_recipe_params`: preferred recipe path. Give semantic parameters; Python builds JSON and escaped regex. Validation is a trial check that can return verifier issues or review warnings; submit is the finalization tool. Use `source_pattern` for numbered groups with `{ep}`; use `exact_paths` or `source_path` for one visible movie, OVA, SP, or special file.
-- `fail_closed`: use when strict evidence is insufficient or contradictory.
+A practical side-content evidence set is:
 
-Use real identifiers in recipe params: local `source_path` strings from the visible universe, and Bangumi `subject_id` / `episode_id` / `episode_type` / `sort` / `ep`. `task_source_path` is the task root, not a local file. Raw `web` is source/API vocabulary, not a recipe field. Choose a legal `media_kind`; keep it separate from Bangumi row `episode_type`.
+- local group title/qualifier, locator range, and representative source path;
+- one clean subject search or relation-graph hit for that side-content title;
+- episode rows for the candidate side-content subject;
+- a comparison of local `SP01-SPnn` numbers to Bangumi `sort` or `ep`, plus title/count checks when available.
+
+When side-content groups differ by season/part qualifier, fetch evidence per qualified group. A result for the unqualified side title is not enough to mark `II`, `III`, `Part 2`, or later-year side groups supplemental. Traverse from the anchor for qualified related subjects first; use qualified direct search when the graph does not expose a plausible match.
+
+Be careful about the query identity. Searching only the parent season title, such as `Franchise II` or `Franchise III`, is parent-season evidence, not evidence for a side-content group titled `Side Story II` or `Mini Anime III`. For season-qualified side groups, either graph from the side-content anchor or search the qualified side title itself, such as `Side Story II`, before deciding there are no rows.
+
+If that evidence exposes compatible rows, draft a mapped sequence even if the files are under an `SPs` folder. If it does not, a supplemental rule is acceptable; the reason should say which targeted title/episode evidence failed.
+
+When `SP01` style local numbers map to exposed Bangumi rows, `SP` belongs in the filename selector or reasoning, not in `episode_offset`. Use `episode_offset: "EP"` unless a real arithmetic shift is needed.
+
+Long special/movie-shaped files can be one-episode Bangumi subjects. Bangumi may expose their single row as `episode_type: "regular"`; use the row's legal type in params.
+
+SP file naming is not the same as Bangumi row type. If a short SP subject exposes rows as `regular`, params should use `episode_type: "regular"` even when `media_kind` is `sp` or `special`.
+
+For one-file movie-shaped subjects, an exact-path rule with `subject_id` and `media_kind: "movie"` can be trial-validated before fetching every one-row episode list. Fetch episode lists for non-movie exceptions, multi-row subjects, or verifier blockers.
+
+Adjacent package numbers are weak evidence for mapping differently named movie/special files to the same Bangumi episode. Re-check titles, relation nodes, and exposed episode IDs.
+
+Companion extras such as interviews, cast/staff talks, making-of, stage greetings, memorial clips, travel/location features, or short bonus documentaries are different from named anime specials/movies/side stories. After the main anime subject is anchored, one exact title search or one representative targeted lookup is enough evidence to treat them as supplemental unless it exposes a plausible anime/video target.
+
+## Identity Reminder
+
+Use real identifiers in recipe params: local `source_path` values from the visible universe, and Bangumi `subject_id`, `episode_id`, `episode_type`, `sort`, and `ep`. `task_source_path` is the task root, not a local file. Raw `web` is source/API vocabulary, not a recipe field.
 
 `references/python-custom-tools.md` is most useful when custom tool schemas or return-shape notes remain unclear.

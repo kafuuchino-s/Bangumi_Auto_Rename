@@ -29,6 +29,88 @@ def test_pi_skills_document_compact_evidence_flow_and_legal_recipe_episode_types
     recipe_docs = recipe_skill + '\n' + recipe_reference
     template = json.loads((SKILL_ROOT / 'organize-recipe-contract' / 'assets' / 'organize_recipe.template.json').read_text(encoding='utf-8'))
 
+    assert 'Working Board' in recipe_skill
+    assert 'local_group | target evidence | recipe rule | status | open issue' in recipe_skill
+    for status in ['unknown', 'anchored', 'draftable', 'supplemental_candidate', 'side_frontier', 'repairing', 'accepted']:
+        assert status in recipe_skill
+    assert 'not as fixed-layer commands' in recipe_skill
+    assert 'Call the first validation when every visible local group has either' in recipe_skill
+    assert 'a testable mapped rule' in recipe_skill
+    assert 'a testable `disposition: "non_bangumi_or_supplemental"` rule' in recipe_skill
+    assert 'If you write or think "ready", "enough", "validate", or "submit"' in recipe_skill
+    assert 'Related Graph Closure' in recipe_skill
+    assert 'Put every remaining anime/video-shaped non-main group into a side frontier' in recipe_skill
+    assert 'add that subject to the anchor set' in recipe_skill
+    assert 'Only after this closure stalls should unresolved frontier groups become final supplemental candidates.' in recipe_skill
+    assert 'Do not downgrade that group to `non_bangumi_or_supplemental` just to make validation pass' in recipe_skill
+    assert 'After `validate_organize_recipe_params`, `submit_organize_recipe_params`, or a patch tool returns invalid/review feedback, stop broad exploration.' in recipe_skill
+    assert 'Repair the named rule/path/target first.' in recipe_skill
+    assert 'Repair is not a permission to lower semantic quality.' in recipe_skill
+    assert 'When uncovered paths and duplicate coverage belong to the same local group' in recipe_skill
+    assert 'duplicate_episode_numbers_in_group' in recipe_skill
+    assert 'exact_paths` must be complete visible `source_path` strings' in recipe_skill
+    assert '`group_ref` is a local selector shorthand' in recipe_skill
+    assert 'it never chooses `subject_id`, `episode_id`, `media_kind`, `episode_type`, disposition, or supplemental status' in recipe_skill
+    assert 'Do not use `SP` as `episode_offset`' in recipe_skill
+    assert 'For `SP01` files that map to Bangumi rows 1-13, keep `episode_range: "1-13"` and `episode_offset: "EP"`.' in recipe_skill
+    assert 'SP filenames and `media_kind: "sp"` do not imply `episode_type: "special"`.' in recipe_skill
+    assert 'check `episode_type` before converting the group to supplemental' in recipe_skill
+    assert 'Supplemental rules do not need `episode_range`, `episode_offset`, `episode_type`, `subject_id`, or `episode_id`.' in recipe_skill
+    assert 'budget_exhausted` is a runner outcome' in recipe_skill
+    assert 'old `final_result.json` files, repository tests, and templates are not evidence' in recipe_skill
+
+    assert 'This skill is about evidence, not recipe orchestration.' in bangumi_skill
+    assert 'Evidence Enough' in bangumi_skill
+    assert 'Episode count alone is not identity evidence.' in bangumi_skill
+    assert 'One bounded related graph is useful evidence, not proof that the whole franchise is exhausted.' in bangumi_skill
+    assert 'For one standalone main-title group, direct subject search plus episode evidence is usually enough.' in bangumi_skill
+    assert 'search one reliable anchor first, then use `expand_related_graph` from that anchor' in bangumi_skill
+    assert 'This is usually more stable than direct-searching every local group independently.' in bangumi_skill
+    assert 'Use related graph closure for packages with non-main local groups:' in bangumi_skill
+    assert 'Repeat from newly mapped side subjects while new anime/video targets explain remaining frontier groups.' in bangumi_skill
+    assert 'Do not treat a verifier issue on a mapped frontier rule as proof that the group is supplemental.' in bangumi_skill
+    assert 'Numbered `SP01`, `SP02`, `Special 1`, or `S00E01` files are candidate special entries' in bangumi_skill
+    assert 'For a numbered side-content group, do not stop at the parent TV subject.' in bangumi_skill
+    assert 'Direct side-title search is a fallback for graph misses, conflicts, or unresolved qualified groups.' in bangumi_skill
+    assert 'Searching only the parent season title' in bangumi_skill
+    assert 'is parent-season evidence, not evidence for a side-content group' in bangumi_skill
+    assert 'If it does not, a supplemental rule is acceptable; the reason should say which targeted title/episode evidence failed.' in bangumi_skill
+    assert '`SP` belongs in the filename selector or reasoning, not in `episode_offset`' in bangumi_skill
+    assert 'SP file naming is not the same as Bangumi row type.' in bangumi_skill
+    assert 'not a chosen target' in bangumi_skill
+
+    assert 'This skill is for reading the local release. It does not choose Bangumi targets' in release_skill
+    assert 'Read local structure through navigation first:' in release_skill
+    assert 'Treat group cards and detail pages as factual grouping evidence only.' in release_skill
+    assert 'Notice duplicate locator variants inside one group' in release_skill
+    assert 'Numbered special tokens such as `SP01`, `SP02`, `Special 1`, or `S00E01` are candidate special locators.' in release_skill
+    assert 'The parent TV subject lacking SP rows does not by itself make the group supplemental.' in release_skill
+    assert 'It is not a recipe `episode_offset`' in release_skill
+    assert 'Missing local duration is not negative evidence.' in release_skill
+    assert 'File-name tokens are investigation hints only.' in release_skill
+
+    assert 'early_bangumi_evidence_bundle' not in recipe_skill
+    assert 'case_quick_start' not in recipe_skill
+    assert 'recommended_recipe' not in bangumi_skill
+    assert 'recommended_recipe' not in recipe_docs
+    assert 'draft_recipe' not in bangumi_skill
+    assert 'draft_recipe' not in recipe_docs
+    assert '`group_ref` / `local_group_ref` are accepted as local selector shorthand' in recipe_docs
+    assert 'validate_organize_recipe_params_patch' in recipe_skill
+    assert 'submit_organize_recipe_params_patch' in recipe_skill
+    assert 'Numbered SP And Short Side Content' in recipe_skill
+    assert 'search one reliable anchor, expand its anime related graph, and match the remaining local group titles against that graph' in recipe_skill
+    assert 'A main-season subject with no SP rows is weak negative evidence' in recipe_skill
+    assert 'Do not use a missing parent-season SP list as the only reason for a numbered side-content group.' in recipe_skill
+    assert 'Do not use a parent-season search as negative evidence for a side-content group.' in recipe_skill
+    assert 'A parent TV subject that lacks SP rows is not enough to make a named side-content group supplemental.' in recipe_reference
+    assert 'Do not change it to `non_bangumi_or_supplemental` merely to make the verifier pass.' in recipe_reference
+    assert 'Use graph closure for side frontiers.' in (SKILL_ROOT / 'bangumi-api' / 'references' / 'python-custom-tools.md').read_text(encoding='utf-8')
+    assert 'that subject becomes a new anchor' in (SKILL_ROOT / 'bangumi-api' / 'references' / 'python-custom-tools.md').read_text(encoding='utf-8')
+    assert template['rules'][0]['target']['episode_type'] == 'regular'
+    assert template['rules'][0]['select']['filename_regex'] == 'Episode {ep}.mkv'
+    return
+
     assert 'find_bangumi_targets_for_local_file' in bangumi_skill
     assert 'Operating Loop' in bangumi_skill
     assert 'One useful graph pass plus matching episode rows is usually enough to draft params and validate.' in bangumi_skill
@@ -51,6 +133,7 @@ def test_pi_skills_document_compact_evidence_flow_and_legal_recipe_episode_types
     assert 'Python escapes regex characters' in recipe_docs
     assert 'Do not paste one literal filename into `source_pattern`' in recipe_docs
     assert '`source_path` and `path` are accepted as one-file `exact_paths` aliases' in recipe_docs
+    assert '`group_ref` / `local_group_ref` are accepted as local selector shorthand' in recipe_docs
     assert 'If `episode_offset` is omitted or null, Python defaults it to `EP`.' in recipe_docs
     assert 'infers exact episode row type when possible' in recipe_skill
     assert 'Keep params minimal.' in recipe_docs
@@ -101,7 +184,8 @@ def test_pi_skills_document_compact_evidence_flow_and_legal_recipe_episode_types
     assert 'Core loop: build a testable recipe first, then let validation drive repair.' in recipe_skill
     assert '`validate_organize_recipe_params` is a trial check, not final submission.' in recipe_skill
     assert 'An invalid or review result is useful feedback for patch repair' in recipe_skill
-    assert '`get_local_recipe_params_scaffold` can lower selector friction' in recipe_skill
+    assert '`get_local_selector_scaffold` and `get_local_recipe_params_scaffold` can lower selector friction' in recipe_skill
+    assert 'params may use `group_ref` as a local selector shorthand' in recipe_skill
     assert 'does not choose Bangumi target IDs' in recipe_skill
     assert 'A practical pre-validation evidence set' in recipe_skill
     assert '`run_progress` reports progress facts' in recipe_skill
@@ -114,8 +198,8 @@ def test_pi_skills_document_compact_evidence_flow_and_legal_recipe_episode_types
     assert 'not a fixed-layer instruction' in release_skill
     assert 'Treat params validation as a trial check of a compact grouping' in release_skill
     assert 'selector gaps, duplicate targets, missing episode rows, and review warnings' in release_skill
-    assert 'use `get_local_recipe_params_scaffold`' in release_skill
-    assert 'does not choose target semantics' in release_skill
+    assert 'use `get_local_selector_scaffold(group_ref)` or `get_local_recipe_params_scaffold(group_ref)`' in release_skill
+    assert 'target semantics still come from Bangumi evidence' in release_skill
     assert 'eight custom-tool calls' not in bangumi_skill
     assert 'eight custom-tool calls' not in release_skill
     assert 'eight custom-tool calls' not in recipe_docs
@@ -133,12 +217,13 @@ def test_pi_skills_document_compact_evidence_flow_and_legal_recipe_episode_types
     assert 'domin' + 'ant' not in release_skill
     assert 'Do not use short refs' not in recipe_skill
     assert 'Use real identifiers in recipes.' in recipe_skill
-    assert 'Read `case_input.json` and inspect `case_input.scratch_paths`.' in recipe_skill
+    assert 'Start from `case_input.case_overview` or `get_case_overview()` and inspect `case_input.scratch_paths`.' in recipe_skill
     assert 'case_quick_start' not in recipe_skill
-    assert '`case_input.local_recipe_skeleton`' in recipe_skill
+    assert '`case_input.local_recipe_skeleton`' not in recipe_skill
     assert 'early_bangumi_evidence_bundle' not in recipe_skill
-    assert 'selector and verifier-repair aid' in recipe_skill
-    assert 'startup semantic checklist' in recipe_skill
+    assert 'Use `list_local_groups(detail=false)` as the local group index.' in recipe_skill
+    assert 'Choose the drill-down path yourself.' in recipe_skill
+    assert 'not a route recommendation' in recipe_skill
     assert '`episode_range` is the local captured file-number range' in recipe_skill
     assert 'The local helper is useful for debugging' in recipe_skill
     assert 'ready for `goal_complete`' in recipe_skill
@@ -161,8 +246,8 @@ def test_pi_skills_document_compact_evidence_flow_and_legal_recipe_episode_types
     assert '`Bangaihen`: side story or extra chapter.' in release_skill
     assert '`Soushuuhen`, `Soshuhen`, `Digest`: recap or compilation.' in release_skill
     assert 'Keep season and title qualifiers that distinguish entries inside one franchise.' in release_skill
-    assert 'Read local structure first:' in release_skill
-    assert 'List the visible `source_path` values and read their directory structure before searching Bangumi.' in release_skill
+    assert 'Read local structure through navigation first:' in release_skill
+    assert 'List visible `source_path` values by opening `get_local_group_detail(group_ref, detail=true)`' in release_skill
     assert 'Notice when numbering restarts.' in release_skill
     assert 'The directory-structure-first workflow applies to every case.' in release_skill
     assert 'treat a franchise-root or earlier-season match as weak evidence' in release_skill
@@ -201,7 +286,7 @@ def test_pi_skills_document_compact_evidence_flow_and_legal_recipe_episode_types
     assert 'Keep one subject within the episode rows it exposes.' in bangumi_skill
     assert 'The Python verifier checks mechanical legality and coverage' in bangumi_skill
     assert 'The recipe verifier is a strict mechanical gate, not a semantic title matcher.' in recipe_skill
-    assert 'Inspect the visible `source_path` values and infer local groups' in recipe_skill
+    assert 'Inspect the visible `source_path` values from chosen group detail pages and infer local groups' in recipe_skill
     assert 'representative `source_path` lookup' in recipe_skill
     assert '`filename_regex` is a real regular expression with `{ep}` as the episode placeholder.' in recipe_docs
     assert 'If the visible files look like `01` to `13`, a single TV episode rule is usually the compact main mapping.' in release_skill
@@ -212,6 +297,10 @@ def test_pi_skills_document_compact_evidence_flow_and_legal_recipe_episode_types
     assert 'check numbered `SP01`-style files against Bangumi special episodes for the same subject' in release_skill
     assert 'Numbered `SP01` / `SP02` / `S00E01` files are candidate special entries.' in bangumi_skill
     assert 'A related special/OVA subject is not enough by itself' in bangumi_skill
+    assert 'Do not mark a numbered SP sequence supplemental only because the main-season lookup did not include SP rows' in bangumi_skill
+    assert 'do not postpone first validation to prove the entire SP graph is exhausted' in bangumi_skill
+    assert 'Main-season lookup results that omit SP rows are not evidence' in recipe_skill
+    assert 'Main-season representative lookup alone is not enough to conclude that a separate numbered SP sequence has no target.' in release_skill
     assert 'duplicate_target' in bangumi_skill
     assert 'split or variant locators such as `_1`/`_2`' in bangumi_skill
     assert 'cover them as supplemental exact paths' in bangumi_skill
@@ -230,12 +319,17 @@ def test_pi_skills_document_compact_evidence_flow_and_legal_recipe_episode_types
     assert 'movie-shaped subject can have a `regular` episode row' in recipe_docs
     assert 'If validation returns `accepted: true` and `review_warnings` is empty' in recipe_skill
     assert 'repair mode should stay targeted: read the issue list, modify the affected params/rules' in recipe_skill
+    assert 'make it a testable `disposition: "non_bangumi_or_supplemental"` rule for the first validation' in recipe_skill
     assert 'accepted but has `review_warnings`' in recipe_skill
     assert 'find_bangumi_targets_for_local_file` lookup with the exact `source_path` from the warning' in recipe_skill
     assert 'A submit result with `status: "review"` is not final' in recipe_skill
     assert 'rather than restarting broad search, inspecting old artifacts/tests, or writing prose instead of validating.' in recipe_skill
     assert 'For `duplicate_target` caused by local split/variant locators' in recipe_skill
     assert 'validate that patch before considering whole-case `fail_closed`' in recipe_skill
+    assert 'multi-file `group_ref`, `source_pattern`, or multi-path exact selector with one fixed `episode_id`, `sort`, or `ep`' in recipe_skill
+    assert 'separate movie/OVA/special files need separate exact-path rules with distinct exposed targets' in recipe_skill
+    assert 'patch that supplemental rule to include the missing exact path' in recipe_skill
+    assert 'Do not change unrelated mapped movie/OVA/special exact-path rules just to satisfy coverage' in recipe_skill
     assert 'validate_organize_recipe_params_patch' in recipe_skill
     assert 'Patch repair shape after a params validation' in recipe_skill
     assert '`validate_organize_recipe_params_patch` can repair only the changed rules' in recipe_docs

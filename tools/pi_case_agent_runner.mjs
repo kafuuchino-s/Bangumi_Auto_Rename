@@ -136,6 +136,15 @@ function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+function effectiveRuntimeBudgetSeconds() {
+  const timeoutSeconds = Number(caseInput.runtime_policy?.wall_clock_timeout_seconds || 0);
+  const finishBeforeSeconds = Number(caseInput.runtime_policy?.suggested_finish_before_seconds || 0);
+  if (timeoutSeconds > 5) {
+    return Math.max(1, Math.min(timeoutSeconds - 2, Math.max(finishBeforeSeconds, timeoutSeconds - 5)));
+  }
+  return finishBeforeSeconds || Math.max(1, timeoutSeconds || 30);
+}
+
 function safePreview(value, limit = 2000) {
   let text;
   try {
@@ -217,6 +226,15 @@ async function fileExists(filePath) {
     return true;
   } catch {
     return false;
+  }
+}
+
+async function readJsonFile(filePath) {
+  if (!(await fileExists(filePath))) return null;
+  try {
+    return JSON.parse(await fs.readFile(filePath, "utf8"));
+  } catch {
+    return null;
   }
 }
 
@@ -302,8 +320,8 @@ async function readLatestVerifierNudgeLines() {
     const reviewWarnings = Array.isArray(verifier.review_warnings) ? verifier.review_warnings : [];
     if (verifier.passed === true && reviewWarnings.length) {
       const lines = [
-        `Latest validate_organize_recipe passed mechanically but has ${reviewWarnings.length} review warning(s).`,
-        "Review mode: resolve only these warnings with targeted evidence, then call validate_organize_recipe_params again:",
+        `Working Board review checkpoint: latest validation passed mechanically but has ${reviewWarnings.length} review warning(s).`,
+        "Resolve only the warnings listed below, then validate params again. Do not switch to raw JSON or broad search:",
       ];
       for (const warning of reviewWarnings.slice(0, 6)) {
         const code = warning.code || "review_warning";
@@ -318,14 +336,14 @@ async function readLatestVerifierNudgeLines() {
     }
     if (verifier.passed === true) {
       return [
-        "Latest validate_organize_recipe result is accepted=true. Submit the same recipe now; do not rewrite it.",
+        "Working Board submit path: latest validation is accepted=true with no review warnings. Submit the same params or recipe now; do not rewrite it.",
       ];
     }
     if (!issues.length) return [];
     const repairHints = Array.isArray(verifier.repair_hints) ? verifier.repair_hints : [];
     const lines = [
-      `Latest validate_organize_recipe is still blocked: ${verifier.summary || "see issues"}.`,
-      "Repair mode: fix only these verifier issues, then call validate_organize_recipe_params again:",
+      `Working Board repair checkpoint: latest verifier is blocked: ${verifier.summary || "see issues"}.`,
+      "Patch only these named issues, then validate params again. Fetch evidence only when the issue or hint asks for targeted evidence:",
     ];
     for (const issue of issues.slice(0, 6)) {
       const code = issue.issue_code || "issue";
@@ -419,20 +437,70 @@ async function readRunnerProgressNudgeLines() {
   ).length;
   if (!verifierExists && validationCalls === 0 && toolNames.length) {
     lines.push(
-      `Run progress fact: no params validation has completed yet. Evidence calls so far: ${subjectEvidenceCalls} subject/search/graph/lookup call(s), ${episodeEvidenceCalls} episode/window/detail call(s). This is progress telemetry, not a target recommendation or next-step instruction.`,
+      `Run progress fact: no params validation has completed yet. Evidence calls so far: ${subjectEvidenceCalls} subject/search/graph/lookup call(s), ${episodeEvidenceCalls} episode/window/detail call(s). This is telemetry for your Working Board, not a target recommendation.`,
     );
+    if (subjectEvidenceCalls + episodeEvidenceCalls >= 4 || toolNames.length >= 8) {
+      lines.push(
+        "Validation debt checkpoint: no trial validation has run after substantial evidence gathering. The next custom tool should be validate_organize_recipe_params with the best testable mapped/supplemental rules, or fail_closed with a concrete blocker if even a trial rule cannot be written. For an uncertain group, write a supplemental test rule instead of delaying first validation. Do not call more search, episode, local-detail, or selector tools in response to this checkpoint.",
+        "If subject/episode evidence exists but selector details are awkward, validate anyway. Duplicate local locators, split files, variant suffixes, and uncertain exclude_regex choices should become verifier feedback, not a no-validation timeout.",
+      );
+    }
   }
   return lines;
 }
 
 async function submitValidatedRecipeIfNeeded(finalPayload, helperCheck) {
-  return { finalPayload, autoSubmit: null };
+  if (finalPayload?.final_result) {
+    return { finalPayload, autoSubmit: null };
+  }
+  const artifactsDir = caseInput.scratch_paths?.artifacts_dir;
+  if (!artifactsDir || helperCheck?.ok !== true) {
+    return { finalPayload, autoSubmit: null };
+  }
+  const verifier = await readJsonFile(path.join(artifactsDir, "recipe_verifier_result.json"));
+  const reviewWarnings = Array.isArray(verifier?.review_warnings) ? verifier.review_warnings : [];
+  const issues = Array.isArray(verifier?.issues) ? verifier.issues : [];
+  if (verifier?.passed !== true || reviewWarnings.length || issues.length) {
+    return { finalPayload, autoSubmit: null };
+  }
+
+  const paramsPath = path.join(artifactsDir, "recipe_params.json");
+  const recipePath = caseInput.scratch_paths?.organize_recipe;
+  const params = await readJsonFile(paramsPath);
+  let tool = "";
+  let args = null;
+  if (params && typeof params === "object") {
+    tool = "submit_organize_recipe_params";
+    args = { recipe_params: params, summary: "auto-submit after accepted params validation" };
+  } else {
+    const recipe = await readJsonFile(recipePath);
+    if (recipe && typeof recipe === "object") {
+      tool = "submit_organize_recipe";
+      args = { organize_recipe: recipe, summary: "auto-submit after accepted recipe validation" };
+    }
+  }
+  if (!tool || !args) {
+    return { finalPayload, autoSubmit: { attempted: false, reason: "accepted validation exists but no params or recipe artifact was readable" } };
+  }
+
+  const result = await callPythonTool(tool, args);
+  const updatedFinalPayload = await readFinalResult();
+  return {
+    finalPayload: updatedFinalPayload?.final_result ? updatedFinalPayload : finalPayload,
+    autoSubmit: {
+      attempted: true,
+      tool,
+      accepted: Boolean(result?.accepted),
+      status: result?.status || "",
+      ok: Boolean(result?.ok),
+      summary: result?.summary || "",
+      final_result_present: Boolean(updatedFinalPayload?.final_result),
+    },
+  };
 }
 
 async function waitForFinalResultOrIdle(session, promptDone, options = {}) {
-  const timeoutSeconds = Number(caseInput.runtime_policy?.wall_clock_timeout_seconds || 0);
-  const finishBeforeSeconds = Number(caseInput.runtime_policy?.suggested_finish_before_seconds || 0);
-  const defaultWaitMs = Math.max(1_000, (finishBeforeSeconds || Math.max(1, timeoutSeconds - 5)) * 1_000);
+  const defaultWaitMs = Math.max(1_000, effectiveRuntimeBudgetSeconds() * 1_000);
   const waitMs = Math.max(1_000, Number(options.waitMs || 0) || defaultWaitMs);
   const deadline = Date.now() + waitMs;
   let idleSince = 0;
@@ -498,10 +566,8 @@ async function waitForFinalResultOrIdle(session, promptDone, options = {}) {
 
 async function waitForFinalResultWithNudge(session, promptDone) {
   const startedAt = Date.now();
-  const timeoutSeconds = Number(caseInput.runtime_policy?.wall_clock_timeout_seconds || 0);
-  const finishBeforeSeconds = Number(caseInput.runtime_policy?.suggested_finish_before_seconds || 0);
-  const totalBudgetMs = Math.max(30_000, (finishBeforeSeconds || Math.max(30, timeoutSeconds - 15)) * 1_000);
-  const firstWaitMs = Math.min(totalBudgetMs, Math.max(45_000, Math.min(90_000, Math.floor(totalBudgetMs * 0.35))));
+  const totalBudgetMs = Math.max(30_000, effectiveRuntimeBudgetSeconds() * 1_000);
+  const firstWaitMs = Math.min(totalBudgetMs, Math.max(35_000, Math.min(60_000, Math.floor(totalBudgetMs * 0.25))));
   let finalWait = await waitForFinalResultOrIdle(session, promptDone, { waitMs: firstWaitMs });
   const nudgeAttempts = [];
   if (finalWait.payload?.final_result) {
@@ -513,22 +579,24 @@ async function waitForFinalResultWithNudge(session, promptDone) {
   const nudgeText = [
     "No final result has been recorded yet.",
     ...progressNudgeLines,
-    "Time-boxed checkpoint: the run needs a final tool result soon.",
-    "Do not print recipe JSON as plain text. Finish through one of the final tool paths: validate/submit params, raw validate/submit for debugging generated JSON, or fail_closed.",
-    "Progress telemetry is factual only. It reports whether verifier feedback exists; it does not choose the semantic target or the next tool for you.",
-    "If your latest validation was rejected, repair mode is scoped to the reported issues: change only the affected params/rules and fetch only evidence required by those issues. validate_organize_recipe_params_patch is available when only a few rules changed.",
+    "Time-boxed Working Board checkpoint: finish through one of three paths.",
+    "Path 1: if validation is accepted with no review warnings, submit the same params/recipe now.",
+    "Path 2: if verifier issues or review warnings exist, patch only the named rule/path/target and validate again.",
+    "Path 3: if a supportable recipe cannot be built after targeted evidence, call fail_closed with the concrete group/reason.",
     ...verifierNudgeLines,
-    "If you have valid recipe parameters, call submit_organize_recipe_params. If you have a raw accepted recipe, call submit_organize_recipe.",
-    "If the latest params result is status:\"review\", do not hand-write or translate a raw OrganizeRecipeDraft; keep using params tools, resolve the listed review_warnings, then validate/submit params again.",
-    "If evidence is insufficient, call fail_closed.",
-    "Do not call more broad search tools during this checkpoint unless a verifier issue specifically requires that evidence. Do not inspect templates or old artifacts just to continue; use the case input and already exposed evidence.",
+    "If no verifier feedback exists and every visible group has a mapped or supplemental test rule, call validate_organize_recipe_params.",
+    "If no validation has run yet and one group remains uncertain, include that group as a supplemental test rule and validate. Validation is the trial that tells you what to repair.",
+    "If mapped target evidence exists but duplicate/split selector handling is uncertain, validate the best mapped rule now and let duplicate_target or uncovered_path feedback name the repair.",
+    "If validation rejects a mapped anime/video frontier rule, repair that mapped rule shape before converting it to supplemental. Supplemental is for closure-stalled or contradicted targets, not for escaping a mechanical issue.",
+    "If your own reasoning says ready, enough, validate, or submit, the next action should be validate, submit, or fail_closed unless you can name one concrete missing evidence item.",
+    "Do not print recipe JSON as prose, inspect old artifacts/tests, or restart broad search during this checkpoint.",
   ].join("\n");
   const nudgeDone = session
     .prompt(nudgeText, { expandPromptTemplates: true, source: "api", streamingBehavior: "followUp" })
     .then(() => ({ ok: true }))
     .catch((error) => ({ ok: false, error: error?.stack || error?.message || String(error) }));
   const remainingMs = Math.max(30_000, totalBudgetMs - firstWaitMs);
-  const nudgeWait = await waitForFinalResultOrIdle(session, nudgeDone, { waitMs: Math.min(120_000, remainingMs) });
+  const nudgeWait = await waitForFinalResultOrIdle(session, nudgeDone, { waitMs: Math.min(90_000, remainingMs) });
   nudgeAttempts.push({
     phase: "checkpoint",
     wait_iterations: nudgeWait.waitIterations,
@@ -544,24 +612,20 @@ async function waitForFinalResultWithNudge(session, promptDone) {
   }
 
   const hardRemainingMs = Math.max(0, totalBudgetMs - (Date.now() - startedAt));
-  const hardWaitMs = Math.min(120_000, hardRemainingMs);
+  const hardWaitMs = Math.min(90_000, hardRemainingMs);
   if (hardWaitMs >= 20_000) {
     const progressLines = await readRunnerProgressNudgeLines();
     const latestVerifierLines = await readLatestVerifierNudgeLines();
     const hardFinishText = [
-      "Hard finish checkpoint: you stopped again without a final accepted recipe or fail_closed result.",
+      "Hard finish Working Board checkpoint: you stopped again without a final accepted recipe or fail_closed result.",
       ...progressLines,
-      "Do not explain. Do not read old run artifacts or repository tests. End through a final tool path.",
-      "Progress telemetry only states what has or has not happened: verifier artifact, recipe artifact, exposed subjects, and evidence-call counts. Use your semantic judgment to choose between validation/submission and fail_closed.",
-      "For a normal numbered TV run, use one sequence rule with source_pattern containing {ep}, subject_id, media_kind:\"tv\", episode_number_field:\"sort\" or \"ep\", range_start/range_end, and a short reason.",
-      "For one independent movie/OVA/SP/special file, use exact_paths/source_path. If an exact episode row is known, include episode_id; if the subject itself is the movie target, omit episode_id.",
-      "For one-file recap/movie files with a direct title or source_path lookup candidate matching the filename qualifier, draft an exact_paths movie rule and validate it; do not fail_closed before this validate attempt.",
-      "For visible files that are truly bonus/interview/menu/extra after evidence, use exact_paths plus disposition:\"non_bangumi_or_supplemental\".",
-      "If validation returns accepted=true, submit the same params immediately. If validation reports issues, change only the affected params and validate again.",
-      "If only a few rules need edits, call validate_organize_recipe_params_patch with patch_rules/append_rules instead of rewriting the whole params object.",
-      "If validation or submit returns status:\"review\", do not switch to raw submit_organize_recipe. Resolve the warning repair_hints and resubmit params.",
-      "Only call fail_closed when strict evidence is insufficient after that targeted validate attempt.",
       ...latestVerifierLines,
+      "Choose one final path now: submit accepted params/recipe; patch named issues and validate; or fail_closed with a concrete evidence gap.",
+      "If no params validation has happened yet, the next custom tool must be validate_organize_recipe_params with best-effort mapped/supplemental rules, unless you call fail_closed for a concrete blocker.",
+      "Budget pressure is not a fail_closed reason. If target evidence exists and only selector/duplicate handling is uncertain, validate the best draft instead of calling fail_closed.",
+      "Do not lower a plausibly mapped OVA/OAD/SP/movie/side-story group to supplemental just to pass validation; patch its target fields or selector first.",
+      "Use params patch tools when a previous params validation/submit exists and only a few rules changed.",
+      "Do not explain, browse old artifacts/tests, or gather broad evidence.",
     ].join("\n");
     const hardDone = session
       .prompt(hardFinishText, { expandPromptTemplates: true, source: "api", streamingBehavior: "followUp" })
@@ -580,7 +644,7 @@ async function waitForFinalResultWithNudge(session, promptDone) {
     finalWait = hardWait;
   }
   let repairAttempt = 0;
-  const maxRepairAttempts = 6;
+  const maxRepairAttempts = 3;
   while (!finalWait.payload?.final_result && repairAttempt < maxRepairAttempts) {
     const remainingMs = Math.max(0, totalBudgetMs - (Date.now() - startedAt));
     if (remainingMs < 20_000) break;
@@ -588,29 +652,24 @@ async function waitForFinalResultWithNudge(session, promptDone) {
     const progressLines = await readRunnerProgressNudgeLines();
     const attemptNumber = repairAttempt + 1;
     const repairText = [
-      "Final repair loop: no final result exists, but wall-clock budget remains.",
+      "Final Working Board repair loop: no final result exists, but wall-clock budget remains.",
       ...progressLines,
       ...verifierLines,
-      "If there is no latest verifier feedback, the factual state is that no recipe has entered the verifier loop yet.",
-      "If progress shows several get_episode_list/get_target_window/get_target_detail calls and no verifier artifact, that is still only evidence collection telemetry, not a semantic blocker by itself.",
-      "For unresolved short SP/bonus or split-SP edge cases, use the evidence you already exposed to choose between a mapped rule, a supplemental rule, or fail_closed.",
-      "Act only on the latest verifier/review feedback above.",
-      "If the latest result has review_warnings, resolve only those warnings: call the exact targeted evidence tool named in repair_hint, then validate the same params again.",
-      "If the latest result has verifier issues and a previous params validation exists, use validate_organize_recipe_params_patch with patch_rules, replace_rules, append_rules, or remove_rule_names so you only send the changed rules.",
-      "For large packages, keep broad supplemental groups compact with path_glob/filename_regex selectors; use exact_paths only for irregular exceptions or the long file named by a review warning.",
-      "For duplicate_target across adjacent numbered files with the same filename template, repair the affected exact rules into one source_pattern sequence/range or assign distinct exposed episode_id values that match the file numbers; do not fail_closed for that mechanical duplicate before validating the repaired params.",
-      "For duplicate_target caused by local split or variant locators such as _1/_2, part markers, or version suffixes where no distinct exposed Bangumi row exists, exclude only those split/variant paths from the mapped sequence and append a supplemental exact_paths rule, then validate a params patch.",
-      `If validate returns accepted=true with no review_warnings, submit the same params immediately. A submit result with \`status: "review"\` is not final; repair the warning and resubmit.`,
-      "Do not manually convert params into a raw OrganizeRecipeDraft during review repair; raw tools are for debugging already-generated JSON only.",
-      "Do not call fail_closed for uncertainty about a subset while plausible direct lookup/search candidates exist for that subset; validate the conservative candidate recipe first.",
-      "If evidence is still insufficient after the targeted repair, call fail_closed with a concrete semantic reason.",
-      "Do not restart broad search, do not inspect old artifacts/tests, and do not print JSON as prose.",
+      "Act only on the current board state and the latest verifier/review feedback.",
+      "If no verifier feedback exists and the board has testable coverage for all visible groups, validate params.",
+      "If no validation has run yet, do not fetch more evidence here; validate best-effort params or fail_closed with the one concrete blocker.",
+      "Do not call fail_closed with reason budget_exhausted. The runner records budget exhaustion; your job is to validate the best draft or name a real evidence contradiction.",
+      "If feedback exists, patch only the named issue or warning, then validate again.",
+      "For a rejected mapped frontier rule, prefer target/selector repair over supplemental downgrade unless evidence has contradicted that target.",
+      `If validation is accepted with no review_warnings, submit the same params immediately. A submit result with \`status: "review"\` is not final.`,
+      "If targeted evidence is still insufficient, call fail_closed with the unresolved group and evidence gap.",
+      "Do not restart broad search, inspect old artifacts/tests, or print JSON as prose.",
     ].join("\n");
     const repairDone = session
       .prompt(repairText, { expandPromptTemplates: true, source: "api", streamingBehavior: "followUp" })
       .then(() => ({ ok: true }))
       .catch((error) => ({ ok: false, error: error?.stack || error?.message || String(error) }));
-    const repairWait = await waitForFinalResultOrIdle(session, repairDone, { waitMs: Math.min(120_000, remainingMs) });
+    const repairWait = await waitForFinalResultOrIdle(session, repairDone, { waitMs: Math.min(90_000, remainingMs) });
     nudgeAttempts.push({
       phase: `final_repair_${attemptNumber}`,
       wait_iterations: repairWait.waitIterations,
@@ -623,7 +682,7 @@ async function waitForFinalResultWithNudge(session, promptDone) {
     finalWait = repairWait;
     const remainingAfterRepairMs = Math.max(0, totalBudgetMs - (Date.now() - startedAt));
     if (!finalWait.payload?.final_result && !finalWait.idle_drained && remainingAfterRepairMs >= 20_000) {
-      const settleWait = await waitForFinalResultOrIdle(session, repairDone, { waitMs: Math.min(120_000, remainingAfterRepairMs) });
+      const settleWait = await waitForFinalResultOrIdle(session, repairDone, { waitMs: Math.min(90_000, remainingAfterRepairMs) });
       nudgeAttempts.push({
         phase: `final_repair_${attemptNumber}_settle`,
         wait_iterations: settleWait.waitIterations,
@@ -659,12 +718,15 @@ function proxyTool(name, label, description, parameters) {
 }
 
 const recipeParamsQuickReference = [
-  "Minimal recipe_params shape: {\"rules\":[{\"name\":\"TV 1-10\",\"source_pattern\":\"Folder {vol}/Episode {ep:02}.mkv\",\"subject_id\":123,\"media_kind\":\"tv\",\"episode_type\":\"regular\",\"episode_range\":\"1-10\",\"episode_number_field\":\"sort\",\"episode_offset\":\"EP\",\"reason\":\"...\"},{\"name\":\"Movie\",\"exact_paths\":[\"real/source.mkv\"],\"subject_id\":456,\"media_kind\":\"movie\",\"episode_id\":789,\"reason\":\"...\"},{\"name\":\"Merged OVA\",\"source_unit\":\"single_file_multi_episode\",\"exact_paths\":[\"merged.mkv\"],\"subject_id\":246,\"media_kind\":\"ova\",\"episode_type\":\"regular\",\"episode_range\":\"1-3\",\"reason\":\"one file has chapters/duration supporting the exposed episode span\"},{\"name\":\"Bonus extras\",\"exact_paths\":[\"bonus.mkv\"],\"disposition\":\"non_bangumi_or_supplemental\",\"reason\":\"package bonus with no supportable Bangumi episode target\"}]}",
-  "Accepted params aliases: source_template for source_pattern; range or range_start/range_end or episode_start/episode_end for episode_range; offset for episode_offset; number_field or target_number_field for episode_number_field; subject_id for bangumi_subject_id; exact_paths, paths, source_path, or path for one-file rules.",
+  "Minimal recipe_params shape: {\"rules\":[{\"name\":\"TV 1-10\",\"group_ref\":\"LG1\",\"subject_id\":123,\"media_kind\":\"tv\",\"episode_type\":\"regular\",\"reason\":\"local group maps to this Bangumi episode run\"},{\"name\":\"TV explicit selector\",\"source_pattern\":\"Folder {vol}/Episode {ep:02}.mkv\",\"subject_id\":123,\"media_kind\":\"tv\",\"episode_type\":\"regular\",\"episode_range\":\"1-10\",\"episode_number_field\":\"sort\",\"episode_offset\":\"EP\",\"reason\":\"...\"},{\"name\":\"Movie\",\"exact_paths\":[\"real/source.mkv\"],\"subject_id\":456,\"media_kind\":\"movie\",\"episode_id\":789,\"reason\":\"...\"},{\"name\":\"Merged OVA\",\"source_unit\":\"single_file_multi_episode\",\"exact_paths\":[\"merged.mkv\"],\"subject_id\":246,\"media_kind\":\"ova\",\"episode_type\":\"regular\",\"episode_range\":\"1-3\",\"reason\":\"one file has chapters/duration supporting the exposed episode span\"},{\"name\":\"Bonus extras\",\"group_ref\":\"LG9\",\"disposition\":\"non_bangumi_or_supplemental\",\"reason\":\"package bonus with no supportable Bangumi episode target\"}]}",
+  "Accepted params aliases: group_ref/local_group_ref for a local selector shorthand from list_local_groups or get_local_selector_scaffold; source_template for source_pattern; range or range_start/range_end or episode_start/episode_end for episode_range; offset for episode_offset; number_field or target_number_field for episode_number_field; subject_id for bangumi_subject_id; exact_paths, paths, source_path, or path for one-file rules.",
   "Supplemental/excluded files must use disposition:\"non_bangumi_or_supplemental\". Do not write boolean flags such as non_bangumi_or_supplemental:true, supplemental:true, or exclude:true. For one file that covers multiple episodes, use source_unit:\"single_file_multi_episode\" with episode_range; do not write merged:true or map it only to episode 1.",
-  "Repair patch shape after a params validation: {\"patch_rules\":[{\"name\":\"Existing rule\",\"set\":{\"episode_id\":0,\"exclude_regex\":\"SP08_2\"},\"unset\":[\"episode_id\"]}],\"append_rules\":[{\"name\":\"Bonus\",\"exact_paths\":[\"real/source.mkv\"],\"disposition\":\"non_bangumi_or_supplemental\",\"reason\":\"...\"}],\"remove_rule_names\":[\"Bad rule\"]}. Use validate_organize_recipe_params_patch before submit_organize_recipe_params_patch.",
+  "Supplemental group rules do not need subject_id, episode_id, episode_type, episode_range, or episode_offset. Use one group_ref/path_glob/filename_regex/exact_paths rule that covers the intended supplemental paths exactly once.",
+  "For a multi-file group_ref/source_pattern sequence, do not include episode_id/sort/ep unless every selected file intentionally maps to the same exact row. Let targets derive from {ep}; split separate movie/OVA/special files into exact_path rules with distinct exposed targets.",
+  "Repair patch shape after a params validation: {\"patch_rules\":[{\"name\":\"Existing rule\",\"set\":{\"episode_id\":0,\"exclude_regex\":\"SP08_2\"},\"unset\":[\"episode_id\"]}],\"append_rules\":[{\"name\":\"Bonus\",\"exact_paths\":[\"real/source.mkv\"],\"disposition\":\"non_bangumi_or_supplemental\",\"reason\":\"...\"}],\"remove_rule_names\":[\"Bad rule\"]}. Use validate_organize_recipe_params_patch before submit_organize_recipe_params_patch; after an accepted patch validation, the same submit patch reuses the accepted merged params instead of applying append_rules again.",
   "Legal media_kind values are tv, movie, ova, oad, sp, special, unknown. Do not use rule-shape words such as numbered_run or exact_paths as media_kind.",
   "Legal episode_type values are regular, special, ova, oad, movie, unknown. For exact episode_id rules, omit episode_type unless copying it from an episode row; Python canonicalizes it.",
+  "Legal episode_offset values are EP arithmetic only, such as EP, EP-10, or EP*2-1. Do not use SP as episode_offset; SP belongs in the filename selector or content evidence. For SP01-SP13 mapping to rows 1-13, use episode_offset:\"EP\".",
   "validate_organize_recipe_params is a trial check, not final submission. invalid/review results are normal contract feedback for repair_hints; accepted validation still needs submit_organize_recipe_params.",
   "A first trial validation does not need to be accepted or warning-free. It is a way to expose concrete coverage, duplicate, selector, missing-row, and review feedback before final submission.",
   "Do not inspect repository tests or Python schema to learn params. When this quick reference is insufficient, validation repair_hints are the contract feedback surface. Do not hand-translate these params into raw organize_recipe JSON to bypass review.",
@@ -672,15 +734,51 @@ const recipeParamsQuickReference = [
 
 const tools = [
   proxyTool(
+    "get_case_overview",
+    "Get Case Overview",
+    "Return the case map: counts, compact local group index, seen Bangumi evidence counts, recipe state, and navigation handles. It does not recommend a route.",
+    objectSchema({}),
+  ),
+  proxyTool(
+    "list_local_groups",
+    "List Local Groups",
+    "Return the local group index. With detail=true, returns expanded local group facts. Pi chooses which group to inspect.",
+    objectSchema({ detail: Json.Optional(Json.Boolean()) }),
+  ),
+  proxyTool(
+    "get_local_group_detail",
+    "Get Local Group Detail",
+    "Expand one local group by group_ref with source paths and optional detailed local file facts. It does not choose Bangumi targets or disposition.",
+    objectSchema({
+      group_ref: Json.String(),
+      detail: Json.Optional(Json.Boolean()),
+    }),
+  ),
+  proxyTool(
+    "get_local_selector_scaffold",
+    "Get Local Selector Scaffold",
+    "Return selector/range params stubs for one local group_ref, or all groups when group_ref is omitted. Pi can use group_ref as a local selector shorthand, and fills target or supplemental fields from evidence.",
+    objectSchema({
+      group_ref: Json.Optional(Json.String()),
+      detail: Json.Optional(Json.Boolean()),
+    }),
+  ),
+  proxyTool(
     "get_case_context",
     "Get Case Context",
-    "Read the current Local to Bangumi case context with real source paths and Bangumi IDs.",
+    "Read bounded Local to Bangumi case context. detail=false returns navigation context; detail=true expands the legacy full debug context.",
     objectSchema({ detail: Json.Optional(Json.Boolean()) }),
   ),
   proxyTool(
     "get_local_recipe_params_scaffold",
     "Get Local Recipe Params Scaffold",
     "Return local selector/range params stubs copied from local facts only. It does not choose Bangumi targets, media kind, episode type, disposition, or supplemental status.",
+    objectSchema({ detail: Json.Optional(Json.Boolean()), group_ref: Json.Optional(Json.String()) }),
+  ),
+  proxyTool(
+    "get_recipe_state",
+    "Get Recipe State",
+    "Return latest params, verifier, submit, and final-result state without changing the case.",
     objectSchema({ detail: Json.Optional(Json.Boolean()) }),
   ),
   proxyTool(
@@ -815,7 +913,7 @@ const tools = [
   proxyTool(
     "submit_organize_recipe_params_patch",
     "Submit Organize Recipe Params Patch",
-    "Patch the latest recipe params from the previous params validate/submit, then submit. Use after the same patch has validated accepted.",
+    "Patch the latest recipe params from the previous params validate/submit, then submit. If the same patch was just accepted by validate_organize_recipe_params_patch, submit reuses that accepted merged params instead of applying append_rules twice.",
     objectSchema({
       recipe_params_patch: Json.Any(),
       summary: Json.Optional(Json.String()),
@@ -841,73 +939,51 @@ const lazySkillMenu = [
   "/skill:organize-recipe-contract: use when recipe params, selectors, verifier issues, helper scripts, or submit/validate repair need the full contract.",
 ].join("\n");
 const recipeGuidance = [
-  "Core loop: infer local groups, expose enough Bangumi evidence for a testable recipe, validate params, then repair only from verifier issues or review warnings.",
-  "Use the case-scoped custom tools as the working surface. get_case_context returns bounded facts, and get_local_recipe_params_scaffold returns local selector/range params stubs. The raw case_input JSON path is a fallback for exact identity checks, not a file to reread after each uncertainty.",
-  "Validation is the main checkpoint. Do not require exhaustive relation-graph or SP/bonus certainty before the first validate_organize_recipe_params call.",
-  "Treat validate_organize_recipe_params as a low-friction trial check, not as final submission. It is useful even when some SP/bonus or selector details may need repair because invalid/review results return concrete verifier issues and repair_hints.",
-  "Do not treat accepted/no-warning confidence as a prerequisite for the first trial validation; accepted/no-warning confidence is the gate for final submit.",
-  "case_input.context.run_progress and get_case_context().data.run_progress are factual telemetry only. They report tool counts, whether params validation has happened, and whether verifier feedback exists; they are not semantic recommendations.",
-  "Before first validation, keep evidence practical: representative search/lookup for active groups, one bounded graph when it helps, and episode lists/windows only for subjects you plan to use in params. Several evidence calls or repeated episode-list/window/detail fetches with no verifier feedback mean only that the verifier loop has not been entered yet.",
-  "Before Bangumi search, inspect case_input.local_structure_summary and visible source_path values; infer local structure groups from folders, repeated title prefixes, content-shape words, and numbering runs.",
-  "When selector construction feels risky, use get_local_recipe_params_scaffold. It gives only local source_pattern/exact_paths/range stubs; fill subject_id, media_kind, episode_type or episode_id, or supplemental disposition from your Bangumi evidence.",
-  "Use case_input.local_recipe_skeleton only as a selector and verifier-repair aid after you have chosen a local group or a verifier issue names uncovered paths. Do not treat it as a startup semantic checklist.",
-  "When local_recipe_skeleton marks a repeated group selector_safe, copy its source_pattern into recipe params instead of hand-writing a regex-like selector.",
-  "For sequence params, episode_range is the local captured file-number range. If local files 27-33 map to Bangumi rows 1-7, use episode_range:\"27-33\" plus episode_offset:\"EP-26\" rather than episode_range:\"1-7\".",
-  "Treat numbering restarts such as multiple 01 files under different folders or title prefixes as likely separate groups, not duplicate episode 1.",
-  "For each inferred group, identify the shared title/qualifier and changing locator token, then search Bangumi with one representative source_path before broad per-file investigation.",
-  "Draft the smallest adequate recipe first: one rule for a coherent group, exact_paths only for independent exceptions.",
-  "For large packages, do not enumerate dozens of obvious supplemental extras as exact_paths when a selector can cover them. Use path_glob/filename_regex for repeated bonus/design/material groups, and keep exact_paths for irregular exceptions or long files that need targeted evidence.",
-  "For large franchise bundles with uniform short SP/bonus folders, use bounded evidence: one representative lookup or one relevant episode list after the main anime graph is anchored. If exact Bangumi alignment is still not clear, cover the repeated short group as supplemental with a compact selector and validate instead of chasing every SP row.",
-  "A related Bangumi special/OVA subject is only candidate evidence for short SP/bonus folders; map only exposed rows that resolve by sort/ep/title/count. Otherwise validate the current conservative disposition and let review/repair request exact evidence if needed.",
-  "Use find_bangumi_targets_for_local_file as a compact fact lookup whenever a specific source_path needs Bangumi subject and episode evidence. It returns facts only, not a chosen target.",
-  "Do not wait for fixed-layer recipe suggestions. Choose the semantic subject/episode yourself from local structure, Bangumi search results, relation graph evidence, and episode rows.",
-  "search_bangumi_subjects is already scoped to Bangumi; do not append site words such as Bangumi, BGM, subject, or anime database to queries.",
-  "Do not use repeated broad searches to check missing episode rows. If a helper result is truncated or a plausible subject_id is visible, call get_episode_list/get_target_window or validate_organize_recipe_params; validation hydrates declared subject evidence.",
-  "Once one or more plausible anime subject anchors are known, one bounded expand_related_graph call is often enough to build a testable recipe. Additional graph expansion should be driven by a named conflict, verifier issue, or review warning.",
-  "For a same-folder movie/special collection with many visible named files from one franchise, do one anchor search, then compare a bounded related graph against the file-title list. Search individual titles only for graph misses, verifier/review feedback, or real conflicts.",
-  "For movie collection folders where filenames carry parenthetical title qualifiers, use direct source_path/title lookup candidates that match those qualifiers as exact-path movie rules, then validate; do not require a fully exhausted relation graph for one-file movie subjects.",
-  "For specials, OVAs, OADs, movies, and side stories, use confirmed anime subject IDs with subject_types:[\"anime\"] and empty relation_kinds for bounded graph evidence.",
-  "Treat max_depth/max_subjects as one bounded graph call, not as proof of completeness. Use traversal_status.next_subject_ids_to_expand only for targeted repair or a specific unresolved named group, not as a reason to postpone first validation.",
-  "Do not pass relation_kinds like anime or video; relation_kinds filters relation labels, not subject type. For anime rename work, prefer subject_types:[\"anime\"] and leave relation_kinds empty unless narrowing by a real relation label.",
-  "When using related subjects, keep anime/video-shaped entries and ignore book/manga/novel/music/game/radio/soundtrack/live-event relations unless the local video evidence explicitly points there.",
-  "Read relation_subjects first, compare graph nodes/edges against local subgroups, then fetch episode lists for matching subjects before drafting recipe targets.",
-  "If a named local group has an exact Bangumi episode_id, draft and validate that mapped rule now. Relation frontier exhaustion is only for final fail_closed or final supplemental justification, not for first validation.",
-  "For one-file movie-shaped Bangumi subjects, validate exact-path rules with subject_id and media_kind:\"movie\" first; do not fetch get_episode_list for every one-episode movie subject unless validation blocks or the subject has multiple rows.",
-  "For companion extras such as recording diaries, interviews, cast/staff talks, travel/location features, making-of, stage greetings, memorial clips, or short bonus documentaries, do one exact title search or one representative targeted lookup after anchoring the main anime subject; if no plausible anime/video target appears, validate a supplemental rule instead of exhausting the whole franchise graph.",
-  "Use the episode_type shown by Bangumi episode rows. It may be regular even when media_kind is movie, special, ova, or oad; media_kind is the organize category, episode_type is the row type.",
-  "For hand-authored work, prefer validate_organize_recipe_params and submit_organize_recipe_params. Use minimal semantic params: sequence rules need source_pattern/source_template with {ep} or zero-padded {ep:02}/{ep:02d}, range/offset, subject_id, media_kind, episode_type, and reason; one-file rules need exact_paths/source_path, subject_id, media_kind, and usually episode_id when an episode row is known. A one-file movie-shaped subject may omit episode_id when the subject itself is the movie target. Python builds the JSON recipe and fills mechanical defaults; do not hand-translate params into raw recipe JSON during review repair.",
-  "After a params validation, repair small verifier issues with validate_organize_recipe_params_patch instead of reconstructing the entire params object. Patch only named rules and append supplemental exact-path rules for newly uncovered bonus files.",
+  "Core method: maintain a Working Board with one row per local group: local_group, target evidence, recipe rule, status, and open issue.",
+  "Use statuses as your own thinking labels, not fixed-layer commands: unknown, anchored, draftable, side_frontier, supplemental_candidate, repairing, accepted.",
+  "Every tool call should move one board row forward: expose one missing fact, draft one rule, repair one named issue, submit, or fail_closed.",
+  "Use the navigable hierarchy. get_case_overview is the map, list_local_groups is the index, get_local_group_detail expands one group, get_local_selector_scaffold provides local selector stubs, and get_recipe_state shows verifier/params progress.",
+  "The hierarchy is fixed, but the reading path is Pi's choice. Overview, local groups, skeleton, scaffolds, and progress telemetry are factual surfaces, not semantic route recommendations.",
+  "Before Bangumi search, infer local groups from folders, repeated title prefixes, content-shape words, and numbering runs. Expand source paths only for groups you choose to inspect.",
+  "For one standalone main-title group, direct Bangumi search can be enough. For multi-season, movie-box, OVA/special-box, or franchise side-content packages, search one reliable anchor first, then use expand_related_graph as the series map for the remaining local groups; direct per-group search is a fallback for graph misses or conflicts.",
+  "After main anchors are mapped, keep a side frontier of remaining anime/video-shaped groups. When graph evidence maps a frontier group, add that subject as a new anchor and continue graph closure until no new plausible anime/video targets explain the remaining frontier.",
+  "Expose enough Bangumi subject/episode evidence for each active board row. Use representative search/lookup, bounded relation graph when it helps, and episode lists/windows for subjects you plan to use.",
+  "Call the first validate_organize_recipe_params when every visible local group has either a testable mapped rule or a testable supplemental rule. Do not wait for exhaustive SP/frontier certainty.",
+  "Mechanical accepted is the floor, not the quality target. Do not downgrade an anime/video frontier group with plausible target evidence to supplemental just to clear a verifier issue; first repair media_kind, episode_type, episode_id, range/offset, selector, or duplicate/split handling.",
+  "Treat numbered SP/bonus groups as their own board rows. A missing parent-TV SP list is weak negative evidence for a side-content title such as mini anime, chibi short, OAD, OVA, Bangaihen, or a named special.",
+  "For numbered side-content, prefer the anchor related graph for the local side-title, then compare exposed rows by sort/ep/title/count. If rows fit, map the sequence; if graph evidence misses or conflicts, use a qualified direct search. Only cover as supplemental after targeted title/episode evidence does not fit.",
+  "If several side-content groups share a base title but differ by season or part qualifier, such as II, III, Part 2, or a year, keep separate board rows and target evidence. One unqualified side-title search is not evidence that the qualified groups lack targets.",
+  "Do not use parent-season searches such as Franchise II or Franchise III as negative evidence for side-title groups. They confirm parent seasons, not Side Story II/Mini Anime III targets. Graph from the side-title anchor or search the qualified side title itself before supplemental.",
+  "If your own reasoning says ready, enough, validate, or submit, the next action should be validate, submit, or fail_closed unless you can name one concrete missing evidence item.",
+  "After invalid/review feedback, stop broad exploration. Repair only verifier_result.issues, repair_hints, review_warnings, or repair_mode entries.",
+  "Fetch more evidence during repair only when the issue or warning asks for targeted evidence. Otherwise patch the affected params and validate again.",
+  "Use validate_organize_recipe_params_patch for small repairs after a previous params validation/submit. After an accepted patch validation, submit the same patch once with submit_organize_recipe_params_patch.",
+  "When uncovered_path and duplicate_coverage are in the same local group, replace the existing partial rule so one mapped or supplemental rule covers that group exactly once; do not append overlapping supplemental rules.",
+  "When uncovered_path names a sibling of an existing supplemental rule, patch that supplemental rule to include the missing exact path or replace it with one compact supplemental selector; do not change unrelated mapped movie/OVA/special exact rules just for coverage.",
+  "For duplicate_target caused by local split or variant files such as _1/_2, part markers, or version suffixes, assign distinct exposed rows if they exist; otherwise exclude only those variant paths and cover them as supplemental exact paths.",
+  "If a local group or selector scaffold reports duplicate_episode_numbers_in_group, do not map every variant in one sequence unless distinct target rows exist. Choose one file per target row and cover the extra split/variant path as supplemental, or validate immediately and repair duplicate_target.",
+  "If duplicate_target names a multi-file rule that fixed episode_id/sort/ep, repair that rule shape before more search: unset fixed locators for a sequence, or split separate movie/OVA/special files into exact_path rules with distinct exposed targets.",
+  "exact_paths must be complete visible source_path strings. Do not write a prefix, basename fragment, or partially copied path; use get_local_group_detail(detail=true) for long paths.",
+  "Use find_bangumi_targets_for_local_file as a compact fact lookup for one visible source_path. It returns evidence, not a chosen target.",
+  "Use search_bangumi_subjects with clean title terms; it is already scoped to Bangumi.",
+  "Use subject_types:[\"anime\"] for anime relation graphs and leave relation_kinds empty unless filtering by a real relation label.",
+  "Use the episode_type shown by Bangumi episode rows. media_kind is the organize category; episode_type is the row type.",
+  "SP filenames and media_kind:\"sp\" do not imply episode_type:\"special\". If the exposed Bangumi rows are regular, use episode_type:\"regular\" before converting a mapped SP group to supplemental.",
+  "Use group_ref as a local selector shorthand only. It expands local selector/range facts; target IDs, media kind, episode type, and supplemental disposition still come from Bangumi evidence.",
+  "For sequence params, episode_range is the local captured file-number range. Use episode_number_field:\"ep\" only when local numbering matches Bangumi ep while sort continues.",
+  "For SP filename sequences, keep SP in source_pattern and use episode_offset:\"EP\" unless the exposed target rows require arithmetic shifting.",
   recipeParamsQuickReference,
-  "source_pattern can include folder segments and non-episode placeholders such as {vol} or {title}; Python treats placeholders other than {ep}/{ep:02}/{ep:02d} as wildcard text. Use this for Vol.1/Vol.2 style batches instead of per-file exact_paths.",
-  "Do not use source_pattern for a single literal filename. If there is no {ep} token, use exact_paths/source_path for that file; source_pattern without {ep} is only useful for non-mapped supplemental matching, not for episode derivation.",
-  "If a repeated group has changing CRC/hash/checksum brackets, per-file IDs, or technical suffixes such as FLAC versus FLACx2, put a wildcard placeholder such as {hash}, {crc}, {audio}, or {a} at that position in source_pattern. Do not copy the first file's changing technical token into the whole sequence rule.",
-  "For one video file that explicitly carries a range in its filename, such as [01-09], use source_unit:\"single_file_multi_episode\" with the matching episode_range after the subject's target rows are exposed.",
-  "For exact one-file rules with episode_id, omit episode_type unless you are copying it from the returned episode row. The params tool canonicalizes exact episode_id rows from exposed evidence.",
-  "Do not open organize-recipe-contract skill or template files for a first draft; these params rules are enough. If a verifier/schema/selector blocker remains after reading repair_hints, use /skill:organize-recipe-contract or read exactly .pi/skills/organize-recipe-contract/SKILL.md and then continue.",
-  "Keep rule reasons short: one clear evidence sentence is usually enough. Do not write search logs in recipe reasons.",
-  "For sequence numbering, compare the local file number with Bangumi episode sort and ep values. Keep episode_number_field:\"sort\" when sort matches; use episode_number_field:\"ep\" when local numbering matches ep while sort continues across an earlier season/cour; use arithmetic offsets only when the chosen number field is shifted.",
-  "Do not stretch one Bangumi subject past the episode rows it exposes. If a later local range is missing from the first subject, split that range to a related season/cour/part subject instead of forcing one broad rule.",
-  "Validate early once subject identity is supportable; validate_organize_recipe_params can fetch episode evidence for subject IDs already declared in the params-derived recipe.",
-  "If validation returns review_warnings, resolve them before submit: for long supplemental files, call find_bangumi_targets_for_local_file with the exact source_path named by the warning, then validate again. These warnings are not target recommendations; they identify evidence that the verifier cannot see yet.",
-  "After representative lookups for the active groups, validate a params draft instead of continuing broad search. For named anime specials/movies, use bounded relation evidence before final supplemental decisions; for short package SP/bonus groups, a targeted lookup plus missing/contradictory episode rows is usually enough to validate a supplemental rule.",
-  "Expand related subjects or wider windows only when candidates conflict, the subject identity is unclear, or the verifier still blocks after validation.",
-  "Before fail_closed, validate a best-effort params recipe once if you have any plausible subject IDs and visible paths. Do not call fail_closed with budget_exhausted yourself; budget exhaustion is a runner outcome.",
-  "Do not read repo templates, tests, or Python schema on the ordinary compact path. For genuine ambiguity, use exactly one relevant /skill:name command or read one matching .pi/skills/<name>/SKILL.md; do not load all skills.",
-  "Do not search old run artifacts, previous final_result JSON files, or tests to copy an answer; validate the current recipe instead.",
-  "Use disposition:\"non_bangumi_or_supplemental\" to cover visible bonus-like files that have no clear Bangumi episode target, with a plain-language reason.",
-  "If validation returns missing_target_episode for a special_or_bonus_candidate group, repair that group with get_episode_list/get_target_window only when a matching row likely exists; otherwise convert just that affected group to disposition:\"non_bangumi_or_supplemental\" and validate again.",
-  "If validation returns duplicate_target for local split or variant locators such as _1/_2, part markers, or version suffixes, either assign distinct exposed target rows or exclude only those split/variant paths from the mapped sequence and cover them as supplemental; validate a patch before deciding fail_closed.",
-  "If one short or bonus-like group stays ambiguous after bounded evidence, cover that group with disposition:\"non_bangumi_or_supplemental\" and validate the whole recipe instead of looping on broad searches.",
-  "Do not write notes for straightforward accepted candidates; notes are for complex, contradictory, or fail-closed investigations.",
-  "After submit_organize_recipe_params or submit_organize_recipe returns accepted=true, call goal_complete immediately; do not do extra context refreshes or investigation. If submit returns status:\"review\", follow the warning repair_hint and validate again.",
+  "Keep rule reasons short. Do not write search logs in recipe reasons.",
+  "Do not read repo templates, tests, old run artifacts, or previous final_result JSON files to copy an answer; validate the current recipe instead.",
+  "After submit_organize_recipe_params or submit_organize_recipe returns accepted=true, call goal_complete immediately. If submit returns status:\"review\", repair the warning and validate again.",
 ].join("\n");
 const instructionPath = path.join(path.dirname(outputPath), "pi_goal_instructions.md");
 
 const instructionText = `
 Complete this Local-to-Bangumi organize recipe case.
 Case input JSON is available at: ${inputPath}
-For tool arguments and recipe exact_paths, use only case_input.visible_source_paths or case_input.context.local_files[].source_path. Never pass case_input.task_source_path as a local source_path.
-Start from bounded custom-tool facts: get_case_context for current case state, and get_local_recipe_params_scaffold for local selector/range params stubs. case_input.local_recipe_skeleton is available as a selector and verifier-repair aid; do not read it at startup as a semantic checklist or repeatedly reread the full case_input JSON when custom-tool facts are enough.
+For tool arguments and recipe exact_paths, use only source_path values exposed by get_local_group_detail, get_local_file_detail, or case_input.context.local_files[].source_path. Never pass case_input.task_source_path as a local source_path.
+Use the navigable custom-tool hierarchy rather than expanding every JSON layer at once: get_case_overview for the map, list_local_groups for group index, get_local_group_detail for a chosen group, get_local_selector_scaffold for selector stubs, Bangumi tools for chosen subject/episode evidence, and get_recipe_state for verifier progress. These tools expose pages; they do not choose the semantic route for you.
 Available lazy skills, to load only when the current instruction file, case input, and tool results are insufficient:
 ${lazySkillMenu}
 Pi has already discovered the skills by name and description. Do not read every SKILL.md at startup; use the relevant /skill:name command or read the matching SKILL.md only after a real blocker: Bangumi evidence confusion, local package interpretation ambiguity, or verifier/schema repair.
@@ -915,6 +991,7 @@ Use scratch paths from case_input.scratch_paths for notes and organize_recipe JS
 ${recipeGuidance}
 Use Bangumi custom tools for subject/episode evidence, then write a MoviePilot-like OrganizeRecipeDraft using real source paths and Bangumi subject_id/episode_id/type/sort/ep.
 Prefer the params path: validate_organize_recipe_params trial-checks semantic parameters and returns repair feedback; the first trial check may be invalid or reviewed. submit_organize_recipe_params finalizes only after there are no blocking issues and no review_warnings. Python turns semantic parameters into the full JSON recipe. The raw validate_organize_recipe and submit_organize_recipe tools remain available for debugging generated JSON, not for bypassing params review. Run the bash helper only when debugging a schema/selector problem.
+Use the Working Board method from the guidance: keep one row per local group, validate when each visible group has a testable mapped or supplemental rule, then repair only named verifier/review feedback.
 find_bangumi_targets_for_local_file is a fact lookup only. It can expose search results and episode rows, but it will not choose a target or generate recipe JSON for you. Do not inspect repository tests or Python schema just to confirm the recipe shape.
 The submit/validate tools write recipe artifacts. Write notes.md only for complex evidence, contradictions, or fail_closed reasoning.
 Only after submit_organize_recipe_params or submit_organize_recipe returns accepted=true may you call goal_complete. If strict evidence is insufficient or contradictory, call fail_closed, then goal_complete. After accepted=true, do not call any other tool except goal_complete.
@@ -926,8 +1003,9 @@ await fs.writeFile(instructionPath, instructionText, "utf8");
 const goalObjective = `
 Produce a Python-verifier accepted OrganizeRecipeDraft or fail closed.
 The full compact guidance is included below and also saved at ${instructionPath} for audit.
-Use case-scoped custom tools for bounded facts; the raw case input at ${inputPath} is a fallback, not the normal working surface.
+Use case-scoped custom tools for navigable facts; the raw case input at ${inputPath} is a fallback, not the normal working surface.
 Choose recipe parameters from exposed facts, validate until there are no blocking issues and no review_warnings, submit them, then call goal_complete immediately after accepted=true.
+Use the Working Board: each local group needs target evidence, a recipe rule, a status, and an open issue if verifier feedback named one.
 
 ${instructionText}
 `.trim();

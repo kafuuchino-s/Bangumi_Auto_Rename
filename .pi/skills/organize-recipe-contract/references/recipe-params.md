@@ -11,6 +11,15 @@ Use this file only when `validate_organize_recipe_params` repair hints are not e
   "rules": [
     {
       "name": "TV episodes",
+      "group_ref": "LG1",
+      "subject_id": 12345,
+      "media_kind": "tv",
+      "episode_type": "regular",
+      "disposition": "map_to_bangumi",
+      "reason": "local group maps to this Bangumi episode run"
+    },
+    {
+      "name": "TV explicit selector",
       "source_pattern": "Episode {ep}.mkv",
       "subject_id": 12345,
       "media_kind": "tv",
@@ -62,6 +71,7 @@ Use this file only when `validate_organize_recipe_params` repair hints are not e
 ## Params Rules
 
 - Use `source_pattern` with `{ep}` for ordinary batch mapping, or `{ep:02}` / `{ep:02d}` when file names use zero-padded numbers such as `01`. Write it like a literal file-name template; Python escapes regex characters such as `[`, `]`, `(`, `)`, `.`, `+`, and `?`.
+- Use `group_ref` when a local group card already expresses the selector you need. It expands only local selector/range facts from `list_local_groups` / `get_local_selector_scaffold`; it does not choose `subject_id`, `episode_id`, `media_kind`, `episode_type`, or supplemental disposition.
 - Do not paste one literal filename into `source_pattern`. If the rule covers one file and has no `{ep}` token, use `exact_paths`, `source_path`, or `path` instead.
 - Other template variables such as `{a}` or `{title}` are allowed for changing text you do not need; Python turns them into wildcard spans while keeping `{ep}` as the episode number.
 - Use placeholders for every changing non-episode token in a repeated group. CRC/hash/checksum brackets, per-file IDs, and audio/source variants such as `FLAC` versus `FLACx2` should be `{hash}`, `{crc}`, `{audio}`, or `{a}`, not copied from the first file.
@@ -69,7 +79,7 @@ Use this file only when `validate_organize_recipe_params` repair hints are not e
 - For repeated supplemental extras, use compact selectors instead of huge `exact_paths` arrays. Example: `{"path_glob":"Show Vol.*/Design Materials/**/*.mkv","filename_regex":".*","disposition":"non_bangumi_or_supplemental"}`. Use exact paths only for irregular exceptions or the long file named by a review warning.
 - Use `exact_paths`, `source_path`, or `path` for a single OVA, SP, movie, or irregular exception. Basenames are accepted only when they uniquely identify one visible `source_path`; full visible paths are safest.
 - For a one-file movie-shaped subject, `subject_id` plus `media_kind: "movie"` is enough to validate a subject-level movie rule when the subject itself is the movie target. Do not spend one `get_episode_list` call per movie subject only to discover its single regular episode row.
-- Use natural params field names. `subject_id` is accepted for the Bangumi subject; `source_template` is accepted as an alias for `source_pattern`; `source_path` and `path` are accepted as one-file `exact_paths` aliases; `range` and `offset` are accepted as aliases for `episode_range` and `episode_offset`; `range_start` plus `range_end` is accepted as a range alias.
+- Use natural params field names. `subject_id` is accepted for the Bangumi subject; `group_ref` / `local_group_ref` are accepted as local selector shorthand; `source_template` is accepted as an alias for `source_pattern`; `source_path` and `path` are accepted as one-file `exact_paths` aliases; `range` and `offset` are accepted as aliases for `episode_range` and `episode_offset`; `range_start` plus `range_end` is accepted as a range alias.
 - Keep params minimal. Do not include `episode_id: 0`, `sort: null`, `ep: null`, empty `exact_paths`, or empty `exclude_regex`; Python fills mechanical defaults.
 - Use `episode_range`, `episode_offset`, and optional `episode_number_field` only when the rule needs episode derivation from `{ep}` or a multi-episode span. If `episode_offset` is omitted or null, Python defaults it to `EP`. If `episode_number_field` is omitted, Python defaults it to `sort`. A one-file exact movie/OVA/SP rule does not need `episode_range`.
 - For sequence rules without fixed `episode_id`, the verifier resolves the calculated number against Bangumi episode `sort` first by default. Compare the local file number with the episode list's `sort` and `ep` values before choosing `episode_number_field` or `episode_offset`.
@@ -149,7 +159,10 @@ Use raw recipe JSON only for debugging generated JSON.
 - For repeated supplemental groups, prefer `path_glob` plus `filename_regex` to cover the group compactly. This is especially useful for design-material folders, repeated bonus clips, and other non-episode files that share folder/name structure. Keep separate exact rules for suspicious long files that need targeted evidence.
 - Do not write boolean disposition flags such as `non_bangumi_or_supplemental: true`, `supplemental: true`, `exclude: true`, or `unmapped: true`. The params parser rejects them so you can fix the contract error explicitly.
 - Keep each rule `reason` short: one clear evidence sentence is usually enough. Do not write a narrative search log in recipe reasons; use `notes.md` only for complex contradictions or fail-closed reasoning.
-- Do not use `non_bangumi_or_supplemental` for a numbered `SP01` / `SP02` / `S00E01`-style file when the selected Bangumi subject has a matching special episode by sort/order and no contradictory evidence. Map the numbered file to that special, and handle vague bonus files such as Roman-numeral-only files separately. If the selected subject or related special subject does not expose matching episode rows, or validation reports `missing_target_episode` after a targeted episode-list/window check, cover the affected SP/bonus group as supplemental with a short evidence-gap reason instead of forcing it onto non-existent rows.
+- If an OVA/OAD/SP/movie/side-story rule has plausible Bangumi target evidence but validation rejects the rule, repair the mapped target fields or selector first. Do not change it to `non_bangumi_or_supplemental` merely to make the verifier pass.
+- Do not use `non_bangumi_or_supplemental` for a numbered `SP01` / `SP02` / `S00E01`-style group when same-title or related Bangumi rows match by sort/order/title/count and no contradictory evidence exists. Map the numbered group to those rows, and handle vague bonus files such as Roman-numeral-only files separately.
+- A parent TV subject that lacks SP rows is not enough to make a named side-content group supplemental. Check the local side title itself, such as mini-anime, chibi short, OAD, OVA, Bangaihen, or a named special, against same-title search/related subjects and their episode rows.
+- If targeted side-title evidence or a targeted episode-list/window check still does not expose matching rows, cover the affected SP/bonus group as supplemental with a short evidence-gap reason instead of forcing it onto non-existent rows.
 - Use `exclude_regex` inside a rule only for extra safety; the case input has already hard-filtered obvious OP/ED/PV/Menu-like noise.
 - A rule with zero matches is invalid.
 - A source path may be covered by exactly one rule.

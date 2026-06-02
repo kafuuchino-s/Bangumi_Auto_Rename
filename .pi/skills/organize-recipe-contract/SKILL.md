@@ -5,47 +5,145 @@ description: Use when recipe params, selectors, helper scripts, or verifier repa
 
 # Organize Recipe Contract
 
-The final output is a Python-verifier accepted `OrganizeRecipeDraft` submitted with `submit_organize_recipe`, or a safe `fail_closed`.
+The final output is a Python-verifier accepted `OrganizeRecipeDraft` submitted with `submit_organize_recipe_params` or `submit_organize_recipe`, or a safe `fail_closed`.
 
-Use real identifiers in recipes. Local identity is the real `source_path` from `case_input.visible_source_paths` or `case_input.context.local_files`; `task_source_path` is only the original task/sample path. Bangumi identity is `subject_id`, `episode_id`, legal recipe `episode_type`, `sort`, and `ep`.
+Use real identifiers. Local identity is the real `source_path` from `get_local_group_detail`, `get_local_file_detail`, or `case_input.context.local_files`. `task_source_path` is only the task root. Bangumi identity is `subject_id`, `episode_id`, legal `episode_type`, `sort`, and `ep`.
 
-The recipe verifier is a strict mechanical gate, not a semantic title matcher. It can tell you that paths are covered and target IDs are exposed; it cannot prove that the selected subject is the correct season, movie, OVA, or franchise entry. Resolve that with Bangumi subject evidence before final submit.
+The verifier is a strict mechanical gate. It checks local coverage, duplicate targets, legal exposed Bangumi targets, selector shape, and review warnings. It does not prove that the selected subject is the right season, movie, OVA, special, or franchise entry; that semantic choice comes from Pi's evidence reading.
 
-Core loop: build a testable recipe first, then let validation drive repair. Bangumi search should expose enough subject/episode evidence for a compact params draft; it does not need exhaustive certainty before the first validation. A practical pre-validation evidence set is a representative search/lookup for active groups, one bounded graph when it helps, and episode lists/windows only for subjects you plan to use in params. `run_progress` reports progress facts such as evidence-call counts, validation_seen, and verifier_feedback_available; it is not a target recommendation or next-step instruction. Frontier exhaustion is for final `fail_closed` or final supplemental reasoning, not a prerequisite for calling `validate_organize_recipe_params`.
+## Working Board
 
-`validate_organize_recipe_params` is a trial check, not final submission. It writes artifacts and returns verifier issues, repair hints, or review warnings without finishing the case. A first trial validation does not need to be accepted or warning-free. An invalid or review result is useful feedback for patch repair. Only `submit_organize_recipe_params` or `submit_organize_recipe` finalizes an accepted recipe.
+Keep a small mental board while you work. One row per local group is enough:
 
-`get_local_recipe_params_scaffold` can lower selector friction. It returns local selector/range stubs copied from `local_recipe_skeleton`; it does not choose Bangumi target IDs, media kind, episode type, disposition, or supplemental status. Fill those fields from Bangumi evidence before validating.
+```text
+local_group | target evidence | recipe rule | status | open issue
+```
 
-## Workflow
+Use these statuses as your own thinking labels, not as fixed-layer commands:
 
-1. Read `case_input.json` and inspect `case_input.scratch_paths`.
-2. Read `case_input.local_structure_summary` and visible `source_path` values first. `case_input.local_recipe_skeleton` is a selector and verifier-repair aid; use it after choosing a local group or when verifier issues name uncovered paths. Do not treat it as a startup semantic checklist or Bangumi candidate recommendation.
-3. Inspect the visible `source_path` values and infer local groups from folders, repeated title prefixes, season/movie/OVA/SP words, and numbering runs before searching Bangumi. The summary is a factual grouping aid, not a target decision.
-4. Use Bangumi tools to expose subject and episode evidence by ID. A representative `source_path` lookup is a compact evidence call; it does not choose a target or generate recipe JSON. Prefer enough high-signal evidence to draft compact params, then validate before chasing every bonus group. A related Bangumi special/OVA subject is candidate evidence only; short SP/bonus folders need exposed episode rows before they are mapped, but unresolved bonus-like groups should not block the first validation.
-5. Prefer params tools: trial-check semantic params with `validate_organize_recipe_params`, repair feedback if needed, then submit the same params with `submit_organize_recipe_params` when accepted and `review_warnings` is empty. Raw `validate_organize_recipe` is for debugging generated JSON.
-6. For repeated local groups, copy a safe `selector_hint.source_pattern` from `case_input.local_recipe_skeleton` or the matching `params_rule_stub` from `get_local_recipe_params_scaffold` instead of hand-writing a regex-like selector. In sequence params, `episode_range` is the local captured file-number range; if local files `27-33` map to Bangumi rows `1-7`, use `episode_range: "27-33"` plus `episode_offset: "EP-26"`.
-7. Validation can be a repair checkpoint even when the first compact params are imperfect. It can fetch episode evidence for subject IDs already declared in your params or recipe, then run the strict mechanical verifier and return concrete issues.
-8. After a representative lookup or bounded graph/episode check for the active groups, validation is usually more useful than continuing broad search. When `run_progress.verifier_feedback_available` is false, the factual state is simply that the verifier loop has not produced feedback yet; interpret that fact with the case evidence rather than as a fixed-layer decision. If a named one-file group has exact `episode_id` evidence, it is ready for a mapped-rule validation.
-9. Use `disposition: "non_bangumi_or_supplemental"` for bonus-like visible files when the current evidence does not support a Bangumi target; let verifier issues or review warnings ask for concrete follow-up. If validation reports `missing_target_episode` for a `special_or_bonus_candidate` group and targeted episode evidence still does not expose matching rows, repair by converting that affected group to supplemental instead of broad-searching the franchise again.
-10. If validation has blocking issues, repair mode should stay targeted: read the issue list, modify the affected params/rules, fetch only evidence requested by those issues, then validate again. For `duplicate_target` caused by local split/variant locators such as `_1`/`_2`, part markers, or version suffixes, either assign distinct exposed Bangumi rows or exclude only those paths from the mapped sequence and cover them with supplemental exact paths; validate that patch before considering whole-case `fail_closed`. If validation is accepted but has `review_warnings`, resolve those warnings; for a long or named supplemental file warning, a targeted `find_bangumi_targets_for_local_file` lookup with the exact `source_path` from the warning is the right evidence path. A submit result with `status: "review"` is not final; repair the warning and resubmit rather than restarting broad search, inspecting old artifacts/tests, or writing prose instead of validating.
-11. After a params validation, use `validate_organize_recipe_params_patch` for small repairs instead of reconstructing the whole params object. Patch named rules with `patch_rules`, add new exact supplemental rules with `append_rules`, or remove a bad rule with `remove_rule_names`; then submit with the same accepted params or `submit_organize_recipe_params_patch`.
-12. If validation returns `accepted: true` and `review_warnings` is empty, submit that same accepted recipe. Keep accepted compact selectors such as `filename_regex` unless a verifier issue asks for a different shape.
-13. If `submit_organize_recipe_params` or `submit_organize_recipe` returns `accepted: true`, the case is ready for `goal_complete`. If evidence is insufficient, finish with `fail_closed` and then `goal_complete`.
+- `unknown`: local group exists, but target evidence has not been checked.
+- `anchored`: plausible Bangumi subject or episode evidence exists.
+- `draftable`: a mapped recipe rule can be trial-validated.
+- `supplemental_candidate`: current evidence does not expose a supportable Bangumi target, but the group can be covered as supplemental.
+- `side_frontier`: a non-main anime/video-shaped group still needs relation-graph or targeted title evidence.
+- `repairing`: verifier or review feedback named this group, rule, path, or target.
+- `accepted`: validation/submit accepted this group without open warnings.
 
-Old run artifacts, old `final_result.json` files, and tests are not evidence for the current case. Finish through `validate_organize_recipe_params`, `submit_organize_recipe_params`, or the raw submit tools rather than by printing recipe JSON as plain text.
+The board is useful because every tool call should move one row forward: expose one missing fact, draft one rule, repair one named issue, submit, or fail closed.
 
-Before `fail_closed`, a best-effort params validation is useful when plausible subject IDs and visible paths exist. `budget_exhausted` is a runner outcome, not a semantic case conclusion.
+## Reading Path
 
-## Common Params
+Start with the navigable context, not a full JSON dump:
 
-Use minimal semantic params. Python turns them into the full JSON recipe, escapes source patterns, canonicalizes paths, infers exact episode row type when possible, and fills mechanical defaults.
+1. Use `case_input.case_overview` or `get_case_overview()` as the map.
+2. Use `list_local_groups(detail=false)` as the local group index.
+3. Open `get_local_group_detail(group_ref, detail=false)` only for groups you choose to inspect; use `detail=true` only when source paths or file facts matter.
+4. Use Bangumi tools to expose subject and episode evidence for the board rows you are actively filling.
+5. Use `get_local_selector_scaffold(group_ref)` or `get_local_recipe_params_scaffold(group_ref)` when selector shape is the blocker. These tools copy local selector facts only.
+
+`group_ref` is a local selector shorthand. It expands local source selectors/ranges; it never chooses `subject_id`, `episode_id`, `media_kind`, `episode_type`, disposition, or supplemental status.
+
+For one standalone main-title group, direct Bangumi search can be the shortest anchor. For a package with multiple seasons, movies, OVAs, specials, or side-content groups under one franchise, use the human workflow: search one reliable anchor, expand its anime related graph, and match the remaining local group titles against that graph. Direct searches for every group are a fallback for graph misses or conflicts, not the default.
+
+## Related Graph Closure
+
+After the main TV/movie anchors are mapped, do not treat the case as complete just because the regular episodes line up. Put every remaining anime/video-shaped non-main group into a side frontier: OAD, OVA, SP, mini anime, chibi short, recap movie, side story, special, or named movie-like file.
+
+Close that frontier the way a human would:
+
+1. Expand the related graph from confirmed anime anchors.
+2. Match related anime/video subjects against the frontier's local titles, qualifiers, counts, episode titles, and durations.
+3. When a related subject explains a frontier group, draft the mapped rule and add that subject to the anchor set.
+4. Expand from newly mapped side subjects when their graph can explain remaining frontier groups.
+5. Repeat until a graph/search pass adds no new plausible anime/video mapping for the remaining frontier.
+
+Only after this closure stalls should unresolved frontier groups become final supplemental candidates. Supplemental is the result of "the closure found no supportable target", not a shortcut after regular episodes already pass.
+
+## First Validation
+
+`validate_organize_recipe_params` is a trial check, not final submission. A first validation does not need to be accepted or warning-free.
+
+Call the first validation when every visible local group has either:
+
+- a testable mapped rule backed by current Bangumi evidence, or
+- a testable `disposition: "non_bangumi_or_supplemental"` rule with a clear evidence gap.
+
+Do not wait for exhaustive relation graphs, every SP frontier, or perfect confidence before the first validation. If a numbered SP/bonus group has compatible exposed rows, map it. If targeted evidence does not expose compatible rows by sort/ep/title/count, cover it as supplemental with the evidence gap in the rule reason.
+
+If one group remains uncertain after representative evidence, make it a testable `disposition: "non_bangumi_or_supplemental"` rule for the first validation instead of postponing the whole case. Validation is allowed to be invalid or reviewed; it gives the next scoped repair.
+
+If target evidence exists but selector details are still awkward, validate the best testable params instead of finishing the selector mentally. Duplicate local locators, split files, variant suffixes, and uncertain `exclude_regex` choices are exactly the kind of mechanical feedback `validate_organize_recipe_params` should surface.
+
+If a draft maps an anime/video frontier group and validation reports a mechanical issue, repair the mapped rule shape first. Do not downgrade that group to `non_bangumi_or_supplemental` just to make validation pass unless targeted title/episode evidence contradicts the mapping or the related-graph closure has stalled with no supportable target.
+
+If you write or think "ready", "enough", "validate", or "submit", the next action should be `validate_organize_recipe_params`, `submit_organize_recipe_params`, `submit_organize_recipe_params_patch`, or `fail_closed`. The only exception is a concrete blocker such as "LG7 lacks any subject evidence"; then fetch exactly that evidence.
+
+## Repair Mode
+
+After `validate_organize_recipe_params`, `submit_organize_recipe_params`, or a patch tool returns invalid/review feedback, stop broad exploration. Work only from:
+
+- `verifier_result.issues`
+- `repair_hints`
+- `review_warnings`
+- `repair_mode`
+
+Repair the named rule/path/target first. Fetch more evidence only when the issue or warning asks for targeted evidence. Otherwise patch the affected params and validate again.
+
+Use `validate_organize_recipe_params_patch` when a previous params validation or submit exists and only a few rules changed. Use `submit_organize_recipe_params_patch` once after the same patch has validated accepted; the submit tool reuses the accepted merged params and does not apply `append_rules` twice.
+
+Repair is not a permission to lower semantic quality. If the affected rule already has plausible anime/video target evidence, patch `media_kind`, `episode_type`, `episode_id`, `episode_range`, selector, offset, or duplicate/split handling before changing it to supplemental.
+
+When uncovered paths and duplicate coverage belong to the same local group, replace or patch the existing partial rule so that one rule covers the group exactly once. Do not append a second supplemental rule over paths already covered by an earlier supplemental rule.
+
+When an uncovered path is in the same local group as an existing supplemental rule, patch that supplemental rule to include the missing exact path or replace it with one compact supplemental selector. Do not change unrelated mapped movie/OVA/special exact-path rules just to satisfy coverage.
+
+For duplicate targets caused by local split or variant files such as `_1`/`_2`, part markers, or version suffixes, either assign distinct exposed Bangumi rows or exclude only those variant paths from the mapped sequence and cover them as supplemental exact paths. Validate that patch before considering whole-case `fail_closed`.
+
+For duplicate targets caused by a multi-file `group_ref`, `source_pattern`, or multi-path exact selector with one fixed `episode_id`, `sort`, or `ep`, repair the rule shape before searching again. A sequence under one subject should derive targets from `{ep}` plus `episode_range` / `episode_number_field`; separate movie/OVA/special files need separate exact-path rules with distinct exposed targets.
+
+If a local group card or selector scaffold reports `duplicate_episode_numbers_in_group`, do not map the whole group as one sequence without handling the duplicate locator. Choose one file per target row and cover the extra split/variant file as supplemental, or validate immediately and repair the `duplicate_target`.
+
+Do not use possible duplicate locators as a reason to skip first validation. A draft that maps the sequence and gets `duplicate_target` is better than a no-validation timeout, because the repair hint will name the affected paths and rule.
+
+For `review_warnings`, resolve only the listed warnings. A submit result with `status: "review"` is not final and is not a reason to switch to raw JSON; keep using params tools.
+
+## Numbered SP And Short Side Content
+
+Treat numbered SP/bonus groups as their own board rows, not as leftovers from the parent TV season. A main-season subject with no SP rows is weak negative evidence for a group whose local title says `Ple Ple Pleiades`, `Mini Anime`, `OAD`, `OVA`, `Bangaihen`, or another side-content name.
+
+For these groups, build evidence at the title level first:
+
+- compare the local group title and qualifier against Bangumi subject titles, aliases, relation cards, and episode titles;
+- after a franchise anchor exists, check related short-anime/special/OVA subjects before judging from the parent TV episode list;
+- when several local side-content groups share a base title but differ by season or part qualifier, such as `II`, `III`, `Part 2`, or a year, treat each qualified group as a separate target search/graph row;
+- compare the local locator range, such as `SP01-SP13`, with exposed Bangumi `sort` or `ep` rows and count;
+- use episode titles when the subject title is ambiguous or when TMDB/Bangumi language labels look noisy.
+
+One unqualified side-title search is not evidence for all season-qualified side groups. If `Side Story`, `Side Story II`, and `Side Story III` appear as separate local groups, the board should have separate target evidence for each one, preferably from the related graph after the franchise anchor.
+
+Do not use a parent-season search as negative evidence for a side-content group. Searching `Franchise II` can confirm the second TV season, but it does not prove that `Side Story II` or `Mini Anime II` lacks a Bangumi subject. For those groups, use the side-title anchor's related graph or a qualified side-title search.
+
+When the exposed rows fit by title plus number/count, draft a normal mapped sequence. Keep `SP` in the selector or reason, use `episode_range` for the local numbers, and usually use `episode_offset: "EP"` with the row's real `episode_type`.
+
+When the exposed rows do not fit, supplemental is fine. The reason should name the targeted evidence that failed, such as "searched same-title short subject and related graph; no exposed rows match SP01-SP04 by title/count." Do not use a missing parent-season SP list as the only reason for a numbered side-content group.
+
+## Params Shape
+
+Use compact semantic params. Python builds the full JSON recipe, escapes source patterns, canonicalizes paths, infers exact episode row type when possible, and fills mechanical defaults.
 
 ```json
 {
   "rules": [
     {
       "name": "TV episodes",
+      "group_ref": "LG1",
+      "subject_id": 12345,
+      "media_kind": "tv",
+      "episode_type": "regular",
+      "reason": "local group maps to this Bangumi episode run"
+    },
+    {
+      "name": "TV explicit selector",
       "source_pattern": "Episode {ep}.mkv",
       "subject_id": 12345,
       "media_kind": "tv",
@@ -82,7 +180,7 @@ Use minimal semantic params. Python turns them into the full JSON recipe, escape
     },
     {
       "name": "Bonus extras",
-      "exact_paths": ["bonus.mkv"],
+      "group_ref": "LG9",
       "disposition": "non_bangumi_or_supplemental",
       "reason": "package bonus with no supportable Bangumi episode target"
     }
@@ -90,25 +188,25 @@ Use minimal semantic params. Python turns them into the full JSON recipe, escape
 }
 ```
 
-Use `source_pattern` with `{ep}` or `{ep:02}` / `{ep:02d}` for ordinary batch mapping. Use `exact_paths` or `source_path` for a single OVA, SP, movie, or irregular exception. A literal filename without an `{ep}` token is not a sequence locator. For a multi-file sequence, leave `episode_id`, `sort`, and `ep` empty unless every selected file should target one exact episode.
+Use `source_pattern` with `{ep}`, `{ep:02}`, or `{ep:02d}` for ordinary numbered sequences. Use `exact_paths` or `source_path` for a single OVA, SP, movie, or irregular exception. A literal filename without an `{ep}` token is not a sequence locator.
 
-For large packages, avoid listing dozens of obvious supplemental extras as `exact_paths`. Use selector params such as `path_glob` and `filename_regex` for repeated bonus/design/material groups, then use `exact_paths` only for irregular exceptions or the exact long file named by a review warning.
+For multi-file sequence rules, do not include `episode_id`, `sort`, or `ep` unless every selected file intentionally maps to that same exact episode row. Keep those fields absent so Python derives one target per file from `{ep}`. For a two-movie recap set or other separate one-file items, split into separate exact-path rules instead of using one `group_ref` with one fixed `episode_id`.
 
-For short SP/bonus folders, a Bangumi related subject or similar title is not enough by itself. Map the group only when the subject exposes compatible rows by sort/ep/title/count. Do not hold the entire case waiting for exhaustive SP certainty: validate the supportable recipe, then use verifier issues or review warnings to decide whether the affected SP/bonus group needs targeted episode evidence, mapping, or `disposition: "non_bangumi_or_supplemental"` with a short evidence-gap reason.
+`exact_paths` must be complete visible `source_path` strings. Do not write a prefix, basename fragment, or partially copied path. If a subset has long path names, copy them from `get_local_group_detail(detail=true)` or use one group-level supplemental selector when the whole group is supplemental.
 
-For a one-file movie-shaped subject, an exact-path rule with `subject_id` and `media_kind: "movie"` can validate without first fetching that subject's `episode_id` when the subject itself is the movie target. `get_episode_list` is most useful when the subject has multiple episode rows, the media kind is not movie-shaped, or the verifier asks for a missing episode.
+`episode_range` is the local captured file-number range. If local files `27-33` map to Bangumi rows `1-7`, use `episode_range: "27-33"` plus `episode_offset: "EP-26"`. Use `episode_number_field: "ep"` only when local numbering matches Bangumi `ep` while `sort` continues.
 
-For sequence rules, Python resolves the calculated number against Bangumi `sort` by default. If the local files are numbered `01-13` but the matching Bangumi subject has `sort` continuing from an earlier season while `ep` is `1-13`, `episode_number_field: "ep"` expresses that evidence after checking the episode list. It is not a way to force the wrong subject to pass.
+`episode_offset` accepts only `EP` arithmetic such as `EP`, `EP-10`, or `EP*2-1`. Do not use `SP` as `episode_offset`; `SP` is a filename locator or content-shape token, not an offset expression. For `SP01` files that map to Bangumi rows 1-13, keep `episode_range: "1-13"` and `episode_offset: "EP"`.
 
-If a repeated sequence has changing release tags such as CRC/hash strings, checksum brackets, per-file IDs, audio-track suffixes, or other technical metadata variants, represent those changing parts with a non-episode placeholder such as `{hash}`, `{audio}`, or `{a}` in `source_pattern` rather than pasting the first file's hash or audio suffix into a rule for the whole group.
+Supplemental or excluded files use the enum field `disposition: "non_bangumi_or_supplemental"`. Do not write boolean flags such as `non_bangumi_or_supplemental: true`, `supplemental: true`, or `exclude: true`.
 
-For one visible file that intentionally covers multiple Bangumi episodes, use `source_unit: "single_file_multi_episode"` with exactly one `exact_paths` or `source_path` value, `subject_id`, `episode_type`, and `episode_range`. Mapping that file only to the first `episode_id` loses the span evidence. The verifier accepts this only when local chapter count or duration mechanically supports the episode span.
+For supplemental groups, use one `group_ref`, `path_glob`/`filename_regex`, or exact_paths list that covers the intended paths exactly once. Supplemental rules do not need `episode_range`, `episode_offset`, `episode_type`, `subject_id`, or `episode_id`.
 
-Supplemental or excluded files use the enum field `disposition: "non_bangumi_or_supplemental"`. Boolean flags such as `non_bangumi_or_supplemental: true`, `supplemental: true`, or `exclude: true` are not part of the params contract.
+Legal `media_kind` values are `tv`, `movie`, `ova`, `oad`, `sp`, `special`, and `unknown`. Legal `episode_type` values are `main`, `regular`, `special`, `ova`, `oad`, `movie`, and `unknown`. Keep `media_kind` and `episode_type` separate; a movie-shaped subject can have a `regular` episode row.
 
-Legal `target.media_kind` values are `tv`, `movie`, `ova`, `oad`, `sp`, `special`, and `unknown`. Legal `target.episode_type` values are `main`, `regular`, `special`, `ova`, `oad`, `movie`, and `unknown`. Keep `media_kind` and `episode_type` separate; a movie-shaped subject can have a `regular` episode row.
+SP filenames and `media_kind: "sp"` do not imply `episode_type: "special"`. Use the Bangumi row type. Many short SP/OVA/movie-shaped subjects expose their rows as `regular`. If `missing_target_episode` appears even though the subject has matching rows by sort/ep/title/count, check `episode_type` before converting the group to supplemental.
 
-Patch repair shape after a params validation:
+Patch shape after a params validation:
 
 ```json
 {
@@ -122,11 +220,17 @@ Patch repair shape after a params validation:
 }
 ```
 
-Use `validate_organize_recipe_params_patch` when only a few existing rules changed; it reuses the latest params from the previous params validate/submit.
+## Stop Rules
+
+Submit immediately when validation is accepted and `review_warnings` is empty. After accepted submit, call `goal_complete`.
+
+Use `fail_closed` only when strict evidence is insufficient or contradictory after a targeted attempt, or when no supportable recipe can cover the visible groups. `budget_exhausted` is a runner outcome, not a semantic reason to write yourself.
+
+Old run artifacts, old `final_result.json` files, repository tests, and templates are not evidence for the current case. Finish through params validate/submit, raw validate/submit only for generated JSON debugging, or `fail_closed`.
 
 ## References
 
-- `references/recipe-params.md` is most useful when params aliases, selector syntax, raw recipe JSON, or verifier repair details remain unclear after reading repair hints.
+- `references/recipe-params.md` is useful when params aliases, selector syntax, raw recipe JSON, or verifier repair details remain unclear after reading repair hints.
 - `assets/organize_recipe.template.json` is a raw JSON starting shape for debugging generated recipe JSON.
 - The local helper is useful for debugging a schema/selector problem:
 

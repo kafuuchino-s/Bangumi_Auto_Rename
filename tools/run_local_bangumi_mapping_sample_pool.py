@@ -917,7 +917,7 @@ def main() -> int:
     parser.add_argument("--limit", type=int, default=None)
     parser.add_argument("--offset", type=int, default=0, help="Skip this many selected samples before applying --limit.")
     parser.add_argument("--max-rounds", type=int, default=None, help="Legacy no-op; Pi native mode is bounded by sample timeout.")
-    parser.add_argument("--sample-timeout-seconds", type=int, default=0, help="Terminate a sample run that exceeds this wall-clock limit. 0 disables the timeout.")
+    parser.add_argument("--sample-timeout-seconds", type=int, default=300, help="Terminate a sample run that exceeds this wall-clock limit. 0 disables the timeout.")
     parser.add_argument("--workers", type=int, default=SAMPLE_WORKER_COUNT, help="Number of samples to run concurrently. Use 1 for sequential smoke matrices.")
     parser.add_argument("--dry-build", action="store_true", help="Only build LocalEvidence from raw samples; do not call AI/Bangumi.")
     args = parser.parse_args()
