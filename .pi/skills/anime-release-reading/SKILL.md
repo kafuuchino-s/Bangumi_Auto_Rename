@@ -46,6 +46,10 @@ Read the title around the numbered special token. `SP01` under a folder titled l
 
 Season or part qualifiers on side-content folders matter. `Side Story`, `Side Story II`, and `Side Story III` are different local group titles even when their SP numbering looks the same.
 
+A folder may be parent-titled and still contain a related short side anime. For example, a season folder with only `SP01-SP13` files may omit the mini-anime title from filenames. Treat the parent season qualifier, local count, durations, and relation-graph side subject as evidence before calling it supplemental.
+
+For a long standalone OVA/OAD/SP-like file, do not assume it is a duplicate compilation only because a split short-episode set exists elsewhere. If a related one-episode OVA/OAD/special subject matches by title, duration, and relation evidence, it is a mapped exact-rule candidate.
+
 `SP` is a local filename/content token. It is not a recipe `episode_offset`; target row arithmetic still uses `EP` unless an actual numeric shift is needed.
 
 Named anime specials, movies, side stories, OVAs, OADs, and recaps should not be dismissed just because they are outside the main TV run. They need Bangumi subject or episode evidence.

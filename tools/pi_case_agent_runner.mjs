@@ -341,6 +341,7 @@ async function readLatestVerifierNudgeLines() {
     }
     if (!issues.length) return [];
     const repairHints = Array.isArray(verifier.repair_hints) ? verifier.repair_hints : [];
+    const issueCodes = new Set(issues.map((issue) => String(issue.issue_code || "")));
     const lines = [
       `Working Board repair checkpoint: latest verifier is blocked: ${verifier.summary || "see issues"}.`,
       "Patch only these named issues, then validate params again. Fetch evidence only when the issue or hint asks for targeted evidence:",
@@ -354,6 +355,11 @@ async function readLatestVerifierNudgeLines() {
       if (relatedRefs.length) {
         lines.push(`  related_refs: ${JSON.stringify(relatedRefs)}`);
       }
+    }
+    if (issueCodes.has("missing_episode_locator") || issueCodes.has("duplicate_target")) {
+      lines.push(
+        "Mechanical selector repair: a numbered multi-file mapped sequence needs group_ref/source_pattern/filename_regex with {ep} plus episode_range; do not enumerate many exact_paths with episode_range. Cover split variants with exclude_regex plus a supplemental exact_paths rule.",
+      );
     }
     if (repairHints.length) {
       lines.push("Top repair_hints:");
@@ -939,43 +945,17 @@ const lazySkillMenu = [
   "/skill:organize-recipe-contract: use when recipe params, selectors, verifier issues, helper scripts, or submit/validate repair need the full contract.",
 ].join("\n");
 const recipeGuidance = [
-  "Core method: maintain a Working Board with one row per local group: local_group, target evidence, recipe rule, status, and open issue.",
-  "Use statuses as your own thinking labels, not fixed-layer commands: unknown, anchored, draftable, side_frontier, supplemental_candidate, repairing, accepted.",
-  "Every tool call should move one board row forward: expose one missing fact, draft one rule, repair one named issue, submit, or fail_closed.",
-  "Use the navigable hierarchy. get_case_overview is the map, list_local_groups is the index, get_local_group_detail expands one group, get_local_selector_scaffold provides local selector stubs, and get_recipe_state shows verifier/params progress.",
-  "The hierarchy is fixed, but the reading path is Pi's choice. Overview, local groups, skeleton, scaffolds, and progress telemetry are factual surfaces, not semantic route recommendations.",
-  "Before Bangumi search, infer local groups from folders, repeated title prefixes, content-shape words, and numbering runs. Expand source paths only for groups you choose to inspect.",
-  "For one standalone main-title group, direct Bangumi search can be enough. For multi-season, movie-box, OVA/special-box, or franchise side-content packages, search one reliable anchor first, then use expand_related_graph as the series map for the remaining local groups; direct per-group search is a fallback for graph misses or conflicts.",
-  "After main anchors are mapped, keep a side frontier of remaining anime/video-shaped groups. When graph evidence maps a frontier group, add that subject as a new anchor and continue graph closure until no new plausible anime/video targets explain the remaining frontier.",
-  "Expose enough Bangumi subject/episode evidence for each active board row. Use representative search/lookup, bounded relation graph when it helps, and episode lists/windows for subjects you plan to use.",
-  "Call the first validate_organize_recipe_params when every visible local group has either a testable mapped rule or a testable supplemental rule. Do not wait for exhaustive SP/frontier certainty.",
-  "Mechanical accepted is the floor, not the quality target. Do not downgrade an anime/video frontier group with plausible target evidence to supplemental just to clear a verifier issue; first repair media_kind, episode_type, episode_id, range/offset, selector, or duplicate/split handling.",
-  "Treat numbered SP/bonus groups as their own board rows. A missing parent-TV SP list is weak negative evidence for a side-content title such as mini anime, chibi short, OAD, OVA, Bangaihen, or a named special.",
-  "For numbered side-content, prefer the anchor related graph for the local side-title, then compare exposed rows by sort/ep/title/count. If rows fit, map the sequence; if graph evidence misses or conflicts, use a qualified direct search. Only cover as supplemental after targeted title/episode evidence does not fit.",
-  "If several side-content groups share a base title but differ by season or part qualifier, such as II, III, Part 2, or a year, keep separate board rows and target evidence. One unqualified side-title search is not evidence that the qualified groups lack targets.",
-  "Do not use parent-season searches such as Franchise II or Franchise III as negative evidence for side-title groups. They confirm parent seasons, not Side Story II/Mini Anime III targets. Graph from the side-title anchor or search the qualified side title itself before supplemental.",
-  "If your own reasoning says ready, enough, validate, or submit, the next action should be validate, submit, or fail_closed unless you can name one concrete missing evidence item.",
-  "After invalid/review feedback, stop broad exploration. Repair only verifier_result.issues, repair_hints, review_warnings, or repair_mode entries.",
-  "Fetch more evidence during repair only when the issue or warning asks for targeted evidence. Otherwise patch the affected params and validate again.",
-  "Use validate_organize_recipe_params_patch for small repairs after a previous params validation/submit. After an accepted patch validation, submit the same patch once with submit_organize_recipe_params_patch.",
-  "When uncovered_path and duplicate_coverage are in the same local group, replace the existing partial rule so one mapped or supplemental rule covers that group exactly once; do not append overlapping supplemental rules.",
-  "When uncovered_path names a sibling of an existing supplemental rule, patch that supplemental rule to include the missing exact path or replace it with one compact supplemental selector; do not change unrelated mapped movie/OVA/special exact rules just for coverage.",
-  "For duplicate_target caused by local split or variant files such as _1/_2, part markers, or version suffixes, assign distinct exposed rows if they exist; otherwise exclude only those variant paths and cover them as supplemental exact paths.",
-  "If a local group or selector scaffold reports duplicate_episode_numbers_in_group, do not map every variant in one sequence unless distinct target rows exist. Choose one file per target row and cover the extra split/variant path as supplemental, or validate immediately and repair duplicate_target.",
-  "If duplicate_target names a multi-file rule that fixed episode_id/sort/ep, repair that rule shape before more search: unset fixed locators for a sequence, or split separate movie/OVA/special files into exact_path rules with distinct exposed targets.",
-  "exact_paths must be complete visible source_path strings. Do not write a prefix, basename fragment, or partially copied path; use get_local_group_detail(detail=true) for long paths.",
-  "Use find_bangumi_targets_for_local_file as a compact fact lookup for one visible source_path. It returns evidence, not a chosen target.",
-  "Use search_bangumi_subjects with clean title terms; it is already scoped to Bangumi.",
-  "Use subject_types:[\"anime\"] for anime relation graphs and leave relation_kinds empty unless filtering by a real relation label.",
-  "Use the episode_type shown by Bangumi episode rows. media_kind is the organize category; episode_type is the row type.",
-  "SP filenames and media_kind:\"sp\" do not imply episode_type:\"special\". If the exposed Bangumi rows are regular, use episode_type:\"regular\" before converting a mapped SP group to supplemental.",
-  "Use group_ref as a local selector shorthand only. It expands local selector/range facts; target IDs, media kind, episode type, and supplemental disposition still come from Bangumi evidence.",
-  "For sequence params, episode_range is the local captured file-number range. Use episode_number_field:\"ep\" only when local numbering matches Bangumi ep while sort continues.",
-  "For SP filename sequences, keep SP in source_pattern and use episode_offset:\"EP\" unless the exposed target rows require arithmetic shifting.",
-  recipeParamsQuickReference,
-  "Keep rule reasons short. Do not write search logs in recipe reasons.",
-  "Do not read repo templates, tests, old run artifacts, or previous final_result JSON files to copy an answer; validate the current recipe instead.",
-  "After submit_organize_recipe_params or submit_organize_recipe returns accepted=true, call goal_complete immediately. If submit returns status:\"review\", repair the warning and validate again.",
+  "Human workflow: read local groups, anchor the main line, close the side frontier through related graph evidence, validate compact params, repair mechanical issues, then submit.",
+  "Use the navigable hierarchy: get_case_overview is the map, list_local_groups is the group index, get_local_group_detail expands a chosen group, and get_recipe_state shows verifier progress.",
+  "Local group facts are not target decisions. group_ref is only a selector shorthand; subject_id, episode_id, media_kind, episode_type, and supplemental status must come from Bangumi evidence.",
+  "For one standalone main-title group, direct Bangumi search is fine. For multi-season, movie-box, OVA/special-box, or franchise side-content packages, search one reliable anchor first, then use expand_related_graph as the series map.",
+  "After main anchors map, keep a side frontier of remaining anime/video-shaped groups, including parent-titled SP folders and long standalone OVA/OAD/SP files. When graph evidence maps a frontier group by season qualifier, count, duration, title, or episode rows, add that subject as a new anchor and continue closure.",
+  "Draft recipe_params when every visible group has either a testable mapped rule or a testable supplemental rule. Validation is the trial that exposes selector, range, row-type, coverage, and duplicate repairs.",
+  "For numbered multi-file mapped sequences, use group_ref/source_pattern/filename_regex with {ep}; reserve exact_paths for one-file rules, separate one-file entries, and supplemental extras.",
+  "Mechanical accepted is the floor, not the quality target. Do not downgrade a plausible OVA/OAD/SP/movie/side-story mapping to supplemental just to clear a verifier issue; repair target fields, selector, range/offset, or duplicate/split handling first.",
+  "Supplemental is for closure-stalled or contradicted targets, plus true extras. Do not use parent-season searches or missing parent SP rows as negative evidence for named side-content groups.",
+  "After invalid or review feedback, stop broad exploration. Patch only verifier_result.issues, repair_hints, review_warnings, or repair_mode, using params patch tools for small repairs.",
+  "Never call fail_closed with budget_exhausted, never inspect old artifacts/tests to copy an answer, and call goal_complete immediately after an accepted submit.",
 ].join("\n");
 const instructionPath = path.join(path.dirname(outputPath), "pi_goal_instructions.md");
 

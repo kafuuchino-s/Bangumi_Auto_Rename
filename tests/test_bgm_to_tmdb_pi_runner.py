@@ -270,6 +270,12 @@ def test_node_sidecar_uses_pi_core_bridge_tools_and_read_only_native_tools() -> 
     assert 'tmdb-bridge-contract' in text
     assert 'one anchor search' in text
     assert 'hydrated legal graph as the next evidence layer' in text
+    assert 'Treat the accepted BGM plan as the frontier.' in text
+    assert 'TMDB side frontier' in text
+    assert 'search additional TMDB titles only for graph misses or conflicting candidates' in text
+    assert 'Do not convert BGM-mapped OVA/OAD/SP/movie/side-story nodes to supplemental' in text
+    assert 'supplemental_group is only for assignments already supplemental in the Local-to-Bangumi plan' in text
+    assert 'Use tmdb_absent_group for BGM nodes that TMDB does not expose' in text
 
 
 def _plan() -> CompiledOrganizePlan:

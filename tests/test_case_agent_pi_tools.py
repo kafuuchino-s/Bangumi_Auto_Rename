@@ -511,6 +511,47 @@ def test_pi_validate_organize_recipe_params_patch_reuses_latest_params(tmp_path)
     assert state.latest_recipe_params_payload['rules'][0]['episode_range'] == '1-2'
 
 
+def test_pi_validate_organize_recipe_params_patch_accepts_nested_select_update(tmp_path):
+    state = PiCaseToolState(workspace=_workspace(), bangumi_client=_BangumiClient(), run_dir=tmp_path / 'run', repo_root=tmp_path)
+    recipe_params = {
+        'summary': 'patch supplemental selector',
+        'rules': [
+            {
+                'name': 'extras',
+                'exact_paths': ['ep1.mkv'],
+                'disposition': 'non_bangumi_or_supplemental',
+                'reason': 'first draft covers one supplemental file',
+            },
+        ],
+    }
+
+    first = state.handle_tool('validate_organize_recipe_params', {'recipe_params': recipe_params})
+    patched = state.handle_tool(
+        'validate_organize_recipe_params_patch',
+        {
+            'recipe_params_patch': {
+                'patch_rules': [
+                    {
+                        'name': 'extras',
+                        'set': {
+                            'select': {
+                                'exact_paths': ['ep1.mkv', 'ep2.mkv'],
+                                'filename_regex': '',
+                                'path_glob': '**/*.mkv',
+                            }
+                        },
+                    },
+                ],
+            }
+        },
+    )
+
+    assert first['accepted'] is False
+    assert patched['accepted'] is True
+    assert state.latest_recipe_params_payload['rules'][0]['exact_paths'] == ['ep1.mkv', 'ep2.mkv']
+    assert 'select' not in state.latest_recipe_params_payload['rules'][0]
+
+
 def test_pi_submit_organize_recipe_params_patch_reuses_accepted_patch_without_reapplying_append(tmp_path):
     state = PiCaseToolState(workspace=_workspace(), bangumi_client=_BangumiClient(), run_dir=tmp_path / 'run', repo_root=tmp_path)
     recipe_params = {

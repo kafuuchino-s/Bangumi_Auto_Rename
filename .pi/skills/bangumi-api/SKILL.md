@@ -74,6 +74,8 @@ A practical side-content evidence set is:
 - episode rows for the candidate side-content subject;
 - a comparison of local `SP01-SPnn` numbers to Bangumi `sort` or `ep`, plus title/count checks when available.
 
+The local file/folder name may not include the side-content title. A parent-season `SPs` group can still map to a related mini-anime, chibi short, OVA/OAD, or special subject when the season qualifier, local count, durations, and exposed episode rows line up. Do not mark it supplemental solely because the filenames only say the parent season plus `SP01-SPnn`.
+
 When side-content groups differ by season/part qualifier, fetch evidence per qualified group. A result for the unqualified side title is not enough to mark `II`, `III`, `Part 2`, or later-year side groups supplemental. Traverse from the anchor for qualified related subjects first; use qualified direct search when the graph does not expose a plausible match.
 
 Be careful about the query identity. Searching only the parent season title, such as `Franchise II` or `Franchise III`, is parent-season evidence, not evidence for a side-content group titled `Side Story II` or `Mini Anime III`. For season-qualified side groups, either graph from the side-content anchor or search the qualified side title itself, such as `Side Story II`, before deciding there are no rows.
@@ -83,6 +85,8 @@ If that evidence exposes compatible rows, draft a mapped sequence even if the fi
 When `SP01` style local numbers map to exposed Bangumi rows, `SP` belongs in the filename selector or reasoning, not in `episode_offset`. Use `episode_offset: "EP"` unless a real arithmetic shift is needed.
 
 Long special/movie-shaped files can be one-episode Bangumi subjects. Bangumi may expose their single row as `episode_type: "regular"`; use the row's legal type in params.
+
+If a long standalone OVA/OAD/SP-like file has a related one-episode subject whose runtime/title/relationship fits, draft an exact mapped rule before treating it as a duplicate compilation of another split group.
 
 SP file naming is not the same as Bangumi row type. If a short SP subject exposes rows as `regular`, params should use `episode_type: "regular"` even when `media_kind` is `sp` or `special`.
 

@@ -93,6 +93,8 @@ Use `validate_organize_recipe_params_patch` when a previous params validation or
 
 Repair is not a permission to lower semantic quality. If the affected rule already has plausible anime/video target evidence, patch `media_kind`, `episode_type`, `episode_id`, `episode_range`, selector, offset, or duplicate/split handling before changing it to supplemental.
 
+For selector repairs, either set selector fields directly on the rule (`exact_paths`, `source_pattern`, `filename_regex`, `path_glob`, `exclude_regex`) or set them inside `set.select`; both mean "replace or update this rule's local selector."
+
 When uncovered paths and duplicate coverage belong to the same local group, replace or patch the existing partial rule so that one rule covers the group exactly once. Do not append a second supplemental rule over paths already covered by an earlier supplemental rule.
 
 When an uncovered path is in the same local group as an existing supplemental rule, patch that supplemental rule to include the missing exact path or replace it with one compact supplemental selector. Do not change unrelated mapped movie/OVA/special exact-path rules just to satisfy coverage.
@@ -110,6 +112,10 @@ For `review_warnings`, resolve only the listed warnings. A submit result with `s
 ## Numbered SP And Short Side Content
 
 Treat numbered SP/bonus groups as their own board rows, not as leftovers from the parent TV season. A main-season subject with no SP rows is weak negative evidence for a group whose local title says `Ple Ple Pleiades`, `Mini Anime`, `OAD`, `OVA`, `Bangaihen`, or another side-content name.
+
+A parent-titled `SPs` folder is also a side-frontier row. If relation-graph evidence exposes a same-season mini-anime, chibi short, OVA/OAD, or special subject whose episode count, durations, and row order fit the local `SP01-SPnn` files, draft a mapped sequence even when the side-content title is absent from the filenames.
+
+For a long standalone OVA/OAD/SP-like file, prefer a related one-episode exact mapped rule when title, runtime, and relation evidence fit. Treat it as a supplemental duplicate compilation only after that targeted exact-rule evidence does not support a distinct Bangumi row.
 
 For these groups, build evidence at the title level first:
 
@@ -188,7 +194,9 @@ Use compact semantic params. Python builds the full JSON recipe, escapes source 
 }
 ```
 
-Use `source_pattern` with `{ep}`, `{ep:02}`, or `{ep:02d}` for ordinary numbered sequences. Use `exact_paths` or `source_path` for a single OVA, SP, movie, or irregular exception. A literal filename without an `{ep}` token is not a sequence locator.
+Use `source_pattern` with `{ep}`, `{ep:02}`, or `{ep:02d}` for ordinary numbered sequences. Use `exact_paths` or `source_path` for a single OVA, SP, movie, separate one-file entry, or irregular exception. A literal filename without an `{ep}` token is not a sequence locator.
+
+Do not cover a numbered multi-episode mapped sequence by listing many `exact_paths` plus `episode_range`; the verifier cannot derive one target per file from that shape. Use `group_ref`, `source_pattern`, or `filename_regex` with `{ep}` for the sequence, and cover only split/variant leftovers as supplemental exact paths.
 
 For multi-file sequence rules, do not include `episode_id`, `sort`, or `ep` unless every selected file intentionally maps to that same exact episode row. Keep those fields absent so Python derives one target per file from `{ep}`. For a two-movie recap set or other separate one-file items, split into separate exact-path rules instead of using one `group_ref` with one fixed `episode_id`.
 

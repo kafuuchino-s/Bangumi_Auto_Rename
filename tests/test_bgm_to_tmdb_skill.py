@@ -28,6 +28,14 @@ def test_tmdb_bridge_skill_teaches_recipe_first_contract_and_valid_params_shape(
     assert 'Franchise Anchor First' in text
     assert 'anchor search -> hydrated TMDB legal graph' in text
     assert 'strongest next evidence layer' in text
+    assert 'TMDB Legal Graph Closure' in text
+    assert 'Use the accepted BGM plan as the frontier, not the local file tree.' in text
+    assert 'Put BGM specials, OVA/OAD, recap movies, spans, and side-story subjects' in text
+    assert 'Search additional TMDB titles only for graph misses, conflicting candidates' in text
+    assert 'Stop closure when another graph/search pass adds no legal TMDB nodes' in text
+    assert 'use `tmdb_absent_group` for BGM-mapped nodes that Bangumi has but TMDB does not expose' in text
+    assert 'Use `supplemental_group` only for assignments that were already Local-to-Bangumi supplemental.' in text
+    assert 'Do not convert BGM-mapped OVA/OAD/SP/movie/side-story nodes to supplemental' in text
 
     example = re.search(r'```json\s*(\{.*?\})\s*```', text, re.DOTALL)
     assert example is not None

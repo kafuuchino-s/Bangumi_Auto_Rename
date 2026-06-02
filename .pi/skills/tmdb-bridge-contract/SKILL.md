@@ -38,6 +38,23 @@ Additional title searches are most useful when the hydrated graph does not expos
 
 Preferred evidence ladder: anchor search -> hydrated TMDB legal graph -> season/episode-card comparison -> recipe validation -> targeted verifier repair. If the first hydrated graph already contains the seasons and S00 specials needed by the BGM subject cards, separate searches for each subject title are unnecessary.
 
+## TMDB Legal Graph Closure
+
+Use the accepted BGM plan as the frontier, not the local file tree. After the main BGM subject or movie anchor is matched to a TMDB ref, hydrate its legal graph and compare every remaining BGM-mapped anime/video group against that graph.
+
+Close the bridge frontier like this:
+
+1. Anchor the strongest TMDB series or movie candidate.
+2. Hydrate its legal graph with seasons, season 0, episode cards, aliases, years, overviews, and slugs.
+3. Map every BGM group whose title/order/count/episode-title evidence fits an exposed legal node range.
+4. Put BGM specials, OVA/OAD, recap movies, spans, and side-story subjects that are not yet explained into a TMDB side frontier.
+5. If the hydrated graph exposes a new relevant season/special/movie shape, draft that rule and treat the hydrated TMDB ref as an anchor for the remaining frontier evidence.
+6. Search additional TMDB titles only for graph misses, conflicting candidates, or frontier groups whose BGM title clearly points outside the hydrated series graph.
+
+Stop closure when another graph/search pass adds no legal TMDB nodes that explain the remaining BGM frontier. At that point, use `tmdb_absent_group` for BGM-mapped nodes that Bangumi has but TMDB does not expose. Use `supplemental_group` only for assignments that were already Local-to-Bangumi supplemental.
+
+Do not convert BGM-mapped OVA/OAD/SP/movie/side-story nodes to supplemental to make validation pass. If a mapped bridge rule has a verifier issue, first repair TMDB ref, season number, episode range, number field, span/movie shape, or target-absent boundary.
+
 ## Episode Title Alignment
 
 When the series title, translated title, or slug is ambiguous, episode titles are usually the next strongest evidence layer before choosing a TMDB ref or season. Read BGM `episode_title_cards_sample` from the subject card, then compare those BGM titles with the TMDB legal-node episode titles shown in the hydrated candidate's seasons.

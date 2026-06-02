@@ -301,6 +301,12 @@ def test_pi_skills_document_compact_evidence_flow_and_legal_recipe_episode_types
     assert 'do not postpone first validation to prove the entire SP graph is exhausted' in bangumi_skill
     assert 'Main-season lookup results that omit SP rows are not evidence' in recipe_skill
     assert 'Main-season representative lookup alone is not enough to conclude that a separate numbered SP sequence has no target.' in release_skill
+    assert 'A parent-titled `SPs` folder is also a side-frontier row.' in recipe_skill
+    assert 'filenames only say the parent season plus `SP01-SPnn`' in bangumi_skill
+    assert 'A folder may be parent-titled and still contain a related short side anime.' in release_skill
+    assert 'prefer a related one-episode exact mapped rule when title, runtime, and relation evidence fit' in recipe_skill
+    assert 'draft an exact mapped rule before treating it as a duplicate compilation' in bangumi_skill
+    assert 'do not assume it is a duplicate compilation only because a split short-episode set exists elsewhere' in release_skill
     assert 'duplicate_target' in bangumi_skill
     assert 'split or variant locators such as `_1`/`_2`' in bangumi_skill
     assert 'cover them as supplemental exact paths' in bangumi_skill
@@ -327,6 +333,8 @@ def test_pi_skills_document_compact_evidence_flow_and_legal_recipe_episode_types
     assert 'For `duplicate_target` caused by local split/variant locators' in recipe_skill
     assert 'validate that patch before considering whole-case `fail_closed`' in recipe_skill
     assert 'multi-file `group_ref`, `source_pattern`, or multi-path exact selector with one fixed `episode_id`, `sort`, or `ep`' in recipe_skill
+    assert 'Do not cover a numbered multi-episode mapped sequence by listing many `exact_paths` plus `episode_range`' in recipe_skill
+    assert 'cover only split/variant leftovers as supplemental exact paths' in recipe_skill
     assert 'separate movie/OVA/special files need separate exact-path rules with distinct exposed targets' in recipe_skill
     assert 'patch that supplemental rule to include the missing exact path' in recipe_skill
     assert 'Do not change unrelated mapped movie/OVA/special exact-path rules just to satisfy coverage' in recipe_skill

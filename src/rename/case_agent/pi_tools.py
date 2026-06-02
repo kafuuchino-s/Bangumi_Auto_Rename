@@ -2971,7 +2971,11 @@ def _apply_recipe_params_patch(base: dict[str, Any], patch: dict[str, Any]) -> d
             for key, value in rule_patch.items()
             if key not in {'name', 'set', 'unset', 'remove'}
         }
-        for key, value in {**direct_updates, **updates}.items():
+        merged_updates = {**direct_updates, **updates}
+        selector_updates = merged_updates.pop('select', None)
+        if isinstance(selector_updates, dict):
+            _apply_recipe_params_selector_patch(target, selector_updates)
+        for key, value in merged_updates.items():
             target[key] = _json_clone(value)
         for key in _coerce_string_list(rule_patch.get('unset') or rule_patch.get('remove')):
             target.pop(key, None)
@@ -2986,6 +2990,38 @@ def _apply_recipe_params_patch(base: dict[str, Any], patch: dict[str, Any]) -> d
         raise ValueError('patch removed every rule')
     merged['rules'] = rules
     return merged
+
+
+_PARAMS_SELECTOR_PATCH_KEYS = {
+    'exact_paths',
+    'exclude',
+    'exclude_regex',
+    'filename_pattern',
+    'filename_regex',
+    'glob',
+    'group_ref',
+    'local_group',
+    'local_group_ref',
+    'path',
+    'path_glob',
+    'paths',
+    'regex',
+    'source_path',
+    'source_paths',
+    'source_pattern',
+    'source_template',
+}
+_PARAMS_POSITIVE_SELECTOR_PATCH_KEYS = _PARAMS_SELECTOR_PATCH_KEYS - {'exclude', 'exclude_regex'}
+
+
+def _apply_recipe_params_selector_patch(target: dict[str, Any], selector_updates: dict[str, Any]) -> None:
+    if any(key in selector_updates for key in _PARAMS_POSITIVE_SELECTOR_PATCH_KEYS):
+        for key in _PARAMS_POSITIVE_SELECTOR_PATCH_KEYS:
+            target.pop(key, None)
+        target.pop('select', None)
+    for key, value in selector_updates.items():
+        if key in _PARAMS_SELECTOR_PATCH_KEYS:
+            target[key] = _json_clone(value)
 
 
 _SOURCE_PATTERN_TOKEN_RE = re.compile(r'\{([A-Za-z_][A-Za-z0-9_]*)(?::0?(\d+)d?)?\}')
