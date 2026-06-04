@@ -1083,6 +1083,8 @@ async function waitForFinalResultWithNudge(session, promptDone) {
 }
 
 
+const instructionPath = path.join(path.dirname(outputPath), "pi_goal_instructions.md");
+
 function buildInstructionText(expandedPromptTemplate, launchTelemetry = {}) {
   return `
 Official-style Local-to-Bangumi Pi entry.
