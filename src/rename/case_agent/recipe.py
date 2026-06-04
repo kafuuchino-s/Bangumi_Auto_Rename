@@ -140,6 +140,7 @@ def compile_and_verify_organize_recipe(
     if not recipe.rules:
         issues.append(_issue('recipe', 'missing_rules', 'OrganizeRecipeDraft.rules must not be empty'))
 
+    assignment_entries: list[tuple[CompiledOrganizeAssignment, list[VerifierIssue]]] = []
     for index, rule in enumerate(recipe.rules, start=1):
         rule_ref = _rule_ref(rule, index)
         matched_paths, selector_issues = _match_rule_paths(rule, files_by_path)
@@ -159,9 +160,12 @@ def compile_and_verify_organize_recipe(
                 source_file=files_by_path.get(path),
                 target_index=target_index,
             )
-            assignments.append(assignment)
-            issues.extend(assignment_issues)
+            assignment_entries.append((assignment, assignment_issues))
 
+    assignment_entries = _apply_exact_supplemental_overrides(assignment_entries, recipe.rules)
+    for assignment, assignment_issues in assignment_entries:
+        assignments.append(assignment)
+        issues.extend(assignment_issues)
     coverage_counts = Counter(assignment.source_path for assignment in assignments if assignment.source_path)
     covered_paths = sorted(coverage_counts)
     duplicate_coverage_paths = sorted(path for path, count in coverage_counts.items() if count > 1)
@@ -627,7 +631,15 @@ def _compile_rule_assignment(
             and not rule.select.filename_regex
         )
         if not subject_level_movie:
-            extracted_number, extraction_issue = _extract_episode_number(rule, source_path)
+            ordered_exact_number, ordered_exact_issue = _episode_number_from_exact_path_order(rule, source_path)
+            if ordered_exact_issue is not None:
+                issues.append(ordered_exact_issue)
+                extraction_issue = None
+            elif ordered_exact_number is not None:
+                extracted_number = ordered_exact_number
+                extraction_issue = None
+            else:
+                extracted_number, extraction_issue = _extract_episode_number(rule, source_path)
             if extraction_issue is not None:
                 issues.append(extraction_issue)
         episode = target_index.find_episode(rule.target, extracted_number, number_field=rule.episode.number_field)
@@ -654,6 +666,72 @@ def _compile_rule_assignment(
         extracted_episode_number=extracted_number,
         reason=rule.reason,
     ), issues
+
+
+def _episode_number_from_exact_path_order(rule: OrganizeRecipeRule, source_path: str) -> tuple[int | None, VerifierIssue | None]:
+    if (
+        rule.source_unit != 'single_file'
+        or rule.disposition != 'map_to_bangumi'
+        or rule.target.episode_id
+        or rule.target.sort is not None
+        or rule.target.ep is not None
+        or rule.select.filename_regex
+        or not rule.episode.range
+    ):
+        return None, None
+    exact_paths = [_norm_path(path) for path in rule.select.exact_paths if _norm_path(path)]
+    if len(exact_paths) <= 1:
+        return None, None
+    normalized_source = _norm_path(source_path)
+    if normalized_source not in exact_paths:
+        return None, None
+    raw_numbers, range_error = _episode_numbers_from_range(rule.episode.range)
+    if range_error:
+        return None, _issue(source_path, 'invalid_episode_range', range_error, related_refs=[source_path])
+    if len(raw_numbers) != len(exact_paths):
+        return None, _issue(
+            source_path,
+            'invalid_exact_path_episode_range',
+            'multi-file exact_paths with episode_range must have the same number of paths and episode numbers',
+            related_refs=[source_path],
+        )
+    raw_number = raw_numbers[exact_paths.index(normalized_source)]
+    try:
+        return _eval_episode_expr(rule.episode.offset or 'EP', raw_number), None
+    except ValueError as exc:
+        return None, _issue(source_path, 'invalid_episode_offset', str(exc), related_refs=[source_path])
+
+
+def _apply_exact_supplemental_overrides(
+    assignment_entries: list[tuple[CompiledOrganizeAssignment, list[VerifierIssue]]],
+    rules: list[OrganizeRecipeRule],
+) -> list[tuple[CompiledOrganizeAssignment, list[VerifierIssue]]]:
+    exact_supplemental_paths = {
+        assignment.source_path
+        for assignment, _issues in assignment_entries
+        if assignment.disposition == 'non_bangumi_or_supplemental'
+        and _rule_has_exact_selector(rules, assignment.rule_name)
+    }
+    if not exact_supplemental_paths:
+        return assignment_entries
+    kept_entries: list[tuple[CompiledOrganizeAssignment, list[VerifierIssue]]] = []
+    for entry in assignment_entries:
+        assignment = entry[0]
+        if (
+            assignment.source_path in exact_supplemental_paths
+            and assignment.disposition == 'map_to_bangumi'
+            and not _rule_has_exact_selector(rules, assignment.rule_name)
+        ):
+            continue
+        kept_entries.append(entry)
+    return kept_entries
+
+
+def _rule_has_exact_selector(rules: list[OrganizeRecipeRule], rule_name: str) -> bool:
+    for index, rule in enumerate(rules, start=1):
+        if _rule_ref(rule, index) == rule_name:
+            return any(_norm_path(path) for path in rule.select.exact_paths)
+    return False
 
 
 def _compile_single_file_multi_episode_target(

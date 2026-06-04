@@ -393,7 +393,7 @@ def run_pi_case_agent(
     final = state.final_result or {}
     status = str(final.get('status') or ('error' if not runtime.get('ok') else 'invalid'))
     ok = bool(final.get('ok')) if final else False
-    summary = str(final.get('summary') or runtime.get('error') or 'Pi runtime ended without a final submit_organize_recipe/fail_closed result.')
+    summary = str(final.get('summary') or runtime.get('error') or 'Pi runtime ended without a final submit_organize_recipe_params/fail_closed result.')
     errors: list[str] = []
     if not runtime.get('ok'):
         errors.append(f"error_kind=pi_runtime_failed")

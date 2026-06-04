@@ -4,13 +4,16 @@ import {
   AuthStorage,
   createAgentSession,
   DefaultResourceLoader,
-  defineTool,
   ModelRegistry,
   SessionManager,
 } from "@earendil-works/pi-coding-agent";
 import { spawn } from "node:child_process";
 import fs from "node:fs/promises";
 import path from "node:path";
+import {
+  LOCAL_BANGUMI_TOOL_NAMES,
+  LOCAL_BANGUMI_TOOLS_ENV,
+} from "../.pi/extensions/local-bangumi-tools/index.js";
 
 function parseArgs(argv) {
   const args = {};
@@ -35,8 +38,11 @@ const provider = args.provider || "";
 const modelId = args.model || "";
 const runtimeApiKeyEnv = args["api-key-env"] || "BAR_PI_CASE_AGENT_API_KEY";
 
-const NATIVE_TOOL_NAMES = ["read", "grep", "find", "ls", "bash", "edit", "write"];
-const EXTENSION_TOOL_NAMES = ["goal_complete"];
+// Local-to-Bangumi dry runs stay on the case-scoped custom tool surface, while
+// retaining Pi's official progressive-disclosure path for skills/references.
+// Enable read only; no shell/edit/write/listing tools are exposed.
+const NATIVE_TOOL_NAMES = ["read"];
+const EXTENSION_TOOL_NAMES = ["goal_complete", ...LOCAL_BANGUMI_TOOL_NAMES];
 const RETRY_STALL_TIMEOUT_ENV = "PI_RETRY_STALL_TIMEOUT_MS";
 // The non-interactive Python subprocess timeout is the hard stall boundary here.
 // pi-retry's watchdog keeps a timer with a session ctx; in SDK mode that timer can
@@ -45,18 +51,56 @@ if (!process.env[RETRY_STALL_TIMEOUT_ENV]) {
   process.env[RETRY_STALL_TIMEOUT_ENV] = "0";
 }
 const EXTENSION_PATHS = [
+  path.join(repoRoot, ".pi", "extensions", "local-bangumi-tools", "index.js"),
   path.join(repoRoot, "node_modules", "@narumitw", "pi-goal", "src", "goal.ts"),
   path.join(repoRoot, "node_modules", "@narumitw", "pi-retry", "src", "retry.ts"),
 ];
+const customToolNames = [...LOCAL_BANGUMI_TOOL_NAMES];
+const enabledToolNames = [...NATIVE_TOOL_NAMES, ...EXTENSION_TOOL_NAMES];
 const REQUIRED_SKILL_NAMES = [
-  "bangumi-api",
-  "anime-release-reading",
-  "organize-recipe-contract",
+  "local-bangumi-organize",
 ];
+const PRIMARY_SKILL_NAME = "local-bangumi-organize";
+const PRIMARY_PROMPT_TEMPLATE_NAME = "local-bangumi-map";
+const PRIMARY_PROMPT_TEMPLATE_PATH = path.join(
+  repoRoot,
+  ".pi",
+  "prompts",
+  `${PRIMARY_PROMPT_TEMPLATE_NAME}.md`,
+);
+const PRIMARY_PROMPT_INVOCATION = `/${PRIMARY_PROMPT_TEMPLATE_NAME} ${inputPath}`;
+const PRIMARY_SKILL_LOAD_COMMAND =
+  `/skill:${PRIMARY_SKILL_NAME} Load this skill as method context for the upcoming Local-to-Bangumi case. ` +
+  "Do not run case tools yet; wait for the next task prompt.";
+const ACTION_AGENT_OUTPUT_CONTRACT = [
+  "Visible output contract: act through tools and artifacts, not reasoning prose.",
+  "Do not write headings such as Deciding, Evaluating, Considering, or explain why a tool should be called.",
+  "When a custom tool or goal_complete is available, call it directly with no prose; otherwise write one short blocker sentence.",
+  "Do not print recipe JSON, full mapping tables, full verifier issues, or old artifact excerpts in assistant text.",
+  "Tool arguments count as output: keep board notes, snapshots, reasons, and summaries compact.",
+  "Do not paste get_case_overview/list_local_groups/get_local_group_detail JSON into notes; cite group refs and named blockers.",
+  "For complex packages, the first Bangumi move is one reliable main-title search, then select_bangumi_anchor_subject; do not fail_closed from an empty draft before that anchor exists unless the case input is malformed.",
+].join("\n");
+const ACTION_AGENT_SYSTEM_PROMPT_SECTION = `
+## Local-to-Bangumi Action Case Agent Output Protocol
+
+This session runs as an action-oriented case agent. Reason internally, then externalize durable work through custom tools and artifacts.
+
+- Assistant-visible text is a status channel, not a scratchpad.
+- On a turn that can call a custom tool or goal_complete, call the tool directly and omit explanatory prose.
+- Do not print chain-of-thought, self-review headings, mapping tables, recipe JSON, drafts, verifier issue dumps, or copied tool JSON.
+- A normal non-final text-only response is at most one short blocker sentence naming the next missing fact or terminal fail_closed reason.
+- When a group/subcluster judgment is stable enough to test, save one compact row with upsert_recipe_group_decision_one instead of explaining the row in prose.
+- When a draft is complete, validate_recipe_params_draft is the next visible action; do not describe that you are ready.
+- When validation is accepted, submit and then goal_complete; do not summarize before submitting.
+- Keep board_delta, validation_snapshot, submit_snapshot, reason, and summary short. Tool arguments are model output too.
+`.trim();
 
 if (!inputPath || !outputPath || !server || !token) {
   throw new Error("required args: --input --output --server --token");
 }
+process.env[LOCAL_BANGUMI_TOOLS_ENV.server] = server;
+process.env[LOCAL_BANGUMI_TOOLS_ENV.token] = token;
 
 const caseInput = JSON.parse(await fs.readFile(inputPath, "utf8"));
 const eventLog = [];
@@ -82,35 +126,6 @@ if (agentDir || provider || modelId) {
       throw new Error(`Pi model not found: provider=${provider} model=${modelId}`);
     }
   }
-}
-
-const Json = {
-  Any: () => ({}),
-  Array: (items) => ({ type: "array", items }),
-  Boolean: () => ({ type: "boolean" }),
-  Number: () => ({ type: "number" }),
-  Object: (properties, required = []) => ({
-    type: "object",
-    properties,
-    required,
-    additionalProperties: false,
-  }),
-  Optional: (schema) => ({ ...schema, optional: true }),
-  String: () => ({ type: "string" }),
-  Union: (schemas) => ({ anyOf: schemas }),
-};
-
-function objectSchema(properties) {
-  const required = Object.entries(properties)
-    .filter(([, schema]) => !schema.optional)
-    .map(([name]) => name);
-  const cleanProperties = Object.fromEntries(
-    Object.entries(properties).map(([name, schema]) => {
-      const { optional: _optional, ...cleanSchema } = schema;
-      return [name, cleanSchema];
-    }),
-  );
-  return Json.Object(cleanProperties, required);
 }
 
 async function callPythonTool(tool, toolArgs) {
@@ -156,6 +171,77 @@ function safePreview(value, limit = 2000) {
   return text.length > limit ? `${text.slice(0, limit)}...truncated...` : text;
 }
 
+function discoverRequiredSkills(resourceLoader) {
+  const loadedSkills = resourceLoader.getSkills().skills || [];
+  const discovered = [];
+  const missing = [];
+  for (const skillName of REQUIRED_SKILL_NAMES) {
+    const skill = loadedSkills.find((candidate) => candidate.name === skillName);
+    if (!skill) {
+      missing.push(skillName);
+      continue;
+    }
+    discovered.push({
+      name: skill.name,
+      description: skill.description || "",
+      filePath: skill.filePath || "",
+      baseDir: skill.baseDir || "",
+    });
+  }
+  return { discovered, missing };
+}
+
+function stripMarkdownFrontmatter(text) {
+  if (!text.startsWith("---")) return text;
+  const normalized = text.replace(/\r\n/g, "\n");
+  const end = normalized.indexOf("\n---", 3);
+  if (end === -1) return text;
+  const after = normalized.indexOf("\n", end + 4);
+  return after === -1 ? "" : normalized.slice(after + 1);
+}
+
+function expandSimplePromptTemplate(templateText, argsList) {
+  const argsJoined = argsList.join(" ");
+  let expanded = stripMarkdownFrontmatter(templateText).trim();
+  for (let index = argsList.length; index >= 1; index -= 1) {
+    const value = argsList[index - 1] || "";
+    expanded = expanded.replaceAll(`$${index}`, value);
+  }
+  expanded = expanded
+    .replaceAll("$ARGUMENTS", argsJoined)
+    .replaceAll("$@", argsJoined);
+  return expanded;
+}
+
+async function readExpandedPrimaryPromptTemplate() {
+  const rawTemplate = await fs.readFile(PRIMARY_PROMPT_TEMPLATE_PATH, "utf8");
+  return expandSimplePromptTemplate(rawTemplate, [inputPath]);
+}
+
+async function buildSkillExpansionFallback(requiredSkillDiscovery) {
+  const skill = requiredSkillDiscovery.discovered.find((item) => item.name === PRIMARY_SKILL_NAME);
+  const skillPath = skill?.filePath || path.join(repoRoot, ".pi", "skills", PRIMARY_SKILL_NAME, "SKILL.md");
+  const baseDir = skill?.baseDir || path.dirname(skillPath);
+  const rawSkill = await fs.readFile(skillPath, "utf8");
+  const body = stripMarkdownFrontmatter(rawSkill).trim();
+  return `<skill name="${PRIMARY_SKILL_NAME}" location="${skillPath}">
+References are relative to ${baseDir}.
+
+${body}
+</skill>
+
+User: Load this skill as method context for the upcoming Local-to-Bangumi case. Do not run case tools yet; wait for the next task prompt.`;
+}
+
+async function promptWithResult(session, text, options = {}) {
+  try {
+    await session.prompt(text, { expandPromptTemplates: true, source: "api", ...options });
+    return { ok: true };
+  } catch (error) {
+    return { ok: false, error: error?.stack || error?.message || String(error) };
+  }
+}
+
 function summarizeEvent(event) {
   const row = {
     type: event.type,
@@ -185,7 +271,8 @@ function summarizeEvent(event) {
 function captureAssistantDelta(event) {
   if (event.type !== "message_update") return;
   const assistantEvent = event.assistantMessageEvent;
-  const rawDelta = assistantEvent?.delta ?? assistantEvent?.text ?? assistantEvent?.content ?? "";
+  if (assistantEvent?.type !== "text_delta") return;
+  const rawDelta = assistantEvent?.delta ?? "";
   const delta = typeof rawDelta === "string" ? rawDelta : "";
   if (!delta || assistantLogCharCount >= MAX_ASSISTANT_LOG_CHARS) return;
   const room = MAX_ASSISTANT_LOG_CHARS - assistantLogCharCount;
@@ -219,6 +306,38 @@ function flushAssistantMessage() {
   assistantTextBuffer = "";
 }
 
+function buildAssistantOutputStats() {
+  const lengths = assistantMessages.map((message) => (message.text || "").length);
+  const totalTextChars = lengths.reduce((total, length) => total + length, 0);
+  const longTextTurns = assistantMessages
+    .filter((message) => (message.text || "").length > 1000)
+    .map((message) => ({
+      turn_count: message.turn_count,
+      text_chars: (message.text || "").length,
+    }))
+    .slice(0, 12);
+  const reasoningHeadingPattern = /(^|\n)\s*(#{1,6}\s+|\*\*)?(Deciding|Evaluating|Considering|Analyzing|Assessing|Reviewing|Searching|Aligning)\b/i;
+  const reasoningHeadingTurns = assistantMessages
+    .filter((message) => reasoningHeadingPattern.test(message.text || ""))
+    .map((message) => ({
+      turn_count: message.turn_count,
+      text_chars: (message.text || "").length,
+    }))
+    .slice(0, 12);
+  return {
+    assistant_message_count: assistantMessages.length,
+    total_text_chars: totalTextChars,
+    max_text_chars: lengths.length ? Math.max(...lengths) : 0,
+    long_text_message_count: lengths.filter((length) => length > 1000).length,
+    very_long_text_message_count: lengths.filter((length) => length > 2000).length,
+    reasoning_heading_message_count: reasoningHeadingTurns.length,
+    long_text_turns: longTextTurns,
+    reasoning_heading_turns: reasoningHeadingTurns,
+    log_char_count: assistantLogCharCount,
+    log_truncated: assistantLogCharCount >= MAX_ASSISTANT_LOG_CHARS,
+  };
+}
+
 async function fileExists(filePath) {
   if (!filePath) return false;
   try {
@@ -235,6 +354,27 @@ async function readJsonFile(filePath) {
     return JSON.parse(await fs.readFile(filePath, "utf8"));
   } catch {
     return null;
+  }
+}
+
+async function readToolTraceRows() {
+  const tracePath = path.join(path.dirname(outputPath), "tool_trace.jsonl");
+  if (!(await fileExists(tracePath))) return [];
+  try {
+    const text = await fs.readFile(tracePath, "utf8");
+    return text
+      .split(/\r?\n/)
+      .filter(Boolean)
+      .map((line) => {
+        try {
+          return JSON.parse(line);
+        } catch {
+          return null;
+        }
+      })
+      .filter(Boolean);
+  } catch {
+    return [];
   }
 }
 
@@ -282,7 +422,7 @@ async function ensureHelperCheckArtifact() {
     await fs.writeFile(helperCheckPath, JSON.stringify(payload, null, 2), "utf8");
     return payload;
   }
-  const scriptPath = path.join(repoRoot, ".pi", "skills", "organize-recipe-contract", "scripts", "check-organize-recipe.mjs");
+  const scriptPath = path.join(repoRoot, ".pi", "skills", "local-bangumi-organize", "scripts", "check-organize-recipe.mjs");
   const completed = await runProcess([process.execPath, scriptPath, recipePath, inputPath], { cwd: repoRoot, timeoutMs: 30000 });
   let payload;
   try {
@@ -320,56 +460,81 @@ async function readLatestVerifierNudgeLines() {
     const reviewWarnings = Array.isArray(verifier.review_warnings) ? verifier.review_warnings : [];
     if (verifier.passed === true && reviewWarnings.length) {
       const lines = [
-        `Working Board review checkpoint: latest validation passed mechanically but has ${reviewWarnings.length} review warning(s).`,
-        "Resolve only the warnings listed below, then validate params again. Do not switch to raw JSON or broad search:",
+        `Latest verifier: review, warning_count=${reviewWarnings.length}.`,
       ];
-      for (const warning of reviewWarnings.slice(0, 6)) {
+      for (const warning of reviewWarnings.slice(0, 4)) {
         const code = warning.code || "review_warning";
         const sourcePath = warning.source_path || "";
         const message = warning.message || "";
-        lines.push(`- ${code}: ${message}${sourcePath ? ` (${sourcePath})` : ""}`);
-        if (warning.repair_hint) {
-          lines.push(`  repair_hint: ${warning.repair_hint}`);
-        }
+        lines.push(`- ${code}${sourcePath ? ` ${sourcePath}` : ""}: ${message}`);
       }
+      lines.push("Next: targeted evidence or small params patch for named warning only.");
       return lines;
     }
     if (verifier.passed === true) {
       return [
-        "Working Board submit path: latest validation is accepted=true with no review warnings. Submit the same params or recipe now; do not rewrite it.",
+        "Latest verifier: accepted with no review warnings. Next: submit accepted params.",
       ];
     }
     if (!issues.length) return [];
-    const repairHints = Array.isArray(verifier.repair_hints) ? verifier.repair_hints : [];
-    const issueCodes = new Set(issues.map((issue) => String(issue.issue_code || "")));
     const lines = [
-      `Working Board repair checkpoint: latest verifier is blocked: ${verifier.summary || "see issues"}.`,
-      "Patch only these named issues, then validate params again. Fetch evidence only when the issue or hint asks for targeted evidence:",
+      `Latest verifier: invalid, issue_count=${issues.length}.`,
     ];
-    for (const issue of issues.slice(0, 6)) {
+    for (const issue of issues.slice(0, 4)) {
       const code = issue.issue_code || "issue";
       const ref = issue.ref || "";
       const message = issue.message || "";
-      lines.push(`- ${code}: ${message}${ref ? ` (${ref})` : ""}`);
+      lines.push(`- ${code}${ref ? ` ${ref}` : ""}: ${message}`);
       const relatedRefs = Array.isArray(issue.related_refs) ? issue.related_refs.filter(Boolean).slice(0, 4) : [];
       if (relatedRefs.length) {
         lines.push(`  related_refs: ${JSON.stringify(relatedRefs)}`);
       }
     }
-    if (issueCodes.has("missing_episode_locator") || issueCodes.has("duplicate_target")) {
-      lines.push(
-        "Mechanical selector repair: a numbered multi-file mapped sequence needs group_ref/source_pattern/filename_regex with {ep} plus episode_range; do not enumerate many exact_paths with episode_range. Cover split variants with exclude_regex plus a supplemental exact_paths rule.",
-      );
-    }
-    if (repairHints.length) {
-      lines.push("Top repair_hints:");
-      for (const hint of repairHints.slice(0, 3)) {
-        lines.push(`- ${hint}`);
-      }
-    }
+    lines.push("Next: patch named issue, one targeted fact, submit accepted, or concrete fail_closed.");
     return lines;
   } catch {
     return [];
+  }
+}
+
+async function readCaseBoardNudgeLines() {
+  const notesPath = caseInput.scratch_paths?.notes;
+  if (!notesPath) return [];
+  if (!(await fileExists(notesPath))) {
+    return [
+      "Case board: notes.md does not exist yet. If you write an Initial Board, keep it compact: cite group refs and blockers only; do not paste the local group JSON.",
+    ];
+  }
+  try {
+    const text = await fs.readFile(notesPath, "utf8");
+    const headings = [...text.matchAll(/^##\s+(.+)$/gm)].map((match) => match[1].trim()).filter(Boolean);
+    const latestHeadings = headings.slice(-5);
+    const nextMatches = [...text.matchAll(/^Next:\s*(.+)$/gm)].map((match) => match[1].trim()).filter(Boolean);
+    const latestNext = nextMatches.slice(-1)[0] || "";
+    const lines = [
+      `Case board: notes.md exists with ${headings.length} section(s)${latestHeadings.length ? `; latest sections: ${latestHeadings.join(" | ")}` : ""}.`,
+    ];
+    const latestHeading = headings.slice(-1)[0] || "";
+    if (latestHeading === "Validation Snapshot") {
+      lines.push(
+        "Latest board section is Validation Snapshot from an older two-step trace. In new work, Validation Snapshot belongs inside the validation transaction.",
+      );
+    } else if (latestHeading === "Verifier Delta") {
+      lines.push(
+        "Latest board section is Verifier Delta. The named issue rows/rules are the current repair surface; targeted evidence is useful only when verifier/review feedback asks for it.",
+      );
+    } else if (latestHeading === "Patch Delta") {
+      lines.push("Latest board section is Patch Delta from an older two-step trace. In new work, Patch Delta belongs in patch_delta when validating or submitting a patch.");
+    } else if (latestHeading === "Submit Snapshot") {
+      lines.push("Latest board section is Submit Snapshot from an older two-step trace. If submit already accepted, the case can be completed; otherwise the accepted params/recipe still need submit.");
+    }
+    if (latestNext) {
+      lines.push(`Case board latest Next: ${latestNext}.`);
+    }
+    lines.push("If your conversation context is stale, get_case_board_notes(mode:\"tail\") restores the latest working memory.");
+    return lines;
+  } catch {
+    return ["Case board: notes.md exists but could not be summarized. Use get_case_board_notes(mode:\"tail\") if needed."];
   }
 }
 
@@ -377,32 +542,25 @@ async function readRunnerProgressNudgeLines() {
   const lines = [];
   const recipePath = caseInput.scratch_paths?.organize_recipe;
   const artifactsDir = caseInput.scratch_paths?.artifacts_dir;
+  const draftPath = caseInput.scratch_paths?.recipe_params_draft;
   const verifierPath = artifactsDir ? path.join(artifactsDir, "recipe_verifier_result.json") : "";
   const recipeExists = await fileExists(recipePath);
+  const draft = draftPath ? await readJsonFile(draftPath) : null;
+  const draftRuleCount = Array.isArray(draft?.rules) ? draft.rules.length : 0;
   const verifierExists = await fileExists(verifierPath);
-  const tracePath = path.join(path.dirname(outputPath), "tool_trace.jsonl");
-  let traceRows = [];
-  if (await fileExists(tracePath)) {
-    try {
-      const text = await fs.readFile(tracePath, "utf8");
-      traceRows = text
-        .split(/\r?\n/)
-        .filter(Boolean)
-        .map((line) => {
-          try {
-            return JSON.parse(line);
-          } catch {
-            return null;
-          }
-        })
-        .filter(Boolean);
-    } catch {
-      traceRows = [];
-    }
-  }
+  const traceRows = await readToolTraceRows();
   const toolNames = traceRows.map((row) => String(row.tool || "")).filter(Boolean);
   const recentTools = toolNames.slice(-6);
   const uniqueTools = [...new Set(toolNames)];
+  const atlasRows = traceRows.filter((row) => ["build_bangumi_relation_atlas", "select_bangumi_anchor_subject"].includes(String(row.tool || "")));
+  const latestDraftSummary = [...traceRows]
+    .reverse()
+    .map((row) => (row.result_summary && typeof row.result_summary === "object" ? row.result_summary : null))
+    .find((summary) => summary && ("recipe_params_draft_rule_count" in summary || "recipe_params_draft_ready" in summary));
+  const latestAnchorAtlasSummary = [...traceRows]
+    .reverse()
+    .map((row) => (row.result_summary && typeof row.result_summary === "object" ? row.result_summary : null))
+    .find((summary) => summary && summary.anchor_atlas_next_tool && Array.isArray(summary.anchor_atlas_candidate_subject_ids) && summary.anchor_atlas_candidate_subject_ids.length);
   if (!toolNames.length) {
     lines.push("Progress so far: no custom tool calls were completed, and no final result exists.");
   } else {
@@ -411,7 +569,34 @@ async function readRunnerProgressNudgeLines() {
     );
     lines.push(`Completed tool types: ${uniqueTools.join(", ")}.`);
   }
-  lines.push(`Recipe artifact exists: ${recipeExists ? "yes" : "no"}. Verifier artifact exists: ${verifierExists ? "yes" : "no"}.`);
+  lines.push(`Recipe artifact exists: ${recipeExists ? "yes" : "no"}. Draft rule count: ${draftRuleCount}. Verifier artifact exists: ${verifierExists ? "yes" : "no"}.`);
+  if (!atlasRows.length && latestAnchorAtlasSummary?.anchor_atlas_candidate_subject_ids?.length) {
+    lines.push(`Anchor bootstrap facts: candidate_subject_ids=${latestAnchorAtlasSummary.anchor_atlas_candidate_subject_ids.slice(0, 8).join(", ")}. Use select_bangumi_anchor_subject once the reliable main anchor is clear; otherwise gather one named anchor fact.`);
+  }
+  if (atlasRows.length) {
+    const latestAtlasSummary = atlasRows.length && atlasRows[atlasRows.length - 1].result_summary && typeof atlasRows[atlasRows.length - 1].result_summary === "object"
+      ? atlasRows[atlasRows.length - 1].result_summary
+      : {};
+    if (latestAtlasSummary.bangumi_relation_atlas_id) {
+      lines.push(
+        `Latest atlas: ${latestAtlasSummary.bangumi_relation_atlas_id}, subjects=${latestAtlasSummary.atlas_subject_count ?? "unknown"}, frontier_exhausted=${latestAtlasSummary.atlas_frontier_exhausted === true ? "true" : "false"}, stop_reason=${latestAtlasSummary.atlas_stop_reason || "unknown"}.`,
+      );
+      if (draftRuleCount === 0 && !verifierExists) {
+        lines.push("Atlas is ready and no decisions are saved. Persist one stable target-surface row with upsert_recipe_group_decision_one, or fetch one targeted fact for the remaining named gap.");
+      }
+    }
+  }
+  if (latestDraftSummary) {
+    const missingCount = latestDraftSummary.draft_missing_group_count;
+    lines.push(
+      `Latest draft preview: ready_for_full_validation=${latestDraftSummary.recipe_params_draft_ready === true ? "true" : "false"}, covered_groups=${latestDraftSummary.draft_covered_group_count ?? "unknown"}, missing_groups=${missingCount ?? "unknown"}.`,
+    );
+    const qualityIssueCount = Number(latestDraftSummary.draft_quality_issue_count || 0);
+    if (qualityIssueCount > 0) {
+      lines.push(`Latest draft quality: ${qualityIssueCount} non-testable row(s). Fix, replace, or remove them.`);
+    }
+  }
+  lines.push(...(await readCaseBoardNudgeLines()));
   const exposedSubjectIds = [];
   for (const row of traceRows) {
     const resultSummary = row.result_summary && typeof row.result_summary === "object" ? row.result_summary : {};
@@ -438,18 +623,26 @@ async function readRunnerProgressNudgeLines() {
       "lookup_bangumi_subject",
       "expand_related_graph",
       "expand_related_subjects",
+      "select_bangumi_anchor_subject",
+      "build_bangumi_relation_atlas",
       "find_bangumi_targets_for_local_file",
     ].includes(name),
   ).length;
   if (!verifierExists && validationCalls === 0 && toolNames.length) {
     lines.push(
-      `Run progress fact: no params validation has completed yet. Evidence calls so far: ${subjectEvidenceCalls} subject/search/graph/lookup call(s), ${episodeEvidenceCalls} episode/window/detail call(s). This is telemetry for your Working Board, not a target recommendation.`,
+      `Run progress: no params validation yet; subject_evidence_calls=${subjectEvidenceCalls}, episode_evidence_calls=${episodeEvidenceCalls}.`,
     );
-    if (subjectEvidenceCalls + episodeEvidenceCalls >= 4 || toolNames.length >= 8) {
-      lines.push(
-        "Validation debt checkpoint: no trial validation has run after substantial evidence gathering. The next custom tool should be validate_organize_recipe_params with the best testable mapped/supplemental rules, or fail_closed with a concrete blocker if even a trial rule cannot be written. For an uncertain group, write a supplemental test rule instead of delaying first validation. Do not call more search, episode, local-detail, or selector tools in response to this checkpoint.",
-        "If subject/episode evidence exists but selector details are awkward, validate anyway. Duplicate local locators, split files, variant suffixes, and uncertain exclude_regex choices should become verifier feedback, not a no-validation timeout.",
-      );
+    if (latestDraftSummary?.recipe_params_draft_ready === true) {
+      lines.push("Draft progress: complete. Next: validate_recipe_params_draft.");
+    } else if (Number(latestDraftSummary?.draft_quality_issue_count || 0) > 0) {
+      lines.push("Draft progress: saved rows need field repair before validation.");
+    } else if (draftRuleCount > 0) {
+      lines.push("Draft progress: partial. Save remaining stable rows or gather one named fact.");
+    } else if (subjectEvidenceCalls + episodeEvidenceCalls > 0) {
+      lines.push("Saved-decision gap: if any group/subcluster is stable, persist one compact row with upsert_recipe_group_decision_one; keep only unresolved surfaces in targeted evidence.");
+      lines.push("Complex package evidence path: one reliable main anchor -> select_bangumi_anchor_subject -> atlas synthesis; side-title fanout is fallback for named atlas gaps.");
+    } else {
+      lines.push("Decision progress: save mapped or evidence-gap supplemental rows when stable.");
     }
   }
   return lines;
@@ -471,22 +664,19 @@ async function submitValidatedRecipeIfNeeded(finalPayload, helperCheck) {
   }
 
   const paramsPath = path.join(artifactsDir, "recipe_params.json");
-  const recipePath = caseInput.scratch_paths?.organize_recipe;
   const params = await readJsonFile(paramsPath);
   let tool = "";
   let args = null;
   if (params && typeof params === "object") {
     tool = "submit_organize_recipe_params";
-    args = { recipe_params: params, summary: "auto-submit after accepted params validation" };
-  } else {
-    const recipe = await readJsonFile(recipePath);
-    if (recipe && typeof recipe === "object") {
-      tool = "submit_organize_recipe";
-      args = { organize_recipe: recipe, summary: "auto-submit after accepted recipe validation" };
-    }
+    args = {
+      recipe_params: params,
+      summary: "auto-submit after accepted params validation",
+      submit_snapshot: "Auto-submit: latest params validation accepted with no review warnings; submitting the same params.",
+    };
   }
   if (!tool || !args) {
-    return { finalPayload, autoSubmit: { attempted: false, reason: "accepted validation exists but no params or recipe artifact was readable" } };
+    return { finalPayload, autoSubmit: { attempted: false, reason: "accepted validation exists but no canonical recipe_params artifact was readable" } };
   }
 
   const result = await callPythonTool(tool, args);
@@ -502,6 +692,114 @@ async function submitValidatedRecipeIfNeeded(finalPayload, helperCheck) {
       summary: result?.summary || "",
       final_result_present: Boolean(updatedFinalPayload?.final_result),
     },
+  };
+}
+
+async function validateReadyDraftIfNeeded(finalPayload) {
+  if (finalPayload?.final_result) {
+    return { finalPayload, autoValidateDraft: null };
+  }
+  const artifactsDir = caseInput.scratch_paths?.artifacts_dir;
+  if (!artifactsDir) {
+    return { finalPayload, autoValidateDraft: null };
+  }
+  const verifierPath = path.join(artifactsDir, "recipe_verifier_result.json");
+  if (await fileExists(verifierPath)) {
+    return { finalPayload, autoValidateDraft: null };
+  }
+  const draftState = await callPythonTool("get_recipe_params_draft", { detail: false });
+  if (draftState?.ready_for_full_validation !== true) {
+    return {
+      finalPayload,
+      autoValidateDraft: {
+        attempted: false,
+        reason: "recipe_params_draft is not ready for full validation",
+        ok: Boolean(draftState?.ok),
+        rule_count: draftState?.rule_count ?? 0,
+        missing_group_refs: draftState?.coverage_preview?.missing_group_refs || [],
+      },
+    };
+  }
+  const result = await callPythonTool("validate_recipe_params_draft", {
+    validation_snapshot: "Auto-validate: recipe_params_draft covers every visible local group; running the full verifier on Pi-owned draft rows.",
+  });
+  const updatedFinalPayload = await readFinalResult();
+  return {
+    finalPayload: updatedFinalPayload?.final_result ? updatedFinalPayload : finalPayload,
+    autoValidateDraft: {
+      attempted: true,
+      ok: Boolean(result?.ok),
+      accepted: Boolean(result?.accepted),
+      status: result?.status || "",
+      summary: result?.summary || "",
+      verifier_passed: result?.verifier_result?.passed,
+      verifier_issue_count: Array.isArray(result?.verifier_result?.issues) ? result.verifier_result.issues.length : 0,
+      review_warning_count: Array.isArray(result?.review_warnings) ? result.review_warnings.length : 0,
+      final_result_present: Boolean(updatedFinalPayload?.final_result),
+    },
+  };
+}
+
+function coerceStringArray(value) {
+  if (Array.isArray(value)) return value.map((item) => String(item || "")).filter(Boolean);
+  if (value === undefined || value === null || value === "") return [];
+  return [String(value)];
+}
+
+function ruleExactPaths(rule) {
+  return coerceStringArray(rule?.exact_paths);
+}
+
+async function repairMovieSubjectLevelLocatorIfNeeded() {
+  const artifactsDir = caseInput.scratch_paths?.artifacts_dir;
+  if (!artifactsDir) return null;
+  const verifier = await readJsonFile(path.join(artifactsDir, "recipe_verifier_result.json"));
+  const params = await readJsonFile(path.join(artifactsDir, "recipe_params.json"));
+  const issues = Array.isArray(verifier?.issues) ? verifier.issues : [];
+  const rules = Array.isArray(params?.rules) ? params.rules : [];
+  if (verifier?.passed === true || !issues.length || !rules.length) return null;
+
+  const patchRules = [];
+  for (const issue of issues) {
+    if (issue?.issue_code !== "missing_target_episode") continue;
+    const relatedRefs = Array.isArray(issue.related_refs) ? issue.related_refs.map((ref) => String(ref || "")) : [];
+    const subjectRefs = relatedRefs
+      .map((ref) => Number(String(ref).replace(/^subject:/, "")))
+      .filter((value) => Number.isFinite(value) && value > 0);
+    const sourceRef = String(issue.ref || relatedRefs.find((ref) => !/^(subject:)?\d+$/.test(String(ref))) || "");
+    const rule = rules.find((candidate) => {
+      if (!candidate || typeof candidate !== "object") return false;
+      if (String(candidate.media_kind || "") !== "movie") return false;
+      if (!(candidate.episode_id || candidate.sort || candidate.ep)) return false;
+      const subjectId = Number(candidate.subject_id || 0);
+      if (subjectRefs.length && !subjectRefs.includes(subjectId)) return false;
+      return ruleExactPaths(candidate).includes(sourceRef);
+    });
+    if (!rule?.name) continue;
+    patchRules.push({ name: String(rule.name), unset: ["episode_id", "sort", "ep"] });
+  }
+
+  const uniquePatchRules = [...new Map(patchRules.map((rule) => [rule.name, rule])).values()];
+  if (!uniquePatchRules.length) return null;
+  const result = await callPythonTool("validate_organize_recipe_params_patch", {
+    recipe_params_patch: { patch_rules: uniquePatchRules },
+    patch_delta: {
+      auto_repair: "subject_level_movie_locator",
+      note: "Removed invalid episode locator from exact-path movie rules while preserving Pi-selected subject_id/media_kind.",
+      patched_rules: uniquePatchRules.map((rule) => rule.name),
+    },
+  });
+  return {
+    attempted: true,
+    tool: "validate_organize_recipe_params_patch",
+    ok: Boolean(result?.ok),
+    accepted: Boolean(result?.accepted),
+    status: result?.status || "",
+    summary: result?.summary || "",
+    patched_rules: uniquePatchRules.map((rule) => rule.name),
+    verifier_passed: result?.verifier_result?.passed,
+    verifier_issue_count: Array.isArray(result?.verifier_result?.issues) ? result.verifier_result.issues.length : 0,
+    review_warning_count: Array.isArray(result?.review_warnings) ? result.review_warnings.length : 0,
   };
 }
 
@@ -573,29 +871,58 @@ async function waitForFinalResultOrIdle(session, promptDone, options = {}) {
 async function waitForFinalResultWithNudge(session, promptDone) {
   const startedAt = Date.now();
   const totalBudgetMs = Math.max(30_000, effectiveRuntimeBudgetSeconds() * 1_000);
-  const firstWaitMs = Math.min(totalBudgetMs, Math.max(35_000, Math.min(60_000, Math.floor(totalBudgetMs * 0.25))));
+  const firstWaitMs = Math.min(totalBudgetMs, Math.max(30_000, Math.min(45_000, Math.floor(totalBudgetMs * 0.15))));
   let finalWait = await waitForFinalResultOrIdle(session, promptDone, { waitMs: firstWaitMs });
   const nudgeAttempts = [];
+  let autoValidateReadyDraft = null;
+  async function validateReadyDraftAtCheckpoint(waitResult, phase) {
+    if (waitResult.payload?.final_result) return waitResult;
+    const draftValidated = await validateReadyDraftIfNeeded(waitResult.payload);
+    if (draftValidated.autoValidateDraft?.attempted !== true) return waitResult;
+    autoValidateReadyDraft = draftValidated.autoValidateDraft;
+    nudgeAttempts.push({
+      phase: `${phase}_auto_validate_ready_draft`,
+      auto_validate_ready_draft: draftValidated.autoValidateDraft,
+      final_result_present: Boolean(draftValidated.finalPayload?.final_result),
+    });
+    return { ...waitResult, payload: draftValidated.finalPayload };
+  }
+  async function submitAcceptedValidationAtCheckpoint(waitResult, phase) {
+    if (waitResult.payload?.final_result) return waitResult;
+    const helperCheck = await ensureHelperCheckArtifact();
+    const submitted = await submitValidatedRecipeIfNeeded(waitResult.payload, helperCheck);
+    if (submitted.autoSubmit?.attempted !== true) return waitResult;
+    nudgeAttempts.push({
+      phase: `${phase}_auto_submit_accepted_validation`,
+      auto_submit_after_validation: submitted.autoSubmit,
+      helper_check_ok: Boolean(helperCheck?.ok),
+      final_result_present: Boolean(submitted.finalPayload?.final_result),
+    });
+    return { ...waitResult, payload: submitted.finalPayload };
+  }
+  finalWait = await validateReadyDraftAtCheckpoint(finalWait, "initial_wait");
+  finalWait = await submitAcceptedValidationAtCheckpoint(finalWait, "initial_wait");
   if (finalWait.payload?.final_result) {
-    return { ...finalWait, nudge_attempts: nudgeAttempts };
+    return {
+      ...finalWait,
+      nudge_attempts: nudgeAttempts,
+      auto_validate_ready_draft: autoValidateReadyDraft,
+    };
   }
 
   const verifierNudgeLines = await readLatestVerifierNudgeLines();
   const progressNudgeLines = await readRunnerProgressNudgeLines();
   const nudgeText = [
-    "No final result has been recorded yet.",
+    "Checkpoint: continue as an action case agent.",
+    "If a tool action is available, call it now with no explanation. Otherwise provide one concrete blocker sentence.",
+    "- save decisions",
+    "- validate complete draft",
+    "- patch named verifier issue",
+    "- submit accepted",
+    "- concrete fail_closed",
     ...progressNudgeLines,
-    "Time-boxed Working Board checkpoint: finish through one of three paths.",
-    "Path 1: if validation is accepted with no review warnings, submit the same params/recipe now.",
-    "Path 2: if verifier issues or review warnings exist, patch only the named rule/path/target and validate again.",
-    "Path 3: if a supportable recipe cannot be built after targeted evidence, call fail_closed with the concrete group/reason.",
     ...verifierNudgeLines,
-    "If no verifier feedback exists and every visible group has a mapped or supplemental test rule, call validate_organize_recipe_params.",
-    "If no validation has run yet and one group remains uncertain, include that group as a supplemental test rule and validate. Validation is the trial that tells you what to repair.",
-    "If mapped target evidence exists but duplicate/split selector handling is uncertain, validate the best mapped rule now and let duplicate_target or uncovered_path feedback name the repair.",
-    "If validation rejects a mapped anime/video frontier rule, repair that mapped rule shape before converting it to supplemental. Supplemental is for closure-stalled or contradicted targets, not for escaping a mechanical issue.",
-    "If your own reasoning says ready, enough, validate, or submit, the next action should be validate, submit, or fail_closed unless you can name one concrete missing evidence item.",
-    "Do not print recipe JSON as prose, inspect old artifacts/tests, or restart broad search during this checkpoint.",
+    "Do not show reasoning narrative, reread skills, or inspect old artifacts/tests.",
   ].join("\n");
   const nudgeDone = session
     .prompt(nudgeText, { expandPromptTemplates: true, source: "api", streamingBehavior: "followUp" })
@@ -612,9 +939,55 @@ async function waitForFinalResultWithNudge(session, promptDone) {
     prompt_error: nudgeWait.prompt_error,
     final_result_present: Boolean(nudgeWait.payload?.final_result),
   });
-  finalWait = nudgeWait;
+  finalWait = await validateReadyDraftAtCheckpoint(nudgeWait, "checkpoint");
+  finalWait = await submitAcceptedValidationAtCheckpoint(finalWait, "checkpoint");
   if (finalWait.payload?.final_result) {
-    return { ...finalWait, nudge_attempts: nudgeAttempts };
+    return {
+      ...finalWait,
+      nudge_attempts: nudgeAttempts,
+      auto_validate_ready_draft: autoValidateReadyDraft,
+    };
+  }
+
+  if (autoValidateReadyDraft?.attempted === true && autoValidateReadyDraft.accepted !== true) {
+    const autoRepairRemainingMs = Math.max(0, totalBudgetMs - (Date.now() - startedAt));
+    if (autoRepairRemainingMs >= 20_000) {
+      const progressLines = await readRunnerProgressNudgeLines();
+      const verifierLines = await readLatestVerifierNudgeLines();
+      const autoRepairText = [
+        "Auto-validation returned invalid/review. Continue with one tool action, no reasoning narrative.",
+        "- patch named verifier issue",
+        "- fetch one named target fact",
+        "- submit accepted patch",
+        "- concrete fail_closed",
+      ...progressLines,
+      ...verifierLines,
+      "Put the correction into patch_delta/tool args, not prose.",
+      ].join("\n");
+      const autoRepairDone = session
+        .prompt(autoRepairText, { expandPromptTemplates: true, source: "api", streamingBehavior: "followUp" })
+        .then(() => ({ ok: true }))
+        .catch((error) => ({ ok: false, error: error?.stack || error?.message || String(error) }));
+      const autoRepairWait = await waitForFinalResultOrIdle(session, autoRepairDone, { waitMs: Math.min(75_000, autoRepairRemainingMs) });
+      nudgeAttempts.push({
+        phase: "auto_validation_repair",
+        wait_iterations: autoRepairWait.waitIterations,
+        wait_timeout_ms: autoRepairWait.wait_timeout_ms,
+        idle_drained: autoRepairWait.idle_drained,
+        prompt_settled: autoRepairWait.prompt_settled,
+        prompt_error: autoRepairWait.prompt_error,
+        final_result_present: Boolean(autoRepairWait.payload?.final_result),
+      });
+      finalWait = await validateReadyDraftAtCheckpoint(autoRepairWait, "auto_validation_repair");
+      finalWait = await submitAcceptedValidationAtCheckpoint(finalWait, "auto_validation_repair");
+      if (finalWait.payload?.final_result) {
+        return {
+          ...finalWait,
+          nudge_attempts: nudgeAttempts,
+          auto_validate_ready_draft: autoValidateReadyDraft,
+        };
+      }
+    }
   }
 
   const hardRemainingMs = Math.max(0, totalBudgetMs - (Date.now() - startedAt));
@@ -623,15 +996,15 @@ async function waitForFinalResultWithNudge(session, promptDone) {
     const progressLines = await readRunnerProgressNudgeLines();
     const latestVerifierLines = await readLatestVerifierNudgeLines();
     const hardFinishText = [
-      "Hard finish Working Board checkpoint: you stopped again without a final accepted recipe or fail_closed result.",
+      "Hard finish checkpoint: act or close. Do not narrate the decision.",
+      "- save decisions",
+      "- validate complete draft",
+      "- patch named verifier issue",
+      "- submit accepted",
+      "- concrete fail_closed",
       ...progressLines,
       ...latestVerifierLines,
-      "Choose one final path now: submit accepted params/recipe; patch named issues and validate; or fail_closed with a concrete evidence gap.",
-      "If no params validation has happened yet, the next custom tool must be validate_organize_recipe_params with best-effort mapped/supplemental rules, unless you call fail_closed for a concrete blocker.",
-      "Budget pressure is not a fail_closed reason. If target evidence exists and only selector/duplicate handling is uncertain, validate the best draft instead of calling fail_closed.",
-      "Do not lower a plausibly mapped OVA/OAD/SP/movie/side-story group to supplemental just to pass validation; patch its target fields or selector first.",
-      "Use params patch tools when a previous params validation/submit exists and only a few rules changed.",
-      "Do not explain, browse old artifacts/tests, or gather broad evidence.",
+      "Budget pressure is not a fail_closed reason.",
     ].join("\n");
     const hardDone = session
       .prompt(hardFinishText, { expandPromptTemplates: true, source: "api", streamingBehavior: "followUp" })
@@ -647,10 +1020,11 @@ async function waitForFinalResultWithNudge(session, promptDone) {
       prompt_error: hardWait.prompt_error,
       final_result_present: Boolean(hardWait.payload?.final_result),
     });
-    finalWait = hardWait;
+    finalWait = await validateReadyDraftAtCheckpoint(hardWait, "hard_finish");
+    finalWait = await submitAcceptedValidationAtCheckpoint(finalWait, "hard_finish");
   }
   let repairAttempt = 0;
-  const maxRepairAttempts = 3;
+  const maxRepairAttempts = 1;
   while (!finalWait.payload?.final_result && repairAttempt < maxRepairAttempts) {
     const remainingMs = Math.max(0, totalBudgetMs - (Date.now() - startedAt));
     if (remainingMs < 20_000) break;
@@ -658,18 +1032,15 @@ async function waitForFinalResultWithNudge(session, promptDone) {
     const progressLines = await readRunnerProgressNudgeLines();
     const attemptNumber = repairAttempt + 1;
     const repairText = [
-      "Final Working Board repair loop: no final result exists, but wall-clock budget remains.",
+      "Final repair loop: call one case tool or close with a concrete evidence reason.",
+      "- save decisions",
+      "- validate complete draft",
+      "- patch named verifier issue",
+      "- submit accepted",
+      "- concrete fail_closed",
       ...progressLines,
       ...verifierLines,
-      "Act only on the current board state and the latest verifier/review feedback.",
-      "If no verifier feedback exists and the board has testable coverage for all visible groups, validate params.",
-      "If no validation has run yet, do not fetch more evidence here; validate best-effort params or fail_closed with the one concrete blocker.",
-      "Do not call fail_closed with reason budget_exhausted. The runner records budget exhaustion; your job is to validate the best draft or name a real evidence contradiction.",
-      "If feedback exists, patch only the named issue or warning, then validate again.",
-      "For a rejected mapped frontier rule, prefer target/selector repair over supplemental downgrade unless evidence has contradicted that target.",
-      `If validation is accepted with no review_warnings, submit the same params immediately. A submit result with \`status: "review"\` is not final.`,
-      "If targeted evidence is still insufficient, call fail_closed with the unresolved group and evidence gap.",
-      "Do not restart broad search, inspect old artifacts/tests, or print JSON as prose.",
+      "No budget_exhausted fail_closed. No recipe JSON or reasoning prose.",
     ].join("\n");
     const repairDone = session
       .prompt(repairText, { expandPromptTemplates: true, source: "api", streamingBehavior: "followUp" })
@@ -685,7 +1056,8 @@ async function waitForFinalResultWithNudge(session, promptDone) {
       prompt_error: repairWait.prompt_error,
       final_result_present: Boolean(repairWait.payload?.final_result),
     });
-    finalWait = repairWait;
+    finalWait = await validateReadyDraftAtCheckpoint(repairWait, `final_repair_${attemptNumber}`);
+    finalWait = await submitAcceptedValidationAtCheckpoint(finalWait, `final_repair_${attemptNumber}`);
     const remainingAfterRepairMs = Math.max(0, totalBudgetMs - (Date.now() - startedAt));
     if (!finalWait.payload?.final_result && !finalWait.idle_drained && remainingAfterRepairMs >= 20_000) {
       const settleWait = await waitForFinalResultOrIdle(session, repairDone, { waitMs: Math.min(90_000, remainingAfterRepairMs) });
@@ -698,297 +1070,65 @@ async function waitForFinalResultWithNudge(session, promptDone) {
         prompt_error: settleWait.prompt_error,
         final_result_present: Boolean(settleWait.payload?.final_result),
       });
-      finalWait = settleWait;
+      finalWait = await validateReadyDraftAtCheckpoint(settleWait, `final_repair_${attemptNumber}_settle`);
+      finalWait = await submitAcceptedValidationAtCheckpoint(finalWait, `final_repair_${attemptNumber}_settle`);
     }
     repairAttempt += 1;
   }
-  return { ...finalWait, nudge_attempts: nudgeAttempts };
+  return {
+    ...finalWait,
+    nudge_attempts: nudgeAttempts,
+    auto_validate_ready_draft: autoValidateReadyDraft,
+  };
 }
 
-function proxyTool(name, label, description, parameters) {
-  return defineTool({
-    name,
-    label,
-    description,
-    parameters,
-    executionMode: "sequential",
-    async execute(_toolCallId, params) {
-      const result = await callPythonTool(name, params);
-      const text = JSON.stringify(result, null, 2);
-      return {
-        content: [{ type: "text", text: text.length > 60000 ? `${text.slice(0, 60000)}\n...truncated...` : text }],
-        details: result,
-      };
-    },
-  });
-}
 
-const recipeParamsQuickReference = [
-  "Minimal recipe_params shape: {\"rules\":[{\"name\":\"TV 1-10\",\"group_ref\":\"LG1\",\"subject_id\":123,\"media_kind\":\"tv\",\"episode_type\":\"regular\",\"reason\":\"local group maps to this Bangumi episode run\"},{\"name\":\"TV explicit selector\",\"source_pattern\":\"Folder {vol}/Episode {ep:02}.mkv\",\"subject_id\":123,\"media_kind\":\"tv\",\"episode_type\":\"regular\",\"episode_range\":\"1-10\",\"episode_number_field\":\"sort\",\"episode_offset\":\"EP\",\"reason\":\"...\"},{\"name\":\"Movie\",\"exact_paths\":[\"real/source.mkv\"],\"subject_id\":456,\"media_kind\":\"movie\",\"episode_id\":789,\"reason\":\"...\"},{\"name\":\"Merged OVA\",\"source_unit\":\"single_file_multi_episode\",\"exact_paths\":[\"merged.mkv\"],\"subject_id\":246,\"media_kind\":\"ova\",\"episode_type\":\"regular\",\"episode_range\":\"1-3\",\"reason\":\"one file has chapters/duration supporting the exposed episode span\"},{\"name\":\"Bonus extras\",\"group_ref\":\"LG9\",\"disposition\":\"non_bangumi_or_supplemental\",\"reason\":\"package bonus with no supportable Bangumi episode target\"}]}",
-  "Accepted params aliases: group_ref/local_group_ref for a local selector shorthand from list_local_groups or get_local_selector_scaffold; source_template for source_pattern; range or range_start/range_end or episode_start/episode_end for episode_range; offset for episode_offset; number_field or target_number_field for episode_number_field; subject_id for bangumi_subject_id; exact_paths, paths, source_path, or path for one-file rules.",
-  "Supplemental/excluded files must use disposition:\"non_bangumi_or_supplemental\". Do not write boolean flags such as non_bangumi_or_supplemental:true, supplemental:true, or exclude:true. For one file that covers multiple episodes, use source_unit:\"single_file_multi_episode\" with episode_range; do not write merged:true or map it only to episode 1.",
-  "Supplemental group rules do not need subject_id, episode_id, episode_type, episode_range, or episode_offset. Use one group_ref/path_glob/filename_regex/exact_paths rule that covers the intended supplemental paths exactly once.",
-  "For a multi-file group_ref/source_pattern sequence, do not include episode_id/sort/ep unless every selected file intentionally maps to the same exact row. Let targets derive from {ep}; split separate movie/OVA/special files into exact_path rules with distinct exposed targets.",
-  "Repair patch shape after a params validation: {\"patch_rules\":[{\"name\":\"Existing rule\",\"set\":{\"episode_id\":0,\"exclude_regex\":\"SP08_2\"},\"unset\":[\"episode_id\"]}],\"append_rules\":[{\"name\":\"Bonus\",\"exact_paths\":[\"real/source.mkv\"],\"disposition\":\"non_bangumi_or_supplemental\",\"reason\":\"...\"}],\"remove_rule_names\":[\"Bad rule\"]}. Use validate_organize_recipe_params_patch before submit_organize_recipe_params_patch; after an accepted patch validation, the same submit patch reuses the accepted merged params instead of applying append_rules again.",
-  "Legal media_kind values are tv, movie, ova, oad, sp, special, unknown. Do not use rule-shape words such as numbered_run or exact_paths as media_kind.",
-  "Legal episode_type values are regular, special, ova, oad, movie, unknown. For exact episode_id rules, omit episode_type unless copying it from an episode row; Python canonicalizes it.",
-  "Legal episode_offset values are EP arithmetic only, such as EP, EP-10, or EP*2-1. Do not use SP as episode_offset; SP belongs in the filename selector or content evidence. For SP01-SP13 mapping to rows 1-13, use episode_offset:\"EP\".",
-  "validate_organize_recipe_params is a trial check, not final submission. invalid/review results are normal contract feedback for repair_hints; accepted validation still needs submit_organize_recipe_params.",
-  "A first trial validation does not need to be accepted or warning-free. It is a way to expose concrete coverage, duplicate, selector, missing-row, and review feedback before final submission.",
-  "Do not inspect repository tests or Python schema to learn params. When this quick reference is insufficient, validation repair_hints are the contract feedback surface. Do not hand-translate these params into raw organize_recipe JSON to bypass review.",
-].join("\n");
-
-const tools = [
-  proxyTool(
-    "get_case_overview",
-    "Get Case Overview",
-    "Return the case map: counts, compact local group index, seen Bangumi evidence counts, recipe state, and navigation handles. It does not recommend a route.",
-    objectSchema({}),
-  ),
-  proxyTool(
-    "list_local_groups",
-    "List Local Groups",
-    "Return the local group index. With detail=true, returns expanded local group facts. Pi chooses which group to inspect.",
-    objectSchema({ detail: Json.Optional(Json.Boolean()) }),
-  ),
-  proxyTool(
-    "get_local_group_detail",
-    "Get Local Group Detail",
-    "Expand one local group by group_ref with source paths and optional detailed local file facts. It does not choose Bangumi targets or disposition.",
-    objectSchema({
-      group_ref: Json.String(),
-      detail: Json.Optional(Json.Boolean()),
-    }),
-  ),
-  proxyTool(
-    "get_local_selector_scaffold",
-    "Get Local Selector Scaffold",
-    "Return selector/range params stubs for one local group_ref, or all groups when group_ref is omitted. Pi can use group_ref as a local selector shorthand, and fills target or supplemental fields from evidence.",
-    objectSchema({
-      group_ref: Json.Optional(Json.String()),
-      detail: Json.Optional(Json.Boolean()),
-    }),
-  ),
-  proxyTool(
-    "get_case_context",
-    "Get Case Context",
-    "Read bounded Local to Bangumi case context. detail=false returns navigation context; detail=true expands the legacy full debug context.",
-    objectSchema({ detail: Json.Optional(Json.Boolean()) }),
-  ),
-  proxyTool(
-    "get_local_recipe_params_scaffold",
-    "Get Local Recipe Params Scaffold",
-    "Return local selector/range params stubs copied from local facts only. It does not choose Bangumi targets, media kind, episode type, disposition, or supplemental status.",
-    objectSchema({ detail: Json.Optional(Json.Boolean()), group_ref: Json.Optional(Json.String()) }),
-  ),
-  proxyTool(
-    "get_recipe_state",
-    "Get Recipe State",
-    "Return latest params, verifier, submit, and final-result state without changing the case.",
-    objectSchema({ detail: Json.Optional(Json.Boolean()) }),
-  ),
-  proxyTool(
-    "search_bangumi_subjects",
-    "Search Bangumi Subjects",
-    "Search Bangumi subjects from a query and add returned subject cards to the workspace.",
-    objectSchema({
-      query: Json.String(),
-      max_subjects: Json.Optional(Json.Number()),
-    }),
-  ),
-  proxyTool(
-    "lookup_bangumi_subject",
-    "Lookup Bangumi Subject",
-    "Fetch details for Bangumi subject IDs.",
-    objectSchema({ subject_ids: Json.Array(Json.Number()) }),
-  ),
-  proxyTool(
-    "expand_related_subjects",
-    "Expand Related Subjects",
-    "Fetch related Bangumi subjects for a Bangumi subject ID.",
-    objectSchema({
-      subject_id: Json.Number(),
-      relation_kinds: Json.Optional(Json.Array(Json.String())),
-      subject_types: Json.Optional(Json.Array(Json.String())),
-      max_subjects: Json.Optional(Json.Number()),
-    }),
-  ),
-  proxyTool(
-    "expand_related_graph",
-    "Expand Related Graph",
-    "Recursively fetch a compact Bangumi related-subject graph for one or more subject IDs.",
-    objectSchema({
-      subject_id: Json.Optional(Json.Number()),
-      subject_ids: Json.Optional(Json.Array(Json.Number())),
-      relation_kinds: Json.Optional(Json.Array(Json.String())),
-      subject_types: Json.Optional(Json.Array(Json.String())),
-      max_depth: Json.Optional(Json.Number()),
-      max_subjects: Json.Optional(Json.Number()),
-    }),
-  ),
-  proxyTool(
-    "get_episode_list",
-    "Get Episode List",
-    "Fetch or expose episode cards for a Bangumi subject ID.",
-    objectSchema({
-      subject_id: Json.Number(),
-      episode_scope: Json.Optional(Json.String()),
-      max_episode_cards: Json.Optional(Json.Number()),
-    }),
-  ),
-  proxyTool(
-    "get_target_detail",
-    "Get Target Detail",
-    "Expose target episode details by episode IDs, or by subject ID plus sort.",
-    objectSchema({
-      episode_ids: Json.Optional(Json.Array(Json.Number())),
-      subject_id: Json.Optional(Json.Number()),
-      sort: Json.Optional(Json.Number()),
-    }),
-  ),
-  proxyTool(
-    "get_local_file_detail",
-    "Get Local File Detail",
-    "Expose local file detail by real source paths.",
-    objectSchema({ paths: Json.Array(Json.String()) }),
-  ),
-  proxyTool(
-    "find_bangumi_targets_for_local_file",
-    "Find Bangumi Targets For Local File",
-    "Fact helper: search Bangumi and return compact subject/episode rows for one visible source_path. It does not recommend targets or recipes.",
-    objectSchema({
-      source_path: Json.String(),
-      title_query: Json.Optional(Json.String()),
-      kind_hint: Json.Optional(Json.String()),
-      max_subjects: Json.Optional(Json.Number()),
-      max_episode_cards: Json.Optional(Json.Number()),
-    }),
-  ),
-  proxyTool(
-    "get_target_window",
-    "Get Target Window",
-    "Expose a target episode window by Bangumi subject ID and sort range.",
-    objectSchema({
-      subject_id: Json.Number(),
-      sort_start: Json.Optional(Json.Number()),
-      sort_end: Json.Optional(Json.Number()),
-    }),
-  ),
-  proxyTool(
-    "validate_organize_recipe",
-    "Validate Organize Recipe",
-    "Compile and verify an OrganizeRecipeDraft without finishing the case.",
-    objectSchema({
-      organize_recipe: Json.Any(),
-    }),
-  ),
-  proxyTool(
-    "validate_organize_recipe_params",
-    "Validate Organize Recipe Params",
-    `Trial-check semantic rule parameters: build an OrganizeRecipeDraft, compile it, and return verifier issues or review warnings without finishing the case. Accepted validation still requires submit_organize_recipe_params.\n${recipeParamsQuickReference}`,
-    objectSchema({
-      recipe_params: Json.Any(),
-    }),
-  ),
-  proxyTool(
-    "validate_organize_recipe_params_patch",
-    "Validate Organize Recipe Params Patch",
-    "Patch the latest recipe params from the previous params validate/submit, then validate. Use this in repair mode to change only affected rules.",
-    objectSchema({
-      recipe_params_patch: Json.Any(),
-    }),
-  ),
-  proxyTool(
-    "submit_organize_recipe",
-    "Submit Organize Recipe",
-    "Submit the final raw OrganizeRecipeDraft. For semantic recipe_params or any status:\"review\" repair, use submit_organize_recipe_params instead; do not hand-translate params into raw JSON.",
-    objectSchema({
-      organize_recipe: Json.Any(),
-      summary: Json.Optional(Json.String()),
-    }),
-  ),
-  proxyTool(
-    "submit_organize_recipe_params",
-    "Submit Organize Recipe Params",
-    `Build the final OrganizeRecipeDraft from semantic rule parameters, then submit it through the strict Python verifier gate.\n${recipeParamsQuickReference}`,
-    objectSchema({
-      recipe_params: Json.Any(),
-      summary: Json.Optional(Json.String()),
-    }),
-  ),
-  proxyTool(
-    "submit_organize_recipe_params_patch",
-    "Submit Organize Recipe Params Patch",
-    "Patch the latest recipe params from the previous params validate/submit, then submit. If the same patch was just accepted by validate_organize_recipe_params_patch, submit reuses that accepted merged params instead of applying append_rules twice.",
-    objectSchema({
-      recipe_params_patch: Json.Any(),
-      summary: Json.Optional(Json.String()),
-    }),
-  ),
-  proxyTool(
-    "fail_closed",
-    "Fail Closed",
-    "Finish safely when the case cannot be mapped under strict evidence and verifier rules.",
-    objectSchema({
-      reason: Json.String(),
-      reason_kind: Json.Optional(Json.String()),
-      related_refs: Json.Optional(Json.Array(Json.String())),
-    }),
-  ),
-];
-
-const customToolNames = tools.map((tool) => tool.name);
-const enabledToolNames = [...NATIVE_TOOL_NAMES, ...EXTENSION_TOOL_NAMES, ...customToolNames];
-const lazySkillMenu = [
-  "/skill:bangumi-api: use when Bangumi search results, relation graph traversal, subject IDs, episode IDs, sort/ep, or target-window evidence is confusing.",
-  "/skill:anime-release-reading: use when local anime release folders, filenames, seasons, cours, OVA/OAD/SP, movies, recaps, duration hints, or package extras are ambiguous.",
-  "/skill:organize-recipe-contract: use when recipe params, selectors, verifier issues, helper scripts, or submit/validate repair need the full contract.",
-].join("\n");
-const recipeGuidance = [
-  "Human workflow: read local groups, anchor the main line, close the side frontier through related graph evidence, validate compact params, repair mechanical issues, then submit.",
-  "Use the navigable hierarchy: get_case_overview is the map, list_local_groups is the group index, get_local_group_detail expands a chosen group, and get_recipe_state shows verifier progress.",
-  "Local group facts are not target decisions. group_ref is only a selector shorthand; subject_id, episode_id, media_kind, episode_type, and supplemental status must come from Bangumi evidence.",
-  "For one standalone main-title group, direct Bangumi search is fine. For multi-season, movie-box, OVA/special-box, or franchise side-content packages, search one reliable anchor first, then use expand_related_graph as the series map.",
-  "After main anchors map, keep a side frontier of remaining anime/video-shaped groups, including parent-titled SP folders and long standalone OVA/OAD/SP files. When graph evidence maps a frontier group by season qualifier, count, duration, title, or episode rows, add that subject as a new anchor and continue closure.",
-  "Draft recipe_params when every visible group has either a testable mapped rule or a testable supplemental rule. Validation is the trial that exposes selector, range, row-type, coverage, and duplicate repairs.",
-  "For numbered multi-file mapped sequences, use group_ref/source_pattern/filename_regex with {ep}; reserve exact_paths for one-file rules, separate one-file entries, and supplemental extras.",
-  "Mechanical accepted is the floor, not the quality target. Do not downgrade a plausible OVA/OAD/SP/movie/side-story mapping to supplemental just to clear a verifier issue; repair target fields, selector, range/offset, or duplicate/split handling first.",
-  "Supplemental is for closure-stalled or contradicted targets, plus true extras. Do not use parent-season searches or missing parent SP rows as negative evidence for named side-content groups.",
-  "After invalid or review feedback, stop broad exploration. Patch only verifier_result.issues, repair_hints, review_warnings, or repair_mode, using params patch tools for small repairs.",
-  "Never call fail_closed with budget_exhausted, never inspect old artifacts/tests to copy an answer, and call goal_complete immediately after an accepted submit.",
-].join("\n");
-const instructionPath = path.join(path.dirname(outputPath), "pi_goal_instructions.md");
-
-const instructionText = `
-Complete this Local-to-Bangumi organize recipe case.
+function buildInstructionText(expandedPromptTemplate, launchTelemetry = {}) {
+  return `
+Official-style Local-to-Bangumi Pi entry.
 Case input JSON is available at: ${inputPath}
-For tool arguments and recipe exact_paths, use only source_path values exposed by get_local_group_detail, get_local_file_detail, or case_input.context.local_files[].source_path. Never pass case_input.task_source_path as a local source_path.
-Use the navigable custom-tool hierarchy rather than expanding every JSON layer at once: get_case_overview for the map, list_local_groups for group index, get_local_group_detail for a chosen group, get_local_selector_scaffold for selector stubs, Bangumi tools for chosen subject/episode evidence, and get_recipe_state for verifier progress. These tools expose pages; they do not choose the semantic route for you.
-Available lazy skills, to load only when the current instruction file, case input, and tool results are insufficient:
-${lazySkillMenu}
-Pi has already discovered the skills by name and description. Do not read every SKILL.md at startup; use the relevant /skill:name command or read the matching SKILL.md only after a real blocker: Bangumi evidence confusion, local package interpretation ambiguity, or verifier/schema repair.
-Use scratch paths from case_input.scratch_paths for notes and organize_recipe JSON.
-${recipeGuidance}
-Use Bangumi custom tools for subject/episode evidence, then write a MoviePilot-like OrganizeRecipeDraft using real source paths and Bangumi subject_id/episode_id/type/sort/ep.
-Prefer the params path: validate_organize_recipe_params trial-checks semantic parameters and returns repair feedback; the first trial check may be invalid or reviewed. submit_organize_recipe_params finalizes only after there are no blocking issues and no review_warnings. Python turns semantic parameters into the full JSON recipe. The raw validate_organize_recipe and submit_organize_recipe tools remain available for debugging generated JSON, not for bypassing params review. Run the bash helper only when debugging a schema/selector problem.
-Use the Working Board method from the guidance: keep one row per local group, validate when each visible group has a testable mapped or supplemental rule, then repair only named verifier/review feedback.
-find_bangumi_targets_for_local_file is a fact lookup only. It can expose search results and episode rows, but it will not choose a target or generate recipe JSON for you. Do not inspect repository tests or Python schema just to confirm the recipe shape.
-The submit/validate tools write recipe artifacts. Write notes.md only for complex evidence, contradictions, or fail_closed reasoning.
-Only after submit_organize_recipe_params or submit_organize_recipe returns accepted=true may you call goal_complete. If strict evidence is insufficient or contradictory, call fail_closed, then goal_complete. After accepted=true, do not call any other tool except goal_complete.
+Prompt template invocation: ${PRIMARY_PROMPT_INVOCATION}
+Prompt template path: ${PRIMARY_PROMPT_TEMPLATE_PATH}
+Forced skill load command: ${PRIMARY_SKILL_LOAD_COMMAND}
+Forced skill load attempted: ${Boolean(launchTelemetry.forcedSkillLoadAttempted)}
+Forced skill load succeeded: ${Boolean(launchTelemetry.forcedSkillLoadSucceeded)}
+Forced skill fallback used: ${Boolean(launchTelemetry.forcedSkillLoadFallback)}
+
+${expandedPromptTemplate}
+
+${ACTION_AGENT_OUTPUT_CONTRACT}
+
+For tool arguments and recipe exact_paths, use only source_path values exposed by get_local_group_detail, get_local_file_detail, or case_input.context.local_files[].source_path. Never pass case_input.task_source_path as a local source_path. Prefer group_ref plus file_numbers/file_number_range/path_contains for numbered subclusters before listing long exact_paths.
+Use the navigable custom-tool hierarchy rather than expanding every JSON layer at once: get_case_overview for the map, list_local_groups for group index, get_local_group_detail for a chosen group, Bangumi tools for chosen subject/episode evidence, get_recipe_group_decisions for saved group decisions, get_recipe_params_draft for compiled draft state, and get_recipe_state for verifier progress. These tools expose facts and audit state; they do not choose the semantic route for you.
+The full local-bangumi-organize skill is loaded before this goal, or an explicit skill expansion fallback was sent before this goal. Use it as experience, then prefer case tools, saved group decisions, and verifier hints over rereading skill files.
+Do not inspect old run artifacts, repository tests, or Python schemas as evidence for this case.
+Use scratch paths from case_input.scratch_paths only through the custom board/draft/validate/submit tools.
+Prefer compact recipe params: validate_organize_recipe_params and validate_recipe_params_draft trial-check semantic parameters; submit_organize_recipe_params finalizes accepted params. Raw validate/submit tools are not part of the Pi-facing workflow.
+Board and draft tools are Pi-owned working memory. The Python verifier remains the strict mechanical gate for coverage, duplicate targets, legal exposed Bangumi targets, and selector shape.
+For complex franchise/side-content packages, after the first reliable main-title search, choose the anchor with select_bangumi_anchor_subject(anchor_subject_id, reason). That tool atomically records Pi's anchor choice and builds the evidence atlas; Python still does not choose any mapping.
+Only after submit_organize_recipe_params or submit_organize_recipe_params_patch returns accepted=true may you call goal_complete. If strict evidence is insufficient or contradictory, call fail_closed with a concrete reason, then goal_complete. After accepted=true, do not call any other tool except goal_complete.
 Try to finish before ${caseInput.runtime_policy?.suggested_finish_before_seconds ?? 0} seconds so the final submit has time to complete.
 `.trim();
+}
 
-await fs.writeFile(instructionPath, instructionText, "utf8");
-
-const goalObjective = `
+function buildGoalObjective(expandedPromptTemplate) {
+  return `
 Produce a Python-verifier accepted OrganizeRecipeDraft or fail closed.
-The full compact guidance is included below and also saved at ${instructionPath} for audit.
-Use case-scoped custom tools for navigable facts; the raw case input at ${inputPath} is a fallback, not the normal working surface.
-Choose recipe parameters from exposed facts, validate until there are no blocking issues and no review_warnings, submit them, then call goal_complete immediately after accepted=true.
-Use the Working Board: each local group needs target evidence, a recipe rule, a status, and an open issue if verifier feedback named one.
+Runtime task boundaries are saved at ${instructionPath} for audit.
+The runner has explicitly loaded /skill:${PRIMARY_SKILL_NAME} or sent an equivalent skill expansion fallback before this /goal.
+Use the project prompt template ${PRIMARY_PROMPT_INVOCATION} as the task briefing.
 
-${instructionText}
+${expandedPromptTemplate}
+
+${ACTION_AGENT_OUTPUT_CONTRACT}
+
+Use case-scoped custom tools for facts and work memory; the raw case input at ${inputPath} is fallback, not the normal working surface.
+For exact_paths, use only visible source_path values exposed by case tools, never task_source_path. Prefer group_ref plus file_numbers/file_number_range/path_contains for numbered subclusters before listing long exact_paths.
+Python only persists Pi-owned board/decision/draft work and verifies coverage, duplicate targets, legal exposed Bangumi rows, and selector shape.
+Do not inspect old run artifacts, repository tests, or Python schemas as case evidence.
+After accepted=true with no review warnings, submit immediately and call goal_complete. If strict evidence cannot support the case, call fail_closed with a concrete reason, then goal_complete.
 `.trim();
+}
 
 const result = {
   ok: false,
@@ -998,6 +1138,17 @@ const result = {
   event_log_path: path.join(path.dirname(outputPath), "pi_event_log.json"),
   assistant_log_path: path.join(path.dirname(outputPath), "pi_assistant_messages.json"),
 };
+let requiredSkillDiscovery = { discovered: [], missing: [] };
+let extensionLoadErrors = [];
+let promptTemplateExpanded = "";
+let forcedSkillLoadTelemetry = {
+  attempted: false,
+  succeeded: false,
+  error: "",
+  fallback: false,
+  fallback_succeeded: false,
+  fallback_error: "",
+};
 
 try {
   const effectiveAgentDir = agentDir || process.env.PI_CODING_AGENT_DIR || path.join(repoRoot, ".pi", "agent");
@@ -1005,18 +1156,23 @@ try {
     cwd: repoRoot,
     agentDir: effectiveAgentDir,
     additionalExtensionPaths: EXTENSION_PATHS,
+    appendSystemPromptOverride: (base) => [
+      ...base,
+      ACTION_AGENT_SYSTEM_PROMPT_SECTION,
+    ],
   });
   await resourceLoader.reload();
-  const extensionLoadErrors = resourceLoader.getExtensions().errors || [];
+  extensionLoadErrors = resourceLoader.getExtensions().errors || [];
+  requiredSkillDiscovery = discoverRequiredSkills(resourceLoader);
+  promptTemplateExpanded = await readExpandedPrimaryPromptTemplate();
   const { session } = await createAgentSession({
     cwd: repoRoot,
-    agentDir: agentDir || undefined,
+    agentDir: effectiveAgentDir,
     authStorage,
     modelRegistry,
     model: selectedModel,
     resourceLoader,
     tools: enabledToolNames,
-    customTools: tools,
     sessionManager: SessionManager.inMemory(repoRoot),
   });
   try {
@@ -1033,13 +1189,48 @@ try {
       }
       eventLog.push(summarizeEvent(event));
     });
+    forcedSkillLoadTelemetry.attempted = true;
+    const discoveredPrimarySkill = requiredSkillDiscovery.discovered.some((item) => item.name === PRIMARY_SKILL_NAME);
+    if (discoveredPrimarySkill) {
+      const skillLoad = await promptWithResult(session, PRIMARY_SKILL_LOAD_COMMAND);
+      forcedSkillLoadTelemetry.succeeded = Boolean(skillLoad.ok);
+      if (!skillLoad.ok) {
+        forcedSkillLoadTelemetry.error = skillLoad.error || "";
+      }
+    } else {
+      forcedSkillLoadTelemetry.error = `Required skill not discovered: ${PRIMARY_SKILL_NAME}`;
+    }
+    if (!forcedSkillLoadTelemetry.succeeded) {
+      forcedSkillLoadTelemetry.fallback = true;
+      try {
+        const fallbackSkillPrompt = await buildSkillExpansionFallback(requiredSkillDiscovery);
+        const fallbackLoad = await promptWithResult(session, fallbackSkillPrompt);
+        forcedSkillLoadTelemetry.fallback_succeeded = Boolean(fallbackLoad.ok);
+        if (!fallbackLoad.ok) {
+          forcedSkillLoadTelemetry.fallback_error = fallbackLoad.error || "";
+        }
+      } catch (error) {
+        forcedSkillLoadTelemetry.fallback_error = error?.stack || error?.message || String(error);
+      }
+    }
+    const instructionText = buildInstructionText(promptTemplateExpanded, {
+      forcedSkillLoadAttempted: forcedSkillLoadTelemetry.attempted,
+      forcedSkillLoadSucceeded: forcedSkillLoadTelemetry.succeeded,
+      forcedSkillLoadFallback: forcedSkillLoadTelemetry.fallback,
+    });
+    const goalObjective = buildGoalObjective(promptTemplateExpanded);
+    await fs.writeFile(instructionPath, instructionText, "utf8");
     const promptDone = session
       .prompt(`/goal ${goalObjective}`, { expandPromptTemplates: true, source: "api" })
       .then(() => ({ ok: true }))
       .catch((error) => ({ ok: false, error: error?.stack || error?.message || String(error) }));
     const finalWait = await waitForFinalResultWithNudge(session, promptDone);
+    const draftValidated = finalWait.auto_validate_ready_draft
+      ? { finalPayload: finalWait.payload, autoValidateDraft: finalWait.auto_validate_ready_draft }
+      : await validateReadyDraftIfNeeded(finalWait.payload);
+    const movieLocatorRepair = await repairMovieSubjectLevelLocatorIfNeeded();
     const helperCheck = await ensureHelperCheckArtifact();
-    const finalized = await submitValidatedRecipeIfNeeded(finalWait.payload, helperCheck);
+    const finalized = await submitValidatedRecipeIfNeeded(draftValidated.finalPayload, helperCheck);
     const finalPayload = finalized.finalPayload;
     Object.assign(result, {
       ok: Boolean(finalPayload.final_result),
@@ -1053,15 +1244,33 @@ try {
       },
       native_tools_enabled: NATIVE_TOOL_NAMES,
       extension_tools_enabled: EXTENSION_TOOL_NAMES,
-      extensions_loaded: ["@narumitw/pi-goal", "@narumitw/pi-retry"],
+      extensions_loaded: ["local-bangumi-tools", "@narumitw/pi-goal", "@narumitw/pi-retry"],
       retry_stall_timeout_ms: process.env[RETRY_STALL_TIMEOUT_ENV],
       extension_load_errors: extensionLoadErrors.map((item) => ({
         path: item.path,
         error: item.error,
       })),
+      required_skills_discovered: requiredSkillDiscovery.discovered.map((item) => ({
+        name: item.name,
+        file_path: item.filePath,
+        description: item.description,
+      })),
+      required_skills_missing: requiredSkillDiscovery.missing,
+      forced_skill_load_attempted: forcedSkillLoadTelemetry.attempted,
+      forced_skill_load_succeeded: forcedSkillLoadTelemetry.succeeded,
+      forced_skill_load_error: forcedSkillLoadTelemetry.error,
+      forced_skill_load_fallback: forcedSkillLoadTelemetry.fallback,
+      forced_skill_load_fallback_succeeded: forcedSkillLoadTelemetry.fallback_succeeded,
+      forced_skill_load_fallback_error: forcedSkillLoadTelemetry.fallback_error,
+      prompt_template_used: PRIMARY_PROMPT_TEMPLATE_NAME,
+      prompt_template_path: PRIMARY_PROMPT_TEMPLATE_PATH,
+      prompt_template_invocation: PRIMARY_PROMPT_INVOCATION,
+      action_system_prompt_appended: true,
       custom_tools_enabled: customToolNames,
       skills_loaded: REQUIRED_SKILL_NAMES,
       helper_check: helperCheck,
+      auto_validate_ready_draft: draftValidated.autoValidateDraft,
+      auto_repair_movie_subject_locator: movieLocatorRepair,
       auto_submit_after_validation: finalized.autoSubmit,
       final_result_present: Boolean(finalPayload.final_result),
     });
@@ -1079,10 +1288,27 @@ try {
     retry_stall_timeout_ms: process.env[RETRY_STALL_TIMEOUT_ENV],
     custom_tools_enabled: customToolNames,
     skills_loaded: REQUIRED_SKILL_NAMES,
+    required_skills_discovered: requiredSkillDiscovery.discovered.map((item) => ({
+      name: item.name,
+      file_path: item.filePath,
+      description: item.description,
+    })),
+    required_skills_missing: requiredSkillDiscovery.missing,
+    forced_skill_load_attempted: forcedSkillLoadTelemetry.attempted,
+    forced_skill_load_succeeded: forcedSkillLoadTelemetry.succeeded,
+    forced_skill_load_error: forcedSkillLoadTelemetry.error,
+    forced_skill_load_fallback: forcedSkillLoadTelemetry.fallback,
+    forced_skill_load_fallback_succeeded: forcedSkillLoadTelemetry.fallback_succeeded,
+    forced_skill_load_fallback_error: forcedSkillLoadTelemetry.fallback_error,
+    prompt_template_used: PRIMARY_PROMPT_TEMPLATE_NAME,
+    prompt_template_path: PRIMARY_PROMPT_TEMPLATE_PATH,
+    prompt_template_invocation: PRIMARY_PROMPT_INVOCATION,
+    action_system_prompt_appended: true,
   });
 }
 
 flushAssistantMessage();
+result.assistant_output = buildAssistantOutputStats();
 await fs.writeFile(result.event_log_path, JSON.stringify(eventLog, null, 2), "utf8");
 await fs.writeFile(result.assistant_log_path, JSON.stringify(assistantMessages, null, 2), "utf8");
 await fs.writeFile(outputPath, JSON.stringify(result, null, 2), "utf8");

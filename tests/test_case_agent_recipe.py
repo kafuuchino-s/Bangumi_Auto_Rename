@@ -271,6 +271,25 @@ def test_recipe_compiler_accepts_single_ova_exact_path():
     assert plan.assignments[0].target.episode_id == 2001
 
 
+def test_recipe_compiler_maps_ordered_exact_paths_with_episode_range():
+    workspace = _workspace(['special 01.mkv', 'special 02.mkv'], [_tv_context(count=2)])
+    plan, result = _verify(workspace, {
+        'version': 1,
+        'rules': [{
+            'name': 'ordered exact specials',
+            'select': {'exact_paths': ['special 01.mkv', 'special 02.mkv']},
+            'target': {'bangumi_subject_id': 100, 'media_kind': 'sp', 'episode_type': 'regular'},
+            'episode': {'range': '1-2', 'offset': 'EP'},
+            'disposition': 'map_to_bangumi',
+        }],
+    })
+
+    assert result.passed is True
+    assert [item.source_path for item in plan.assignments] == ['special 01.mkv', 'special 02.mkv']
+    assert [item.target.episode_id for item in plan.assignments] == [1001, 1002]
+    assert [item.extracted_episode_number for item in plan.assignments] == [1, 2]
+
+
 def test_recipe_compiler_accepts_single_file_multi_episode_span():
     workspace = _multi_episode_workspace()
     plan, result = _verify(workspace, {
@@ -310,6 +329,23 @@ def test_recipe_compiler_requires_source_unit_for_exact_path_episode_range():
 
     assert result.passed is False
     assert any(issue.issue_code == 'missing_episode_locator' for issue in result.issues)
+
+
+def test_recipe_compiler_rejects_ordered_exact_paths_range_count_mismatch():
+    workspace = _workspace(['special 01.mkv', 'special 02.mkv'], [_tv_context(count=3)])
+    _plan, result = _verify(workspace, {
+        'version': 1,
+        'rules': [{
+            'name': 'ordered exact mismatch',
+            'select': {'exact_paths': ['special 01.mkv', 'special 02.mkv']},
+            'target': {'bangumi_subject_id': 100, 'media_kind': 'sp', 'episode_type': 'regular'},
+            'episode': {'range': '1-3', 'offset': 'EP'},
+            'disposition': 'map_to_bangumi',
+        }],
+    })
+
+    assert result.passed is False
+    assert any(issue.issue_code == 'invalid_exact_path_episode_range' for issue in result.issues)
 
 
 def test_recipe_compiler_rejects_single_file_multi_episode_with_fixed_episode_id():
@@ -495,6 +531,67 @@ def test_recipe_compiler_accepts_supplemental_exclusion_rule():
     assert result.passed is True
     by_path = {item.source_path: item.disposition for item in plan.assignments}
     assert by_path == {'ep1.mkv': 'map_to_bangumi', 'side-material.mkv': 'non_bangumi_or_supplemental'}
+
+
+def test_recipe_compiler_exact_supplemental_exception_carves_broad_sequence():
+    workspace = _workspace(['SP01.mkv', 'SP02_1.mkv', 'SP02_2.mkv'], [_tv_context(count=2)])
+    plan, result = _verify(workspace, {
+        'version': 1,
+        'rules': [
+            {
+                'name': 'mapped specials',
+                'select': {'filename_regex': 'SP{ep:02}.*.mkv'},
+                'target': {'bangumi_subject_id': 100, 'media_kind': 'sp', 'episode_type': 'regular'},
+                'episode': {'capture': 'ep', 'offset': 'EP', 'range': '1-2'},
+                'disposition': 'map_to_bangumi',
+            },
+            {
+                'name': 'duplicate variant',
+                'select': {'exact_paths': ['SP02_2.mkv']},
+                'disposition': 'non_bangumi_or_supplemental',
+                'reason': 'duplicate variant with no distinct target',
+            },
+        ],
+    })
+
+    assert result.passed is True
+    assert plan.duplicate_coverage_paths == []
+    assert plan.duplicate_target_keys == []
+    assert [(item.source_path, item.disposition, item.target.episode_id) for item in plan.assignments] == [
+        ('SP01.mkv', 'map_to_bangumi', 1001),
+        ('SP02_1.mkv', 'map_to_bangumi', 1002),
+        ('SP02_2.mkv', 'non_bangumi_or_supplemental', 0),
+    ]
+
+
+def test_recipe_compiler_exact_supplemental_exception_drops_carved_assignment_issues():
+    workspace = _workspace(['SP01.mkv', 'SP02.mkv'], [_tv_context(count=1)])
+    plan, result = _verify(workspace, {
+        'version': 1,
+        'rules': [
+            {
+                'name': 'mapped specials',
+                'select': {'filename_regex': 'SP{ep:02}.mkv'},
+                'target': {'bangumi_subject_id': 100, 'media_kind': 'sp', 'episode_type': 'regular'},
+                'episode': {'capture': 'ep', 'offset': 'EP', 'range': '1-2'},
+                'disposition': 'map_to_bangumi',
+            },
+            {
+                'name': 'absent special',
+                'select': {'exact_paths': ['SP02.mkv']},
+                'disposition': 'non_bangumi_or_supplemental',
+                'reason': 'no exposed target episode for this side file',
+            },
+        ],
+    })
+
+    assert result.passed is True
+    assert plan.uncovered_paths == []
+    assert {issue.issue_code for issue in result.issues} == set()
+    assert [(item.source_path, item.disposition, item.target.episode_id) for item in plan.assignments] == [
+        ('SP01.mkv', 'map_to_bangumi', 1001),
+        ('SP02.mkv', 'non_bangumi_or_supplemental', 0),
+    ]
 
 
 def test_recipe_verifier_blocks_zero_match_overlap_uncovered_and_duplicate_target():
