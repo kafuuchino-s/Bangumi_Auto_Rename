@@ -348,6 +348,16 @@ async function fileExists(filePath) {
   }
 }
 
+async function fileMtimeMs(filePath) {
+  if (!filePath) return 0;
+  try {
+    const stat = await fs.stat(filePath);
+    return Number(stat.mtimeMs || 0);
+  } catch {
+    return 0;
+  }
+}
+
 async function readJsonFile(filePath) {
   if (!(await fileExists(filePath))) return null;
   try {
@@ -458,6 +468,7 @@ async function readLatestVerifierNudgeLines() {
     const verifier = JSON.parse(await fs.readFile(verifierPath, "utf8"));
     const issues = Array.isArray(verifier.issues) ? verifier.issues : [];
     const reviewWarnings = Array.isArray(verifier.review_warnings) ? verifier.review_warnings : [];
+    const issueRepairContexts = Array.isArray(verifier.issue_repair_contexts) ? verifier.issue_repair_contexts : [];
     if (verifier.passed === true && reviewWarnings.length) {
       const lines = [
         `Latest verifier: review, warning_count=${reviewWarnings.length}.`,
@@ -467,8 +478,48 @@ async function readLatestVerifierNudgeLines() {
         const sourcePath = warning.source_path || "";
         const message = warning.message || "";
         lines.push(`- ${code}${sourcePath ? ` ${sourcePath}` : ""}: ${message}`);
+        if (warning.repair_hint) {
+          lines.push(`  repair_hint: ${String(warning.repair_hint).slice(0, 420)}`);
+        }
+        const metrics = warning.metrics && typeof warning.metrics === "object" ? warning.metrics : {};
+        const warningCandidates = Array.isArray(metrics.candidate_episode_rows) ? metrics.candidate_episode_rows : [];
+        if (warningCandidates.length) {
+          const sample = warningCandidates.slice(0, 4).map((row) => ({
+            local_locator_number: row.local_locator_number,
+            subject_id: row.subject_id,
+            episode_id: row.episode_id,
+            episode_type: row.episode_type,
+            sort: row.sort,
+            ep: row.ep,
+            duration_seconds: row.duration_seconds,
+            duration_delta_seconds: row.duration_delta_seconds,
+            title: row.title,
+          }));
+          lines.push(`  warning_candidate_episode_rows: ${JSON.stringify(sample)}`);
+        }
       }
-      lines.push("Next: targeted evidence or small params patch for named warning only.");
+      for (const context of issueRepairContexts.slice(0, 3)) {
+        const kind = context.repair_kind || "repair_context";
+        const ref = context.ref || "";
+        const nextAction = context.next_action || "";
+        const flags = context.mechanical_flags && typeof context.mechanical_flags === "object" ? context.mechanical_flags : {};
+        lines.push(`Repair context ${kind}${ref ? ` ${ref}` : ""}: next=${nextAction}; flags=${JSON.stringify(flags)}`);
+        const candidates = Array.isArray(context.candidate_episode_rows) ? context.candidate_episode_rows : [];
+        if (candidates.length) {
+          const sample = candidates.slice(0, 4).map((row) => ({
+            source: row.matched_source_path,
+            local_locator_number: row.local_locator_number,
+            subject_id: row.subject_id,
+            episode_id: row.episode_id,
+            episode_type: row.episode_type,
+            sort: row.sort,
+            sort_matches_local_locator: row.sort_matches_local_locator,
+            duration_seconds: row.duration_seconds,
+          }));
+          lines.push(`  candidate_episode_rows: ${JSON.stringify(sample)}`);
+        }
+      }
+      lines.push("Next: if warning_candidate_episode_rows are supportable, validate a small params patch for the named source(s); if not supportable, record the concrete contradiction or fail_closed. Do not continue broad evidence.");
       return lines;
     }
     if (verifier.passed === true) {
@@ -489,6 +540,38 @@ async function readLatestVerifierNudgeLines() {
       if (relatedRefs.length) {
         lines.push(`  related_refs: ${JSON.stringify(relatedRefs)}`);
       }
+    }
+    for (const context of issueRepairContexts.slice(0, 3)) {
+      const kind = context.repair_kind || "repair_context";
+      const ref = context.ref || "";
+      const nextAction = context.next_action || "";
+      const flags = context.mechanical_flags && typeof context.mechanical_flags === "object" ? context.mechanical_flags : {};
+      lines.push(`Repair context ${kind}${ref ? ` ${ref}` : ""}: next=${nextAction}; flags=${JSON.stringify(flags)}`);
+      const sources = Array.isArray(context.related_sources) ? context.related_sources : [];
+      for (const source of sources.slice(0, 3)) {
+        const pathText = source.source_path || "";
+        const duration = source.duration_seconds ?? "";
+        const group = source.group_ref || "";
+        const shape = source.group_kind_hint || "";
+        lines.push(`  source ${pathText}: duration=${duration}${group ? ` group=${group}` : ""}${shape ? ` shape=${shape}` : ""}`);
+      }
+      const candidates = Array.isArray(context.candidate_episode_rows) ? context.candidate_episode_rows : [];
+      if (candidates.length) {
+          const sample = candidates.slice(0, 4).map((row) => ({
+            source: row.matched_source_path,
+            local_locator_number: row.local_locator_number,
+            subject_id: row.subject_id,
+            episode_id: row.episode_id,
+            episode_type: row.episode_type,
+            sort: row.sort,
+            sort_matches_local_locator: row.sort_matches_local_locator,
+            duration_seconds: row.duration_seconds,
+          }));
+        lines.push(`  candidate_episode_rows: ${JSON.stringify(sample)}`);
+      }
+    }
+    if (issueRepairContexts.some((context) => context?.mechanical_flags?.likely_wrong_target_surface)) {
+      lines.push("Issue repair context indicates likely wrong target surface: inspect or patch distinct exposed side/special/OVA/movie-like rows before changing mapped files to supplemental.");
     }
     lines.push("Next: patch named issue, one targeted fact, submit accepted, or concrete fail_closed.");
     return lines;
@@ -591,6 +674,14 @@ async function readRunnerProgressNudgeLines() {
     lines.push(
       `Latest draft preview: ready_for_full_validation=${latestDraftSummary.recipe_params_draft_ready === true ? "true" : "false"}, covered_groups=${latestDraftSummary.draft_covered_group_count ?? "unknown"}, missing_groups=${missingCount ?? "unknown"}.`,
     );
+    const ruleCount = Number(latestDraftSummary.recipe_params_draft_rule_count || 0);
+    const uncoveredPathCount = Number(latestDraftSummary.draft_uncovered_path_count || 0);
+    if (ruleCount > 0 && (Number(missingCount || 0) > 0 || uncoveredPathCount > 0)) {
+      lines.push("Partial draft exists: next action should save the next stable missing group/subcluster or record one specific blocker; do not spend another broad evidence pass on all remaining groups.");
+    }
+    if (latestDraftSummary.workpaper_checkpoint_next_tool) {
+      lines.push(`Workpaper checkpoint is active: next custom tool should be ${latestDraftSummary.workpaper_checkpoint_next_tool}; save one stable row or record the exact blocker before more evidence.`);
+    }
     const qualityIssueCount = Number(latestDraftSummary.draft_quality_issue_count || 0);
     if (qualityIssueCount > 0) {
       lines.push(`Latest draft quality: ${qualityIssueCount} non-testable row(s). Fix, replace, or remove them.`);
@@ -648,53 +739,6 @@ async function readRunnerProgressNudgeLines() {
   return lines;
 }
 
-async function submitValidatedRecipeIfNeeded(finalPayload, helperCheck) {
-  if (finalPayload?.final_result) {
-    return { finalPayload, autoSubmit: null };
-  }
-  const artifactsDir = caseInput.scratch_paths?.artifacts_dir;
-  if (!artifactsDir || helperCheck?.ok !== true) {
-    return { finalPayload, autoSubmit: null };
-  }
-  const verifier = await readJsonFile(path.join(artifactsDir, "recipe_verifier_result.json"));
-  const reviewWarnings = Array.isArray(verifier?.review_warnings) ? verifier.review_warnings : [];
-  const issues = Array.isArray(verifier?.issues) ? verifier.issues : [];
-  if (verifier?.passed !== true || reviewWarnings.length || issues.length) {
-    return { finalPayload, autoSubmit: null };
-  }
-
-  const paramsPath = path.join(artifactsDir, "recipe_params.json");
-  const params = await readJsonFile(paramsPath);
-  let tool = "";
-  let args = null;
-  if (params && typeof params === "object") {
-    tool = "submit_organize_recipe_params";
-    args = {
-      recipe_params: params,
-      summary: "auto-submit after accepted params validation",
-      submit_snapshot: "Auto-submit: latest params validation accepted with no review warnings; submitting the same params.",
-    };
-  }
-  if (!tool || !args) {
-    return { finalPayload, autoSubmit: { attempted: false, reason: "accepted validation exists but no canonical recipe_params artifact was readable" } };
-  }
-
-  const result = await callPythonTool(tool, args);
-  const updatedFinalPayload = await readFinalResult();
-  return {
-    finalPayload: updatedFinalPayload?.final_result ? updatedFinalPayload : finalPayload,
-    autoSubmit: {
-      attempted: true,
-      tool,
-      accepted: Boolean(result?.accepted),
-      status: result?.status || "",
-      ok: Boolean(result?.ok),
-      summary: result?.summary || "",
-      final_result_present: Boolean(updatedFinalPayload?.final_result),
-    },
-  };
-}
-
 async function validateReadyDraftIfNeeded(finalPayload) {
   if (finalPayload?.final_result) {
     return { finalPayload, autoValidateDraft: null };
@@ -704,8 +748,30 @@ async function validateReadyDraftIfNeeded(finalPayload) {
     return { finalPayload, autoValidateDraft: null };
   }
   const verifierPath = path.join(artifactsDir, "recipe_verifier_result.json");
-  if (await fileExists(verifierPath)) {
-    return { finalPayload, autoValidateDraft: null };
+  const draftPath = caseInput.scratch_paths?.recipe_params_draft;
+  const verifier = await readJsonFile(verifierPath);
+  const verifierMtimeMs = await fileMtimeMs(verifierPath);
+  const draftMtimeMs = await fileMtimeMs(draftPath);
+  const reviewWarnings = Array.isArray(verifier?.review_warnings) ? verifier.review_warnings : [];
+  const verifierCurrentForDraft = Boolean(verifier) && verifierMtimeMs >= draftMtimeMs && draftMtimeMs > 0;
+  if (verifierCurrentForDraft) {
+    return {
+      finalPayload,
+      autoValidateDraft: {
+        attempted: false,
+        reason: verifier?.passed === true && reviewWarnings.length === 0
+          ? "latest verifier already accepted this recipe_params_draft; submit accepted params"
+          : "latest verifier is current for recipe_params_draft; repair or submit before revalidating",
+        ok: true,
+        accepted: verifier?.passed === true && reviewWarnings.length === 0,
+        status: verifier?.passed === true ? (reviewWarnings.length ? "review" : "accepted") : "invalid",
+        summary: verifier?.summary || "",
+        verifier_passed: verifier?.passed,
+        verifier_issue_count: Array.isArray(verifier?.issues) ? verifier.issues.length : 0,
+        review_warning_count: reviewWarnings.length,
+        final_result_present: false,
+      },
+    };
   }
   const draftState = await callPythonTool("get_recipe_params_draft", { detail: false });
   if (draftState?.ready_for_full_validation !== true) {
@@ -887,21 +953,7 @@ async function waitForFinalResultWithNudge(session, promptDone) {
     });
     return { ...waitResult, payload: draftValidated.finalPayload };
   }
-  async function submitAcceptedValidationAtCheckpoint(waitResult, phase) {
-    if (waitResult.payload?.final_result) return waitResult;
-    const helperCheck = await ensureHelperCheckArtifact();
-    const submitted = await submitValidatedRecipeIfNeeded(waitResult.payload, helperCheck);
-    if (submitted.autoSubmit?.attempted !== true) return waitResult;
-    nudgeAttempts.push({
-      phase: `${phase}_auto_submit_accepted_validation`,
-      auto_submit_after_validation: submitted.autoSubmit,
-      helper_check_ok: Boolean(helperCheck?.ok),
-      final_result_present: Boolean(submitted.finalPayload?.final_result),
-    });
-    return { ...waitResult, payload: submitted.finalPayload };
-  }
   finalWait = await validateReadyDraftAtCheckpoint(finalWait, "initial_wait");
-  finalWait = await submitAcceptedValidationAtCheckpoint(finalWait, "initial_wait");
   if (finalWait.payload?.final_result) {
     return {
       ...finalWait,
@@ -918,6 +970,7 @@ async function waitForFinalResultWithNudge(session, promptDone) {
     "- save decisions",
     "- validate complete draft",
     "- patch named verifier issue",
+    "- after verifier feedback, use one targeted fact per named issue/warning cluster, capped by the checkpoint before patch/submit/blocker",
     "- submit accepted",
     "- concrete fail_closed",
     ...progressNudgeLines,
@@ -940,7 +993,6 @@ async function waitForFinalResultWithNudge(session, promptDone) {
     final_result_present: Boolean(nudgeWait.payload?.final_result),
   });
   finalWait = await validateReadyDraftAtCheckpoint(nudgeWait, "checkpoint");
-  finalWait = await submitAcceptedValidationAtCheckpoint(finalWait, "checkpoint");
   if (finalWait.payload?.final_result) {
     return {
       ...finalWait,
@@ -956,8 +1008,11 @@ async function waitForFinalResultWithNudge(session, promptDone) {
       const verifierLines = await readLatestVerifierNudgeLines();
       const autoRepairText = [
         "Auto-validation returned invalid/review. Continue with one tool action, no reasoning narrative.",
+        "Use issue_repair_contexts and repair_hints as the repair plan.",
+        "Do not convert mapped side/SP/OVA/movie rows to non_bangumi_or_supplemental as the first repair when context shows duration/path mismatch, likely_wrong_target_surface, or candidate episode rows; inspect or patch the alternate target surface first.",
         "- patch named verifier issue",
         "- fetch one named target fact",
+        "- after verifier feedback, use one targeted fact per named issue/warning cluster, capped by the checkpoint before patch/submit/blocker",
         "- submit accepted patch",
         "- concrete fail_closed",
       ...progressLines,
@@ -979,7 +1034,6 @@ async function waitForFinalResultWithNudge(session, promptDone) {
         final_result_present: Boolean(autoRepairWait.payload?.final_result),
       });
       finalWait = await validateReadyDraftAtCheckpoint(autoRepairWait, "auto_validation_repair");
-      finalWait = await submitAcceptedValidationAtCheckpoint(finalWait, "auto_validation_repair");
       if (finalWait.payload?.final_result) {
         return {
           ...finalWait,
@@ -997,9 +1051,11 @@ async function waitForFinalResultWithNudge(session, promptDone) {
     const latestVerifierLines = await readLatestVerifierNudgeLines();
     const hardFinishText = [
       "Hard finish checkpoint: act or close. Do not narrate the decision.",
+      "Use issue_repair_contexts before cheap patches; target-surface mismatch must be repaired or explicitly exhausted before supplemental.",
       "- save decisions",
       "- validate complete draft",
       "- patch named verifier issue",
+      "- after verifier feedback, use one targeted fact per named issue/warning cluster, capped by the checkpoint before patch/submit/blocker",
       "- submit accepted",
       "- concrete fail_closed",
       ...progressLines,
@@ -1021,7 +1077,6 @@ async function waitForFinalResultWithNudge(session, promptDone) {
       final_result_present: Boolean(hardWait.payload?.final_result),
     });
     finalWait = await validateReadyDraftAtCheckpoint(hardWait, "hard_finish");
-    finalWait = await submitAcceptedValidationAtCheckpoint(finalWait, "hard_finish");
   }
   let repairAttempt = 0;
   const maxRepairAttempts = 1;
@@ -1033,9 +1088,11 @@ async function waitForFinalResultWithNudge(session, promptDone) {
     const attemptNumber = repairAttempt + 1;
     const repairText = [
       "Final repair loop: call one case tool or close with a concrete evidence reason.",
+      "Follow issue_repair_contexts/repair_hints. Do not make a mapped side file supplemental merely to pass duplicate_target when the context points to a distinct target surface.",
       "- save decisions",
       "- validate complete draft",
       "- patch named verifier issue",
+      "- after verifier feedback, use one targeted fact per named issue/warning cluster, capped by the checkpoint before patch/submit/blocker",
       "- submit accepted",
       "- concrete fail_closed",
       ...progressLines,
@@ -1057,7 +1114,6 @@ async function waitForFinalResultWithNudge(session, promptDone) {
       final_result_present: Boolean(repairWait.payload?.final_result),
     });
     finalWait = await validateReadyDraftAtCheckpoint(repairWait, `final_repair_${attemptNumber}`);
-    finalWait = await submitAcceptedValidationAtCheckpoint(finalWait, `final_repair_${attemptNumber}`);
     const remainingAfterRepairMs = Math.max(0, totalBudgetMs - (Date.now() - startedAt));
     if (!finalWait.payload?.final_result && !finalWait.idle_drained && remainingAfterRepairMs >= 20_000) {
       const settleWait = await waitForFinalResultOrIdle(session, repairDone, { waitMs: Math.min(90_000, remainingAfterRepairMs) });
@@ -1071,7 +1127,6 @@ async function waitForFinalResultWithNudge(session, promptDone) {
         final_result_present: Boolean(settleWait.payload?.final_result),
       });
       finalWait = await validateReadyDraftAtCheckpoint(settleWait, `final_repair_${attemptNumber}_settle`);
-      finalWait = await submitAcceptedValidationAtCheckpoint(finalWait, `final_repair_${attemptNumber}_settle`);
     }
     repairAttempt += 1;
   }
@@ -1107,7 +1162,11 @@ Do not inspect old run artifacts, repository tests, or Python schemas as evidenc
 Use scratch paths from case_input.scratch_paths only through the custom board/draft/validate/submit tools.
 Prefer compact recipe params: validate_organize_recipe_params and validate_recipe_params_draft trial-check semantic parameters; submit_organize_recipe_params finalizes accepted params. Raw validate/submit tools are not part of the Pi-facing workflow.
 Board and draft tools are Pi-owned working memory. The Python verifier remains the strict mechanical gate for coverage, duplicate targets, legal exposed Bangumi targets, and selector shape.
+Convergence protocol: each evidence burst must become saved group decisions, draft params, validation, or a compact named blocker. More search is not progress once the blocker already names a target surface.
 For complex franchise/side-content packages, after the first reliable main-title search, choose the anchor with select_bangumi_anchor_subject(anchor_subject_id, reason). That tool atomically records Pi's anchor choice and builds the evidence atlas; Python still does not choose any mapping.
+Before finalizing a numbered side/SP/OVA/movie-like visible file as supplemental, Pi must check the target surface itself with find_bangumi_targets_for_local_file on the exact source_path or a representative path. Use returned duration_candidate_episode_rows as facts, not recommendations; keep supplemental only when that evidence exposes no supportable row or the surface is explicitly exhausted.
+When validation returns issue_repair_contexts, treat them as structured repair instructions. Duplicate-target context is target-surface feedback, not permission to make side/SP/OVA/movie rows supplemental before duration/path mismatch and exposed candidate rows have been audited.
+For one-to-one multi-target rows, use selected exact_paths plus episode_ids, and do not also set episode_id/sort/ep. append_rules only adds new named rules; patch or replace existing rule names instead of appending overlaps.
 Only after submit_organize_recipe_params or submit_organize_recipe_params_patch returns accepted=true may you call goal_complete. If strict evidence is insufficient or contradictory, call fail_closed with a concrete reason, then goal_complete. After accepted=true, do not call any other tool except goal_complete.
 Try to finish before ${caseInput.runtime_policy?.suggested_finish_before_seconds ?? 0} seconds so the final submit has time to complete.
 `.trim();
@@ -1127,8 +1186,12 @@ ${ACTION_AGENT_OUTPUT_CONTRACT}
 Use case-scoped custom tools for facts and work memory; the raw case input at ${inputPath} is fallback, not the normal working surface.
 For exact_paths, use only visible source_path values exposed by case tools, never task_source_path. Prefer group_ref plus file_numbers/file_number_range/path_contains for numbered subclusters before listing long exact_paths.
 Python only persists Pi-owned board/decision/draft work and verifies coverage, duplicate targets, legal exposed Bangumi rows, and selector shape.
+After gathering a useful evidence batch, materialize it as saved decisions or draft validation before broadening the search.
+For uncertain numbered side/SP/OVA/movie-like supplemental rows, call find_bangumi_targets_for_local_file yourself before final submit; use its duration_candidate_episode_rows to judge whether a supportable exposed row exists.
+Use issue_repair_contexts from validation/submission feedback before cheap supplemental patches; repair or exhaust the named target surface first.
+Use episode_ids only with selected exact_paths for one-to-one expansion, never together with episode_id/sort/ep; use append_rules only for new names and patch_rules/replace_rules for existing names.
 Do not inspect old run artifacts, repository tests, or Python schemas as case evidence.
-After accepted=true with no review warnings, submit immediately and call goal_complete. If strict evidence cannot support the case, call fail_closed with a concrete reason, then goal_complete.
+After accepted=true, submit explicitly with submit_organize_recipe_params or submit_organize_recipe_params_patch, then call goal_complete. If strict evidence cannot support the case, call fail_closed with a concrete reason, then goal_complete.
 `.trim();
 }
 
@@ -1232,8 +1295,7 @@ try {
       : await validateReadyDraftIfNeeded(finalWait.payload);
     const movieLocatorRepair = await repairMovieSubjectLevelLocatorIfNeeded();
     const helperCheck = await ensureHelperCheckArtifact();
-    const finalized = await submitValidatedRecipeIfNeeded(draftValidated.finalPayload, helperCheck);
-    const finalPayload = finalized.finalPayload;
+    const finalPayload = draftValidated.finalPayload;
     Object.assign(result, {
       ok: Boolean(finalPayload.final_result),
       status: finalPayload.final_result?.status || "invalid",
@@ -1273,7 +1335,7 @@ try {
       helper_check: helperCheck,
       auto_validate_ready_draft: draftValidated.autoValidateDraft,
       auto_repair_movie_subject_locator: movieLocatorRepair,
-      auto_submit_after_validation: finalized.autoSubmit,
+      submit_after_validation_mode: "explicit_pi_tool_call_only",
       final_result_present: Boolean(finalPayload.final_result),
     });
   } finally {

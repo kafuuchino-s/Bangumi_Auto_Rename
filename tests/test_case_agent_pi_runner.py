@@ -143,7 +143,7 @@ def test_pi_runner_fake_runtime_goal_complete_without_final_is_invalid(tmp_path)
     assert 'error_kind=pi_no_final_result' not in result.errors
 
 
-def test_pi_runner_auto_finalizes_accepted_params_validation_without_final_submit(tmp_path):
+def test_pi_runner_auto_submits_after_accepted_params_validation(tmp_path):
     def fake_runtime(state):
         return {
             'ok': True,
@@ -158,8 +158,9 @@ def test_pi_runner_auto_finalizes_accepted_params_validation_without_final_submi
     assert result.ok is True
     assert result.status == 'accepted'
     assert result.tool_sequence == ['validate_organize_recipe_params', 'submit_organize_recipe_params']
-    assert result.raw_runtime_result['post_runtime_auto_finalization']['accepted'] is True
-    assert result.raw_runtime_result['post_runtime_auto_finalization']['auto_finalized_from_validated_recipe_params'] is True
+    assert result.raw_runtime_result['post_runtime_auto_submit_accepted_validation']['accepted'] is True
+    assert not any('error_kind=pi_no_final_result' in error for error in result.errors)
+    assert result.raw_runtime_result['tool_result']['verifier_result']['passed'] is True
     assert result.final_verifier_result.passed is True
     assert result.organize_recipe is not None
 
@@ -404,6 +405,8 @@ def test_node_runner_loads_project_extension_tools_without_subagents_or_mapping_
     assert 'const recipeGroupDecisionSchema = recipeParamsRuleSchema' in extension_text
     assert 'strictObject(properties)' in extension_text
     assert 'additionalProperties: false' in extension_text
+    assert 'issue_repair_contexts: issueRepairContexts.slice(0, 4)' in extension_text
+    assert 'accounting: result?.accounting' in extension_text
     assert 'decision: recipeGroupDecisionSchema' in extension_text
     assert 'decisions: Type.Optional(Type.Array(recipeGroupDecisionSchema))' in extension_text
     assert 'subject_id: Type.Optional(Type.Number())' in extension_text
@@ -421,8 +424,22 @@ def test_node_runner_loads_project_extension_tools_without_subagents_or_mapping_
     assert '- save decisions' in text
     assert '- validate complete draft' in text
     assert '- patch named verifier issue' in text
+    assert '- after verifier feedback, use one targeted fact per named issue/warning cluster, capped by the checkpoint before patch/submit/blocker' in text
     assert '- submit accepted' in text
     assert '- concrete fail_closed' in text
+    assert 'Use issue_repair_contexts and repair_hints as the repair plan.' in text
+    assert 'candidate_episode_rows' in text
+    assert 'warning_candidate_episode_rows' in text
+    assert 'if warning_candidate_episode_rows are supportable, validate a small params patch for the named source(s)' in text
+    assert 'Do not continue broad evidence.' in text
+    assert 'Issue repair context indicates likely wrong target surface' in text
+    assert 'Pi must check the target surface itself with find_bangumi_targets_for_local_file' in text
+    assert 'use its duration_candidate_episode_rows to judge whether a supportable exposed row exists' in text
+    assert 'Use issue_repair_contexts before cheap patches' in text
+    assert 'target-surface mismatch must be repaired or explicitly exhausted before supplemental' in text
+    assert 'Do not make a mapped side file supplemental merely to pass duplicate_target' in text
+    assert 'Use episode_ids only with selected exact_paths' in text
+    assert 'append_rules only for new names' in text
     assert 'Do not show reasoning narrative, reread skills, or inspect old artifacts/tests.' in text
     assert 'Choose one action' not in text
     assert 'Keep prose short. Do not print recipe JSON' not in text
@@ -439,26 +456,29 @@ def test_node_runner_loads_project_extension_tools_without_subagents_or_mapping_
     assert 'detail: Type.Optional(Type.Boolean())' in extension_text
     assert 'async function validateReadyDraftIfNeeded' in text
     assert 'async function validateReadyDraftAtCheckpoint' in text
-    assert 'auto-submit after accepted params validation' in text
+    assert 'submit_after_validation_mode: "explicit_pi_tool_call_only"' in text
     assert 'agentDir: effectiveAgentDir' in text
     assert 'agentDir: agentDir || undefined' not in text
     assert 'extensions_loaded: ["local-bangumi-tools", "@narumitw/pi-goal", "@narumitw/pi-retry"]' in text
-    assert 'Fact helper: search Bangumi and return compact subject/episode rows for one visible source_path.' in extension_text
+    assert 'Fact helper: search Bangumi and return compact subject/episode rows plus duration_candidate_episode_rows for one visible source_path.' in extension_text
+    assert '"needs_more_evidence"' not in extension_text
+    assert '"unaligned_fail_closed"' not in extension_text
     assert 'Math.min(90_000, remainingMs)' in text
     assert 'async function readJsonFile' in text
-    assert 'auto-submit after accepted params validation' in text
+    assert 'auto-submit after accepted params validation' not in text
     assert 'auto-submit after accepted recipe validation' not in text
     assert 'async function validateReadyDraftIfNeeded' in text
+    assert 'async function fileMtimeMs' in text
+    assert 'verifierCurrentForDraft' in text
+    assert 'latest verifier is current for recipe_params_draft; repair or submit before revalidating' in text
     assert 'auto_validate_ready_draft' in text
     assert 'Auto-validate: recipe_params_draft covers every visible local group' in text
     assert 'async function validateReadyDraftAtCheckpoint' in text
     assert 'validateReadyDraftAtCheckpoint(finalWait, "initial_wait")' in text
-    assert 'submitAcceptedValidationAtCheckpoint(finalWait, "initial_wait")' in text
     assert 'validateReadyDraftAtCheckpoint(nudgeWait, "checkpoint")' in text
-    assert 'submitAcceptedValidationAtCheckpoint(finalWait, "checkpoint")' in text
     assert 'phase: "auto_validation_repair"' in text
     assert 'validateReadyDraftAtCheckpoint(autoRepairWait, "auto_validation_repair")' in text
-    assert 'submitAcceptedValidationAtCheckpoint(finalWait, "auto_validation_repair")' in text
+    assert 'submitAcceptedValidationAtCheckpoint' not in text
     assert 'validateReadyDraftAtCheckpoint(hardWait, "hard_finish")' in text
     assert 'phase: `${phase}_auto_validate_ready_draft`' in text
     assert 'validateReadyDraftAtCheckpoint(repairWait, `final_repair_${attemptNumber}`)' in text
@@ -466,7 +486,7 @@ def test_node_runner_loads_project_extension_tools_without_subagents_or_mapping_
     assert 'async function repairMovieSubjectLevelLocatorIfNeeded' in text
     assert 'auto_repair_movie_subject_locator' in text
     assert 'subject_level_movie_locator' in text
-    assert 'verifier?.passed !== true || reviewWarnings.length || issues.length' in text
+    assert 'submit_after_validation_mode: "explicit_pi_tool_call_only"' in text
     assert 'submit_organize_recipe_params_patch' in extension_text
     assert 'validate_organize_recipe_params_patch' in text
     assert 'After accepted=true, do not call any other tool except goal_complete.' in text

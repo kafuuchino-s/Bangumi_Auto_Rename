@@ -67,6 +67,16 @@ class StubBangumiClient:
                 tags=["特典"],
                 meta_tags=[],
             ),
+            300001: BangumiSubject(
+                id=300001,
+                type=2,
+                name="Weak Role Appearance Anime",
+                name_cn="弱关系客串动画",
+                date="2014-01-01",
+                platform="TV",
+                total_episodes=12,
+                eps=12,
+            ),
         }
         return mapping.get(subject_id)
 
@@ -88,6 +98,13 @@ class StubBangumiClient:
                 relation="音乐",
                 name="OST",
                 name_cn="",
+            ),
+            BangumiSubjectRelation(
+                id=300001,
+                type=2,
+                relation="角色出演",
+                name="Weak Role Appearance Anime",
+                name_cn="弱关系客串动画",
             ),
         ]
 
@@ -167,6 +184,7 @@ def test_build_tv_context_returns_compact_bangumi_context():
     assert context["subjects"][0]["episodes"][1]["sort"] == 13
     assert context["subjects"][0]["episodes"][1]["type"] == 1
     assert context["subjects"][1]["relation_to_main"] == "番外篇"
+    assert all(subject["subject"]["id"] != 300001 for subject in context["subjects"])
 
 
 def test_build_tv_context_returns_none_when_search_misses():

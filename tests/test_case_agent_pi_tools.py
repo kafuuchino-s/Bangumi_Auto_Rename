@@ -5,7 +5,7 @@ from pathlib import Path
 from types import SimpleNamespace
 
 from src.rename.case_agent.local_bangumi_entry import _build_workspace
-from src.rename.case_agent.models import BangumiItemCard, CaseBudget, CaseContract, CaseHeader, LocalFileCard
+from src.rename.case_agent.models import BangumiItemCard, BangumiSubjectCard, CaseBudget, CaseContract, CaseHeader, LocalFileCard
 from src.rename.case_agent.pi_tools import PiCaseToolState
 from src.rename.case_agent.workspace import CaseEvidenceWorkspace
 
@@ -304,6 +304,530 @@ def test_pi_submit_organize_recipe_rejects_duplicate_target_and_can_retry(tmp_pa
     assert state.final_result['status'] == 'accepted'
 
 
+def test_pi_validate_duplicate_target_exposes_target_surface_repair_context(tmp_path):
+    workspace = CaseEvidenceWorkspace.from_cards(
+        header=CaseHeader(case_id='test'),
+        budget=CaseBudget(),
+        contract=CaseContract(main_file_refs=['LF1', 'LF2', 'LF3']),
+        local_files=[
+            LocalFileCard(
+                ref='LF1',
+                path='Movies/Main Movie.mkv',
+                is_main=True,
+                container_facts={'probe_status': 'available', 'duration_seconds': 7200.0},
+                fact_summary={'duration_seconds': 7200.0},
+            ),
+            LocalFileCard(
+                ref='LF2',
+                path='SPs/Side SP01.mkv',
+                is_main=True,
+                container_facts={'probe_status': 'available', 'duration_seconds': 781.0},
+                fact_summary={'duration_seconds': 781.0},
+            ),
+        ],
+        bangumi_items=[
+            BangumiItemCard(
+                ref='episode:9001',
+                item_kind='movie',
+                episode_id=9001,
+                type='2',
+                sort=1,
+                ep=1,
+                subject_ref='subject:900',
+                duration_seconds=7200,
+                title='Main Movie',
+            ),
+            BangumiItemCard(
+                ref='episode:9101',
+                item_kind='special',
+                episode_id=9101,
+                type='1',
+                sort=1,
+                ep=1,
+                subject_ref='subject:901',
+                duration_seconds=780,
+                title='Side Special 1',
+            ),
+        ],
+    )
+    state = PiCaseToolState(workspace=workspace, bangumi_client=_NoEpisodeEvidenceBangumiClient(), run_dir=tmp_path / 'run', repo_root=tmp_path)
+
+    result = state.handle_tool(
+        'validate_organize_recipe_params',
+        {
+            'recipe_params': {
+                'rules': [
+                    {
+                        'name': 'main movie',
+                        'exact_paths': ['Movies/Main Movie.mkv'],
+                        'subject_id': 900,
+                        'media_kind': 'movie',
+                        'episode_type': 'movie',
+                        'episode_id': 9001,
+                    },
+                    {
+                        'name': 'side sp wrong surface',
+                        'exact_paths': ['SPs/Side SP01.mkv'],
+                        'subject_id': 900,
+                        'media_kind': 'movie',
+                        'episode_id': 9001,
+                    },
+                ]
+            }
+        },
+    )
+
+    assert result['accepted'] is False
+    contexts = result['issue_repair_contexts']
+    assert contexts
+    context = contexts[0]
+    assert context['issue_code'] == 'duplicate_target'
+    assert context['repair_kind'] == 'target_surface_audit'
+    assert context['mechanical_flags']['duration_mismatch'] is True
+    assert context['mechanical_flags']['sp_bonus_path_mismatch'] is True
+    assert context['mechanical_flags']['likely_wrong_target_surface'] is True
+    assert context['next_action'] == 'inspect_or_patch_alternative_target_surface_before_supplemental'
+    assert {source['source_path'] for source in context['related_sources']} == {'Movies/Main Movie.mkv', 'SPs/Side SP01.mkv'}
+    side_source = next(source for source in context['related_sources'] if source['source_path'] == 'SPs/Side SP01.mkv')
+    assert side_source['duration_seconds'] == 781.0
+    assert 'SP_OR_BONUS_DIR' in side_source['shape_markers']
+    assert any(candidate['episode_id'] == 9101 and candidate['subject_id'] == 901 for candidate in context['candidate_episode_rows'])
+    verifier_artifact = json.loads((tmp_path / 'run' / 'artifacts' / 'recipe_verifier_result.json').read_text(encoding='utf-8'))
+    assert verifier_artifact['issue_repair_contexts'][0]['repair_kind'] == 'target_surface_audit'
+
+
+def test_pi_validate_supplemental_with_candidate_row_requires_targeted_lookup_without_precomputing_target_surface(tmp_path):
+    workspace = CaseEvidenceWorkspace.from_cards(
+        header=CaseHeader(case_id='test'),
+        budget=CaseBudget(),
+        contract=CaseContract(main_file_refs=['LF1', 'LF2', 'LF3']),
+        local_files=[
+            LocalFileCard(
+                ref='LF1',
+                path='Movies/Main Movie.mkv',
+                is_main=True,
+                container_facts={'probe_status': 'available', 'duration_seconds': 7200.0},
+                fact_summary={'duration_seconds': 7200.0},
+            ),
+            LocalFileCard(
+                ref='LF2',
+                path='SPs/Side SP01.mkv',
+                is_main=True,
+                container_facts={'probe_status': 'available', 'duration_seconds': 781.0},
+                fact_summary={'duration_seconds': 781.0},
+            ),
+        ],
+        bangumi_items=[
+            BangumiItemCard(
+                ref='episode:9001',
+                item_kind='movie',
+                episode_id=9001,
+                type='2',
+                sort=1,
+                ep=1,
+                subject_ref='subject:900',
+                duration_seconds=7200,
+                title='Main Movie',
+            ),
+            BangumiItemCard(
+                ref='episode:9101',
+                item_kind='special',
+                episode_id=9101,
+                type='1',
+                sort=1,
+                ep=1,
+                subject_ref='subject:901',
+                duration_seconds=780,
+                title='Side Special 1',
+            ),
+        ],
+    )
+    state = PiCaseToolState(workspace=workspace, bangumi_client=_NoEpisodeEvidenceBangumiClient(), run_dir=tmp_path / 'run', repo_root=tmp_path)
+
+    result = state.handle_tool(
+        'validate_organize_recipe_params',
+        {
+            'recipe_params': {
+                'rules': [
+                    {
+                        'name': 'main movie',
+                        'exact_paths': ['Movies/Main Movie.mkv'],
+                        'subject_id': 900,
+                        'media_kind': 'movie',
+                        'episode_type': 'movie',
+                        'episode_id': 9001,
+                    },
+                    {
+                        'name': 'side sp premature supplemental',
+                        'exact_paths': ['SPs/Side SP01.mkv'],
+                        'disposition': 'non_bangumi_or_supplemental',
+                        'reason': 'side short treated as extra.',
+                    },
+                ]
+            }
+        },
+    )
+    state.handle_tool('find_bangumi_targets_for_local_file', {'source_path': 'SPs/Side SP01.mkv', 'max_subjects': 1, 'max_episode_cards': 2})
+    candidate_review = state.handle_tool(
+        'validate_organize_recipe_params',
+        {
+            'detail': True,
+            'recipe_params': {
+                'rules': [
+                    {
+                        'name': 'main movie',
+                        'exact_paths': ['Movies/Main Movie.mkv'],
+                        'subject_id': 900,
+                        'media_kind': 'movie',
+                        'episode_type': 'movie',
+                        'episode_id': 9001,
+                    },
+                    {
+                        'name': 'side sp premature supplemental',
+                        'exact_paths': ['SPs/Side SP01.mkv'],
+                        'disposition': 'non_bangumi_or_supplemental',
+                        'reason': 'side short treated as extra.',
+                    },
+                ]
+            }
+        },
+    )
+
+    assert result['accepted'] is False
+    assert result['status'] == 'review'
+    assert result['review_warnings'][0]['code'] == 'numbered_supplemental_without_targeted_evidence'
+    assert result['issue_repair_contexts'] == []
+    assert not any('candidate exposed Bangumi row' in hint for hint in result['repair_hints'])
+    assert candidate_review['accepted'] is False
+    assert candidate_review['status'] == 'review'
+    assert candidate_review['review_warnings'][0]['code'] == 'numbered_supplemental_candidate_rows_need_decision'
+    assert candidate_review['review_warnings'][0]['metrics']['duration_candidate_episode_row_count'] == 1
+    assert any('Patch to a supportable target' in hint for hint in candidate_review['repair_hints'])
+
+
+def test_pi_duplicate_target_candidate_debt_blocks_supplemental_shortcut_after_feedback(tmp_path):
+    workspace = CaseEvidenceWorkspace.from_cards(
+        header=CaseHeader(case_id='test'),
+        budget=CaseBudget(),
+        contract=CaseContract(main_file_refs=['LF1', 'LF2']),
+        local_files=[
+            LocalFileCard(
+                ref='LF1',
+                path='Movies/Main Movie.mkv',
+                is_main=True,
+                container_facts={'probe_status': 'available', 'duration_seconds': 7200.0},
+                fact_summary={'duration_seconds': 7200.0},
+            ),
+            LocalFileCard(
+                ref='LF2',
+                path='SPs/Side SP01.mkv',
+                is_main=True,
+                container_facts={'probe_status': 'available', 'duration_seconds': 781.0},
+                fact_summary={'duration_seconds': 781.0},
+            ),
+        ],
+        bangumi_items=[
+            BangumiItemCard(
+                ref='episode:9001',
+                item_kind='movie',
+                episode_id=9001,
+                type='2',
+                sort=1,
+                ep=1,
+                subject_ref='subject:900',
+                duration_seconds=7200,
+                title='Main Movie',
+            ),
+            BangumiItemCard(
+                ref='episode:9101',
+                item_kind='special',
+                episode_id=9101,
+                type='1',
+                sort=1,
+                ep=1,
+                subject_ref='subject:901',
+                duration_seconds=780,
+                title='Side Special 1',
+            ),
+        ],
+    )
+    state = PiCaseToolState(workspace=workspace, bangumi_client=_NoEpisodeEvidenceBangumiClient(), run_dir=tmp_path / 'run', repo_root=tmp_path)
+
+    duplicate = state.handle_tool(
+        'validate_organize_recipe_params',
+        {
+            'recipe_params': {
+                'rules': [
+                    {
+                        'name': 'main movie',
+                        'exact_paths': ['Movies/Main Movie.mkv'],
+                        'subject_id': 900,
+                        'media_kind': 'movie',
+                        'episode_type': 'movie',
+                        'episode_id': 9001,
+                    },
+                    {
+                        'name': 'side sp wrong surface',
+                        'exact_paths': ['SPs/Side SP01.mkv'],
+                        'subject_id': 900,
+                        'media_kind': 'movie',
+                        'episode_id': 9001,
+                    },
+                ]
+            }
+        },
+    )
+    assert duplicate['accepted'] is False
+    assert duplicate['issue_repair_contexts'][0]['candidate_episode_rows'][0]['episode_id'] == 9101
+
+    shortcut = state.handle_tool(
+        'validate_organize_recipe_params',
+        {
+            'recipe_params': {
+                'rules': [
+                    {
+                        'name': 'main movie',
+                        'exact_paths': ['Movies/Main Movie.mkv'],
+                        'subject_id': 900,
+                        'media_kind': 'movie',
+                        'episode_type': 'movie',
+                        'episode_id': 9001,
+                    },
+                    {
+                        'name': 'side sp supplemental shortcut',
+                        'exact_paths': ['SPs/Side SP01.mkv'],
+                        'disposition': 'non_bangumi_or_supplemental',
+                        'reason': 'duplicate target fixed by treating the side file as extra.',
+                    },
+                ]
+            }
+        },
+    )
+
+    assert shortcut['accepted'] is False
+    assert shortcut['status'] == 'review'
+    assert shortcut['review_warnings'][0]['code'] == 'duplicate_target_candidate_unaddressed'
+    assert shortcut['review_warnings'][0]['candidate_episode_rows'][0]['episode_id'] == 9101
+    assert any('candidate episode row' in hint for hint in shortcut['repair_hints'])
+
+    repaired = state.handle_tool(
+        'validate_organize_recipe_params',
+        {
+            'recipe_params': {
+                'rules': [
+                    {
+                        'name': 'main movie',
+                        'exact_paths': ['Movies/Main Movie.mkv'],
+                        'subject_id': 900,
+                        'media_kind': 'movie',
+                        'episode_type': 'movie',
+                        'episode_id': 9001,
+                    },
+                    {
+                        'name': 'side sp candidate',
+                        'exact_paths': ['SPs/Side SP01.mkv'],
+                        'subject_id': 901,
+                        'media_kind': 'special',
+                        'episode_type': 'special',
+                        'episode_id': 9101,
+                    },
+                ]
+            }
+        },
+    )
+
+    assert repaired['accepted'] is True
+    assert repaired['review_warnings'] == []
+
+
+def test_pi_find_local_file_targets_exposes_duration_candidates_as_facts(tmp_path):
+    workspace = CaseEvidenceWorkspace.from_cards(
+        header=CaseHeader(case_id='test'),
+        budget=CaseBudget(),
+        contract=CaseContract(main_file_refs=['LF1', 'LF2']),
+        local_files=[
+            LocalFileCard(
+                ref='LF1',
+                path='Movies/Main Movie.mkv',
+                is_main=True,
+                container_facts={'probe_status': 'available', 'duration_seconds': 7200.0},
+                fact_summary={'duration_seconds': 7200.0},
+            ),
+            LocalFileCard(
+                ref='LF2',
+                path='SPs/Side SP01.mkv',
+                is_main=True,
+                container_facts={'probe_status': 'available', 'duration_seconds': 781.0},
+                fact_summary={'duration_seconds': 781.0},
+            ),
+        ],
+        bangumi_items=[
+            BangumiItemCard(
+                ref='episode:9001',
+                item_kind='movie',
+                episode_id=9001,
+                type='2',
+                sort=1,
+                ep=1,
+                subject_ref='subject:900',
+                duration_seconds=7200,
+                title='Main Movie',
+            ),
+            BangumiItemCard(
+                ref='episode:9101',
+                item_kind='special',
+                episode_id=9101,
+                type='1',
+                sort=1,
+                ep=1,
+                subject_ref='subject:901',
+                duration_seconds=780,
+                title='Side Special 1',
+            ),
+        ],
+    )
+    state = PiCaseToolState(workspace=workspace, bangumi_client=_NoEpisodeEvidenceBangumiClient(), run_dir=tmp_path / 'run', repo_root=tmp_path)
+
+    result = state.handle_tool(
+        'find_bangumi_targets_for_local_file',
+        {
+            'source_path': 'SPs/Side SP01.mkv',
+            'max_subjects': 1,
+            'max_episode_cards': 2,
+        },
+    )
+
+    assert result['ok'] is True
+    assert result['source_path'] == 'SPs/Side SP01.mkv'
+    assert 'does not choose the target or reject supplemental' in result['duration_candidate_policy']
+    row = result['duration_candidate_episode_rows'][0]
+    assert row['matched_source_path'] == 'SPs/Side SP01.mkv'
+    assert row['local_locator_number'] == 1
+    assert row['local_duration_seconds'] == 781.0
+    assert row['duration_seconds'] == 780.0
+    assert row['duration_delta_seconds'] == 1.0
+    assert row['subject_id'] == 901
+    assert row['episode_id'] == 9101
+    assert row['episode_type'] == 'special'
+    assert row['api_item_kind'] == 'special'
+    assert row['api_type'] == '1'
+    assert row['sort'] == 1
+    assert row['ep'] == 1
+    assert row['sort_matches_local_locator'] is True
+    assert row['ep_matches_local_locator'] is True
+    assert row['title'] == 'Side Special 1'
+    assert row['duration'] == ''
+    assert row['ordinal_alignment'] in {'both_unmarked', 'local_unmarked'}
+
+
+def test_pi_find_local_file_targets_orders_duration_candidates_by_title_ordinal_fact(tmp_path):
+    workspace = CaseEvidenceWorkspace.from_cards(
+        header=CaseHeader(case_id='test'),
+        budget=CaseBudget(),
+        contract=CaseContract(main_file_refs=['LF1']),
+        local_files=[
+            LocalFileCard(
+                ref='LF1',
+                path='[VCB-Studio] OVERLORD II [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD II [SP08_1][Ma10p_1080p][x265_flac].mkv',
+                is_main=True,
+                container_facts={'probe_status': 'available', 'duration_seconds': 92.0},
+                fact_summary={'duration_seconds': 92.0},
+            ),
+        ],
+        bangumi_subjects=[
+            BangumiSubjectCard(ref='subject:193953', subject_id=193953, title='Play Play Overlord'),
+            BangumiSubjectCard(ref='subject:234089', subject_id=234089, title='Play Play Overlord 2'),
+        ],
+        bangumi_items=[
+            BangumiItemCard(
+                ref='episode:193958',
+                item_kind='episode',
+                episode_id=193958,
+                type='0',
+                sort=8,
+                ep=8,
+                subject_ref='subject:193953',
+                duration_seconds=90,
+                title='First run episode 8',
+            ),
+            BangumiItemCard(
+                ref='episode:234098',
+                item_kind='episode',
+                episode_id=234098,
+                type='0',
+                sort=8,
+                ep=8,
+                subject_ref='subject:234089',
+                duration_seconds=90,
+                title='Second run episode 8',
+            ),
+        ],
+    )
+    state = PiCaseToolState(workspace=workspace, bangumi_client=_NoEpisodeEvidenceBangumiClient(), run_dir=tmp_path / 'run', repo_root=tmp_path)
+
+    result = state.handle_tool(
+        'find_bangumi_targets_for_local_file',
+        {
+            'source_path': '[VCB-Studio] OVERLORD II [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD II [SP08_1][Ma10p_1080p][x265_flac].mkv',
+            'max_subjects': 1,
+            'max_episode_cards': 2,
+        },
+    )
+
+    rows = result['duration_candidate_episode_rows']
+    assert [row['subject_id'] for row in rows[:2]] == [234089, 193953]
+    assert rows[0]['local_title_ordinals'] == [2]
+    assert rows[0]['subject_title_ordinals'] == [2]
+    assert rows[0]['ordinal_alignment'] == 'match'
+    assert rows[1]['ordinal_alignment'] == 'subject_unmarked'
+
+
+def test_pi_find_local_file_targets_exposes_long_standalone_duration_candidates(tmp_path):
+    workspace = CaseEvidenceWorkspace.from_cards(
+        header=CaseHeader(case_id='test'),
+        budget=CaseBudget(),
+        contract=CaseContract(main_file_refs=['LF1']),
+        local_files=[
+            LocalFileCard(
+                ref='LF1',
+                path='OVA/Show OAD.mkv',
+                is_main=True,
+                container_facts={'probe_status': 'available', 'duration_seconds': 1801.0},
+                fact_summary={'duration_seconds': 1801.0},
+            ),
+        ],
+        bangumi_items=[
+            BangumiItemCard(
+                ref='episode:184057',
+                item_kind='episode',
+                episode_id=639450,
+                type='0',
+                sort=1,
+                ep=1,
+                subject_ref='subject:184057',
+                duration_seconds=1800,
+                title='OAD',
+            ),
+        ],
+    )
+    state = PiCaseToolState(workspace=workspace, bangumi_client=_NoEpisodeEvidenceBangumiClient(), run_dir=tmp_path / 'run', repo_root=tmp_path)
+
+    result = state.handle_tool(
+        'find_bangumi_targets_for_local_file',
+        {
+            'source_path': 'OVA/Show OAD.mkv',
+            'max_subjects': 1,
+            'max_episode_cards': 2,
+        },
+    )
+
+    assert result['ok'] is True
+    assert result['duration_candidate_episode_rows'][0]['subject_id'] == 184057
+    assert result['duration_candidate_episode_rows'][0]['episode_id'] == 639450
+    assert result['duration_candidate_episode_rows'][0]['duration_delta_seconds'] == 1.0
+    assert result['duration_candidate_episode_rows'][0]['local_locator_number'] is None
+
+
 def test_pi_validate_recipe_params_hints_multi_file_group_ref_with_fixed_episode_id(tmp_path):
     state = PiCaseToolState(workspace=_workspace(), bangumi_client=_BangumiClient(), run_dir=tmp_path / 'run', repo_root=tmp_path)
 
@@ -458,7 +982,8 @@ def test_pi_validate_organize_recipe_params_defaults_to_compact_result_and_detai
     assert 'artifact_paths' in compact
     assert 'organize_recipe' not in compact
     assert 'compiled_plan' not in compact
-    assert 'accounting' not in compact
+    assert compact['accounting']['matched_path_count'] == 2
+    assert compact['accounting']['excluded_path_count'] == 0
     assert detailed['accepted'] is True
     assert detailed['organize_recipe']['rules'][0]['episode']['range'] == '1-2'
     assert detailed['compiled_plan']['assignments']
@@ -491,7 +1016,8 @@ def test_pi_validate_organize_recipe_params_default_invalid_result_is_compact(tm
     assert len(result['repair_hints']) <= 4
     assert 'compiled_plan' not in result
     assert 'organize_recipe' not in result
-    assert 'accounting' not in result
+    assert result['accounting']['matched_path_count'] == 2
+    assert result['accounting']['duplicate_target_count'] == 1
     assert 'artifact_paths' in result
     assert result['verifier_result']['issues'][0]['issue_code'] == 'duplicate_target'
     assert set(result['verifier_result']['issues'][0]) == {'issue_code', 'severity', 'ref', 'message', 'related_refs'}
@@ -546,6 +1072,35 @@ def test_pi_validate_organize_recipe_params_rejects_group_ref_bad_source_pattern
     assert result['accepted'] is False
     assert 'source_pattern that matches none of that group' in result['error']
     assert any('Fix the template or use group_ref alone' in hint for hint in result['repair_hints'])
+
+
+def test_pi_validate_organize_recipe_params_rejects_group_ref_partial_source_pattern_without_explicit_subcluster(tmp_path):
+    state = PiCaseToolState(workspace=_workspace(), bangumi_client=_BangumiClient(), run_dir=tmp_path / 'run', repo_root=tmp_path)
+
+    result = state.handle_tool(
+        'validate_organize_recipe_params',
+        {
+            'detail': True,
+            'recipe_params': {
+                'rules': [
+                    {
+                        'name': 'partial group pattern',
+                        'group_ref': 'LG1',
+                        'source_pattern': 'ep1.mkv',
+                        'subject_id': 100,
+                        'media_kind': 'tv',
+                        'episode_type': 'regular',
+                    },
+                ]
+            },
+        },
+    )
+
+    assert result['ok'] is False
+    assert 'source_pattern that only matches 1/2 visible path(s)' in result['error']
+    assert 'Unmatched sample' in result['error']
+    assert any('use group_ref alone' in hint for hint in result['repair_hints'])
+    assert any('selected subset is explicit' in hint for hint in result['repair_hints'])
 
 
 def test_pi_validate_organize_recipe_params_rejects_unknown_group_ref(tmp_path):
@@ -625,6 +1180,31 @@ def test_pi_validate_organize_recipe_params_rejects_raw_media_kind(tmp_path):
     assert result['accepted'] is False
     assert "media_kind 'web' is not legal" in result['error']
     assert any("raw source/API values" in hint for hint in result['repair_hints'])
+
+
+def test_pi_validate_organize_recipe_params_rejects_unresolved_disposition(tmp_path):
+    state = PiCaseToolState(workspace=_workspace(), bangumi_client=_BangumiClient(), run_dir=tmp_path / 'run', repo_root=tmp_path)
+
+    result = state.handle_tool(
+        'validate_organize_recipe_params',
+        {
+            'recipe_params': {
+                'rules': [
+                    {
+                        'name': 'still unresolved',
+                        'exact_paths': ['ep1.mkv'],
+                        'disposition': 'needs_more_evidence',
+                        'reason': 'not ready yet',
+                    }
+                ]
+            }
+        },
+    )
+
+    assert result['ok'] is False
+    assert result['accepted'] is False
+    assert 'needs_more_evidence' in result['error']
+    assert 'non_bangumi_or_supplemental' in result['error']
 
 
 def test_pi_validate_organize_recipe_params_patch_reuses_latest_params(tmp_path):
@@ -753,6 +1333,103 @@ def test_pi_validate_organize_recipe_params_patch_appends_new_complete_rule(tmp_
     assert [rule['name'] for rule in state.latest_recipe_params_payload['rules']] == ['episode 1', 'episode 2 supplemental']
 
 
+def test_pi_validate_organize_recipe_params_expands_episode_ids_over_exact_paths(tmp_path):
+    state = PiCaseToolState(workspace=_workspace(), bangumi_client=_BangumiClient(), run_dir=tmp_path / 'run', repo_root=tmp_path)
+
+    result = state.handle_tool(
+        'validate_organize_recipe_params',
+        {
+            'detail': True,
+            'recipe_params': {
+                'rules': [
+                    {
+                        'name': 'paired ids',
+                        'exact_paths': ['ep1.mkv', 'ep2.mkv'],
+                        'subject_id': 100,
+                        'media_kind': 'tv',
+                        'episode_type': 'regular',
+                        'episode_ids': [1001, 1002],
+                        'reason': 'two exact files map one-to-one to exposed episode rows',
+                    }
+                ]
+            },
+        },
+    )
+
+    assert result['accepted'] is True
+    assert [rule['name'] for rule in result['organize_recipe']['rules']] == ['paired ids #1', 'paired ids #2']
+    assignments = result['compiled_plan']['assignments']
+    assert [assignment['target']['episode_id'] for assignment in assignments] == [1001, 1002]
+    assert [assignment['source_path'] for assignment in assignments] == ['ep1.mkv', 'ep2.mkv']
+
+
+def test_pi_validate_organize_recipe_params_rejects_episode_ids_with_fixed_locator(tmp_path):
+    state = PiCaseToolState(workspace=_workspace(), bangumi_client=_BangumiClient(), run_dir=tmp_path / 'run', repo_root=tmp_path)
+
+    result = state.handle_tool(
+        'validate_organize_recipe_params',
+        {
+            'recipe_params': {
+                'rules': [
+                    {
+                        'name': 'ambiguous ids',
+                        'exact_paths': ['ep1.mkv', 'ep2.mkv'],
+                        'subject_id': 100,
+                        'media_kind': 'tv',
+                        'episode_id': 1001,
+                        'episode_ids': [1001, 1002],
+                        'reason': 'episode_ids must not be mixed with a fixed episode_id',
+                    }
+                ]
+            }
+        },
+    )
+
+    assert result['ok'] is False
+    assert result['accepted'] is False
+    assert 'cannot combine episode_ids with fixed locator' in result['error']
+    assert any('Do not send episode_id/sort/ep together with episode_ids' in hint for hint in result['repair_hints'])
+
+
+def test_pi_validate_organize_recipe_params_patch_rejects_duplicate_append_rule_name(tmp_path):
+    state = PiCaseToolState(workspace=_workspace(), bangumi_client=_BangumiClient(), run_dir=tmp_path / 'run', repo_root=tmp_path)
+    recipe_params = {
+        'rules': [
+            {
+                'name': 'episode 1',
+                'exact_paths': ['ep1.mkv'],
+                'subject_id': 100,
+                'media_kind': 'tv',
+                'episode_id': 1001,
+                'reason': 'first draft covers one file',
+            },
+        ],
+    }
+
+    state.handle_tool('validate_organize_recipe_params', {'recipe_params': recipe_params, 'detail': True})
+    result = state.handle_tool(
+        'validate_organize_recipe_params_patch',
+        {
+            'recipe_params_patch': {
+                'append_rules': [
+                    {
+                        'name': 'episode 1',
+                        'exact_paths': ['ep2.mkv'],
+                        'disposition': 'non_bangumi_or_supplemental',
+                        'reason': 'bad patch reuses an existing rule name',
+                    }
+                ]
+            }
+        },
+    )
+
+    assert result['ok'] is False
+    assert result['accepted'] is False
+    assert 'append_rules target already exists: episode 1' in result['error']
+    assert any('append_rules may only add new named rules' in hint for hint in result['repair_hints'])
+    assert [rule['name'] for rule in state.latest_recipe_params_payload['rules']] == ['episode 1']
+
+
 def test_pi_validate_organize_recipe_params_patch_rejects_patch_fields_misplaced_in_patch_delta(tmp_path):
     state = PiCaseToolState(workspace=_workspace(), bangumi_client=_BangumiClient(), run_dir=tmp_path / 'run', repo_root=tmp_path)
     recipe_params = {
@@ -845,6 +1522,52 @@ def test_pi_validate_organize_recipe_params_patch_still_rejects_missing_update_t
     assert result['ok'] is False
     assert result['accepted'] is False
     assert 'patch_rules target not found: typo rule name' in result['error']
+    assert "existing_rule_names=['tv episodes']" in result['error']
+    assert any('remove_rule_names' in hint and 'append_rules' in hint for hint in result['repair_hints'])
+
+
+def test_pi_validate_organize_recipe_params_patch_update_inherits_existing_group_ref(tmp_path):
+    state = PiCaseToolState(workspace=_workspace(), bangumi_client=_BangumiClient(), run_dir=tmp_path / 'run', repo_root=tmp_path)
+    recipe_params = {
+        'rules': [
+            {
+                'name': 'tv episodes',
+                'group_ref': 'LG1',
+                'subject_id': 100,
+                'media_kind': 'tv',
+                'episode_type': 'regular',
+                'reason': 'complete grouped sequence',
+            },
+        ],
+    }
+
+    first = state.handle_tool('validate_organize_recipe_params', {'recipe_params': recipe_params, 'detail': True})
+    result = state.handle_tool(
+        'validate_organize_recipe_params_patch',
+        {
+            'detail': True,
+            'recipe_params_patch': {
+                'patch_rules': [
+                    {
+                        'name': 'tv episodes',
+                        'updates': {
+                            'file_numbers': [1],
+                            'episode_id': 1001,
+                            'reason': 'narrow the existing group-scoped rule to one file',
+                        },
+                    },
+                ],
+            },
+        },
+    )
+
+    assert first['accepted'] is True
+    assert result['ok'] is True
+    assert result['accepted'] is False
+    assert result['params_patch_applied'] is True
+    assert 'file_numbers/file_number_range require group_ref' not in json.dumps(result, ensure_ascii=False)
+    assert state.latest_recipe_params_payload['rules'][0]['group_ref'] == 'LG1'
+    assert state.latest_recipe_params_payload['rules'][0]['file_numbers'] == [1]
 
 
 def test_pi_submit_organize_recipe_params_patch_reuses_accepted_patch_without_reapplying_append(tmp_path):
@@ -895,6 +1618,100 @@ def test_pi_submit_organize_recipe_params_patch_reuses_accepted_patch_without_re
     notes = (tmp_path / 'run' / 'artifacts' / 'notes.md').read_text(encoding='utf-8')
     assert notes.count('## Submit Snapshot') == 1
     assert 'patch validation already accepted' in notes
+
+
+def test_pi_submit_organize_recipe_params_patch_reuses_review_patch_without_reapplying_append(tmp_path):
+    workspace = CaseEvidenceWorkspace.from_cards(
+        header=CaseHeader(case_id='test'),
+        budget=CaseBudget(),
+        contract=CaseContract(main_file_refs=['LF1', 'LF2', 'LF3']),
+        local_files=[
+            LocalFileCard(
+                ref='LF1',
+                path='ep1.mkv',
+                is_main=True,
+                container_facts={'probe_status': 'available', 'duration_seconds': 1440.0},
+                fact_summary={'duration_seconds': 1440.0},
+            ),
+            LocalFileCard(
+                ref='LF2',
+                path='SPs/Short 01.mkv',
+                is_main=True,
+                container_facts={'probe_status': 'available', 'duration_seconds': 92.0},
+                fact_summary={'duration_seconds': 92.0},
+            ),
+            LocalFileCard(
+                ref='LF3',
+                path='SPs/Short 02.mkv',
+                is_main=True,
+                container_facts={'probe_status': 'available', 'duration_seconds': 92.0},
+                fact_summary={'duration_seconds': 92.0},
+            ),
+        ],
+        bangumi_items=[
+            BangumiItemCard(
+                ref='episode:1001',
+                item_kind='episode',
+                episode_id=1001,
+                type='0',
+                sort=1,
+                ep=1,
+                subject_ref='subject:100',
+                title='Episode 1',
+            ),
+        ],
+    )
+    state = PiCaseToolState(workspace=workspace, bangumi_client=_BangumiClient(), run_dir=tmp_path / 'run', repo_root=tmp_path)
+    recipe_params = {
+        'summary': 'map one file then patch one unverified short file',
+        'rules': [
+            {
+                'name': 'episode 1',
+                'exact_paths': ['ep1.mkv'],
+                'subject_id': 100,
+                'media_kind': 'tv',
+                'episode_id': 1001,
+                'reason': 'first draft covers one file',
+            },
+        ],
+    }
+    patch = {
+        'append_rules': [
+            {
+                'name': 'short supplemental',
+                'source_pattern': 'SPs/Short {ep:02}.mkv',
+                'disposition': 'non_bangumi_or_supplemental',
+                'reason': 'short files have no supportable target yet',
+            },
+        ],
+    }
+
+    first = state.handle_tool('validate_organize_recipe_params', {'recipe_params': recipe_params, 'detail': True})
+    patched = state.handle_tool('validate_organize_recipe_params_patch', {'recipe_params_patch': patch, 'detail': True})
+    submitted = state.handle_tool(
+        'submit_organize_recipe_params_patch',
+        {
+            'recipe_params_patch': {**patch, 'remove_rule_names': []},
+            'submit_snapshot': 'retry the same patch after review feedback',
+            'detail': True,
+        },
+    )
+
+    assert first['accepted'] is False
+    assert patched['accepted'] is False
+    assert patched['status'] == 'review'
+    assert submitted['ok'] is True
+    assert submitted['accepted'] is False
+    assert submitted['status'] == 'review'
+    assert submitted['params_patch_reused_from_latest_validation'] is True
+    assert submitted['params_patch_reused_from_accepted_validation'] is False
+    assert submitted['params_patch_applied'] is True
+    assert submitted['submit_rejected'] is True
+    assert submitted['next_tool'] == 'validate_organize_recipe_params_patch'
+    assert submitted['case_board_next_action']['next_tool'] == 'validate_organize_recipe_params_patch'
+    assert 'append_rules target already exists' not in json.dumps(submitted, ensure_ascii=False)
+    assert len(state.latest_recipe_params_payload['rules']) == 2
+    assert state.final_result is None
 
 
 def test_pi_submit_organize_recipe_params_invalid_returns_patch_repair_mode(tmp_path):
@@ -1026,6 +1843,10 @@ def test_uncovered_and_duplicate_coverage_hints_prefer_replacing_partial_supplem
     assert any('patch or replace that existing rule so one rule covers the intended group exactly once' in hint for hint in uncovered_result['repair_hints'])
     assert duplicate_result['accepted'] is False
     assert any('Do not append a second supplemental rule' in hint for hint in duplicate_result['repair_hints'])
+    assert duplicate_result['issue_repair_contexts'][0]['repair_kind'] == 'selector_overlap'
+    assert duplicate_result['issue_repair_contexts'][0]['source_path'] == 'ep1.mkv'
+    assert duplicate_result['issue_repair_contexts'][0]['overlapping_rule_names'] == ['supplemental a', 'supplemental b']
+    assert duplicate_result['issue_repair_contexts'][0]['next_action'] == 'remove_or_replace_overlapping_rule_before_append'
 
 
 def test_uncovered_hint_prefers_patching_existing_supplemental_sibling_rule(tmp_path):
@@ -1093,6 +1914,13 @@ def test_missing_target_episode_hint_checks_row_episode_type_before_supplemental
 
     assert result['accepted'] is False
     assert any('do not imply episode_type:"special"' in hint for hint in result['repair_hints'])
+    contexts = result['issue_repair_contexts']
+    assert contexts[0]['issue_code'] == 'missing_target_episode'
+    assert contexts[0]['repair_kind'] == 'target_episode_not_visible'
+    assert contexts[0]['overlapping_rule_names'] == ['wrong type sequence']
+    assert contexts[0]['mechanical_flags']['declared_subject_id'] == 100
+    assert contexts[0]['mechanical_flags']['declared_episode_type'] == 'special'
+    assert 'candidate_episode_rows' not in contexts[0]
 
 
 def test_pi_validate_review_warns_for_long_supplemental_until_targeted_lookup(tmp_path):
@@ -1155,6 +1983,69 @@ def test_pi_validate_review_warns_for_long_supplemental_until_targeted_lookup(tm
     assert warning_keys.index('repair_hints') < warning_keys.index('compiled_plan')
     assert accepted['accepted'] is True
     assert accepted['review_warnings'] == []
+
+
+def test_pi_validate_review_allows_supplemental_when_targeted_candidate_is_already_mapped(tmp_path):
+    workspace = CaseEvidenceWorkspace.from_cards(
+        header=CaseHeader(case_id='test'),
+        budget=CaseBudget(),
+        contract=CaseContract(main_file_refs=['LF1', 'LF2']),
+        local_files=[
+            LocalFileCard(
+                ref='LF1',
+                path='SPs/Show SP08_1.mkv',
+                is_main=True,
+                container_facts={'probe_status': 'available', 'duration_seconds': 92.0},
+                fact_summary={'duration_seconds': 92.0},
+            ),
+            LocalFileCard(
+                ref='LF2',
+                path='SPs/Show SP08_2.mkv',
+                is_main=True,
+                container_facts={'probe_status': 'available', 'duration_seconds': 92.0},
+                fact_summary={'duration_seconds': 92.0},
+            ),
+        ],
+        bangumi_items=[
+            BangumiItemCard(
+                ref='episode:1008',
+                item_kind='episode',
+                episode_id=1008,
+                type='0',
+                sort=8,
+                ep=8,
+                subject_ref='subject:100',
+                title='Episode 8',
+                duration='92s',
+            )
+        ],
+    )
+    state = PiCaseToolState(workspace=workspace, bangumi_client=_BangumiClient(), run_dir=tmp_path / 'run', repo_root=tmp_path)
+    recipe_params = {
+        'rules': [
+            {
+                'name': 'mapped split part',
+                'exact_paths': ['SPs/Show SP08_1.mkv'],
+                'subject_id': 100,
+                'media_kind': 'sp',
+                'episode_id': 1008,
+                'reason': 'first split file maps to the exposed row',
+            },
+            {
+                'name': 'extra split part',
+                'exact_paths': ['SPs/Show SP08_2.mkv'],
+                'disposition': 'non_bangumi_or_supplemental',
+                'reason': 'second split file would reuse the same exposed row',
+            },
+        ]
+    }
+
+    state.handle_tool('find_bangumi_targets_for_local_file', {'source_path': 'SPs/Show SP08_2.mkv', 'max_subjects': 1, 'max_episode_cards': 2})
+    accepted = state.handle_tool('validate_organize_recipe_params', {'recipe_params': recipe_params, 'detail': True})
+
+    assert accepted['accepted'] is True
+    assert accepted['review_warnings'] == []
+    assert accepted['compiled_plan']['duplicate_target_keys'] == []
 
 
 def test_pi_validate_review_allows_bracketed_iv_in_supplemental_dir(tmp_path):
@@ -1332,9 +2223,165 @@ def test_pi_validate_review_accepts_targeted_representative_for_supplemental_seq
     assert warning['status'] == 'review'
     assert [item['source_path'] for item in warning['review_warnings']] == [
         'SPs/Side Story 01.mkv',
-        'SPs/Side Story 02.mkv',
-        'SPs/Side Story 03.mkv',
     ]
+    assert accepted['accepted'] is True
+    assert accepted['review_warnings'] == []
+
+
+def test_pi_validate_review_warns_for_short_numbered_supplemental_sequence_without_targeted_lookup(tmp_path):
+    workspace = CaseEvidenceWorkspace.from_cards(
+        header=CaseHeader(case_id='test'),
+        budget=CaseBudget(),
+        contract=CaseContract(main_file_refs=['LF1', 'LF2', 'LF3']),
+        local_files=[
+            LocalFileCard(
+                ref='LF1',
+                path='ep1.mkv',
+                is_main=True,
+                container_facts={'probe_status': 'available', 'duration_seconds': 1440.0},
+                fact_summary={'duration_seconds': 1440.0},
+            ),
+            *[
+                LocalFileCard(
+                    ref=f'LF{index + 1}',
+                    path=f'SPs/Short {index:02}.mkv',
+                    is_main=True,
+                    container_facts={'probe_status': 'available', 'duration_seconds': 92.0},
+                    fact_summary={'duration_seconds': 92.0},
+                )
+                for index in range(1, 3)
+            ],
+        ],
+        bangumi_items=[
+            BangumiItemCard(
+                ref='episode:1001',
+                item_kind='episode',
+                episode_id=1001,
+                type='0',
+                sort=1,
+                ep=1,
+                subject_ref='subject:100',
+                title='Episode 1',
+            )
+        ],
+    )
+    state = PiCaseToolState(workspace=workspace, bangumi_client=_BangumiClient(), run_dir=tmp_path / 'run', repo_root=tmp_path)
+    recipe_params = {
+        'rules': [
+            {'name': 'episode', 'exact_paths': ['ep1.mkv'], 'subject_id': 100, 'media_kind': 'tv', 'episode_id': 1001},
+            {
+                'name': 'short-sp-sequence',
+                'source_pattern': 'SPs/Short {ep:02}.mkv',
+                'disposition': 'non_bangumi_or_supplemental',
+                'reason': 'Short numbered SPs have no supportable target.',
+            },
+        ]
+    }
+
+    warning = state.handle_tool('validate_organize_recipe_params', {'recipe_params': recipe_params, 'detail': True})
+    state.handle_tool('find_bangumi_targets_for_local_file', {'source_path': 'SPs/Short 01.mkv', 'max_subjects': 1, 'max_episode_cards': 2})
+    accepted = state.handle_tool('validate_organize_recipe_params', {'recipe_params': recipe_params, 'detail': True})
+
+    assert warning['accepted'] is False
+    assert warning['status'] == 'review'
+    assert {item['code'] for item in warning['review_warnings']} == {'numbered_supplemental_sequence_without_targeted_evidence'}
+    assert [item['source_path'] for item in warning['review_warnings']] == ['SPs/Short 01.mkv']
+    assert any('find_bangumi_targets_for_local_file' in hint for hint in warning['repair_hints'])
+    assert accepted['accepted'] is True
+    assert accepted['review_warnings'] == []
+
+
+def test_pi_validate_review_warns_for_medium_numbered_single_supplemental_rules_without_exact_lookup(tmp_path):
+    workspace = CaseEvidenceWorkspace.from_cards(
+        header=CaseHeader(case_id='test'),
+        budget=CaseBudget(),
+        contract=CaseContract(main_file_refs=['LF1', 'LF2', 'LF3', 'LF4']),
+        local_files=[
+            LocalFileCard(
+                ref='LF1',
+                path='Movie 01.mkv',
+                is_main=True,
+                container_facts={'probe_status': 'available', 'duration_seconds': 5400.0},
+                fact_summary={'duration_seconds': 5400.0},
+            ),
+            LocalFileCard(
+                ref='LF2',
+                path='Movie 02.mkv',
+                is_main=True,
+                container_facts={'probe_status': 'available', 'duration_seconds': 5400.0},
+                fact_summary={'duration_seconds': 5400.0},
+            ),
+            LocalFileCard(
+                ref='LF3',
+                path='SPs/Movie [SP01].mkv',
+                is_main=True,
+                container_facts={'probe_status': 'available', 'duration_seconds': 781.0},
+                fact_summary={'duration_seconds': 781.0},
+            ),
+            LocalFileCard(
+                ref='LF4',
+                path='SPs/Movie [SP02].mkv',
+                is_main=True,
+                container_facts={'probe_status': 'available', 'duration_seconds': 782.0},
+                fact_summary={'duration_seconds': 782.0},
+            ),
+        ],
+        bangumi_items=[
+            BangumiItemCard(
+                ref='episode:1001',
+                item_kind='episode',
+                episode_id=1001,
+                type='0',
+                sort=1,
+                ep=1,
+                subject_ref='subject:100',
+                title='Movie 1',
+            ),
+            BangumiItemCard(
+                ref='episode:1002',
+                item_kind='episode',
+                episode_id=1002,
+                type='0',
+                sort=2,
+                ep=2,
+                subject_ref='subject:100',
+                title='Movie 2',
+            ),
+        ],
+    )
+    state = PiCaseToolState(workspace=workspace, bangumi_client=_BangumiClient(), run_dir=tmp_path / 'run', repo_root=tmp_path)
+    recipe_params = {
+        'rules': [
+            {'name': 'movie 1', 'exact_paths': ['Movie 01.mkv'], 'subject_id': 100, 'media_kind': 'movie', 'episode_id': 1001},
+            {'name': 'movie 2', 'exact_paths': ['Movie 02.mkv'], 'subject_id': 100, 'media_kind': 'movie', 'episode_id': 1002},
+            {
+                'name': 'recap duplicate 1',
+                'exact_paths': ['SPs/Movie [SP01].mkv'],
+                'disposition': 'non_bangumi_or_supplemental',
+                'reason': 'recap duplicate with no distinct Bangumi row',
+            },
+            {
+                'name': 'recap duplicate 2',
+                'exact_paths': ['SPs/Movie [SP02].mkv'],
+                'disposition': 'non_bangumi_or_supplemental',
+                'reason': 'recap duplicate with no distinct Bangumi row',
+            },
+        ]
+    }
+
+    warning = state.handle_tool('validate_organize_recipe_params', {'recipe_params': recipe_params, 'detail': True})
+    state.handle_tool('find_bangumi_targets_for_local_file', {'source_path': 'SPs/Movie [SP01].mkv', 'max_subjects': 1, 'max_episode_cards': 2})
+    partial = state.handle_tool('validate_organize_recipe_params', {'recipe_params': recipe_params, 'detail': True})
+    state.handle_tool('find_bangumi_targets_for_local_file', {'source_path': 'SPs/Movie [SP02].mkv', 'max_subjects': 1, 'max_episode_cards': 2})
+    accepted = state.handle_tool('validate_organize_recipe_params', {'recipe_params': recipe_params, 'detail': True})
+
+    assert warning['accepted'] is False
+    assert warning['status'] == 'review'
+    assert {item['code'] for item in warning['review_warnings']} == {'numbered_supplemental_sequence_without_targeted_evidence'}
+    assert [item['source_path'] for item in warning['review_warnings']] == ['SPs/Movie [SP01].mkv']
+    assert warning['review_warnings'][0]['metrics']['sequence_member_count'] == 2
+    assert partial['accepted'] is True
+    assert partial['review_warnings'] == []
     assert accepted['accepted'] is True
     assert accepted['review_warnings'] == []
 
@@ -2550,7 +3597,7 @@ def test_pi_recipe_group_decision_selects_subcluster_and_requires_remaining_path
     assert compiled['rule_count'] == 1
     assert compiled['ready_for_full_validation'] is False
     coverage = compiled['coverage_preview']
-    assert coverage['covered_group_refs'] == ['LG1']
+    assert coverage['covered_group_refs'] == []
     assert coverage['uncovered_path_count'] == 1
     assert 'ep2.mkv' in coverage['uncovered_path_sample'][0]
 
@@ -2573,7 +3620,7 @@ def test_pi_recipe_group_decision_selects_subcluster_and_requires_remaining_path
     assert detail['recipe_params_draft']['rules'][1]['disposition'] == 'non_bangumi_or_supplemental'
 
 
-def test_pi_recipe_group_decision_rejects_large_batch_before_writing(tmp_path):
+def test_pi_recipe_group_decision_accepts_large_canonical_batch_without_hard_limit(tmp_path):
     state = PiCaseToolState(workspace=_workspace(), bangumi_client=_BangumiClient(), run_dir=tmp_path / 'run', repo_root=tmp_path)
 
     result = state.handle_tool(
@@ -2587,15 +3634,119 @@ def test_pi_recipe_group_decision_rejects_large_batch_before_writing(tmp_path):
                     'disposition': 'non_bangumi_or_supplemental',
                     'reason': 'test row.',
                 }
-                for index in range(6)
+                for index in range(13)
+            ],
+        },
+    )
+
+    assert result['ok'] is True
+    assert result['accepted_decision_count'] == 13
+    assert result['rejected_decision_count'] == 0
+    assert result['decision_count'] == 13
+    assert (tmp_path / 'run' / 'artifacts' / 'recipe_group_decisions.json').exists()
+
+
+def test_pi_recipe_group_decision_partially_accepts_valid_rows_and_rejects_bad_rows(tmp_path):
+    state = PiCaseToolState(workspace=_workspace(), bangumi_client=_BangumiClient(), run_dir=tmp_path / 'run', repo_root=tmp_path)
+
+    result = state.handle_tool(
+        'upsert_recipe_group_decision',
+        {
+            'decisions': [
+                {
+                    'name': 'valid row',
+                    'group_ref': 'LG1',
+                    'file_numbers': [1],
+                    'disposition': 'non_bangumi_or_supplemental',
+                    'reason': 'valid supplemental row.',
+                },
+                {
+                    'name': 'bad plural row',
+                    'group_ref': 'LG1',
+                    'file_numbers': [2],
+                    'target_subject_ids': [100, 200],
+                    'media_kind': 'movie',
+                    'reason': 'bad row must be split.',
+                },
+            ],
+        },
+    )
+
+    assert result['ok'] is True
+    assert result['partial_accept'] is True
+    assert result['accepted_decision_count'] == 1
+    assert result['accepted_decision_names'] == ['valid row']
+    assert result['rejected_decision_count'] == 1
+    assert result['rejected_decisions'][0]['decision_index'] == 2
+    assert result['rejected_decisions'][0]['decision_name'] == 'bad plural row'
+    assert 'target_subject_ids' in result['rejected_decisions'][0]['error']
+    detail = state.handle_tool('get_recipe_group_decisions', {'detail': True})
+    assert detail['decision_count'] == 1
+    assert detail['decision_names'] == ['valid row']
+
+
+def test_pi_recipe_group_decision_rejects_unresolved_disposition_without_blocking_valid_rows(tmp_path):
+    state = PiCaseToolState(workspace=_workspace(), bangumi_client=_BangumiClient(), run_dir=tmp_path / 'run', repo_root=tmp_path)
+
+    result = state.handle_tool(
+        'upsert_recipe_group_decision',
+        {
+            'decisions': [
+                {
+                    'name': 'valid mapped row',
+                    'group_ref': 'LG1',
+                    'file_numbers': [1],
+                    'subject_id': 100,
+                    'media_kind': 'tv',
+                    'episode_id': 1001,
+                    'reason': 'valid mapped row.',
+                },
+                {
+                    'name': 'unresolved row',
+                    'group_ref': 'LG1',
+                    'file_numbers': [2],
+                    'disposition': 'needs_more_evidence',
+                    'reason': 'not enough evidence yet.',
+                },
+            ],
+        },
+    )
+
+    assert result['ok'] is True
+    assert result['partial_accept'] is True
+    assert result['accepted_decision_names'] == ['valid mapped row']
+    assert result['rejected_decision_count'] == 1
+    assert result['rejected_decisions'][0]['decision_name'] == 'unresolved row'
+    assert 'needs_more_evidence' in result['rejected_decisions'][0]['error']
+    assert 'Case Board' in ' '.join(result['rejected_decisions'][0]['repair_hints'])
+    detail = state.handle_tool('get_recipe_group_decisions', {'detail': True})
+    assert detail['decision_names'] == ['valid mapped row']
+
+
+def test_pi_recipe_group_decision_rejects_all_invalid_batch_without_writing(tmp_path):
+    state = PiCaseToolState(workspace=_workspace(), bangumi_client=_BangumiClient(), run_dir=tmp_path / 'run', repo_root=tmp_path)
+
+    result = state.handle_tool(
+        'upsert_recipe_group_decision',
+        {
+            'decisions': [
+                {
+                    'name': 'bad plural row',
+                    'group_ref': 'LG1',
+                    'file_numbers': [1],
+                    'target_subject_ids': [100, 200],
+                    'media_kind': 'movie',
+                    'reason': 'bad row must be split.',
+                },
             ],
         },
     )
 
     assert result['ok'] is False
-    assert result['error'] == 'too_many_group_decisions_for_one_call'
-    assert result['decision_count'] == 6
-    assert any('upsert_recipe_group_decision_one' in hint for hint in result['repair_hints'])
+    assert result['accepted_decision_count'] == 0
+    assert result['rejected_decision_count'] == 1
+    assert 'target_subject_ids' in result['error']
+    assert 'target_subject_ids' in result['rejected_decisions'][0]['error']
     assert not (tmp_path / 'run' / 'artifacts' / 'recipe_group_decisions.json').exists()
 
 
@@ -2710,9 +3861,89 @@ def test_pi_recipe_group_decision_preserves_compact_group_range_selector(tmp_pat
     draft = state.handle_tool('get_recipe_params_draft', {'detail': True})['recipe_params_draft']
     rule = draft['rules'][0]
     assert rule['group_ref'] == 'LG1'
+    assert rule['file_number_range'] == '1-5'
     assert 'source_pattern' in rule
     assert rule['episode_range'] == '1-5'
     assert 'exact_paths' not in rule
+
+
+def test_pi_validate_recipe_params_limits_group_ref_file_number_range_to_selected_paths(tmp_path):
+    local = SimpleNamespace(
+        source_path='tests/sample',
+        files=[_File(f'sp{index}', f'Show SP{index:02d}.mkv', f'SPs/Show SP{index:02d}.mkv') for index in range(1, 5)],
+    )
+    state = PiCaseToolState(
+        workspace=_build_workspace(local_evidence=local, bangumi_contexts=[]),
+        bangumi_client=_BangumiClient(),
+        run_dir=tmp_path / 'run',
+        repo_root=tmp_path,
+    )
+    recipe_params = {
+        'rules': [
+            {
+                'name': 'mapped specials',
+                'exact_paths': ['SPs/Show SP01.mkv', 'SPs/Show SP02.mkv'],
+                'subject_id': 100,
+                'media_kind': 'tv',
+                'episode_type': 'regular',
+                'episode_range': '1-2',
+                'reason': 'first two specials map to exposed rows.',
+            },
+            {
+                'name': 'supplemental extras',
+                'group_ref': 'LG1',
+                'file_number_range': '3-4',
+                'disposition': 'non_bangumi_or_supplemental',
+                'reason': 'later files are supplemental after target closure.',
+            },
+        ],
+    }
+
+    result = state.handle_tool('validate_organize_recipe_params', {'recipe_params': recipe_params, 'detail': True})
+
+    assert result['verifier_result']['passed'] is True
+    recipe = json.loads((tmp_path / 'run' / 'artifacts' / 'organize_recipe.json').read_text(encoding='utf-8'))
+    supplemental_rule = next(rule for rule in recipe['rules'] if rule['name'] == 'supplemental extras')
+    assert supplemental_rule['select']['filename_regex'] == ''
+    assert supplemental_rule['select']['exact_paths'] == ['SPs/Show SP03.mkv', 'SPs/Show SP04.mkv']
+    assert not any(issue['issue_code'] == 'duplicate_local_episode' for issue in result['verifier_result']['issues'])
+
+
+def test_pi_recipe_params_draft_coverage_treats_group_ref_file_number_range_as_partial(tmp_path):
+    local = SimpleNamespace(
+        source_path='tests/sample',
+        files=[_File(f'sp{index}', f'Show SP{index:02d}.mkv', f'SPs/Show SP{index:02d}.mkv') for index in range(1, 5)],
+    )
+    state = PiCaseToolState(
+        workspace=_build_workspace(local_evidence=local, bangumi_contexts=[]),
+        bangumi_client=_BangumiClient(),
+        run_dir=tmp_path / 'run',
+        repo_root=tmp_path,
+    )
+
+    result = state.handle_tool(
+        'upsert_recipe_params_draft',
+        {
+            'rules': [
+                {
+                    'name': 'tail extras',
+                    'group_ref': 'LG1',
+                    'file_number_range': '3-4',
+                    'disposition': 'non_bangumi_or_supplemental',
+                    'reason': 'tail files are supplemental.',
+                }
+            ],
+            'summary': 'partial tail decision',
+        },
+    )
+    assert result['ok'] is True
+
+    draft_state = state.handle_tool('get_recipe_params_draft', {'detail': True})
+    coverage = draft_state['coverage_preview']
+    assert coverage['covered_path_count'] == 2
+    assert coverage['uncovered_path_count'] == 2
+    assert coverage['uncovered_path_sample'] == ['SPs/Show SP01.mkv', 'SPs/Show SP02.mkv']
+    assert coverage['ready_for_full_validation'] is False
 
 
 def test_pi_recipe_params_preserves_explicit_source_pattern_with_group_ref(tmp_path):
@@ -2825,6 +4056,265 @@ def test_pi_validate_recipe_params_draft_complete_runs_full_validation_and_write
     notes = (tmp_path / 'run' / 'artifacts' / 'notes.md').read_text(encoding='utf-8')
     assert '## Validation Snapshot' in notes
     assert 'ready from draft' in notes
+
+
+def test_pi_validate_recipe_params_derives_episode_range_from_filtered_group_selector(tmp_path):
+    workspace = CaseEvidenceWorkspace.from_cards(
+        header=CaseHeader(case_id='test'),
+        budget=CaseBudget(),
+        contract=CaseContract(main_file_refs=['LF1', 'LF2', 'LF3', 'LF4']),
+        local_files=[
+            LocalFileCard(ref='LF1', path='SPs/Show [SP01].mkv', is_main=True),
+            LocalFileCard(ref='LF2', path='SPs/Show [SP02].mkv', is_main=True),
+            LocalFileCard(ref='LF3', path='SPs/Show [SP03].mkv', is_main=True),
+            LocalFileCard(ref='LF4', path='SPs/Show [SP04].mkv', is_main=True),
+        ],
+        bangumi_items=[
+            BangumiItemCard(ref='episode:1001', item_kind='episode', episode_id=1001, type='0', sort=1, ep=1, subject_ref='subject:100', title='SP 1'),
+            BangumiItemCard(ref='episode:1002', item_kind='episode', episode_id=1002, type='0', sort=2, ep=2, subject_ref='subject:100', title='SP 2'),
+            BangumiItemCard(ref='episode:1004', item_kind='episode', episode_id=1004, type='0', sort=4, ep=4, subject_ref='subject:100', title='SP 4'),
+        ],
+    )
+    state = PiCaseToolState(workspace=workspace, bangumi_client=_BangumiClient(), run_dir=tmp_path / 'run', repo_root=tmp_path)
+    group_ref = state.handle_tool('list_local_groups', {'detail': False})['data']['groups'][0]['group_ref']
+
+    result = state.handle_tool(
+        'validate_organize_recipe_params',
+        {
+            'detail': True,
+            'recipe_params': {
+                'rules': [
+                    {
+                        'name': 'filtered SP sequence',
+                        'group_ref': group_ref,
+                        'source_pattern': 'SPs/Show [SP{ep:02}].mkv',
+                        'exclude_path_contains': ['SP03'],
+                        'subject_id': 100,
+                        'media_kind': 'sp',
+                        'episode_type': 'regular',
+                        'reason': 'explicit selector excludes one local file; remaining numbers derive the target range',
+                    },
+                    {
+                        'name': 'excluded SP03',
+                        'exact_paths': ['SPs/Show [SP03].mkv'],
+                        'disposition': 'non_bangumi_or_supplemental',
+                        'reason': 'test-only excluded path',
+                    },
+                ],
+            },
+        },
+    )
+
+    assert result['accepted'] is True
+    assert result['organize_recipe']['rules'][0]['episode']['range'] == '1-2,4'
+
+
+def test_pi_validate_recipe_params_rejects_file_numbers_without_group_ref(tmp_path):
+    state = PiCaseToolState(workspace=_workspace(), bangumi_client=_BangumiClient(), run_dir=tmp_path / 'run', repo_root=tmp_path)
+
+    result = state.handle_tool(
+        'validate_organize_recipe_params',
+        {
+            'recipe_params': {
+                'rules': [
+                    {
+                        'name': 'ambiguous numbered selector',
+                        'file_numbers': [2],
+                        'subject_id': 100,
+                        'media_kind': 'tv',
+                        'episode_id': 1002,
+                        'reason': 'file_numbers must be scoped to a visible local group.',
+                    },
+                ],
+            },
+        },
+    )
+
+    assert result['ok'] is False
+    assert result['accepted'] is False
+    assert 'file_numbers/file_number_range require group_ref' in result['error']
+    assert any('scoped to a local group' in hint for hint in result['repair_hints'])
+
+
+def test_pi_validate_recipe_params_restores_group_pattern_for_exact_path_sequence(tmp_path):
+    local = SimpleNamespace(
+        source_path='tests/sample',
+        files=[_File(f'sp{index}', f'Show SP{index:02d}.mkv', f'SPs/Show SP{index:02d}.mkv') for index in range(1, 3)],
+    )
+    state = PiCaseToolState(
+        workspace=_build_workspace(local_evidence=local, bangumi_contexts=[]),
+        bangumi_client=_BangumiClient(),
+        run_dir=tmp_path / 'run',
+        repo_root=tmp_path,
+    )
+
+    result = state.handle_tool(
+        'validate_organize_recipe_params',
+        {
+            'detail': True,
+            'recipe_params': {
+                'rules': [
+                    {
+                        'name': 'mapped exact sequence',
+                        'group_ref': 'LG1',
+                        'exact_paths': ['SPs/Show SP01.mkv', 'SPs/Show SP02.mkv'],
+                        'subject_id': 100,
+                        'media_kind': 'tv',
+                        'episode_type': 'regular',
+                        'reason': 'exact path subset still follows the group sequence template.',
+                    },
+                ],
+            },
+        },
+    )
+
+    assert result['accepted'] is True
+    rule = result['organize_recipe']['rules'][0]
+    assert rule['select']['exact_paths'] == ['SPs/Show SP01.mkv', 'SPs/Show SP02.mkv']
+    assert '(?P<ep>' in rule['select']['filename_regex']
+    assert rule['episode']['range'] == '1-2'
+
+
+def test_pi_submit_recipe_params_rejects_manual_payload_after_accepted_draft_validation(tmp_path):
+    state = PiCaseToolState(workspace=_workspace(), bangumi_client=_BangumiClient(), run_dir=tmp_path / 'run', repo_root=tmp_path)
+
+    state.handle_tool(
+        'upsert_recipe_params_draft',
+        {
+            'rules': [
+                {
+                    'name': 'LG1 TV',
+                    'group_ref': 'LG1',
+                    'subject_id': 100,
+                    'media_kind': 'tv',
+                    'episode_type': 'regular',
+                    'reason': 'Bangumi rows 1-2 match local files.',
+                }
+            ]
+        },
+    )
+    validated = state.handle_tool('validate_recipe_params_draft', {'validation_snapshot': {'LG1': 'ready from draft'}})
+
+    result = state.handle_tool(
+        'submit_organize_recipe_params',
+        {
+            'recipe_params': {
+                'summary': 'manually reconstructed and stale',
+                'rules': [
+                    {
+                        'name': 'episode 1 only',
+                        'exact_paths': ['ep1.mkv'],
+                        'subject_id': 100,
+                        'media_kind': 'tv',
+                        'episode_id': 1001,
+                    }
+                ],
+            },
+            'submit_snapshot': 'try to submit a manually rebuilt payload',
+        },
+    )
+
+    assert validated['accepted'] is True
+    assert result['ok'] is False
+    assert result['accepted'] is False
+    assert result['status'] == 'accepted_validation_submit_required'
+    assert result['latest_validation_source'] == 'draft'
+    assert result['accepted_rule_count'] == 1
+    assert result['incoming_rule_count'] == 1
+    assert state.final_result is None
+    assert state.latest_recipe_params_payload == state.latest_recipe_params_validation_payload
+
+
+def test_pi_submit_recipe_params_accepts_matching_accepted_draft_validation(tmp_path):
+    state = PiCaseToolState(workspace=_workspace(), bangumi_client=_BangumiClient(), run_dir=tmp_path / 'run', repo_root=tmp_path)
+
+    state.handle_tool(
+        'upsert_recipe_params_draft',
+        {
+            'rules': [
+                {
+                    'name': 'LG1 TV',
+                    'group_ref': 'LG1',
+                    'subject_id': 100,
+                    'media_kind': 'tv',
+                    'episode_type': 'regular',
+                    'reason': 'Bangumi rows 1-2 match local files.',
+                }
+            ]
+        },
+    )
+    validated = state.handle_tool('validate_recipe_params_draft', {'validation_snapshot': {'LG1': 'ready from draft'}})
+    accepted_payload = json.loads(json.dumps(state.latest_recipe_params_validation_payload))
+
+    result = state.handle_tool(
+        'submit_organize_recipe_params',
+        {
+            'recipe_params': accepted_payload,
+            'summary': 'accepted draft submitted exactly',
+            'submit_snapshot': 'submit the current accepted draft payload',
+        },
+    )
+
+    assert validated['accepted'] is True
+    assert result['accepted'] is True
+    assert result['params_compiled'] is True
+    assert state.final_result['status'] == 'accepted'
+    assert state.final_result['summary'] == 'accepted draft submitted exactly'
+
+
+def test_pi_submit_recipe_params_reuses_accepted_draft_validation_when_payload_omitted(tmp_path):
+    state = PiCaseToolState(workspace=_workspace(), bangumi_client=_BangumiClient(), run_dir=tmp_path / 'run', repo_root=tmp_path)
+
+    state.handle_tool(
+        'upsert_recipe_params_draft',
+        {
+            'rules': [
+                {
+                    'name': 'LG1 TV',
+                    'group_ref': 'LG1',
+                    'subject_id': 100,
+                    'media_kind': 'tv',
+                    'episode_type': 'regular',
+                    'reason': 'Bangumi rows 1-2 match local files.',
+                }
+            ]
+        },
+    )
+    validated = state.handle_tool('validate_recipe_params_draft', {'validation_snapshot': {'LG1': 'ready from draft'}})
+
+    result = state.handle_tool(
+        'submit_organize_recipe_params',
+        {
+            'summary': 'accepted draft submitted by reference',
+            'submit_snapshot': 'submit the current accepted draft without copying params',
+        },
+    )
+
+    assert validated['accepted'] is True
+    assert result['accepted'] is True
+    assert result['params_compiled'] is True
+    assert state.final_result['status'] == 'accepted'
+    assert state.final_result['summary'] == 'accepted draft submitted by reference'
+    assert state.latest_recipe_params_payload == state.latest_recipe_params_validation_payload
+
+
+def test_pi_submit_recipe_params_requires_payload_until_validation_accepted(tmp_path):
+    state = PiCaseToolState(workspace=_workspace(), bangumi_client=_BangumiClient(), run_dir=tmp_path / 'run', repo_root=tmp_path)
+
+    result = state.handle_tool(
+        'submit_organize_recipe_params',
+        {
+            'summary': 'premature submit',
+            'submit_snapshot': 'no accepted validation exists yet',
+        },
+    )
+
+    assert result['ok'] is False
+    assert result['accepted'] is False
+    assert result['status'] == 'recipe_params_required'
+    assert result['next_tool'] == 'validate_recipe_params_draft'
+    assert 'recipe_params is required' in result['error']
+    assert state.final_result is None
 
 
 def test_pi_validate_recipe_params_draft_invalid_auto_records_verifier_delta(tmp_path):
@@ -2956,6 +4446,158 @@ def test_pi_evidence_tools_keep_returning_evidence_after_unpersisted_search(tmp_
     assert allowed.get('status') != 'workpaper_checkpoint_required'
 
 
+def _prepare_empty_workpaper_after_local_surface_scan(tmp_path):
+    state = PiCaseToolState(workspace=_workspace(), bangumi_client=_BangumiClient(), run_dir=tmp_path / 'run', repo_root=tmp_path)
+    state.handle_tool('select_bangumi_anchor_subject', {'anchor_subject_id': 100, 'reason': 'test anchor'})
+    state.handle_tool('get_local_group_detail', {'group_ref': 'LG1', 'detail': False})
+    for _ in range(state._EMPTY_WORKPAPER_SEMANTIC_EVIDENCE_LIMIT):
+        result = state.handle_tool('get_episode_list', {'subject_id': 100})
+        assert result['ok'] is True
+    return state
+
+
+def test_pi_get_empty_draft_requires_action_after_surface_scan_and_target_evidence(tmp_path):
+    state = _prepare_empty_workpaper_after_local_surface_scan(tmp_path)
+
+    result = state.handle_tool('get_recipe_params_draft', {'detail': False})
+
+    assert result['ok'] is True
+    assert result['status'] == 'workpaper_action_required'
+    assert result['recipe_params_draft_next_action']['next_tool'] == 'upsert_recipe_group_decision_one'
+    assert result['workpaper_checkpoint']['local_surface_scanned'] is True
+    assert result['workpaper_checkpoint']['semantic_evidence_calls_since_workpaper'] == state._EMPTY_WORKPAPER_SEMANTIC_EVIDENCE_LIMIT
+    assert 'append_case_board_note' in result['workpaper_checkpoint']['next_tools']
+    assert 'Python is not choosing a Bangumi target' in result['workpaper_checkpoint']['policy']
+    assert state.tool_trace[-1]['result_summary']['workpaper_checkpoint_next_tool'] == 'upsert_recipe_group_decision_one'
+
+
+def test_pi_blocks_more_evidence_after_empty_workpaper_surface_checkpoint(tmp_path):
+    state = _prepare_empty_workpaper_after_local_surface_scan(tmp_path)
+
+    result = state.handle_tool('search_bangumi_subjects', {'query': 'OVERLORD', 'max_subjects': 1})
+
+    assert result['ok'] is False
+    assert result['error'] == 'workpaper_checkpoint_required'
+    assert result['workpaper_checkpoint']['next_tool'] == 'upsert_recipe_group_decision_one'
+    assert result['workpaper_checkpoint']['semantic_evidence_calls_since_workpaper'] == state._EMPTY_WORKPAPER_SEMANTIC_EVIDENCE_LIMIT
+    assert 'supplemental status' in result['workpaper_checkpoint']['policy']
+    assert state.tool_trace[-1]['result_summary']['workpaper_checkpoint_next_tool'] == 'upsert_recipe_group_decision_one'
+
+
+def test_pi_blocks_more_evidence_after_partial_local_surface_scan_with_empty_workpaper(tmp_path):
+    local = SimpleNamespace(
+        source_path='tests/sample',
+        files=[
+            _File(f'f{index}', f'Show Part {index} - 01.mkv', f'Part {index}/Show Part {index} - 01.mkv')
+            for index in range(1, 9)
+        ],
+    )
+    state = PiCaseToolState(
+        workspace=_build_workspace(local_evidence=local, bangumi_contexts=[]),
+        bangumi_client=_BangumiClient(),
+        run_dir=tmp_path / 'run',
+        repo_root=tmp_path,
+    )
+    group_refs = [
+        group['group_ref']
+        for group in state.handle_tool('list_local_groups', {'detail': False})['data']['groups']
+    ]
+    assert len(group_refs) == 8
+    for group_ref in group_refs[:4]:
+        detail = state.handle_tool('get_local_group_detail', {'group_ref': group_ref, 'detail': False})
+        assert detail['ok'] is True
+    for _ in range(state._EMPTY_WORKPAPER_SEMANTIC_EVIDENCE_LIMIT):
+        evidence = state.handle_tool('get_episode_list', {'subject_id': 100})
+        assert evidence['ok'] is True
+
+    blocked = state.handle_tool('search_bangumi_subjects', {'query': 'Show', 'max_subjects': 1})
+
+    assert blocked['ok'] is False
+    assert blocked['error'] == 'workpaper_checkpoint_required'
+    checkpoint = blocked['workpaper_checkpoint']
+    assert checkpoint['checkpoint_trigger'] == 'partial_local_surface_scan'
+    assert checkpoint['local_surface_scanned'] is False
+    assert checkpoint['partial_local_surface_scanned'] is True
+    assert checkpoint['partial_scan_threshold'] == 4
+    assert checkpoint['inspected_group_refs'] == group_refs[:4]
+    assert checkpoint['next_tool'] == 'upsert_recipe_group_decision_one'
+    assert checkpoint['semantic_evidence_calls_since_workpaper'] == state._EMPTY_WORKPAPER_SEMANTIC_EVIDENCE_LIMIT
+
+
+def test_pi_get_empty_draft_requires_action_after_repeated_empty_draft_reads_and_target_evidence(tmp_path):
+    state = PiCaseToolState(workspace=_workspace(), bangumi_client=_BangumiClient(), run_dir=tmp_path / 'run', repo_root=tmp_path)
+    state.handle_tool('select_bangumi_anchor_subject', {'anchor_subject_id': 100, 'reason': 'test anchor'})
+    state.handle_tool('list_local_groups', {'detail': False})
+    for _ in range(state._EMPTY_WORKPAPER_SEMANTIC_EVIDENCE_LIMIT):
+        evidence = state.handle_tool('get_episode_list', {'subject_id': 100})
+        assert evidence['ok'] is True
+    for _ in range(state._EMPTY_WORKPAPER_DRAFT_READ_LIMIT):
+        draft = state.handle_tool('get_recipe_params_draft', {'detail': False})
+        assert draft['ok'] is True
+        assert draft.get('status') != 'workpaper_action_required'
+
+    result = state.handle_tool('get_recipe_params_draft', {'detail': False})
+
+    assert result['ok'] is True
+    assert result['status'] == 'workpaper_action_required'
+    assert result['workpaper_checkpoint']['next_tool'] == 'upsert_recipe_group_decision_one'
+    assert result['workpaper_checkpoint']['local_surface_scanned'] is False
+    assert result['workpaper_checkpoint']['checkpoint_trigger'] == 'repeated_empty_draft_reads'
+    assert result['workpaper_checkpoint']['empty_draft_read_count'] == state._EMPTY_WORKPAPER_DRAFT_READ_LIMIT
+    assert result['workpaper_checkpoint']['semantic_evidence_calls_since_workpaper'] == state._EMPTY_WORKPAPER_SEMANTIC_EVIDENCE_LIMIT
+
+
+def test_pi_blocks_more_evidence_after_repeated_empty_draft_reads_checkpoint(tmp_path):
+    state = PiCaseToolState(workspace=_workspace(), bangumi_client=_BangumiClient(), run_dir=tmp_path / 'run', repo_root=tmp_path)
+    state.handle_tool('select_bangumi_anchor_subject', {'anchor_subject_id': 100, 'reason': 'test anchor'})
+    state.handle_tool('list_local_groups', {'detail': False})
+    for _ in range(state._EMPTY_WORKPAPER_SEMANTIC_EVIDENCE_LIMIT):
+        evidence = state.handle_tool('get_episode_list', {'subject_id': 100})
+        assert evidence['ok'] is True
+    for _ in range(state._EMPTY_WORKPAPER_DRAFT_READ_LIMIT):
+        draft = state.handle_tool('get_recipe_params_draft', {'detail': False})
+        assert draft['ok'] is True
+
+    result = state.handle_tool('search_bangumi_subjects', {'query': 'OVERLORD', 'max_subjects': 1})
+
+    assert result['ok'] is False
+    assert result['error'] == 'workpaper_checkpoint_required'
+    assert result['workpaper_checkpoint']['checkpoint_trigger'] == 'repeated_empty_draft_reads'
+    assert result['workpaper_checkpoint']['next_tool'] == 'upsert_recipe_group_decision_one'
+
+
+def test_pi_get_partial_draft_requires_action_after_target_evidence_for_gaps(tmp_path):
+    state = PiCaseToolState(workspace=_workspace(), bangumi_client=_BangumiClient(), run_dir=tmp_path / 'run', repo_root=tmp_path)
+    state.handle_tool(
+        'upsert_recipe_group_decision_one',
+        {
+            'decision': {
+                'name': 'first file mapped',
+                'group_ref': 'LG1',
+                'file_numbers': [1],
+                'subject_id': 100,
+                'media_kind': 'tv',
+                'episode_id': 1001,
+                'reason': 'first file is stable.',
+            }
+        },
+    )
+    for _ in range(state._PARTIAL_WORKPAPER_SEMANTIC_EVIDENCE_LIMIT):
+        result = state.handle_tool('get_episode_list', {'subject_id': 100})
+        assert result['ok'] is True
+
+    draft = state.handle_tool('get_recipe_params_draft', {'detail': False})
+
+    assert draft['ok'] is True
+    assert draft['status'] == 'workpaper_action_required'
+    assert draft['workpaper_checkpoint']['next_tool'] == 'upsert_recipe_group_decision'
+    assert draft['workpaper_checkpoint']['draft_rule_count'] == 1
+    assert draft['workpaper_checkpoint']['uncovered_path_count'] == 1
+    assert draft['workpaper_checkpoint']['semantic_evidence_calls_since_workpaper'] == state._PARTIAL_WORKPAPER_SEMANTIC_EVIDENCE_LIMIT
+    assert 'ep2.mkv' in draft['workpaper_checkpoint']['uncovered_path_sample'][0]
+    assert state.tool_trace[-1]['result_summary']['workpaper_checkpoint_next_tool'] == 'upsert_recipe_group_decision'
+
+
 def test_pi_evidence_batch_requires_workpaper_checkpoint_before_more_evidence(tmp_path):
     state = PiCaseToolState(workspace=_workspace(), bangumi_client=_BangumiClient(), run_dir=tmp_path / 'run', repo_root=tmp_path)
 
@@ -2967,13 +4609,15 @@ def test_pi_evidence_batch_requires_workpaper_checkpoint_before_more_evidence(tm
 
     assert result['ok'] is False
     assert result['error'] == 'evidence_batch_checkpoint_required'
-    assert result['workpaper_checkpoint']['next_tools'][0] == 'upsert_recipe_group_decision_one'
+    assert result['workpaper_checkpoint']['next_tools'][0] == 'upsert_recipe_group_decision'
+    assert 'append_case_board_note' in result['workpaper_checkpoint']['next_tools']
     assert 'subagent' not in result['workpaper_checkpoint']['next_tools']
     assert 'prepare_bangumi_frontier_scout_packet' not in result['workpaper_checkpoint']['next_tools']
     assert 'prepare_bangumi_relation_atlas_scout_packets' not in result['workpaper_checkpoint']['next_tools']
     assert result['workpaper_checkpoint']['evidence_calls_since_workpaper'] == state._EVIDENCE_BATCH_LIMIT
+    assert result['workpaper_checkpoint']['limit'] == state._EVIDENCE_BATCH_LIMIT
     assert 'Python is not choosing a Bangumi target' in result['workpaper_checkpoint']['policy']
-    assert state.tool_trace[-1]['result_summary']['workpaper_checkpoint_next_tool'] == 'upsert_recipe_group_decision_one'
+    assert state.tool_trace[-1]['result_summary']['workpaper_checkpoint_next_tool'] == 'upsert_recipe_group_decision'
     assert state.tool_trace[-1]['result_summary']['evidence_calls_since_workpaper'] == state._EVIDENCE_BATCH_LIMIT
 
     board = state.handle_tool(
@@ -2990,7 +4634,216 @@ def test_pi_evidence_batch_requires_workpaper_checkpoint_before_more_evidence(tm
     assert allowed['ok'] is True
 
 
-def test_pi_evidence_tools_keep_returning_evidence_after_partial_draft_stalls(tmp_path):
+def test_pi_blocks_more_evidence_after_verifier_feedback_until_repair_action(tmp_path):
+    state = PiCaseToolState(workspace=_workspace(), bangumi_client=_BangumiClient(), run_dir=tmp_path / 'run', repo_root=tmp_path)
+    invalid = state.handle_tool(
+        'validate_organize_recipe_params',
+        {
+            'recipe_params': {
+                'rules': [
+                    {
+                        'name': 'episode 1',
+                        'exact_paths': ['ep1.mkv'],
+                        'subject_id': 100,
+                        'media_kind': 'tv',
+                        'episode_id': 1001,
+                        'reason': 'first local file maps to episode 1',
+                    },
+                    {
+                        'name': 'episode 2 duplicate',
+                        'exact_paths': ['ep2.mkv'],
+                        'subject_id': 100,
+                        'media_kind': 'tv',
+                        'episode_id': 1001,
+                        'reason': 'intentional duplicate target for repair-loop test',
+                    },
+                ]
+            },
+            'detail': True,
+        },
+    )
+    assert invalid['ok'] is True
+    assert invalid['accepted'] is False
+    assert invalid['status'] == 'invalid'
+
+    for _ in range(state._POST_VERIFIER_EVIDENCE_LIMIT):
+        allowed = state.handle_tool('search_bangumi_subjects', {'query': 'OVERLORD', 'max_subjects': 1})
+        assert allowed['ok'] is True
+        assert allowed.get('status') != 'verifier_repair_checkpoint_required'
+
+    blocked = state.handle_tool('get_episode_list', {'subject_id': 100})
+
+    assert blocked['ok'] is False
+    assert blocked['error'] == 'verifier_repair_checkpoint_required'
+    assert blocked['verifier_repair_checkpoint']['next_tool'] == 'validate_organize_recipe_params_patch'
+    assert blocked['verifier_repair_checkpoint']['feedback_tool'] == 'validate_organize_recipe_params'
+    assert blocked['verifier_repair_checkpoint']['evidence_calls_since_feedback'] == state._POST_VERIFIER_EVIDENCE_LIMIT
+    assert blocked['verifier_repair_checkpoint']['policy'].startswith('Non-semantic repair-loop checkpoint')
+    assert 'recipe_params_patch' in ' '.join(blocked['repair_hints'])
+    assert state.tool_trace[-1]['result_summary']['verifier_repair_checkpoint_next_tool'] == 'validate_organize_recipe_params_patch'
+
+    repaired = state.handle_tool(
+        'validate_organize_recipe_params_patch',
+        {
+            'recipe_params_patch': {
+                'patch_rules': [
+                    {'name': 'episode 2 duplicate', 'updates': {'episode_id': 1002}},
+                ]
+            }
+        },
+    )
+
+    assert repaired['ok'] is True
+    assert repaired['accepted'] is True
+
+
+def test_pi_post_verifier_evidence_limit_scales_with_feedback_clusters(tmp_path):
+    state = PiCaseToolState(workspace=_workspace(), bangumi_client=_BangumiClient(), run_dir=tmp_path / 'run', repo_root=tmp_path)
+    state.tool_trace.append(
+        {
+            'index': 1,
+            'tool': 'validate_organize_recipe_params',
+            'ok': True,
+            'result_summary': {
+                'accepted': False,
+                'status': 'invalid',
+                'verifier_passed': False,
+                'verifier_issue_count': 2,
+                'review_warning_count': 1,
+            },
+        }
+    )
+
+    for _ in range(state._POST_VERIFIER_EVIDENCE_LIMIT_MAX):
+        allowed = state.handle_tool('search_bangumi_subjects', {'query': 'OVERLORD', 'max_subjects': 1})
+        assert allowed['ok'] is True
+        assert allowed.get('status') != 'verifier_repair_checkpoint_required'
+
+    blocked = state.handle_tool('get_episode_list', {'subject_id': 100})
+
+    assert blocked['ok'] is False
+    assert blocked['error'] == 'verifier_repair_checkpoint_required'
+    assert blocked['verifier_repair_checkpoint']['evidence_calls_since_feedback'] == state._POST_VERIFIER_EVIDENCE_LIMIT_MAX
+    assert blocked['verifier_repair_checkpoint']['evidence_limit'] == state._POST_VERIFIER_EVIDENCE_LIMIT_MAX
+
+
+def test_pi_post_verifier_duplicate_target_feedback_requires_patch_after_one_fact(tmp_path):
+    state = PiCaseToolState(workspace=_workspace(), bangumi_client=_BangumiClient(), run_dir=tmp_path / 'run', repo_root=tmp_path)
+    state.tool_trace.append(
+        {
+            'index': 1,
+            'tool': 'validate_organize_recipe_params_patch',
+            'ok': True,
+            'result_summary': {
+                'accepted': False,
+                'status': 'invalid',
+                'verifier_passed': False,
+                'verifier_issue_count': 3,
+                'verifier_issue_codes': ['duplicate_target'],
+                'review_warning_count': 0,
+            },
+        }
+    )
+
+    allowed = state.handle_tool('search_bangumi_subjects', {'query': 'OVERLORD', 'max_subjects': 1})
+    blocked = state.handle_tool('get_episode_list', {'subject_id': 100})
+
+    assert allowed['ok'] is True
+    assert blocked['ok'] is False
+    assert blocked['error'] == 'verifier_repair_checkpoint_required'
+    assert blocked['verifier_repair_checkpoint']['evidence_calls_since_feedback'] == state._POST_VERIFIER_EVIDENCE_LIMIT
+    assert blocked['verifier_repair_checkpoint']['evidence_limit'] == state._POST_VERIFIER_EVIDENCE_LIMIT
+    assert blocked['verifier_repair_checkpoint']['verifier_issue_codes'] == ['duplicate_target']
+
+
+def test_pi_blocks_durable_group_decision_rewrite_after_verifier_feedback(tmp_path):
+    state = PiCaseToolState(workspace=_workspace(), bangumi_client=_BangumiClient(), run_dir=tmp_path / 'run', repo_root=tmp_path)
+    invalid = state.handle_tool(
+        'validate_organize_recipe_params',
+        {
+            'recipe_params': {
+                'rules': [
+                    {
+                        'name': 'episode 1',
+                        'exact_paths': ['ep1.mkv'],
+                        'subject_id': 100,
+                        'media_kind': 'tv',
+                        'episode_id': 1001,
+                        'reason': 'first local file maps to episode 1',
+                    },
+                    {
+                        'name': 'episode 2 duplicate',
+                        'exact_paths': ['ep2.mkv'],
+                        'subject_id': 100,
+                        'media_kind': 'tv',
+                        'episode_id': 1001,
+                        'reason': 'duplicate target needing patch',
+                    },
+                ]
+            }
+        },
+    )
+    blocked = state.handle_tool(
+        'upsert_recipe_group_decision',
+        {
+            'decisions': [
+                {
+                    'name': 'rewrite after verifier',
+                    'group_ref': 'LG1',
+                    'subject_id': 100,
+                    'media_kind': 'tv',
+                    'episode_type': 'regular',
+                    'reason': 'should use params patch instead',
+                }
+            ]
+        },
+    )
+
+    assert invalid['status'] == 'invalid'
+    assert blocked['ok'] is False
+    assert blocked['error'] == 'verifier_repair_patch_required'
+    assert blocked['verifier_repair_checkpoint']['attempted_tool'] == 'upsert_recipe_group_decision'
+    assert blocked['verifier_repair_checkpoint']['next_tool'] == 'validate_organize_recipe_params_patch'
+    assert 'Durable group decisions are for pre-validation semantic workpaper rows' in blocked['verifier_repair_checkpoint']['policy']
+
+    blocked_clear = state.handle_tool('clear_recipe_params_draft', {'reason': 'rebuild from scratch'})
+
+    assert blocked_clear['ok'] is False
+    assert blocked_clear['error'] == 'verifier_repair_patch_required'
+    assert blocked_clear['verifier_repair_checkpoint']['attempted_tool'] == 'clear_recipe_params_draft'
+    assert blocked_clear['verifier_repair_checkpoint']['next_tool'] == 'validate_organize_recipe_params_patch'
+    assert 'clearing an already-validated params draft is a destructive reset' in blocked_clear['verifier_repair_checkpoint']['policy']
+
+
+def test_pi_allows_group_decision_reset_after_params_parse_error(tmp_path):
+    state = PiCaseToolState(workspace=_workspace(), bangumi_client=_BangumiClient(), run_dir=tmp_path / 'run', repo_root=tmp_path)
+    saved = state.handle_tool(
+        'upsert_recipe_group_decision_one',
+        {
+            'decision': {
+                'name': 'bad pattern row',
+                'group_ref': 'LG1',
+                'source_pattern': 'does-not-match-{ep}.mkv',
+                'subject_id': 100,
+                'media_kind': 'tv',
+                'episode_type': 'regular',
+                'reason': 'bad selector should be resettable before verifier feedback.',
+            },
+        },
+    )
+    invalid = state.handle_tool('validate_recipe_params_draft', {'validation_snapshot': 'selector smoke test'})
+
+    reset = state.handle_tool('clear_recipe_group_decisions', {'reason': 'rebuild after parse error'})
+
+    assert saved['ok'] is True
+    assert invalid['ok'] is False
+    assert 'source_pattern that matches none' in invalid['error']
+    assert reset['ok'] is True
+    assert reset['cleared'] is True
+    assert state.handle_tool('get_recipe_group_decisions', {'detail': False})['decision_count'] == 0
+
+
+def test_pi_evidence_tools_require_workpaper_after_partial_draft_checkpoint(tmp_path):
     local = SimpleNamespace(
         source_path='tests/sample',
         files=[
@@ -3035,20 +4888,32 @@ def test_pi_evidence_tools_keep_returning_evidence_after_partial_draft_stalls(tm
     draft = state.handle_tool('get_recipe_params_draft', {'detail': False})
     assert draft['coverage_preview']['missing_group_refs'] == ['LG2']
 
-    for _ in range(6):
+    for _ in range(state._PARTIAL_WORKPAPER_SEMANTIC_EVIDENCE_LIMIT):
         allowed = state.handle_tool('search_bangumi_subjects', {'query': 'OVERLORD', 'max_subjects': 1})
         assert allowed['ok'] is True
         assert allowed.get('status') != 'workpaper_checkpoint_required'
 
     result = state.handle_tool('get_episode_list', {'subject_id': 100})
 
-    assert result['ok'] is True
-    assert result.get('status') != 'workpaper_checkpoint_required'
-    assert result.get('no_new_evidence_returned') is not True
-    assert result['recipe_params_draft_next_action']['next_tool'] == 'upsert_recipe_params_draft'
-    assert result['recipe_params_draft_next_action']['missing_group_refs'] == ['LG2']
-    assert 'still needs a side-surface check' in result['recipe_params_draft_next_action']['reason']
-    assert 'upsert_recipe_params_draft' in result['recipe_params_draft_next_action']['allowed_next_tools']
+    assert result['ok'] is False
+    assert result['status'] == 'workpaper_checkpoint_required'
+    assert result['workpaper_checkpoint']['next_tool'] == 'upsert_recipe_group_decision'
+    assert result['workpaper_checkpoint']['missing_group_refs'] == ['LG2']
+    assert result['workpaper_checkpoint']['semantic_evidence_calls_since_workpaper'] == state._PARTIAL_WORKPAPER_SEMANTIC_EVIDENCE_LIMIT
+
+    board = state.handle_tool(
+        'append_case_board_note',
+        {
+            'section_type': 'Board Delta',
+            'content': 'LG2 still needs one exact episode surface before a row can be saved.',
+            'next_action': 'fetch LG2 exact row',
+        },
+    )
+    allowed = state.handle_tool('get_episode_list', {'subject_id': 100})
+
+    assert board['ok'] is True
+    assert allowed['ok'] is True
+    assert allowed.get('status') != 'workpaper_checkpoint_required'
 
 
 def test_pi_validate_params_returns_case_board_next_action_for_repair(tmp_path):

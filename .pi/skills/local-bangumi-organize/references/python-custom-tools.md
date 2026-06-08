@@ -106,9 +106,11 @@ Use before writing exact-path exception rules when filenames or local facts are 
 
 `find_bangumi_targets_for_local_file({ "source_path": "...", "title_query": "...", "kind_hint": "ova", "max_subjects": 5, "max_episode_cards": 24 })`
 
-Use this when a specific visible file needs compact Bangumi subject and episode evidence before drafting or repairing a recipe rule. It performs a compact subject search plus episode lookup and updates the Python evidence workspace. It does not rank semantic candidates, choose a target, or return recipe JSON.
+Use this when a specific visible file needs compact Bangumi subject and episode evidence before drafting or repairing a recipe rule. It performs a compact subject search plus episode lookup, returns nearby `duration_candidate_episode_rows` when already-exposed Bangumi rows match a side/special-like local file by duration, and updates the Python evidence workspace. It does not rank semantic candidates, choose a target, or return recipe JSON.
 
-The result preserves mechanical order: Bangumi search result order for subjects, and Bangumi episode `sort`, then `ep`, then `episode_id` order for episode rows. Use the returned subject IDs and episode rows as facts only; Pi chooses the semantic target and then calls the params validation/submit tools.
+This is the quick check for uncertain supplemental decisions. Before keeping a numbered side/SP/OVA/movie-like visible file supplemental, call this tool for the exact path or a representative path in the same uniform sequence; if the returned subject/episode rows do not support a target, record that exhausted-target reason in the supplemental rule.
+
+The result preserves mechanical order: Bangumi search result order for subjects, and Bangumi episode `sort`, then `ep`, then `episode_id` order for episode rows. Use the returned subject IDs, episode rows, and duration candidate rows as facts only; Pi chooses the semantic target and then calls the params validation/submit tools.
 
 This helper intentionally provides no fixed-layer recipe, no readiness flag, and no target recommendation. If you have enough evidence, write recipe params yourself and validate.
 
@@ -120,7 +122,7 @@ Preferred normal path. Save one compact group/subcluster judgment as soon as it 
 
 `upsert_recipe_group_decision({ "decisions": [...] })`
 
-Small-batch fallback only. If the tool rejects a large batch, split the rows into `upsert_recipe_group_decision_one` calls.
+Batch path for canonical decision rows. This is useful after an atlas or verifier pass makes several rows stable at once. Valid canonical rows are saved; invalid rows are rejected by `decision_index` / `decision_name` and must be resent after repair. Rejected rows are not migrated or coerced.
 
 Use this while exploring. It saves compact Pi-owned group/subcluster judgments and Python mechanically compiles them into `recipe_params_draft`. Useful fields include `group_ref`, `file_numbers`, `file_number_range`, `path_contains`, `exclude_path_contains`, `source_pattern`, `exact_paths`, `subject_id`, `media_kind`, `episode_type`, `episode_id`, `episode_ids`, `disposition`, and `reason`. Selector fields only choose local files; Pi still chooses Bangumi targets and supplemental status.
 
@@ -133,6 +135,8 @@ Reads saved decisions and the compiled draft coverage preview. If a group is onl
 `validate_organize_recipe_params({ "recipe_params": <params> })`
 
 Use this for hand-authored work and trial checks. Params use strict canonical rule fields: `group_ref`, `file_numbers`, `file_number_range`, `path_contains`, `exclude_path_contains`, `exact_paths`, `source_pattern`, `filename_regex`, `exclude_regex`, `source_unit`, `episode_range`, `episode_range_start`, `episode_range_end`, `episode_offset`, `episode_number_field`, `subject_id`, `media_kind`, `episode_id`, `episode_ids`, `episode_type`, `sort`, `ep`, `disposition`, and `reason`. Python expands `group_ref` into local selector facts, turns `source_pattern` into escaped recipe regex, treats extra placeholders such as `{a}` as wildcard spans, fills defaults such as `episode_offset: "EP"`, writes `organize_recipe.json`, and returns the generated `organize_recipe` plus verifier issues or review warnings. The first trial check does not need to be accepted or warning-free. Invalid/review feedback is part of the repair loop; it does not finalize the case. Use `group_ref` when the local group card already expresses the selector; combine `group_ref + source_pattern` only when the explicit pattern matches that group and includes `{ep}` for sequence mapping; use `exact_paths` only when compact group selectors cannot safely identify one visible movie, OVA, SP, or special file.
+
+Invalid duplicate-target feedback may include `issue_repair_contexts`. Read it before patching: it names the affected files, duration/path-shape mismatch, candidate exposed rows when available, and whether to inspect or patch an alternate target surface before supplemental.
 
 For one visible local file that intentionally covers multiple Bangumi episode rows, set `source_unit: "single_file_multi_episode"`, one `exact_paths` entry, and `episode_range`. Do not use boolean aliases such as `merged: true`, and do not collapse the file to the first `episode_id`.
 

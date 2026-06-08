@@ -73,6 +73,7 @@ function modelVisibleEnvelope(name, result) {
   const verifierIssues = Array.isArray(result?.verifier_result?.issues) ? result.verifier_result.issues : [];
   const issues = Array.isArray(result?.issues) ? result.issues : verifierIssues;
   const reviewWarnings = Array.isArray(result?.review_warnings) ? result.review_warnings : [];
+  const issueRepairContexts = Array.isArray(result?.issue_repair_contexts) ? result.issue_repair_contexts : [];
   const nextAction = result?.case_board_next_action && typeof result.case_board_next_action === "object"
     ? result.case_board_next_action.next_tool
     : "";
@@ -91,6 +92,9 @@ function modelVisibleEnvelope(name, result) {
     review_warning_count: arrayLength(reviewWarnings),
     review_warnings: reviewWarnings.slice(0, 6),
     repair_hints: Array.isArray(result?.repair_hints) ? result.repair_hints.slice(0, 8) : [],
+    issue_repair_context_count: arrayLength(issueRepairContexts),
+    issue_repair_contexts: issueRepairContexts.slice(0, 4),
+    accounting: result?.accounting && typeof result.accounting === "object" ? result.accounting : {},
     next_tool: result?.next_tool || nextAction || draftNext || "",
     final_result_present: Boolean(result?.final_result),
   };
@@ -132,8 +136,6 @@ const episodeTypeSchema = StringEnum(["main", "regular", "special", "ova", "oad"
 const dispositionSchema = StringEnum([
   "map_to_bangumi",
   "non_bangumi_or_supplemental",
-  "needs_more_evidence",
-  "unaligned_fail_closed",
 ]);
 const episodeNumberFieldSchema = StringEnum(["sort", "ep"]);
 
@@ -294,7 +296,7 @@ const tools = [
   proxyTool(
     "upsert_recipe_group_decision_one",
     "Upsert One Recipe Group Decision",
-    "Preferred action-style path: save exactly one compact Pi-owned group/subcluster decision. The decision parameter is schema-shaped: use subject_id, episode_id/episode_ids, media_kind, episode_type, group_ref, file_numbers/file_number_range/path_contains/exact_paths, and a short reason. Do not invent plural target fields such as target_subject_ids; split multi-movie or mixed target surfaces into separate one-row decisions. Python compiles the saved decision into recipe_params_draft but does not choose Bangumi targets or supplemental status.",
+    "Preferred action-style path: save exactly one compact Pi-owned group/subcluster decision. The decision parameter is schema-shaped: use subject_id, episode_id/episode_ids, media_kind, episode_type, group_ref, file_numbers/file_number_range/path_contains/exact_paths, and a short reason. Use episode_ids only for one-to-one exact-path expansion; do not combine it with episode_id/sort/ep. Do not invent plural target fields such as target_subject_ids; split multi-movie or mixed target surfaces into separate one-row decisions. Python compiles the saved decision into recipe_params_draft but does not choose Bangumi targets or supplemental status.",
     strictObject({
       decision: recipeGroupDecisionSchema,
       board_delta: Type.Optional(Type.Any()),
@@ -305,7 +307,7 @@ const tools = [
   proxyTool(
     "upsert_recipe_group_decision",
     "Upsert Recipe Group Decision",
-    "Save a small batch of Pi-owned group/subcluster decisions using the same schema-shaped rows as upsert_recipe_group_decision_one. Prefer upsert_recipe_group_decision_one for normal work. Do not invent plural target fields such as target_subject_ids; split multi-movie or mixed target surfaces into separate decisions. Default result is compact counts/readiness; detail=true returns full saved decision/debug draft data. Python does not choose Bangumi targets or supplemental status.",
+    "Save a batch of Pi-owned group/subcluster decisions using the same schema-shaped rows as upsert_recipe_group_decision_one. Valid canonical rows are saved; invalid rows are reported by decision_index/decision_name and are not migrated. Prefer upsert_recipe_group_decision_one for incremental work. Do not invent plural target fields such as target_subject_ids; split multi-movie or mixed target surfaces into separate decisions. Default result is compact counts/readiness; detail=true returns full saved decision/debug draft data. Python does not choose Bangumi targets or supplemental status.",
     strictObject({
       decisions: Type.Optional(Type.Array(recipeGroupDecisionSchema)),
       remove_decision_names: Type.Optional(Type.Array(Type.String())),
@@ -423,7 +425,7 @@ const tools = [
   proxyTool(
     "find_bangumi_targets_for_local_file",
     "Find Bangumi Targets For Local File",
-    "Fact helper: search Bangumi and return compact subject/episode rows for one visible source_path. Use it for exact side files or mixed-group subclusters that need row-surface evidence. It does not recommend targets or recipes.",
+    "Fact helper: search Bangumi and return compact subject/episode rows plus duration_candidate_episode_rows for one visible source_path. Use it for exact side files or mixed-group subclusters that need row-surface evidence. It does not recommend targets or recipes.",
     strictObject({
       source_path: Type.String(),
       title_query: Type.Optional(Type.String()),
@@ -455,7 +457,7 @@ const tools = [
   proxyTool(
     "validate_organize_recipe_params_patch",
     "Validate Organize Recipe Params Patch",
-    "Patch the latest recipe params from the previous params validate/submit, then validate. If no previous params validation exists but recipe_params_draft does, the patch updates that draft and returns coverage preview without running verifier. Put the small Patch Delta in patch_delta so board write and patch/draft update happen in one transaction.",
+    "Patch the latest recipe params from the previous params validate/submit, then validate. If no previous params validation exists but recipe_params_draft does, the patch updates that draft and returns coverage preview without running verifier. append_rules is only for new named rules; use patch_rules/replace_rules for existing names or remove_rule_names before appending a replacement. Put the small Patch Delta in patch_delta so board write and patch/draft update happen in one transaction.",
     strictObject({
       recipe_params_patch: recipeParamsPatchSchema,
       patch_delta: Type.Optional(Type.Any()),
@@ -465,9 +467,9 @@ const tools = [
   proxyTool(
     "submit_organize_recipe_params",
     "Submit Organize Recipe Params",
-    `Build the final OrganizeRecipeDraft from semantic rule parameters, then submit it through the strict Python verifier gate. Put the Submit Snapshot in submit_snapshot so board write and submit happen in one transaction.\n${recipeParamsQuickReference}`,
+    `Build the final OrganizeRecipeDraft from semantic rule parameters, then submit it through the strict Python verifier gate. After an accepted validate_recipe_params_draft/validate_organize_recipe_params result, omit recipe_params to reuse the accepted canonical payload. Put the Submit Snapshot in submit_snapshot so board write and submit happen in one transaction.\n${recipeParamsQuickReference}`,
     strictObject({
-      recipe_params: recipeParamsPayloadSchema,
+      recipe_params: Type.Optional(recipeParamsPayloadSchema),
       summary: Type.Optional(Type.String()),
       submit_snapshot: Type.Optional(Type.Any()),
       detail: Type.Optional(Type.Boolean()),
@@ -476,7 +478,7 @@ const tools = [
   proxyTool(
     "submit_organize_recipe_params_patch",
     "Submit Organize Recipe Params Patch",
-    "Patch the latest recipe params from the previous params validate/submit, then submit. If the same patch was just accepted by validate_organize_recipe_params_patch, submit reuses that accepted merged params instead of applying append_rules twice. Use submit_snapshot for the final board snapshot; patch_delta is optional when submitting a newly changed patch.",
+    "Patch the latest recipe params from the previous params validate/submit, then submit. append_rules is only for new names; patch or replace existing names instead. If the same patch was just accepted by validate_organize_recipe_params_patch, submit reuses that accepted merged params instead of applying append_rules twice. Use submit_snapshot for the final board snapshot; patch_delta is optional when submitting a newly changed patch.",
     strictObject({
       recipe_params_patch: recipeParamsPatchSchema,
       summary: Type.Optional(Type.String()),

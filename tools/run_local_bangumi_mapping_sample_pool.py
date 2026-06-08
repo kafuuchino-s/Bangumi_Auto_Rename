@@ -482,6 +482,14 @@ def _sample_row(sample_path: Path, result: dict[str, Any], elapsed_ms: int) -> d
             return snapshot.get(key)
         return pi_session_summary.get(key)
 
+    runner_result = (
+        (snapshot.get("pi_runtime_result") or {}).get("runner_result", {})
+        if isinstance(snapshot, dict) and isinstance(snapshot.get("pi_runtime_result"), dict)
+        else {}
+    )
+    runner_result = runner_result if isinstance(runner_result, dict) else {}
+    assistant_output = runner_result.get("assistant_output") if isinstance(runner_result.get("assistant_output"), dict) else {}
+
     summary_value = snapshot.get("summary") or result.get("summary") if isinstance(snapshot, dict) else result.get("summary")
     return {
         "sample": sample_path.as_posix(),
@@ -509,10 +517,15 @@ def _sample_row(sample_path: Path, result: dict[str, Any], elapsed_ms: int) -> d
         "pi_tool_call_counts": snapshot.get("pi_tool_call_counts") if isinstance(snapshot, dict) else pi_session_summary.get("pi_tool_call_counts"),
         "pi_tool_sequence": snapshot.get("pi_tool_sequence") if isinstance(snapshot, dict) else pi_session_summary.get("pi_tool_sequence"),
         "pi_turn_count": (
-            (snapshot.get("pi_runtime_result") or {}).get("runner_result", {}).get("turn_count")
-            if isinstance(snapshot, dict) and isinstance(snapshot.get("pi_runtime_result"), dict)
+            runner_result.get("turn_count")
+            if runner_result
             else None
         ),
+        "pi_assistant_message_count": assistant_output.get("assistant_message_count"),
+        "pi_assistant_max_text_chars": assistant_output.get("max_text_chars"),
+        "pi_assistant_long_text_message_count": assistant_output.get("long_text_message_count"),
+        "pi_assistant_very_long_text_message_count": assistant_output.get("very_long_text_message_count"),
+        "pi_assistant_reasoning_heading_message_count": assistant_output.get("reasoning_heading_message_count"),
         "first_turn_estimated_tokens": snapshot.get("first_turn_estimated_tokens") if isinstance(snapshot, dict) else None,
         "agent_facing_locator_count": snapshot.get("agent_facing_locator_count") if isinstance(snapshot, dict) else None,
         "submit_rejection_count": snapshot.get("submit_rejection_count") if isinstance(snapshot, dict) else None,

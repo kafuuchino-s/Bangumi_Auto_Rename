@@ -358,7 +358,6 @@ If global TMDB identity evidence is insufficient or contradictory, call fail_clo
 Do not use native tools to edit, write, move, copy, link, rename, or inspect old run artifacts for answers.
 Available lazy skills:
 /skill:tmdb-bridge-contract: use when bridge draft shape, TMDB ID/node policy, or verifier repair is unclear.
-/skill:anime-release-reading: use when local release naming semantics remain ambiguous.
 Try to finish before ${caseInput.runtime_policy?.suggested_finish_before_seconds ?? 0} seconds.
 `.trim();
 await fs.writeFile(result.instruction_path, instructionText, "utf8");

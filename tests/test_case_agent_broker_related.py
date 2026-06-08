@@ -84,6 +84,45 @@ def test_disallowed_relation_skipped():
     assert any('disallowed' in note for note in result.notes)
 
 
+def test_requested_strict_relation_filter_allows_strict_alias():
+    workspace = _workspace()
+    registry = EvidenceCardRegistry.from_workspace(workspace)
+    client = FakeClient([FakeRelation(2, 2, 'sequel')], {2: FakeSubject(2, 2)})
+    request = EvidenceRequest(
+        request_ref='REQ1',
+        request_type='related_expansion',
+        subject_refs=['BS1'],
+        relation_kinds=['sequel'],
+    )
+
+    subjects, relations, provenance, result, _ = execute_related_expansion(request, workspace, registry, BudgetLedger(workspace.budget), client)
+
+    assert len(subjects) == 1
+    assert len(relations) == 1
+    assert relations[0].relation_kind == 'sequel'
+    assert len(provenance) == 1
+    assert result.accepted is True
+
+
+def test_requested_unknown_relation_filter_rejected_before_related_api_call():
+    workspace = _workspace()
+    registry = EvidenceCardRegistry.from_workspace(workspace)
+    client = FakeClient([FakeRelation(2, 2, '续集')], {2: FakeSubject(2, 2)})
+    request = EvidenceRequest(
+        request_ref='REQ1',
+        request_type='related_expansion',
+        subject_refs=['BS1'],
+        relation_kinds=['unknown'],
+    )
+
+    subjects, relations, provenance, result, _ = execute_related_expansion(request, workspace, registry, BudgetLedger(workspace.budget), client)
+
+    assert subjects == [] and relations == [] and provenance == []
+    assert result.accepted is False
+    assert any('unknown' in note for note in result.notes)
+    assert client.calls == []
+
+
 def test_non_anime_skipped():
     workspace = _workspace()
     registry = EvidenceCardRegistry.from_workspace(workspace)

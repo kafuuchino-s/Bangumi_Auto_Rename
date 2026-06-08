@@ -24,7 +24,7 @@ Tool arguments count as output too. Keep `board_delta`, `validation_snapshot`, `
 
 For complex packages, the first Bangumi move is one reliable main-title search, then `select_bangumi_anchor_subject(anchor_subject_id, reason)`; do not fail_closed from an empty draft before that anchor exists unless the case input is malformed.
 
-Prefer `group_ref` for ordinary continuous groups. For numbered one-file or subcluster exceptions, prefer `group_ref + file_numbers/file_number_range/path_contains` before long `exact_paths`. Use full `exact_paths` only for unnumbered, path-ambiguous, or truly mixed exceptions. This output discipline does not reduce the semantic method: still use anchor atlas, row-surface closure, duration/title/content-shape evidence, and targeted episode rows when they help.
+Prefer `group_ref` for ordinary continuous groups. Do not restate a complete group with a full copied `source_pattern`; release codec/audio/hash tokens often vary and cause partial coverage. For numbered one-file or subcluster exceptions, prefer `group_ref + file_numbers/file_number_range/path_contains` before long `exact_paths`. Use full `exact_paths` only for unnumbered, path-ambiguous, or truly mixed exceptions. This output discipline does not reduce the semantic method: still use anchor atlas, row-surface closure, duration/title/content-shape evidence, and targeted episode rows when they help.
 
 ## References
 
@@ -49,9 +49,13 @@ Work like a person sorting a release:
 
 The important rhythm is not a fixed checklist. It is: evidence changes judgment, judgment becomes a saved row, a complete saved draft gets validated, verifier feedback gets patched.
 
+Do not let targeted evidence become a substitute for a work product. After a useful evidence burst, save the stable rows, update draft params, validate, or record one compact named blocker; then keep the next evidence call tied to that blocker.
+
 For complex packages, the first anchor is the door into the whole family. Make the first Bangumi evidence batch one reliable main-title search, then use `select_bangumi_anchor_subject(anchor_subject_id, reason)` to record that Pi-chosen anchor and read the complete reachable anime/video genealogy plus compact row surfaces. Do not start by searching every visible side title; treat per-visible-title search as fallback for a named item still missing or contradictory after the atlas.
 
 After an atlas, graph pass, or episode batch changes your judgment, save the stable subset immediately. A useful human workpaper row can be one main season, one exact movie, one OVA/OAD file, one side mini-anime sequence, or one scoped evidence-gap supplemental subset. The hardest frontier can stay open while stable rows are already saved.
+
+When a checkpoint or draft preview reports missing rows, saving only the obvious main seasons is not enough if side/exception evidence was already gathered. Continue by saving the next stable side/exception subcluster, or record one specific blocker tied to one group/source path and one next fact.
 
 A saved row is a target-surface claim, not just a local-group claim. Before saving a `group_ref` row, ask whether every selected file shares one Bangumi subject and one exposed row surface. If the local group contains distinct movie titles, recap parts, OVA/OAD files, numbered specials, split variants, or extras, save only the stable subcluster with `file_numbers`, `file_number_range`, `path_contains`, exclusions, or `exact_paths` when numbering/path filters are not safe.
 
@@ -61,8 +65,8 @@ Use the Case Board as a notebook, and group decisions as the working spreadsheet
 
 - `append_case_board_note(section_type:"Initial Board"|"Board Delta", ...)` records compact local shape, evidence changes, and blockers. Do not paste tool JSON into the board.
 - `get_case_board_notes(mode:"tail")` restores context after drift or compression.
-- `upsert_recipe_group_decision_one(decision={...})` saves one compact mapped or supplemental judgment. This is the normal action path.
-- `upsert_recipe_group_decision(decisions=[...])` is only for a small batch. If the tool rejects the batch as too large, split it into one-row calls.
+- `upsert_recipe_group_decision_one(decision={...})` saves one compact mapped or supplemental judgment. This is the normal incremental action path.
+- `upsert_recipe_group_decision(decisions=[...])` accepts canonical decision batches. Valid rows are saved; invalid rows are rejected by `decision_index` / `decision_name` and must be resent after repair.
 - `get_recipe_group_decisions(detail=false)` reads saved decisions and compiled draft coverage.
 - `upsert_recipe_params_draft(rules=[...])` is for full params rows when you already know the row shape.
 - `get_recipe_params_draft(detail=false)` reports local coverage preview; coverage is not semantic validation.
@@ -92,23 +96,28 @@ One unnumbered file is not automatically a multi-episode span. Use `source_unit:
 
 Params validation is a trial check, not final submission. Invalid or review feedback is useful.
 
+Before finalizing a numbered side/SP/OVA/movie-like file as supplemental, Pi should check that target surface itself. Use `find_bangumi_targets_for_local_file` with the exact visible `source_path` or one representative path for a uniform sequence; inspect returned `duration_candidate_episode_rows` as facts, not recommendations. Candidate rows include `ordinal_alignment` between the local group title and candidate subject title; use it as evidence when choosing among same-duration sequel/side subjects. Keep supplemental only when that evidence does not expose a supportable row or the surface is explicitly exhausted.
+
+When validation or submit returns `issue_repair_contexts`, use those structured facts before choosing a cheap patch. They summarize the affected source paths, duration/path shape, candidate exposed rows, and the next repair action; keep the correction in params patch tool arguments.
+
 Repair lock:
 
 - coverage and exact-path issues repair local selectors;
 - duplicate targets repair sequence shape, split variants, wrong target surfaces, or exact exceptions;
 - missing target rows repair `episode_type`, `episode_range`, `episode_number_field`, `episode_offset`, `episode_id`, or the selected exposed row;
-- review warnings get only the targeted evidence they name.
+- review warnings get only the targeted evidence they name;
+- numbered supplemental sequence warnings need one representative `find_bangumi_targets_for_local_file` call for the exact sequence path, then validation again. Python is asking for Pi-owned evidence provenance, not deciding whether the returned rows are supportable.
 
 Do not change a plausible mapped OVA/OAD/SP/movie/side-story group to supplemental merely to make the verifier pass. If duplicate feedback pairs a short side-folder file with a long main movie/episode target, treat the duration/content-shape mismatch as evidence against reusing that target surface, not as evidence that the side file is disposable. Change semantic target or supplemental status only when targeted evidence contradicts the mapping or the exact side frontier is exhausted.
 
-When validation is accepted and there are no `review_warnings`, submit immediately with `submit_snapshot`, then call `goal_complete`. `budget_exhausted` is a runner outcome, not a semantic `fail_closed` reason.
+When validation is accepted and there are no `review_warnings`, explicitly call `submit_organize_recipe_params` with `submit_snapshot`, then call `goal_complete`. `budget_exhausted` is a runner outcome, not a semantic `fail_closed` reason.
 
 ## Params Reminders
 Gold shapes for `upsert_recipe_group_decision_one`:
 ```jsonl
 {"decision":{"name":"Main TV","group_ref":"LG1","subject_id":123,"media_kind":"tv","episode_type":"regular","reason":"local numbering matches exposed regular rows"}}
 {"decision":{"name":"Side mini sequence","group_ref":"LG6","source_pattern":"Show/SPs/Show SP{ep:02}.mkv","episode_range":"1-13","subject_id":456,"media_kind":"sp","episode_type":"regular","reason":"side-folder shorts match exposed mini-anime rows"}}
-{"decision":{"name":"Duplicate side variant","group_ref":"LG6","path_contains":["SP08_2"],"disposition":"non_bangumi_or_supplemental","reason":"split package variant has no distinct exposed row"}}
+{"decision":{"name":"Duplicate side variant","group_ref":"LG6","path_contains":["Variant-B"],"disposition":"non_bangumi_or_supplemental","reason":"split package variant has no distinct exposed row"}}
 {"decision":{"name":"Exact special","group_ref":"LG4","file_numbers":[2],"subject_id":456,"media_kind":"sp","episode_id":789,"reason":"title matches special row"}}
 {"decision":{"name":"Movie one","group_ref":"LG4","file_numbers":[1],"subject_id":111,"media_kind":"movie","reason":"first movie file title matches this movie subject"}}
 {"decision":{"name":"Movie two","group_ref":"LG4","file_numbers":[2],"subject_id":222,"media_kind":"movie","reason":"second movie file title matches this movie subject"}}
@@ -116,7 +125,7 @@ Gold shapes for `upsert_recipe_group_decision_one`:
 ```
 `group_ref` is only local selector shorthand. It never chooses `subject_id`, `episode_id`, `media_kind`, `episode_type`, or supplemental status.
 One decision row has one target surface. Do not write plural target fields such as `target_subject_ids`, `subject_ids`, or `bangumi_subject_ids`. For two movies, two exact specials, or a mixed `SPs` folder, split into multiple `upsert_recipe_group_decision_one` calls with `file_numbers`, `file_number_range`, `path_contains`, or `exact_paths`.
-Use `group_ref + file_numbers/file_number_range/path_contains` for numbered one-off movies, OVA/OAD/SP files, irregular exceptions, and mixed-folder subclusters when the local numbering/filter is safe. Use full `exact_paths` only when numbering is absent, ambiguous, or the subcluster cannot be expressed compactly. Use `group_ref` alone for ordinary complete local groups whose scaffold already captures the sequence. Use `group_ref + source_pattern` only when you need an explicit side-folder/subcluster template; that `source_pattern` must match files in the selected group and include `{ep}` for sequence mapping.
+Use `group_ref + file_numbers/file_number_range/path_contains` for numbered one-off movies, OVA/OAD/SP files, irregular exceptions, and mixed-folder subclusters when the local numbering/filter is safe. Use full `exact_paths` only when numbering is absent, ambiguous, or the subcluster cannot be expressed compactly. Use `group_ref` alone for ordinary complete local groups whose scaffold already captures the sequence. Use `group_ref + source_pattern` only when you need an explicit side-folder/subcluster template; without `file_numbers`, `file_number_range`, `path_contains`, `exclude_path_contains`, or `exact_paths`, that `source_pattern` must match the whole group and include `{ep}` for sequence mapping.
 Tool shape is strict. Write only canonical params fields; do not use aliases such as `source_path`, `path`, `source_template`, `range`, `offset`, nested `select`/`target`/`episode`, plural subject fields, or boolean flags. Write `episode_range` as a string such as `"1-13"` or use `episode_range_start/end`; do not pass `[1,13]`. Use legal `media_kind` values only: `tv`, `movie`, `ova`, `oad`, `sp`, `special`, or `unknown`; do not use raw surface words such as `web` or `anime`.
 Use the Bangumi row's legal `episode_type`; SP filenames and `media_kind:"sp"` do not imply `episode_type:"special"`. For exact `episode_id` rules, omit `episode_type` if unsure; Python can canonicalize from exposed rows.
 Read `references/recipe-params.md` only when canonical params fields, selector syntax, or exact patch shape remains unclear after tool repair hints.

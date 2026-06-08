@@ -19,10 +19,10 @@ Action-first output mode:
 - Do not paste `get_case_overview`, `list_local_groups`, `get_local_group_detail`, or atlas JSON into notes. Cite `LG*`, subject IDs, episode IDs, and one-line blockers.
 - For complex packages, the first Bangumi move is one reliable main-title search, then `select_bangumi_anchor_subject(anchor_subject_id, reason)`; do not fail_closed from an empty draft before that anchor exists unless the case input is malformed.
 - Use `upsert_recipe_group_decision_one` for each stable row, draft tools for unusual bulk edits, `validate_recipe_params_draft` for complete draft checks, patch tools for named verifier issues, and submit tools for accepted params.
-- Prefer `group_ref` for ordinary continuous groups. For numbered one-file/subcluster exceptions, prefer `group_ref + file_numbers/file_number_range/path_contains` before long `exact_paths`.
+- Prefer `group_ref` for ordinary continuous groups. Do not copy a full release filename into `source_pattern` for a complete group; codec/audio/hash tokens vary and can leave files uncovered. For numbered one-file/subcluster exceptions, prefer `group_ref + file_numbers/file_number_range/path_contains` before long `exact_paths`.
 - Decision shape is strict. Write `episode_range` as a string such as `"1-13"` or use `episode_range_start/end`; do not pass `[1,13]`. Use legal `media_kind` values only: `tv`, `movie`, `ova`, `oad`, `sp`, `special`, or `unknown`.
 - One decision row has one target surface. Use `subject_id`, not plural fields such as `target_subject_ids`; split two movies, two specials, or mixed side-folder subclusters into separate `upsert_recipe_group_decision_one` calls.
-- If you combine `group_ref` with `source_pattern`, the pattern must be a literal file template that matches the selected group and contains `{ep}` for sequence mapping. A mismatched pattern is a tool-shape error to repair, not something Python will guess around.
+- If you combine `group_ref` with `source_pattern`, the pattern must be a literal file template that matches the selected group and contains `{ep}` for sequence mapping. Without `file_numbers`, `file_number_range`, `path_contains`, `exclude_path_contains`, or `exact_paths`, it must match the whole group. A mismatched or partial pattern is a tool-shape error to repair, not something Python will guess around.
 - Use full `exact_paths` only for unnumbered, path-ambiguous, or truly mixed exceptions.
 - Tool defaults are compact. Pass `detail:true` only for debugging full repair hints, compiled plans, or compiled recipe details.
 
@@ -37,6 +37,10 @@ Save judgments as soon as they become stable. A stable target-surface judgment b
 
 Stable rows can be partial progress: main TV sequence, exact movie, OVA/OAD file, mini-anime sequence, supported SP subset, or scoped evidence-gap supplemental subset. A hard side frontier can stay open while unrelated stable rows are saved.
 
-When saved decisions compile into a complete draft, call `validate_recipe_params_draft(validation_snapshot=...)`. If verifier feedback appears, patch only the named rule/path/target or gather the one targeted fact it asks for. When validation is accepted with no review warnings, submit immediately and then call `goal_complete`.
+When a workpaper checkpoint or draft preview says rows are missing, do not satisfy it by saving only the easy main-season rows and then restarting broad evidence. Save the next stable side/exception subcluster too, or record one specific blocker tied to one group/source path and one next fact.
+
+Before finalizing a numbered side/SP/OVA/movie-like file as supplemental, call `find_bangumi_targets_for_local_file` for the exact visible `source_path` or one representative path in a uniform sequence. Treat returned `duration_candidate_episode_rows` as evidence for Pi to judge; keep supplemental only when that fact check exposes no supportable row or the target surface is explicitly exhausted. If validation returns a numbered supplemental sequence review warning, do that representative targeted lookup and validate again.
+
+When saved decisions compile into a complete draft, call `validate_recipe_params_draft(validation_snapshot=...)`. If verifier feedback appears, patch only the named rule/path/target or gather the one targeted fact it asks for. When validation is accepted with no review warnings, explicitly call `submit_organize_recipe_params` with `submit_snapshot`, then call `goal_complete`.
 
 If validation says a side-folder file duplicated a main movie/episode target, read that as target-key feedback, not proof the local videos are the same content. When title, runtime, folder role, or content shape makes the side file incompatible with the main movie/episode, leave the main exact rule intact and reopen the atlas row surface for the side group. Patch the side rule to a distinct exposed special/side row, or to a scoped supplemental gap only after that row surface is exhausted.

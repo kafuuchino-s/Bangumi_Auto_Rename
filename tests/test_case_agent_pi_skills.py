@@ -59,10 +59,10 @@ def test_local_bangumi_prompt_template_is_official_entry_briefing():
     assert 'title, runtime, folder role, or content shape makes the side file incompatible' in prompt
     assert 'leave the main exact rule intact and reopen the atlas row surface for the side group' in prompt
     assert 'validate_recipe_params_draft(validation_snapshot=...)' in prompt
-    assert 'submit immediately and then call `goal_complete`' in prompt
+    assert 'explicitly call `submit_organize_recipe_params`' in prompt
     assert 'old artifacts or tests' in prompt
     assert 'Do not touch real media files.' in prompt
-    for concrete_title in ['sample_0096', 'OVERLORD', 'Ple Ple']:
+    for concrete_title in ['sample_0096', 'OVERLORD', 'Ple Ple', 'SP08_2']:
         assert concrete_title not in prompt
 
 
@@ -180,6 +180,7 @@ def test_pi_skills_document_compact_evidence_flow_and_legal_recipe_episode_types
     assert 'sample_0096' not in recipe_docs
     assert 'OVERLORD' not in recipe_docs
     assert 'Ple Ple' not in recipe_docs
+    assert 'SP08_2' not in recipe_docs
     assert template['rules'][0]['target']['episode_type'] == 'regular'
     assert template['rules'][0]['select']['filename_regex'] == 'Episode {ep}.mkv'
 
@@ -310,7 +311,7 @@ def test_pi_skills_document_compact_evidence_flow_and_legal_recipe_episode_types
     assert 'SP filenames and `media_kind: "sp"` do not imply `episode_type: "special"`.' in recipe_skill
     assert 'Supplemental rules do not need `episode_range`, `episode_offset`, `episode_type`, `subject_id`, or `episode_id`.' in recipe_skill
     assert 'When applying a patch, pass a small `patch_delta` to the patch tool' in recipe_skill
-    assert 'submit immediately with `submit_snapshot`' in recipe_skill
+    assert 'explicitly call `submit_organize_recipe_params` with `submit_snapshot`' in recipe_skill
     assert 'budget_exhausted` is a runner outcome' in recipe_skill
     assert 'old `final_result.json` files, repository tests, and templates are not evidence' in recipe_skill
 
@@ -470,6 +471,10 @@ def test_pi_skills_document_compact_evidence_flow_and_legal_recipe_episode_types
     assert 'use `episode_offset: "EP"`' in recipe_docs
     assert 'Treat params validation as a trial check of the current semantic recipe' in bangumi_skill
     assert 'Validation is a trial check that can return verifier issues or review warnings' in bangumi_skill
+    assert 'Before finalizing a numbered side/SP/OVA/movie-like file as supplemental' in bangumi_skill
+    assert 'When validation or submit returns `issue_repair_contexts`' in bangumi_skill
+    assert 'Invalid duplicate-target feedback may include `issue_repair_contexts`' in bangumi_tools_reference
+    assert 'quick check for uncertain supplemental decisions' in bangumi_tools_reference
     assert 'get_local_recipe_params_scaffold' in bangumi_skill
     assert 'not a target recommendation' in bangumi_skill
     assert 'Search Discipline' in bangumi_skill
@@ -633,6 +638,7 @@ def test_pi_skills_document_compact_evidence_flow_and_legal_recipe_episode_types
     assert 'long unnumbered standalone title' in bangumi_skill
     assert 'use `find_bangumi_targets_for_local_file` with that exact `source_path`' in bangumi_skill
     assert 'Do not use `non_bangumi_or_supplemental` for a numbered `SP01` / `SP02` / `S00E01`-style file' in recipe_docs
+    assert 'Before keeping a numbered SP/OVA/OAD/movie-like visible file supplemental' in recipe_docs
     assert 'validate a supplemental draft with a clear reason' in release_skill
     assert 'validation says the candidate target is missing' in release_skill
     assert 'long standalone file has a distinctive title but no episode number' in release_skill

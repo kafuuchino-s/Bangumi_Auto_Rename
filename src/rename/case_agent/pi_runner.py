@@ -373,16 +373,25 @@ def run_pi_case_agent(
             runtime_model_config=runtime_model_config,
         )
 
+    if state.final_result is None and getattr(state, 'latest_recipe_params_validation_accepted', False):
+        auto_submit = state.handle_tool(
+            'submit_organize_recipe_params',
+            {
+                'summary': 'Auto-submit latest accepted params validation after Pi runtime ended before the explicit final submit.',
+                'submit_snapshot': {
+                    'source': 'post_runtime_auto_submit_accepted_validation',
+                    'latest_validation_source': getattr(state, 'latest_recipe_params_validation_source', ''),
+                },
+            },
+        )
+        runtime['post_runtime_auto_submit_accepted_validation'] = auto_submit
+
     if state.final_result is None and runtime.get('error') == 'timeout':
         auto_timeout_fail_closed = state.auto_fail_closed_no_final_result(
             reason=f'Pi runtime exceeded wall-clock timeout of {timeout_seconds} seconds without an accepted recipe.',
         )
         if not auto_timeout_fail_closed.get('skipped'):
             runtime['post_runtime_timeout_fail_closed'] = auto_timeout_fail_closed
-    if state.final_result is None:
-        auto_finalization = state.auto_finalize_accepted_validation()
-        if not auto_finalization.get('skipped'):
-            runtime['post_runtime_auto_finalization'] = auto_finalization
     if state.final_result is None:
         auto_fail_closed = state.auto_fail_closed_no_final_result(
             reason='budget_exhausted',

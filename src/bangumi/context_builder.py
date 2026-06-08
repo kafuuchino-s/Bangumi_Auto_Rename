@@ -14,6 +14,7 @@ from .models import (
     BangumiSubjectRelation,
     BangumiTVContext,
 )
+from .relation_filters import STRICT_RELATED_RELATION_KINDS, is_strict_related_relation, normalize_relation_name
 
 
 class AnimeInfoDict(TypedDict, total=False):
@@ -65,10 +66,16 @@ class BangumiContextBuilder:
         "番外篇": 4,
         "总集篇": 3,
         "衍生": 3,
-        "其他": 2,
         "不同演绎": 1,
+        "sequel": 5,
+        "prequel": 4,
+        "side_story": 4,
+        "side story": 4,
+        "special": 4,
+        "child": 3,
+        "adaptation": 1,
     }
-    ALLOWED_RELATED_RELATIONS: frozenset[str] = frozenset({"续集", "前传", "番外篇", "不同演绎", "演绎", "总集篇", "衍生"})
+    ALLOWED_RELATED_RELATIONS: frozenset[str] = STRICT_RELATED_RELATION_KINDS
 
     def __init__(self, client: BangumiClient | None = None) -> None:
         self.client: BangumiClient = client or BangumiClient()
@@ -257,8 +264,8 @@ class BangumiContextBuilder:
                     break
                 if relation.id in seen or relation.type != self.ANIME_TYPE:
                     continue
-                relation_name = (relation.relation or "").strip()
-                if relation_name not in self.ALLOWED_RELATED_RELATIONS:
+                relation_name = normalize_relation_name(relation.relation or "")
+                if not is_strict_related_relation(relation_name):
                     continue
                 seen.add(relation.id)
 
@@ -271,14 +278,14 @@ class BangumiContextBuilder:
                 score = self._score_related_subject(full_subject, relation, anime_info)
                 scored_by_id[full_subject.id] = {
                     "subject": full_subject,
-                    "relation": relation.relation or "related",
-                    "relation_to_main": relation.relation or "related",
+                    "relation": relation_name,
+                    "relation_to_main": relation_name,
                     "score": score,
                     "distance": current_distance + 1,
                     "parent_subject_id": current_subject_id,
-                    "relation_path": [*current_path, self._make_relation_edge(current_subject_id, current_subject, relation.relation or "related", full_subject)],
+                    "relation_path": [*current_path, self._make_relation_edge(current_subject_id, current_subject, relation_name, full_subject)],
                 }
-                queue.append({"subject_id": full_subject.id, "distance": current_distance + 1, "relation_path": [*current_path, self._make_relation_edge(current_subject_id, current_subject, relation.relation or "related", full_subject)]})
+                queue.append({"subject_id": full_subject.id, "distance": current_distance + 1, "relation_path": [*current_path, self._make_relation_edge(current_subject_id, current_subject, relation_name, full_subject)]})
 
         scored = list(scored_by_id.values())
         scored.sort(key=lambda item: item["score"], reverse=True)
@@ -390,8 +397,26 @@ class BangumiContextBuilder:
             return False
         if source_form_hint == "tv_series" and max(subject.total_episodes, subject.eps) > 1:
             return False
-        allowed_relations = {"总集篇", "番外篇", "演绎", "不同演绎", "衍生"}
-        if source_form_hint not in self.SINGLETON_SOURCE_HINTS and relation not in allowed_relations and relation_to_main not in allowed_relations:
+        allowed_relations = {
+            "总集篇",
+            "番外篇",
+            "演绎",
+            "不同演绎",
+            "衍生",
+            "side_story",
+            "side story",
+            "special",
+            "parent",
+            "adaptation",
+            "child",
+        }
+        relation_key = normalize_relation_name(relation)
+        relation_to_main_key = normalize_relation_name(relation_to_main)
+        if (
+            source_form_hint not in self.SINGLETON_SOURCE_HINTS
+            and relation_key not in allowed_relations
+            and relation_to_main_key not in allowed_relations
+        ):
             return False
         return True
 
@@ -494,7 +519,7 @@ class BangumiContextBuilder:
         anime_info: AnimeInfoDict,
     ) -> float:
         base = self._score_subject(anime_info, subject.name_cn or subject.name, subject)
-        relation_bonus = self.RELATION_PRIORITY.get(relation.relation or "", 0)
+        relation_bonus = self.RELATION_PRIORITY.get(normalize_relation_name(relation.relation or ""), 0)
         return base + relation_bonus
 
     def _is_relevant_related_subject(
@@ -506,11 +531,7 @@ class BangumiContextBuilder:
         if subject.type != self.ANIME_TYPE:
             return False
 
-        relation_name = relation.relation or ""
-        if relation_name in {"", "其他", "角色", "出演", "制作人员", "角色出演", "游戏", "书籍", "音乐"}:
-            return False
-
-        return True
+        return is_strict_related_relation(relation.relation or "")
 
     def _make_relation_edge(
         self,
