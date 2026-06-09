@@ -128,6 +128,8 @@ Use this while exploring. It saves compact Pi-owned group/subcluster judgments a
 
 Keep the tool arguments compact and schema-correct. Use short reasons. For numbered one-file or subcluster decisions, prefer `group_ref` plus `file_numbers`, `file_number_range`, `path_contains`, or `exclude_path_contains`; use full `exact_paths` only when the compact selector cannot name the files safely. Use `episode_range` as a string such as `"1-13"`, not `[1,13]`. Use legal `media_kind` values only (`tv`, `movie`, `ova`, `oad`, `sp`, `special`, `unknown`).
 
+Board and transaction notes are strict small envelopes, not arbitrary JSON. Use `board_delta`/`content` with `summary`, `observations`, `blockers`, `next_action`; `validation_snapshot` with `summary`, `accepted_scope`, `open_issues`, `next_action`; `patch_delta` with `summary`, `changed_rules`, `evidence_refs`, `reason`; and `submit_snapshot` with `summary`, `accepted_rule_count`, `review_notes`.
+
 `get_recipe_group_decisions({ "detail": false })`
 
 Reads saved decisions and the compiled draft coverage preview. If a group is only in reasoning, save it here before more broad evidence.

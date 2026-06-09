@@ -20,7 +20,7 @@ Do not paste full mapping tables, full recipe JSON, full drafts, or full verifie
 
 Do not emit visible self-reasoning headings such as "Deciding", "Evaluating", or "Considering". Do not write "enough evidence", "figured out", "should save", or "ready to validate" as prose; call the matching tool instead. Use `detail:false` defaults for normal work; pass `detail:true` only when debugging full `repair_hints`, `compiled_plan`, `organize_recipe`, or full draft details.
 
-Tool arguments count as output too. Keep `board_delta`, `validation_snapshot`, `submit_snapshot`, `reason`, and `summary` short. Do not paste `get_case_overview`, `list_local_groups`, `get_local_group_detail`, or atlas JSON into notes; cite `LG*`, subject IDs, episode IDs, and one-line blockers.
+Tool arguments count as output too. Keep `board_delta`, `validation_snapshot`, `patch_delta`, `submit_snapshot`, `reason`, and `summary` short. Transaction notes use strict small envelopes, not arbitrary JSON. Do not paste `get_case_overview`, `list_local_groups`, `get_local_group_detail`, or atlas JSON into notes; cite `LG*`, subject IDs, episode IDs, and one-line blockers.
 
 For complex packages, the first Bangumi move is one reliable main-title search, then `select_bangumi_anchor_subject(anchor_subject_id, reason)`; do not fail_closed from an empty draft before that anchor exists unless the case input is malformed.
 
@@ -44,7 +44,7 @@ Work like a person sorting a release:
 3. Build a side frontier from local groups that are anime/video-shaped but not the main run: SP, OVA, OAD, mini anime, recap, side story, parent-titled `SPs`, long standalone special-like files, and movie-like files.
 4. Close the frontier at the Bangumi row-surface level. A related subject can expose regular rows, special rows, OVA/OAD rows, movie-like rows, or one-off exact rows; one subject may support more than one local group or subcluster.
 5. When one group or subcluster becomes stable enough to test, save it with `upsert_recipe_group_decision_one`. Do not wait for the whole case, and do not narrate the stable judgment instead of saving it.
-6. When saved decisions compile into a draft covering every visible group, call `validate_recipe_params_draft(validation_snapshot=...)`.
+6. When saved decisions compile into a draft covering every visible group, call `validate_recipe_params_draft(validation_snapshot={summary, accepted_scope, open_issues, next_action})`.
 7. After validation, patch only named mechanical issues or targeted semantic gaps, then submit accepted params and call `goal_complete`.
 
 The important rhythm is not a fixed checklist. It is: evidence changes judgment, judgment becomes a saved row, a complete saved draft gets validated, verifier feedback gets patched.
@@ -63,16 +63,16 @@ A saved row is a target-surface claim, not just a local-group claim. Before savi
 
 Use the Case Board as a notebook, and group decisions as the working spreadsheet:
 
-- `append_case_board_note(section_type:"Initial Board"|"Board Delta", ...)` records compact local shape, evidence changes, and blockers. Do not paste tool JSON into the board.
+- `append_case_board_note(section_type:"Initial Board"|"Board Delta", content={summary, observations, blockers, next_action})` records compact local shape, evidence changes, and blockers. Do not paste tool JSON into the board.
 - `get_case_board_notes(mode:"tail")` restores context after drift or compression.
 - `upsert_recipe_group_decision_one(decision={...})` saves one compact mapped or supplemental judgment. This is the normal incremental action path.
 - `upsert_recipe_group_decision(decisions=[...])` accepts canonical decision batches. Valid rows are saved; invalid rows are rejected by `decision_index` / `decision_name` and must be resent after repair.
 - `get_recipe_group_decisions(detail=false)` reads saved decisions and compiled draft coverage.
 - `upsert_recipe_params_draft(rules=[...])` is for full params rows when you already know the row shape.
 - `get_recipe_params_draft(detail=false)` reports local coverage preview; coverage is not semantic validation.
-- `validate_recipe_params_draft(validation_snapshot=...)` runs the full verifier only after local coverage is complete.
+- `validate_recipe_params_draft(validation_snapshot={summary, accepted_scope, open_issues, next_action})` runs the full verifier only after local coverage is complete.
 
-Board transaction fields keep the note and action atomic: put `validation_snapshot` in validate tools, `patch_delta` in patch tools, and `submit_snapshot` in submit tools. `Verifier Delta` is appended by Python when validate/submit returns invalid or review.
+Board transaction fields keep the note and action atomic. Use strict envelopes: `board_delta`/`content` has `summary`, `observations`, `blockers`, `next_action`; `validation_snapshot` has `summary`, `accepted_scope`, `open_issues`, `next_action`; `patch_delta` has `summary`, `changed_rules`, `evidence_refs`, `reason`; `submit_snapshot` has `summary`, `accepted_rule_count`, `review_notes`. `Verifier Delta` is appended by Python when validate/submit returns invalid or review.
 
 A saved row should be testable. Do not save a row with only a name or only a local selector. Include either a Bangumi target or `disposition:"non_bangumi_or_supplemental"` plus a reason.
 
@@ -110,7 +110,7 @@ Repair lock:
 
 Do not change a plausible mapped OVA/OAD/SP/movie/side-story group to supplemental merely to make the verifier pass. If duplicate feedback pairs a short side-folder file with a long main movie/episode target, treat the duration/content-shape mismatch as evidence against reusing that target surface, not as evidence that the side file is disposable. Change semantic target or supplemental status only when targeted evidence contradicts the mapping or the exact side frontier is exhausted.
 
-When validation is accepted and there are no `review_warnings`, explicitly call `submit_organize_recipe_params` with `submit_snapshot`, then call `goal_complete`. `budget_exhausted` is a runner outcome, not a semantic `fail_closed` reason.
+When validation is accepted and there are no `review_warnings`, explicitly call `submit_organize_recipe_params` with `submit_snapshot={summary, accepted_rule_count, review_notes}`, then call `goal_complete`. `budget_exhausted` is a runner outcome, not a semantic `fail_closed` reason.
 
 ## Params Reminders
 Gold shapes for `upsert_recipe_group_decision_one`:

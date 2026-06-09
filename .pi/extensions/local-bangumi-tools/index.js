@@ -1,4 +1,5 @@
 import { defineTool } from "@earendil-works/pi-coding-agent";
+import { StringEnum } from "@earendil-works/pi-ai";
 import { Type } from "typebox";
 
 export const LOCAL_BANGUMI_TOOLS_ENV = {
@@ -8,10 +9,6 @@ export const LOCAL_BANGUMI_TOOLS_ENV = {
 
 function strictObject(properties) {
   return Type.Object(properties, { additionalProperties: false });
-}
-
-function StringEnum(values) {
-  return Type.Unsafe({ type: "string", enum: values });
 }
 
 async function callPythonTool(tool, toolArgs) {
@@ -57,6 +54,7 @@ function shouldTerminateAfterTool(name, result) {
 }
 
 const ENVELOPE_TOOL_NAMES = new Set([
+  "find_bangumi_targets_for_local_file",
   "validate_recipe_params_draft",
   "validate_organize_recipe_params",
   "validate_organize_recipe_params_patch",
@@ -69,7 +67,91 @@ function arrayLength(value) {
   return Array.isArray(value) ? value.length : 0;
 }
 
+function compactRows(value, limit = 8) {
+  return Array.isArray(value) ? value.slice(0, limit) : [];
+}
+
+function compactLocalFactSummary(result) {
+  const localFile = result?.local_file && typeof result.local_file === "object" ? result.local_file : {};
+  const factSummary = localFile.fact_summary && typeof localFile.fact_summary === "object" ? localFile.fact_summary : {};
+  const pathFacts = localFile.path_facts && typeof localFile.path_facts === "object" ? localFile.path_facts : {};
+  return {
+    basename: localFile.basename || "",
+    parent_display: localFile.parent_display || "",
+    duration_seconds: factSummary.duration_seconds ?? null,
+    probe_status: factSummary.probe_status || "",
+    locator_markers: Array.isArray(pathFacts.raw_marker_tokens) ? pathFacts.raw_marker_tokens.slice(0, 8) : [],
+  };
+}
+
+function compactSubjectRow(value) {
+  const subject = value && typeof value === "object" ? value : {};
+  return {
+    subject_id: subject.subject_id ?? null,
+    title: subject.title || "",
+    name: subject.name || "",
+    name_cn: subject.name_cn || "",
+    date: subject.date || "",
+    platform: subject.platform || "",
+    eps: subject.eps ?? null,
+    total_episodes: subject.total_episodes ?? null,
+  };
+}
+
+function compactEpisodeRow(value) {
+  const episode = value && typeof value === "object" ? value : {};
+  return {
+    subject_id: episode.subject_id ?? null,
+    episode_id: episode.episode_id ?? null,
+    episode_type: episode.episode_type || episode.item_kind || "",
+    api_type: episode.api_type || episode.type || "",
+    sort: episode.sort ?? null,
+    ep: episode.ep ?? null,
+    title: episode.title || "",
+    name: episode.name || "",
+    name_cn: episode.name_cn || "",
+    duration: episode.duration || "",
+  };
+}
+
+function compactSubjectEpisodeGroups(value, limit = 4, episodeLimit = 4) {
+  if (!Array.isArray(value)) return [];
+  return value.slice(0, limit).map((group) => ({
+    subject: compactSubjectRow(group?.subject),
+    episode_count_available: group?.episode_count_available ?? null,
+    episode_count_returned: group?.episode_count_returned ?? null,
+    episode_rows_limited: Boolean(group?.episode_rows_limited),
+    episodes: compactRows(group?.episodes, episodeLimit).map(compactEpisodeRow),
+    episode_list_error: group?.episode_list_error || "",
+  }));
+}
+
+function targetLookupEnvelope(name, result) {
+  const durationRows = compactRows(result?.duration_candidate_episode_rows, 12);
+  return {
+    tool: name,
+    ok: Boolean(result?.ok),
+    source_path: result?.source_path || "",
+    source_path_canonicalized_from: result?.source_path_canonicalized_from || "",
+    error: result?.error || "",
+    local_file: compactLocalFactSummary(result),
+    title_query: result?.title_query || "",
+    queries_used: compactRows(result?.queries_used, 4),
+    duration_candidate_episode_row_count: arrayLength(result?.duration_candidate_episode_rows),
+    duration_candidate_episode_rows: durationRows,
+    duration_candidate_policy: result?.duration_candidate_policy || "",
+    subject_episode_groups: compactSubjectEpisodeGroups(result?.subject_episode_groups, 4, 4),
+    repair_hints: Array.isArray(result?.repair_hints) ? result.repair_hints.slice(0, 6) : [],
+    next_tool: durationRows.length > 0
+      ? "use duration_candidate_episode_rows to judge and patch/validate the named source or group"
+      : "if no supportable target row exists, validate the supplemental rule again or fail_closed with evidence",
+  };
+}
+
 function modelVisibleEnvelope(name, result) {
+  if (name === "find_bangumi_targets_for_local_file") {
+    return targetLookupEnvelope(name, result);
+  }
   const verifierIssues = Array.isArray(result?.verifier_result?.issues) ? result.verifier_result.issues : [];
   const issues = Array.isArray(result?.issues) ? result.issues : verifierIssues;
   const reviewWarnings = Array.isArray(result?.review_warnings) ? result.review_warnings : [];
@@ -91,20 +173,25 @@ function modelVisibleEnvelope(name, result) {
     issues: issues.slice(0, 6),
     review_warning_count: arrayLength(reviewWarnings),
     review_warnings: reviewWarnings.slice(0, 6),
-    repair_hints: Array.isArray(result?.repair_hints) ? result.repair_hints.slice(0, 8) : [],
     issue_repair_context_count: arrayLength(issueRepairContexts),
     issue_repair_contexts: issueRepairContexts.slice(0, 4),
+    repair_hints: Array.isArray(result?.repair_hints) ? result.repair_hints.slice(0, 8) : [],
+    patch_repair_feedback: result?.patch_repair_feedback && typeof result.patch_repair_feedback === "object" ? result.patch_repair_feedback : {},
     accounting: result?.accounting && typeof result.accounting === "object" ? result.accounting : {},
     next_tool: result?.next_tool || nextAction || draftNext || "",
     final_result_present: Boolean(result?.final_result),
   };
 }
 
-function proxyTool(name, label, description, parameters) {
+function proxyTool(name, label, description, parameters, options = {}) {
+  const promptMetadata = {};
+  if (options.promptSnippet) promptMetadata.promptSnippet = options.promptSnippet;
+  if (options.promptGuidelines) promptMetadata.promptGuidelines = options.promptGuidelines;
   return defineTool({
     name,
     label,
     description,
+    ...promptMetadata,
     parameters,
     executionMode: "sequential",
     async execute(_toolCallId, params) {
@@ -125,11 +212,34 @@ const recipeParamsQuickReference = [
   "Use group_ref for normal sequences; for numbered subclusters prefer group_ref + file_numbers/file_number_range/path_contains before long exact_paths.",
   "Use exact_paths only for unnumbered, path-ambiguous, or truly mixed exceptions.",
   "Use disposition:\"non_bangumi_or_supplemental\" for scoped supplemental rows.",
-  "Accepted validation still needs submit; put snapshots/deltas in the matching params transaction tools.",
+  "Accepted validation still needs submit; put board_delta/content, validation_snapshot, patch_delta, and submit_snapshot in their strict small envelope schemas.",
   "Schema is strict: do not use source_path/path/source_paths/source_template/range/offset aliases, nested select/target/episode objects, plural subject fields, boolean flags, patch_delta structural fields, or raw recipe JSON.",
 ].join("\n");
 
 const stringOrStringArraySchema = Type.Union([Type.String(), Type.Array(Type.String())]);
+const boardMemoryEnvelopeSchema = strictObject({
+  summary: Type.Optional(Type.String()),
+  observations: Type.Optional(Type.Array(Type.String())),
+  blockers: Type.Optional(Type.Array(Type.String())),
+  next_action: Type.Optional(Type.String()),
+});
+const validationSnapshotSchema = strictObject({
+  summary: Type.Optional(Type.String()),
+  accepted_scope: Type.Optional(Type.Array(Type.String())),
+  open_issues: Type.Optional(Type.Array(Type.String())),
+  next_action: Type.Optional(Type.String()),
+});
+const patchDeltaSchema = strictObject({
+  summary: Type.Optional(Type.String()),
+  changed_rules: Type.Optional(Type.Array(Type.String())),
+  evidence_refs: Type.Optional(Type.Array(Type.String())),
+  reason: Type.Optional(Type.String()),
+});
+const submitSnapshotSchema = strictObject({
+  summary: Type.Optional(Type.String()),
+  accepted_rule_count: Type.Optional(Type.Number()),
+  review_notes: Type.Optional(Type.Array(Type.String())),
+});
 const sourceUnitSchema = StringEnum(["single_file", "single_file_multi_episode"]);
 const mediaKindSchema = StringEnum(["tv", "movie", "ova", "oad", "sp", "special", "unknown"]);
 const episodeTypeSchema = StringEnum(["main", "regular", "special", "ova", "oad", "movie", "unknown"]);
@@ -236,10 +346,10 @@ const tools = [
   proxyTool(
     "append_case_board_note",
     "Append Case Board Note",
-    "Append one compact section to scratch_paths.notes as Pi-owned working memory. Use directly for Initial Board and ordinary Board Delta. Do not paste local group/evidence JSON; cite group refs, facts, and blockers. Put Validation Snapshot, Patch Delta, and Submit Snapshot into the params transaction tools instead. This is append-only audit I/O; it does not choose targets or recipe state.",
+    "Append one compact strict-envelope section to scratch_paths.notes as Pi-owned working memory. Use directly for Initial Board and ordinary Board Delta. Do not paste local group/evidence JSON; cite group refs, facts, and blockers. Put Validation Snapshot, Patch Delta, and Submit Snapshot into the params transaction tools instead. This is append-only audit I/O; it does not choose targets or recipe state.",
     strictObject({
       section_type: Type.String(),
-      content: Type.Any(),
+      content: boardMemoryEnvelopeSchema,
       next_action: Type.Optional(Type.String()),
     }),
   ),
@@ -259,7 +369,7 @@ const tools = [
     strictObject({
       anchor_subject_id: Type.Number(),
       reason: Type.Optional(Type.String()),
-      board_delta: Type.Optional(Type.Any()),
+      board_delta: Type.Optional(boardMemoryEnvelopeSchema),
       max_subjects: Type.Optional(Type.Number()),
       hydrate_episode_surfaces: Type.Optional(Type.Boolean()),
       max_relation_fetches: Type.Optional(Type.Number()),
@@ -288,10 +398,17 @@ const tools = [
     strictObject({
       rules: Type.Optional(Type.Union([recipeParamsRuleSchema, Type.Array(recipeParamsRuleSchema)])),
       remove_rule_names: Type.Optional(Type.Array(Type.String())),
-      board_delta: Type.Optional(Type.Any()),
+      board_delta: Type.Optional(boardMemoryEnvelopeSchema),
       summary: Type.Optional(Type.String()),
       detail: Type.Optional(Type.Boolean()),
     }),
+    {
+      promptSnippet: "Save canonical recipe params draft rows before full validation",
+      promptGuidelines: [
+        "Use upsert_recipe_params_draft when Pi already has complete canonical params rows but is not ready to submit.",
+        "Use upsert_recipe_params_draft board_delta as a strict small envelope, not arbitrary JSON or prose.",
+      ],
+    },
   ),
   proxyTool(
     "upsert_recipe_group_decision_one",
@@ -299,10 +416,17 @@ const tools = [
     "Preferred action-style path: save exactly one compact Pi-owned group/subcluster decision. The decision parameter is schema-shaped: use subject_id, episode_id/episode_ids, media_kind, episode_type, group_ref, file_numbers/file_number_range/path_contains/exact_paths, and a short reason. Use episode_ids only for one-to-one exact-path expansion; do not combine it with episode_id/sort/ep. Do not invent plural target fields such as target_subject_ids; split multi-movie or mixed target surfaces into separate one-row decisions. Python compiles the saved decision into recipe_params_draft but does not choose Bangumi targets or supplemental status.",
     strictObject({
       decision: recipeGroupDecisionSchema,
-      board_delta: Type.Optional(Type.Any()),
+      board_delta: Type.Optional(boardMemoryEnvelopeSchema),
       summary: Type.Optional(Type.String()),
       detail: Type.Optional(Type.Boolean()),
     }),
+    {
+      promptSnippet: "Save one schema-shaped Local-to-Bangumi group decision",
+      promptGuidelines: [
+        "Use upsert_recipe_group_decision_one when one group or subcluster target-surface judgment is stable enough to persist.",
+        "Use upsert_recipe_group_decision_one with one canonical target surface per decision row; split mixed movie, special, or supplemental surfaces.",
+      ],
+    },
   ),
   proxyTool(
     "upsert_recipe_group_decision",
@@ -311,10 +435,17 @@ const tools = [
     strictObject({
       decisions: Type.Optional(Type.Array(recipeGroupDecisionSchema)),
       remove_decision_names: Type.Optional(Type.Array(Type.String())),
-      board_delta: Type.Optional(Type.Any()),
+      board_delta: Type.Optional(boardMemoryEnvelopeSchema),
       summary: Type.Optional(Type.String()),
       detail: Type.Optional(Type.Boolean()),
     }),
+    {
+      promptSnippet: "Save a canonical batch of Local-to-Bangumi group decisions",
+      promptGuidelines: [
+        "Use upsert_recipe_group_decision only for canonical decision batches whose rows are already independently stable.",
+        "Use upsert_recipe_group_decision_one for incremental work when only one row is stable.",
+      ],
+    },
   ),
   proxyTool(
     "get_recipe_group_decisions",
@@ -353,9 +484,16 @@ const tools = [
     "Validate Recipe Params Draft",
     "Run the full params verifier on the current recipe_params_draft only after local coverage is complete. Default result is compact; detail=true is for debug output.",
     strictObject({
-      validation_snapshot: Type.Optional(Type.Any()),
+      validation_snapshot: Type.Optional(validationSnapshotSchema),
       detail: Type.Optional(Type.Boolean()),
     }),
+    {
+      promptSnippet: "Validate the saved params draft through the strict verifier",
+      promptGuidelines: [
+        "Use validate_recipe_params_draft only after saved draft rules cover every visible local group.",
+        "Use validate_recipe_params_draft validation_snapshot as a strict small envelope summarizing accepted scope and open issues.",
+      ],
+    },
   ),
   proxyTool(
     "search_bangumi_subjects",
@@ -433,6 +571,14 @@ const tools = [
       max_subjects: Type.Optional(Type.Number()),
       max_episode_cards: Type.Optional(Type.Number()),
     }),
+    {
+      promptSnippet: "Expose compact Bangumi row candidates for one exact local source_path",
+      promptGuidelines: [
+        "Use duration_candidate_episode_rows as facts for Pi judgment; the tool does not choose the target.",
+        "If rows are supportable, patch or validate the affected rule; if not, record the concrete contradiction or fail_closed.",
+        "Do not continue broad evidence after this helper answers the named source_path.",
+      ],
+    },
   ),
   proxyTool(
     "get_target_window",
@@ -450,9 +596,16 @@ const tools = [
     `Trial-check semantic rule parameters: build an OrganizeRecipeDraft, compile it, and return verifier issues or review warnings without finishing the case. Put the current Validation Snapshot in validation_snapshot so board write and validation happen in one transaction. Accepted validation still requires submit_organize_recipe_params.\n${recipeParamsQuickReference}`,
     strictObject({
       recipe_params: recipeParamsPayloadSchema,
-      validation_snapshot: Type.Optional(Type.Any()),
+      validation_snapshot: Type.Optional(validationSnapshotSchema),
       detail: Type.Optional(Type.Boolean()),
     }),
+    {
+      promptSnippet: "Trial-check canonical recipe params without finalizing",
+      promptGuidelines: [
+        "Use validate_organize_recipe_params to test canonical recipe params and read verifier or review feedback before final submit.",
+        "Use validate_organize_recipe_params validation_snapshot as a strict small envelope; accepted validation still needs submit_organize_recipe_params.",
+      ],
+    },
   ),
   proxyTool(
     "validate_organize_recipe_params_patch",
@@ -460,9 +613,16 @@ const tools = [
     "Patch the latest recipe params from the previous params validate/submit, then validate. If no previous params validation exists but recipe_params_draft does, the patch updates that draft and returns coverage preview without running verifier. append_rules is only for new named rules; use patch_rules/replace_rules for existing names or remove_rule_names before appending a replacement. Put the small Patch Delta in patch_delta so board write and patch/draft update happen in one transaction.",
     strictObject({
       recipe_params_patch: recipeParamsPatchSchema,
-      patch_delta: Type.Optional(Type.Any()),
+      patch_delta: Type.Optional(patchDeltaSchema),
       detail: Type.Optional(Type.Boolean()),
     }),
+    {
+      promptSnippet: "Validate a strict recipe params patch against latest params",
+      promptGuidelines: [
+        "Use validate_organize_recipe_params_patch for named repairs after validation or submission feedback.",
+        "Use validate_organize_recipe_params_patch patch_delta only for a strict small evidence note; put structural edits in recipe_params_patch.",
+      ],
+    },
   ),
   proxyTool(
     "submit_organize_recipe_params",
@@ -471,9 +631,16 @@ const tools = [
     strictObject({
       recipe_params: Type.Optional(recipeParamsPayloadSchema),
       summary: Type.Optional(Type.String()),
-      submit_snapshot: Type.Optional(Type.Any()),
+      submit_snapshot: Type.Optional(submitSnapshotSchema),
       detail: Type.Optional(Type.Boolean()),
     }),
+    {
+      promptSnippet: "Submit accepted canonical recipe params as final structured output",
+      promptGuidelines: [
+        "Use submit_organize_recipe_params only after params validation is accepted and review warnings are resolved.",
+        "After submit_organize_recipe_params returns accepted=true, do not call any tool except goal_complete.",
+      ],
+    },
   ),
   proxyTool(
     "submit_organize_recipe_params_patch",
@@ -482,10 +649,17 @@ const tools = [
     strictObject({
       recipe_params_patch: recipeParamsPatchSchema,
       summary: Type.Optional(Type.String()),
-      patch_delta: Type.Optional(Type.Any()),
-      submit_snapshot: Type.Optional(Type.Any()),
+      patch_delta: Type.Optional(patchDeltaSchema),
+      submit_snapshot: Type.Optional(submitSnapshotSchema),
       detail: Type.Optional(Type.Boolean()),
     }),
+    {
+      promptSnippet: "Submit an accepted strict recipe params patch as final structured output",
+      promptGuidelines: [
+        "Use submit_organize_recipe_params_patch after an accepted patch validation, or when submitting the same accepted merged patch payload.",
+        "After submit_organize_recipe_params_patch returns accepted=true, do not call any tool except goal_complete.",
+      ],
+    },
   ),
   proxyTool(
     "fail_closed",
@@ -496,6 +670,13 @@ const tools = [
       reason_kind: Type.Optional(Type.String()),
       related_refs: Type.Optional(Type.Array(Type.String())),
     }),
+    {
+      promptSnippet: "Finish safely with a concrete strict-evidence blocker",
+      promptGuidelines: [
+        "Use fail_closed only when strict evidence is insufficient or contradictory after targeted evidence and verifier feedback have been exhausted.",
+        "After fail_closed succeeds, call goal_complete and do not continue evidence search.",
+      ],
+    },
   ),
 ];
 

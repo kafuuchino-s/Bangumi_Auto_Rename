@@ -3,6 +3,7 @@
   "private": true,
   "description": "Pi sidecar runtime for Bangumi Auto Rename Local-to-Bangumi case agent",
   "dependencies": {
+    "@earendil-works/pi-ai": "0.75.5",
     "@earendil-works/pi-coding-agent": "0.75.5",
     "@narumitw/pi-goal": "0.1.36",
     "@narumitw/pi-retry": "0.1.34"

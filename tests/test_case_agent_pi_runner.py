@@ -299,6 +299,7 @@ def test_node_runner_loads_project_extension_tools_without_subagents_or_mapping_
     text = (REPO_ROOT / 'tools' / 'pi_case_agent_runner.mjs').read_text(encoding='utf-8')
     extension_text = (REPO_ROOT / '.pi' / 'extensions' / 'local-bangumi-tools' / 'index.js').read_text(encoding='utf-8')
     extension_package = json.loads((REPO_ROOT / '.pi' / 'extensions' / 'local-bangumi-tools' / 'package.json').read_text(encoding='utf-8'))
+    local_entry_text = (REPO_ROOT / 'src' / 'rename' / 'case_agent' / 'local_bangumi_entry.py').read_text(encoding='utf-8')
     combined = text + '\n' + extension_text
 
     assert extension_package['type'] == 'module'
@@ -309,6 +310,17 @@ def test_node_runner_loads_project_extension_tools_without_subagents_or_mapping_
     assert 'customTools: tools' not in text
     assert 'pi.registerTool(tool)' in extension_text
     assert 'export const LOCAL_BANGUMI_TOOL_NAMES = tools.map((tool) => tool.name)' in extension_text
+    assert 'import { StringEnum } from "@earendil-works/pi-ai";' in extension_text
+    assert 'function StringEnum(values)' not in extension_text
+    assert 'Type.Any(' not in extension_text
+    assert 'Json.Any(' not in extension_text
+    assert 'promptSnippet' in extension_text
+    assert 'promptGuidelines' in extension_text
+    assert 'boardMemoryEnvelopeSchema' in extension_text
+    assert 'validationSnapshotSchema' in extension_text
+    assert 'patchDeltaSchema' in extension_text
+    assert 'submitSnapshotSchema' in extension_text
+    assert 'patch_repair_feedback' in extension_text
     assert '"goal_complete"' in text
     assert '"subagent"' not in combined
     assert 'pi-subagents' not in combined
@@ -342,6 +354,8 @@ def test_node_runner_loads_project_extension_tools_without_subagents_or_mapping_
     assert '"submit_organize_recipe_params_patch"' in extension_text
     assert '"validate_organize_recipe"' not in extension_text
     assert '"submit_organize_recipe"' not in extension_text
+    assert "'action_policy_allowed': ['submit_organize_recipe_params', 'submit_organize_recipe_params_patch', 'fail_closed', 'goal_complete_after_acceptance']" in local_entry_text
+    assert "'action_policy_allowed': ['validate_organize_recipe', 'submit_organize_recipe'" not in local_entry_text
     assert '"submit_recommended_recipe"' not in combined
     assert '"submit_mapping_draft"' not in combined
     assert 'const NATIVE_TOOL_NAMES = ["read"]' in text
@@ -416,7 +430,7 @@ def test_node_runner_loads_project_extension_tools_without_subagents_or_mapping_
     assert 'terminate: shouldTerminateAfterTool(name, result)' in extension_text
     assert 'result.accepted === true || result.status === "accepted" || Boolean(result.final_result)' in extension_text
     assert 'Do not write headings such as Deciding, Evaluating, Considering' in text
-    assert 'Tool arguments count as output: keep board notes, snapshots, reasons, and summaries compact.' in text
+    assert 'Transaction notes use strict small envelopes, not arbitrary JSON.' in text
     assert 'Do not paste get_case_overview/list_local_groups/get_local_group_detail JSON into notes' in text
     assert 'do not fail_closed from an empty draft before that anchor exists' in text
     assert 'Checkpoint: continue as an action case agent.' in text
@@ -467,12 +481,18 @@ def test_node_runner_loads_project_extension_tools_without_subagents_or_mapping_
     assert 'async function readJsonFile' in text
     assert 'auto-submit after accepted params validation' not in text
     assert 'auto-submit after accepted recipe validation' not in text
+    assert 'function targetLookupEnvelope' in extension_text
+    assert 'duration_candidate_episode_rows: durationRows' in extension_text
+    assert 'local_file: compactLocalFactSummary(result)' in extension_text
+    assert 'subject_episode_groups: compactSubjectEpisodeGroups(result?.subject_episode_groups' in extension_text
+    assert 'Expose compact Bangumi row candidates for one exact local source_path' in extension_text
+    assert 'Do not continue broad evidence after this helper answers the named source_path.' in extension_text
     assert 'async function validateReadyDraftIfNeeded' in text
     assert 'async function fileMtimeMs' in text
     assert 'verifierCurrentForDraft' in text
     assert 'latest verifier is current for recipe_params_draft; repair or submit before revalidating' in text
     assert 'auto_validate_ready_draft' in text
-    assert 'Auto-validate: recipe_params_draft covers every visible local group' in text
+    assert 'Auto-validate complete recipe_params_draft through the full verifier.' in text
     assert 'async function validateReadyDraftAtCheckpoint' in text
     assert 'validateReadyDraftAtCheckpoint(finalWait, "initial_wait")' in text
     assert 'validateReadyDraftAtCheckpoint(nudgeWait, "checkpoint")' in text
@@ -481,11 +501,15 @@ def test_node_runner_loads_project_extension_tools_without_subagents_or_mapping_
     assert 'submitAcceptedValidationAtCheckpoint' not in text
     assert 'validateReadyDraftAtCheckpoint(hardWait, "hard_finish")' in text
     assert 'phase: `${phase}_auto_validate_ready_draft`' in text
+    assert 'const maxRepairAttempts = 1' in text
+    assert 'previousRepairHadNoToolAction' not in text
+    assert 'This turn must be exactly one custom tool call or goal_complete; no prose.' not in text
+    assert 'tool_action_count: toolActionCount' not in text
     assert 'validateReadyDraftAtCheckpoint(repairWait, `final_repair_${attemptNumber}`)' in text
     assert 'finalWait.auto_validate_ready_draft' in text
     assert 'async function repairMovieSubjectLevelLocatorIfNeeded' in text
     assert 'auto_repair_movie_subject_locator' in text
-    assert 'subject_level_movie_locator' in text
+    assert 'Auto-repair subject-level movie locator.' in text
     assert 'submit_after_validation_mode: "explicit_pi_tool_call_only"' in text
     assert 'submit_organize_recipe_params_patch' in extension_text
     assert 'validate_organize_recipe_params_patch' in text

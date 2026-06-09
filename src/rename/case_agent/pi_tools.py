@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import ast
 import json
 import re
 import subprocess
@@ -1118,11 +1119,11 @@ class PiCaseToolState:
             'recipe_state': 'get_recipe_state(detail=false/true)',
             'bangumi_subjects_seen': 'get_case_overview().bangumi_seen; use lookup/search/graph tools to expand evidence',
             'bangumi_episode_window': 'get_target_window(subject_id, sort_start, sort_end) or get_episode_list(subject_id)',
-            'case_board_notes': 'get_case_board_notes(mode="tail") or append_case_board_note(section_type, content, next_action) for Initial Board / Board Delta; params tools accept validation_snapshot, patch_delta, submit_snapshot transaction notes',
+            'case_board_notes': 'get_case_board_notes(mode="tail") or append_case_board_note(section_type, content envelope, next_action) for Initial Board / Board Delta; params tools accept strict validation_snapshot, patch_delta, and submit_snapshot transaction envelopes',
             'bangumi_anchor_bootstrap': 'select_bangumi_anchor_subject(anchor_subject_id, reason) after Pi chooses one reliable main anime/video anchor; it records the anchor and atomically builds the relation atlas',
             'bangumi_relation_atlas': 'build_bangumi_relation_atlas(anchor_subject_id) debug/manual fallback',
-            'recipe_group_decisions': 'upsert_recipe_group_decision_one(decision, board_delta, summary) preferred for incremental rows; upsert_recipe_group_decision(decisions, remove_decision_names, board_delta, summary) saves valid canonical batch rows and reports invalid rows by index/name; get_recipe_group_decisions(detail=false)',
-            'recipe_params_draft': 'upsert_recipe_params_draft(rules, remove_rule_names, board_delta, summary), get_recipe_params_draft(detail=false), validate_recipe_params_draft(validation_snapshot)',
+            'recipe_group_decisions': 'upsert_recipe_group_decision_one(decision, board_delta envelope, summary) preferred for incremental rows; upsert_recipe_group_decision(decisions, remove_decision_names, board_delta envelope, summary) saves valid canonical batch rows and reports invalid rows by index/name; get_recipe_group_decisions(detail=false)',
+            'recipe_params_draft': 'upsert_recipe_params_draft(rules, remove_rule_names, board_delta envelope, summary), get_recipe_params_draft(detail=false), validate_recipe_params_draft(validation_snapshot envelope)',
         }
 
     def _case_navigation_payload(self) -> dict[str, Any]:
@@ -1141,12 +1142,12 @@ class PiCaseToolState:
                 'bangumi_anchor_bootstrap': 'select_bangumi_anchor_subject(anchor_subject_id, reason) records Pi anchor choice and writes a full anime/video relation atlas',
                 'bangumi_relation_atlas': 'build_bangumi_relation_atlas(anchor_subject_id) debug/manual fallback',
                 'bangumi_episode_window': 'get_target_window(subject_id, sort_start, sort_end) or get_episode_list(subject_id)',
-                'case_board': 'append_case_board_note(section_type, content, next_action) for Initial Board / Board Delta; get_case_board_notes(mode="tail") for recovery',
-                'recipe_group_decisions': 'upsert_recipe_group_decision_one(decision, board_delta, summary) preferred for incremental rows; upsert_recipe_group_decision(decisions, remove_decision_names, board_delta, summary) saves valid canonical batch rows and reports invalid rows by index/name; get_recipe_group_decisions(detail=false), clear_recipe_group_decisions(reason)',
-                'recipe_params_draft': 'upsert_recipe_params_draft(rules, remove_rule_names, board_delta, summary), get_recipe_params_draft(detail=false), clear_recipe_params_draft(reason)',
-                'validate': 'validate_organize_recipe_params(recipe_params, validation_snapshot)',
-                'repair_patch': 'validate_organize_recipe_params_patch(recipe_params_patch, patch_delta)',
-                'submit': 'submit_organize_recipe_params(recipe_params, submit_snapshot) or submit_organize_recipe_params_patch(recipe_params_patch, submit_snapshot); same patch after accepted patch validation submits the accepted merged params instead of applying it twice',
+                'case_board': 'append_case_board_note(section_type, content envelope, next_action) for Initial Board / Board Delta; get_case_board_notes(mode="tail") for recovery',
+                'recipe_group_decisions': 'upsert_recipe_group_decision_one(decision, board_delta envelope, summary) preferred for incremental rows; upsert_recipe_group_decision(decisions, remove_decision_names, board_delta envelope, summary) saves valid canonical batch rows and reports invalid rows by index/name; get_recipe_group_decisions(detail=false), clear_recipe_group_decisions(reason)',
+                'recipe_params_draft': 'upsert_recipe_params_draft(rules, remove_rule_names, board_delta envelope, summary), get_recipe_params_draft(detail=false), clear_recipe_params_draft(reason)',
+                'validate': 'validate_organize_recipe_params(recipe_params, validation_snapshot envelope)',
+                'repair_patch': 'validate_organize_recipe_params_patch(recipe_params_patch, patch_delta envelope)',
+                'submit': 'submit_organize_recipe_params(recipe_params, submit_snapshot envelope) or submit_organize_recipe_params_patch(recipe_params_patch, submit_snapshot envelope); same patch after accepted patch validation submits the accepted merged params instead of applying it twice',
             },
         }
 
@@ -2296,16 +2297,27 @@ class PiCaseToolState:
             for issue in (verifier.get('issues') or [])[:12]
             if isinstance(issue, dict)
         ]
-        warnings = [
-            {
+        warnings: list[dict[str, Any]] = []
+        for warning in (result.get('review_warnings') or [])[:12]:
+            if not isinstance(warning, dict):
+                continue
+            item = {
                 'code': str(warning.get('code') or ''),
                 'source_path': str(warning.get('source_path') or ''),
                 'message': str(warning.get('message') or warning.get('summary') or ''),
                 'repair_hint': str(warning.get('repair_hint') or ''),
             }
-            for warning in (result.get('review_warnings') or [])[:12]
-            if isinstance(warning, dict)
-        ]
+            metrics = warning.get('metrics') if isinstance(warning.get('metrics'), dict) else {}
+            candidates = (
+                metrics.get('candidate_episode_rows')
+                if isinstance(metrics.get('candidate_episode_rows'), list)
+                else metrics.get('duration_candidate_episode_rows')
+                if isinstance(metrics.get('duration_candidate_episode_rows'), list)
+                else []
+            )
+            if candidates:
+                item['candidate_episode_rows'] = _compact_candidate_episode_rows(candidates, limit=4)
+            warnings.append(item)
         content = {
             'status': status,
             'summary': str(result.get('summary') or verifier.get('summary') or ''),
@@ -2418,22 +2430,15 @@ class PiCaseToolState:
                 'repair_hint': _compact_text(str(warning.get('repair_hint') or ''), limit=220),
             }
             metrics = warning.get('metrics') if isinstance(warning.get('metrics'), dict) else {}
-            candidates = metrics.get('candidate_episode_rows') if isinstance(metrics.get('candidate_episode_rows'), list) else []
+            candidates = (
+                metrics.get('candidate_episode_rows')
+                if isinstance(metrics.get('candidate_episode_rows'), list)
+                else metrics.get('duration_candidate_episode_rows')
+                if isinstance(metrics.get('duration_candidate_episode_rows'), list)
+                else []
+            )
             if candidates:
-                item['candidate_episode_rows'] = [
-                    {
-                        'subject_id': candidate.get('subject_id'),
-                        'episode_id': candidate.get('episode_id'),
-                        'episode_type': str(candidate.get('episode_type') or ''),
-                        'sort': candidate.get('sort'),
-                        'ep': candidate.get('ep'),
-                        'duration_seconds': candidate.get('duration_seconds'),
-                        'duration_delta_seconds': candidate.get('duration_delta_seconds'),
-                        'title': _compact_text(str(candidate.get('title') or ''), limit=80),
-                    }
-                    for candidate in candidates[:4]
-                    if isinstance(candidate, dict)
-                ]
+                item['candidate_episode_rows'] = _compact_candidate_episode_rows(candidates, limit=4)
             compact.append(item)
         return compact
 
@@ -2918,6 +2923,7 @@ class PiCaseToolState:
             'accepted_rule_count',
             'incoming_rule_count',
             'submit_protocol',
+            'patch_repair_feedback',
         ]
         compact = {key: result.get(key) for key in keys if key in result}
         verifier = self._compact_verifier_result_payload(result.get('verifier_result'))
@@ -4293,6 +4299,9 @@ class PiCaseToolState:
         normalized_patch, error = self._normalize_recipe_params_patch_payload(recipe_params_patch if recipe_params_patch is not None else patch)
         if error:
             result = {'ok': False, 'accepted': False, 'error': error, 'repair_hints': _parse_error_repair_hints(error, self._visible_main_paths())}
+            patch_feedback = _recipe_params_patch_repair_feedback(error)
+            if patch_feedback:
+                result['patch_repair_feedback'] = patch_feedback
             if board_note:
                 result['case_board_transaction'] = {'patch_delta': board_note}
             return self._compact_params_tool_result(result, detail=bool(detail))
@@ -4340,10 +4349,20 @@ class PiCaseToolState:
             if draft_error:
                 error = f'{error}; recipe_params_draft patch also failed: {draft_error}'
             result = {'ok': False, 'accepted': False, 'error': error, 'repair_hints': _parse_error_repair_hints(error, self._visible_main_paths())}
+            patch_feedback = _recipe_params_patch_repair_feedback(error)
+            if patch_feedback:
+                result['patch_repair_feedback'] = patch_feedback
             if board_note:
                 result['case_board_transaction'] = {'patch_delta': board_note}
             return self._compact_params_tool_result(result, detail=bool(detail))
         result = self.tool_validate_organize_recipe_params(recipe_params=merged, detail=detail)
+        if not result.get('ok') and result.get('error'):
+            enriched_error = _recipe_params_patch_error_with_context(ValueError(str(result.get('error') or '')), self.latest_recipe_params_payload)
+            result['error'] = enriched_error
+            result['repair_hints'] = _parse_error_repair_hints(enriched_error, self._visible_main_paths())
+            patch_feedback = _recipe_params_patch_repair_feedback(enriched_error)
+            if patch_feedback:
+                result['patch_repair_feedback'] = patch_feedback
         self._record_recipe_params_validation(
             payload=_canonical_recipe_params_payload_for_validation(merged),
             source='patch',
@@ -4552,6 +4571,9 @@ class PiCaseToolState:
         normalized_patch, error = self._normalize_recipe_params_patch_payload(recipe_params_patch if recipe_params_patch is not None else patch)
         if error:
             result = {'ok': False, 'accepted': False, 'error': error, 'repair_hints': _parse_error_repair_hints(error, self._visible_main_paths())}
+            patch_feedback = _recipe_params_patch_repair_feedback(error)
+            if patch_feedback:
+                result['patch_repair_feedback'] = patch_feedback
             if board_note:
                 result['case_board_transaction'] = {'patch_delta': board_note}
             return self._compact_params_tool_result(result, detail=bool(detail))
@@ -4581,6 +4603,9 @@ class PiCaseToolState:
         merged, error = self._recipe_params_with_normalized_patch(normalized_patch)
         if error:
             result = {'ok': False, 'accepted': False, 'error': error, 'repair_hints': _parse_error_repair_hints(error, self._visible_main_paths())}
+            patch_feedback = _recipe_params_patch_repair_feedback(error)
+            if patch_feedback:
+                result['patch_repair_feedback'] = patch_feedback
             if board_note:
                 result['case_board_transaction'] = {'patch_delta': board_note}
             return self._compact_params_tool_result(result, detail=bool(detail))
@@ -4591,6 +4616,13 @@ class PiCaseToolState:
             detail=detail,
             _allow_accepted_validation_mismatch=True,
         )
+        if not result.get('ok') and result.get('error'):
+            enriched_error = _recipe_params_patch_error_with_context(ValueError(str(result.get('error') or '')), self.latest_recipe_params_payload)
+            result['error'] = enriched_error
+            result['repair_hints'] = _parse_error_repair_hints(enriched_error, self._visible_main_paths())
+            patch_feedback = _recipe_params_patch_repair_feedback(enriched_error)
+            if patch_feedback:
+                result['patch_repair_feedback'] = patch_feedback
         result['params_patch_applied'] = True
         result['params_patch_reused_from_accepted_validation'] = False
         result['params_patch_reused_from_latest_validation'] = False
@@ -5732,6 +5764,14 @@ class PiCaseToolState:
                 episode_offset=episode_offset,
                 episode_number_field=episode_number_field,
             )
+        include_path_regex = _path_contains_tokens_regex(_coerce_string_list(_first_present(rule, keys=('path_contains',))))
+        exclude_path_regex = _path_contains_tokens_regex(_coerce_string_list(_first_present(rule, keys=('exclude_path_contains',))))
+        if include_path_regex and filename_regex and not exact_paths:
+            filename_regex = f'(?=.*(?:{include_path_regex}))(?:{filename_regex})'
+        exclude_regex = _combine_regex_alternatives(
+            _string_or_default(_first_present(rule, keys=('exclude_regex',)), ''),
+            exclude_path_regex,
+        )
         return {
             'name': _string_or_default(rule.get('name'), f'rule_{index}'),
             'source_unit': _source_unit_from_params(rule, index=index),
@@ -5739,7 +5779,7 @@ class PiCaseToolState:
                 'path_glob': '**/*.mkv',
                 'filename_regex': filename_regex,
                 'exact_paths': [self._canonicalize_exact_path(path) for path in exact_paths],
-                'exclude_regex': _string_or_default(_first_present(rule, keys=('exclude_regex',)), ''),
+                'exclude_regex': exclude_regex,
             },
             'target': {
                 'bangumi_subject_id': subject_id,
@@ -6044,6 +6084,7 @@ class PiCaseToolState:
                 'validation_policy': 'validate_organize_recipe_params is a trial/checkpoint tool: it compiles semantic params, hydrates declared evidence when possible, returns verifier issues or review warnings, and does not finalize the case.',
                 'submission_policy': 'submit_organize_recipe_params is the finalization path after accepted validation and resolved review warnings.',
                 'scaffold_policy': 'local_recipe_params_scaffold is local selector/range scaffolding only; Pi must fill Bangumi target fields or supplemental disposition from evidence.',
+                'transaction_note_policy': 'board_delta/content, validation_snapshot, patch_delta, and submit_snapshot are strict small envelopes for Pi-owned work memory and audit notes; they are not arbitrary JSON payloads.',
             },
         }
         if include_startup_evidence:
@@ -6383,6 +6424,7 @@ class PiCaseToolState:
                             'message': 'Targeted candidate evidence exists for a numbered side/SP/bonus sequence that is still covered as non_bangumi_or_supplemental.',
                             'metrics': {
                                 'duration_candidate_episode_row_count': len(decision_rows) if decision_rows is not None else int(targeted_candidate_counts.get(candidate_path) or 0),
+                                'duration_candidate_episode_rows': _compact_candidate_episode_rows(decision_rows or [], limit=4),
                                 'sequence_member_count': sequence_member_count,
                                 'targeted_source_path': candidate_path,
                                 'member_path_sample': member_paths[:6],
@@ -6427,6 +6469,7 @@ class PiCaseToolState:
                         'metrics': {
                             'duration_seconds': duration,
                             'duration_candidate_episode_row_count': len(decision_candidate_rows) if decision_candidate_rows is not None else candidate_count,
+                            'duration_candidate_episode_rows': _compact_candidate_episode_rows(decision_candidate_rows or [], limit=4),
                             'shape_markers': markers,
                         },
                         'repair_hint': (
@@ -7219,16 +7262,70 @@ def _recipe_params_existing_rule_names(payload: dict[str, Any] | None, *, limit:
 
 def _recipe_params_patch_error_with_context(error: Exception, base: dict[str, Any] | None) -> str:
     message = str(error)
-    if 'target not found' not in message:
+    if 'target not found' not in message and 'match no visible path' not in message:
         return message
     names = _recipe_params_existing_rule_names(base)
     if not names:
         return message
+    if 'target not found' in message:
+        return (
+            f'{message}; existing_rule_names={names}; '
+            'patch_rules/replace_rules must use one of those existing names. '
+            'To split one broad rule into several new named rows, use remove_rule_names for the old name plus append_rules for the new rows.'
+        )
     return (
         f'{message}; existing_rule_names={names}; '
-        'patch_rules/replace_rules must use one of those existing names. '
-        'To split one broad rule into several new named rows, use remove_rule_names for the old name plus append_rules for the new rows.'
+        'A selector patch must not leave the named rule matching zero visible paths. '
+        'To delete a stale broad rule, use remove_rule_names with an existing name; do not use exclude filters to empty it.'
     )
+
+
+def _recipe_params_patch_repair_feedback(error: str) -> dict[str, Any]:
+    text = str(error or '')
+    target_matches = re.findall(r'\b(patch_rules|replace_rules) target not found: ([^;]+)', text)
+    selector_filter_match = re.search(
+        r"rules\[(\d+)\] combines group_ref '([^']+)' with filter\(s\) (\[[^\]]*\]) that match no visible path",
+        text,
+    )
+    if not target_matches and 'append_rules target already exists' not in text and selector_filter_match is None:
+        return {}
+    feedback: dict[str, Any] = {
+        'policy': 'Strict rejection only. Python is not migrating patch fields; Pi must resend a canonical recipe_params_patch.',
+        'next_patch_shape': {
+            'patch_rules': 'Use only names from existing_rule_names for in-place field updates.',
+            'replace_rules': 'Use only names from existing_rule_names when replacing an existing row with a full RecipeParamsRule.',
+            'append_rules': 'Use for every new named rule, including split replacement rows with new names.',
+            'remove_rule_names': 'Use existing broad rule names when splitting/removing old rows before append_rules.',
+        },
+    }
+    invalid_names = _dedupe_nonempty([name.strip() for _kind, name in target_matches])
+    if invalid_names:
+        feedback['error_kind'] = 'patch_target_not_found'
+        feedback['invalid_patch_rule_names'] = invalid_names
+        feedback['invalid_patch_sections'] = _dedupe_nonempty([kind for kind, _name in target_matches])
+    if selector_filter_match is not None:
+        feedback['error_kind'] = 'selector_filter_matched_no_paths'
+        feedback['rule_index'] = int(selector_filter_match.group(1))
+        feedback['group_ref'] = selector_filter_match.group(2)
+        try:
+            filter_keys = ast.literal_eval(selector_filter_match.group(3))
+        except (SyntaxError, ValueError):
+            filter_keys = []
+        feedback['invalid_filter_keys'] = [str(key) for key in filter_keys if str(key)] if isinstance(filter_keys, list) else []
+        feedback['repair_intent'] = 'If the old rule is stale, use remove_rule_names for that existing name or replace_rules for a full replacement; do not patch filters so the rule matches zero visible paths.'
+    existing_names_match = re.search(r'existing_rule_names=(\[[^\]]*\])', text)
+    if existing_names_match:
+        try:
+            names = ast.literal_eval(existing_names_match.group(1))
+        except (SyntaxError, ValueError):
+            names = []
+        if isinstance(names, list):
+            feedback['existing_rule_names'] = [str(name) for name in names[:24] if str(name)]
+    append_existing = re.findall(r'append_rules target already exists: ([^;]+)', text)
+    if append_existing:
+        feedback['error_kind'] = 'append_rule_name_already_exists'
+        feedback['invalid_append_rule_names'] = _dedupe_nonempty([name.strip() for name in append_existing])
+    return feedback
 
 
 def _canonical_recipe_params_patch_for_reuse(patch: Any) -> dict[str, Any]:
@@ -7501,6 +7598,24 @@ def _source_pattern_from_params(rule: dict[str, Any]) -> str:
     return _string_or_default(_first_present(rule, keys=('source_pattern',)), '')
 
 
+def _path_contains_tokens_regex(tokens: list[str]) -> str:
+    escaped = [
+        re.escape(str(token or '').strip())
+        for token in tokens
+        if str(token or '').strip()
+    ]
+    return '|'.join(escaped)
+
+
+def _combine_regex_alternatives(*patterns: str) -> str:
+    nonempty = [str(pattern or '').strip() for pattern in patterns if str(pattern or '').strip()]
+    if not nonempty:
+        return ''
+    if len(nonempty) == 1:
+        return nonempty[0]
+    return '|'.join(f'(?:{pattern})' for pattern in nonempty)
+
+
 def _reject_unsupported_disposition_flags(rule: dict[str, Any], *, index: int, disposition: str) -> None:
     flagged = [
         key
@@ -7770,6 +7885,26 @@ def _review_warning_hints(review_warnings: list[dict[str, Any]]) -> list[str]:
         if hint:
             hints.append(hint)
     return _dedupe_nonempty(hints)
+
+
+def _compact_candidate_episode_rows(rows: Any, *, limit: int = 4) -> list[dict[str, Any]]:
+    result: list[dict[str, Any]] = []
+    if not isinstance(rows, list):
+        return result
+    for candidate in rows[:limit]:
+        if not isinstance(candidate, dict):
+            continue
+        result.append({
+            'subject_id': candidate.get('subject_id'),
+            'episode_id': candidate.get('episode_id'),
+            'episode_type': str(candidate.get('episode_type') or ''),
+            'sort': candidate.get('sort'),
+            'ep': candidate.get('ep'),
+            'duration_seconds': candidate.get('duration_seconds'),
+            'duration_delta_seconds': candidate.get('duration_delta_seconds'),
+            'title': _compact_text(str(candidate.get('title') or ''), limit=80),
+        })
+    return result
 
 
 def _dedupe_nonempty(values: list[str]) -> list[str]:

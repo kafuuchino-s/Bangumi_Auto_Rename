@@ -58,7 +58,8 @@ def test_local_bangumi_prompt_template_is_official_entry_briefing():
     assert 'target-key feedback, not proof the local videos are the same content' in prompt
     assert 'title, runtime, folder role, or content shape makes the side file incompatible' in prompt
     assert 'leave the main exact rule intact and reopen the atlas row surface for the side group' in prompt
-    assert 'validate_recipe_params_draft(validation_snapshot=...)' in prompt
+    assert 'validate_recipe_params_draft(validation_snapshot={summary, accepted_scope, open_issues, next_action})' in prompt
+    assert 'Transaction notes use strict small envelopes, not arbitrary JSON.' in prompt
     assert 'explicitly call `submit_organize_recipe_params`' in prompt
     assert 'old artifacts or tests' in prompt
     assert 'Do not touch real media files.' in prompt
@@ -118,7 +119,10 @@ def test_pi_skills_document_compact_evidence_flow_and_legal_recipe_episode_types
     assert 'optional audit helpers for fresh-context/file-read review' not in recipe_skill
     assert 'evidence changes judgment, judgment becomes a saved row' in recipe_skill
     assert 'upsert_recipe_group_decision_one' in recipe_skill
-    assert 'validate_recipe_params_draft(validation_snapshot=...)' in recipe_skill
+    assert 'validate_recipe_params_draft(validation_snapshot={summary, accepted_scope, open_issues, next_action})' in recipe_skill
+    assert 'Transaction notes use strict small envelopes, not arbitrary JSON.' in recipe_docs
+    assert '`patch_delta` has `summary`, `changed_rules`, `evidence_refs`, `reason`' in recipe_skill
+    assert '`submit_snapshot` has `summary`, `accepted_rule_count`, `review_notes`' in recipe_skill
     assert 'Verifier Delta' in recipe_skill
     assert 'Short duration, an `SPs` folder, or a parent TV subject with no SP rows is local shape evidence, not supplemental proof.' in recipe_skill
     assert 'Treat duplicate feedback as a surface mismatch.' in recipe_skill
@@ -222,7 +226,7 @@ def test_pi_skills_document_compact_evidence_flow_and_legal_recipe_episode_types
     assert 'An ambiguous side group does not block saving unrelated stable groups.' in recipe_skill
     assert 'If you catch yourself thinking "LG1 maps to subject X"' in recipe_skill
     assert '`get_recipe_params_draft(detail=false)`' in recipe_skill
-    assert '`validate_recipe_params_draft(validation_snapshot=...)`' in recipe_skill
+    assert '`validate_recipe_params_draft(validation_snapshot={summary, accepted_scope, open_issues, next_action})`' in recipe_skill
     assert 'There is no partial verifier.' in recipe_skill
     assert 'The `Initial Board` is local-only' in recipe_skill
     assert 'It is a local memory aid, not a Bangumi decision.' in recipe_skill
@@ -247,7 +251,7 @@ def test_pi_skills_document_compact_evidence_flow_and_legal_recipe_episode_types
     assert "save that group's judgment with `upsert_recipe_group_decision_one`" in recipe_skill
     assert 'a `Board Delta` naming the group and the one missing Bangumi fact keeps the next evidence lookup focused' in recipe_skill
     assert 'If your own reasoning says "I can use exact_paths and episode_id"' in recipe_skill
-    assert 'The normal draft validation transaction is `validate_recipe_params_draft(validation_snapshot=...)`.' in recipe_skill
+    assert 'validate_recipe_params_draft(validation_snapshot={summary, accepted_scope, open_issues, next_action})' in recipe_skill
     assert 'Side Frontier Closure' in recipe_skill
     assert 'Put these local shapes into the side frontier' in recipe_skill
     assert 'add that subject as a new anchor' in recipe_skill
@@ -310,8 +314,8 @@ def test_pi_skills_document_compact_evidence_flow_and_legal_recipe_episode_types
     assert 'Do not use `SP` as `episode_offset`' in recipe_skill
     assert 'SP filenames and `media_kind: "sp"` do not imply `episode_type: "special"`.' in recipe_skill
     assert 'Supplemental rules do not need `episode_range`, `episode_offset`, `episode_type`, `subject_id`, or `episode_id`.' in recipe_skill
-    assert 'When applying a patch, pass a small `patch_delta` to the patch tool' in recipe_skill
-    assert 'explicitly call `submit_organize_recipe_params` with `submit_snapshot`' in recipe_skill
+    assert '`patch_delta` has `summary`, `changed_rules`, `evidence_refs`, `reason`' in recipe_skill
+    assert 'explicitly call `submit_organize_recipe_params` with `submit_snapshot={summary, accepted_rule_count, review_notes}`' in recipe_skill
     assert 'budget_exhausted` is a runner outcome' in recipe_skill
     assert 'old `final_result.json` files, repository tests, and templates are not evidence' in recipe_skill
 

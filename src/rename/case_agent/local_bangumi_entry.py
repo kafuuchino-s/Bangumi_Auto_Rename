@@ -931,7 +931,7 @@ def _build_pi_case_agent_snapshot(result: PiCaseAgentRunResult) -> dict[str, Any
         'selected_menu_request_ids': [],
         'unknown_menu_request_ids': [],
         'resolved_menu_request_count': 0,
-        'action_policy_allowed': ['validate_organize_recipe', 'submit_organize_recipe', 'fail_closed', 'goal_complete_after_acceptance'],
+        'action_policy_allowed': ['submit_organize_recipe_params', 'submit_organize_recipe_params_patch', 'fail_closed', 'goal_complete_after_acceptance'],
         'action_policy_disallowed': ['repo_write', 'media_mutation', 'task_record_write', 'secret_read'],
         'action_policy_final_opportunity': bool(final_output is not None and result.status in {'fail_closed', 'accepted'}),
         'issue_router_issue_counts': {'count': len(getattr(final_verifier_result, 'issues', []) or [])},

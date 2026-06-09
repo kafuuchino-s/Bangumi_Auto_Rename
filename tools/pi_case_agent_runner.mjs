@@ -93,7 +93,7 @@ This session runs as an action-oriented case agent. Reason internally, then exte
 - When a group/subcluster judgment is stable enough to test, save one compact row with upsert_recipe_group_decision_one instead of explaining the row in prose.
 - When a draft is complete, validate_recipe_params_draft is the next visible action; do not describe that you are ready.
 - When validation is accepted, submit and then goal_complete; do not summarize before submitting.
-- Keep board_delta, validation_snapshot, submit_snapshot, reason, and summary short. Tool arguments are model output too.
+- Keep board_delta, validation_snapshot, patch_delta, submit_snapshot, reason, and summary short. Transaction notes use strict small envelopes, not arbitrary JSON.
 `.trim();
 
 if (!inputPath || !outputPath || !server || !token) {
@@ -787,7 +787,12 @@ async function validateReadyDraftIfNeeded(finalPayload) {
     };
   }
   const result = await callPythonTool("validate_recipe_params_draft", {
-    validation_snapshot: "Auto-validate: recipe_params_draft covers every visible local group; running the full verifier on Pi-owned draft rows.",
+    validation_snapshot: {
+      summary: "Auto-validate complete recipe_params_draft through the full verifier.",
+      accepted_scope: ["recipe_params_draft covers every visible local group"],
+      open_issues: [],
+      next_action: "read verifier result and submit or patch",
+    },
   });
   const updatedFinalPayload = await readFinalResult();
   return {
@@ -850,9 +855,9 @@ async function repairMovieSubjectLevelLocatorIfNeeded() {
   const result = await callPythonTool("validate_organize_recipe_params_patch", {
     recipe_params_patch: { patch_rules: uniquePatchRules },
     patch_delta: {
-      auto_repair: "subject_level_movie_locator",
-      note: "Removed invalid episode locator from exact-path movie rules while preserving Pi-selected subject_id/media_kind.",
-      patched_rules: uniquePatchRules.map((rule) => rule.name),
+      summary: "Auto-repair subject-level movie locator.",
+      changed_rules: uniquePatchRules.map((rule) => rule.name),
+      reason: "Removed invalid episode locator from exact-path movie rules while preserving Pi-selected subject_id/media_kind.",
     },
   });
   return {
@@ -1160,7 +1165,7 @@ Use the navigable custom-tool hierarchy rather than expanding every JSON layer a
 The full local-bangumi-organize skill is loaded before this goal, or an explicit skill expansion fallback was sent before this goal. Use it as experience, then prefer case tools, saved group decisions, and verifier hints over rereading skill files.
 Do not inspect old run artifacts, repository tests, or Python schemas as evidence for this case.
 Use scratch paths from case_input.scratch_paths only through the custom board/draft/validate/submit tools.
-Prefer compact recipe params: validate_organize_recipe_params and validate_recipe_params_draft trial-check semantic parameters; submit_organize_recipe_params finalizes accepted params. Raw validate/submit tools are not part of the Pi-facing workflow.
+Prefer compact recipe params: validate_organize_recipe_params and validate_recipe_params_draft trial-check semantic parameters; submit_organize_recipe_params finalizes accepted params. The visible completion path is params submit, params patch submit, or fail_closed.
 Board and draft tools are Pi-owned working memory. The Python verifier remains the strict mechanical gate for coverage, duplicate targets, legal exposed Bangumi targets, and selector shape.
 Convergence protocol: each evidence burst must become saved group decisions, draft params, validation, or a compact named blocker. More search is not progress once the blocker already names a target surface.
 For complex franchise/side-content packages, after the first reliable main-title search, choose the anchor with select_bangumi_anchor_subject(anchor_subject_id, reason). That tool atomically records Pi's anchor choice and builds the evidence atlas; Python still does not choose any mapping.

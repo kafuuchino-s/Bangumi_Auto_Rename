@@ -468,29 +468,34 @@ def test_pi_validate_supplemental_with_candidate_row_requires_targeted_lookup_wi
         },
     )
     state.handle_tool('find_bangumi_targets_for_local_file', {'source_path': 'SPs/Side SP01.mkv', 'max_subjects': 1, 'max_episode_cards': 2})
+    candidate_recipe_params = {
+        'rules': [
+            {
+                'name': 'main movie',
+                'exact_paths': ['Movies/Main Movie.mkv'],
+                'subject_id': 900,
+                'media_kind': 'movie',
+                'episode_type': 'movie',
+                'episode_id': 9001,
+            },
+            {
+                'name': 'side sp premature supplemental',
+                'exact_paths': ['SPs/Side SP01.mkv'],
+                'disposition': 'non_bangumi_or_supplemental',
+                'reason': 'side short treated as extra.',
+            },
+        ]
+    }
     candidate_review = state.handle_tool(
         'validate_organize_recipe_params',
         {
             'detail': True,
-            'recipe_params': {
-                'rules': [
-                    {
-                        'name': 'main movie',
-                        'exact_paths': ['Movies/Main Movie.mkv'],
-                        'subject_id': 900,
-                        'media_kind': 'movie',
-                        'episode_type': 'movie',
-                        'episode_id': 9001,
-                    },
-                    {
-                        'name': 'side sp premature supplemental',
-                        'exact_paths': ['SPs/Side SP01.mkv'],
-                        'disposition': 'non_bangumi_or_supplemental',
-                        'reason': 'side short treated as extra.',
-                    },
-                ]
-            }
+            'recipe_params': candidate_recipe_params,
         },
+    )
+    compact_candidate_review = state.handle_tool(
+        'validate_organize_recipe_params',
+        {'recipe_params': candidate_recipe_params},
     )
 
     assert result['accepted'] is False
@@ -502,6 +507,8 @@ def test_pi_validate_supplemental_with_candidate_row_requires_targeted_lookup_wi
     assert candidate_review['status'] == 'review'
     assert candidate_review['review_warnings'][0]['code'] == 'numbered_supplemental_candidate_rows_need_decision'
     assert candidate_review['review_warnings'][0]['metrics']['duration_candidate_episode_row_count'] == 1
+    assert candidate_review['review_warnings'][0]['metrics']['duration_candidate_episode_rows'][0]['episode_id'] == 9101
+    assert compact_candidate_review['review_warnings'][0]['candidate_episode_rows'][0]['episode_id'] == 9101
     assert any('Patch to a supportable target' in hint for hint in candidate_review['repair_hints'])
 
 
@@ -1523,7 +1530,51 @@ def test_pi_validate_organize_recipe_params_patch_still_rejects_missing_update_t
     assert result['accepted'] is False
     assert 'patch_rules target not found: typo rule name' in result['error']
     assert "existing_rule_names=['tv episodes']" in result['error']
+    assert result['patch_repair_feedback']['error_kind'] == 'patch_target_not_found'
+    assert result['patch_repair_feedback']['invalid_patch_rule_names'] == ['typo rule name']
+    assert result['patch_repair_feedback']['existing_rule_names'] == ['tv episodes']
+    assert 'append_rules' in result['patch_repair_feedback']['next_patch_shape']
     assert any('remove_rule_names' in hint and 'append_rules' in hint for hint in result['repair_hints'])
+
+
+def test_pi_validate_organize_recipe_params_patch_explains_filter_that_empties_rule(tmp_path):
+    state = PiCaseToolState(workspace=_workspace(), bangumi_client=_BangumiClient(), run_dir=tmp_path / 'run', repo_root=tmp_path)
+    recipe_params = {
+        'rules': [
+            {
+                'name': 'tv episodes',
+                'group_ref': 'LG1',
+                'subject_id': 100,
+                'media_kind': 'tv',
+                'episode_type': 'regular',
+                'reason': 'complete grouped sequence',
+            },
+        ],
+    }
+
+    state.handle_tool('validate_organize_recipe_params', {'recipe_params': recipe_params, 'detail': True})
+    result = state.handle_tool(
+        'validate_organize_recipe_params_patch',
+        {
+            'detail': True,
+            'recipe_params_patch': {
+                'patch_rules': [
+                    {'name': 'tv episodes', 'updates': {'exclude_path_contains': 'ep'}},
+                ],
+            }
+        },
+    )
+
+    assert result['ok'] is False
+    assert result['accepted'] is False
+    assert 'match no visible path' in result['error']
+    assert "existing_rule_names=['tv episodes']" in result['error']
+    feedback = result['patch_repair_feedback']
+    assert feedback['error_kind'] == 'selector_filter_matched_no_paths'
+    assert feedback['group_ref'] == 'LG1'
+    assert feedback['invalid_filter_keys'] == ['exclude_path_contains']
+    assert feedback['existing_rule_names'] == ['tv episodes']
+    assert 'remove_rule_names' in feedback['repair_intent']
 
 
 def test_pi_validate_organize_recipe_params_patch_update_inherits_existing_group_ref(tmp_path):
@@ -4107,6 +4158,61 @@ def test_pi_validate_recipe_params_derives_episode_range_from_filtered_group_sel
 
     assert result['accepted'] is True
     assert result['organize_recipe']['rules'][0]['episode']['range'] == '1-2,4'
+
+
+def test_pi_validate_recipe_params_applies_exclude_path_contains_to_global_source_pattern(tmp_path):
+    workspace = CaseEvidenceWorkspace.from_cards(
+        header=CaseHeader(case_id='test'),
+        budget=CaseBudget(),
+        contract=CaseContract(main_file_refs=['LF1', 'LF2', 'LF3', 'LF4']),
+        local_files=[
+            LocalFileCard(ref='LF1', path='SPs/Show [SP01].mkv', is_main=True),
+            LocalFileCard(ref='LF2', path='SPs/Show [SP02_1].mkv', is_main=True),
+            LocalFileCard(ref='LF3', path='SPs/Show [SP02_2].mkv', is_main=True),
+            LocalFileCard(ref='LF4', path='SPs/Show [SP03].mkv', is_main=True),
+        ],
+        bangumi_items=[
+            BangumiItemCard(ref='episode:1001', item_kind='episode', episode_id=1001, type='0', sort=1, ep=1, subject_ref='subject:100'),
+            BangumiItemCard(ref='episode:1002', item_kind='episode', episode_id=1002, type='0', sort=2, ep=2, subject_ref='subject:100'),
+            BangumiItemCard(ref='episode:1003', item_kind='episode', episode_id=1003, type='0', sort=3, ep=3, subject_ref='subject:100'),
+        ],
+    )
+    state = PiCaseToolState(workspace=workspace, bangumi_client=_BangumiClient(), run_dir=tmp_path / 'run', repo_root=tmp_path)
+
+    result = state.handle_tool(
+        'validate_organize_recipe_params',
+        {
+            'detail': True,
+            'recipe_params': {
+                'rules': [
+                    {
+                        'name': 'bulk SPs',
+                        'source_pattern': 'SPs/Show [SP{ep:02}{ver}].mkv',
+                        'exclude_path_contains': ['SP02_2'],
+                        'subject_id': 100,
+                        'media_kind': 'sp',
+                        'episode_type': 'regular',
+                        'reason': 'global source_pattern excludes one split variant',
+                    },
+                    {
+                        'name': 'split variant',
+                        'exact_paths': ['SPs/Show [SP02_2].mkv'],
+                        'disposition': 'non_bangumi_or_supplemental',
+                        'reason': 'extra local split variant',
+                    },
+                ],
+            },
+        },
+    )
+
+    assert result['accepted'] is True
+    assert 'SP02_2' in result['organize_recipe']['rules'][0]['select']['exclude_regex']
+    mapped_paths = [
+        row['source_path']
+        for row in result['compiled_plan']['assignments']
+        if row['disposition'] == 'map_to_bangumi'
+    ]
+    assert 'SPs/Show [SP02_2].mkv' not in mapped_paths
 
 
 def test_pi_validate_recipe_params_rejects_file_numbers_without_group_ref(tmp_path):
