@@ -2195,6 +2195,91 @@ def test_pi_submit_organize_recipe_params_patch_reuses_review_patch_without_reap
     assert state.final_result is None
 
 
+def test_pi_validate_organize_recipe_params_patch_reuses_review_patch_without_reapplying_append(tmp_path):
+    workspace = CaseEvidenceWorkspace.from_cards(
+        header=CaseHeader(case_id='test'),
+        budget=CaseBudget(),
+        contract=CaseContract(main_file_refs=['LF1', 'LF2', 'LF3']),
+        local_files=[
+            LocalFileCard(
+                ref='LF1',
+                path='ep1.mkv',
+                is_main=True,
+                container_facts={'probe_status': 'available', 'duration_seconds': 1440.0},
+                fact_summary={'duration_seconds': 1440.0},
+            ),
+            LocalFileCard(
+                ref='LF2',
+                path='SPs/Short 01.mkv',
+                is_main=True,
+                container_facts={'probe_status': 'available', 'duration_seconds': 92.0},
+                fact_summary={'duration_seconds': 92.0},
+            ),
+            LocalFileCard(
+                ref='LF3',
+                path='SPs/Short 02.mkv',
+                is_main=True,
+                container_facts={'probe_status': 'available', 'duration_seconds': 92.0},
+                fact_summary={'duration_seconds': 92.0},
+            ),
+        ],
+        bangumi_items=[
+            BangumiItemCard(
+                ref='episode:1001',
+                item_kind='episode',
+                episode_id=1001,
+                type='0',
+                sort=1,
+                ep=1,
+                subject_ref='subject:100',
+                title='Episode 1',
+            ),
+        ],
+    )
+    state = PiCaseToolState(workspace=workspace, bangumi_client=_BangumiClient(), run_dir=tmp_path / 'run', repo_root=tmp_path)
+    recipe_params = {
+        'summary': 'map one file then patch one unverified short file',
+        'rules': [
+            {
+                'name': 'episode 1',
+                'exact_paths': ['ep1.mkv'],
+                'subject_id': 100,
+                'media_kind': 'tv',
+                'episode_id': 1001,
+                'reason': 'first draft covers one file',
+            },
+        ],
+    }
+    patch = {
+        'append_rules': [
+            {
+                'name': 'short supplemental',
+                'source_pattern': 'SPs/Short {ep:02}.mkv',
+                'disposition': 'non_bangumi_or_supplemental',
+                'reason': 'short files have no supportable target yet',
+            },
+        ],
+    }
+
+    first = state.handle_tool('validate_organize_recipe_params', {'recipe_params': recipe_params, 'detail': True})
+    patched = state.handle_tool('validate_organize_recipe_params_patch', {'recipe_params_patch': patch, 'detail': True})
+    revalidated = state.handle_tool(
+        'validate_organize_recipe_params_patch',
+        {'recipe_params_patch': {**patch, 'remove_rule_names': []}, 'detail': True},
+    )
+
+    assert first['accepted'] is False
+    assert patched['accepted'] is False
+    assert patched['status'] == 'review'
+    assert revalidated['ok'] is True
+    assert revalidated['accepted'] is False
+    assert revalidated['status'] == 'review'
+    assert revalidated['params_patch_reused_from_latest_validation'] is True
+    assert 'append_rules target already exists' not in json.dumps(revalidated, ensure_ascii=False)
+    assert len(state.latest_recipe_params_payload['rules']) == 2
+    assert state.final_result is None
+
+
 def test_pi_submit_organize_recipe_params_invalid_returns_patch_repair_mode(tmp_path):
     state = PiCaseToolState(workspace=_workspace(), bangumi_client=_BangumiClient(), run_dir=tmp_path / 'run', repo_root=tmp_path)
 
@@ -2599,6 +2684,60 @@ def test_pi_validate_review_allows_supplemental_when_targeted_candidate_is_alrea
     assert accepted['compiled_plan']['duplicate_target_keys'] == []
 
 
+def test_pi_validate_review_groups_split_variants_before_supplemental_without_targeted_evidence(tmp_path):
+    workspace = CaseEvidenceWorkspace.from_cards(
+        header=CaseHeader(case_id='test'),
+        budget=CaseBudget(),
+        contract=CaseContract(main_file_refs=['LF1', 'LF2']),
+        local_files=[
+            LocalFileCard(
+                ref='LF1',
+                path='SPs/Show SP08_1.mkv',
+                is_main=True,
+                container_facts={'probe_status': 'available', 'duration_seconds': 92.0},
+                fact_summary={'duration_seconds': 92.0},
+            ),
+            LocalFileCard(
+                ref='LF2',
+                path='SPs/Show SP08_2.mkv',
+                is_main=True,
+                container_facts={'probe_status': 'available', 'duration_seconds': 91.0},
+                fact_summary={'duration_seconds': 91.0},
+            ),
+        ],
+    )
+    state = PiCaseToolState(workspace=workspace, bangumi_client=_NoEpisodeEvidenceBangumiClient(), run_dir=tmp_path / 'run', repo_root=tmp_path)
+
+    result = state.handle_tool(
+        'validate_organize_recipe_params',
+        {
+            'detail': True,
+            'recipe_params': {
+                'rules': [
+                    {
+                        'name': 'split variants supplemental',
+                        'exact_paths': [
+                            'SPs/Show SP08_1.mkv',
+                            'SPs/Show SP08_2.mkv',
+                        ],
+                        'disposition': 'non_bangumi_or_supplemental',
+                        'reason': 'Pi needs targeted evidence before leaving both split variants supplemental',
+                    }
+                ]
+            },
+        },
+    )
+
+    assert result['accepted'] is False
+    assert result['status'] == 'review'
+    warning = result['review_warnings'][0]
+    assert warning['code'] == 'numbered_supplemental_sequence_without_targeted_evidence'
+    assert warning['source_path'] == 'SPs/Show SP08_1.mkv'
+    assert warning['metrics']['sequence_member_count'] == 2
+    assert warning['metrics']['member_path_sample'] == ['SPs/Show SP08_1.mkv', 'SPs/Show SP08_2.mkv']
+    assert any('find_bangumi_targets_for_local_file' in hint for hint in result['repair_hints'])
+
+
 def test_pi_validate_review_allows_bracketed_iv_in_supplemental_dir(tmp_path):
     workspace = CaseEvidenceWorkspace.from_cards(
         header=CaseHeader(case_id='test'),
@@ -2779,6 +2918,74 @@ def test_pi_validate_review_accepts_targeted_representative_for_supplemental_seq
     assert accepted['review_warnings'] == []
 
 
+def test_pi_validate_review_uses_canonical_targeted_lookup_path_for_supplemental_sequence(tmp_path):
+    workspace = CaseEvidenceWorkspace.from_cards(
+        header=CaseHeader(case_id='test'),
+        budget=CaseBudget(),
+        contract=CaseContract(main_file_refs=['LF1', 'LF2', 'LF3']),
+        local_files=[
+            LocalFileCard(
+                ref='LF1',
+                path='ep1.mkv',
+                is_main=True,
+                container_facts={'probe_status': 'available', 'duration_seconds': 1440.0},
+                fact_summary={'duration_seconds': 1440.0},
+            ),
+            LocalFileCard(
+                ref='LF2',
+                path='SPs/Short Pack  /Short 01.mkv',
+                is_main=True,
+                container_facts={'probe_status': 'available', 'duration_seconds': 92.0},
+                fact_summary={'duration_seconds': 92.0},
+            ),
+            LocalFileCard(
+                ref='LF3',
+                path='SPs/Short Pack  /Short 02.mkv',
+                is_main=True,
+                container_facts={'probe_status': 'available', 'duration_seconds': 92.0},
+                fact_summary={'duration_seconds': 92.0},
+            ),
+        ],
+        bangumi_items=[
+            BangumiItemCard(
+                ref='episode:1001',
+                item_kind='episode',
+                episode_id=1001,
+                type='0',
+                sort=1,
+                ep=1,
+                subject_ref='subject:100',
+                title='Episode 1',
+            )
+        ],
+    )
+    state = PiCaseToolState(workspace=workspace, bangumi_client=_BangumiClient(), run_dir=tmp_path / 'run', repo_root=tmp_path)
+    recipe_params = {
+        'rules': [
+            {'name': 'episode', 'exact_paths': ['ep1.mkv'], 'subject_id': 100, 'media_kind': 'tv', 'episode_id': 1001},
+            {
+                'name': 'short-sp-sequence',
+                'source_pattern': 'SPs/Short Pack  /Short {ep:02}.mkv',
+                'disposition': 'non_bangumi_or_supplemental',
+                'reason': 'Short numbered SPs have no supportable target.',
+            },
+        ]
+    }
+
+    warning = state.handle_tool('validate_organize_recipe_params', {'recipe_params': recipe_params, 'detail': True})
+    lookup = state.handle_tool('find_bangumi_targets_for_local_file', {'source_path': 'SPs/Short Pack /Short 01.mkv', 'max_subjects': 1, 'max_episode_cards': 2})
+    lookup_summary = dict(state.tool_trace[-1]['result_summary'])
+    accepted = state.handle_tool('validate_organize_recipe_params', {'recipe_params': recipe_params, 'detail': True})
+
+    assert warning['accepted'] is False
+    assert warning['review_warnings'][0]['source_path'] == 'SPs/Short Pack  /Short 01.mkv'
+    assert lookup['ok'] is True
+    assert lookup['source_path'] == 'SPs/Short Pack  /Short 01.mkv'
+    assert lookup_summary['source_path'] == 'SPs/Short Pack  /Short 01.mkv'
+    assert accepted['accepted'] is True
+    assert accepted['review_warnings'] == []
+
+
 def test_pi_validate_review_warns_for_short_numbered_supplemental_sequence_without_targeted_lookup(tmp_path):
     workspace = CaseEvidenceWorkspace.from_cards(
         header=CaseHeader(case_id='test'),
@@ -2830,6 +3037,16 @@ def test_pi_validate_review_warns_for_short_numbered_supplemental_sequence_witho
     }
 
     warning = state.handle_tool('validate_organize_recipe_params', {'recipe_params': recipe_params, 'detail': True})
+    state.tool_trace.append(
+        {
+            'index': 999,
+            'tool': 'find_bangumi_targets_for_local_file',
+            'ok': False,
+            'arguments': {'source_path': 'SPs/Short 01.mkv'},
+            'result_summary': {'ok': False, 'status': 'workpaper_checkpoint_required'},
+        }
+    )
+    still_warning = state.handle_tool('validate_organize_recipe_params', {'recipe_params': recipe_params, 'detail': True})
     state.handle_tool('find_bangumi_targets_for_local_file', {'source_path': 'SPs/Short 01.mkv', 'max_subjects': 1, 'max_episode_cards': 2})
     accepted = state.handle_tool('validate_organize_recipe_params', {'recipe_params': recipe_params, 'detail': True})
 
@@ -2837,6 +3054,9 @@ def test_pi_validate_review_warns_for_short_numbered_supplemental_sequence_witho
     assert warning['status'] == 'review'
     assert {item['code'] for item in warning['review_warnings']} == {'numbered_supplemental_sequence_without_targeted_evidence'}
     assert [item['source_path'] for item in warning['review_warnings']] == ['SPs/Short 01.mkv']
+    assert still_warning['accepted'] is False
+    assert still_warning['status'] == 'review'
+    assert {item['code'] for item in still_warning['review_warnings']} == {'numbered_supplemental_sequence_without_targeted_evidence'}
     assert any('find_bangumi_targets_for_local_file' in hint for hint in warning['repair_hints'])
     assert accepted['accepted'] is True
     assert accepted['review_warnings'] == []
@@ -2935,6 +3155,80 @@ def test_pi_validate_review_warns_for_medium_numbered_single_supplemental_rules_
     assert partial['review_warnings'] == []
     assert accepted['accepted'] is True
     assert accepted['review_warnings'] == []
+
+
+def test_pi_uncovered_zero_based_sequence_hint_explains_episode_offset(tmp_path):
+    workspace = CaseEvidenceWorkspace.from_cards(
+        header=CaseHeader(case_id='test'),
+        budget=CaseBudget(),
+        contract=CaseContract(main_file_refs=['LF1', 'LF2']),
+        local_files=[
+            LocalFileCard(
+                ref='LF1',
+                path='Mini #00.mkv',
+                is_main=True,
+                container_facts={'probe_status': 'available', 'duration_seconds': 90.0},
+                fact_summary={'duration_seconds': 90.0},
+            ),
+            LocalFileCard(
+                ref='LF2',
+                path='Mini #01.mkv',
+                is_main=True,
+                container_facts={'probe_status': 'available', 'duration_seconds': 90.0},
+                fact_summary={'duration_seconds': 90.0},
+            ),
+        ],
+        bangumi_items=[
+            BangumiItemCard(
+                ref='episode:1001',
+                item_kind='episode',
+                episode_id=1001,
+                type='0',
+                sort=1,
+                ep=1,
+                subject_ref='subject:100',
+                title='Episode 1',
+            ),
+            BangumiItemCard(
+                ref='episode:1002',
+                item_kind='episode',
+                episode_id=1002,
+                type='0',
+                sort=2,
+                ep=2,
+                subject_ref='subject:100',
+                title='Episode 2',
+            ),
+        ],
+    )
+    state = PiCaseToolState(workspace=workspace, bangumi_client=_BangumiClient(), run_dir=tmp_path / 'run', repo_root=tmp_path)
+
+    result = state.handle_tool(
+        'validate_organize_recipe_params',
+        {
+            'recipe_params': {
+                'rules': [
+                    {
+                        'name': 'zero based mini sequence',
+                        'group_ref': 'LG1',
+                        'file_number_range': '0-1',
+                        'subject_id': 100,
+                        'media_kind': 'sp',
+                        'episode_type': 'regular',
+                        'episode_range': '1-2',
+                        'episode_number_field': 'sort',
+                        'episode_offset': 'EP',
+                    }
+                ]
+            },
+            'detail': True,
+        },
+    )
+
+    assert result['accepted'] is False
+    assert result['status'] == 'invalid'
+    assert any(issue['issue_code'] == 'uncovered_path' for issue in result['verifier_result']['issues'])
+    assert any('Zero-based sequence repair' in hint and 'EP+1' in hint for hint in result['repair_hints'])
 
 
 def test_pi_validate_organize_recipe_hydrates_declared_subject_targets(tmp_path):
@@ -5486,6 +5780,45 @@ def test_pi_blocks_more_evidence_after_repeated_empty_draft_reads_checkpoint(tmp
     assert result['workpaper_checkpoint']['next_tool'] == 'upsert_recipe_group_decision_one'
 
 
+def _prepare_empty_workpaper_search_checkpoint(tmp_path):
+    state = PiCaseToolState(workspace=_workspace(), bangumi_client=_BangumiClient(), run_dir=tmp_path / 'run', repo_root=tmp_path)
+    state.handle_tool('list_local_groups', {'detail': False})
+    for _ in range(state._EMPTY_WORKPAPER_DRAFT_READ_LIMIT):
+        draft = state.handle_tool('get_recipe_params_draft', {'detail': False})
+        assert draft['ok'] is True
+    for _ in range(state._EMPTY_WORKPAPER_SEMANTIC_EVIDENCE_LIMIT):
+        evidence = state.handle_tool('search_bangumi_subjects', {'query': 'OVERLORD', 'max_subjects': 1})
+        assert evidence['ok'] is True
+    return state
+
+
+def test_pi_workpaper_checkpoint_allows_anchor_selection_as_materialized_action(tmp_path):
+    state = _prepare_empty_workpaper_search_checkpoint(tmp_path)
+
+    result = state.handle_tool('select_bangumi_anchor_subject', {'anchor_subject_id': 100, 'reason': 'reliable main anchor'})
+
+    assert result['ok'] is True
+    assert result.get('status') != 'workpaper_checkpoint_required'
+    assert result['selected_anchor_subject_id'] == 100
+
+
+def test_pi_fail_closed_rejects_workpaper_checkpoint_as_terminal_reason(tmp_path):
+    state = _prepare_empty_workpaper_search_checkpoint(tmp_path)
+
+    result = state.handle_tool(
+        'fail_closed',
+        {
+            'reason': 'current workpaper checkpoint blocks further evidence without a saved decision',
+            'reason_kind': 'strict_evidence_blocker',
+            'related_refs': ['LG1'],
+        },
+    )
+
+    assert result['ok'] is False
+    assert result['error'] == 'fail_closed_requires_workpaper_action_after_checkpoint'
+    assert 'select_bangumi_anchor_subject' in ' '.join(result['repair_hints'])
+
+
 def test_pi_get_partial_draft_requires_action_after_target_evidence_for_gaps(tmp_path):
     state = PiCaseToolState(workspace=_workspace(), bangumi_client=_BangumiClient(), run_dir=tmp_path / 'run', repo_root=tmp_path)
     state.handle_tool(
@@ -5516,6 +5849,66 @@ def test_pi_get_partial_draft_requires_action_after_target_evidence_for_gaps(tmp
     assert draft['workpaper_checkpoint']['semantic_evidence_calls_since_workpaper'] == state._PARTIAL_WORKPAPER_SEMANTIC_EVIDENCE_LIMIT
     assert 'ep2.mkv' in draft['workpaper_checkpoint']['uncovered_path_sample'][0]
     assert state.tool_trace[-1]['result_summary']['workpaper_checkpoint_next_tool'] == 'upsert_recipe_group_decision'
+
+
+def test_pi_get_partial_draft_requires_action_after_repeated_status_reads(tmp_path):
+    state = PiCaseToolState(workspace=_workspace(), bangumi_client=_BangumiClient(), run_dir=tmp_path / 'run', repo_root=tmp_path)
+    state.handle_tool(
+        'upsert_recipe_group_decision_one',
+        {
+            'decision': {
+                'name': 'first file mapped',
+                'group_ref': 'LG1',
+                'file_numbers': [1],
+                'subject_id': 100,
+                'media_kind': 'tv',
+                'episode_id': 1001,
+                'reason': 'first file is stable.',
+            }
+        },
+    )
+
+    first_read = state.handle_tool('get_recipe_params_draft', {'detail': False})
+    second_read = state.handle_tool('get_recipe_params_draft', {'detail': False})
+
+    assert first_read['ok'] is True
+    assert first_read.get('status') != 'workpaper_action_required'
+    assert second_read['ok'] is True
+    assert second_read['status'] == 'workpaper_action_required'
+    checkpoint = second_read['workpaper_checkpoint']
+    assert checkpoint['checkpoint_trigger'] == 'partial_draft_read_loop'
+    assert checkpoint['next_tool'] == 'upsert_recipe_group_decision'
+    assert checkpoint['partial_draft_read_count'] == state._PARTIAL_WORKPAPER_DRAFT_READ_LIMIT
+    assert 'get_recipe_params_draft' not in checkpoint['next_tools']
+    assert 'Do not call get_recipe_params_draft again' in ' '.join(second_read['repair_hints'])
+    trace_tail = state.tool_trace[-1]['result_summary']
+    assert trace_tail['workpaper_checkpoint_next_tool'] == 'upsert_recipe_group_decision'
+    assert trace_tail['draft_missing_group_refs']
+
+
+def test_pi_partial_draft_status_read_still_allows_targeted_evidence(tmp_path):
+    state = PiCaseToolState(workspace=_workspace(), bangumi_client=_BangumiClient(), run_dir=tmp_path / 'run', repo_root=tmp_path)
+    state.handle_tool(
+        'upsert_recipe_group_decision_one',
+        {
+            'decision': {
+                'name': 'first file mapped',
+                'group_ref': 'LG1',
+                'file_numbers': [1],
+                'subject_id': 100,
+                'media_kind': 'tv',
+                'episode_id': 1001,
+                'reason': 'first file is stable.',
+            }
+        },
+    )
+    draft = state.handle_tool('get_recipe_params_draft', {'detail': False})
+
+    evidence = state.handle_tool('get_episode_list', {'subject_id': 100})
+
+    assert draft['ok'] is True
+    assert evidence['ok'] is True
+    assert evidence.get('status') != 'workpaper_checkpoint_required'
 
 
 def test_pi_evidence_batch_requires_workpaper_checkpoint_before_more_evidence(tmp_path):
@@ -5646,6 +6039,313 @@ def test_pi_post_verifier_evidence_limit_scales_with_feedback_clusters(tmp_path)
     assert blocked['error'] == 'verifier_repair_checkpoint_required'
     assert blocked['verifier_repair_checkpoint']['evidence_calls_since_feedback'] == state._POST_VERIFIER_EVIDENCE_LIMIT_MAX
     assert blocked['verifier_repair_checkpoint']['evidence_limit'] == state._POST_VERIFIER_EVIDENCE_LIMIT_MAX
+
+
+def test_pi_post_verifier_missing_target_episode_allows_multi_cluster_targeted_facts(tmp_path):
+    state = PiCaseToolState(workspace=_workspace(), bangumi_client=_BangumiClient(), run_dir=tmp_path / 'run', repo_root=tmp_path)
+    state.tool_trace.append(
+        {
+            'index': 1,
+            'tool': 'validate_recipe_params_draft',
+            'ok': True,
+            'result_summary': {
+                'accepted': False,
+                'status': 'invalid',
+                'verifier_passed': False,
+                'verifier_issue_count': 6,
+                'verifier_issue_codes': ['missing_target_episode'],
+                'review_warning_count': 0,
+            },
+        }
+    )
+
+    for _ in range(state._POST_VERIFIER_MISSING_TARGET_EVIDENCE_LIMIT_MAX):
+        allowed = state.handle_tool('search_bangumi_subjects', {'query': 'hidasketch', 'max_subjects': 1})
+        assert allowed['ok'] is True
+        assert allowed.get('status') != 'verifier_repair_checkpoint_required'
+
+    blocked = state.handle_tool('get_episode_list', {'subject_id': 100})
+
+    assert blocked['ok'] is False
+    assert blocked['error'] == 'verifier_repair_checkpoint_required'
+    assert blocked['verifier_repair_checkpoint']['evidence_calls_since_feedback'] == state._POST_VERIFIER_MISSING_TARGET_EVIDENCE_LIMIT_MAX
+    assert blocked['verifier_repair_checkpoint']['evidence_limit'] == state._POST_VERIFIER_MISSING_TARGET_EVIDENCE_LIMIT_MAX
+    assert blocked['verifier_repair_checkpoint']['verifier_issue_codes'] == ['missing_target_episode']
+
+
+def test_pi_fail_closed_rejects_premature_latest_verifier_evidence_cap_claim(tmp_path):
+    state = PiCaseToolState(workspace=_workspace(), bangumi_client=_BangumiClient(), run_dir=tmp_path / 'run', repo_root=tmp_path)
+    state.tool_trace.append(
+        {
+            'index': 1,
+            'tool': 'validate_organize_recipe_params_patch',
+            'ok': True,
+            'result_summary': {
+                'accepted': False,
+                'status': 'invalid',
+                'verifier_passed': False,
+                'verifier_issue_count': 1,
+                'verifier_issue_codes': ['missing_target_episode'],
+                'review_warning_count': 3,
+            },
+        }
+    )
+
+    result = state.handle_tool(
+        'fail_closed',
+        {
+            'reason': 'The repair loop hit the evidence cap for the latest missing target episode feedback.',
+            'reason_kind': 'insufficient_evidence',
+        },
+    )
+
+    assert result['ok'] is False
+    assert result['error'] == 'fail_closed_requires_latest_verifier_repair'
+    assert result['verifier_repair_checkpoint']['evidence_calls_since_feedback'] == 0
+    assert result['verifier_repair_checkpoint']['evidence_limit'] == 4
+    assert result['verifier_repair_checkpoint']['verifier_issue_codes'] == ['missing_target_episode']
+    assert state.final_result is None
+
+
+def test_pi_fail_closed_rejects_latest_verifier_feedback_without_post_action(tmp_path):
+    state = PiCaseToolState(workspace=_workspace(), bangumi_client=_BangumiClient(), run_dir=tmp_path / 'run', repo_root=tmp_path)
+    state.tool_trace.append(
+        {
+            'index': 1,
+            'tool': 'validate_recipe_params_draft',
+            'ok': True,
+            'result_summary': {
+                'accepted': False,
+                'status': 'invalid',
+                'verifier_passed': False,
+                'verifier_issue_count': 1,
+                'verifier_issue_codes': ['duplicate_target'],
+                'review_warning_count': 1,
+            },
+        }
+    )
+
+    result = state.handle_tool(
+        'fail_closed',
+        {
+            'reason': 'duplicate_target remains unresolved and one supplemental row is still generic.',
+            'reason_kind': 'insufficient_evidence',
+        },
+    )
+
+    assert result['ok'] is False
+    assert result['error'] == 'fail_closed_requires_latest_verifier_action'
+    assert result['verifier_repair_checkpoint']['verifier_issue_codes'] == ['duplicate_target']
+    assert result['verifier_repair_checkpoint']['evidence_calls_since_feedback'] == 0
+    assert state.final_result is None
+
+
+def test_pi_fail_closed_rejects_duplicate_target_after_evidence_without_repair_action(tmp_path):
+    state = PiCaseToolState(workspace=_workspace(), bangumi_client=_BangumiClient(), run_dir=tmp_path / 'run', repo_root=tmp_path)
+    state.tool_trace.append(
+        {
+            'index': 1,
+            'tool': 'validate_recipe_params_draft',
+            'ok': True,
+            'result_summary': {
+                'accepted': False,
+                'status': 'invalid',
+                'verifier_passed': False,
+                'verifier_issue_count': 1,
+                'verifier_issue_codes': ['duplicate_target'],
+                'review_warning_count': 0,
+            },
+        }
+    )
+    evidence = state.handle_tool('get_local_file_detail', {'paths': ['ep1.mkv']})
+    assert evidence['ok'] is True
+
+    result = state.handle_tool(
+        'fail_closed',
+        {
+            'reason': 'duplicate_target cannot be repaired because no distinct Bangumi episode exists for the split variant.',
+            'reason_kind': 'insufficient_evidence',
+        },
+    )
+
+    assert result['ok'] is False
+    assert result['error'] == 'fail_closed_requires_duplicate_target_repair_action'
+    assert result['verifier_repair_checkpoint']['verifier_issue_codes'] == ['duplicate_target']
+    assert result['verifier_repair_checkpoint']['evidence_calls_since_feedback'] == 1
+    assert any('one mapped supportable path plus one exact supplemental variant path' in hint for hint in result['repair_hints'])
+    assert state.final_result is None
+
+
+def test_pi_fail_closed_rejects_without_targeted_evidence_review_warning(tmp_path):
+    state = PiCaseToolState(workspace=_workspace(), bangumi_client=_BangumiClient(), run_dir=tmp_path / 'run', repo_root=tmp_path)
+    state.latest_review_warnings = [
+        {
+            'code': 'numbered_supplemental_sequence_without_targeted_evidence',
+            'source_path': 'ep1.mkv',
+            'metrics': {'member_path_sample': ['ep1.mkv', 'ep2.mkv']},
+        }
+    ]
+    state.tool_trace.append(
+        {
+            'index': 1,
+            'tool': 'validate_recipe_params_draft',
+            'ok': True,
+            'result_summary': {
+                'accepted': False,
+                'status': 'review',
+                'verifier_passed': True,
+                'verifier_issue_count': 0,
+                'verifier_issue_codes': [],
+                'review_warning_count': 1,
+            },
+        }
+    )
+
+    result = state.handle_tool(
+        'fail_closed',
+        {
+            'reason': 'Persistent numbered supplemental warning remains after handwritten review_resolutions.',
+            'reason_kind': 'insufficient_evidence',
+        },
+    )
+
+    assert result['ok'] is False
+    assert result['error'] == 'fail_closed_requires_targeted_evidence_review_action'
+    assert result['next_tool'] == 'find_bangumi_targets_for_local_file'
+    assert result['review_warning_checkpoint']['next_tool'] == 'find_bangumi_targets_for_local_file'
+    assert result['review_warning_checkpoint']['source_path'] == 'ep1.mkv'
+    assert result['review_warning_checkpoint']['warning_code'] == 'numbered_supplemental_sequence_without_targeted_evidence'
+    assert state.tool_trace[-1]['result_summary']['review_warning_checkpoint_next_tool'] == 'find_bangumi_targets_for_local_file'
+    assert state.tool_trace[-1]['result_summary']['review_warning_source_path'] == 'ep1.mkv'
+    assert any('hand-write candidate IDs from a different source path' in hint for hint in result['repair_hints'])
+    assert state.final_result is None
+
+
+def test_pi_fail_closed_rejects_stale_without_targeted_evidence_after_lookup(tmp_path):
+    state = PiCaseToolState(workspace=_workspace(), bangumi_client=_BangumiClient(), run_dir=tmp_path / 'run', repo_root=tmp_path)
+    state.latest_review_warnings = [
+        {
+            'code': 'numbered_supplemental_sequence_without_targeted_evidence',
+            'source_path': 'ep1.mkv',
+            'metrics': {'member_path_sample': ['ep1.mkv', 'ep2.mkv']},
+        }
+    ]
+    state.tool_trace.extend(
+        [
+            {
+                'index': 1,
+                'tool': 'validate_recipe_params_draft',
+                'ok': True,
+                'result_summary': {
+                    'accepted': False,
+                    'status': 'review',
+                    'verifier_passed': True,
+                    'verifier_issue_count': 0,
+                    'verifier_issue_codes': [],
+                    'review_warning_count': 1,
+                },
+            },
+            {
+                'index': 2,
+                'tool': 'find_bangumi_targets_for_local_file',
+                'ok': True,
+                'arguments': {'source_path': 'ep1.mkv'},
+                'result_summary': {
+                    'ok': True,
+                    'source_path': 'ep1.mkv',
+                    'duration_candidate_episode_row_count': 0,
+                },
+            },
+        ]
+    )
+
+    result = state.handle_tool(
+        'fail_closed',
+        {
+            'reason': 'Persistent numbered supplemental warning remains after exact source lookup.',
+            'reason_kind': 'insufficient_evidence',
+        },
+    )
+
+    assert result['ok'] is False
+    assert result['error'] == 'fail_closed_requires_targeted_evidence_review_action'
+    assert result['next_tool'] == 'validate_recipe_params_draft'
+    assert result['review_warning_checkpoint']['next_tool'] == 'validate_recipe_params_draft'
+    assert result['review_warning_checkpoint']['targeted_review_paths'] == ['ep1.mkv']
+    assert state.tool_trace[-1]['result_summary']['review_warning_checkpoint_next_tool'] == 'validate_recipe_params_draft'
+    assert any('validate the draft/patch again before fail_closed' in hint for hint in result['repair_hints'])
+    assert state.final_result is None
+
+
+def test_pi_rejected_fail_closed_does_not_clear_latest_verifier_repair_requirement(tmp_path):
+    state = PiCaseToolState(workspace=_workspace(), bangumi_client=_BangumiClient(), run_dir=tmp_path / 'run', repo_root=tmp_path)
+    state.tool_trace.append(
+        {
+            'index': 1,
+            'tool': 'validate_recipe_params_draft',
+            'ok': True,
+            'result_summary': {
+                'accepted': False,
+                'status': 'invalid',
+                'verifier_passed': False,
+                'verifier_issue_count': 2,
+                'verifier_issue_codes': ['missing_target_episode'],
+                'review_warning_count': 0,
+            },
+        }
+    )
+
+    first = state.handle_tool(
+        'fail_closed',
+        {
+            'reason': 'The latest verifier surface still has unresolved missing target episodes.',
+            'reason_kind': 'insufficient_evidence',
+        },
+    )
+    second = state.handle_tool(
+        'fail_closed',
+        {
+            'reason': 'The latest verifier surface still has unresolved missing target episodes after the rejected close attempt.',
+            'reason_kind': 'insufficient_evidence',
+        },
+    )
+
+    assert first['ok'] is False
+    assert first['error'] == 'fail_closed_requires_latest_verifier_action'
+    assert second['ok'] is False
+    assert second['error'] == 'fail_closed_requires_latest_verifier_action'
+    assert second['verifier_repair_checkpoint']['feedback_tool'] == 'validate_recipe_params_draft'
+    assert second['verifier_repair_checkpoint']['evidence_calls_since_feedback'] == 0
+    assert state.final_result is None
+
+
+def test_pi_fail_closed_rejects_partial_workpaper_as_terminal_reason(tmp_path):
+    state = PiCaseToolState(workspace=_workspace(), bangumi_client=_BangumiClient(), run_dir=tmp_path / 'run', repo_root=tmp_path)
+    state._recipe_params_draft_state_payload = lambda detail=False: {  # type: ignore[method-assign]
+        'ok': True,
+        'exists': True,
+        'rule_count': 3,
+        'ready_for_full_validation': False,
+        'coverage_preview': {
+            'missing_group_refs': ['LG4', 'LG5'],
+            'uncovered_path_count': 12,
+            'uncovered_path_sample': ['extra1.mkv'],
+        },
+    }
+
+    result = state.handle_tool(
+        'fail_closed',
+        {
+            'reason': 'Remaining LG4-LG5 still lack per-group evidence, and no targeted facts were gathered before the checkpoint.',
+            'reason_kind': 'insufficient_evidence',
+            'related_refs': ['LG4', 'LG5'],
+        },
+    )
+
+    assert result['ok'] is False
+    assert result['error'] == 'fail_closed_requires_complete_workpaper_or_concrete_blocker'
+    assert result['coverage_preview']['missing_group_refs'] == ['LG4', 'LG5']
+    assert state.final_result is None
 
 
 def test_pi_post_verifier_review_only_feedback_allows_targeted_evidence(tmp_path):

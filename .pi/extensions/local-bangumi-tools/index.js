@@ -178,6 +178,7 @@ function modelVisibleEnvelope(name, result) {
     issue_repair_context_count: arrayLength(issueRepairContexts),
     issue_repair_contexts: issueRepairContexts.slice(0, 4),
     repair_hints: Array.isArray(result?.repair_hints) ? result.repair_hints.slice(0, 8) : [],
+    review_warning_checkpoint: result?.review_warning_checkpoint && typeof result.review_warning_checkpoint === "object" ? result.review_warning_checkpoint : {},
     patch_repair_feedback: result?.patch_repair_feedback && typeof result.patch_repair_feedback === "object" ? result.patch_repair_feedback : {},
     accounting: result?.accounting && typeof result.accounting === "object" ? result.accounting : {},
     next_tool: result?.next_tool || nextAction || draftNext || "",

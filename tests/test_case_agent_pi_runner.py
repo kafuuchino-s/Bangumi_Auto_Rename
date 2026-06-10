@@ -447,6 +447,7 @@ def test_node_runner_loads_project_extension_tools_without_subagents_or_mapping_
     assert 'candidate_episode_rows' in text
     assert 'warning_candidate_episode_rows' in text
     assert 'review_resolution_candidate_episode_ids' in text
+    assert 'Review candidate rows are blocking completion.' in text
     assert 'if warning_candidate_episode_rows are supportable, validate a small params patch for the named source(s)' in text
     assert 'using review_resolution_candidate_episode_ids when present' in text
     assert 'A different subject_id alone is not a contradiction for side/SP/OVA/movie-bundle extras' in text
@@ -457,6 +458,11 @@ def test_node_runner_loads_project_extension_tools_without_subagents_or_mapping_
     assert 'Use issue_repair_contexts before cheap patches' in text
     assert 'target-surface mismatch must be repaired or explicitly exhausted before supplemental' in text
     assert 'Do not make a mapped side file supplemental merely to pass duplicate_target' in text
+    assert 'no distinct Bangumi row usually means try one mapped supportable path plus one exact supplemental variant path' in text
+    assert 'Duplicate_target candidate rows are blocking completion.' in text
+    assert 'Do not call read/status tools such as get_recipe_group_decisions, get_recipe_params_draft, or get_recipe_state after invalid duplicate_target feedback' in text
+    assert 'After verifier feedback, read/status tools are not a repair' in text
+    assert 'This turn must be exactly one custom tool call or fail_closed; no prose.' in text
     assert 'Use episode_ids only with selected exact_paths' in text
     assert 'append_rules only for new names' in text
     assert 'Do not show reasoning narrative, reread skills, or inspect old artifacts/tests.' in text
@@ -491,19 +497,33 @@ def test_node_runner_loads_project_extension_tools_without_subagents_or_mapping_
     assert 'review_resolution_next_action: result?.review_resolution_next_action || null' in extension_text
     assert 'candidate_judgment_policy' in extension_text
     assert 'Do not reject duration candidate rows merely because subject_id differs' in extension_text
+    assert 'review_warning_checkpoint: result?.review_warning_checkpoint' in extension_text
     assert 'local_file: compactLocalFactSummary(result)' in extension_text
     assert 'subject_episode_groups: compactSubjectEpisodeGroups(result?.subject_episode_groups' in extension_text
     assert 'metrics.duration_candidate_episode_rows' in text
     assert 'review_resolutions' in extension_text
     assert 'patch review_resolutions on the supplemental rule' in text
+    assert 'Latest Board Delta names a repair/blocker surface.' in text
+    assert 'Do not append another note or read status only' in text
+    assert 'Partial draft missing_group_refs:' in text
+    assert 'Partial draft uncovered path sample:' in text
+    assert 'Partial draft exists: next action must materialize one named missing group/subcluster as a saved mapped/supplemental row' in text
+    assert 'Read/status loop guard: do not call get_recipe_group_decisions, get_recipe_params_draft, or get_recipe_state again' in text
     assert 'Expose compact Bangumi row candidates for one exact local source_path' in extension_text
     assert 'Do not continue broad evidence after this helper answers the named source_path.' in extension_text
     assert 'async function validateReadyDraftIfNeeded' in text
     assert 'async function fileMtimeMs' in text
     assert 'verifierCurrentForDraft' in text
+    assert 'targetedReviewEvidenceAfterVerifier' in text
+    assert 'verifierCurrentForDraft && !reviewEvidenceAfterVerifier' in text
     assert 'latest verifier is current for recipe_params_draft; repair or submit before revalidating' in text
+    assert 'function latestPatchValidationFeedbackRow' in text
+    assert 'Auto-revalidate latest recipe_params_patch after targeted review evidence.' in text
+    assert 'Keep the current patch merged payload instead of falling back to stale recipe_params_draft.' in text
+    assert 'reused_latest_patch: true' in text
     assert 'auto_validate_ready_draft' in text
     assert 'Auto-validate complete recipe_params_draft through the full verifier.' in text
+    assert 'Auto-revalidate complete recipe_params_draft after targeted review evidence.' in text
     assert 'async function validateReadyDraftAtCheckpoint' in text
     assert 'validateReadyDraftAtCheckpoint(finalWait, "initial_wait")' in text
     assert 'validateReadyDraftAtCheckpoint(nudgeWait, "checkpoint")' in text
@@ -512,7 +532,8 @@ def test_node_runner_loads_project_extension_tools_without_subagents_or_mapping_
     assert 'submitAcceptedValidationAtCheckpoint' not in text
     assert 'validateReadyDraftAtCheckpoint(hardWait, "hard_finish")' in text
     assert 'phase: `${phase}_auto_validate_ready_draft`' in text
-    assert 'const maxRepairAttempts = 1' in text
+    assert 'const maxRepairAttempts = 3' in text
+    assert 'For *_without_targeted_evidence review warnings, call find_bangumi_targets_for_local_file for the warning source_path before review_resolutions, patch attempts, or fail_closed; then validate again.' in text
     assert 'previousRepairHadNoToolAction' not in text
     assert 'This turn must be exactly one custom tool call or goal_complete; no prose.' not in text
     assert 'tool_action_count: toolActionCount' not in text

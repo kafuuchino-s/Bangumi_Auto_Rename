@@ -388,6 +388,50 @@ async function readToolTraceRows() {
   }
 }
 
+const VERIFIER_FEEDBACK_TOOL_NAMES = new Set([
+  "validate_recipe_params_draft",
+  "validate_organize_recipe_params",
+  "validate_organize_recipe_params_patch",
+  "submit_organize_recipe_params",
+  "submit_organize_recipe_params_patch",
+]);
+
+function isVerifierFeedbackTraceRow(row) {
+  const name = String(row?.tool || "");
+  if (!VERIFIER_FEEDBACK_TOOL_NAMES.has(name)) return false;
+  const summary = row?.result_summary && typeof row.result_summary === "object" ? row.result_summary : {};
+  const status = String(summary.status || "").trim().toLowerCase();
+  return (
+    "verifier_passed" in summary
+    || Number(summary.verifier_issue_count || 0) > 0
+    || Number(summary.review_warning_count || 0) > 0
+    || ["invalid", "review", "accepted"].includes(status)
+  );
+}
+
+function latestVerifierFeedbackTraceRow(traceRows) {
+  return [...traceRows].reverse().find(isVerifierFeedbackTraceRow) || null;
+}
+
+function targetedReviewEvidenceAfterVerifier(traceRows) {
+  const latestVerifierRow = latestVerifierFeedbackTraceRow(traceRows);
+  const latestVerifierIndex = Number(latestVerifierRow?.index || 0);
+  if (!latestVerifierIndex) return false;
+  return traceRows.some((row) =>
+    Number(row?.index || 0) > latestVerifierIndex
+    && String(row?.tool || "") === "find_bangumi_targets_for_local_file"
+    && row?.ok !== false,
+  );
+}
+
+function latestPatchValidationFeedbackRow(traceRows) {
+  const row = latestVerifierFeedbackTraceRow(traceRows);
+  const patch = row?.arguments?.recipe_params_patch;
+  if (String(row?.tool || "") !== "validate_organize_recipe_params_patch") return null;
+  if (!patch || typeof patch !== "object" || Array.isArray(patch)) return null;
+  return row;
+}
+
 async function runProcess(argv, options = {}) {
   const timeoutMs = options.timeoutMs ?? 30000;
   const maxOutputChars = options.maxOutputChars ?? 200000;
@@ -473,6 +517,7 @@ async function readLatestVerifierNudgeLines() {
       const lines = [
         `Latest verifier: review, warning_count=${reviewWarnings.length}.`,
       ];
+      let candidateReviewWarningSeen = false;
       for (const warning of reviewWarnings.slice(0, 4)) {
         const code = warning.code || "review_warning";
         const sourcePath = warning.source_path || "";
@@ -492,6 +537,7 @@ async function readLatestVerifierNudgeLines() {
           ? metrics.candidate_episode_rows
           : (Array.isArray(metrics.duration_candidate_episode_rows) ? metrics.duration_candidate_episode_rows : []);
         if (warningCandidates.length) {
+          candidateReviewWarningSeen = true;
           const sample = warningCandidates.slice(0, 4).map((row) => ({
             local_locator_number: row.local_locator_number,
             subject_id: row.subject_id,
@@ -505,6 +551,9 @@ async function readLatestVerifierNudgeLines() {
           }));
           lines.push(`  warning_candidate_episode_rows: ${JSON.stringify(sample)}`);
         }
+      }
+      if (candidateReviewWarningSeen) {
+        lines.push("Review candidate rows are blocking completion. Next custom tool must be validate_organize_recipe_params_patch: either patch the named source_path to a supportable candidate row, or add review_resolutions with a concrete contradiction for the same candidate IDs.");
       }
       for (const context of issueRepairContexts.slice(0, 3)) {
         const kind = context.repair_kind || "repair_context";
@@ -578,8 +627,19 @@ async function readLatestVerifierNudgeLines() {
         lines.push(`  candidate_episode_rows: ${JSON.stringify(sample)}`);
       }
     }
+    const issueCodes = new Set(issues.map((issue) => issue?.issue_code).filter(Boolean));
+    const duplicateTargetCandidateSeen = issueCodes.has("duplicate_target")
+      && issueRepairContexts.some((context) => Array.isArray(context?.candidate_episode_rows) && context.candidate_episode_rows.length);
+    if (duplicateTargetCandidateSeen) {
+      lines.push("Duplicate_target candidate rows are blocking completion. Next custom tool must be validate_organize_recipe_params_patch, one targeted fact tool for a named related source, append_case_board_note with a concrete contradiction, or fail_closed with that concrete contradiction.");
+      lines.push("Do not call read/status tools such as get_recipe_group_decisions, get_recipe_params_draft, or get_recipe_state after invalid duplicate_target feedback; the verifier result is already current.");
+    }
     if (issueRepairContexts.some((context) => context?.mechanical_flags?.likely_wrong_target_surface)) {
       lines.push("Issue repair context indicates likely wrong target surface: inspect or patch distinct exposed side/special/OVA/movie-like rows before changing mapped files to supplemental.");
+    }
+    const repairHints = Array.isArray(verifier.repair_hints) ? verifier.repair_hints : [];
+    for (const hint of repairHints.slice(0, 4)) {
+      lines.push(`repair_hint: ${String(hint || "").slice(0, 520)}`);
     }
     lines.push("Next: patch named issue, one targeted fact, submit accepted, or concrete fail_closed.");
     return lines;
@@ -621,6 +681,13 @@ async function readCaseBoardNudgeLines() {
     }
     if (latestNext) {
       lines.push(`Case board latest Next: ${latestNext}.`);
+    }
+    if (latestHeading === "Board Delta") {
+      const latestSectionStart = text.lastIndexOf(`## ${latestHeading}`);
+      const latestSectionText = latestSectionStart >= 0 ? text.slice(latestSectionStart) : "";
+      if (/(blocker|blocked|patch|repair|validate)/i.test(`${latestSectionText}\n${latestNext}`)) {
+        lines.push("Latest Board Delta names a repair/blocker surface. Do not append another note or read status only; next custom tool should materialize the named patch, fetch one targeted fact, or fail_closed with the concrete contradiction.");
+      }
     }
     lines.push("If your conversation context is stale, get_case_board_notes(mode:\"tail\") restores the latest working memory.");
     return lines;
@@ -679,13 +746,28 @@ async function readRunnerProgressNudgeLines() {
   }
   if (latestDraftSummary) {
     const missingCount = latestDraftSummary.draft_missing_group_count;
+    const missingRefs = Array.isArray(latestDraftSummary.draft_missing_group_refs)
+      ? latestDraftSummary.draft_missing_group_refs.filter(Boolean).slice(0, 12)
+      : [];
+    const uncoveredSamples = Array.isArray(latestDraftSummary.draft_uncovered_path_sample)
+      ? latestDraftSummary.draft_uncovered_path_sample.filter(Boolean).slice(0, 4)
+      : [];
     lines.push(
       `Latest draft preview: ready_for_full_validation=${latestDraftSummary.recipe_params_draft_ready === true ? "true" : "false"}, covered_groups=${latestDraftSummary.draft_covered_group_count ?? "unknown"}, missing_groups=${missingCount ?? "unknown"}.`,
     );
+    if (missingRefs.length) {
+      lines.push(`Partial draft missing_group_refs: ${missingRefs.join(", ")}.`);
+    }
+    if (uncoveredSamples.length) {
+      lines.push(`Partial draft uncovered path sample: ${uncoveredSamples.join(" | ")}.`);
+    }
     const ruleCount = Number(latestDraftSummary.recipe_params_draft_rule_count || 0);
     const uncoveredPathCount = Number(latestDraftSummary.draft_uncovered_path_count || 0);
     if (ruleCount > 0 && (Number(missingCount || 0) > 0 || uncoveredPathCount > 0)) {
-      lines.push("Partial draft exists: next action should save the next stable missing group/subcluster or record one specific blocker; do not spend another broad evidence pass on all remaining groups.");
+      lines.push("Partial draft exists: next action must materialize one named missing group/subcluster as a saved mapped/supplemental row, fetch one targeted fact for a named gap, or record one concrete blocker.");
+      if (recentTools.some((tool) => ["get_recipe_group_decisions", "get_recipe_params_draft", "get_recipe_state"].includes(tool))) {
+        lines.push("Read/status loop guard: do not call get_recipe_group_decisions, get_recipe_params_draft, or get_recipe_state again until a saved decision, draft row, targeted fact, validation, or concrete Board Delta changes the workpaper.");
+      }
     }
     if (latestDraftSummary.workpaper_checkpoint_next_tool) {
       lines.push(`Workpaper checkpoint is active: next custom tool should be ${latestDraftSummary.workpaper_checkpoint_next_tool}; save one stable row or record the exact blocker before more evidence.`);
@@ -762,7 +844,9 @@ async function validateReadyDraftIfNeeded(finalPayload) {
   const draftMtimeMs = await fileMtimeMs(draftPath);
   const reviewWarnings = Array.isArray(verifier?.review_warnings) ? verifier.review_warnings : [];
   const verifierCurrentForDraft = Boolean(verifier) && verifierMtimeMs >= draftMtimeMs && draftMtimeMs > 0;
-  if (verifierCurrentForDraft) {
+  const traceRows = reviewWarnings.length ? await readToolTraceRows() : [];
+  const reviewEvidenceAfterVerifier = reviewWarnings.length ? targetedReviewEvidenceAfterVerifier(traceRows) : false;
+  if (verifierCurrentForDraft && !reviewEvidenceAfterVerifier) {
     return {
       finalPayload,
       autoValidateDraft: {
@@ -781,6 +865,33 @@ async function validateReadyDraftIfNeeded(finalPayload) {
       },
     };
   }
+  const patchFeedbackRow = reviewEvidenceAfterVerifier ? latestPatchValidationFeedbackRow(traceRows) : null;
+  if (patchFeedbackRow) {
+    const result = await callPythonTool("validate_organize_recipe_params_patch", {
+      recipe_params_patch: patchFeedbackRow.arguments.recipe_params_patch,
+      patch_delta: {
+        summary: "Auto-revalidate latest recipe_params_patch after targeted review evidence.",
+        reason: "Keep the current patch merged payload instead of falling back to stale recipe_params_draft.",
+      },
+    });
+    const updatedFinalPayload = await readFinalResult();
+    return {
+      finalPayload: updatedFinalPayload?.final_result ? updatedFinalPayload : finalPayload,
+      autoValidateDraft: {
+        attempted: true,
+        tool: "validate_organize_recipe_params_patch",
+        reused_latest_patch: true,
+        ok: Boolean(result?.ok),
+        accepted: Boolean(result?.accepted),
+        status: result?.status || "",
+        summary: result?.summary || "",
+        verifier_passed: result?.verifier_result?.passed,
+        verifier_issue_count: Array.isArray(result?.verifier_result?.issues) ? result.verifier_result.issues.length : 0,
+        review_warning_count: Array.isArray(result?.review_warnings) ? result.review_warnings.length : 0,
+        final_result_present: Boolean(updatedFinalPayload?.final_result),
+      },
+    };
+  }
   const draftState = await callPythonTool("get_recipe_params_draft", { detail: false });
   if (draftState?.ready_for_full_validation !== true) {
     return {
@@ -796,7 +907,9 @@ async function validateReadyDraftIfNeeded(finalPayload) {
   }
   const result = await callPythonTool("validate_recipe_params_draft", {
     validation_snapshot: {
-      summary: "Auto-validate complete recipe_params_draft through the full verifier.",
+      summary: reviewEvidenceAfterVerifier
+        ? "Auto-revalidate complete recipe_params_draft after targeted review evidence."
+        : "Auto-validate complete recipe_params_draft through the full verifier.",
       accepted_scope: ["recipe_params_draft covers every visible local group"],
       open_issues: [],
       next_action: "read verifier result and submit or patch",
@@ -1021,8 +1134,11 @@ async function waitForFinalResultWithNudge(session, promptDone) {
       const verifierLines = await readLatestVerifierNudgeLines();
       const autoRepairText = [
         "Auto-validation returned invalid/review. Continue with one tool action, no reasoning narrative.",
+        "This turn must be exactly one custom tool call or fail_closed; no prose.",
         "Use issue_repair_contexts and repair_hints as the repair plan.",
         "Do not convert mapped side/SP/OVA/movie rows to non_bangumi_or_supplemental as the first repair when context shows duration/path mismatch, likely_wrong_target_surface, or candidate episode rows; inspect or patch the alternate target surface first.",
+        "For duplicate local locator or split/variant duplicate_target, no distinct Bangumi row usually means try one mapped supportable path plus one exact supplemental variant path; validate that scoped patch before fail_closed.",
+        "For *_without_targeted_evidence review warnings, call find_bangumi_targets_for_local_file for the warning source_path before review_resolutions, patch attempts, or fail_closed; then validate again.",
         "- patch named verifier issue",
         "- fetch one named target fact",
         "- after verifier feedback, use one targeted fact per named issue/warning cluster, capped by the checkpoint before patch/submit/blocker",
@@ -1064,6 +1180,7 @@ async function waitForFinalResultWithNudge(session, promptDone) {
     const latestVerifierLines = await readLatestVerifierNudgeLines();
     const hardFinishText = [
       "Hard finish checkpoint: act or close. Do not narrate the decision.",
+      "This turn must be exactly one custom tool call or fail_closed; no prose.",
       "Use issue_repair_contexts before cheap patches; target-surface mismatch must be repaired or explicitly exhausted before supplemental.",
       "- save decisions",
       "- validate complete draft",
@@ -1092,7 +1209,7 @@ async function waitForFinalResultWithNudge(session, promptDone) {
     finalWait = await validateReadyDraftAtCheckpoint(hardWait, "hard_finish");
   }
   let repairAttempt = 0;
-  const maxRepairAttempts = 1;
+  const maxRepairAttempts = 3;
   while (!finalWait.payload?.final_result && repairAttempt < maxRepairAttempts) {
     const remainingMs = Math.max(0, totalBudgetMs - (Date.now() - startedAt));
     if (remainingMs < 20_000) break;
@@ -1101,7 +1218,11 @@ async function waitForFinalResultWithNudge(session, promptDone) {
     const attemptNumber = repairAttempt + 1;
     const repairText = [
       "Final repair loop: call one case tool or close with a concrete evidence reason.",
+      "This turn must be exactly one custom tool call or fail_closed; no prose.",
       "Follow issue_repair_contexts/repair_hints. Do not make a mapped side file supplemental merely to pass duplicate_target when the context points to a distinct target surface.",
+      "For duplicate local locator or split/variant duplicate_target, no distinct Bangumi row usually means try one mapped supportable path plus one exact supplemental variant path; validate that scoped patch before fail_closed.",
+      "For *_without_targeted_evidence review warnings, call find_bangumi_targets_for_local_file for the warning source_path before review_resolutions, patch attempts, or fail_closed; then validate again.",
+      "After verifier feedback, read/status tools are not a repair; use patch, one targeted fact, Board Delta blocker, submit accepted, or concrete fail_closed.",
       "- save decisions",
       "- validate complete draft",
       "- patch named verifier issue",
