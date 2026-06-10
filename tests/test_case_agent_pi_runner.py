@@ -371,6 +371,8 @@ def test_node_runner_loads_project_extension_tools_without_subagents_or_mapping_
     assert 'PRIMARY_PROMPT_INVOCATION = `/${PRIMARY_PROMPT_TEMPLATE_NAME} ${inputPath}`' in text
     assert 'PRIMARY_SKILL_LOAD_COMMAND' in text
     assert '/skill:${PRIMARY_SKILL_NAME}' in text
+    assert 'the next prompt is the task to execute immediately' in text
+    assert 'wait for the next task prompt' not in text
     assert 'readExpandedPrimaryPromptTemplate' in text
     assert 'expandSimplePromptTemplate' in text
     assert 'buildSkillExpansionFallback' in text
@@ -444,7 +446,10 @@ def test_node_runner_loads_project_extension_tools_without_subagents_or_mapping_
     assert 'Use issue_repair_contexts and repair_hints as the repair plan.' in text
     assert 'candidate_episode_rows' in text
     assert 'warning_candidate_episode_rows' in text
+    assert 'review_resolution_candidate_episode_ids' in text
     assert 'if warning_candidate_episode_rows are supportable, validate a small params patch for the named source(s)' in text
+    assert 'using review_resolution_candidate_episode_ids when present' in text
+    assert 'A different subject_id alone is not a contradiction for side/SP/OVA/movie-bundle extras' in text
     assert 'Do not continue broad evidence.' in text
     assert 'Issue repair context indicates likely wrong target surface' in text
     assert 'Pi must check the target surface itself with find_bangumi_targets_for_local_file' in text
@@ -483,8 +488,14 @@ def test_node_runner_loads_project_extension_tools_without_subagents_or_mapping_
     assert 'auto-submit after accepted recipe validation' not in text
     assert 'function targetLookupEnvelope' in extension_text
     assert 'duration_candidate_episode_rows: durationRows' in extension_text
+    assert 'review_resolution_next_action: result?.review_resolution_next_action || null' in extension_text
+    assert 'candidate_judgment_policy' in extension_text
+    assert 'Do not reject duration candidate rows merely because subject_id differs' in extension_text
     assert 'local_file: compactLocalFactSummary(result)' in extension_text
     assert 'subject_episode_groups: compactSubjectEpisodeGroups(result?.subject_episode_groups' in extension_text
+    assert 'metrics.duration_candidate_episode_rows' in text
+    assert 'review_resolutions' in extension_text
+    assert 'patch review_resolutions on the supplemental rule' in text
     assert 'Expose compact Bangumi row candidates for one exact local source_path' in extension_text
     assert 'Do not continue broad evidence after this helper answers the named source_path.' in extension_text
     assert 'async function validateReadyDraftIfNeeded' in text

@@ -96,7 +96,7 @@ One unnumbered file is not automatically a multi-episode span. Use `source_unit:
 
 Params validation is a trial check, not final submission. Invalid or review feedback is useful.
 
-Before finalizing a numbered side/SP/OVA/movie-like file as supplemental, Pi should check that target surface itself. Use `find_bangumi_targets_for_local_file` with the exact visible `source_path` or one representative path for a uniform sequence; inspect returned `duration_candidate_episode_rows` as facts, not recommendations. Candidate rows include `ordinal_alignment` between the local group title and candidate subject title; use it as evidence when choosing among same-duration sequel/side subjects. Keep supplemental only when that evidence does not expose a supportable row or the surface is explicitly exhausted.
+Before finalizing a numbered side/SP/OVA/movie-like file as supplemental, Pi should check that target surface itself. Use `find_bangumi_targets_for_local_file` with the exact visible `source_path` or one representative path for a uniform sequence; inspect returned `duration_candidate_episode_rows` as facts, not recommendations. Candidate rows include `ordinal_alignment` between the local group title and candidate subject title; use it as evidence when choosing among same-duration sequel/side subjects. A different `subject_id` is not by itself a contradiction for side/SP/OVA/movie-bundle extras; require concrete relation/title/duration/locator mismatch evidence before recording `candidate_rows_not_supportable`. Keep supplemental only when that evidence does not expose a supportable row or the surface is explicitly exhausted.
 
 When validation or submit returns `issue_repair_contexts`, use those structured facts before choosing a cheap patch. They summarize the affected source paths, duration/path shape, candidate exposed rows, and the next repair action; keep the correction in params patch tool arguments.
 
@@ -107,6 +107,10 @@ Repair lock:
 - missing target rows repair `episode_type`, `episode_range`, `episode_number_field`, `episode_offset`, `episode_id`, or the selected exposed row;
 - review warnings get only the targeted evidence they name;
 - numbered supplemental sequence warnings need one representative `find_bangumi_targets_for_local_file` call for the exact sequence path, then validation again. Python is asking for Pi-owned evidence provenance, not deciding whether the returned rows are supportable.
+
+If a review warning exposes candidate rows for a supplemental source and Pi judges those rows unsupported, do not fail closed just to record that judgment. Patch the same supplemental rule with `review_resolutions: [{source_path, candidate_episode_ids, decision:"candidate_rows_not_supportable", reason}]`, using `review_resolution_candidate_episode_ids` when present because compact warning rows may show only a sample, then validate again. Python only checks that the resolution references the current warning candidates; Pi owns the semantic contradiction.
+
+Patch repairs use one canonical intent at a time. Do not put the same rule name in `remove_rule_names` and `patch_rules`/`replace_rules`. To keep a rule, patch or replace that existing name; to split/delete it, remove the old name and append every replacement row with names that do not already exist. Keep `patch_delta` top-level, never inside `recipe_params_patch`.
 
 Do not change a plausible mapped OVA/OAD/SP/movie/side-story group to supplemental merely to make the verifier pass. If duplicate feedback pairs a short side-folder file with a long main movie/episode target, treat the duration/content-shape mismatch as evidence against reusing that target surface, not as evidence that the side file is disposable. Change semantic target or supplemental status only when targeted evidence contradicts the mapping or the exact side frontier is exhausted.
 

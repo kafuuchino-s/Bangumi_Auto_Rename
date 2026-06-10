@@ -57,6 +57,7 @@ def test_local_bangumi_prompt_template_is_official_entry_briefing():
     assert 'Use `subject_id`, not plural fields such as `target_subject_ids`' in prompt
     assert 'target-key feedback, not proof the local videos are the same content' in prompt
     assert 'title, runtime, folder role, or content shape makes the side file incompatible' in prompt
+    assert 'A different `subject_id` alone is not a contradiction for side/SP/OVA/movie-bundle extras' in prompt
     assert 'leave the main exact rule intact and reopen the atlas row surface for the side group' in prompt
     assert 'validate_recipe_params_draft(validation_snapshot={summary, accepted_scope, open_issues, next_action})' in prompt
     assert 'Transaction notes use strict small envelopes, not arbitrary JSON.' in prompt
@@ -280,6 +281,7 @@ def test_pi_skills_document_compact_evidence_flow_and_legal_recipe_episode_types
     assert 'Treat a duplicate with the main feature row as a wrong-surface symptom' in recipe_skill
     assert 'When a duplicate repair touches only a mixed side-folder subset, keep the repair exact.' in recipe_skill
     assert 'Do not use a vague reason such as "no supportable target chosen" for a numbered side group' in recipe_skill
+    assert 'A different `subject_id` is not by itself a contradiction for side/SP/OVA/movie-bundle extras' in recipe_skill
     assert 'do not stretch it into `source_unit: "single_file_multi_episode"` merely because its title resembles a short-series subject' in recipe_skill
     assert 'Do not change a plausible mapped OVA/OAD/SP/movie/side-story group to `non_bangumi_or_supplemental` merely to make the verifier pass.' in recipe_skill
     assert 'the tool appends a `Verifier Delta` automatically' in recipe_skill
@@ -673,6 +675,7 @@ def test_pi_skills_document_compact_evidence_flow_and_legal_recipe_episode_types
     assert '`validate_organize_recipe_params_patch` can repair only the changed rules' in recipe_docs
     assert 'Use `{ep}`, `{ep:02}`, or `{ep:02d}`, not Python-style `(?P<ep>...)`, for the episode capture.' in recipe_docs
     assert 'Do not cover a numbered multi-episode sequence with many `exact_paths`' in recipe_docs
+    assert 'A different `subject_id` is not by itself a contradiction for side/SP/OVA/movie-bundle extras' in recipe_docs
     assert 'For repeated supplemental groups, prefer `path_glob` plus `filename_regex`' in recipe_docs
     assert 'avoid listing dozens of obvious supplemental extras as `exact_paths`' in recipe_skill
     assert 'For a multi-file sequence rule that uses `{ep}`, do not hard-code the first episode target.' in recipe_docs

@@ -71,7 +71,7 @@ const PRIMARY_PROMPT_TEMPLATE_PATH = path.join(
 const PRIMARY_PROMPT_INVOCATION = `/${PRIMARY_PROMPT_TEMPLATE_NAME} ${inputPath}`;
 const PRIMARY_SKILL_LOAD_COMMAND =
   `/skill:${PRIMARY_SKILL_NAME} Load this skill as method context for the upcoming Local-to-Bangumi case. ` +
-  "Do not run case tools yet; wait for the next task prompt.";
+  "During this skill-load step only, do not run case tools; the next prompt is the task to execute immediately.";
 const ACTION_AGENT_OUTPUT_CONTRACT = [
   "Visible output contract: act through tools and artifacts, not reasoning prose.",
   "Do not write headings such as Deciding, Evaluating, Considering, or explain why a tool should be called.",
@@ -230,7 +230,7 @@ References are relative to ${baseDir}.
 ${body}
 </skill>
 
-User: Load this skill as method context for the upcoming Local-to-Bangumi case. Do not run case tools yet; wait for the next task prompt.`;
+User: Load this skill as method context for the upcoming Local-to-Bangumi case. During this skill-load step only, do not run case tools; the next prompt is the task to execute immediately.`;
 }
 
 async function promptWithResult(session, text, options = {}) {
@@ -482,7 +482,15 @@ async function readLatestVerifierNudgeLines() {
           lines.push(`  repair_hint: ${String(warning.repair_hint).slice(0, 420)}`);
         }
         const metrics = warning.metrics && typeof warning.metrics === "object" ? warning.metrics : {};
-        const warningCandidates = Array.isArray(metrics.candidate_episode_rows) ? metrics.candidate_episode_rows : [];
+        const resolutionCandidateIds = Array.isArray(metrics.review_resolution_candidate_episode_ids)
+          ? metrics.review_resolution_candidate_episode_ids
+          : (Array.isArray(warning.review_resolution_candidate_episode_ids) ? warning.review_resolution_candidate_episode_ids : []);
+        if (resolutionCandidateIds.length) {
+          lines.push(`  review_resolution_candidate_episode_ids: ${JSON.stringify(resolutionCandidateIds)}`);
+        }
+        const warningCandidates = Array.isArray(metrics.candidate_episode_rows)
+          ? metrics.candidate_episode_rows
+          : (Array.isArray(metrics.duration_candidate_episode_rows) ? metrics.duration_candidate_episode_rows : []);
         if (warningCandidates.length) {
           const sample = warningCandidates.slice(0, 4).map((row) => ({
             local_locator_number: row.local_locator_number,
@@ -519,7 +527,7 @@ async function readLatestVerifierNudgeLines() {
           lines.push(`  candidate_episode_rows: ${JSON.stringify(sample)}`);
         }
       }
-      lines.push("Next: if warning_candidate_episode_rows are supportable, validate a small params patch for the named source(s); if not supportable, record the concrete contradiction or fail_closed. Do not continue broad evidence.");
+      lines.push("Next: if warning_candidate_episode_rows are supportable, validate a small params patch for the named source(s); if not supportable, patch review_resolutions on the supplemental rule using review_resolution_candidate_episode_ids when present, then validate again. A different subject_id alone is not a contradiction for side/SP/OVA/movie-bundle extras. Use fail_closed only when the whole case cannot be resolved. Do not continue broad evidence.");
       return lines;
     }
     if (verifier.passed === true) {
@@ -1169,7 +1177,7 @@ Prefer compact recipe params: validate_organize_recipe_params and validate_recip
 Board and draft tools are Pi-owned working memory. The Python verifier remains the strict mechanical gate for coverage, duplicate targets, legal exposed Bangumi targets, and selector shape.
 Convergence protocol: each evidence burst must become saved group decisions, draft params, validation, or a compact named blocker. More search is not progress once the blocker already names a target surface.
 For complex franchise/side-content packages, after the first reliable main-title search, choose the anchor with select_bangumi_anchor_subject(anchor_subject_id, reason). That tool atomically records Pi's anchor choice and builds the evidence atlas; Python still does not choose any mapping.
-Before finalizing a numbered side/SP/OVA/movie-like visible file as supplemental, Pi must check the target surface itself with find_bangumi_targets_for_local_file on the exact source_path or a representative path. Use returned duration_candidate_episode_rows as facts, not recommendations; keep supplemental only when that evidence exposes no supportable row or the surface is explicitly exhausted.
+Before finalizing a numbered side/SP/OVA/movie-like visible file as supplemental, Pi must check the target surface itself with find_bangumi_targets_for_local_file on the exact source_path or a representative path. Use returned duration_candidate_episode_rows as facts, not recommendations; keep supplemental only when that evidence exposes no supportable row or the surface is explicitly exhausted. A different subject_id alone is not a contradiction for side/SP/OVA/movie-bundle extras; require concrete relation/title/duration/locator mismatch evidence before recording candidate_rows_not_supportable.
 When validation returns issue_repair_contexts, treat them as structured repair instructions. Duplicate-target context is target-surface feedback, not permission to make side/SP/OVA/movie rows supplemental before duration/path mismatch and exposed candidate rows have been audited.
 For one-to-one multi-target rows, use selected exact_paths plus episode_ids, and do not also set episode_id/sort/ep. append_rules only adds new named rules; patch or replace existing rule names instead of appending overlaps.
 Only after submit_organize_recipe_params or submit_organize_recipe_params_patch returns accepted=true may you call goal_complete. If strict evidence is insufficient or contradictory, call fail_closed with a concrete reason, then goal_complete. After accepted=true, do not call any other tool except goal_complete.
@@ -1192,7 +1200,7 @@ Use case-scoped custom tools for facts and work memory; the raw case input at ${
 For exact_paths, use only visible source_path values exposed by case tools, never task_source_path. Prefer group_ref plus file_numbers/file_number_range/path_contains for numbered subclusters before listing long exact_paths.
 Python only persists Pi-owned board/decision/draft work and verifies coverage, duplicate targets, legal exposed Bangumi rows, and selector shape.
 After gathering a useful evidence batch, materialize it as saved decisions or draft validation before broadening the search.
-For uncertain numbered side/SP/OVA/movie-like supplemental rows, call find_bangumi_targets_for_local_file yourself before final submit; use its duration_candidate_episode_rows to judge whether a supportable exposed row exists.
+For uncertain numbered side/SP/OVA/movie-like supplemental rows, call find_bangumi_targets_for_local_file yourself before final submit; use its duration_candidate_episode_rows to judge whether a supportable exposed row exists. A different subject_id alone is not a contradiction for side/SP/OVA/movie-bundle extras; require concrete relation/title/duration/locator mismatch evidence before recording candidate_rows_not_supportable.
 Use issue_repair_contexts from validation/submission feedback before cheap supplemental patches; repair or exhaust the named target surface first.
 Use episode_ids only with selected exact_paths for one-to-one expansion, never together with episode_id/sort/ep; use append_rules only for new names and patch_rules/replace_rules for existing names.
 Do not inspect old run artifacts, repository tests, or Python schemas as case evidence.

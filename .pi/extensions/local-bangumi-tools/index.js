@@ -139,7 +139,9 @@ function targetLookupEnvelope(name, result) {
     queries_used: compactRows(result?.queries_used, 4),
     duration_candidate_episode_row_count: arrayLength(result?.duration_candidate_episode_rows),
     duration_candidate_episode_rows: durationRows,
+    review_resolution_next_action: result?.review_resolution_next_action || null,
     duration_candidate_policy: result?.duration_candidate_policy || "",
+    candidate_judgment_policy: "A different subject_id is not by itself a contradiction for side/SP/OVA/movie-bundle extras; judge relation, title, duration, locator/order, and concrete mismatch evidence.",
     subject_episode_groups: compactSubjectEpisodeGroups(result?.subject_episode_groups, 4, 4),
     repair_hints: Array.isArray(result?.repair_hints) ? result.repair_hints.slice(0, 6) : [],
     next_tool: durationRows.length > 0
@@ -213,6 +215,8 @@ const recipeParamsQuickReference = [
   "Use exact_paths only for unnumbered, path-ambiguous, or truly mixed exceptions.",
   "Use disposition:\"non_bangumi_or_supplemental\" for scoped supplemental rows.",
   "Accepted validation still needs submit; put board_delta/content, validation_snapshot, patch_delta, and submit_snapshot in their strict small envelope schemas.",
+  "If review warnings show candidate rows for a supplemental source that Pi judges unsupported, add review_resolutions:[{source_path,candidate_episode_ids,decision:\"candidate_rows_not_supportable\",reason}] to that supplemental rule and validate again. Use review_resolution_candidate_episode_ids when present; compact candidate rows may show only a sample.",
+  "Do not reject duration candidate rows merely because subject_id differs; side/SP/OVA/movie-bundle extras often live on related subjects, so require concrete relation/title/duration/locator mismatch evidence before recording candidate_rows_not_supportable.",
   "Schema is strict: do not use source_path/path/source_paths/source_template/range/offset aliases, nested select/target/episode objects, plural subject fields, boolean flags, patch_delta structural fields, or raw recipe JSON.",
 ].join("\n");
 
@@ -248,6 +252,13 @@ const dispositionSchema = StringEnum([
   "non_bangumi_or_supplemental",
 ]);
 const episodeNumberFieldSchema = StringEnum(["sort", "ep"]);
+const reviewResolutionDecisionSchema = StringEnum(["candidate_rows_not_supportable"]);
+const reviewResolutionSchema = strictObject({
+  source_path: Type.String(),
+  candidate_episode_ids: Type.Optional(Type.Array(Type.Number())),
+  decision: reviewResolutionDecisionSchema,
+  reason: Type.String(),
+});
 
 const recipeParamsRuleSchema = strictObject({
   name: Type.Optional(Type.String()),
@@ -275,6 +286,7 @@ const recipeParamsRuleSchema = strictObject({
   episode_number_field: Type.Optional(episodeNumberFieldSchema),
   disposition: Type.Optional(dispositionSchema),
   reason: Type.Optional(Type.String()),
+  review_resolutions: Type.Optional(Type.Array(reviewResolutionSchema)),
 });
 const recipeGroupDecisionSchema = recipeParamsRuleSchema;
 const recipeParamsPayloadSchema = strictObject({
@@ -575,6 +587,7 @@ const tools = [
       promptSnippet: "Expose compact Bangumi row candidates for one exact local source_path",
       promptGuidelines: [
         "Use duration_candidate_episode_rows as facts for Pi judgment; the tool does not choose the target.",
+        "A different subject_id alone is not a contradiction for side/SP/OVA/movie-bundle extras; compare relation, title, duration, locator/order, and concrete mismatches.",
         "If rows are supportable, patch or validate the affected rule; if not, record the concrete contradiction or fail_closed.",
         "Do not continue broad evidence after this helper answers the named source_path.",
       ],
@@ -610,7 +623,7 @@ const tools = [
   proxyTool(
     "validate_organize_recipe_params_patch",
     "Validate Organize Recipe Params Patch",
-    "Patch the latest recipe params from the previous params validate/submit, then validate. If no previous params validation exists but recipe_params_draft does, the patch updates that draft and returns coverage preview without running verifier. append_rules is only for new named rules; use patch_rules/replace_rules for existing names or remove_rule_names before appending a replacement. Put the small Patch Delta in patch_delta so board write and patch/draft update happen in one transaction.",
+    "Patch the latest recipe params from the previous params validate/submit, then validate. If no previous params validation exists but recipe_params_draft does, the patch updates that draft and returns coverage preview without running verifier. append_rules is only for new named rules. For existing names, use patch_rules/replace_rules; if splitting or deleting an old row, put its name only in remove_rule_names and put every replacement row in append_rules. Never put patch_delta inside recipe_params_patch; patch_delta is a top-level small note envelope.",
     strictObject({
       recipe_params_patch: recipeParamsPatchSchema,
       patch_delta: Type.Optional(patchDeltaSchema),
@@ -621,6 +634,8 @@ const tools = [
       promptGuidelines: [
         "Use validate_organize_recipe_params_patch for named repairs after validation or submission feedback.",
         "Use validate_organize_recipe_params_patch patch_delta only for a strict small evidence note; put structural edits in recipe_params_patch.",
+        "Do not patch/replace and remove the same rule name in one patch; choose patch_rules/replace_rules or remove_rule_names plus append_rules.",
+        "If patch_repair_feedback says append_rule_name_already_exists, move that row to patch_rules/replace_rules, or add the old name to remove_rule_names and resend a full append replacement.",
       ],
     },
   ),
@@ -645,7 +660,7 @@ const tools = [
   proxyTool(
     "submit_organize_recipe_params_patch",
     "Submit Organize Recipe Params Patch",
-    "Patch the latest recipe params from the previous params validate/submit, then submit. append_rules is only for new names; patch or replace existing names instead. If the same patch was just accepted by validate_organize_recipe_params_patch, submit reuses that accepted merged params instead of applying append_rules twice. Use submit_snapshot for the final board snapshot; patch_delta is optional when submitting a newly changed patch.",
+    "Patch the latest recipe params from the previous params validate/submit, then submit. append_rules is only for new names; patch or replace existing names instead, or remove an old name before appending a full replacement. Do not patch/replace and remove the same name in one patch. If the same patch was just accepted by validate_organize_recipe_params_patch, submit reuses that accepted merged params instead of applying append_rules twice. Use submit_snapshot for the final board snapshot; patch_delta is optional when submitting a newly changed patch.",
     strictObject({
       recipe_params_patch: recipeParamsPatchSchema,
       summary: Type.Optional(Type.String()),
