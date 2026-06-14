@@ -27,8 +27,9 @@ from src.rename.local_supplemental_filter import classify_local_video_supplement
 from src.rename.utils import VIDEO_SUFFIX
 
 
-SAMPLE_WORKER_COUNT = 20
+SAMPLE_WORKER_COUNT = 10
 SAMPLE_PROVIDER_NO_RESPONSE_RETRIES = 2
+SAMPLE_TIMEOUT_CHILD_BUFFER_SECONDS = 15
 CASE_AGENT_PROGRESS_ENV_VAR = "LOCAL_BANGUMI_CASE_AGENT_PROGRESS_PATH"
 ALLOWED_FAIL_CLOSED_SUMMARIES = {
     "budget_exhausted",
@@ -551,30 +552,50 @@ def _sample_row(sample_path: Path, result: dict[str, Any], elapsed_ms: int) -> d
     }
 
 
-def _is_provider_no_response_result(result: dict[str, Any]) -> bool:
+def _sample_retry_reason(result: dict[str, Any]) -> str:
     snapshot = result.get("snapshot") if isinstance(result.get("snapshot"), dict) else result
     if not isinstance(snapshot, dict):
-        return False
+        return ""
     error_kind = str(snapshot.get("case_agent_error_kind") or snapshot.get("error_kind") or result.get("error_kind") or "")
     if error_kind == "provider_no_response":
-        return True
+        return "provider_no_response"
     errors = snapshot.get("errors") if isinstance(snapshot.get("errors"), list) else result.get("errors")
     if any("provider_no_response" in str(item) or "no response" in str(item).casefold() for item in list(errors or [])):
-        return True
+        return "provider_no_response"
     if error_kind != "pi_runtime_failed":
-        return False
-    if str(snapshot.get("status") or result.get("status") or "") != "fail_closed":
-        return False
-    if str(snapshot.get("summary") or result.get("summary") or "") != "budget_exhausted":
-        return False
+        return ""
     runtime = snapshot.get("pi_runtime_result") if isinstance(snapshot.get("pi_runtime_result"), dict) else {}
     runner_result = runtime.get("runner_result") if isinstance(runtime.get("runner_result"), dict) else {}
     if runner_result.get("final_result_present") is not False:
-        return False
-    tool_sequence = list(snapshot.get("pi_tool_sequence") or [])
-    tool_counts = snapshot.get("pi_tool_call_counts") if isinstance(snapshot.get("pi_tool_call_counts"), dict) else {}
-    # Pi produced no useful action; the single fail_closed is Python's auto-finalizer.
-    return tool_sequence in ([], ["fail_closed"]) and set(tool_counts).issubset({"fail_closed"})
+        return ""
+    summary = str(snapshot.get("summary") or result.get("summary") or "")
+    error_items = list(errors or [])
+    has_no_final_error = any("pi_no_final_result" in str(item) for item in error_items)
+    has_no_final_summary = "without a final" in summary.casefold()
+    # `budget_exhausted` is runner-only in the Pi tool surface. If Pi made useful
+    # tool calls but never reached a terminating submit/fail tool, the Python
+    # bridge can either auto-finalize it as budget_exhausted or surface a direct
+    # no-final runtime error. Treat both as transient runtime completion failures;
+    # do not confuse them with a semantic fail_closed, which would have a real
+    # final result.
+    if summary == "budget_exhausted" or has_no_final_error or has_no_final_summary:
+        return "pi_runtime_no_final_result"
+    return ""
+
+
+def _sample_strict_failure_retry_reason(result: dict[str, Any]) -> str:
+    snapshot = result.get("snapshot") if isinstance(result.get("snapshot"), dict) else result
+    if not isinstance(snapshot, dict):
+        return ""
+    status = str(snapshot.get("status") or result.get("status") or "")
+    summary = str(snapshot.get("summary") or result.get("summary") or "")
+    if status == "fail_closed" and summary not in ALLOWED_FAIL_CLOSED_SUMMARIES:
+        return "strict_fail_closed"
+    return ""
+
+
+def _is_provider_no_response_result(result: dict[str, Any]) -> bool:
+    return bool(_sample_retry_reason(result))
 
 
 def _write_sample_result(sample: Path, output_dir: Path, result: dict[str, Any]) -> None:
@@ -661,6 +682,7 @@ def _run_mapping_sample_uncapped(
     output_dir: Path,
     max_rounds: int | None = None,
     pi_timeout_seconds: int | None = None,
+    sample_deadline_monotonic: float | None = None,
 ) -> dict[str, Any]:
     started = time.time()
     retry_reasons: list[str] = []
@@ -680,6 +702,16 @@ def _run_mapping_sample_uncapped(
         )
         result: dict[str, Any] = {}
         for attempt in range(SAMPLE_PROVIDER_NO_RESPONSE_RETRIES + 1):
+            attempt_pi_timeout_seconds = pi_timeout_seconds
+            if sample_deadline_monotonic is not None:
+                remaining_seconds = int(sample_deadline_monotonic - time.monotonic() - SAMPLE_TIMEOUT_CHILD_BUFFER_SECONDS)
+                if remaining_seconds <= 0 and attempt > 0:
+                    break
+                if remaining_seconds > 0:
+                    if attempt_pi_timeout_seconds is None or int(attempt_pi_timeout_seconds or 0) <= 0:
+                        attempt_pi_timeout_seconds = remaining_seconds
+                    else:
+                        attempt_pi_timeout_seconds = min(int(attempt_pi_timeout_seconds or 0), remaining_seconds)
             _write_runner_progress(
                 sample,
                 output_dir,
@@ -687,12 +719,12 @@ def _run_mapping_sample_uncapped(
                 extra={
                     "attempt": attempt + 1,
                     "max_rounds": max_rounds,
-                    "pi_timeout_seconds": pi_timeout_seconds,
+                    "pi_timeout_seconds": attempt_pi_timeout_seconds,
                 },
             )
             overrides: dict[str, Any] = {}
-            if pi_timeout_seconds is not None and int(pi_timeout_seconds or 0) > 0:
-                overrides['rename_local_bangumi_pi_timeout_seconds'] = max(1, int(pi_timeout_seconds or 0))
+            if attempt_pi_timeout_seconds is not None and int(attempt_pi_timeout_seconds or 0) > 0:
+                overrides['rename_local_bangumi_pi_timeout_seconds'] = max(1, int(attempt_pi_timeout_seconds or 0))
             if overrides:
                 with cm.temporary_config(overrides):
                     result = run_local_bangumi_case_agent_mapping(
@@ -710,11 +742,12 @@ def _run_mapping_sample_uncapped(
                     source_path=sample,
                     bangumi_client=BangumiClient(),
                 )
-            if not _is_provider_no_response_result(result):
+            retry_reason = _sample_retry_reason(result) or _sample_strict_failure_retry_reason(result)
+            if not retry_reason:
                 break
             if attempt >= SAMPLE_PROVIDER_NO_RESPONSE_RETRIES:
                 break
-            retry_reasons.append("provider_no_response")
+            retry_reasons.append(retry_reason)
             time.sleep(min(1.0, 0.25 * (attempt + 1)))
         _write_runner_progress(
             sample,
@@ -763,12 +796,13 @@ def _run_mapping_sample_process_entry(
     output_dir: str,
     max_rounds: int | None,
     pi_timeout_seconds: int | None,
+    sample_deadline_monotonic: float | None,
 ) -> None:
     progress_path = _progress_path_for_sample(Path(sample), Path(output_dir))
     previous_progress_path = os.environ.get(CASE_AGENT_PROGRESS_ENV_VAR)
     os.environ[CASE_AGENT_PROGRESS_ENV_VAR] = progress_path.as_posix()
     try:
-        row = _run_mapping_sample_uncapped(Path(sample), Path(output_dir), max_rounds, pi_timeout_seconds)
+        row = _run_mapping_sample_uncapped(Path(sample), Path(output_dir), max_rounds, pi_timeout_seconds, sample_deadline_monotonic)
         queue.put({"ok": True, "row": row})
     except BaseException as exc:
         queue.put({"ok": False, "error": str(exc)})
@@ -792,10 +826,12 @@ def _run_mapping_sample(
     started = time.time()
     queue: mp.Queue = mp.Queue(maxsize=1)
     progress_path = _progress_path_for_sample(sample, output_dir)
-    pi_timeout_seconds = max(1, timeout - 15) if timeout > 20 else timeout
+    child_buffer = SAMPLE_TIMEOUT_CHILD_BUFFER_SECONDS
+    pi_timeout_seconds = max(1, timeout - child_buffer) if timeout > child_buffer + 5 else timeout
+    sample_deadline_monotonic = time.monotonic() + timeout
     process = mp.Process(
         target=_run_mapping_sample_process_entry,
-        args=(queue, sample.as_posix(), output_dir.as_posix(), max_rounds, pi_timeout_seconds),
+        args=(queue, sample.as_posix(), output_dir.as_posix(), max_rounds, pi_timeout_seconds, sample_deadline_monotonic),
     )
     process.start()
     deadline = started + timeout

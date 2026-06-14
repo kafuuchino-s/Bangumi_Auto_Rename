@@ -138,7 +138,57 @@ def test_pi_runtime_blank_budget_exhausted_counts_as_provider_no_response():
     )
 
 
-def test_semantic_budget_fail_closed_is_not_provider_no_response():
+def test_pi_runtime_no_final_after_useful_tools_counts_as_provider_no_response():
+    assert runner._is_provider_no_response_result(
+        {
+            "ok": True,
+            "snapshot": {
+                "status": "fail_closed",
+                "summary": "budget_exhausted",
+                "case_agent_error_kind": "pi_runtime_failed",
+                "pi_tool_sequence": [
+                    "get_recipe_params_draft",
+                    "search_bangumi_subjects",
+                    "validate_recipe_params_draft",
+                ],
+                "pi_tool_call_counts": {
+                    "get_recipe_params_draft": 2,
+                    "search_bangumi_subjects": 1,
+                    "validate_recipe_params_draft": 1,
+                },
+                "pi_runtime_result": {
+                    "runner_result": {
+                        "final_result_present": False,
+                    }
+                },
+            },
+        }
+    )
+
+
+def test_pi_runtime_direct_no_final_error_counts_as_provider_no_response():
+    assert runner._is_provider_no_response_result(
+        {
+            "ok": False,
+            "snapshot": {
+                "status": "error",
+                "summary": "Pi runtime ended without a final submit_organize_recipe_params/fail_closed result.",
+                "case_agent_error_kind": "pi_runtime_failed",
+                "errors": [
+                    "error_kind=pi_runtime_failed",
+                    "error_kind=pi_no_final_result",
+                ],
+                "pi_runtime_result": {
+                    "runner_result": {
+                        "final_result_present": False,
+                    }
+                },
+            },
+        }
+    )
+
+
+def test_semantic_budget_fail_closed_final_result_is_not_provider_no_response():
     assert not runner._is_provider_no_response_result(
         {
             "ok": True,
@@ -150,12 +200,174 @@ def test_semantic_budget_fail_closed_is_not_provider_no_response():
                 "pi_tool_call_counts": {"search_bangumi_subjects": 1, "fail_closed": 1},
                 "pi_runtime_result": {
                     "runner_result": {
-                        "final_result_present": False,
+                        "final_result_present": True,
                     }
                 },
             },
         }
     )
+
+
+def test_allowed_fail_closed_is_not_strict_failure_retry():
+    assert runner._sample_strict_failure_retry_reason(
+        {
+            "ok": True,
+            "snapshot": {
+                "status": "fail_closed",
+                "summary": "semantic_ambiguity",
+                "final_verifier_passed": True,
+            },
+        }
+    ) == ""
+
+
+def test_unaccepted_fail_closed_counts_as_strict_failure_retry():
+    assert runner._sample_strict_failure_retry_reason(
+        {
+            "ok": True,
+            "snapshot": {
+                "status": "fail_closed",
+                "summary": "No supportable target row surfaced from this attempt.",
+                "final_verifier_passed": True,
+            },
+        }
+    ) == "strict_fail_closed"
+
+
+def test_runtime_no_final_budget_exhausted_is_retried(tmp_path: Path, monkeypatch):
+    sample = tmp_path / "sample_retry.json"
+    sample.write_text("{}", encoding="utf-8")
+    output_dir = tmp_path / "out"
+    output_dir.mkdir()
+
+    class FakeEvidence:
+        root_name = "Retry Sample"
+        files = [object()]
+        main_video_count = 1
+        supplemental_candidate_count = 0
+
+    monkeypatch.setattr(runner, "local_evidence_from_raw_sample", lambda _sample: FakeEvidence())
+    monkeypatch.setattr(runner, "AIClient", lambda: object())
+    monkeypatch.setattr(runner, "BangumiClient", lambda: object())
+    attempts = []
+
+    def fake_run_local_bangumi_case_agent_mapping(**_kwargs):
+        attempts.append(1)
+        if len(attempts) == 1:
+            return {
+                "ok": True,
+                "status": "fail_closed",
+                "summary": "budget_exhausted",
+                "snapshot": {
+                    "status": "fail_closed",
+                    "summary": "budget_exhausted",
+                    "case_agent_error_kind": "pi_runtime_failed",
+                    "pi_tool_sequence": ["validate_recipe_params_draft"],
+                    "pi_tool_call_counts": {"validate_recipe_params_draft": 1},
+                    "pi_runtime_result": {
+                        "runner_result": {
+                            "final_result_present": False,
+                        }
+                    },
+                },
+            }
+        return {
+            "ok": True,
+            "status": "accepted",
+            "summary": "accepted",
+            "snapshot": {
+                "status": "accepted",
+                "summary": "accepted",
+                "final_verifier_passed": True,
+                "pi_runtime_result": {
+                    "runner_result": {
+                        "final_result_present": True,
+                    }
+                },
+            },
+        }
+
+    monkeypatch.setattr(
+        runner,
+        "run_local_bangumi_case_agent_mapping",
+        fake_run_local_bangumi_case_agent_mapping,
+    )
+
+    row = runner._run_mapping_sample_uncapped(sample, output_dir)
+
+    assert len(attempts) == 2
+    assert row["status"] == "accepted"
+    assert row["sample_runner_retry_count"] == 1
+    assert row["sample_runner_retry_reasons"] == ["pi_runtime_no_final_result"]
+    written = json.loads((output_dir / "sample_retry.json").read_text(encoding="utf-8"))
+    assert written["sample_runner"]["sample_runner_retry_count"] == 1
+
+
+def test_strict_fail_closed_is_retried(tmp_path: Path, monkeypatch):
+    sample = tmp_path / "sample_retry_fail_closed.json"
+    sample.write_text("{}", encoding="utf-8")
+    output_dir = tmp_path / "out"
+    output_dir.mkdir()
+
+    class FakeEvidence:
+        root_name = "Retry Fail Closed Sample"
+        files = [object()]
+        main_video_count = 1
+        supplemental_candidate_count = 0
+
+    monkeypatch.setattr(runner, "local_evidence_from_raw_sample", lambda _sample: FakeEvidence())
+    monkeypatch.setattr(runner, "AIClient", lambda: object())
+    monkeypatch.setattr(runner, "BangumiClient", lambda: object())
+    attempts = []
+
+    def fake_run_local_bangumi_case_agent_mapping(**_kwargs):
+        attempts.append(1)
+        if len(attempts) == 1:
+            return {
+                "ok": True,
+                "status": "fail_closed",
+                "summary": "No supportable target row surfaced from this attempt.",
+                "snapshot": {
+                    "status": "fail_closed",
+                    "summary": "No supportable target row surfaced from this attempt.",
+                    "final_verifier_passed": True,
+                    "pi_runtime_result": {
+                        "runner_result": {
+                            "final_result_present": True,
+                        }
+                    },
+                },
+            }
+        return {
+            "ok": True,
+            "status": "accepted",
+            "summary": "accepted",
+            "snapshot": {
+                "status": "accepted",
+                "summary": "accepted",
+                "final_verifier_passed": True,
+                "accepted_accounting_ready": True,
+                "main_file_count": 1,
+                "accounted_for_count": 1,
+                "mapped_file_count": 1,
+                "resolved_unmapped_file_count": 0,
+                "manual_review_file_count": 0,
+                "unresolved_count": 0,
+            },
+        }
+
+    monkeypatch.setattr(
+        runner,
+        "run_local_bangumi_case_agent_mapping",
+        fake_run_local_bangumi_case_agent_mapping,
+    )
+
+    row = runner._run_mapping_sample_uncapped(sample, output_dir)
+
+    assert len(attempts) == 2
+    assert row["status"] == "accepted"
+    assert row["sample_runner_retry_count"] == 1
+    assert row["sample_runner_retry_reasons"] == ["strict_fail_closed"]
 
 
 def test_strict_row_ok_accepts_agent_fail_closed_submit_summary():
@@ -333,7 +545,9 @@ def test_sample_timeout_passes_shorter_pi_timeout_to_child(tmp_path: Path, monke
     row = runner._run_mapping_sample(sample, output_dir, max_rounds=None, sample_timeout_seconds=120)
 
     assert row["status"] == "accepted"
-    assert captured["args"][-1] == 105
+    assert len(captured["args"]) == 6
+    assert captured["args"][-2] == 105
+    assert captured["args"][-1] > captured["args"][-2]
 
 
 def test_raw_sample_builds_local_fact_surface_shape(tmp_path: Path):
@@ -437,3 +651,7 @@ def test_run_in_parallel_runs_single_sample_serially(monkeypatch):
 
     assert calls == ["sample_one.json"]
     assert rows == [{"sample": "sample_one.json", "prefix": "ok"}]
+
+
+def test_sample_worker_default_is_ten():
+    assert runner.SAMPLE_WORKER_COUNT == 10
