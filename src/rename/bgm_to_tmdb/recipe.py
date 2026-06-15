@@ -313,7 +313,9 @@ def _assignment_matches_selector(assignment: BgmAssignmentRef, selector: BgmToTm
         return False
     if selector.media_kind and _norm_text(_assignment_media_kind(assignment)) != _norm_text(selector.media_kind):
         return False
-    if selector.episode_type and _norm_text(_assignment_episode_type(assignment)) != _norm_text(selector.episode_type):
+    if selector.episode_type and not _episode_types_compatible(
+        _assignment_episode_type(assignment), selector.episode_type
+    ):
         return False
     if selector.rule_name and str(assignment.rule_name or '') != selector.rule_name:
         return False
@@ -467,6 +469,23 @@ def _assignment_media_kind(assignment: BgmAssignmentRef) -> str:
 
 def _assignment_episode_type(assignment: BgmAssignmentRef) -> str:
     return str(assignment.target_span.episode_type or assignment.target.episode_type or '')
+
+
+def _episode_types_compatible(assignment_episode_type: str, selector_episode_type: str) -> bool:
+    """Treat 'episode' as an alias for 'regular' for matching purposes.
+
+    Some accepted Local-to-Bangumi plans use episode_type='episode' instead of
+    the canonical 'regular' for regular TV episodes. The bridge verifier should
+    accept both as equivalent for the BGM->TMDB recipe selector.
+    """
+    normalized_assignment = _norm_text(assignment_episode_type)
+    normalized_selector = _norm_text(selector_episode_type)
+    if normalized_assignment == normalized_selector:
+        return True
+    canonical_regular = {'regular', 'episode'}
+    if normalized_assignment in canonical_regular and normalized_selector in canonical_regular:
+        return True
+    return False
 
 
 def _rule_ref(rule: BgmToTmdbRecipeRule, index: int) -> str:

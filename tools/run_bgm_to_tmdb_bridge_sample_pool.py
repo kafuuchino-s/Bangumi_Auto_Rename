@@ -381,6 +381,49 @@ def _run_in_parallel(
     return [indexed_rows[index] for index in range(len(entries))]
 
 
+def _retry_failed_rows(
+    entries: list[dict[str, Any]],
+    rows: list[dict[str, Any]],
+    worker: Callable[..., dict[str, Any]],
+    output_dir: Path,
+    sample_timeout_seconds: int,
+    *,
+    max_retries: int,
+    retry_workers: int,
+) -> list[dict[str, Any]]:
+    entries_by_id = {str(entry['sample_id']): entry for entry in entries}
+    current_rows = list(rows)
+    retry_history: list[dict[str, Any]] = []
+    for attempt in range(1, max_retries + 1):
+        failed_entries = [
+            entries_by_id.get(str(row.get('sample_id')))
+            for row in current_rows
+            if str(row.get('status')) != 'accepted' and entries_by_id.get(str(row.get('sample_id')))
+        ]
+        if not failed_entries:
+            break
+        print(f'Retry pass {attempt}/{max_retries}: {len(failed_entries)} non-accepted samples with {retry_workers} worker(s)...')
+        retry_rows = _run_in_parallel(
+            failed_entries,
+            worker,
+            output_dir,
+            sample_timeout_seconds,
+            worker_count=retry_workers,
+        )
+        retry_history.append({
+            'attempt': attempt,
+            'retried_count': len(failed_entries),
+            'retried_sample_ids': [str(entry['sample_id']) for entry in failed_entries],
+            'retry_rows': retry_rows,
+        })
+        retry_rows_by_id = {str(row.get('sample_id')): row for row in retry_rows}
+        current_rows = [
+            retry_rows_by_id.get(str(row.get('sample_id')), row)
+            for row in current_rows
+        ]
+    return current_rows
+
+
 def _strict_row_ok(row: dict[str, Any]) -> bool:
     status = str(row.get('status') or '')
     if status == 'dry_build':
@@ -474,6 +517,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument('--limit', type=int, default=None)
     parser.add_argument('--offset', type=int, default=0, help='Skip this many selected artifacts before applying --limit.')
     parser.add_argument('--workers', type=int, default=DEFAULT_WORKERS)
+    parser.add_argument('--retry-workers', type=int, default=1, help='Workers for the retry pass of non-accepted samples.')
+    parser.add_argument('--max-retries', type=int, default=1, help='Retry passes for non-accepted samples; 0 disables retry.')
     parser.add_argument('--sample-timeout-seconds', type=int, default=0)
     parser.add_argument('--output-dir', type=Path, default=None)
     parser.add_argument('--dry-build', action='store_true', help='Parse accepted artifacts and compile bridge input; do not call Pi or TMDB.')
@@ -509,6 +554,16 @@ def main(argv: list[str] | None = None) -> int:
             int(args.sample_timeout_seconds or 0),
             worker_count=args.workers,
         )
+        if int(args.max_retries or 0) > 0:
+            rows = _retry_failed_rows(
+                entries,
+                rows,
+                _run_bridge_entry,
+                output_dir,
+                int(args.sample_timeout_seconds or 0),
+                max_retries=int(args.max_retries or 0),
+                retry_workers=max(1, int(args.retry_workers or 1)),
+            )
     summary = _summary(
         accepted_root=accepted_root,
         output_dir=output_dir,
