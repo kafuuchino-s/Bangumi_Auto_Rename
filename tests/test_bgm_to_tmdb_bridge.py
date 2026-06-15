@@ -472,6 +472,11 @@ def test_tool_state_validates_submits_and_writes_artifacts(tmp_path) -> None:
     assert (tmp_path / 'artifacts' / 'bgm_to_tmdb_verified_plan.json').exists()
     assert (tmp_path / 'final_result.json').exists()
     assert state.tool_summary()['tool_call_counts']['submit_bgm_to_tmdb_bridge'] == 1
+    assert context['data']['bridge_contract']['final_tools'] == [
+        'validate_bgm_to_tmdb_bridge_recipe_params',
+        'submit_bgm_to_tmdb_bridge_recipe_params',
+        'fail_closed',
+    ]
 
 
 def test_recipe_sequence_compiles_bgm_sort_range_to_tmdb_episode_nodes() -> None:
@@ -797,7 +802,7 @@ def test_recipe_rejects_zero_match_count_mismatch_duplicate_and_supplemental_map
     } <= codes
 
 
-def test_validate_recipe_params_hydrates_declared_tmdb_ref_and_accepts_json_string(tmp_path) -> None:
+def test_validate_recipe_params_hydrates_declared_tmdb_ref_and_rejects_json_string(tmp_path) -> None:
     bridge_input = compile_bgm_to_tmdb_input(
         CompiledOrganizePlan(assignments=[_assignment('E01.mkv', sort=1, ep=1)]),
         source_path='Show',
@@ -826,9 +831,76 @@ def test_validate_recipe_params_hydrates_declared_tmdb_ref_and_accepts_json_stri
         {'recipe_params': json.dumps(params)},
     )
 
+    assert result['accepted'] is False
+    assert result['status'] == 'invalid'
+    assert result['error'] == 'recipe_params must be a canonical JSON object'
+    assert 'tmdb_hydration' not in result
+
+
+def test_validate_recipe_params_hydrates_declared_tmdb_ref_and_accepts_canonical_dict(tmp_path) -> None:
+    bridge_input = compile_bgm_to_tmdb_input(
+        CompiledOrganizePlan(assignments=[_assignment('E01.mkv', sort=1, ep=1)]),
+        source_path='Show',
+    )
+    state = BgmToTmdbBridgeToolState(
+        bridge_input=bridge_input,
+        legal_graph=build_tmdb_legal_graph([]),
+        run_dir=tmp_path,
+        tmdb_search=_FakeTmdbSearch(),
+    )
+    params = {
+        'rules': [
+            {
+                'name': 'hydrated',
+                'rule_type': 'episode_sequence',
+                'select_bgm': {'bangumi_subject_id': 100},
+                'target_tmdb': {'tmdb_ref': 'tv:45844', 'season_number': 1, 'episode_range': '1'},
+                'confidence': 'High',
+                'reason': 'validate hydrates tv:45844 and exposes the legal node',
+            }
+        ],
+    }
+
+    result = state.handle_tool(
+        'validate_bgm_to_tmdb_bridge_recipe_params',
+        {'recipe_params': params},
+    )
+
     assert result['accepted'] is True
     assert result['tmdb_hydration']['candidate_count'] == 1
     assert state.legal_graph.legal_node_map()['tv:45844:S01E01'].title == 'Messenger of Iscandar'
+
+
+def test_raw_bridge_tools_reject_string_payloads(tmp_path) -> None:
+    bridge_input = compile_bgm_to_tmdb_input(
+        CompiledOrganizePlan(assignments=[_assignment('E01.mkv', sort=1, ep=1)]),
+        source_path='Show',
+    )
+    state = BgmToTmdbBridgeToolState(
+        bridge_input=bridge_input,
+        legal_graph=build_tmdb_legal_graph([]),
+        run_dir=tmp_path,
+    )
+
+    result = state.handle_tool(
+        'validate_bgm_to_tmdb_bridge',
+        {
+            'bridge_draft': json.dumps({
+                'mappings': [
+                    {
+                        'source_path': 'E01.mkv',
+                        'disposition': 'map_to_tmdb',
+                        'tmdb_legal_node_ids': ['tv:42:S01E01'],
+                        'reason': 'exposed legal node',
+                    }
+                ]
+            }),
+        },
+    )
+
+    assert result['accepted'] is False
+    assert result['status'] == 'invalid'
+    assert result['error'] == 'bridge_draft must be a canonical JSON object'
 
 
 def test_recipe_review_warning_blocks_submit_until_evidence_is_added(tmp_path) -> None:

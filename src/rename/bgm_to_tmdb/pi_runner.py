@@ -322,6 +322,7 @@ def _invoke_pi_runtime(
         env = os.environ.copy()
         if runtime_model_config is not None:
             env.update(runtime_model_config.env)
+        env['TMDB_REQUESTS_TIMEOUT'] = '20'
         try:
             completed = subprocess.run(
                 argv,

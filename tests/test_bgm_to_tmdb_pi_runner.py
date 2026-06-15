@@ -256,17 +256,24 @@ def test_node_sidecar_uses_pi_core_bridge_tools_and_read_only_native_tools() -> 
     native_names = set(re.findall(r'"([^"]+)"', native_match.group(1)))
 
     assert 'createAgentSession' in text
-    assert {'read', 'grep', 'find', 'ls'} <= native_names
+    assert native_names.issubset({'read', 'grep', 'find', 'ls'})
+    assert 'read' in native_names
     assert native_names.isdisjoint({'write', 'edit', 'bash', 'shell', 'delete'})
     assert 'get_bgm_to_tmdb_bridge_context' in text
     assert 'search_tmdb_candidates' in text
     assert 'get_tmdb_legal_graph' in text
     assert 'validate_bgm_to_tmdb_bridge_recipe_params' in text
     assert 'submit_bgm_to_tmdb_bridge_recipe_params' in text
+    assert 'promptSnippet' in text
+    assert 'promptGuidelines' in text
+    assert 'StringEnum' in text
+    assert 'Json.Any(' not in text
+    assert 'Type.Any(' not in text
     assert 'Do not hand-write per-source TMDB node mappings' in text
     assert 'do not keep searching recap/summary/CM/bonus title variants' in text
     assert 'streamingBehavior: "followUp"' in text
-    assert 'submit_bgm_to_tmdb_bridge' in text
+    assert re.search(r'(?<![A-Za-z0-9_])validate_bgm_to_tmdb_bridge(?![A-Za-z0-9_])', text) is None
+    assert re.search(r'(?<![A-Za-z0-9_])submit_bgm_to_tmdb_bridge(?![A-Za-z0-9_])', text) is None
     assert 'tmdb-bridge-contract' in text
     assert 'one anchor search' in text
     assert 'hydrated legal graph as the next evidence layer' in text

@@ -12,13 +12,12 @@ def test_tmdb_bridge_skill_teaches_recipe_first_contract_and_valid_params_shape(
 
     assert 'validate_bgm_to_tmdb_bridge_recipe_params' in text
     assert 'submit_bgm_to_tmdb_bridge_recipe_params' in text
-    assert 'Per-source `source_path -> tv:<id>:SxxEyy` mappings are debug/fallback material' in text
-    assert 'Raw `validate_bgm_to_tmdb_bridge` and `submit_bgm_to_tmdb_bridge` are debug/fallback tools only' in text
-    assert 'source_path -> tv:<id>:SxxEyy' in text
+    assert 'per-source raw mappings' in text
     assert 'tv:<tmdb_id>:SxxEyy' in text
     assert 'movie:<tmdb_id>' in text
     assert 'Names are semantic evidence' not in text
     assert 'TMDB names are semantic evidence, not output identity' in text
+    assert 'canonical structured recipe params' in text
     assert 'recap/summary/CM/bonus-title searches' in text
     assert 'Episode Title Alignment' in text
     assert 'episode_title_cards_sample' in text

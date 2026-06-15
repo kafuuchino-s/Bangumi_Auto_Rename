@@ -177,7 +177,7 @@ class BgmToTmdbBridgeToolState:
             }
         return self._hydrate_tmdb_refs(refs)
 
-    def tool_validate_bgm_to_tmdb_bridge_recipe_params(self, recipe_params: dict[str, Any] | str | None = None) -> dict[str, Any]:
+    def tool_validate_bgm_to_tmdb_bridge_recipe_params(self, recipe_params: dict[str, Any] | None = None) -> dict[str, Any]:
         params, error = self._parse_recipe_params_payload(recipe_params)
         if error:
             return {'ok': False, 'accepted': False, 'status': 'invalid', 'error': error, 'repair_hints': ['Submit a JSON object shaped like BgmToTmdbRecipeParams.']}
@@ -218,7 +218,7 @@ class BgmToTmdbBridgeToolState:
             'recipe_params': params.model_dump(mode='json'),
         }
 
-    def tool_submit_bgm_to_tmdb_bridge_recipe_params(self, recipe_params: dict[str, Any] | str | None = None, summary: str = '') -> dict[str, Any]:
+    def tool_submit_bgm_to_tmdb_bridge_recipe_params(self, recipe_params: dict[str, Any] | None = None, summary: str = '') -> dict[str, Any]:
         params, error = self._parse_recipe_params_payload(recipe_params)
         if error:
             return {'ok': False, 'accepted': False, 'status': 'invalid', 'error': error, 'repair_hints': ['Submit a JSON object shaped like BgmToTmdbRecipeParams.']}
@@ -406,7 +406,7 @@ class BgmToTmdbBridgeToolState:
         enriched = _safe_call(getattr(self.tmdb_search, 'enrich_tv_alias_metadata', None), tv_info)
         return enriched if isinstance(enriched, dict) and enriched else tv_info
 
-    def tool_validate_bgm_to_tmdb_bridge(self, bridge_draft: dict[str, Any] | str | None = None) -> dict[str, Any]:
+    def tool_validate_bgm_to_tmdb_bridge(self, bridge_draft: dict[str, Any] | None = None) -> dict[str, Any]:
         draft, error = self._parse_bridge_draft_payload(bridge_draft)
         if error:
             return {'ok': False, 'accepted': False, 'status': 'invalid', 'error': error, 'repair_hints': ['Submit a JSON object shaped like BgmToTmdbMappingDraft.']}
@@ -427,7 +427,7 @@ class BgmToTmdbBridgeToolState:
             'bridge_draft': draft.model_dump(mode='json'),
         }
 
-    def tool_submit_bgm_to_tmdb_bridge(self, bridge_draft: dict[str, Any] | str | None = None, summary: str = '') -> dict[str, Any]:
+    def tool_submit_bgm_to_tmdb_bridge(self, bridge_draft: dict[str, Any] | None = None, summary: str = '') -> dict[str, Any]:
         draft, error = self._parse_bridge_draft_payload(bridge_draft)
         if error:
             return {'ok': False, 'accepted': False, 'status': 'invalid', 'error': error, 'repair_hints': ['Submit a JSON object shaped like BgmToTmdbMappingDraft.']}
@@ -518,21 +518,7 @@ class BgmToTmdbBridgeToolState:
                 self.final_result['auto_finalized_from_validated_recipe_params'] = True
                 self._write_final_result()
             return result
-        if self.bridge_draft is None:
-            return {'ok': False, 'accepted': False, 'skipped': True, 'reason': 'no bridge_draft has been validated'}
-        if self.bridge_verifier_result is None or not self.bridge_verifier_result.passed:
-            return {'ok': False, 'accepted': False, 'skipped': True, 'reason': 'latest bridge verifier result is not accepted'}
-        result = self.handle_tool(
-            'submit_bgm_to_tmdb_bridge',
-            {
-                'bridge_draft': self.bridge_draft.model_dump(mode='json'),
-                'summary': 'Runner finalized a Pi-validated BGM-to-TMDB bridge draft after validate_bgm_to_tmdb_bridge returned accepted=true.',
-            },
-        )
-        if result.get('accepted') and self.final_result:
-            self.final_result['auto_finalized_from_validated_bridge'] = True
-            self._write_final_result()
-        return result
+        return {'ok': False, 'accepted': False, 'skipped': True, 'reason': 'no validated recipe_params has been accepted'}
 
     def auto_fail_closed_no_final_result(self, reason: str) -> dict[str, Any]:
         if self.final_result:
@@ -560,9 +546,9 @@ class BgmToTmdbBridgeToolState:
             'tmdb_legal_graph': self.legal_graph.model_dump(mode='json'),
             'bridge_contract': {
                 'identity_policy': 'TMDB titles, original names, aliases, and slugs are semantic evidence only; mapped targets must use tv:<tmdb_id>:SxxEyy or movie:<tmdb_id> legal nodes. BGM assignments that TMDB does not expose may be marked tmdb_target_absent.',
-                'final_tools': ['validate_bgm_to_tmdb_bridge_recipe_params', 'submit_bgm_to_tmdb_bridge_recipe_params', 'validate_bgm_to_tmdb_bridge', 'submit_bgm_to_tmdb_bridge', 'fail_closed'],
+                'final_tools': ['validate_bgm_to_tmdb_bridge_recipe_params', 'submit_bgm_to_tmdb_bridge_recipe_params', 'fail_closed'],
                 'tmdb_tools': ['search_tmdb_candidates', 'get_tmdb_legal_graph'],
-                'primary_workflow': 'Use recipe params for normal TV/movie/special/span/tmdb_absent/supplemental groups. Raw node mappings are debug fallback only.',
+                'primary_workflow': 'Use recipe params for the normal TV/movie/special/span/tmdb_absent/supplemental workflow.',
                 'accepted_mapping_outcomes': [
                     'map_to_tmdb for BGM assignments with exposed TMDB legal nodes',
                     'tmdb_target_absent for BGM assignments that TMDB does not expose as legal nodes after targeted title/episode-title checks',
@@ -583,31 +569,21 @@ class BgmToTmdbBridgeToolState:
             payload['last_invalid_submission'] = _json_safe(self.last_invalid_submission)
         return payload
 
-    def _parse_recipe_params_payload(self, payload: dict[str, Any] | str | None) -> tuple[BgmToTmdbRecipeParams | None, str]:
+    def _parse_recipe_params_payload(self, payload: dict[str, Any] | None) -> tuple[BgmToTmdbRecipeParams | None, str]:
         if payload is None:
             return None, 'missing recipe_params'
-        if isinstance(payload, str):
-            try:
-                payload = json.loads(payload)
-            except json.JSONDecodeError as exc:
-                return None, f'invalid recipe_params JSON: {exc}'
         if not isinstance(payload, dict):
-            return None, 'recipe_params must be a JSON object'
+            return None, 'recipe_params must be a canonical JSON object'
         try:
             return BgmToTmdbRecipeParams.model_validate(payload), ''
         except Exception as exc:
             return None, str(exc)
 
-    def _parse_bridge_draft_payload(self, payload: dict[str, Any] | str | None) -> tuple[BgmToTmdbMappingDraft | None, str]:
+    def _parse_bridge_draft_payload(self, payload: dict[str, Any] | None) -> tuple[BgmToTmdbMappingDraft | None, str]:
         if payload is None:
             return None, 'missing bridge_draft'
-        if isinstance(payload, str):
-            try:
-                payload = json.loads(payload)
-            except json.JSONDecodeError as exc:
-                return None, f'invalid bridge_draft JSON: {exc}'
         if not isinstance(payload, dict):
-            return None, 'bridge_draft must be a JSON object'
+            return None, 'bridge_draft must be a canonical JSON object'
         try:
             return BgmToTmdbMappingDraft.model_validate(payload), ''
         except Exception as exc:

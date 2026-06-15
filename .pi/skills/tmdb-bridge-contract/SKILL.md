@@ -7,7 +7,7 @@ description: Use when bridging an accepted Local-to-Bangumi compiled plan to TMD
 
 The final output for this stage is Python-verifier accepted BGM-to-TMDB recipe params submitted with `submit_bgm_to_tmdb_bridge_recipe_params`, or a safe fail-closed result for global ambiguity. This stage is dry-run only: no moving, copying, linking, renaming, or writing final media files.
 
-Use recipe params as the primary workflow. Per-source `source_path -> tv:<id>:SxxEyy` mappings are debug/fallback material for exact edge cases, not the normal TV episode sequence workflow. Python compiles compact rules into raw bridge outcomes, then the existing verifier checks coverage, duplicates, legal nodes, spans, target-absent boundaries, and supplemental boundaries.
+Use recipe params as the primary workflow. The normal path is canonical structured recipe params, not per-source raw mappings. Python compiles compact rules into bridge outcomes, then the existing verifier checks coverage, duplicates, legal nodes, spans, target-absent boundaries, and supplemental boundaries.
 
 Bangumi identity comes from the accepted compiled plan: `source_path`, `bangumi_subject_id`, `episode_id`, `sort`, `ep`, title, media kind, episode type, and span episode IDs. TMDB identity in recipe params is `tmdb_ref` (`tv:<tmdb_id>` or `movie:<tmdb_id>`), plus season/range fields when needed. Compiled legal nodes are `tv:<tmdb_id>:SxxEyy` for TV episodes and `movie:<tmdb_id>` for movies.
 
@@ -23,8 +23,6 @@ TMDB names are semantic evidence, not output identity. Use `display_title`, `ori
 6. After validation returns `accepted:true`, call `submit_bgm_to_tmdb_bridge_recipe_params` with the same params.
 
 Search is for finding plausible TMDB refs, not for exhaustively proving every recap/summary/CM/bonus title. After a plausible series/movie candidate is found and hydrated, recipe validation is the next stronger evidence layer. If validation shows a mapped Bangumi episode/special has no concrete TMDB legal node, a targeted season-0/episode-title check can justify `tmdb_absent_group` for that BGM node instead of failing the whole case.
-
-Raw `validate_bgm_to_tmdb_bridge` and `submit_bgm_to_tmdb_bridge` are debug/fallback tools only. Use them for exact edge cases or inspecting generated JSON, not as the normal path.
 
 ## Franchise Anchor First
 
