@@ -3,55 +3,185 @@
   "files": [
     {
       "path": "[VCB-Studio] Minami-ke [Ma10p_1080p]/[VCB-Studio] Minami-ke [01][Ma10p_1080p][x265_flac].mkv",
-      "size": 588449191
+      "size": 588449191,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1427.095,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke [Ma10p_1080p]/[VCB-Studio] Minami-ke [02][Ma10p_1080p][x265_flac].mkv",
-      "size": 510071633
+      "size": 510071633,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1426.093,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke [Ma10p_1080p]/[VCB-Studio] Minami-ke [03][Ma10p_1080p][x265_flac].mkv",
-      "size": 530157218
+      "size": 530157218,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1426.011,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke [Ma10p_1080p]/[VCB-Studio] Minami-ke [04][Ma10p_1080p][x265_flac].mkv",
-      "size": 563074287
+      "size": 563074287,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1427.095,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke [Ma10p_1080p]/[VCB-Studio] Minami-ke [05][Ma10p_1080p][x265_flac].mkv",
-      "size": 579558088
+      "size": 579558088,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1426.093,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke [Ma10p_1080p]/[VCB-Studio] Minami-ke [06][Ma10p_1080p][x265_flac].mkv",
-      "size": 597597337
+      "size": 597597337,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1426.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke [Ma10p_1080p]/[VCB-Studio] Minami-ke [07][Ma10p_1080p][x265_flac].mkv",
-      "size": 551010308
+      "size": 551010308,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1427.095,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke [Ma10p_1080p]/[VCB-Studio] Minami-ke [08][Ma10p_1080p][x265_flac].mkv",
-      "size": 578564036
+      "size": 578564036,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1426.093,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke [Ma10p_1080p]/[VCB-Studio] Minami-ke [09][Ma10p_1080p][x265_flac].mkv",
-      "size": 511705478
+      "size": 511705478,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1426.011,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke [Ma10p_1080p]/[VCB-Studio] Minami-ke [10][Ma10p_1080p][x265_flac].mkv",
-      "size": 549019269
+      "size": 549019269,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1427.095,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke [Ma10p_1080p]/[VCB-Studio] Minami-ke [11][Ma10p_1080p][x265_flac].mkv",
-      "size": 561119428
+      "size": 561119428,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1426.093,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke [Ma10p_1080p]/[VCB-Studio] Minami-ke [12][Ma10p_1080p][x265_flac].mkv",
-      "size": 553381681
+      "size": 553381681,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1426.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke [Ma10p_1080p]/[VCB-Studio] Minami-ke [13][Ma10p_1080p][x265_flac].mkv",
-      "size": 565562707
+      "size": 565562707,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1410.995,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke [Ma10p_1080p]/CDs/[071024] ｢経験値上昇中☆｣ (flac+jpg)/KICM-3158.cue",
@@ -287,139 +417,479 @@
     },
     {
       "path": "[VCB-Studio] Minami-ke [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke [CM Collection 01][Ma10p_720p][x265_flac].mkv",
-      "size": 48596542
+      "size": 48596542,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 158.16,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke [CM Collection 02][Ma10p_720p][x265_flac].mkv",
-      "size": 20182333
+      "size": 20182333,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 65.065,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke [CM Collection 03][Ma10p_720p][x265_flac].mkv",
-      "size": 67220747
+      "size": 67220747,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 193.195,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke [IV][Ma10p_720p][x265_aac].mkv",
-      "size": 753797114
+      "size": 753797114,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 2063.082,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke [Menu01_1][Ma10p_1080p][x265_flac].mkv",
-      "size": 25530591
+      "size": 25530591,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 90.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke [Menu01_2][Ma10p_1080p][x265_flac].mkv",
-      "size": 25741260
+      "size": 25741260,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 90.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke [Menu02_1][Ma10p_1080p][x265_flac].mkv",
-      "size": 22338675
+      "size": 22338675,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 90.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke [Menu02_2][Ma10p_1080p][x265_flac].mkv",
-      "size": 22549353
+      "size": 22549353,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 90.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke [Menu03_1][Ma10p_1080p][x265_flac].mkv",
-      "size": 26694246
+      "size": 26694246,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 90.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke [Menu03_2][Ma10p_1080p][x265_flac].mkv",
-      "size": 26904915
+      "size": 26904915,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 90.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke [Menu04_1][Ma10p_1080p][x265_flac].mkv",
-      "size": 19770505
+      "size": 19770505,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 90.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke [Menu04_2][Ma10p_1080p][x265_flac].mkv",
-      "size": 19981190
+      "size": 19981190,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 90.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke [NCED][Ma10p_1080p][x265_flac].mkv",
-      "size": 54321558
+      "size": 54321558,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.095,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke [NCED_EP13][Ma10p_1080p][x265_flac].mkv",
-      "size": 56258780
+      "size": 56258780,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.01,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke [NCOP][Ma10p_1080p][x265_flac].mkv",
-      "size": 72251870
+      "size": 72251870,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.095,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke OAD [Ma10p_720p]/[VCB-Studio] Minami-ke Betsubara [OAD01][Ma10p_720p][x265_ac3].mkv",
-      "size": 554846039
+      "size": 554846039,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1503.488,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke OAD [Ma10p_720p]/[VCB-Studio] Minami-ke Natsuyasumi [OAD03][Ma10p_720p][x265_ac3].mkv",
-      "size": 395060114
+      "size": 395060114,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1695.694,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke OAD [Ma10p_720p]/[VCB-Studio] Minami-ke Omatase [OAD02][Ma10p_720p][x265_ac3].mkv",
-      "size": 469256612
+      "size": 469256612,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1523.522,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke OAD [Ma10p_720p]/SPs/[VCB-Studio] Minami-ke Betsubara [Menu][Ma10p_720p][x265_ac3].mkv",
-      "size": 16434581
+      "size": 16434581,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 205.205,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke OAD [Ma10p_720p]/SPs/[VCB-Studio] Minami-ke Natsuyasumi [Menu][Ma10p_720p][x265_ac3].mkv",
-      "size": 70339495
+      "size": 70339495,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 298.8,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke OAD [Ma10p_720p]/SPs/[VCB-Studio] Minami-ke Omatase [Menu][Ma10p_720p][x265_ac3].mkv",
-      "size": 15822074
+      "size": 15822074,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.313,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Okaeri [Ma10p_1080p]/[VCB-Studio] Minami-ke Okaeri [01][Ma10p_1080p][x265_flac].mkv",
-      "size": 1127817712
+      "size": 1127817712,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1427.095,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Okaeri [Ma10p_1080p]/[VCB-Studio] Minami-ke Okaeri [02][Ma10p_1080p][x265_flac].mkv",
-      "size": 1111595712
+      "size": 1111595712,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1426.093,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Okaeri [Ma10p_1080p]/[VCB-Studio] Minami-ke Okaeri [03][Ma10p_1080p][x265_flac].mkv",
-      "size": 1059326663
+      "size": 1059326663,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1426.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Okaeri [Ma10p_1080p]/[VCB-Studio] Minami-ke Okaeri [04][Ma10p_1080p][x265_flac].mkv",
-      "size": 1091428964
+      "size": 1091428964,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1427.095,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Okaeri [Ma10p_1080p]/[VCB-Studio] Minami-ke Okaeri [05][Ma10p_1080p][x265_flac].mkv",
-      "size": 1168491334
+      "size": 1168491334,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1425.968,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Okaeri [Ma10p_1080p]/[VCB-Studio] Minami-ke Okaeri [06][Ma10p_1080p][x265_flac].mkv",
-      "size": 1052306397
+      "size": 1052306397,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1426.217,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Okaeri [Ma10p_1080p]/[VCB-Studio] Minami-ke Okaeri [07][Ma10p_1080p][x265_flac].mkv",
-      "size": 1097748656
+      "size": 1097748656,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1427.095,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Okaeri [Ma10p_1080p]/[VCB-Studio] Minami-ke Okaeri [08][Ma10p_1080p][x265_flac].mkv",
-      "size": 1095132684
+      "size": 1095132684,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1426.093,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Okaeri [Ma10p_1080p]/[VCB-Studio] Minami-ke Okaeri [09][Ma10p_1080p][x265_flac].mkv",
-      "size": 1077982803
+      "size": 1077982803,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1426.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Okaeri [Ma10p_1080p]/[VCB-Studio] Minami-ke Okaeri [10][Ma10p_1080p][x265_flac].mkv",
-      "size": 1077587885
+      "size": 1077587885,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1426.93,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Okaeri [Ma10p_1080p]/[VCB-Studio] Minami-ke Okaeri [11][Ma10p_1080p][x265_flac].mkv",
-      "size": 1036541805
+      "size": 1036541805,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1426.094,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Okaeri [Ma10p_1080p]/[VCB-Studio] Minami-ke Okaeri [12][Ma10p_1080p][x265_flac].mkv",
-      "size": 1160988783
+      "size": 1160988783,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1426.093,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Okaeri [Ma10p_1080p]/[VCB-Studio] Minami-ke Okaeri [13][Ma10p_1080p][x265_flac].mkv",
-      "size": 1117058353
+      "size": 1117058353,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1411.577,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Okaeri [Ma10p_1080p]/CDs/[081217] キャラクターイメージミニアルバム ｢春夏秋登場!!｣ (flac+webp)/Cover.jpg",
@@ -587,111 +1057,381 @@
     },
     {
       "path": "[VCB-Studio] Minami-ke Okaeri [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Okaeri [CM Collection 01][Ma10p_1080p][x265_flac].mkv",
-      "size": 44767916
+      "size": 44767916,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 65.065,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Okaeri [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Okaeri [CM Collection 02][Ma10p_1080p][x265_flac].mkv",
-      "size": 127408394
+      "size": 127408394,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 193.195,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Okaeri [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Okaeri [CM Collection 03][Ma10p_1080p][x265_flac].mkv",
-      "size": 40355601
+      "size": 40355601,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 69.07,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Okaeri [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Okaeri [Menu01_1][Ma10p_1080p][x265_flac].mkv",
-      "size": 136869732
+      "size": 136869732,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 90.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Okaeri [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Okaeri [Menu01_2][Ma10p_1080p][x265_flac].mkv",
-      "size": 139967388
+      "size": 139967388,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 90.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Okaeri [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Okaeri [Menu02_1][Ma10p_1080p][x265_flac].mkv",
-      "size": 104867663
+      "size": 104867663,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 90.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Okaeri [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Okaeri [Menu02_2][Ma10p_1080p][x265_flac].mkv",
-      "size": 102250852
+      "size": 102250852,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 90.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Okaeri [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Okaeri [Menu03_1][Ma10p_1080p][x265_flac].mkv",
-      "size": 73821735
+      "size": 73821735,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 90.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Okaeri [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Okaeri [Menu03_2][Ma10p_1080p][x265_flac].mkv",
-      "size": 71753423
+      "size": 71753423,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 90.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Okaeri [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Okaeri [Menu04_1][Ma10p_1080p][x265_flac].mkv",
-      "size": 145726851
+      "size": 145726851,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 90.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Okaeri [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Okaeri [Menu04_2][Ma10p_1080p][x265_flac].mkv",
-      "size": 150803516
+      "size": 150803516,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 90.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Okaeri [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Okaeri [NCED Full Size Ver.][Ma10p_1080p][x265_flac].mkv",
-      "size": 77865470
+      "size": 77865470,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.095,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Okaeri [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Okaeri [NCED][Ma10p_1080p][x265_flac].mkv",
-      "size": 61628287
+      "size": 61628287,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.095,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Okaeri [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Okaeri [NCOP][Ma10p_1080p][x265_flac].mkv",
-      "size": 78075163
+      "size": 78075163,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.01,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Okawari [Ma10p_1080p]/[VCB-Studio] Minami-ke Okawari [01][Ma10p_1080p][x265_flac].mkv",
-      "size": 769481254
+      "size": 769481254,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1427.095,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Okawari [Ma10p_1080p]/[VCB-Studio] Minami-ke Okawari [02][Ma10p_1080p][x265_flac].mkv",
-      "size": 728195260
+      "size": 728195260,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1455.123,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Okawari [Ma10p_1080p]/[VCB-Studio] Minami-ke Okawari [03][Ma10p_1080p][x265_flac].mkv",
-      "size": 699344003
+      "size": 699344003,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1426.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Okawari [Ma10p_1080p]/[VCB-Studio] Minami-ke Okawari [04][Ma10p_1080p][x265_flac].mkv",
-      "size": 1312638009
+      "size": 1312638009,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1516.015,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Okawari [Ma10p_1080p]/[VCB-Studio] Minami-ke Okawari [05][Ma10p_1080p][x265_flac].mkv",
-      "size": 1073005094
+      "size": 1073005094,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1426.095,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Okawari [Ma10p_1080p]/[VCB-Studio] Minami-ke Okawari [06][Ma10p_1080p][x265_flac].mkv",
-      "size": 1112315919
+      "size": 1112315919,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1426.094,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Okawari [Ma10p_1080p]/[VCB-Studio] Minami-ke Okawari [07][Ma10p_1080p][x265_flac].mkv",
-      "size": 953625412
+      "size": 953625412,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1427.095,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Okawari [Ma10p_1080p]/[VCB-Studio] Minami-ke Okawari [08][Ma10p_1080p][x265_flac].mkv",
-      "size": 1024766426
+      "size": 1024766426,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1426.093,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Okawari [Ma10p_1080p]/[VCB-Studio] Minami-ke Okawari [09][Ma10p_1080p][x265_flac].mkv",
-      "size": 947599663
+      "size": 947599663,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1426.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Okawari [Ma10p_1080p]/[VCB-Studio] Minami-ke Okawari [10][Ma10p_1080p][x265_flac].mkv",
-      "size": 1009863831
+      "size": 1009863831,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1427.095,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Okawari [Ma10p_1080p]/[VCB-Studio] Minami-ke Okawari [11][Ma10p_1080p][x265_flac].mkv",
-      "size": 912587823
+      "size": 912587823,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1426.093,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Okawari [Ma10p_1080p]/[VCB-Studio] Minami-ke Okawari [12][Ma10p_1080p][x265_flac].mkv",
-      "size": 1068949991
+      "size": 1068949991,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1426.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Okawari [Ma10p_1080p]/[VCB-Studio] Minami-ke Okawari [13][Ma10p_1080p][x265_flac].mkv",
-      "size": 1087233431
+      "size": 1087233431,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1411.41,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Okawari [Ma10p_1080p]/CDs/[080123] ｢ココロノツバサ｣ (flac+jpg)/Cover.jpg",
@@ -903,123 +1643,423 @@
     },
     {
       "path": "[VCB-Studio] Minami-ke Okawari [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Okawari [CM01][Ma10p_720p][x265_flac].mkv",
-      "size": 23075621
+      "size": 23075621,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 64.065,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Okawari [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Okawari [CM02][Ma10p_720p][x265_flac].mkv",
-      "size": 23366918
+      "size": 23366918,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 65.065,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "950x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Okawari [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Okawari [CM03][Ma10p_720p][x265_flac].mkv",
-      "size": 46803780
+      "size": 46803780,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 129.13,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Okawari [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Okawari [Menu01][Ma10p_1080p][x265_flac].mkv",
-      "size": 189766692
+      "size": 189766692,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 90.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Okawari [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Okawari [Menu02_1][Ma10p_1080p][x265_flac].mkv",
-      "size": 5748561
+      "size": 5748561,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 15.79,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Okawari [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Okawari [Menu02_2][Ma10p_1080p][x265_flac].mkv",
-      "size": 5773810
+      "size": 5773810,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 16.5,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Okawari [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Okawari [Menu03_1][Ma10p_1080p][x265_flac].mkv",
-      "size": 72959582
+      "size": 72959582,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 90.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Okawari [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Okawari [Menu03_2][Ma10p_1080p][x265_flac].mkv",
-      "size": 68677758
+      "size": 68677758,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 90.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Okawari [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Okawari [Menu04_1][Ma10p_1080p][x265_flac].mkv",
-      "size": 223544613
+      "size": 223544613,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 90.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Okawari [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Okawari [Menu04_2][Ma10p_1080p][x265_flac].mkv",
-      "size": 220631366
+      "size": 220631366,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 90.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Okawari [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Okawari [NCED Full Size Ver.][Ma10p_1080p][x265_flac].mkv",
-      "size": 367434393
+      "size": 367434393,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 365.365,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Okawari [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Okawari [NCED01][Ma10p_1080p][x265_flac].mkv",
-      "size": 35033619
+      "size": 35033619,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.055,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Okawari [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Okawari [NCED02][Ma10p_1080p][x265_flac].mkv",
-      "size": 34663559
+      "size": 34663559,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.095,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Okawari [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Okawari [NCED03][Ma10p_1080p][x265_flac].mkv",
-      "size": 33557569
+      "size": 33557569,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.095,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Okawari [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Okawari [NCED04][Ma10p_1080p][x265_flac].mkv",
-      "size": 34644502
+      "size": 34644502,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.095,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Okawari [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Okawari [NCED05][Ma10p_1080p][x265_flac].mkv",
-      "size": 106894022
+      "size": 106894022,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.095,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Okawari [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Okawari [NCOP][Ma10p_1080p][x265_flac].mkv",
-      "size": 105137005
+      "size": 105137005,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.055,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/[VCB-Studio] Minami-ke Tadaima [01][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 828800145
+      "size": 828800145,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1417.045,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/[VCB-Studio] Minami-ke Tadaima [02][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 821664124
+      "size": 821664124,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1416.021,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/[VCB-Studio] Minami-ke Tadaima [03][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 845468594
+      "size": 845468594,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1416.106,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/[VCB-Studio] Minami-ke Tadaima [04][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 902804602
+      "size": 902804602,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1416.96,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/[VCB-Studio] Minami-ke Tadaima [05][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 928780180
+      "size": 928780180,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1416.106,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/[VCB-Studio] Minami-ke Tadaima [06][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 965465993
+      "size": 965465993,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1416.021,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/[VCB-Studio] Minami-ke Tadaima [07][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1092985460
+      "size": 1092985460,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1416.207,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/[VCB-Studio] Minami-ke Tadaima [08][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 920005843
+      "size": 920005843,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1416.106,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/[VCB-Studio] Minami-ke Tadaima [09][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 837458970
+      "size": 837458970,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1416.02,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/[VCB-Studio] Minami-ke Tadaima [10][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 774575281
+      "size": 774575281,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1417.13,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/[VCB-Studio] Minami-ke Tadaima [11][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 923554443
+      "size": 923554443,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1416.064,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/[VCB-Studio] Minami-ke Tadaima [12][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 859834409
+      "size": 859834409,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1416.17,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/[VCB-Studio] Minami-ke Tadaima [13][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 875953547
+      "size": 875953547,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1417.386,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/CDs/[130123] キャラクターソングアルバム ｢みなみけのみなうた｣ (flac+webp)/Cover.jpg",
@@ -1203,163 +2243,594 @@
     },
     {
       "path": "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Tadaima [11 NCED Ver.][Ma10p_1080p][x265_flac].mkv",
-      "size": 334836021
+      "size": 334836021,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 489.07,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Tadaima [13 NCED Ver.][Ma10p_1080p][x265_flac].mkv",
-      "size": 358665905
+      "size": 358665905,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 640.891,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Tadaima [CM01][Ma10p_1080p][x265_flac].mkv",
-      "size": 12019304
+      "size": 12019304,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 16.02,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Tadaima [CM02][Ma10p_1080p][x265_flac].mkv",
-      "size": 22924421
+      "size": 22924421,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 31.035,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Tadaima [CM03][Ma10p_1080p][x265_flac].mkv",
-      "size": 13304996
+      "size": 13304996,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 16.02,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Tadaima [CM04][Ma10p_1080p][x265_flac].mkv",
-      "size": 13103771
+      "size": 13103771,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 16.02,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Tadaima [CM05][Ma10p_1080p][x265_flac].mkv",
-      "size": 14460041
+      "size": 14460041,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 16.02,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Tadaima [CM06][Ma10p_1080p][x265_flac].mkv",
-      "size": 14616897
+      "size": 14616897,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 16.02,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Tadaima [CM07][Ma10p_1080p][x265_flac].mkv",
-      "size": 10704513
+      "size": 10704513,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 16.02,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Tadaima [CM08][Ma10p_1080p][x265_flac].mkv",
-      "size": 10322047
+      "size": 10322047,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 16.02,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Tadaima [CM09][Ma10p_1080p][x265_flac].mkv",
-      "size": 10697923
+      "size": 10697923,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 16.02,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Tadaima [CM10][Ma10p_1080p][x265_flac].mkv",
-      "size": 10204617
+      "size": 10204617,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 16.02,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Tadaima [CM11][Ma10p_1080p][x265_flac].mkv",
-      "size": 8444232
+      "size": 8444232,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 16.02,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Tadaima [CM12][Ma10p_1080p][x265_flac].mkv",
-      "size": 9125240
+      "size": 9125240,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 16.02,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Tadaima [CM13][Ma10p_1080p][x265_flac].mkv",
-      "size": 8882925
+      "size": 8882925,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 16.02,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Tadaima [CM14][Ma10p_1080p][x265_flac].mkv",
-      "size": 8822122
+      "size": 8822122,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 16.02,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Tadaima [CM15][Ma10p_1080p][x265_flac].mkv",
-      "size": 12218353
+      "size": 12218353,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 16.02,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Tadaima [CM16][Ma10p_1080p][x265_flac].mkv",
-      "size": 8192258
+      "size": 8192258,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 16.02,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Tadaima [CM17][Ma10p_1080p][x265_flac].mkv",
-      "size": 9750935
+      "size": 9750935,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 16.02,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Tadaima [CM18][Ma10p_1080p][x265_flac].mkv",
-      "size": 8048970
+      "size": 8048970,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 16.02,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Tadaima [Menu01_1][Ma10p_1080p][x265_flac].mkv",
-      "size": 27461292
+      "size": 27461292,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.091,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Tadaima [Menu01_2][Ma10p_1080p][x265_flac].mkv",
-      "size": 25152716
+      "size": 25152716,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.091,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Tadaima [Menu01_3][Ma10p_1080p][x265_flac].mkv",
-      "size": 26306648
+      "size": 26306648,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.091,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Tadaima [Menu01_4][Ma10p_1080p][x265_flac].mkv",
-      "size": 26672593
+      "size": 26672593,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.091,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Tadaima [Menu02_1][Ma10p_1080p][x265_flac].mkv",
-      "size": 25384653
+      "size": 25384653,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.091,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Tadaima [Menu02_2][Ma10p_1080p][x265_flac].mkv",
-      "size": 23108762
+      "size": 23108762,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.091,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Tadaima [Menu02_3][Ma10p_1080p][x265_flac].mkv",
-      "size": 24189387
+      "size": 24189387,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.091,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Tadaima [Menu02_4][Ma10p_1080p][x265_flac].mkv",
-      "size": 23049565
+      "size": 23049565,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.091,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Tadaima [Menu03_1][Ma10p_1080p][x265_flac].mkv",
-      "size": 26935799
+      "size": 26935799,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.091,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Tadaima [Menu03_2][Ma10p_1080p][x265_flac].mkv",
-      "size": 25413471
+      "size": 25413471,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.091,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Tadaima [Menu03_3][Ma10p_1080p][x265_flac].mkv",
-      "size": 24648512
+      "size": 24648512,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.091,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Tadaima [Menu03_4][Ma10p_1080p][x265_flac].mkv",
-      "size": 24764106
+      "size": 24764106,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.091,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Tadaima [Menu04_1][Ma10p_1080p][x265_flac].mkv",
-      "size": 26690067
+      "size": 26690067,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.091,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Tadaima [Menu04_2][Ma10p_1080p][x265_flac].mkv",
-      "size": 25027407
+      "size": 25027407,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.091,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Tadaima [Menu04_3][Ma10p_1080p][x265_flac].mkv",
-      "size": 25750209
+      "size": 25750209,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.091,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Tadaima [Menu04_4][Ma10p_1080p][x265_flac].mkv",
-      "size": 25650793
+      "size": 25650793,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.091,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Tadaima [Menu04_5][Ma10p_1080p][x265_flac].mkv",
-      "size": 25293938
+      "size": 25293938,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.091,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Tadaima [Menu04_6][Ma10p_1080p][x265_flac].mkv",
-      "size": 26974439
+      "size": 26974439,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.091,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Tadaima [NCED][Ma10p_1080p][x265_flac].mkv",
-      "size": 74742508
+      "size": 74742508,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.16,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Minami-ke Tadaima [Ma10p_1080p]/SPs/[VCB-Studio] Minami-ke Tadaima [NCOP][Ma10p_1080p][x265_flac].mkv",
-      "size": 80383163
+      "size": 80383163,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.16,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     }
-  ]
+  ],
+  "local_container_fact_summary": {
+    "container_fact_count": 144,
+    "probe_status_counts": {
+      "available": 144
+    },
+    "duration_seconds_range": [
+      15.79,
+      2063.082
+    ],
+    "duration_seconds_samples": [
+      1427.095,
+      1426.093,
+      1426.011,
+      1427.095,
+      1426.093,
+      1426.092
+    ]
+  },
+  "local_container_fact_source": {
+    "kind": "real_local_media_duration_backfill",
+    "media_root": "H:\\Anime",
+    "probe_media": true,
+    "container_probe": "ffprobe",
+    "embedded_in": "files[].container_facts",
+    "matched_file_count": 340,
+    "matched_video_count": 144,
+    "missing_actual_video_count": 0,
+    "match_stats": {
+      "matched_by_root_path": 340
+    }
+  }
 }

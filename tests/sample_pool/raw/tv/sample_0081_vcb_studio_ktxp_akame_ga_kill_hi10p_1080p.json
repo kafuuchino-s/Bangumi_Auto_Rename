@@ -3,7 +3,17 @@
   "files": [
     {
       "path": "[VCB-Studio&KTXP] Akame ga Kill! [01][Hi10p_1080p][x264_2flac].mkv",
-      "size": 1189595204
+      "size": 1189595204,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1421.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio&KTXP] Akame ga Kill! [01][Hi10p_1080p][x264_2flac].sc.ass",
@@ -15,7 +25,17 @@
     },
     {
       "path": "[VCB-Studio&KTXP] Akame ga Kill! [02][Hi10p_1080p][x264_flac].mkv",
-      "size": 980758495
+      "size": 980758495,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1421.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio&KTXP] Akame ga Kill! [02][Hi10p_1080p][x264_flac].sc.ass",
@@ -27,7 +47,17 @@
     },
     {
       "path": "[VCB-Studio&KTXP] Akame ga Kill! [03][Hi10p_1080p][x264_flac].mkv",
-      "size": 1031517049
+      "size": 1031517049,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1421.087,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio&KTXP] Akame ga Kill! [03][Hi10p_1080p][x264_flac].sc.ass",
@@ -39,7 +69,17 @@
     },
     {
       "path": "[VCB-Studio&KTXP] Akame ga Kill! [04][Hi10p_1080p][x264_flac].mkv",
-      "size": 915482880
+      "size": 915482880,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1421.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio&KTXP] Akame ga Kill! [04][Hi10p_1080p][x264_flac].sc.ass",
@@ -51,7 +91,17 @@
     },
     {
       "path": "[VCB-Studio&KTXP] Akame ga Kill! [05][Hi10p_1080p][x264_flac].mkv",
-      "size": 938260647
+      "size": 938260647,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1421.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio&KTXP] Akame ga Kill! [05][Hi10p_1080p][x264_flac].sc.ass",
@@ -63,7 +113,17 @@
     },
     {
       "path": "[VCB-Studio&KTXP] Akame ga Kill! [06][Hi10p_1080p][x264_2flac].mkv",
-      "size": 1472391980
+      "size": 1472391980,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1421.087,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio&KTXP] Akame ga Kill! [06][Hi10p_1080p][x264_2flac].sc.ass",
@@ -75,7 +135,17 @@
     },
     {
       "path": "[VCB-Studio&KTXP] Akame ga Kill! [07][Hi10p_1080p][x264_flac].mkv",
-      "size": 850233210
+      "size": 850233210,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1421.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio&KTXP] Akame ga Kill! [07][Hi10p_1080p][x264_flac].sc.ass",
@@ -87,7 +157,17 @@
     },
     {
       "path": "[VCB-Studio&KTXP] Akame ga Kill! [08][Hi10p_1080p][x264_2flac].mkv",
-      "size": 1359724222
+      "size": 1359724222,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1421.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio&KTXP] Akame ga Kill! [08][Hi10p_1080p][x264_2flac].sc.ass",
@@ -99,7 +179,17 @@
     },
     {
       "path": "[VCB-Studio&KTXP] Akame ga Kill! [09][Hi10p_1080p][x264_flac].mkv",
-      "size": 864327828
+      "size": 864327828,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1421.087,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio&KTXP] Akame ga Kill! [09][Hi10p_1080p][x264_flac].sc.ass",
@@ -111,7 +201,17 @@
     },
     {
       "path": "[VCB-Studio&KTXP] Akame ga Kill! [10][Hi10p_1080p][x264_2flac].mkv",
-      "size": 1136906549
+      "size": 1136906549,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1421.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio&KTXP] Akame ga Kill! [10][Hi10p_1080p][x264_2flac].sc.ass",
@@ -123,7 +223,17 @@
     },
     {
       "path": "[VCB-Studio&KTXP] Akame ga Kill! [11][Hi10p_1080p][x264_flac].mkv",
-      "size": 940112229
+      "size": 940112229,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1421.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio&KTXP] Akame ga Kill! [11][Hi10p_1080p][x264_flac].sc.ass",
@@ -135,7 +245,17 @@
     },
     {
       "path": "[VCB-Studio&KTXP] Akame ga Kill! [12][Hi10p_1080p][x264_flac].mkv",
-      "size": 879061875
+      "size": 879061875,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1421.087,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio&KTXP] Akame ga Kill! [12][Hi10p_1080p][x264_flac].sc.ass",
@@ -147,7 +267,17 @@
     },
     {
       "path": "[VCB-Studio&KTXP] Akame ga Kill! [13][Hi10p_1080p][x264_flac].mkv",
-      "size": 887779109
+      "size": 887779109,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1421.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio&KTXP] Akame ga Kill! [13][Hi10p_1080p][x264_flac].sc.ass",
@@ -159,7 +289,17 @@
     },
     {
       "path": "[VCB-Studio&KTXP] Akame ga Kill! [14][Hi10p_1080p][x264_2flac].mkv",
-      "size": 1170435848
+      "size": 1170435848,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1421.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio&KTXP] Akame ga Kill! [14][Hi10p_1080p][x264_2flac].sc.ass",
@@ -171,7 +311,17 @@
     },
     {
       "path": "[VCB-Studio&KTXP] Akame ga Kill! [15][Hi10p_1080p][x264_flac].mkv",
-      "size": 869495099
+      "size": 869495099,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1421.087,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio&KTXP] Akame ga Kill! [15][Hi10p_1080p][x264_flac].sc.ass",
@@ -183,7 +333,17 @@
     },
     {
       "path": "[VCB-Studio&KTXP] Akame ga Kill! [16][Hi10p_1080p][x264_flac].mkv",
-      "size": 1069277838
+      "size": 1069277838,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1421.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio&KTXP] Akame ga Kill! [16][Hi10p_1080p][x264_flac].sc.ass",
@@ -195,7 +355,17 @@
     },
     {
       "path": "[VCB-Studio&KTXP] Akame ga Kill! [17][Hi10p_1080p][x264_2flac].mkv",
-      "size": 1191577583
+      "size": 1191577583,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1421.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio&KTXP] Akame ga Kill! [17][Hi10p_1080p][x264_2flac].sc.ass",
@@ -207,7 +377,17 @@
     },
     {
       "path": "[VCB-Studio&KTXP] Akame ga Kill! [18][Hi10p_1080p][x264_flac].mkv",
-      "size": 855189492
+      "size": 855189492,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1421.087,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio&KTXP] Akame ga Kill! [18][Hi10p_1080p][x264_flac].sc.ass",
@@ -219,7 +399,17 @@
     },
     {
       "path": "[VCB-Studio&KTXP] Akame ga Kill! [19][Hi10p_1080p][x264_flac].mkv",
-      "size": 1070231520
+      "size": 1070231520,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1421.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio&KTXP] Akame ga Kill! [19][Hi10p_1080p][x264_flac].sc.ass",
@@ -231,7 +421,17 @@
     },
     {
       "path": "[VCB-Studio&KTXP] Akame ga Kill! [20][Hi10p_1080p][x264_2flac].mkv",
-      "size": 1196591177
+      "size": 1196591177,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1421.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio&KTXP] Akame ga Kill! [20][Hi10p_1080p][x264_2flac].sc.ass",
@@ -243,7 +443,17 @@
     },
     {
       "path": "[VCB-Studio&KTXP] Akame ga Kill! [21][Hi10p_1080p][x264_flac].mkv",
-      "size": 970977116
+      "size": 970977116,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1420.92,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio&KTXP] Akame ga Kill! [21][Hi10p_1080p][x264_flac].sc.ass",
@@ -255,7 +465,17 @@
     },
     {
       "path": "[VCB-Studio&KTXP] Akame ga Kill! [22][Hi10p_1080p][x264_flac].mkv",
-      "size": 951412606
+      "size": 951412606,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1421.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio&KTXP] Akame ga Kill! [22][Hi10p_1080p][x264_flac].sc.ass",
@@ -267,7 +487,17 @@
     },
     {
       "path": "[VCB-Studio&KTXP] Akame ga Kill! [23][Hi10p_1080p][x264_flac].mkv",
-      "size": 992428851
+      "size": 992428851,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1421.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio&KTXP] Akame ga Kill! [23][Hi10p_1080p][x264_flac].sc.ass",
@@ -279,7 +509,17 @@
     },
     {
       "path": "[VCB-Studio&KTXP] Akame ga Kill! [24][Hi10p_1080p][x264_2flac].mkv",
-      "size": 1250852213
+      "size": 1250852213,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1421.087,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio&KTXP] Akame ga Kill! [24][Hi10p_1080p][x264_2flac].sc.ass",
@@ -823,135 +1063,465 @@
     },
     {
       "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [CM01v2][Hi10p_1080p][x264_flac].mkv",
-      "size": 60358663
+      "size": 60358663,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [CM02][Hi10p_1080p][x264_flac].mkv",
-      "size": 9217383
+      "size": 9217383,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 20.02,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [CM03][Hi10p_1080p][x264_flac].mkv",
-      "size": 21929666
+      "size": 21929666,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 32.032,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [CM04][Hi10p_1080p][x264_flac].mkv",
-      "size": 71728603
+      "size": 71728603,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [CM05][Hi10p_1080p][x264_flac].mkv",
-      "size": 20929145
+      "size": 20929145,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 17.017,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [CM06][Hi10p_1080p][x264_flac].mkv",
-      "size": 19866072
+      "size": 19866072,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 17.017,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [CM07][Hi10p_1080p][x264_flac].mkv",
-      "size": 14942861
+      "size": 14942861,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 17.017,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [CM08][Hi10p_1080p][x264_flac].mkv",
-      "size": 11922540
+      "size": 11922540,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 17.017,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [CM09][Hi10p_1080p][x264_flac].mkv",
-      "size": 13525697
+      "size": 13525697,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 17.017,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [CM10][Hi10p_1080p][x264_flac].mkv",
-      "size": 12510167
+      "size": 12510167,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 17.017,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [CM11][Hi10p_1080p][x264_flac].mkv",
-      "size": 11165542
+      "size": 11165542,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 17.017,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [CM12][Hi10p_1080p][x264_flac].mkv",
-      "size": 10649333
+      "size": 10649333,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 17.017,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [CM13][Hi10p_1080p][x264_flac].mkv",
-      "size": 17295421
+      "size": 17295421,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 17.017,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [CM14][Hi10p_1080p][x264_flac].mkv",
-      "size": 10464066
+      "size": 10464066,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 17.017,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [CM15][Hi10p_1080p][x264_flac].mkv",
-      "size": 19298014
+      "size": 19298014,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 17.017,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [CM16][Hi10p_1080p][x264_flac].mkv",
-      "size": 17080763
+      "size": 17080763,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 17.017,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [IV01][Hi10p_1080p][x264_flac].mkv",
-      "size": 1035964305
+      "size": 1035964305,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1318.317,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [IV02][Hi10p_1080p][x264_flac].mkv",
-      "size": 438025966
+      "size": 438025966,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 658.66,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [IV03][Hi10p_1080p][x264_flac].mkv",
-      "size": 1439316275
+      "size": 1439316275,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1542.541,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [Menu01][Hi10p_1080p][x264_flac].mkv",
-      "size": 35331423
+      "size": 35331423,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 86.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [Menu02][Hi10p_1080p][x264_flac].mkv",
-      "size": 45199816
+      "size": 45199816,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 86.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [Menu03][Hi10p_1080p][x264_flac].mkv",
-      "size": 45123006
+      "size": 45123006,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 86.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [Menu04][Hi10p_1080p][x264_flac].mkv",
-      "size": 26486027
+      "size": 26486027,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 86.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [Menu05][Hi10p_1080p][x264_flac].mkv",
-      "size": 34810598
+      "size": 34810598,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 86.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [Menu06][Hi10p_1080p][x264_flac].mkv",
-      "size": 45243759
+      "size": 45243759,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 86.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [Menu07][Hi10p_1080p][x264_flac].mkv",
-      "size": 43348587
+      "size": 43348587,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 86.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [Menu08][Hi10p_1080p][x264_flac].mkv",
-      "size": 40497631
+      "size": 40497631,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 86.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [NCED02][Hi10p_1080p][x264_flac].mkv",
-      "size": 84098702
+      "size": 84098702,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [NCED][1080p][x264_flac].mkv",
-      "size": 369203184
+      "size": 369203184,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [NCOP02][Hi10p_1080p][x264_flac].mkv",
-      "size": 162077296
+      "size": 162077296,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.091,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [NCOP][Hi10p_1080p][x264_flac].mkv",
-      "size": 95864671
+      "size": 95864671,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.05,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [PV01][Hi10p_1080p][x264_flac].mkv",
-      "size": 56635914
+      "size": 56635914,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 102.102,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP01][Hi10p_1080p][x264_flac].mkv",
-      "size": 22126949
+      "size": 22126949,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 61.061,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP01][Hi10p_1080p][x264_flac].sc.ass",
@@ -963,7 +1533,17 @@
     },
     {
       "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP02][Hi10p_1080p][x264_flac].mkv",
-      "size": 27926540
+      "size": 27926540,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 61.061,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP02][Hi10p_1080p][x264_flac].sc.ass",
@@ -975,7 +1555,17 @@
     },
     {
       "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP03][Hi10p_1080p][x264_flac].mkv",
-      "size": 24765839
+      "size": 24765839,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 61.061,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP03][Hi10p_1080p][x264_flac].sc.ass",
@@ -987,7 +1577,17 @@
     },
     {
       "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP04][Hi10p_1080p][x264_flac].mkv",
-      "size": 25119778
+      "size": 25119778,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 67.067,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP04][Hi10p_1080p][x264_flac].sc.ass",
@@ -999,7 +1599,17 @@
     },
     {
       "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP05][Hi10p_1080p][x264_flac].mkv",
-      "size": 32123963
+      "size": 32123963,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 61.061,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP05][Hi10p_1080p][x264_flac].sc.ass",
@@ -1011,7 +1621,17 @@
     },
     {
       "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP06][Hi10p_1080p][x264_flac].mkv",
-      "size": 25892816
+      "size": 25892816,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 61.061,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP06][Hi10p_1080p][x264_flac].sc.ass",
@@ -1023,7 +1643,17 @@
     },
     {
       "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP07][Hi10p_1080p][x264_flac].mkv",
-      "size": 28524686
+      "size": 28524686,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 63.065,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP07][Hi10p_1080p][x264_flac].sc.ass",
@@ -1035,7 +1665,17 @@
     },
     {
       "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP08][Hi10p_1080p][x264_flac].mkv",
-      "size": 32978719
+      "size": 32978719,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 61.061,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP08][Hi10p_1080p][x264_flac].sc.ass",
@@ -1047,7 +1687,17 @@
     },
     {
       "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP09][Hi10p_1080p][x264_flac].mkv",
-      "size": 25264164
+      "size": 25264164,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 61.061,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP09][Hi10p_1080p][x264_flac].sc.ass",
@@ -1059,7 +1709,17 @@
     },
     {
       "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP10][Hi10p_1080p][x264_flac].mkv",
-      "size": 37701249
+      "size": 37701249,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 61.061,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP10][Hi10p_1080p][x264_flac].sc.ass",
@@ -1071,7 +1731,17 @@
     },
     {
       "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP11][Hi10p_1080p][x264_flac].mkv",
-      "size": 27745684
+      "size": 27745684,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 61.061,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP11][Hi10p_1080p][x264_flac].sc.ass",
@@ -1083,7 +1753,17 @@
     },
     {
       "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP12][Hi10p_1080p][x264_flac].mkv",
-      "size": 26700412
+      "size": 26700412,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 65.065,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP12][Hi10p_1080p][x264_flac].sc.ass",
@@ -1095,7 +1775,17 @@
     },
     {
       "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP13][Hi10p_1080p][x264_flac].mkv",
-      "size": 29607582
+      "size": 29607582,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 62.062,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP13][Hi10p_1080p][x264_flac].sc.ass",
@@ -1107,7 +1797,17 @@
     },
     {
       "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP14][Hi10p_1080p][x264_flac].mkv",
-      "size": 24047996
+      "size": 24047996,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 65.065,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP14][Hi10p_1080p][x264_flac].sc.ass",
@@ -1119,7 +1819,17 @@
     },
     {
       "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP15][Hi10p_1080p][x264_flac].mkv",
-      "size": 23146278
+      "size": 23146278,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 62.062,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP15][Hi10p_1080p][x264_flac].sc.ass",
@@ -1131,7 +1841,17 @@
     },
     {
       "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP16][Hi10p_1080p][x264_flac].mkv",
-      "size": 27996507
+      "size": 27996507,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 62.062,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP16][Hi10p_1080p][x264_flac].sc.ass",
@@ -1143,7 +1863,17 @@
     },
     {
       "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP17][Hi10p_1080p][x264_flac].mkv",
-      "size": 31712025
+      "size": 31712025,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 68.07,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP17][Hi10p_1080p][x264_flac].sc.ass",
@@ -1155,7 +1885,17 @@
     },
     {
       "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP18][Hi10p_1080p][x264_flac].mkv",
-      "size": 25994356
+      "size": 25994356,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 64.065,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP18][Hi10p_1080p][x264_flac].sc.ass",
@@ -1167,7 +1907,17 @@
     },
     {
       "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP19][Hi10p_1080p][x264_flac].mkv",
-      "size": 30617310
+      "size": 30617310,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 71.071,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP19][Hi10p_1080p][x264_flac].sc.ass",
@@ -1179,7 +1929,17 @@
     },
     {
       "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP20][Hi10p_1080p][x264_flac].mkv",
-      "size": 35246413
+      "size": 35246413,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 71.071,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP20][Hi10p_1080p][x264_flac].sc.ass",
@@ -1191,7 +1951,17 @@
     },
     {
       "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP21][Hi10p_1080p][x264_flac].mkv",
-      "size": 48586339
+      "size": 48586339,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 83.085,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP21][Hi10p_1080p][x264_flac].sc.ass",
@@ -1203,7 +1973,17 @@
     },
     {
       "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP22][Hi10p_1080p][x264_flac].mkv",
-      "size": 28081807
+      "size": 28081807,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 82.082,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP22][Hi10p_1080p][x264_flac].sc.ass",
@@ -1215,7 +1995,17 @@
     },
     {
       "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP23][Hi10p_1080p][x264_flac].mkv",
-      "size": 29069741
+      "size": 29069741,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 77.077,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP23][Hi10p_1080p][x264_flac].sc.ass",
@@ -1227,7 +2017,17 @@
     },
     {
       "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP24][Hi10p_1080p][x264_flac].mkv",
-      "size": 31052508
+      "size": 31052508,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 87.087,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP24][Hi10p_1080p][x264_flac].sc.ass",
@@ -1237,5 +2037,36 @@
       "path": "SPs/[VCB-Studio&KTXP] Akame ga Kill! [SP24][Hi10p_1080p][x264_flac].tc.ass",
       "size": 2469
     }
-  ]
+  ],
+  "local_container_fact_summary": {
+    "container_fact_count": 80,
+    "probe_status_counts": {
+      "available": 80
+    },
+    "duration_seconds_range": [
+      17.017,
+      1542.541
+    ],
+    "duration_seconds_samples": [
+      1421.09,
+      1421.09,
+      1421.087,
+      1421.09,
+      1421.09,
+      1421.087
+    ]
+  },
+  "local_container_fact_source": {
+    "kind": "real_local_media_duration_backfill",
+    "media_root": "H:\\Anime",
+    "probe_media": true,
+    "container_probe": "ffprobe",
+    "embedded_in": "files[].container_facts",
+    "matched_file_count": 309,
+    "matched_video_count": 80,
+    "missing_actual_video_count": 0,
+    "match_stats": {
+      "matched_by_root_path": 309
+    }
+  }
 }

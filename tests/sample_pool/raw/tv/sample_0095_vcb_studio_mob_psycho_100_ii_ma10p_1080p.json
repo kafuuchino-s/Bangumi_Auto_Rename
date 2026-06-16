@@ -3,7 +3,17 @@
   "files": [
     {
       "path": "[VCB-Studio] Mob Psycho 100 II [01][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1359399966
+      "size": 1359399966,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1452.288,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Mob Psycho 100 II [01][Ma10p_1080p][x265_flac_aac].sc.ass",
@@ -15,7 +25,17 @@
     },
     {
       "path": "[VCB-Studio] Mob Psycho 100 II [02][Ma10p_1080p][x265_flac].mkv",
-      "size": 1473561804
+      "size": 1473561804,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1452.285,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Mob Psycho 100 II [02][Ma10p_1080p][x265_flac].sc.ass",
@@ -27,7 +47,17 @@
     },
     {
       "path": "[VCB-Studio] Mob Psycho 100 II [03][Ma10p_1080p][x265_flac].mkv",
-      "size": 1041760227
+      "size": 1041760227,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.285,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Mob Psycho 100 II [03][Ma10p_1080p][x265_flac].sc.ass",
@@ -39,7 +69,17 @@
     },
     {
       "path": "[VCB-Studio] Mob Psycho 100 II [04][Ma10p_1080p][x265_flac].mkv",
-      "size": 1248005042
+      "size": 1248005042,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1452.285,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Mob Psycho 100 II [04][Ma10p_1080p][x265_flac].sc.ass",
@@ -51,7 +91,17 @@
     },
     {
       "path": "[VCB-Studio] Mob Psycho 100 II [05][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1317021886
+      "size": 1317021886,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.285,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Mob Psycho 100 II [05][Ma10p_1080p][x265_flac_aac].sc.ass",
@@ -63,7 +113,17 @@
     },
     {
       "path": "[VCB-Studio] Mob Psycho 100 II [06][Ma10p_1080p][x265_flac].mkv",
-      "size": 1130464510
+      "size": 1130464510,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1452.285,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Mob Psycho 100 II [06][Ma10p_1080p][x265_flac].sc.ass",
@@ -75,7 +135,17 @@
     },
     {
       "path": "[VCB-Studio] Mob Psycho 100 II [07][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1327936518
+      "size": 1327936518,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.285,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Mob Psycho 100 II [07][Ma10p_1080p][x265_flac_aac].sc.ass",
@@ -87,7 +157,17 @@
     },
     {
       "path": "[VCB-Studio] Mob Psycho 100 II [08][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1306983273
+      "size": 1306983273,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1452.288,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Mob Psycho 100 II [08][Ma10p_1080p][x265_flac_aac].sc.ass",
@@ -99,7 +179,17 @@
     },
     {
       "path": "[VCB-Studio] Mob Psycho 100 II [09][Ma10p_1080p][x265_flac].mkv",
-      "size": 1302358976
+      "size": 1302358976,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.285,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Mob Psycho 100 II [09][Ma10p_1080p][x265_flac].sc.ass",
@@ -111,7 +201,17 @@
     },
     {
       "path": "[VCB-Studio] Mob Psycho 100 II [10][Ma10p_1080p][x265_flac].mkv",
-      "size": 1350863624
+      "size": 1350863624,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1452.285,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Mob Psycho 100 II [10][Ma10p_1080p][x265_flac].sc.ass",
@@ -123,7 +223,17 @@
     },
     {
       "path": "[VCB-Studio] Mob Psycho 100 II [11][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1457650513
+      "size": 1457650513,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.285,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Mob Psycho 100 II [11][Ma10p_1080p][x265_flac_aac].sc.ass",
@@ -135,7 +245,17 @@
     },
     {
       "path": "[VCB-Studio] Mob Psycho 100 II [12][Ma10p_1080p][x265_flac].mkv",
-      "size": 1390386284
+      "size": 1390386284,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1452.285,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Mob Psycho 100 II [12][Ma10p_1080p][x265_flac].sc.ass",
@@ -147,7 +267,17 @@
     },
     {
       "path": "[VCB-Studio] Mob Psycho 100 II [13][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1406794229
+      "size": 1406794229,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.285,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Mob Psycho 100 II [13][Ma10p_1080p][x265_flac_aac].sc.ass",
@@ -159,7 +289,17 @@
     },
     {
       "path": "[VCB-Studio] Mob Psycho 100 II [OVA][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1005143383
+      "size": 1005143383,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1450.453,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Mob Psycho 100 II [OVA][Ma10p_1080p][x265_flac_aac].sc.ass",
@@ -835,111 +975,412 @@
     },
     {
       "path": "SPs/[VCB-Studio] Mob Psycho 100 II [CM01][Ma10p_1080p][x265_flac].mkv",
-      "size": 41935134
+      "size": 41935134,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 33.035,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Mob Psycho 100 II [CM02][Ma10p_1080p][x265_flac].mkv",
-      "size": 46673570
+      "size": 46673570,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 33.035,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Mob Psycho 100 II [CM03][Ma10p_1080p][x265_flac].mkv",
-      "size": 53638787
+      "size": 53638787,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 33.035,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Mob Psycho 100 II [Menu01][Ma10p_1080p][x265_flac].mkv",
-      "size": 90776483
+      "size": 90776483,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.095,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Mob Psycho 100 II [Menu02][Ma10p_1080p][x265_flac].mkv",
-      "size": 87423782
+      "size": 87423782,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.095,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Mob Psycho 100 II [Menu03][Ma10p_1080p][x265_flac].mkv",
-      "size": 83253121
+      "size": 83253121,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.095,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Mob Psycho 100 II [Menu04][Ma10p_1080p][x265_flac].mkv",
-      "size": 102290555
+      "size": 102290555,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.095,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Mob Psycho 100 II [Menu05][Ma10p_1080p][x265_flac].mkv",
-      "size": 80878154
+      "size": 80878154,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.095,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Mob Psycho 100 II [Menu06][Ma10p_1080p][x265_flac].mkv",
-      "size": 75602447
+      "size": 75602447,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.095,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Mob Psycho 100 II [Menu_OVA][Ma10p_1080p][x265_flac].mkv",
-      "size": 78974273
+      "size": 78974273,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 101.105,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Mob Psycho 100 II [NCED][Ma10p_1080p][x265_flac].mkv",
-      "size": 70930510
+      "size": 70930510,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Mob Psycho 100 II [NCED_EP01][Ma10p_1080p][x265_flac].mkv",
-      "size": 77032334
+      "size": 77032334,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 95.43,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Mob Psycho 100 II [NCED_EP05][Ma10p_1080p][x265_flac].mkv",
-      "size": 61655064
+      "size": 61655064,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 89.465,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Mob Psycho 100 II [NCED_EP07][Ma10p_1080p][x265_flac].mkv",
-      "size": 66928791
+      "size": 66928791,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 95.18,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Mob Psycho 100 II [NCED_EP13][Ma10p_1080p][x265_flac].mkv",
-      "size": 63626566
+      "size": 63626566,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 96.055,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Mob Psycho 100 II [NCED_OVA][Ma10p_1080p][x265_flac].mkv",
-      "size": 63741602
+      "size": 63741602,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 95.346,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Mob Psycho 100 II [NCOP_OVA][Ma10p_1080p][x265_flac].mkv",
-      "size": 43559829
+      "size": 43559829,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 54.055,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Mob Psycho 100 II [PV01][Ma10p_1080p][x265_flac].mkv",
-      "size": 88893319
+      "size": 88893319,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 78.162,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Mob Psycho 100 II [PV02][Ma10p_1080p][x265_flac].mkv",
-      "size": 99390239
+      "size": 99390239,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 106.106,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Mob Psycho 100 II [PV_OVA][Ma10p_1080p][x265_flac].mkv",
-      "size": 10443150
+      "size": 10443150,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 17.017,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Mob Psycho 100 II [SP01][Ma10p_1080p][x265].mkv",
-      "size": 136342656
+      "size": 136342656,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 289.456,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 0,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Mob Psycho 100 II [SP02][Ma10p_1080p][x265].mkv",
-      "size": 162471198
+      "size": 162471198,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 239.239,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 0,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Mob Psycho 100 II [SP03][Ma10p_1080p][x265].mkv",
-      "size": 69529521
+      "size": 69529521,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 188.188,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 0,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Mob Psycho 100 II [SP04][Ma10p_1080p][x265].mkv",
-      "size": 74555722
+      "size": 74555722,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 132.132,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 0,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Mob Psycho 100 II [SP05][Ma10p_1080p][x265].mkv",
-      "size": 151722366
+      "size": 151722366,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 162.246,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 0,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Mob Psycho 100 II [SP06][Ma10p_1080p][x265].mkv",
-      "size": 148015826
+      "size": 148015826,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 142.142,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 0,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Mob Psycho 100 II [Storyboard][Ma10p_1080p][x265_flac].mkv",
-      "size": 191288285
+      "size": 191288285,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 586.586,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     }
-  ]
+  ],
+  "local_container_fact_summary": {
+    "container_fact_count": 41,
+    "probe_status_counts": {
+      "available": 41
+    },
+    "duration_seconds_range": [
+      17.017,
+      1452.288
+    ],
+    "duration_seconds_samples": [
+      1452.288,
+      1452.285,
+      1451.285,
+      1452.285,
+      1451.285,
+      1452.285
+    ]
+  },
+  "local_container_fact_source": {
+    "kind": "real_local_media_duration_backfill",
+    "media_root": "H:\\Anime",
+    "probe_media": true,
+    "container_probe": "ffprobe",
+    "embedded_in": "files[].container_facts",
+    "matched_file_count": 235,
+    "matched_video_count": 41,
+    "missing_actual_video_count": 0,
+    "match_stats": {
+      "matched_by_root_path": 235
+    }
+  }
 }

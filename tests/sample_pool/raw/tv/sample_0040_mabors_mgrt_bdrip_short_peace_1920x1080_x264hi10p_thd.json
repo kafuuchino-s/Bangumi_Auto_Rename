@@ -11,7 +11,17 @@
     },
     {
       "path": "[Mabors&MGRT][BDrip]SHORT PEACE (1920x1080_x264Hi10P_thd).mkv",
-      "size": 3722285959
+      "size": 3722285959,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 4109.731,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Mabors&MGRT][BDrip]SHORT PEACE (1920x1080_x264Hi10P_thd5.1ch).thd",
@@ -27,7 +37,17 @@
     },
     {
       "path": "[Mabors&MGRT][BDrip]SHORT PEACE - GAMBO (1920x1080_x264Hi10P_thd).mkv",
-      "size": 1481816099
+      "size": 1481816099,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 750.708,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Mabors&MGRT][BDrip]SHORT PEACE - GAMBO (1920x1080_x264Hi10P_thd5.1ch).thd",
@@ -43,7 +63,17 @@
     },
     {
       "path": "[Mabors&MGRT][BDrip]SHORT PEACE - OP (1920x1080_x264Hi10P_thd).mkv",
-      "size": 93108542
+      "size": 93108542,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 207.916,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Mabors&MGRT][BDrip]SHORT PEACE - OP (1920x1080_x264Hi10P_thd5.1ch).thd",
@@ -59,7 +89,17 @@
     },
     {
       "path": "[Mabors&MGRT][BDrip]SHORT PEACE - 九十九 (1920x1080_x264Hi10P_thd).mkv",
-      "size": 566151353
+      "size": 566151353,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 844.802,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Mabors&MGRT][BDrip]SHORT PEACE - 九十九 (1920x1080_x264Hi10P_thd5.1ch).thd",
@@ -75,7 +115,17 @@
     },
     {
       "path": "[Mabors&MGRT][BDrip]SHORT PEACE - 武器よさらば (1920x1080_x264Hi10P_thd).mkv",
-      "size": 1071023288
+      "size": 1071023288,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1518.475,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Mabors&MGRT][BDrip]SHORT PEACE - 武器よさらば (1920x1080_x264Hi10P_thd.51ch).thd",
@@ -91,7 +141,17 @@
     },
     {
       "path": "[Mabors&MGRT][BDrip]SHORT PEACE - 火要鎮 (1920x1080_x264Hi10P_thd).mkv",
-      "size": 401968733
+      "size": 401968733,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 767.725,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Mabors&MGRT][BDrip]SHORT PEACE - 火要鎮 (1920x1080_x264Hi10P_thd5.1ch).thd",
@@ -113,5 +173,36 @@
       "path": "FONT/汉鼎繁行楷.TTF",
       "size": 11084492
     }
-  ]
+  ],
+  "local_container_fact_summary": {
+    "container_fact_count": 6,
+    "probe_status_counts": {
+      "available": 6
+    },
+    "duration_seconds_range": [
+      207.916,
+      4109.731
+    ],
+    "duration_seconds_samples": [
+      4109.731,
+      750.708,
+      207.916,
+      844.802,
+      1518.475,
+      767.725
+    ]
+  },
+  "local_container_fact_source": {
+    "kind": "real_local_media_duration_backfill",
+    "media_root": "H:\\Anime",
+    "probe_media": true,
+    "container_probe": "ffprobe",
+    "embedded_in": "files[].container_facts",
+    "matched_file_count": 28,
+    "matched_video_count": 6,
+    "missing_actual_video_count": 0,
+    "match_stats": {
+      "matched_by_root_path": 28
+    }
+  }
 }

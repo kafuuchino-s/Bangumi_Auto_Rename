@@ -7,7 +7,17 @@
     },
     {
       "path": "[DewDream] ひだまりスケッチ  (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ - 01 (BDrip1080p Ma10p x265 2FLAC).mkv",
-      "size": 735042694
+      "size": 735042694,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.742,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ - 02 (BDrip1080p Ma10p x265 2FLAC).default.chi.zh-cn.ass",
@@ -15,7 +25,17 @@
     },
     {
       "path": "[DewDream] ひだまりスケッチ  (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ - 02 (BDrip1080p Ma10p x265 2FLAC).mkv",
-      "size": 675222521
+      "size": 675222521,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.826,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ - 03 (BDrip1080p Ma10p x265 2FLAC).default.chi.zh-cn.ass",
@@ -23,7 +43,17 @@
     },
     {
       "path": "[DewDream] ひだまりスケッチ  (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ - 03 (BDrip1080p Ma10p x265 2FLAC).mkv",
-      "size": 881534869
+      "size": 881534869,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1460.46,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ - 04 (BDrip1080p Ma10p x265 2FLAC).default.chi.zh-cn.ass",
@@ -31,7 +61,17 @@
     },
     {
       "path": "[DewDream] ひだまりスケッチ  (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ - 04 (BDrip1080p Ma10p x265 2FLAC).mkv",
-      "size": 703871023
+      "size": 703871023,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.7,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ - 05 (BDrip1080p Ma10p x265 2FLAC).default.chi.zh-cn.ass",
@@ -39,7 +79,17 @@
     },
     {
       "path": "[DewDream] ひだまりスケッチ  (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ - 05 (BDrip1080p Ma10p x265 2FLAC).mkv",
-      "size": 852512136
+      "size": 852512136,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.742,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ - 06 (BDrip1080p Ma10p x265 2FLAC).default.chi.zh-cn.ass",
@@ -47,7 +97,17 @@
     },
     {
       "path": "[DewDream] ひだまりスケッチ  (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ - 06 (BDrip1080p Ma10p x265 2FLAC).mkv",
-      "size": 934927719
+      "size": 934927719,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1460.46,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ - 07 (BDrip1080p Ma10p x265 2FLAC).default.chi.zh-cn.ass",
@@ -55,7 +115,17 @@
     },
     {
       "path": "[DewDream] ひだまりスケッチ  (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ - 07 (BDrip1080p Ma10p x265 2FLAC).mkv",
-      "size": 821770588
+      "size": 821770588,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.742,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ - 08 (BDrip1080p Ma10p x265 2FLAC).default.chi.zh-cn.ass",
@@ -63,7 +133,17 @@
     },
     {
       "path": "[DewDream] ひだまりスケッチ  (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ - 08 (BDrip1080p Ma10p x265 2FLAC).mkv",
-      "size": 581720274
+      "size": 581720274,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.826,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ - 09 (BDrip1080p Ma10p x265 2FLAC).default.chi.zh-cn.ass",
@@ -71,7 +151,17 @@
     },
     {
       "path": "[DewDream] ひだまりスケッチ  (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ - 09 (BDrip1080p Ma10p x265 2FLAC).mkv",
-      "size": 698819663
+      "size": 698819663,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.742,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ - 10 (BDrip1080p Ma10p x265 2FLAC).default.chi.zh-cn.ass",
@@ -79,7 +169,17 @@
     },
     {
       "path": "[DewDream] ひだまりスケッチ  (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ - 10 (BDrip1080p Ma10p x265 2FLAC).mkv",
-      "size": 666134973
+      "size": 666134973,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1460.46,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ - 11 (BDrip1080p Ma10p x265 2FLAC).default.chi.zh-cn.ass",
@@ -87,7 +187,17 @@
     },
     {
       "path": "[DewDream] ひだまりスケッチ  (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ - 11 (BDrip1080p Ma10p x265 2FLAC).mkv",
-      "size": 763144071
+      "size": 763144071,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.742,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ - 12 (BDrip1080p Ma10p x265 2FLAC).default.chi.zh-cn.ass",
@@ -95,7 +205,17 @@
     },
     {
       "path": "[DewDream] ひだまりスケッチ  (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ - 12 (BDrip1080p Ma10p x265 2FLAC).mkv",
-      "size": 802958604
+      "size": 802958604,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1421.837,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ - 13 OVA (BDrip1080p Ma10p x265 2FLAC).default.chi.zh-cn.ass",
@@ -103,7 +223,17 @@
     },
     {
       "path": "[DewDream] ひだまりスケッチ  (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ - 13 OVA (BDrip1080p Ma10p x265 2FLAC).mkv",
-      "size": 769672855
+      "size": 769672855,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1483.941,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ - 14 OVA (BDrip1080p Ma10p x265 2FLAC).default.chi.zh-cn.ass",
@@ -111,7 +241,17 @@
     },
     {
       "path": "[DewDream] ひだまりスケッチ  (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ - 14 OVA (BDrip1080p Ma10p x265 2FLAC).mkv",
-      "size": 761374623
+      "size": 761374623,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1430.43,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  (BDRip1080p Ma10p)/CDs/[EAC][070124] TVアニメ「ひだまりスケッチ」オープニング主題歌 「スケッチスイッチ」 (flac+cue+jpg)/Cover.jpg",
@@ -803,99 +943,339 @@
     },
     {
       "path": "[DewDream] ひだまりスケッチ  (BDRip1080p Ma10p)/SPs/[DewDream] ひだまりスケッチ - IV01 (DVDrip720p Ma10p x265 AC3).mkv",
-      "size": 920497722
+      "size": 920497722,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 2586.917,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  (BDRip1080p Ma10p)/SPs/[DewDream] ひだまりスケッチ - IV02 (DVDrip720p Ma10p x265 AC3).mkv",
-      "size": 1010311423
+      "size": 1010311423,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 2586.917,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  (BDRip1080p Ma10p)/SPs/[DewDream] ひだまりスケッチ - IV03 (DVDrip720p Ma10p x265 AC3).mkv",
-      "size": 1617325347
+      "size": 1617325347,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 2586.917,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  (BDRip1080p Ma10p)/SPs/[DewDream] ひだまりスケッチ - IV04 (DVDrip720p Ma10p x265 AC3).mkv",
-      "size": 356875829
+      "size": 356875829,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1005.004,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "960x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  (BDRip1080p Ma10p)/SPs/[DewDream] ひだまりスケッチ - Menu01 (BDrip1080p Ma10p x265 2FLAC).mkv",
-      "size": 56723020
+      "size": 56723020,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 104.0,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  (BDRip1080p Ma10p)/SPs/[DewDream] ひだまりスケッチ - Menu02 (BDrip1080p Ma10p x265 2FLAC).mkv",
-      "size": 37169071
+      "size": 37169071,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 75.0,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  (BDRip1080p Ma10p)/SPs/[DewDream] ひだまりスケッチ - Menu03 (BDrip1080p Ma10p x265 2FLAC).mkv",
-      "size": 51402106
+      "size": 51402106,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 104.0,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  (BDRip1080p Ma10p)/SPs/[DewDream] ひだまりスケッチ - Menu04 (BDrip1080p Ma10p x265 2FLAC).mkv",
-      "size": 33276302
+      "size": 33276302,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 75.0,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  (BDRip1080p Ma10p)/SPs/[DewDream] ひだまりスケッチ - Menu05 (BDrip1080p Ma10p x265 2FLAC).mkv",
-      "size": 46787914
+      "size": 46787914,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 104.0,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  (BDRip1080p Ma10p)/SPs/[DewDream] ひだまりスケッチ - Menu06 (BDrip1080p Ma10p x265 2FLAC).mkv",
-      "size": 27089154
+      "size": 27089154,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 75.0,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  (BDRip1080p Ma10p)/SPs/[DewDream] ひだまりスケッチ - Menu07 (BDrip1080p Ma10p x265 2FLAC).mkv",
-      "size": 47948562
+      "size": 47948562,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 104.0,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  (BDRip1080p Ma10p)/SPs/[DewDream] ひだまりスケッチ - Menu08 (BDrip1080p Ma10p x265 2FLAC).mkv",
-      "size": 25942793
+      "size": 25942793,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 75.035,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  (BDRip1080p Ma10p)/SPs/[DewDream] ひだまりスケッチ - Menu09 (BDrip1080p Ma10p x265 2FLAC).mkv",
-      "size": 21858154
+      "size": 21858154,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 36.0,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  (BDRip1080p Ma10p)/SPs/[DewDream] ひだまりスケッチ - Menu10 (BDrip1080p Ma10p x265 2FLAC).mkv",
-      "size": 9155854
+      "size": 9155854,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 36.035,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  (BDRip1080p Ma10p)/SPs/[DewDream] ひだまりスケッチ - Menu11 (DVDrip720p Ma10p x265 AC3).mkv",
-      "size": 76274664
+      "size": 76274664,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 276.276,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "720x480",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  (BDRip1080p Ma10p)/SPs/[DewDream] ひだまりスケッチ - NCED (BDrip1080p Ma10p x265 FLAC).mkv",
-      "size": 55250665
+      "size": 55250665,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.091,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  (BDRip1080p Ma10p)/SPs/[DewDream] ひだまりスケッチ - NCOP01 (BDrip1080p Ma10p x265 FLAC).mkv",
-      "size": 75157163
+      "size": 75157163,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.801,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  (BDRip1080p Ma10p)/SPs/[DewDream] ひだまりスケッチ - NCOP02 (BDrip1080p Ma10p x265 FLAC).mkv",
-      "size": 76296970
+      "size": 76296970,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.926,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  (BDRip1080p Ma10p)/SPs/[DewDream] ひだまりスケッチ - NCOP03 (BDrip1080p Ma10p x265 FLAC).mkv",
-      "size": 76415640
+      "size": 76415640,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.845,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  (BDRip1080p Ma10p)/SPs/[DewDream] ひだまりスケッチ - Preview (BDrip1080p Ma10p x265 FLAC).mkv",
-      "size": 22919313
+      "size": 22919313,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 33.035,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  (BDRip1080p Ma10p)/SPs/[DewDream] ひだまりスケッチ - SP01 (DVDrip720p Ma10p x265 AC3).mkv",
-      "size": 127766305
+      "size": 127766305,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 290.29,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  (BDRip1080p Ma10p)/SPs/[DewDream] ひだまりスケッチ - SP02 (DVDrip720p Ma10p x265 AC3).mkv",
-      "size": 145062188
+      "size": 145062188,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 290.29,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  (BDRip1080p Ma10p)/SPs/[DewDream] ひだまりスケッチ - SP03 (DVDrip720p Ma10p x265 AC3).mkv",
-      "size": 36685996
+      "size": 36685996,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 136.704,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  (BDRip1080p Ma10p)/SPs/[DewDream] ひだまりスケッチ - SP04 (DVDrip720p Ma10p x265 AC3).mkv",
-      "size": 29031163
+      "size": 29031163,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 99.099,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  ×365 (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ×365 - 01 (BDrip1080p Ma10p x265 2FLAC).default.chi.zh-cn.ass",
@@ -903,7 +1283,17 @@
     },
     {
       "path": "[DewDream] ひだまりスケッチ  ×365 (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ×365 - 01 (BDrip1080p Ma10p x265 2FLAC).mkv",
-      "size": 1092786591
+      "size": 1092786591,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.7,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  ×365 (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ×365 - 02 (BDrip1080p Ma10p x265 2FLAC).default.chi.zh-cn.ass",
@@ -911,7 +1301,17 @@
     },
     {
       "path": "[DewDream] ひだまりスケッチ  ×365 (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ×365 - 02 (BDrip1080p Ma10p x265 2FLAC).mkv",
-      "size": 974956267
+      "size": 974956267,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.785,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  ×365 (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ×365 - 03 (BDrip1080p Ma10p x265 2FLAC).default.chi.zh-cn.ass",
@@ -919,7 +1319,17 @@
     },
     {
       "path": "[DewDream] ひだまりスケッチ  ×365 (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ×365 - 03 (BDrip1080p Ma10p x265 2FLAC).mkv",
-      "size": 933298787
+      "size": 933298787,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.701,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  ×365 (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ×365 - 04 (BDrip1080p Ma10p x265 2FLAC).default.chi.zh-cn.ass",
@@ -927,7 +1337,17 @@
     },
     {
       "path": "[DewDream] ひだまりスケッチ  ×365 (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ×365 - 04 (BDrip1080p Ma10p x265 2FLAC).mkv",
-      "size": 1181235030
+      "size": 1181235030,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1672.171,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  ×365 (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ×365 - 05 (BDrip1080p Ma10p x265 2FLAC).default.chi.zh-cn.ass",
@@ -935,7 +1355,17 @@
     },
     {
       "path": "[DewDream] ひだまりスケッチ  ×365 (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ×365 - 05 (BDrip1080p Ma10p x265 2FLAC).mkv",
-      "size": 974543683
+      "size": 974543683,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.742,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  ×365 (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ×365 - 06 (BDrip1080p Ma10p x265 2FLAC).default.chi.zh-cn.ass",
@@ -943,7 +1373,17 @@
     },
     {
       "path": "[DewDream] ひだまりスケッチ  ×365 (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ×365 - 06 (BDrip1080p Ma10p x265 2FLAC).mkv",
-      "size": 1041093767
+      "size": 1041093767,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1662.328,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  ×365 (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ×365 - 07 (BDrip1080p Ma10p x265 2FLAC).default.chi.zh-cn.ass",
@@ -951,7 +1391,17 @@
     },
     {
       "path": "[DewDream] ひだまりスケッチ  ×365 (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ×365 - 07 (BDrip1080p Ma10p x265 2FLAC).mkv",
-      "size": 918804532
+      "size": 918804532,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.7,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  ×365 (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ×365 - 08 (BDrip1080p Ma10p x265 2FLAC).default.chi.zh-cn.ass",
@@ -959,7 +1409,17 @@
     },
     {
       "path": "[DewDream] ひだまりスケッチ  ×365 (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ×365 - 08 (BDrip1080p Ma10p x265 2FLAC).mkv",
-      "size": 977246922
+      "size": 977246922,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1460.46,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  ×365 (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ×365 - 09 (BDrip1080p Ma10p x265 2FLAC).default.chi.zh-cn.ass",
@@ -967,7 +1427,17 @@
     },
     {
       "path": "[DewDream] ひだまりスケッチ  ×365 (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ×365 - 09 (BDrip1080p Ma10p x265 2FLAC).mkv",
-      "size": 1059609056
+      "size": 1059609056,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1662.911,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  ×365 (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ×365 - 10 (BDrip1080p Ma10p x265 2FLAC).default.chi.zh-cn.ass",
@@ -975,7 +1445,17 @@
     },
     {
       "path": "[DewDream] ひだまりスケッチ  ×365 (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ×365 - 10 (BDrip1080p Ma10p x265 2FLAC).mkv",
-      "size": 962014196
+      "size": 962014196,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.867,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  ×365 (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ×365 - 11 (BDrip1080p Ma10p x265 2FLAC).default.chi.zh-cn.ass",
@@ -983,7 +1463,17 @@
     },
     {
       "path": "[DewDream] ひだまりスケッチ  ×365 (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ×365 - 11 (BDrip1080p Ma10p x265 2FLAC).mkv",
-      "size": 1005296806
+      "size": 1005296806,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.7,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  ×365 (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ×365 - 12 (BDrip1080p Ma10p x265 2FLAC).default.chi.zh-cn.ass",
@@ -991,7 +1481,17 @@
     },
     {
       "path": "[DewDream] ひだまりスケッチ  ×365 (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ×365 - 12 (BDrip1080p Ma10p x265 2FLAC).mkv",
-      "size": 1122431344
+      "size": 1122431344,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1460.46,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  ×365 (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ×365 - 13 (BDrip1080p Ma10p x265 2FLAC).default.chi.zh-cn.ass",
@@ -999,7 +1499,17 @@
     },
     {
       "path": "[DewDream] ひだまりスケッチ  ×365 (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ×365 - 13 (BDrip1080p Ma10p x265 2FLAC).mkv",
-      "size": 870429905
+      "size": 870429905,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1421.921,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  ×365 (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ×365 - 14 EX (BDrip1080p Ma10p x265 2FLAC).default.chi.zh-cn.ass",
@@ -1007,7 +1517,17 @@
     },
     {
       "path": "[DewDream] ひだまりスケッチ  ×365 (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ×365 - 14 EX (BDrip1080p Ma10p x265 2FLAC).mkv",
-      "size": 1043412270
+      "size": 1043412270,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.867,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  ×365 (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ×365 - 15 OVA (BDrip1080p Ma10p x265 2FLAC).default.chi.zh-cn.ass",
@@ -1015,7 +1535,17 @@
     },
     {
       "path": "[DewDream] ひだまりスケッチ  ×365 (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ×365 - 15 OVA (BDrip1080p Ma10p x265 2FLAC).mkv",
-      "size": 779673003
+      "size": 779673003,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.7,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  ×365 (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ×365 - 16 OVA (BDrip1080p Ma10p x265 2FLAC).default.chi.zh-cn.ass",
@@ -1023,7 +1553,17 @@
     },
     {
       "path": "[DewDream] ひだまりスケッチ  ×365 (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ×365 - 16 OVA (BDrip1080p Ma10p x265 2FLAC).mkv",
-      "size": 788076269
+      "size": 788076269,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1430.43,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  ×365 (BDRip1080p Ma10p)/CDs/[EAC][080604] WEBラジオ「ひだまりラジオ×365」OP／EDテーマ 「ゆめデリバリー」 (flac+cue+jpg)/Cover.jpg",
@@ -2439,167 +2979,577 @@
     },
     {
       "path": "[DewDream] ひだまりスケッチ  ×365 (BDRip1080p Ma10p)/SPs/[DewDream] ひだまりスケッチ×365 - IV01 (DVDrip720p Ma10p x265 AC3).mkv",
-      "size": 976656517
+      "size": 976656517,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 3058.555,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  ×365 (BDRip1080p Ma10p)/SPs/[DewDream] ひだまりスケッチ×365 - IV02 (DVDrip720p Ma10p x265 AC3).mkv",
-      "size": 1401974278
+      "size": 1401974278,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 3058.555,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  ×365 (BDRip1080p Ma10p)/SPs/[DewDream] ひだまりスケッチ×365 - IV03 (DVDrip720p Ma10p x265 AC3).mkv",
-      "size": 801904812
+      "size": 801904812,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 2672.169,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  ×365 (BDRip1080p Ma10p)/SPs/[DewDream] ひだまりスケッチ×365 - Menu01 (BDrip1080p Ma10p x265 2FLAC).mkv",
-      "size": 76618717
+      "size": 76618717,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 108.0,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  ×365 (BDRip1080p Ma10p)/SPs/[DewDream] ひだまりスケッチ×365 - Menu02 (BDrip1080p Ma10p x265 2FLAC).mkv",
-      "size": 30190880
+      "size": 30190880,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 74.92,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  ×365 (BDRip1080p Ma10p)/SPs/[DewDream] ひだまりスケッチ×365 - Menu03 (BDrip1080p Ma10p x265 2FLAC).mkv",
-      "size": 13798930
+      "size": 13798930,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 36.0,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  ×365 (BDRip1080p Ma10p)/SPs/[DewDream] ひだまりスケッチ×365 - Menu04 (BDrip1080p Ma10p x265 2FLAC).mkv",
-      "size": 74598021
+      "size": 74598021,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 104.0,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  ×365 (BDRip1080p Ma10p)/SPs/[DewDream] ひだまりスケッチ×365 - Menu05 (BDrip1080p Ma10p x265 2FLAC).mkv",
-      "size": 36395503
+      "size": 36395503,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 75.0,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  ×365 (BDRip1080p Ma10p)/SPs/[DewDream] ひだまりスケッチ×365 - Menu06 (BDrip1080p Ma10p x265 2FLAC).mkv",
-      "size": 14548959
+      "size": 14548959,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 36.0,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  ×365 (BDRip1080p Ma10p)/SPs/[DewDream] ひだまりスケッチ×365 - Menu07 (BDrip1080p Ma10p x265 2FLAC).mkv",
-      "size": 73887904
+      "size": 73887904,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 104.0,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  ×365 (BDRip1080p Ma10p)/SPs/[DewDream] ひだまりスケッチ×365 - Menu08 (BDrip1080p Ma10p x265 2FLAC).mkv",
-      "size": 25321660
+      "size": 25321660,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 75.0,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  ×365 (BDRip1080p Ma10p)/SPs/[DewDream] ひだまりスケッチ×365 - Menu09 (BDrip1080p Ma10p x265 2FLAC).mkv",
-      "size": 15604652
+      "size": 15604652,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 36.0,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  ×365 (BDRip1080p Ma10p)/SPs/[DewDream] ひだまりスケッチ×365 - Menu10 (BDrip1080p Ma10p x265 2FLAC).mkv",
-      "size": 72328493
+      "size": 72328493,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 104.064,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  ×365 (BDRip1080p Ma10p)/SPs/[DewDream] ひだまりスケッチ×365 - Menu11 (BDrip1080p Ma10p x265 2FLAC).mkv",
-      "size": 27948593
+      "size": 27948593,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 75.0,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  ×365 (BDRip1080p Ma10p)/SPs/[DewDream] ひだまりスケッチ×365 - Menu12 (BDrip1080p Ma10p x265 2FLAC).mkv",
-      "size": 14044971
+      "size": 14044971,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 36.0,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  ×365 (BDRip1080p Ma10p)/SPs/[DewDream] ひだまりスケッチ×365 - Menu13 (DVDrip720p Ma10p x265 AC3).mkv",
-      "size": 26777502
+      "size": 26777502,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 150.016,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  ×365 (BDRip1080p Ma10p)/SPs/[DewDream] ひだまりスケッチ×365 - NCED01 (BDrip1080p Ma10p x265 FLAC).mkv",
-      "size": 77133438
+      "size": 77133438,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  ×365 (BDRip1080p Ma10p)/SPs/[DewDream] ひだまりスケッチ×365 - NCOP01 (BDrip1080p Ma10p x265 FLAC).mkv",
-      "size": 151110765
+      "size": 151110765,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  ×365 (BDRip1080p Ma10p)/SPs/[DewDream] ひだまりスケッチ×365 - NCOP02 (BDrip1080p Ma10p x265 FLAC).mkv",
-      "size": 151193177
+      "size": 151193177,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  ×365 (BDRip1080p Ma10p)/SPs/[DewDream] ひだまりスケッチ×365 - NCOP03 (BDrip1080p Ma10p x265 FLAC).mkv",
-      "size": 151829140
+      "size": 151829140,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  ×365 (BDRip1080p Ma10p)/SPs/[DewDream] ひだまりスケッチ×365 - NCOP04A (BDrip1080p Ma10p x265 FLAC).mkv",
-      "size": 150947695
+      "size": 150947695,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  ×365 (BDRip1080p Ma10p)/SPs/[DewDream] ひだまりスケッチ×365 - NCOP04B (BDrip1080p Ma10p x265 FLAC).mkv",
-      "size": 149964147
+      "size": 149964147,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  ×365 (BDRip1080p Ma10p)/SPs/[DewDream] ひだまりスケッチ×365 - NCOP05 (BDrip1080p Ma10p x265 FLAC).mkv",
-      "size": 151442270
+      "size": 151442270,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.095,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  ×365 (BDRip1080p Ma10p)/SPs/[DewDream] ひだまりスケッチ×365 - NCOP06A (BDrip1080p Ma10p x265 FLAC).mkv",
-      "size": 151547271
+      "size": 151547271,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  ×365 (BDRip1080p Ma10p)/SPs/[DewDream] ひだまりスケッチ×365 - NCOP06B (BDrip1080p Ma10p x265 FLAC).mkv",
-      "size": 152429849
+      "size": 152429849,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  ×365 (BDRip1080p Ma10p)/SPs/[DewDream] ひだまりスケッチ×365 - NCOP07 (BDrip1080p Ma10p x265 FLAC).mkv",
-      "size": 151440231
+      "size": 151440231,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  ×365 (BDRip1080p Ma10p)/SPs/[DewDream] ひだまりスケッチ×365 - NCOP08 (BDrip1080p Ma10p x265 FLAC).mkv",
-      "size": 151446191
+      "size": 151446191,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  ×365 (BDRip1080p Ma10p)/SPs/[DewDream] ひだまりスケッチ×365 - NCOP09A (BDrip1080p Ma10p x265 FLAC).mkv",
-      "size": 152363868
+      "size": 152363868,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  ×365 (BDRip1080p Ma10p)/SPs/[DewDream] ひだまりスケッチ×365 - NCOP09B (BDrip1080p Ma10p x265 FLAC).mkv",
-      "size": 153073649
+      "size": 153073649,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  ×365 (BDRip1080p Ma10p)/SPs/[DewDream] ひだまりスケッチ×365 - NCOP10 (BDrip1080p Ma10p x265 FLAC).mkv",
-      "size": 151686851
+      "size": 151686851,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  ×365 (BDRip1080p Ma10p)/SPs/[DewDream] ひだまりスケッチ×365 - NCOP11 (BDrip1080p Ma10p x265 FLAC).mkv",
-      "size": 151579939
+      "size": 151579939,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  ×365 (BDRip1080p Ma10p)/SPs/[DewDream] ひだまりスケッチ×365 - NCOP12 (BDrip1080p Ma10p x265 FLAC).mkv",
-      "size": 150563828
+      "size": 150563828,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  ×365 (BDRip1080p Ma10p)/SPs/[DewDream] ひだまりスケッチ×365 - NCOP13 (BDrip1080p Ma10p x265 FLAC).mkv",
-      "size": 151178223
+      "size": 151178223,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  ×365 (BDRip1080p Ma10p)/SPs/[DewDream] ひだまりスケッチ×365 - NCOP14 (BDrip1080p Ma10p x265 FLAC).mkv",
-      "size": 150782947
+      "size": 150782947,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  ×365 (BDRip1080p Ma10p)/SPs/[DewDream] ひだまりスケッチ×365 - NCOP15 (BDrip1080p Ma10p x265 FLAC).mkv",
-      "size": 150886452
+      "size": 150886452,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  ×365 (BDRip1080p Ma10p)/SPs/[DewDream] ひだまりスケッチ×365 - NCOP16 (BDrip1080p Ma10p x265 FLAC).mkv",
-      "size": 150634514
+      "size": 150634514,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  ×365 (BDRip1080p Ma10p)/SPs/[DewDream] ひだまりスケッチ×365 - Preview (BDrip1080p Ma10p x265 FLAC).mkv",
-      "size": 14884461
+      "size": 14884461,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 32.866,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  ×365 (BDRip1080p Ma10p)/SPs/[DewDream] ひだまりスケッチ×365 - PV (DVDrip720p Ma10p x265 AC3).mkv",
-      "size": 26295115
+      "size": 26295115,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 146.146,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  ×365 (BDRip1080p Ma10p)/SPs/[DewDream] ひだまりスケッチ×365 - SP01 (DVDrip720p Ma10p x265 AC3).mkv",
-      "size": 21415773
+      "size": 21415773,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 73.573,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  ×365 (BDRip1080p Ma10p)/SPs/[DewDream] ひだまりスケッチ×365 - SP02 (DVDrip720p Ma10p x265 AC3).mkv",
-      "size": 28553450
+      "size": 28553450,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 73.573,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ  ×365 (BDRip1080p Ma10p)/SPs/[DewDream] ひだまりスケッチ×365 - SP03 (DVDrip720p Ma10p x265 AC3).mkv",
-      "size": 44529763
+      "size": 44529763,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 133.867,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×SP (BDRip1080p Ma10)/[DewDream] ひだまりスケッチ×SP - 01 (BDrip1080p Ma10p x265 2FLAC).default.chi.zh-cn.ass",
@@ -2607,7 +3557,17 @@
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×SP (BDRip1080p Ma10)/[DewDream] ひだまりスケッチ×SP - 01 (BDrip1080p Ma10p x265 2FLAC).mkv",
-      "size": 960526508
+      "size": 960526508,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1452.08,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×SP (BDRip1080p Ma10)/[DewDream] ひだまりスケッチ×SP - 02 (BDrip1080p Ma10p x265 2FLAC).default.chi.zh-cn.ass",
@@ -2615,7 +3575,17 @@
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×SP (BDRip1080p Ma10)/[DewDream] ひだまりスケッチ×SP - 02 (BDrip1080p Ma10p x265 2FLAC).mkv",
-      "size": 937259486
+      "size": 937259486,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1432.431,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×SP (BDRip1080p Ma10)/CDs/[EAC][20210930]ひだまりスケッチ×SP 特典CD vol.1 (wav+cue)/ANZX-6702.cue",
@@ -2659,39 +3629,129 @@
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×SP (BDRip1080p Ma10)/SPs/[DewDream] ひだまりスケッチ×SP - Menu01 (BDrip1080p Ma10p x265 FLAC).mkv",
-      "size": 67112935
+      "size": 67112935,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 83.0,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×SP (BDRip1080p Ma10)/SPs/[DewDream] ひだまりスケッチ×SP - Menu02 (BDrip1080p Ma10p x265 FLAC).mkv",
-      "size": 121938698
+      "size": 121938698,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 159.993,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×SP (BDRip1080p Ma10)/SPs/[DewDream] ひだまりスケッチ×SP - Menu03 (BDrip1080p Ma10p x265 FLAC).mkv",
-      "size": 30028307
+      "size": 30028307,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 83.0,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×SP (BDRip1080p Ma10)/SPs/[DewDream] ひだまりスケッチ×SP - Menu04 (BDrip1080p Ma10p x265 FLAC).mkv",
-      "size": 56858601
+      "size": 56858601,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 159.993,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×SP (BDRip1080p Ma10)/SPs/[DewDream] ひだまりスケッチ×SP - Menu05 (BDrip1080p Ma10p x265 FLAC).mkv",
-      "size": 32643586
+      "size": 32643586,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 63.063,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×SP (BDRip1080p Ma10)/SPs/[DewDream] ひだまりスケッチ×SP - Menu06 (BDrip1080p Ma10p x265 FLAC).mkv",
-      "size": 62492300
+      "size": 62492300,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 120.12,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×SP (BDRip1080p Ma10)/SPs/[DewDream] ひだまりスケッチ×SP - NCED01 (BDrip1080p Ma10p x265 FLAC).mkv",
-      "size": 46539475
+      "size": 46539475,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.967,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×SP (BDRip1080p Ma10)/SPs/[DewDream] ひだまりスケッチ×SP - NCOP01 (BDrip1080p Ma10p x265 FLAC).mkv",
-      "size": 77156729
+      "size": 77156729,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.97,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×SP (BDRip1080p Ma10)/SPs/[DewDream] ひだまりスケッチ×SP - Preview (BDrip1080p Ma10p x265 FLAC).mkv",
-      "size": 12025901
+      "size": 12025901,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 33.035,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×☆☆☆ (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ×☆☆☆ - 01 (BDrip1080p Ma10p x265 2FLAC).default.chi.zh-cn.ass",
@@ -2699,7 +3759,17 @@
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×☆☆☆ (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ×☆☆☆ - 01 (BDrip1080p Ma10p x265 2FLAC).mkv",
-      "size": 1034790927
+      "size": 1034790927,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1452.66,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×☆☆☆ (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ×☆☆☆ - 02 (BDrip1080p Ma10p x265 2FLAC).default.chi.zh-cn.ass",
@@ -2707,7 +3777,17 @@
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×☆☆☆ (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ×☆☆☆ - 02 (BDrip1080p Ma10p x265 2FLAC).mkv",
-      "size": 880328939
+      "size": 880328939,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.66,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×☆☆☆ (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ×☆☆☆ - 03 (BDrip1080p Ma10p x265 2FLAC).default.chi.zh-cn.ass",
@@ -2715,7 +3795,17 @@
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×☆☆☆ (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ×☆☆☆ - 03 (BDrip1080p Ma10p x265 2FLAC).mkv",
-      "size": 865988631
+      "size": 865988631,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1452.455,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×☆☆☆ (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ×☆☆☆ - 04 (BDrip1080p Ma10p x265 2FLAC).default.chi.zh-cn.ass",
@@ -2723,7 +3813,17 @@
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×☆☆☆ (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ×☆☆☆ - 04 (BDrip1080p Ma10p x265 2FLAC).mkv",
-      "size": 1022775610
+      "size": 1022775610,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.45,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×☆☆☆ (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ×☆☆☆ - 05 (BDrip1080p Ma10p x265 2FLAC).default.chi.zh-cn.ass",
@@ -2731,7 +3831,17 @@
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×☆☆☆ (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ×☆☆☆ - 05 (BDrip1080p Ma10p x265 2FLAC).mkv",
-      "size": 909604482
+      "size": 909604482,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1452.705,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×☆☆☆ (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ×☆☆☆ - 06 (BDrip1080p Ma10p x265 2FLAC).default.chi.zh-cn.ass",
@@ -2739,7 +3849,17 @@
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×☆☆☆ (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ×☆☆☆ - 06 (BDrip1080p Ma10p x265 2FLAC).mkv",
-      "size": 923342736
+      "size": 923342736,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.785,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×☆☆☆ (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ×☆☆☆ - 07 (BDrip1080p Ma10p x265 2FLAC).default.chi.zh-cn.ass",
@@ -2747,7 +3867,17 @@
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×☆☆☆ (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ×☆☆☆ - 07 (BDrip1080p Ma10p x265 2FLAC).mkv",
-      "size": 958873651
+      "size": 958873651,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1481.9,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×☆☆☆ (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ×☆☆☆ - 08 (BDrip1080p Ma10p x265 2FLAC).default.chi.zh-cn.ass",
@@ -2755,7 +3885,17 @@
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×☆☆☆ (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ×☆☆☆ - 08 (BDrip1080p Ma10p x265 2FLAC).mkv",
-      "size": 934492882
+      "size": 934492882,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1452.745,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×☆☆☆ (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ×☆☆☆ - 09 (BDrip1080p Ma10p x265 2FLAC).default.chi.zh-cn.ass",
@@ -2763,7 +3903,17 @@
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×☆☆☆ (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ×☆☆☆ - 09 (BDrip1080p Ma10p x265 2FLAC).mkv",
-      "size": 920141177
+      "size": 920141177,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.745,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×☆☆☆ (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ×☆☆☆ - 10 (BDrip1080p Ma10p x265 2FLAC).default.chi.zh-cn.ass",
@@ -2771,7 +3921,17 @@
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×☆☆☆ (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ×☆☆☆ - 10 (BDrip1080p Ma10p x265 2FLAC).mkv",
-      "size": 989688843
+      "size": 989688843,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1452.785,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×☆☆☆ (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ×☆☆☆ - 11 (BDrip1080p Ma10p x265 2FLAC).default.chi.zh-cn.ass",
@@ -2779,7 +3939,17 @@
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×☆☆☆ (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ×☆☆☆ - 11 (BDrip1080p Ma10p x265 2FLAC).mkv",
-      "size": 925517675
+      "size": 925517675,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.705,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×☆☆☆ (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ×☆☆☆ - 12 (BDrip1080p Ma10p x265 2FLAC).default.chi.zh-cn.ass",
@@ -2787,7 +3957,17 @@
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×☆☆☆ (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ×☆☆☆ - 12 (BDrip1080p Ma10p x265 2FLAC).mkv",
-      "size": 920373758
+      "size": 920373758,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1422.8,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×☆☆☆ (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ×☆☆☆ - 13 OVA (BDrip1080p Ma10p x265 2FLAC).default.chi.zh-cn.ass",
@@ -2795,7 +3975,17 @@
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×☆☆☆ (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ×☆☆☆ - 13 OVA (BDrip1080p Ma10p x265 2FLAC).mkv",
-      "size": 1044316995
+      "size": 1044316995,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.705,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×☆☆☆ (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ×☆☆☆ - 14 OVA (BDrip1080p Ma10p x265 2FLAC).default.chi.zh-cn.ass",
@@ -2803,7 +3993,17 @@
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×☆☆☆ (BDRip1080p Ma10p)/[DewDream] ひだまりスケッチ×☆☆☆ - 14 OVA (BDrip1080p Ma10p x265 2FLAC).mkv",
-      "size": 1011214685
+      "size": 1011214685,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1421.84,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×☆☆☆ (BDRip1080p Ma10p)/CDs/[EAC][100126] (シングル) ひだまりスケッチ×☆☆☆ OP 「できるかなって☆☆☆」 (tta＋cue)/LASM4044.cue",
@@ -3631,63 +4831,213 @@
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×☆☆☆ (BDRip1080p Ma10p)/SPs/[DewDream] ひだまりスケッチ×☆☆☆ - Menu01 (BDrip1080p Ma10p x265 FLAC).mkv",
-      "size": 144143939
+      "size": 144143939,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 265.057,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×☆☆☆ (BDRip1080p Ma10p)/SPs/[DewDream] ひだまりスケッチ×☆☆☆ - Menu02 (BDrip1080p Ma10p x265 FLAC).mkv",
-      "size": 53074159
+      "size": 53074159,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 300.3,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×☆☆☆ (BDRip1080p Ma10p)/SPs/[DewDream] ひだまりスケッチ×☆☆☆ - Menu03 (BDrip1080p Ma10p x265 FLAC).mkv",
-      "size": 143733243
+      "size": 143733243,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 265.057,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×☆☆☆ (BDRip1080p Ma10p)/SPs/[DewDream] ひだまりスケッチ×☆☆☆ - Menu04 (BDrip1080p Ma10p x265 FLAC).mkv",
-      "size": 50224634
+      "size": 50224634,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 300.3,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×☆☆☆ (BDRip1080p Ma10p)/SPs/[DewDream] ひだまりスケッチ×☆☆☆ - Menu05 (BDrip1080p Ma10p x265 FLAC).mkv",
-      "size": 147074262
+      "size": 147074262,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 265.057,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×☆☆☆ (BDRip1080p Ma10p)/SPs/[DewDream] ひだまりスケッチ×☆☆☆ - Menu06 (BDrip1080p Ma10p x265 FLAC).mkv",
-      "size": 71494711
+      "size": 71494711,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 300.3,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×☆☆☆ (BDRip1080p Ma10p)/SPs/[DewDream] ひだまりスケッチ×☆☆☆ - Menu07 (BDrip1080p Ma10p x265 FLAC).mkv",
-      "size": 144406841
+      "size": 144406841,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 265.057,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×☆☆☆ (BDRip1080p Ma10p)/SPs/[DewDream] ひだまりスケッチ×☆☆☆ - Menu08 (BDrip1080p Ma10p x265 FLAC).mkv",
-      "size": 50930288
+      "size": 50930288,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 300.3,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×☆☆☆ (BDRip1080p Ma10p)/SPs/[DewDream] ひだまりスケッチ×☆☆☆ - Menu09 (BDrip1080p Ma10p x265 FLAC).mkv",
-      "size": 142853875
+      "size": 142853875,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 265.057,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×☆☆☆ (BDRip1080p Ma10p)/SPs/[DewDream] ひだまりスケッチ×☆☆☆ - Menu10 (BDrip1080p Ma10p x265 FLAC).mkv",
-      "size": 55564886
+      "size": 55564886,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 300.3,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×☆☆☆ (BDRip1080p Ma10p)/SPs/[DewDream] ひだまりスケッチ×☆☆☆ - Menu11 (BDrip1080p Ma10p x265 FLAC).mkv",
-      "size": 142722390
+      "size": 142722390,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 265.057,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×☆☆☆ (BDRip1080p Ma10p)/SPs/[DewDream] ひだまりスケッチ×☆☆☆ - Menu12 (BDrip1080p Ma10p x265 FLAC).mkv",
-      "size": 47379942
+      "size": 47379942,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 300.3,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×☆☆☆ (BDRip1080p Ma10p)/SPs/[DewDream] ひだまりスケッチ×☆☆☆ - Menu13 (BDrip1080p Ma10p x265 FLAC).mkv",
-      "size": 176973550
+      "size": 176973550,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 265.057,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×☆☆☆ (BDRip1080p Ma10p)/SPs/[DewDream] ひだまりスケッチ×☆☆☆ - Menu14 (BDrip1080p Ma10p x265 FLAC).mkv",
-      "size": 55455566
+      "size": 55455566,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 300.3,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×☆☆☆ (BDRip1080p Ma10p)/SPs/[DewDream] ひだまりスケッチ×☆☆☆ - Preview (BDrip1080p Ma10p x265 FLAC).mkv",
-      "size": 8723504
+      "size": 8723504,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 32.866,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×ハニカム (BDRip1080p Ma10)/[DewDream] ひだまりスケッチ×ハニカム - 01 (BDrip1080p Ma10p x265 2FLAC).default.chi.zh-cn.ass",
@@ -3695,7 +5045,17 @@
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×ハニカム (BDRip1080p Ma10)/[DewDream] ひだまりスケッチ×ハニカム - 01 (BDrip1080p Ma10p x265 2FLAC).mkv",
-      "size": 899425659
+      "size": 899425659,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1452.12,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×ハニカム (BDRip1080p Ma10)/[DewDream] ひだまりスケッチ×ハニカム - 02 (BDrip1080p Ma10p x265 2FLAC).default.chi.zh-cn.ass",
@@ -3703,7 +5063,17 @@
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×ハニカム (BDRip1080p Ma10)/[DewDream] ひだまりスケッチ×ハニカム - 02 (BDrip1080p Ma10p x265 2FLAC).mkv",
-      "size": 857970926
+      "size": 857970926,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1458.125,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×ハニカム (BDRip1080p Ma10)/[DewDream] ひだまりスケッチ×ハニカム - 03 (BDrip1080p Ma10p x265 2FLAC).default.chi.zh-cn.ass",
@@ -3711,7 +5081,17 @@
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×ハニカム (BDRip1080p Ma10)/[DewDream] ひだまりスケッチ×ハニカム - 03 (BDrip1080p Ma10p x265 2FLAC).mkv",
-      "size": 1059941746
+      "size": 1059941746,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1452.12,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×ハニカム (BDRip1080p Ma10)/[DewDream] ひだまりスケッチ×ハニカム - 04 (BDrip1080p Ma10p x265 2FLAC).default.chi.zh-cn.ass",
@@ -3719,7 +5099,17 @@
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×ハニカム (BDRip1080p Ma10)/[DewDream] ひだまりスケッチ×ハニカム - 04 (BDrip1080p Ma10p x265 2FLAC).mkv",
-      "size": 905304567
+      "size": 905304567,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1458.125,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×ハニカム (BDRip1080p Ma10)/[DewDream] ひだまりスケッチ×ハニカム - 05 (BDrip1080p Ma10p x265 2FLAC).default.chi.zh-cn.ass",
@@ -3727,7 +5117,17 @@
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×ハニカム (BDRip1080p Ma10)/[DewDream] ひだまりスケッチ×ハニカム - 05 (BDrip1080p Ma10p x265 2FLAC).mkv",
-      "size": 839297519
+      "size": 839297519,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1452.12,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×ハニカム (BDRip1080p Ma10)/[DewDream] ひだまりスケッチ×ハニカム - 06 (BDrip1080p Ma10p x265 2FLAC).default.chi.zh-cn.ass",
@@ -3735,7 +5135,17 @@
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×ハニカム (BDRip1080p Ma10)/[DewDream] ひだまりスケッチ×ハニカム - 06 (BDrip1080p Ma10p x265 2FLAC).mkv",
-      "size": 828566256
+      "size": 828566256,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1458.125,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×ハニカム (BDRip1080p Ma10)/[DewDream] ひだまりスケッチ×ハニカム - 07 (BDrip1080p Ma10p x265 2FLAC).default.chi.zh-cn.ass",
@@ -3743,7 +5153,17 @@
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×ハニカム (BDRip1080p Ma10)/[DewDream] ひだまりスケッチ×ハニカム - 07 (BDrip1080p Ma10p x265 2FLAC).mkv",
-      "size": 913729353
+      "size": 913729353,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1452.12,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×ハニカム (BDRip1080p Ma10)/[DewDream] ひだまりスケッチ×ハニカム - 08 (BDrip1080p Ma10p x265 2FLAC).default.chi.zh-cn.ass",
@@ -3751,7 +5171,17 @@
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×ハニカム (BDRip1080p Ma10)/[DewDream] ひだまりスケッチ×ハニカム - 08 (BDrip1080p Ma10p x265 2FLAC).mkv",
-      "size": 934354879
+      "size": 934354879,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1458.125,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×ハニカム (BDRip1080p Ma10)/[DewDream] ひだまりスケッチ×ハニカム - 09 (BDrip1080p Ma10p x265 2FLAC).default.chi.zh-cn.ass",
@@ -3759,7 +5189,17 @@
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×ハニカム (BDRip1080p Ma10)/[DewDream] ひだまりスケッチ×ハニカム - 09 (BDrip1080p Ma10p x265 2FLAC).mkv",
-      "size": 901691603
+      "size": 901691603,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1452.12,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×ハニカム (BDRip1080p Ma10)/[DewDream] ひだまりスケッチ×ハニカム - 10 (BDrip1080p Ma10p x265 2FLAC).default.chi.zh-cn.ass",
@@ -3767,7 +5207,17 @@
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×ハニカム (BDRip1080p Ma10)/[DewDream] ひだまりスケッチ×ハニカム - 10 (BDrip1080p Ma10p x265 2FLAC).mkv",
-      "size": 836792544
+      "size": 836792544,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1458.125,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×ハニカム (BDRip1080p Ma10)/[DewDream] ひだまりスケッチ×ハニカム - 11 (BDrip1080p Ma10p x265 2FLAC).default.chi.zh-cn.ass",
@@ -3775,7 +5225,17 @@
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×ハニカム (BDRip1080p Ma10)/[DewDream] ひだまりスケッチ×ハニカム - 11 (BDrip1080p Ma10p x265 2FLAC).mkv",
-      "size": 933591850
+      "size": 933591850,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1452.12,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×ハニカム (BDRip1080p Ma10)/[DewDream] ひだまりスケッチ×ハニカム - 12 (BDrip1080p Ma10p x265 2FLAC).default.chi.zh-cn.ass",
@@ -3783,7 +5243,17 @@
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×ハニカム (BDRip1080p Ma10)/[DewDream] ひだまりスケッチ×ハニカム - 12 (BDrip1080p Ma10p x265 2FLAC).mkv",
-      "size": 907441427
+      "size": 907441427,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1428.095,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×ハニカム (BDRip1080p Ma10)/CDs/[EAC][111123] TVアニメ「ひだまりスケッチ×SP」 OP＆EDテーマ「気まぐれ、じゃんけんポンっ！／nora」 (flac+cue)/LASM-4118.cue",
@@ -5907,135 +7377,465 @@
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×ハニカム (BDRip1080p Ma10)/SPs/[DewDream] ひだまりスケッチ×ハニカム - IV01 (BDrip1080p Ma10p x265 FLAC).mkv",
-      "size": 2256053173
+      "size": 2256053173,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 4042.04,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×ハニカム (BDRip1080p Ma10)/SPs/[DewDream] ひだまりスケッチ×ハニカム - IV02 (BDrip1080p Ma10p x265 FLAC).mkv",
-      "size": 6357078162
+      "size": 6357078162,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 4042.04,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×ハニカム (BDRip1080p Ma10)/SPs/[DewDream] ひだまりスケッチ×ハニカム - IV03 (BDrip1080p Ma10p x265 FLAC).mkv",
-      "size": 1710420831
+      "size": 1710420831,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 4042.04,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×ハニカム (BDRip1080p Ma10)/SPs/[DewDream] ひだまりスケッチ×ハニカム - IV04 (BDrip1080p Ma10p x265 FLAC).mkv",
-      "size": 2535812633
+      "size": 2535812633,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 2502.5,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×ハニカム (BDRip1080p Ma10)/SPs/[DewDream] ひだまりスケッチ×ハニカム - Menu01 (BDrip1080p Ma10p x265 FLAC).mkv",
-      "size": 322397360
+      "size": 322397360,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1276.275,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×ハニカム (BDRip1080p Ma10)/SPs/[DewDream] ひだまりスケッチ×ハニカム - Menu02 (BDrip1080p Ma10p x265 FLAC).mkv",
-      "size": 231781161
+      "size": 231781161,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 624.0,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×ハニカム (BDRip1080p Ma10)/SPs/[DewDream] ひだまりスケッチ×ハニカム - Menu03 (BDrip1080p Ma10p x265 FLAC).mkv",
-      "size": 325099135
+      "size": 325099135,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1276.275,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×ハニカム (BDRip1080p Ma10)/SPs/[DewDream] ひだまりスケッチ×ハニカム - Menu04 (BDrip1080p Ma10p x265 FLAC).mkv",
-      "size": 271308474
+      "size": 271308474,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 624.0,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×ハニカム (BDRip1080p Ma10)/SPs/[DewDream] ひだまりスケッチ×ハニカム - Menu05 (BDrip1080p Ma10p x265 FLAC).mkv",
-      "size": 214790049
+      "size": 214790049,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 624.0,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×ハニカム (BDRip1080p Ma10)/SPs/[DewDream] ひだまりスケッチ×ハニカム - Menu06 (BDrip1080p Ma10p x265 FLAC).mkv",
-      "size": 341578968
+      "size": 341578968,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1276.275,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×ハニカム (BDRip1080p Ma10)/SPs/[DewDream] ひだまりスケッチ×ハニカム - Menu07 (BDrip1080p Ma10p x265 FLAC).mkv",
-      "size": 214200151
+      "size": 214200151,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 624.0,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×ハニカム (BDRip1080p Ma10)/SPs/[DewDream] ひだまりスケッチ×ハニカム - Menu08 (BDrip1080p Ma10p x265 FLAC).mkv",
-      "size": 317915721
+      "size": 317915721,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1274.273,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×ハニカム (BDRip1080p Ma10)/SPs/[DewDream] ひだまりスケッチ×ハニカム - Menu09 (BDrip1080p Ma10p x265 FLAC).mkv",
-      "size": 249009689
+      "size": 249009689,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 624.0,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×ハニカム (BDRip1080p Ma10)/SPs/[DewDream] ひだまりスケッチ×ハニカム - Menu10 (BDrip1080p Ma10p x265 FLAC).mkv",
-      "size": 332938320
+      "size": 332938320,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1274.273,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×ハニカム (BDRip1080p Ma10)/SPs/[DewDream] ひだまりスケッチ×ハニカム - Menu11 (BDrip1080p Ma10p x265 FLAC).mkv",
-      "size": 266152686
+      "size": 266152686,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 624.0,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×ハニカム (BDRip1080p Ma10)/SPs/[DewDream] ひだまりスケッチ×ハニカム - Menu12 (BDrip1080p Ma10p x265 FLAC).mkv",
-      "size": 399656864
+      "size": 399656864,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1274.273,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×ハニカム (BDRip1080p Ma10)/SPs/[DewDream] ひだまりスケッチ×ハニカム - Menu13 (BDrip1080p Ma10p x265 FLAC).mkv",
-      "size": 287730249
+      "size": 287730249,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 624.0,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×ハニカム (BDRip1080p Ma10)/SPs/[DewDream] ひだまりスケッチ×ハニカム - Menu14 (BDrip1080p Ma10p x265 FLAC).mkv",
-      "size": 250668859
+      "size": 250668859,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 624.0,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×ハニカム (BDRip1080p Ma10)/SPs/[DewDream] ひだまりスケッチ×ハニカム - Menu15 (BDrip1080p Ma10p x265 FLAC).mkv",
-      "size": 8124207
+      "size": 8124207,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 60.06,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×ハニカム (BDRip1080p Ma10)/SPs/[DewDream] ひだまりスケッチ×ハニカム - Menu16 (BDrip1080p Ma10p x265 FLAC).mkv",
-      "size": 15107733
+      "size": 15107733,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 60.06,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×ハニカム (BDRip1080p Ma10)/SPs/[DewDream] ひだまりスケッチ×ハニカム - NCED (BDrip1080p Ma10p x265 FLAC).mkv",
-      "size": 65218401
+      "size": 65218401,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×ハニカム (BDRip1080p Ma10)/SPs/[DewDream] ひだまりスケッチ×ハニカム - NCOP (BDrip1080p Ma10p x265 FLAC).mkv",
-      "size": 73785832
+      "size": 73785832,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×ハニカム (BDRip1080p Ma10)/SPs/[DewDream] ひだまりスケッチ×ハニカム - PV (BDrip1080p Ma10p x265 FLAC).mkv",
-      "size": 17554347
+      "size": 17554347,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 18.02,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×ハニカム (BDRip1080p Ma10)/SPs/[DewDream] ひだまりスケッチ×ハニカム - SP01 (BDrip1080p Ma10p x265 FLAC).mkv",
-      "size": 47418271
+      "size": 47418271,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 125.542,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×ハニカム (BDRip1080p Ma10)/SPs/[DewDream] ひだまりスケッチ×ハニカム - SP02 (BDrip1080p Ma10p x265 FLAC).mkv",
-      "size": 27298117
+      "size": 27298117,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 88.505,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×ハニカム (BDRip1080p Ma10)/SPs/[DewDream] ひだまりスケッチ×ハニカム - SP03 (BDrip1080p Ma10p x265 FLAC).mkv",
-      "size": 19977812
+      "size": 19977812,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 65.025,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×ハニカム (BDRip1080p Ma10)/SPs/[DewDream] ひだまりスケッチ×ハニカム - SP04 (BDrip1080p Ma10p x265 FLAC).mkv",
-      "size": 18509680
+      "size": 18509680,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 68.527,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×ハニカム (BDRip1080p Ma10)/SPs/[DewDream] ひだまりスケッチ×ハニカム - SP05 (BDrip1080p Ma10p x265 FLAC).mkv",
-      "size": 16798910
+      "size": 16798910,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 54.847,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×ハニカム (BDRip1080p Ma10)/SPs/[DewDream] ひだまりスケッチ×ハニカム - SP06 (BDrip1080p Ma10p x265 FLAC).mkv",
-      "size": 50210532
+      "size": 50210532,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 102.98,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×ハニカム (BDRip1080p Ma10)/SPs/[DewDream] ひだまりスケッチ×ハニカム - SP07 (BDrip1080p Ma10p x265 FLAC).mkv",
-      "size": 28380839
+      "size": 28380839,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 88.047,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×ハニカム (BDRip1080p Ma10)/SPs/[DewDream] ひだまりスケッチ×ハニカム - SP08 (BDrip1080p Ma10p x265 FLAC).mkv",
-      "size": 6206478
+      "size": 6206478,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 17.476,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×ハニカム (BDRip1080p Ma10)/SPs/[DewDream] ひだまりスケッチ×ハニカム - SP09 (BDrip1080p Ma10p x265 FLAC).mkv",
-      "size": 32535920
+      "size": 32535920,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 84.835,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ ×ハニカム (BDRip1080p Ma10)/SPs/[DewDream] ひだまりスケッチ×ハニカム - SP10 (BDrip1080p Ma10p x265 FLAC).mkv",
-      "size": 23916789
+      "size": 23916789,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 77.036,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ 沙英・ヒロ 卒業編 (BDRip1080p Ma10)/[DewDream] ひだまりスケッチ 沙英・ヒロ 卒業編 - 01 (BDrip1080p Ma10p x265 2FLAC).default.chi.zh-cn.ass",
@@ -6043,7 +7843,17 @@
     },
     {
       "path": "[DewDream] ひだまりスケッチ 沙英・ヒロ 卒業編 (BDRip1080p Ma10)/[DewDream] ひだまりスケッチ 沙英・ヒロ 卒業編 - 01 (BDrip1080p Ma10p x265 2FLAC).mkv",
-      "size": 887234175
+      "size": 887234175,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1452.12,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ 沙英・ヒロ 卒業編 (BDRip1080p Ma10)/[DewDream] ひだまりスケッチ 沙英・ヒロ 卒業編 - 02 (BDrip1080p Ma10p x265 2FLAC).default.chi.zh-cn.ass",
@@ -6051,7 +7861,17 @@
     },
     {
       "path": "[DewDream] ひだまりスケッチ 沙英・ヒロ 卒業編 (BDRip1080p Ma10)/[DewDream] ひだまりスケッチ 沙英・ヒロ 卒業編 - 02 (BDrip1080p Ma10p x265 2FLAC).mkv",
-      "size": 1028148406
+      "size": 1028148406,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1428.095,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ 沙英・ヒロ 卒業編 (BDRip1080p Ma10)/CDs/ひだまりスケッチ 沙英・ヒロ 卒業編 特典CD (tak+cue)/ひだまりスケッチ 沙英・ヒロ 卒業編 特典CD.cue",
@@ -6211,31 +8031,132 @@
     },
     {
       "path": "[DewDream] ひだまりスケッチ 沙英・ヒロ 卒業編 (BDRip1080p Ma10)/SPs/[DewDream] ひだまりスケッチ 沙英・ヒロ 卒業編 - Menu01 (BDrip1080p Ma10p x265 FLAC).mkv",
-      "size": 361993898
+      "size": 361993898,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1258.257,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ 沙英・ヒロ 卒業編 (BDRip1080p Ma10)/SPs/[DewDream] ひだまりスケッチ 沙英・ヒロ 卒業編 - Menu02 (BDrip1080p Ma10p x265 FLAC).mkv",
-      "size": 112784345
+      "size": 112784345,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 632.632,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ 沙英・ヒロ 卒業編 (BDRip1080p Ma10)/SPs/[DewDream] ひだまりスケッチ 沙英・ヒロ 卒業編 - Menu03 (BDrip1080p Ma10p x265 FLAC).mkv",
-      "size": 196177133
+      "size": 196177133,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 632.632,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ 沙英・ヒロ 卒業編 (BDRip1080p Ma10)/SPs/[DewDream] ひだまりスケッチ 沙英・ヒロ 卒業編 - NCED01 (BDrip1080p Ma10p x265 FLAC).mkv",
-      "size": 65727779
+      "size": 65727779,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ 沙英・ヒロ 卒業編 (BDRip1080p Ma10)/SPs/[DewDream] ひだまりスケッチ 沙英・ヒロ 卒業編 - NCED02 (BDrip1080p Ma10p x265 FLAC).mkv",
-      "size": 168141501
+      "size": 168141501,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ 沙英・ヒロ 卒業編 (BDRip1080p Ma10)/SPs/[DewDream] ひだまりスケッチ 沙英・ヒロ 卒業編 - NCOP01 (BDrip1080p Ma10p x265 FLAC).mkv",
-      "size": 75902481
+      "size": 75902481,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[DewDream] ひだまりスケッチ 沙英・ヒロ 卒業編 (BDRip1080p Ma10)/SPs/[DewDream] ひだまりスケッチ 沙英・ヒロ 卒業編 - NCOP02 (BDrip1080p Ma10p x265 FLAC).mkv",
-      "size": 74229674
+      "size": 74229674,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     }
-  ]
+  ],
+  "local_container_fact_summary": {
+    "container_fact_count": 189,
+    "probe_status_counts": {
+      "available": 189
+    },
+    "duration_seconds_range": [
+      17.476,
+      4042.04
+    ],
+    "duration_seconds_samples": [
+      1451.742,
+      1451.826,
+      1460.46,
+      1451.7,
+      1451.742,
+      1460.46
+    ]
+  },
+  "local_container_fact_source": {
+    "kind": "real_local_media_duration_backfill",
+    "media_root": "H:\\Anime",
+    "probe_media": true,
+    "container_probe": "ffprobe",
+    "embedded_in": "files[].container_facts",
+    "matched_file_count": 1559,
+    "matched_video_count": 189,
+    "missing_actual_video_count": 0,
+    "match_stats": {
+      "matched_by_root_path": 1559
+    }
+  }
 }

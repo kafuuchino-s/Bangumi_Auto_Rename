@@ -84,9 +84,9 @@ class FilenameBuilder:
             season: 季度号
 
         Returns:
-            "Season {season:02d}"
+            "Season {season}"
         """
-        return f"Season {season:02d}"
+        return f"Season {season}"
 
     @staticmethod
     def build_movie_folder(title: str, year: Optional[str] = None) -> str:

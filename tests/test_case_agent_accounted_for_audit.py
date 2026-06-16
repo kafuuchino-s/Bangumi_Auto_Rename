@@ -55,7 +55,7 @@ def test_manual_review_assignments_are_accounted_without_unresolved_blocker():
                 ref='A2',
                 file_ref='LF2',
                 target_ref='UNALIGNED',
-                reason='mapping_draft:human_case_agent:manual_review:manual_review:needs human review',
+                reason='mapping_draft:pi_case_agent:manual_review:manual_review:needs human review',
             ),
         ],
     )

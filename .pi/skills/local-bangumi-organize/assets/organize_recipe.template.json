@@ -1,0 +1,31 @@
+{
+  "version": 1,
+  "summary": "Replace with case summary.",
+  "rules": [
+    {
+      "name": "TV episodes",
+      "source_unit": "single_file",
+      "select": {
+        "path_glob": "**/*.mkv",
+        "filename_regex": "Episode {ep}.mkv",
+        "exact_paths": [],
+        "exclude_regex": "(NCOP|NCED|PV|CM|Menu|Trailer)"
+      },
+      "target": {
+        "bangumi_subject_id": 0,
+        "media_kind": "tv",
+        "episode_id": 0,
+        "episode_type": "regular",
+        "sort": null,
+        "ep": null
+      },
+      "episode": {
+        "capture": "ep",
+        "offset": "EP",
+        "range": ""
+      },
+      "disposition": "map_to_bangumi",
+      "reason": "Replace with evidence summary."
+    }
+  ]
+}

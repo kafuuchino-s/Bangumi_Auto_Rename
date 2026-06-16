@@ -76,15 +76,30 @@ def test_lpa_projection_is_compact_and_sampled() -> None:
         get_last_ai_call_audit=lambda: {'call_name': 'LocalPackageAnalysis', 'unexpected': True},
     )
 
-    def fake_run(workspace, ai_client, bangumi_client, max_rounds=None):
-        return SimpleNamespace(ok=True, status='accepted', case_id=workspace.header.case_id, summary='accepted', final_action='submit_verdict', errors=[], evidence_batches=[], judge_outputs=[], final_workspace=workspace)
+    def fake_run_pi_case_agent(*, workspace, bangumi_client, source_path):
+        from src.rename.case_agent.pi_runner import PiCaseAgentRunResult
+        from src.rename.case_agent.models import CaseJudgeOutput, CaseVerifierResult
 
-    # Verify the mapping entry leaves query/title semantics to the orchestrated Query Composer.
+        final_output = CaseJudgeOutput(action='fail_closed', summary='projection test')
+        return PiCaseAgentRunResult(
+            ok=True,
+            status='fail_closed',
+            case_id=workspace.header.case_id,
+            summary='projection test',
+            final_action='fail_closed',
+            final_workspace=workspace,
+            run_dir=Path('tests/tmp/pi-run'),
+            judge_outputs=[final_output],
+            final_output=final_output,
+            final_verifier_result=CaseVerifierResult(passed=True, issues=[]),
+        )
+
+    # Verify the mapping entry leaves query/title semantics to the Pi runtime.
     from src.rename.case_agent import local_bangumi_entry as lbe
 
-    original = lbe.run_local_bangumi_case_agent
+    original = lbe.run_pi_case_agent
     try:
-        lbe.run_local_bangumi_case_agent = fake_run
+        lbe.run_pi_case_agent = fake_run_pi_case_agent
         result = run_local_bangumi_case_agent_mapping(
             local_evidence=SimpleNamespace(
                 source_path='tests/sample',
@@ -95,11 +110,11 @@ def test_lpa_projection_is_compact_and_sampled() -> None:
             source_path='tests/sample',
         )
     finally:
-        lbe.run_local_bangumi_case_agent = original
+        lbe.run_pi_case_agent = original
 
     audit = result['snapshot']['local_package_analysis_audit']
     assert audit['skipped'] is True
-    assert audit['reason'] == 'query_composer_orchestrated_main_path'
+    assert audit['reason'] == 'pi_case_agent_mapping_only_path'
     assert result['snapshot']['primary_title_cues']
     assert '[Snow-Raws]' not in result['snapshot']['primary_title_cues'][0]
 

@@ -3,55 +3,185 @@
   "files": [
     {
       "path": "[x_x] AIURA [Ep01] [BDRip 1080p x265 Main10 Flac 2.0ch].mkv",
-      "size": 291676541
+      "size": 291676541,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 331.335,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[x_x] AIURA [Ep02] [BDRip 1080p x265 Main10 Flac 2.0ch].mkv",
-      "size": 285486202
+      "size": 285486202,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 331.335,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[x_x] AIURA [Ep03] [BDRip 1080p x265 Main10 Flac 2.0ch].mkv",
-      "size": 285056590
+      "size": 285056590,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 331.335,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[x_x] AIURA [Ep04] [BDRip 1080p x265 Main10 Flac 2.0ch].mkv",
-      "size": 313112387
+      "size": 313112387,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 331.335,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[x_x] AIURA [Ep05] [BDRip 1080p x265 Main10 Flac 2.0ch].mkv",
-      "size": 285528641
+      "size": 285528641,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 331.335,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[x_x] AIURA [Ep06] [BDRip 1080p x265 Main10 Flac 2.0ch].mkv",
-      "size": 278062371
+      "size": 278062371,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 331.335,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[x_x] AIURA [Ep07] [BDRip 1080p x265 Main10 Flac 2.0ch].mkv",
-      "size": 284593454
+      "size": 284593454,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 331.335,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[x_x] AIURA [Ep08] [BDRip 1080p x265 Main10 Flac 2.0ch].mkv",
-      "size": 281484742
+      "size": 281484742,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 331.335,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[x_x] AIURA [Ep09] [BDRip 1080p x265 Main10 Flac 2.0ch].mkv",
-      "size": 298552220
+      "size": 298552220,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 331.335,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[x_x] AIURA [Ep10] [BDRip 1080p x265 Main10 Flac 2.0ch].mkv",
-      "size": 288694299
+      "size": 288694299,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 331.335,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[x_x] AIURA [Ep11] [BDRip 1080p x265 Main10 Flac 2.0ch].mkv",
-      "size": 341097675
+      "size": 341097675,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 331.335,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[x_x] AIURA [Ep12] [BDRip 1080p x265 Main10 Flac 2.0ch].mkv",
-      "size": 333944357
+      "size": 333944357,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 331.335,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[x_x] AIURA [Main Story Straight Play] [BDRip 1080p x265 Main10 2xFlac 2.0ch].mkv",
-      "size": 1898302811
+      "size": 1898302811,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 2324.325,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Menus/[x_x] AIURA [Menu1].webp",
@@ -71,7 +201,17 @@
     },
     {
       "path": "Menus/[x_x] AIURA [Menu] [BDRip 1080p x264 RGB Lossless].mkv",
-      "size": 2717782
+      "size": 2717782,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 30.0,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 0,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Scans/001.heic",
@@ -127,23 +267,104 @@
     },
     {
       "path": "特典映像/[x_x] AIURA [NCED] [BDRip 1080p x265 Main10 Flac 2.0ch].mkv",
-      "size": 74861126
+      "size": 74861126,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.095,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "特典映像/[x_x] AIURA [NCOP] [BDRip 1080p x265 Main10 Flac 2.0ch].mkv",
-      "size": 70720901
+      "size": 70720901,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 61.065,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "特典映像/[x_x] AIURA [Warning1] [BDRip 1080p x265 Main Lossless Flac 2.0ch].mkv",
-      "size": 21269263
+      "size": 21269263,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 27.03,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "特典映像/[x_x] AIURA [Warning2] [BDRip 1080p x265 Main Lossless Flac 2.0ch].mkv",
-      "size": 21690222
+      "size": 21690222,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 31.035,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "特典映像/[x_x] AIURA [Warning3] [BDRip 1080p x265 Main Lossless Flac 2.0ch].mkv",
-      "size": 34104211
+      "size": 34104211,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 52.055,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     }
-  ]
+  ],
+  "local_container_fact_summary": {
+    "container_fact_count": 19,
+    "probe_status_counts": {
+      "available": 19
+    },
+    "duration_seconds_range": [
+      27.03,
+      2324.325
+    ],
+    "duration_seconds_samples": [
+      331.335,
+      331.335,
+      331.335,
+      331.335,
+      331.335,
+      331.335
+    ]
+  },
+  "local_container_fact_source": {
+    "kind": "real_local_media_duration_backfill",
+    "media_root": "H:\\Anime",
+    "probe_media": true,
+    "container_probe": "ffprobe",
+    "embedded_in": "files[].container_facts",
+    "matched_file_count": 36,
+    "matched_video_count": 19,
+    "missing_actual_video_count": 0,
+    "match_stats": {
+      "matched_by_root_path": 36
+    }
+  }
 }

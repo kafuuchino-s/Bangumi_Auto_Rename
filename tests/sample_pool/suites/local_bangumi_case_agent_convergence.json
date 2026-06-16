@@ -161,7 +161,7 @@
       "sample_path": "tv/sample_0115_vcb_studio_yamada_kun_to_7_nin_no_majo_ma10p_1080p.json",
       "bucket": "regression_local_structure_title_digit",
       "expected_policy": "recover_accepted_or_specific_fail_closed",
-      "why": "Regressed from accepted; protects LocalStructureAgent title-internal numeral handling.",
+      "why": "Regressed from accepted; protects local title-internal numeral handling.",
       "baseline_best_status": "accepted",
       "latest_status": "fail_closed"
     },

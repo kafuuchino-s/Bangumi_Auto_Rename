@@ -3,67 +3,227 @@
   "files": [
     {
       "path": "[ANK-Raws] AKB0048 next stage (Creditless ED) (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 161741320
+      "size": 161741320,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.97,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] AKB0048 next stage (Creditless OP) (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 142168027
+      "size": 142168027,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.97,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] AKB0048 next stage 01 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 1308289446
+      "size": 1308289446,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1442.445,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] AKB0048 next stage 02 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 1014499223
+      "size": 1014499223,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1441.962,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] AKB0048 next stage 03 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 1021744726
+      "size": 1021744726,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1441.132,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] AKB0048 next stage 04 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 791762503
+      "size": 791762503,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1441.315,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] AKB0048 next stage 05 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 1087914284
+      "size": 1087914284,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1442.133,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] AKB0048 next stage 06 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 1107750248
+      "size": 1107750248,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1441.091,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] AKB0048 next stage 07 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 1087933959
+      "size": 1087933959,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1441.231,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] AKB0048 next stage 08 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 1222781558
+      "size": 1222781558,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1442.047,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] AKB0048 next stage 09 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 984053819
+      "size": 984053819,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1441.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] AKB0048 next stage 10 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 1181919659
+      "size": 1181919659,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1441.315,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] AKB0048 next stage 11 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 995877543
+      "size": 995877543,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1442.133,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] AKB0048 next stage 12 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 1068311954
+      "size": 1068311954,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1441.006,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] AKB0048 next stage 13 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 1342938828
+      "size": 1342938828,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1426.258,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] AKB0048 next stage PV01 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 74491226
+      "size": 74491226,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 103.105,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[特典]ドラマCD/01-オーディオトラック 01.mp3",
@@ -71,23 +231,104 @@
     },
     {
       "path": "Menu (Vol.1).mkv",
-      "size": 17386513
+      "size": 17386513,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 150.15,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Menu (Vol.2).mkv",
-      "size": 17386513
+      "size": 17386513,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 150.15,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Menu (Vol.3).mkv",
-      "size": 17386513
+      "size": 17386513,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 150.15,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Menu (Vol.4).mkv",
-      "size": 17386513
+      "size": 17386513,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 150.15,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Menu (Vol.5).mkv",
-      "size": 17386513
+      "size": 17386513,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 150.15,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     }
-  ]
+  ],
+  "local_container_fact_summary": {
+    "container_fact_count": 21,
+    "probe_status_counts": {
+      "available": 21
+    },
+    "duration_seconds_range": [
+      91.97,
+      1442.445
+    ],
+    "duration_seconds_samples": [
+      91.97,
+      91.97,
+      1442.445,
+      1441.962,
+      1441.132,
+      1441.315
+    ]
+  },
+  "local_container_fact_source": {
+    "kind": "real_local_media_duration_backfill",
+    "media_root": "H:\\Anime",
+    "probe_media": true,
+    "container_probe": "ffprobe",
+    "embedded_in": "files[].container_facts",
+    "matched_file_count": 22,
+    "matched_video_count": 21,
+    "missing_actual_video_count": 0,
+    "match_stats": {
+      "matched_by_root_path": 22
+    }
+  }
 }

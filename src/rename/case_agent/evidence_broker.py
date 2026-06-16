@@ -11,7 +11,6 @@ from .broker_related import execute_related_expansion
 from .broker_search import execute_subject_search
 from .broker_subject import execute_subject_lookup
 from .models import BangumiItemCard, BangumiSpanCard, EvidenceBatchResult, EvidenceRequest, EvidenceRequestResult
-from .notebook import close_notebook_agenda_for_evidence_results
 from .workspace import CaseEvidenceWorkspace
 
 
@@ -375,7 +374,6 @@ class EvidenceBroker:
         ready_span_refs = list(dict.fromkeys([*(getattr(plan_state, 'ready_span_refs', []) or []), *[card.ref for rr in request_results for card in (getattr(rr, 'bangumi_span_cards', []) or []) if bool(getattr(card, 'detail_equivalent', False))]]))
         plan_status = 'completed' if selected_ids and len(completed_ids) == len(selected_ids) and not failed_ids else ('blocked' if failed_ids and not completed_ids else ('in_progress' if selected_ids else getattr(plan_state, 'plan_status', 'idle')))
         completed_span_request_count = len([rid for rid in completed_ids if rid.startswith('REQ_TARGET_SPAN_')])
-        updated_notebook = close_notebook_agenda_for_evidence_results(getattr(current_ws, 'investigation_notebook', None), request_results)
         visible_target_refs = list(dict.fromkeys([
             *list(getattr(current_ws.contract, 'visible_target_refs', []) or []),
             *[
@@ -408,9 +406,6 @@ class EvidenceBroker:
             mapping_draft=current_ws.mapping_draft,
             mapping_draft_patches=current_ws.mapping_draft_patches,
             mapping_draft_candidate_comparisons=getattr(current_ws, 'mapping_draft_candidate_comparisons', []),
-            case_briefing=getattr(current_ws, 'case_briefing', None),
-            investigation_notebook=updated_notebook,
-            case_resolution_ledger=getattr(current_ws, 'case_resolution_ledger', None),
             plan_state=plan_state.model_copy(update={
                 'selected_menu_request_ids': list(dict.fromkeys([*(getattr(plan_state, 'selected_menu_request_ids', []) or []), *selected_ids])),
                 'completed_menu_request_ids': list(dict.fromkeys([*(getattr(plan_state, 'completed_menu_request_ids', []) or []), *completed_ids])),

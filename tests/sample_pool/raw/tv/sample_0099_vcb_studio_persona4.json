@@ -3,7 +3,17 @@
   "files": [
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/[VCB-Studio] Persona4 the ANIMATION [01(Director's Cut Ver.)][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1492515550
+      "size": 1492515550,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1703.722,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/[VCB-Studio] Persona4 the ANIMATION [01(Director's Cut Ver.)][Ma10p_1080p][x265_flac_aac].sc.ass",
@@ -15,7 +25,17 @@
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/[VCB-Studio] Persona4 the ANIMATION [01(On Air Ver.)][Ma10p_1080p][x265_flac].mkv",
-      "size": 1235241748
+      "size": 1235241748,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1472.471,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/[VCB-Studio] Persona4 the ANIMATION [01(On Air Ver.)][Ma10p_1080p][x265_flac].sc.ass",
@@ -27,7 +47,17 @@
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/[VCB-Studio] Persona4 the ANIMATION [02][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1484546168
+      "size": 1484546168,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1472.49,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/[VCB-Studio] Persona4 the ANIMATION [02][Ma10p_1080p][x265_flac_aac].sc.ass",
@@ -39,7 +69,17 @@
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/[VCB-Studio] Persona4 the ANIMATION [03][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1455448074
+      "size": 1455448074,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1472.49,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/[VCB-Studio] Persona4 the ANIMATION [03][Ma10p_1080p][x265_flac_aac].sc.ass",
@@ -51,7 +91,17 @@
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/[VCB-Studio] Persona4 the ANIMATION [04][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1588921612
+      "size": 1588921612,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1472.49,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/[VCB-Studio] Persona4 the ANIMATION [04][Ma10p_1080p][x265_flac_aac].sc.ass",
@@ -63,7 +113,17 @@
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/[VCB-Studio] Persona4 the ANIMATION [05][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1253227220
+      "size": 1253227220,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1472.49,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/[VCB-Studio] Persona4 the ANIMATION [05][Ma10p_1080p][x265_flac_aac].sc.ass",
@@ -75,7 +135,17 @@
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/[VCB-Studio] Persona4 the ANIMATION [06][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1322576504
+      "size": 1322576504,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1472.49,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/[VCB-Studio] Persona4 the ANIMATION [06][Ma10p_1080p][x265_flac_aac].sc.ass",
@@ -87,7 +157,17 @@
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/[VCB-Studio] Persona4 the ANIMATION [07][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1507913613
+      "size": 1507913613,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1472.49,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/[VCB-Studio] Persona4 the ANIMATION [07][Ma10p_1080p][x265_flac_aac].sc.ass",
@@ -99,7 +179,17 @@
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/[VCB-Studio] Persona4 the ANIMATION [08][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1356329323
+      "size": 1356329323,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1472.49,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/[VCB-Studio] Persona4 the ANIMATION [08][Ma10p_1080p][x265_flac_aac].sc.ass",
@@ -111,7 +201,17 @@
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/[VCB-Studio] Persona4 the ANIMATION [09][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1177703113
+      "size": 1177703113,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1472.49,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/[VCB-Studio] Persona4 the ANIMATION [09][Ma10p_1080p][x265_flac_aac].sc.ass",
@@ -123,7 +223,17 @@
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/[VCB-Studio] Persona4 the ANIMATION [10][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1682117169
+      "size": 1682117169,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1472.49,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/[VCB-Studio] Persona4 the ANIMATION [10][Ma10p_1080p][x265_flac_aac].sc.ass",
@@ -135,7 +245,17 @@
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/[VCB-Studio] Persona4 the ANIMATION [11][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1251798627
+      "size": 1251798627,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1472.49,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/[VCB-Studio] Persona4 the ANIMATION [11][Ma10p_1080p][x265_flac_aac].sc.ass",
@@ -147,7 +267,17 @@
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/[VCB-Studio] Persona4 the ANIMATION [12][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1500844496
+      "size": 1500844496,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1472.49,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/[VCB-Studio] Persona4 the ANIMATION [12][Ma10p_1080p][x265_flac_aac].sc.ass",
@@ -159,7 +289,17 @@
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/[VCB-Studio] Persona4 the ANIMATION [13][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1429932390
+      "size": 1429932390,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1472.49,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/[VCB-Studio] Persona4 the ANIMATION [13][Ma10p_1080p][x265_flac_aac].sc.ass",
@@ -171,7 +311,17 @@
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/[VCB-Studio] Persona4 the ANIMATION [14][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1256933534
+      "size": 1256933534,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1472.49,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/[VCB-Studio] Persona4 the ANIMATION [14][Ma10p_1080p][x265_flac_aac].sc.ass",
@@ -183,7 +333,17 @@
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/[VCB-Studio] Persona4 the ANIMATION [15][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1350108878
+      "size": 1350108878,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1472.49,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/[VCB-Studio] Persona4 the ANIMATION [15][Ma10p_1080p][x265_flac_aac].sc.ass",
@@ -195,7 +355,17 @@
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/[VCB-Studio] Persona4 the ANIMATION [16][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1335087416
+      "size": 1335087416,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1472.49,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/[VCB-Studio] Persona4 the ANIMATION [16][Ma10p_1080p][x265_flac_aac].sc.ass",
@@ -207,7 +377,17 @@
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/[VCB-Studio] Persona4 the ANIMATION [17][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1383544433
+      "size": 1383544433,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1457.472,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/[VCB-Studio] Persona4 the ANIMATION [17][Ma10p_1080p][x265_flac_aac].sc.ass",
@@ -219,7 +399,17 @@
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/[VCB-Studio] Persona4 the ANIMATION [18][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1286842414
+      "size": 1286842414,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1457.472,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/[VCB-Studio] Persona4 the ANIMATION [18][Ma10p_1080p][x265_flac_aac].sc.ass",
@@ -231,7 +421,17 @@
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/[VCB-Studio] Persona4 the ANIMATION [19][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1365598927
+      "size": 1365598927,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1457.472,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/[VCB-Studio] Persona4 the ANIMATION [19][Ma10p_1080p][x265_flac_aac].sc.ass",
@@ -243,7 +443,17 @@
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/[VCB-Studio] Persona4 the ANIMATION [20][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1252279172
+      "size": 1252279172,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1457.472,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/[VCB-Studio] Persona4 the ANIMATION [20][Ma10p_1080p][x265_flac_aac].sc.ass",
@@ -255,7 +465,17 @@
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/[VCB-Studio] Persona4 the ANIMATION [21][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1187200877
+      "size": 1187200877,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1475.477,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/[VCB-Studio] Persona4 the ANIMATION [21][Ma10p_1080p][x265_flac_aac].sc.ass",
@@ -267,7 +487,17 @@
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/[VCB-Studio] Persona4 the ANIMATION [22][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1442913989
+      "size": 1442913989,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1457.472,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/[VCB-Studio] Persona4 the ANIMATION [22][Ma10p_1080p][x265_flac_aac].sc.ass",
@@ -279,7 +509,17 @@
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/[VCB-Studio] Persona4 the ANIMATION [23][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1271134269
+      "size": 1271134269,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1550.57,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/[VCB-Studio] Persona4 the ANIMATION [23][Ma10p_1080p][x265_flac_aac].sc.ass",
@@ -291,7 +531,17 @@
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/[VCB-Studio] Persona4 the ANIMATION [24][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1566074883
+      "size": 1566074883,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1760.768,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/[VCB-Studio] Persona4 the ANIMATION [24][Ma10p_1080p][x265_flac_aac].sc.ass",
@@ -303,7 +553,17 @@
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/[VCB-Studio] Persona4 the ANIMATION [25][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1649765773
+      "size": 1649765773,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1625.642,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/[VCB-Studio] Persona4 the ANIMATION [25][Ma10p_1080p][x265_flac_aac].sc.ass",
@@ -315,7 +575,17 @@
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/[VCB-Studio] Persona4 the ANIMATION [True End Episode][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1884407943
+      "size": 1884407943,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1802.816,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/[VCB-Studio] Persona4 the ANIMATION [True End Episode][Ma10p_1080p][x265_flac_aac].sc.ass",
@@ -611,211 +881,731 @@
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/SPs/[VCB-Studio] Persona4 the ANIMATION [Blu-ray & DVD Persona Music Live CM01][Ma10p_1080p][x265_aac].mkv",
-      "size": 37985699
+      "size": 37985699,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 36.053,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/SPs/[VCB-Studio] Persona4 the ANIMATION [Blu-ray & DVD Persona Music Live CM02][Ma10p_1080p][x265_aac].mkv",
-      "size": 23172788
+      "size": 23172788,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 17.024,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/SPs/[VCB-Studio] Persona4 the ANIMATION [Blu-ray & DVD Series CM][Ma10p_1080p][x265_flac].mkv",
-      "size": 25570400
+      "size": 25570400,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 17.017,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/SPs/[VCB-Studio] Persona4 the ANIMATION [Blu-ray & DVD Vol.10 CM][Ma10p_1080p][x265_flac].mkv",
-      "size": 73211500
+      "size": 73211500,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 31.031,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/SPs/[VCB-Studio] Persona4 the ANIMATION [CM Collection 01][Ma10p_1080p][x265_flac].mkv",
-      "size": 33164844
+      "size": 33164844,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 31.031,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/SPs/[VCB-Studio] Persona4 the ANIMATION [CM Collection 02][Ma10p_1080p][x265_flac].mkv",
-      "size": 148170281
+      "size": 148170281,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 76.076,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/SPs/[VCB-Studio] Persona4 the ANIMATION [Making of True Story][Ma10p_1080p][x265_aac].mkv",
-      "size": 1081609516
+      "size": 1081609516,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1352.362,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/SPs/[VCB-Studio] Persona4 the ANIMATION [Menu01_01][Ma10p_1080p][x265].mkv",
-      "size": 2612145
+      "size": 2612145,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 2.878,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 0,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/SPs/[VCB-Studio] Persona4 the ANIMATION [Menu01_02][Ma10p_1080p][x265_flac].mkv",
-      "size": 22285226
+      "size": 22285226,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 47.55,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/SPs/[VCB-Studio] Persona4 the ANIMATION [Menu02_01][Ma10p_1080p][x265].mkv",
-      "size": 2629007
+      "size": 2629007,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 2.878,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 0,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/SPs/[VCB-Studio] Persona4 the ANIMATION [Menu02_02][Ma10p_1080p][x265_flac].mkv",
-      "size": 22422136
+      "size": 22422136,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 47.55,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/SPs/[VCB-Studio] Persona4 the ANIMATION [Menu03_01][Ma10p_1080p][x265].mkv",
-      "size": 2424909
+      "size": 2424909,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 2.878,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 0,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/SPs/[VCB-Studio] Persona4 the ANIMATION [Menu03_02][Ma10p_1080p][x265_flac].mkv",
-      "size": 23405817
+      "size": 23405817,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 47.55,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/SPs/[VCB-Studio] Persona4 the ANIMATION [Menu04_01][Ma10p_1080p][x265].mkv",
-      "size": 2471925
+      "size": 2471925,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 2.878,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 0,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/SPs/[VCB-Studio] Persona4 the ANIMATION [Menu04_02][Ma10p_1080p][x265_flac].mkv",
-      "size": 25997045
+      "size": 25997045,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 47.55,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/SPs/[VCB-Studio] Persona4 the ANIMATION [Menu05_01][Ma10p_1080p][x265].mkv",
-      "size": 2366770
+      "size": 2366770,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 2.878,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 0,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/SPs/[VCB-Studio] Persona4 the ANIMATION [Menu05_02][Ma10p_1080p][x265_flac].mkv",
-      "size": 25762525
+      "size": 25762525,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 47.55,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/SPs/[VCB-Studio] Persona4 the ANIMATION [Menu06_01][Ma10p_1080p][x265].mkv",
-      "size": 2793560
+      "size": 2793560,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 2.878,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 0,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/SPs/[VCB-Studio] Persona4 the ANIMATION [Menu06_02][Ma10p_1080p][x265_flac].mkv",
-      "size": 25110679
+      "size": 25110679,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 47.55,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/SPs/[VCB-Studio] Persona4 the ANIMATION [Menu07_01][Ma10p_1080p][x265].mkv",
-      "size": 2148610
+      "size": 2148610,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 2.878,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 0,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/SPs/[VCB-Studio] Persona4 the ANIMATION [Menu07_02][Ma10p_1080p][x265_flac].mkv",
-      "size": 20771421
+      "size": 20771421,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 47.55,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/SPs/[VCB-Studio] Persona4 the ANIMATION [Menu08_01][Ma10p_1080p][x265].mkv",
-      "size": 2666145
+      "size": 2666145,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 2.878,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 0,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/SPs/[VCB-Studio] Persona4 the ANIMATION [Menu08_02][Ma10p_1080p][x265_flac].mkv",
-      "size": 21406123
+      "size": 21406123,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 47.55,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/SPs/[VCB-Studio] Persona4 the ANIMATION [Menu09_01][Ma10p_1080p][x265].mkv",
-      "size": 2162005
+      "size": 2162005,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 2.878,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 0,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/SPs/[VCB-Studio] Persona4 the ANIMATION [Menu09_02][Ma10p_1080p][x265_flac].mkv",
-      "size": 91772420
+      "size": 91772420,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 139.14,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/SPs/[VCB-Studio] Persona4 the ANIMATION [Menu10_01][Ma10p_1080p][x265].mkv",
-      "size": 2645027
+      "size": 2645027,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 2.878,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 0,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/SPs/[VCB-Studio] Persona4 the ANIMATION [Menu10_02][Ma10p_1080p][x265_flac].mkv",
-      "size": 25541539
+      "size": 25541539,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 47.55,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/SPs/[VCB-Studio] Persona4 the ANIMATION [NCED01 Arcana Full Ver.][Ma10p_1080p][x265_flac].mkv",
-      "size": 63229828
+      "size": 63229828,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.592,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/SPs/[VCB-Studio] Persona4 the ANIMATION [NCED01][Ma10p_1080p][x265_flac].mkv",
-      "size": 58827040
+      "size": 58827040,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/SPs/[VCB-Studio] Persona4 the ANIMATION [NCED_EP13][Ma10p_1080p][x265_flac].mkv",
-      "size": 55087544
+      "size": 55087544,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 74.575,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/SPs/[VCB-Studio] Persona4 the ANIMATION [NCED_EP14][Ma10p_1080p][x265_flac].mkv",
-      "size": 70958309
+      "size": 70958309,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.76,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/SPs/[VCB-Studio] Persona4 the ANIMATION [NCED_EP18][Ma10p_1080p][x265_flac].mkv",
-      "size": 247942402
+      "size": 247942402,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 252.961,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/SPs/[VCB-Studio] Persona4 the ANIMATION [NCED_EP22][Ma10p_1080p][x265_flac].mkv",
-      "size": 57514084
+      "size": 57514084,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.343,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/SPs/[VCB-Studio] Persona4 the ANIMATION [NCED_EP25][Ma10p_1080p][x265_flac].mkv",
-      "size": 130718721
+      "size": 130718721,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 185.227,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/SPs/[VCB-Studio] Persona4 the ANIMATION [NCOP01][Ma10p_1080p][x265_flac].mkv",
-      "size": 156773857
+      "size": 156773857,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/SPs/[VCB-Studio] Persona4 the ANIMATION [NCOP02][Ma10p_1080p][x265_flac].mkv",
-      "size": 159571613
+      "size": 159571613,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.592,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/SPs/[VCB-Studio] Persona4 the ANIMATION [NCOP_EP15][Ma10p_1080p][x265_flac].mkv",
-      "size": 83296589
+      "size": 83296589,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.26,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/SPs/[VCB-Studio] Persona4 the ANIMATION [Ninja Experiment Animation 01][Ma10p_1080p][x265_flac].mkv",
-      "size": 31869507
+      "size": 31869507,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 89.59,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/SPs/[VCB-Studio] Persona4 the ANIMATION [Ninja Experiment Animation 02][Ma10p_1080p][x265_flac].mkv",
-      "size": 54195999
+      "size": 54195999,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 139.14,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/SPs/[VCB-Studio] Persona4 the ANIMATION [Ninja Experiment Animation 03][Ma10p_1080p][x265_flac].mkv",
-      "size": 47067212
+      "size": 47067212,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 118.12,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/SPs/[VCB-Studio] Persona4 the ANIMATION [Ninja Experiment Animation 04][Ma10p_1080p][x265_flac].mkv",
-      "size": 32432213
+      "size": 32432213,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 83.085,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/SPs/[VCB-Studio] Persona4 the ANIMATION [Ninja Experiment Animation 05][Ma10p_1080p][x265_flac].mkv",
-      "size": 89140383
+      "size": 89140383,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 163.665,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/SPs/[VCB-Studio] Persona4 the ANIMATION [Preview01][Ma10p_1080p][x265_flac].mkv",
-      "size": 29581176
+      "size": 29581176,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 31.031,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/SPs/[VCB-Studio] Persona4 the ANIMATION [PV01][Ma10p_1080p][x265_flac].mkv",
-      "size": 93896737
+      "size": 93896737,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 36.537,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/SPs/[VCB-Studio] Persona4 the ANIMATION [PV02][Ma10p_1080p][x265_flac].mkv",
-      "size": 99621282
+      "size": 99621282,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 55.055,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/SPs/[VCB-Studio] Persona4 the ANIMATION [PV03][Ma10p_1080p][x265_flac].mkv",
-      "size": 147697367
+      "size": 147697367,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 66.567,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/SPs/[VCB-Studio] Persona4 the ANIMATION [PV04][Ma10p_1080p][x265_flac].mkv",
-      "size": 130307897
+      "size": 130307897,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 68.57,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/SPs/[VCB-Studio] Persona4 the ANIMATION [PV05][Ma10p_1080p][x265_flac].mkv",
-      "size": 233380802
+      "size": 233380802,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 103.02,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/SPs/[VCB-Studio] Persona4 the ANIMATION [PV06][Ma10p_1080p][x265_flac].mkv",
-      "size": 137143617
+      "size": 137143617,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 116.617,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/SPs/[VCB-Studio] Persona4 the ANIMATION [PV07][Ma10p_1080p][x265_flac].mkv",
-      "size": 275270048
+      "size": 275270048,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 211.211,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the ANIMATION [Ma10p_1080p]/SPs/[VCB-Studio] Persona4 the ANIMATION [Short Animation][Ma10p_1080p][x265_flac].mkv",
-      "size": 31962955
+      "size": 31962955,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 61.061,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the Golden ANIMATION [Ma10p_1080p]/[VCB-Studio] Persona4 the Golden ANIMATION [01][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1414283162
+      "size": 1414283162,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1469.482,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the Golden ANIMATION [Ma10p_1080p]/[VCB-Studio] Persona4 the Golden ANIMATION [01][Ma10p_1080p][x265_flac_aac].sc.ass",
@@ -827,7 +1617,17 @@
     },
     {
       "path": "[VCB-Studio] Persona4 the Golden ANIMATION [Ma10p_1080p]/[VCB-Studio] Persona4 the Golden ANIMATION [02][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1127406242
+      "size": 1127406242,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1469.482,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the Golden ANIMATION [Ma10p_1080p]/[VCB-Studio] Persona4 the Golden ANIMATION [02][Ma10p_1080p][x265_flac_aac].sc.ass",
@@ -839,7 +1639,17 @@
     },
     {
       "path": "[VCB-Studio] Persona4 the Golden ANIMATION [Ma10p_1080p]/[VCB-Studio] Persona4 the Golden ANIMATION [03][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1453575265
+      "size": 1453575265,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1469.482,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the Golden ANIMATION [Ma10p_1080p]/[VCB-Studio] Persona4 the Golden ANIMATION [03][Ma10p_1080p][x265_flac_aac].sc.ass",
@@ -851,7 +1661,17 @@
     },
     {
       "path": "[VCB-Studio] Persona4 the Golden ANIMATION [Ma10p_1080p]/[VCB-Studio] Persona4 the Golden ANIMATION [04][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1043866410
+      "size": 1043866410,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1469.482,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the Golden ANIMATION [Ma10p_1080p]/[VCB-Studio] Persona4 the Golden ANIMATION [04][Ma10p_1080p][x265_flac_aac].sc.ass",
@@ -863,7 +1683,17 @@
     },
     {
       "path": "[VCB-Studio] Persona4 the Golden ANIMATION [Ma10p_1080p]/[VCB-Studio] Persona4 the Golden ANIMATION [05][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1118315737
+      "size": 1118315737,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1469.482,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the Golden ANIMATION [Ma10p_1080p]/[VCB-Studio] Persona4 the Golden ANIMATION [05][Ma10p_1080p][x265_flac_aac].sc.ass",
@@ -875,7 +1705,17 @@
     },
     {
       "path": "[VCB-Studio] Persona4 the Golden ANIMATION [Ma10p_1080p]/[VCB-Studio] Persona4 the Golden ANIMATION [06][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1007815663
+      "size": 1007815663,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1469.482,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the Golden ANIMATION [Ma10p_1080p]/[VCB-Studio] Persona4 the Golden ANIMATION [06][Ma10p_1080p][x265_flac_aac].sc.ass",
@@ -887,7 +1727,17 @@
     },
     {
       "path": "[VCB-Studio] Persona4 the Golden ANIMATION [Ma10p_1080p]/[VCB-Studio] Persona4 the Golden ANIMATION [07][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1139224155
+      "size": 1139224155,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1454.464,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the Golden ANIMATION [Ma10p_1080p]/[VCB-Studio] Persona4 the Golden ANIMATION [07][Ma10p_1080p][x265_flac_aac].sc.ass",
@@ -899,7 +1749,17 @@
     },
     {
       "path": "[VCB-Studio] Persona4 the Golden ANIMATION [Ma10p_1080p]/[VCB-Studio] Persona4 the Golden ANIMATION [08][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1236139692
+      "size": 1236139692,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1454.464,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the Golden ANIMATION [Ma10p_1080p]/[VCB-Studio] Persona4 the Golden ANIMATION [08][Ma10p_1080p][x265_flac_aac].sc.ass",
@@ -911,7 +1771,17 @@
     },
     {
       "path": "[VCB-Studio] Persona4 the Golden ANIMATION [Ma10p_1080p]/[VCB-Studio] Persona4 the Golden ANIMATION [09][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1588580350
+      "size": 1588580350,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1454.464,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the Golden ANIMATION [Ma10p_1080p]/[VCB-Studio] Persona4 the Golden ANIMATION [09][Ma10p_1080p][x265_flac_aac].sc.ass",
@@ -923,7 +1793,17 @@
     },
     {
       "path": "[VCB-Studio] Persona4 the Golden ANIMATION [Ma10p_1080p]/[VCB-Studio] Persona4 the Golden ANIMATION [10][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1419993343
+      "size": 1419993343,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1454.464,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the Golden ANIMATION [Ma10p_1080p]/[VCB-Studio] Persona4 the Golden ANIMATION [10][Ma10p_1080p][x265_flac_aac].sc.ass",
@@ -935,7 +1815,17 @@
     },
     {
       "path": "[VCB-Studio] Persona4 the Golden ANIMATION [Ma10p_1080p]/[VCB-Studio] Persona4 the Golden ANIMATION [11][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1273506084
+      "size": 1273506084,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1454.464,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the Golden ANIMATION [Ma10p_1080p]/[VCB-Studio] Persona4 the Golden ANIMATION [11][Ma10p_1080p][x265_flac_aac].sc.ass",
@@ -947,7 +1837,17 @@
     },
     {
       "path": "[VCB-Studio] Persona4 the Golden ANIMATION [Ma10p_1080p]/[VCB-Studio] Persona4 the Golden ANIMATION [12][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1666597959
+      "size": 1666597959,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1807.829,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the Golden ANIMATION [Ma10p_1080p]/[VCB-Studio] Persona4 the Golden ANIMATION [12][Ma10p_1080p][x265_flac_aac].sc.ass",
@@ -1111,107 +2011,398 @@
     },
     {
       "path": "[VCB-Studio] Persona4 the Golden ANIMATION [Ma10p_1080p]/SPs/[VCB-Studio] Persona4 the Golden ANIMATION [Another End Episode：Thank you Mr. Accomplice][Ma10p_1080p][x265_flac].mkv",
-      "size": 893176486
+      "size": 893176486,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 978.98,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the Golden ANIMATION [Ma10p_1080p]/SPs/[VCB-Studio] Persona4 the Golden ANIMATION [Blu-ray & DVD CM][Ma10p_1080p][x265_flac].mkv",
-      "size": 328443495
+      "size": 328443495,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 299.3,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the Golden ANIMATION [Ma10p_1080p]/SPs/[VCB-Studio] Persona4 the Golden ANIMATION [Blu-ray & DVD Vol.1 CM01][Ma10p_1080p][x265_flac].mkv",
-      "size": 22129091
+      "size": 22129091,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 17.017,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the Golden ANIMATION [Ma10p_1080p]/SPs/[VCB-Studio] Persona4 the Golden ANIMATION [Blu-ray & DVD Vol.1 CM02][Ma10p_1080p][x265_flac].mkv",
-      "size": 22286102
+      "size": 22286102,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 17.017,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the Golden ANIMATION [Ma10p_1080p]/SPs/[VCB-Studio] Persona4 the Golden ANIMATION [CM01][Ma10p_1080p][x265_flac].mkv",
-      "size": 23058801
+      "size": 23058801,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 17.02,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the Golden ANIMATION [Ma10p_1080p]/SPs/[VCB-Studio] Persona4 the Golden ANIMATION [CM02][Ma10p_1080p][x265_flac].mkv",
-      "size": 21694219
+      "size": 21694219,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 17.02,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the Golden ANIMATION [Ma10p_1080p]/SPs/[VCB-Studio] Persona4 the Golden ANIMATION [CM03][Ma10p_1080p][x265_flac].mkv",
-      "size": 21372726
+      "size": 21372726,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 17.02,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the Golden ANIMATION [Ma10p_1080p]/SPs/[VCB-Studio] Persona4 the Golden ANIMATION [CM04][Ma10p_1080p][x265_flac].mkv",
-      "size": 20144527
+      "size": 20144527,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 17.02,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the Golden ANIMATION [Ma10p_1080p]/SPs/[VCB-Studio] Persona4 the Golden ANIMATION [CM05][Ma10p_1080p][x265_flac].mkv",
-      "size": 34256870
+      "size": 34256870,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 32.035,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the Golden ANIMATION [Ma10p_1080p]/SPs/[VCB-Studio] Persona4 the Golden ANIMATION [Mayonaka Live TV][Ma10p_1080p][x265_aac].mkv",
-      "size": 1706695510
+      "size": 1706695510,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 2310.314,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the Golden ANIMATION [Ma10p_1080p]/SPs/[VCB-Studio] Persona4 the Golden ANIMATION [Menu01_01][Ma10p_1080p][x265_flac].mkv",
-      "size": 66020558
+      "size": 66020558,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 86.715,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the Golden ANIMATION [Ma10p_1080p]/SPs/[VCB-Studio] Persona4 the Golden ANIMATION [Menu01_02][Ma10p_1080p][x265_flac].mkv",
-      "size": 42540761
+      "size": 42540761,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 82.085,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the Golden ANIMATION [Ma10p_1080p]/SPs/[VCB-Studio] Persona4 the Golden ANIMATION [Menu02_01][Ma10p_1080p][x265_flac].mkv",
-      "size": 64447352
+      "size": 64447352,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 86.715,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the Golden ANIMATION [Ma10p_1080p]/SPs/[VCB-Studio] Persona4 the Golden ANIMATION [Menu02_02][Ma10p_1080p][x265_flac].mkv",
-      "size": 40157908
+      "size": 40157908,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 82.085,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the Golden ANIMATION [Ma10p_1080p]/SPs/[VCB-Studio] Persona4 the Golden ANIMATION [Menu03_01][Ma10p_1080p][x265_flac].mkv",
-      "size": 64915125
+      "size": 64915125,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 86.715,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the Golden ANIMATION [Ma10p_1080p]/SPs/[VCB-Studio] Persona4 the Golden ANIMATION [Menu03_02][Ma10p_1080p][x265_flac].mkv",
-      "size": 41008695
+      "size": 41008695,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 82.085,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the Golden ANIMATION [Ma10p_1080p]/SPs/[VCB-Studio] Persona4 the Golden ANIMATION [Menu04_01][Ma10p_1080p][x265_flac].mkv",
-      "size": 62671915
+      "size": 62671915,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 86.715,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the Golden ANIMATION [Ma10p_1080p]/SPs/[VCB-Studio] Persona4 the Golden ANIMATION [Menu04_02][Ma10p_1080p][x265_flac].mkv",
-      "size": 38056549
+      "size": 38056549,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 82.085,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the Golden ANIMATION [Ma10p_1080p]/SPs/[VCB-Studio] Persona4 the Golden ANIMATION [Menu05_01][Ma10p_1080p][x265_flac].mkv",
-      "size": 67954789
+      "size": 67954789,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 86.715,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the Golden ANIMATION [Ma10p_1080p]/SPs/[VCB-Studio] Persona4 the Golden ANIMATION [Menu05_02][Ma10p_1080p][x265_flac].mkv",
-      "size": 45406582
+      "size": 45406582,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 82.085,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the Golden ANIMATION [Ma10p_1080p]/SPs/[VCB-Studio] Persona4 the Golden ANIMATION [Menu06_01][Ma10p_1080p][x265_flac].mkv",
-      "size": 62403154
+      "size": 62403154,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 86.715,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the Golden ANIMATION [Ma10p_1080p]/SPs/[VCB-Studio] Persona4 the Golden ANIMATION [Menu06_02][Ma10p_1080p][x265_flac].mkv",
-      "size": 38296876
+      "size": 38296876,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 82.085,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the Golden ANIMATION [Ma10p_1080p]/SPs/[VCB-Studio] Persona4 the Golden ANIMATION [NCED][Ma10p_1080p][x265_flac].mkv",
-      "size": 98727533
+      "size": 98727533,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the Golden ANIMATION [Ma10p_1080p]/SPs/[VCB-Studio] Persona4 the Golden ANIMATION [NCOP][Ma10p_1080p][x265_flac].mkv",
-      "size": 226251663
+      "size": 226251663,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the Golden ANIMATION [Ma10p_1080p]/SPs/[VCB-Studio] Persona4 the Golden ANIMATION [PV01][Ma10p_1080p][x265_flac].mkv",
-      "size": 175571104
+      "size": 175571104,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 112.115,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Persona4 the Golden ANIMATION [Ma10p_1080p]/SPs/[VCB-Studio] Persona4 the Golden ANIMATION [PV02][Ma10p_1080p][x265_flac].mkv",
-      "size": 122384650
+      "size": 122384650,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 85.085,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     }
-  ]
+  ],
+  "local_container_fact_summary": {
+    "container_fact_count": 116,
+    "probe_status_counts": {
+      "available": 116
+    },
+    "duration_seconds_range": [
+      2.878,
+      2310.314
+    ],
+    "duration_seconds_samples": [
+      1703.722,
+      1472.471,
+      1472.49,
+      1472.49,
+      1472.49,
+      1472.49
+    ]
+  },
+  "local_container_fact_source": {
+    "kind": "real_local_media_duration_backfill",
+    "media_root": "H:\\Anime",
+    "probe_media": true,
+    "container_probe": "ffprobe",
+    "embedded_in": "files[].container_facts",
+    "matched_file_count": 303,
+    "matched_video_count": 116,
+    "missing_actual_video_count": 0,
+    "match_stats": {
+      "matched_by_root_path": 303
+    }
+  }
 }

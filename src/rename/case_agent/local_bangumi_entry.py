@@ -25,9 +25,10 @@ from .dossier import build_bounded_case_dossier
 from .query_cards import build_query_cards
 from .audit import summarize_case_agent_snapshot_refs
 from .assignment_expander import expand_bulk_assignment_intents
-from .orchestrator import CaseAgentRunResult, run_local_bangumi_case_agent
-from .mapping_draft import compute_local_span_partition_coverage, summarize_mapping_draft_coverage
+from .mapping_draft import compute_local_span_partition_coverage
 from .mapping_draft import compute_mapping_draft_accounting
+from .pi_runner import PiCaseAgentRunResult, run_pi_case_agent
+from .recipe import recipe_accounting
 from .workspace import CaseEvidenceWorkspace
 from ..local_fact_surface import (
     compact_fact_surface_summary,
@@ -162,6 +163,7 @@ def _verdict_assignment_accounting(final_dossier: Any, final_output: Any) -> dic
         'main_file_count': len(main_refs),
         'mapped_file_count': mapped,
         'excluded_file_count': excluded,
+        'resolved_unmapped_file_count': excluded,
         'manual_review_file_count': manual_review,
         'needs_more_evidence_file_count': needs,
         'unaligned_file_count': unaligned,
@@ -285,33 +287,9 @@ def _config_int_at_least(key: str, default: int, minimum: int) -> int:
 
 
 def _case_agent_round_safety_cap() -> int:
-    # This is a loop guard, not a fixed investigation plan. A case that gets
-    # close to this cap is unhealthy and should be diagnosed by turn audit.
-    return _config_int_at_least('rename_local_bangumi_case_agent_max_rounds', 12, 6)
-
-
-def _case_agent_audit_round_cap_override() -> int | None:
-    raw = cm.get_config('rename_local_bangumi_case_agent_audit_max_rounds')
-    if raw is None:
-        return None
-    try:
-        return max(1, int(raw))
-    except Exception:
-        return None
-
-
-def _orchestrator_context_limits() -> tuple[int, int]:
-    soft = _config_int_at_least(
-        'rename_local_bangumi_orchestrator_agent_context_soft_token_limit',
-        180000,
-        8192,
-    )
-    hard = _config_int_at_least(
-        'rename_local_bangumi_orchestrator_agent_context_hard_token_limit',
-        300000,
-        soft + 1024,
-    )
-    return soft, hard
+    # Pi native mode is bounded by wall-clock timeout, not turn count. Keep the
+    # legacy header field at zero so downstream snapshots do not imply a turn cap.
+    return 0
 
 
 def _episode_structure_from_context(value: object) -> dict[str, Any]:
@@ -333,6 +311,24 @@ def _path_suffix(path: str) -> str:
     if '.' not in name:
         return ''
     return f".{name.rsplit('.', 1)[-1].casefold()}"
+
+
+def _recipe_path_id(path: str) -> str:
+    return str(path or '').replace('\\', '/').strip().lstrip('./')
+
+
+def _subject_identity_ref(subject_id: int, fallback_index: int) -> str:
+    if int(subject_id or 0) > 0:
+        return f'subject:{int(subject_id)}'
+    return f'subject:context:{fallback_index}'
+
+
+def _episode_identity_ref(subject_ref: str, episode_id: int, sort: int, fallback_index: int) -> str:
+    if int(episode_id or 0) > 0:
+        return f'episode:{int(episode_id)}'
+    if subject_ref:
+        return f'{subject_ref}:sort:{int(sort or 0)}'
+    return f'episode:context:{fallback_index}'
 
 
 def _as_bool(value: object, default: bool = False) -> bool:
@@ -441,7 +437,7 @@ def build_local_bangumi_cards_view(local_evidence, bangumi_contexts: list[dict[s
             })
             continue
 
-        ref = f'LF{visible_index}'
+        ref = _recipe_path_id(relative_path or name) or f'local-file-{visible_index}'
         visible_index += 1
         cluster_ref = cluster_refs.setdefault(parent_display, f'LC{len(cluster_refs) + 1}')
         cluster_members.setdefault(parent_display, []).append(ref)
@@ -491,14 +487,16 @@ def build_local_bangumi_cards_view(local_evidence, bangumi_contexts: list[dict[s
         structure = _episode_structure_from_context(context)
         if not structure:
             continue
-        subject_ref = f'BS{subject_index}'
-        group_ref = f'BR{subject_index}'
+        subject_id = int(structure.get('subject_id') or structure.get('id') or 0)
+        subject_ref = _subject_identity_ref(subject_id, subject_index)
+        group_ref = f'{subject_ref}:episodes'
         episodes = [item for item in (structure.get('episodes') or []) if isinstance(item, dict)]
         member_refs: list[str] = []
         bangumi_cards.append({
+            'card_kind': 'subject',
             'ref': subject_ref,
             'entity_ref': subject_ref,
-            'subject_id': int(structure.get('subject_id') or structure.get('id') or 0),
+            'subject_id': subject_id,
             'title': structure.get('title') or structure.get('subject_title') or '',
             'subject_title': structure.get('subject_title') or structure.get('title') or '',
             'name': structure.get('name') or '',
@@ -510,15 +508,17 @@ def build_local_bangumi_cards_view(local_evidence, bangumi_contexts: list[dict[s
             'source_role': structure.get('source_role') or '',
         })
         for episode in episodes:
-            item_ref = f'BE{episode_ref_index}'
+            episode_id = int(episode.get('episode_id') or episode.get('id') or 0)
+            item_ref = _episode_identity_ref(subject_ref, episode_id, int(episode.get('sort') or 0), episode_ref_index)
             episode_ref_index += 1
             member_refs.append(item_ref)
             bangumi_cards.append({
+                'card_kind': 'episode',
                 'ref': item_ref,
                 'item_ref': item_ref,
                 'group_ref': group_ref,
                 'entity_ref': subject_ref,
-                'episode_id': int(episode.get('episode_id') or episode.get('id') or 0),
+                'episode_id': episode_id,
                 'kind': episode.get('kind') or episode.get('type') or 'regular',
                 'sort': int(episode.get('sort') or 0),
                 'ep': int(episode.get('ep') or episode.get('sort') or 0),
@@ -536,6 +536,7 @@ def build_local_bangumi_cards_view(local_evidence, bangumi_contexts: list[dict[s
             for item in episodes
         ]
         bangumi_cards.append({
+            'card_kind': 'group',
             'ref': group_ref,
             'group_ref': group_ref,
             'entity_ref': subject_ref,
@@ -594,45 +595,34 @@ def _build_workspace(*, local_evidence, bangumi_contexts: list[dict[str, object]
     ]
     local_clusters = [LocalClusterCard(ref=card['ref'], cluster_name=card.get('display_title') or card.get('title') or '', title_cues=list(card.get('title_tokens') or []), file_refs=list(card.get('member_refs') or []), cluster_kind='mixed' if card.get('kind') in {'movie_like', 'spinoff_like'} else 'local', summary=card.get('display_title') or '') for card in (views.local_bangumi_direct_view.get('local_cluster_cards') or []) if isinstance(card, dict) and card.get('ref')]
     bangumi_cards = [card for card in (views.local_bangumi_direct_view.get('bangumi_cards') or []) if isinstance(card, dict)]
-    bangumi_subjects = [BangumiSubjectCard(ref=str(card.get('ref') or card.get('entity_ref') or ''), subject_id=int(card.get('subject_id') or 0), subject_type='anime', title=card.get('title') or card.get('subject_title') or '', name=card.get('name') or '', name_cn=card.get('name_cn') or '', summary_short=card.get('summary_short') or '', eps=int(card.get('episode_count') or 0), total_episodes=int(card.get('episode_count') or 0), source_form_hint=card.get('source_form_hint') or '', relation_to_main=card.get('relation_to_main') or '', source_role=card.get('source_role') or '') for card in bangumi_cards if str(card.get('ref') or card.get('entity_ref') or '').startswith('BS')]
-    bangumi_groups = [BangumiGroupCard(ref=str(card.get('ref') or card.get('group_ref') or ''), group_kind='special_group' if str(card.get('kind') or '').endswith('special') else 'season_group', member_refs_visible=list(card.get('member_refs') or []), sort_start=int((card.get('sort_range') or [0, 0])[0] if card.get('sort_range') else 0), sort_end=int((card.get('sort_range') or [0, 0])[-1] if card.get('sort_range') else 0), title_examples=list(card.get('title_examples') or []), subject_refs=[str(card.get('entity_ref') or '')] if card.get('entity_ref') else [], item_refs=list(card.get('member_refs_sample') or [])) for card in bangumi_cards if str(card.get('ref') or card.get('group_ref') or '').startswith('BR')]
-    bangumi_items = [BangumiItemCard(ref=str(card.get('ref') or card.get('item_ref') or ''), item_kind='episode' if str(card.get('kind') or '') != 'special' else 'special', episode_id=int(card.get('episode_id') or 0), kind=card.get('kind') or '', type=card.get('kind') or '', sort=int(card.get('sort') or 0), ep=int(card.get('ep') or 0), subject_ref=card.get('entity_ref') or '', title=card.get('title') or '', name=card.get('name') or '', name_cn=card.get('name_cn') or '', duration=str(card.get('runtime') or ''), desc_short=card.get('summary_short') or '', synthetic=bool(card.get('synthetic')), source_form_hint=card.get('source_form_hint') or '', relation_to_main=card.get('relation_to_main') or '', parent_refs=[str(card.get('group_ref') or '')] if card.get('group_ref') else []) for card in bangumi_cards if str(card.get('ref') or card.get('item_ref') or '').startswith('BE')]
+    bangumi_subjects = [BangumiSubjectCard(ref=str(card.get('ref') or card.get('entity_ref') or ''), subject_id=int(card.get('subject_id') or 0), subject_type='anime', title=card.get('title') or card.get('subject_title') or '', name=card.get('name') or '', name_cn=card.get('name_cn') or '', summary_short=card.get('summary_short') or '', eps=int(card.get('episode_count') or 0), total_episodes=int(card.get('episode_count') or 0), source_form_hint=card.get('source_form_hint') or '', relation_to_main=card.get('relation_to_main') or '', source_role=card.get('source_role') or '') for card in bangumi_cards if card.get('card_kind') == 'subject']
+    bangumi_groups = [BangumiGroupCard(ref=str(card.get('ref') or card.get('group_ref') or ''), group_kind='special_group' if str(card.get('kind') or '').endswith('special') else 'season_group', member_refs_visible=list(card.get('member_refs') or []), sort_start=int((card.get('sort_range') or [0, 0])[0] if card.get('sort_range') else 0), sort_end=int((card.get('sort_range') or [0, 0])[-1] if card.get('sort_range') else 0), title_examples=list(card.get('title_examples') or []), subject_refs=[str(card.get('entity_ref') or '')] if card.get('entity_ref') else [], item_refs=list(card.get('member_refs_sample') or [])) for card in bangumi_cards if card.get('card_kind') == 'group']
+    bangumi_items = [BangumiItemCard(ref=str(card.get('ref') or card.get('item_ref') or ''), item_kind='episode' if str(card.get('kind') or '') != 'special' else 'special', episode_id=int(card.get('episode_id') or 0), kind=card.get('kind') or '', type=card.get('kind') or '', sort=int(card.get('sort') or 0), ep=int(card.get('ep') or 0), subject_ref=card.get('entity_ref') or '', title=card.get('title') or '', name=card.get('name') or '', name_cn=card.get('name_cn') or '', duration=str(card.get('runtime') or ''), desc_short=card.get('summary_short') or '', synthetic=bool(card.get('synthetic')), source_form_hint=card.get('source_form_hint') or '', relation_to_main=card.get('relation_to_main') or '', parent_refs=[str(card.get('group_ref') or '')] if card.get('group_ref') else []) for card in bangumi_cards if card.get('card_kind') == 'episode']
     derived_main_file_refs = list(views.ref_map.main_file_refs or views.ref_map.file_refs or [card.ref for card in local_files if card.is_main])
     query_cards = build_query_cards(local_files, local_clusters, bangumi_subjects)
     provenance_cards = [ProvenanceCard(ref='PV1', source_operation='local_bangumi_case_agent_entry', raw_response_count=len(bangumi_items), parent_refs=[card.ref for card in local_files[:2]])]
-    contract = CaseContract(summary='Local->Bangumi case agent mapping workspace', expected_outcome='unknown', main_file_refs=derived_main_file_refs, supplemental_file_refs=list(views.ref_map.supplemental_file_refs or []), allowed_file_refs=list(views.ref_map.file_refs or [card.ref for card in local_files]), visible_target_refs=[card.ref for card in bangumi_items], coverage_rule='main files must be covered exactly once or fail closed', duplicate_rule='bangumi item refs must not be duplicated', support_rule='only visible bangumi cards may be referenced')
+    contract = CaseContract(summary='Local->Bangumi case agent recipe workspace', expected_outcome='unknown', main_file_refs=derived_main_file_refs, supplemental_file_refs=list(views.ref_map.supplemental_file_refs or []), allowed_file_refs=list(views.ref_map.file_refs or [card.ref for card in local_files]), visible_target_refs=[card.ref for card in bangumi_items], coverage_rule='visible source_path values must be covered exactly once or fail closed', duplicate_rule='Bangumi episode targets must not be duplicated', support_rule='final recipe must use source_path strings and Bangumi IDs')
     round_safety_cap = _case_agent_round_safety_cap()
     header = CaseHeader(case_id=f'local-bangumi-{getattr(local_evidence, "source_path", "") or "mapping"}', max_rounds=round_safety_cap, status='open')
-    budget = CaseBudget(max_judge_rounds=header.max_rounds, max_evidence_batches=_config_int_at_least('rename_local_bangumi_case_agent_max_evidence_batches', 12, 12), max_issue_response_rounds=_config_int('rename_local_bangumi_case_agent_max_issue_response_rounds', 1), max_requests_per_batch=_config_int('rename_local_bangumi_case_agent_max_requests_per_batch', 8))
+    budget = CaseBudget(
+        max_judge_rounds=header.max_rounds,
+        max_evidence_batches=_config_int_at_least('rename_local_bangumi_case_agent_max_evidence_batches', 12, 12),
+        max_issue_response_rounds=_config_int('rename_local_bangumi_case_agent_max_issue_response_rounds', 1),
+        max_requests_per_batch=_config_int('rename_local_bangumi_case_agent_max_requests_per_batch', 8),
+        max_api_calls_per_case=240,
+        max_subject_searches=48,
+        max_search_results_per_query=8,
+        max_related_depth=6,
+        max_new_subject_cards=240,
+        max_new_episode_cards=2000,
+    )
     local_span_cards = _build_raw_local_span_shells(local_files, contract)
     workspace = CaseEvidenceWorkspace.from_cards(header=header, budget=budget, contract=contract, local_files=local_files, local_clusters=local_clusters, local_span_cards=local_span_cards, bangumi_subjects=bangumi_subjects, bangumi_groups=bangumi_groups, bangumi_items=bangumi_items, query_cards=query_cards, provenance_cards=provenance_cards)
-    filtered_files = list(getattr(views.ref_map, 'filtered_files', []) or [])
     local_fact_summary = compact_fact_surface_summary(getattr(local_evidence, 'fact_surface', None))
     fact_audit = {
         'note': 'local_fact_surface_projection',
         'fact_surface_summary': local_fact_summary,
     } if int(local_fact_summary.get('file_fact_count') or 0) > 0 else {}
-    if filtered_files:
-        object.__setattr__(
-            workspace,
-            'judge_request_audits',
-            [
-                *list(getattr(workspace, 'judge_request_audits', []) or []),
-                {
-                    'note': 'deterministic_local_supplemental_projection',
-                    'filtered_file_count': len(filtered_files),
-                    'filtered_video_count': sum(1 for file in filtered_files if bool(file.get('is_video'))),
-                    'filtered_file_samples': [
-                        {
-                            'path': str(file.get('relative_path') or file.get('path') or ''),
-                            'rule_id': str(file.get('rule_id') or ''),
-                            'reason_kind': str(file.get('reason_kind') or ''),
-                        }
-                        for file in filtered_files[:12]
-                    ],
-                },
-            ],
-        )
     if fact_audit:
         object.__setattr__(
             workspace,
@@ -680,482 +670,204 @@ def _build_raw_local_span_shells(local_files: list[LocalFileCard], contract: Cas
     return [package, child]
 
 
-def run_local_bangumi_case_agent_mapping(*, local_evidence, bangumi_contexts: list[dict[str, object]], ai_client, source_path, bangumi_client=None) -> dict[str, Any]:
-    workspace = _build_workspace(
-        local_evidence=local_evidence,
-        bangumi_contexts=bangumi_contexts,
-    )
-    effective_bangumi_client = bangumi_client if bangumi_client is not None else BangumiClient()
-    orchestrator_soft_limit, orchestrator_hard_limit = _orchestrator_context_limits()
-    result: CaseAgentRunResult = run_local_bangumi_case_agent(
-        workspace,
-        ai_client,
-        effective_bangumi_client,
-        max_rounds=_case_agent_audit_round_cap_override(),
-        orchestrator_context_soft_token_limit=orchestrator_soft_limit,
-        orchestrator_context_hard_token_limit=orchestrator_hard_limit,
-    )
-    child_results = list(getattr(result, 'child_results', []) or [])
-    def _walk_child_results(children):
-        for child in list(children or []):
-            yield child
-            yield from _walk_child_results(list(getattr(child, 'child_results', []) or []))
-    all_child_results = list(_walk_child_results(child_results))
-    child_request_audits: list[dict[str, Any]] = []
-    for child in all_child_results:
-        child_workspace = getattr(child, 'final_workspace', None)
-        child_case_id = str(getattr(child, 'case_id', '') or '')
-        for audit in list(getattr(child_workspace, 'judge_request_audits', []) or []):
-            if not isinstance(audit, dict):
-                continue
-            child_audit = dict(audit)
-            child_audit.setdefault('child_case_id', child_case_id)
-            child_request_audits.append(child_audit)
-    bounded = build_bounded_case_dossier(result.final_workspace)
-    final_output = getattr(result, 'final_output', None)
-    final_verifier_result = getattr(result, 'final_verifier_result', None)
-    evidence_response_refs = [ref for batch in result.evidence_batches for req in (getattr(batch, 'request_results', []) or []) for ref in (getattr(req, 'response_refs', []) or []) if ref]
-    parent_request_audits = list(getattr(result.final_workspace, 'judge_request_audits', []) or [])
-    request_audits = [*parent_request_audits, *child_request_audits]
-    deterministic_projection_audits = [
-        audit
-        for audit in request_audits
-        if isinstance(audit, dict)
-        and str(audit.get('note') or '') == 'deterministic_local_supplemental_projection'
-    ]
-    deterministic_projection_audit = deterministic_projection_audits[-1] if deterministic_projection_audits else {}
-    selected_menu_request_ids = []
-    unknown_menu_request_ids = []
-    evidence_menu_request_ids = []
-    evidence_menu_span_request_ids = []
-    resolved_menu_request_count = 0
-    legacy_raw_request_count = 0
-    normalized_legacy_request_count = 0
-    for audit in request_audits:
-        if not isinstance(audit, dict):
-            continue
-        if not _is_case_judge_audit(audit):
-            continue
-        evidence_menu_request_ids.extend([str(v) for v in (audit.get('evidence_menu_request_ids') or []) if str(v)])
-        evidence_menu_span_request_ids.extend([str(v) for v in (audit.get('evidence_menu_span_request_ids') or []) if str(v)])
-        selected_menu_request_ids.extend([str(v) for v in (audit.get('selected_menu_request_ids') or []) if str(v)])
-        unknown_menu_request_ids.extend([str(v) for v in (audit.get('unknown_menu_request_ids') or []) if str(v)])
-        resolved_menu_request_count += int(audit.get('resolved_menu_request_count') or audit.get('menu_request_count') or 0)
-        legacy_raw_request_count += int(audit.get('legacy_raw_request_count') or 0)
-        normalized_legacy_request_count += int(audit.get('normalized_legacy_request_count') or 0)
-    seen_detail_refs = list(dict.fromkeys([*(getattr(result.final_workspace, 'seen_detail_refs', []) or []), *evidence_response_refs]))
+def _pi_case_agent_audits(result: PiCaseAgentRunResult) -> list[dict[str, Any]]:
+    audits = list(getattr(result.final_workspace, 'judge_request_audits', []) or [])
+    audits.append({
+        'note': 'pi_case_agent_session_summary',
+        'case_agent_mode': 'pi_case_agent',
+        'pi_run_dir': str(result.run_dir),
+        'pi_case_id': result.case_id,
+        'pi_command': result.pi_command,
+        'runtime_command': list(result.runtime_command or []),
+        'runtime_returncode': result.runtime_returncode,
+        'tool_trace_count': len(result.tool_trace),
+        'pi_tool_call_counts': dict(result.tool_call_counts),
+        'pi_tool_sequence': list(result.tool_sequence),
+        'submit_rejection_count': int(result.submit_rejection_count or 0),
+    })
+    for row in result.tool_trace:
+        result_summary = dict(row.get('result_summary') or {})
+        audits.append({
+            'note': 'pi_case_agent_tool_call',
+            'case_agent_mode': 'pi_case_agent',
+            'tool_name': str(row.get('tool') or ''),
+            'accepted': bool(result_summary.get('accepted')) if 'accepted' in result_summary else bool(row.get('ok')),
+            'elapsed_ms': int(row.get('elapsed_ms') or 0),
+            'result_summary': result_summary,
+        })
+    return audits
+
+
+def _build_pi_case_agent_snapshot(result: PiCaseAgentRunResult) -> dict[str, Any]:
+    final_workspace = result.final_workspace
+    final_output = result.final_output
+    final_verifier_result = result.final_verifier_result
+    final_dossier = final_workspace.to_dossier(round_context='snapshot')
+    bounded = build_bounded_case_dossier(final_dossier)
     initial_projection = _initial_projection_for_snapshot(bounded)
-    request_audits = [*parent_request_audits, *child_request_audits]
+    request_audits = _pi_case_agent_audits(result)
+    evidence_response_refs = [
+        ref
+        for batch in result.evidence_batches
+        for req in (getattr(batch, 'request_results', []) or [])
+        for ref in (getattr(req, 'response_refs', []) or [])
+        if ref
+    ]
+    seen_detail_refs = list(dict.fromkeys([*(getattr(final_workspace, 'seen_detail_refs', []) or []), *evidence_response_refs]))
+    local_span_cards = list(getattr(final_workspace, 'local_span_cards', []) or [])
+    bangumi_span_cards = list(getattr(final_dossier, 'bangumi_span_cards', []) or [])
+    local_coverage = compute_local_span_partition_coverage(final_workspace, None)
+    compiled_plan = result.compiled_plan
+    organize_recipe = result.organize_recipe
+    if compiled_plan is not None:
+        recipe_metrics = recipe_accounting(compiled_plan)
+        recipe_assignments = list(compiled_plan.assignments or [])
+        recipe_main_paths = list(compiled_plan.main_paths or [])
+        recipe_covered_paths = list(compiled_plan.covered_paths or [])
+        recipe_uncovered_paths = list(compiled_plan.uncovered_paths or [])
+        recipe_duplicate_coverage_paths = list(compiled_plan.duplicate_coverage_paths or [])
+        recipe_duplicate_target_keys = list(compiled_plan.duplicate_target_keys or [])
+    else:
+        recipe_assignments = []
+        recipe_main_paths = [str(card.path).replace('\\', '/') for card in final_workspace.local_files if bool(getattr(card, 'is_main', False))]
+        recipe_covered_paths = []
+        recipe_uncovered_paths = recipe_main_paths if result.status not in {'fail_closed'} else []
+        recipe_duplicate_coverage_paths = []
+        recipe_duplicate_target_keys = []
+        recipe_metrics = {
+            'recipe_rule_count': 0,
+            'main_path_count': len(recipe_main_paths),
+            'matched_path_count': 0,
+            'mapped_path_count': 0,
+            'mapped_file_count': 0,
+            'mapped_target_episode_count': 0,
+            'single_file_multi_episode_count': 0,
+            'excluded_path_count': 0,
+            'unresolved_path_count': len(recipe_uncovered_paths),
+            'uncovered_path_count': len(recipe_uncovered_paths),
+            'duplicate_coverage_count': 0,
+            'duplicate_target_count': 0,
+            'accepted_accounting_ready': result.status == 'fail_closed',
+        }
+    mapping_draft_metrics = {
+        'mapping_draft_row_count': 0,
+        'mapping_draft_local_coverage_count': 0,
+        'mapping_draft_missing_main_count': 0,
+        'mapping_draft_open_count': 0,
+        'mapping_draft_proposed_count': 0,
+        'mapping_draft_verified_count': 0,
+        'mapping_draft_unresolved_count': 0,
+        'mapping_draft_patch_count': 0,
+        'span_mapping_patch_count': 0,
+        'candidate_comparison_count': 0,
+    }
+    target_span_requests = [
+        req
+        for batch in result.evidence_batches
+        for req in (getattr(batch, 'request_results', []) or [])
+        if str(getattr(req, 'request_type', '') or '').endswith(('span', 'window'))
+    ]
+    case_agent_error_kind = next((str(err).split('=', 1)[1] for err in result.errors if str(err).startswith('error_kind=')), '')
     local_package_analysis_audit = {
         'call_name': 'LocalPackageAnalysis',
         'skipped': True,
-        'reason': 'query_composer_orchestrated_main_path',
+        'reason': 'pi_case_agent_mapping_only_path',
     }
-    if request_audits:
-        top_config = request_audits[-1].get('configured_interface', 'unknown')
-        top_actual = request_audits[-1].get('actual_interface', 'unknown')
-        top_streaming = request_audits[-1].get('streaming', 'unknown')
-    else:
-        top_config = top_actual = top_streaming = 'unknown'
-    include_full_dump = _snapshot_debug_enabled()
-    case_judge_audits = [a for a in request_audits if isinstance(a, dict) and _is_case_judge_audit(a)]
-    final_dossier = None
-    if hasattr(result.final_workspace, 'to_dossier'):
-        try:
-            final_dossier = result.final_workspace.to_dossier(round_context='snapshot')
-        except Exception:
-            final_dossier = None
-    local_span_cards = list(getattr(result.final_workspace, 'local_span_cards', []) or [])
-    bangumi_span_cards = list(getattr(final_dossier, 'bangumi_span_cards', []) or []) if final_dossier is not None else list(getattr(result.final_workspace, 'bangumi_span_cards', []) or [])
-    local_span_count = len(local_span_cards)
-    span_rows_with_candidates = 0
-    span_rows_without_candidates = 0
-    planned_span_request_count = 0
-    selected_span_request_count = 0
-    completed_span_request_count = 0
-    local_coverage = compute_local_span_partition_coverage(result.final_workspace, getattr(result.final_workspace, 'mapping_draft', None))
-    draft_coverage = summarize_mapping_draft_coverage(result.final_workspace.to_dossier(round_context='snapshot'), getattr(result.final_workspace, 'mapping_draft', None) or MappingDraft()) if getattr(result.final_workspace, 'mapping_draft', None) is not None else None
-    local_span_main_file_count = int(local_coverage['main_file_count'])
-    for card in local_span_cards:
-        candidates = list(getattr(card, 'candidate_refs', []) or [])
-        if candidates:
-            span_rows_with_candidates += 1
-        else:
-            span_rows_without_candidates += 1
-        planned_span_request_count += int(getattr(card, 'planned_span_request_count', 0) or 0)
-        selected_span_request_count += int(getattr(card, 'selected_span_request_count', 0) or 0)
-        completed_span_request_count += int(getattr(card, 'completed_span_request_count', 0) or 0)
-    local_child_span_count = int(local_coverage['local_child_span_count'])
-    local_span_covered_main_count = int(local_coverage.get('span_covered_main_file_count', local_coverage['covered_main_file_count']))
-    local_span_missing_main_count = int(local_coverage.get('span_missing_main_file_count', local_coverage['missing_main_file_count']))
-    local_span_overlap_count = int(local_coverage.get('span_overlap_count', local_coverage['overlap_count']))
-    local_span_partition_complete = bool(local_coverage.get('span_partition_complete', local_coverage['partition_complete']))
-    bangumi_span_count = len(bangumi_span_cards)
-    detail_equivalent_target_span_count = sum(1 for card in bangumi_span_cards if bool(getattr(card, 'detail_equivalent', False)))
-    span_alignment_claim_count = len([a for a in case_judge_audits if any(str(a.get(k) or '').strip() for k in ('action_actual', 'action_expected', 'summary'))])
-    bulk_assignment_intent_count = _count_bulk_assignment_intents(final_output, final_verifier_result, result)
-    mapping_draft_metrics = _count_mapping_draft_metrics(result, final_output, final_verifier_result)
-    accounting = compute_mapping_draft_accounting(getattr(result.final_workspace, 'mapping_draft', None), result.final_workspace) if getattr(result.final_workspace, 'mapping_draft', None) is not None else None
-    expanded_assignment_count = mapping_draft_metrics['expanded_assignment_count']
-    target_span_requests = [req for batch in result.evidence_batches for req in (getattr(batch, 'request_results', []) or []) if str(getattr(req, 'request_type', '') or '').endswith('span') or str(getattr(req, 'request_type', '') or '').endswith('window')]
-    actual_target_span_request_count = len(target_span_requests)
-    recommended_target_span_request_count = len(target_span_requests)
-    accepted_target_span_request_count = len([req for req in target_span_requests if bool(getattr(req, 'accepted', False))])
-    rejected_target_span_request_count = len([req for req in target_span_requests if not bool(getattr(req, 'accepted', False))])
-    rejected_target_span_reason_samples = list(dict.fromkeys([
-        '; '.join(str(note or '') for note in list(getattr(req, 'notes', []) or []) if str(note or ''))[:160]
-        for req in target_span_requests
-        if not bool(getattr(req, 'accepted', False))
-    ]))[:8]
-    subject_search_attempted_count = len([req for batch in result.evidence_batches for req in (getattr(batch, 'request_results', []) or []) if str(getattr(req, 'request_type', '') or '') == 'subject_search'])
-    episode_list_attempted_count = len([req for batch in result.evidence_batches for req in (getattr(batch, 'request_results', []) or []) if str(getattr(req, 'request_type', '') or '') == 'episode_list'])
-    deferred_evidence_intent_count = sum(int(audit.get('deferred_evidence_intent_count') or 0) for audit in request_audits if isinstance(audit, dict))
-    target_span_blocked_by_missing_items_count = sum(int(audit.get('target_span_blocked_by_missing_items_count') or 0) for audit in request_audits if isinstance(audit, dict))
-    case_briefing = getattr(result.final_workspace, 'case_briefing', None)
-    investigation_notebook = getattr(result.final_workspace, 'investigation_notebook', None)
-    case_resolution_ledger = getattr(result.final_workspace, 'case_resolution_ledger', None)
-    ledger_rows = list(getattr(case_resolution_ledger, 'rows', []) or []) if case_resolution_ledger is not None else []
-    ledger_outcome_counts: dict[str, int] = {}
-    for row in ledger_rows:
-        outcome = str(getattr(row, 'outcome', '') or 'unknown')
-        ledger_outcome_counts[outcome] = ledger_outcome_counts.get(outcome, 0) + 1
-    ledger_result_audits = [
-        audit for audit in request_audits
-        if isinstance(audit, dict) and str(audit.get('note') or '') == 'orchestrator_case_resolution_ledger_result'
-    ]
-    ledger_blocked_row_count = sum(int(audit.get('blocked_ledger_row_count') or 0) for audit in ledger_result_audits)
-    ledger_compiled_patch_count = sum(int(audit.get('compiled_patch_count') or 0) for audit in ledger_result_audits)
-    ledger_requested_evidence_count = sum(len(list(audit.get('requested_evidence') or [])) for audit in ledger_result_audits)
-    briefing_agent_applied = any(isinstance(audit, dict) and str(audit.get('note') or '') == 'case_briefing_agent_applied' for audit in request_audits)
-    case_understanding_applied = any(isinstance(audit, dict) and str(audit.get('note') or '') == 'case_understanding_applied' for audit in request_audits)
-    notebook_open_questions = [
-        item for item in list(getattr(investigation_notebook, 'open_questions', []) or [])
-        if str(getattr(item, 'status', '') or '') == 'open'
-    ] if investigation_notebook is not None else []
-    human_next_action_blocked_count = sum(
-        int(audit.get('human_next_action_blocked_no_new_evidence_count') or 0)
-        for audit in request_audits
-        if isinstance(audit, dict)
-    )
-    child_briefing_count = sum(
-        1
-        for child in all_child_results
-        if getattr(getattr(child, 'final_workspace', None), 'case_briefing', None) is not None
-    )
-    planning_output = getattr(result, 'planning_output', None)
-    orchestrator_call_audits = [
-        audit for audit in request_audits
-        if isinstance(audit, dict) and str(audit.get('note') or '') == 'orchestrator_agent_called'
-    ]
-    root_orchestrator_session_summary = next(
-        (
-            audit for audit in reversed(parent_request_audits)
-            if isinstance(audit, dict) and str(audit.get('note') or '') == 'orchestrator_agent_session_summary'
-        ),
-        None,
-    )
-    orchestrator_session_summaries = [
-        audit for audit in request_audits
-        if isinstance(audit, dict) and str(audit.get('note') or '') == 'orchestrator_agent_session_summary'
-    ]
-    child_orchestrator_session_summaries = [
-        {
-            'child_case_id': str(audit.get('child_case_id') or ''),
-            'orchestrator_turn_count': int(audit.get('orchestrator_turn_count') or 0),
-            'orchestrator_tool_sequence': [
-                str(tool_name)
-                for tool_name in list(audit.get('orchestrator_tool_sequence') or [])
-                if str(tool_name)
-            ][:32],
-            'tool_rejection_count': int(audit.get('tool_rejection_count') or 0),
-            'near_turn_limit_unhealthy_count': int(audit.get('near_turn_limit_unhealthy_count') or 0),
-            'stall_suspected_count': int(audit.get('stall_suspected_count') or 0),
-            'consecutive_stall_count': int(audit.get('consecutive_stall_count') or 0),
-            'compact_count': int(audit.get('compact_count') or 0),
-            'session_mode': str(audit.get('session_mode') or ''),
-            'http_session_id': str(audit.get('http_session_id') or ''),
-        }
-        for audit in orchestrator_session_summaries
-        if isinstance(audit, dict) and str(audit.get('child_case_id') or '')
-    ]
-    orchestrator_session_summary = next(
-        (
-            audit for audit in reversed(request_audits)
-            if isinstance(audit, dict) and str(audit.get('note') or '') == 'orchestrator_agent_session_summary'
-        ),
-        None,
-    )
-    orchestrator_tool_sequence = [
-        str(audit.get('tool_name') or '')
-        for audit in orchestrator_call_audits
-        if str(audit.get('tool_name') or '')
-    ]
-    root_orchestrator_tool_sequence: list[str] = []
-    if isinstance(root_orchestrator_session_summary, dict) and isinstance(root_orchestrator_session_summary.get('orchestrator_tool_sequence'), list):
-        root_orchestrator_tool_sequence = [
-            str(tool_name)
-            for tool_name in list(root_orchestrator_session_summary.get('orchestrator_tool_sequence') or [])
-            if str(tool_name)
-        ]
-    orchestrator_tool_call_counts: dict[str, int] = {}
-    for tool_name in orchestrator_tool_sequence:
-        orchestrator_tool_call_counts[tool_name] = orchestrator_tool_call_counts.get(tool_name, 0) + 1
-    root_orchestrator_tool_call_counts: dict[str, int] = {}
-    if isinstance(root_orchestrator_session_summary, dict) and isinstance(root_orchestrator_session_summary.get('orchestrator_tool_call_counts'), dict):
-        root_orchestrator_tool_call_counts = {
-            str(key): int(value or 0)
-            for key, value in dict(root_orchestrator_session_summary.get('orchestrator_tool_call_counts') or {}).items()
-        }
-    orchestrator_tool_rejection_count = sum(
-        1
-        for audit in request_audits
-        if isinstance(audit, dict)
-        and str(audit.get('note') or '') == 'orchestrator_tool_selected'
-        and not bool(audit.get('accepted'))
-    )
-    if isinstance(orchestrator_session_summary, dict) and orchestrator_session_summary.get('tool_rejection_count') is not None:
-        orchestrator_tool_rejection_count = int(orchestrator_session_summary.get('tool_rejection_count') or 0)
-    near_turn_limit_unhealthy_count = sum(
-        int(audit.get('near_turn_limit_unhealthy_count') or 0)
-        for audit in orchestrator_session_summaries
-        if isinstance(audit, dict)
-    )
-    stall_suspected_count = sum(
-        int(audit.get('stall_suspected_count') or 0)
-        for audit in orchestrator_session_summaries
-        if isinstance(audit, dict)
-    )
-    if isinstance(orchestrator_session_summary, dict):
-        near_turn_limit_unhealthy_count = int(orchestrator_session_summary.get('near_turn_limit_unhealthy_count') or near_turn_limit_unhealthy_count)
-        stall_suspected_count = int(orchestrator_session_summary.get('stall_suspected_count') or stall_suspected_count)
-    orchestrator_compact_count = sum(
-        1
-        for audit in orchestrator_call_audits
-        if bool(audit.get('compacted'))
-    )
-    if isinstance(orchestrator_session_summary, dict) and orchestrator_session_summary.get('compact_count') is not None:
-        orchestrator_compact_count = int(orchestrator_session_summary.get('compact_count') or 0)
-    orchestrator_turn_count = len(orchestrator_call_audits)
-    root_orchestrator_turn_count = 0
-    if isinstance(root_orchestrator_session_summary, dict) and root_orchestrator_session_summary.get('orchestrator_turn_count') is not None:
-        root_orchestrator_turn_count = int(root_orchestrator_session_summary.get('orchestrator_turn_count') or 0)
-    context_soft_limit_hit_count = sum(1 for audit in orchestrator_call_audits if int(audit.get('context_soft_limit_hit_count') or 0) > 0)
-    context_hard_limit_hit_count = sum(1 for audit in orchestrator_call_audits if int(audit.get('context_hard_limit_hit_count') or 0) > 0)
-    if isinstance(orchestrator_session_summary, dict):
-        context_soft_limit_hit_count = int(orchestrator_session_summary.get('context_soft_limit_hit_count') or context_soft_limit_hit_count)
-        context_hard_limit_hit_count = int(orchestrator_session_summary.get('context_hard_limit_hit_count') or context_hard_limit_hit_count)
-    latest_orchestrator_call_audit = orchestrator_call_audits[-1] if orchestrator_call_audits else {}
-    orchestrator_session_mode = ''
-    orchestrator_provider_session_enabled = False
-    orchestrator_provider_response_id = ''
-    orchestrator_provider_conversation_id = ''
-    orchestrator_http_session_id = ''
-    orchestrator_prompt_cache_key = ''
-    orchestrator_prompt_cache_retention = ''
-    orchestrator_provider_cached_input_tokens = 0
-    orchestrator_usage_input_tokens = 0
-    orchestrator_stable_prefix_estimated_tokens = 0
-    orchestrator_turn_tail_estimated_tokens = 0
-    if isinstance(latest_orchestrator_call_audit, dict):
-        orchestrator_session_mode = str(latest_orchestrator_call_audit.get('session_mode') or '')
-        orchestrator_provider_session_enabled = bool(latest_orchestrator_call_audit.get('provider_session_enabled'))
-        orchestrator_provider_response_id = str(latest_orchestrator_call_audit.get('provider_response_id') or '')
-        orchestrator_provider_conversation_id = str(latest_orchestrator_call_audit.get('provider_conversation_id') or '')
-        orchestrator_http_session_id = str(latest_orchestrator_call_audit.get('http_session_id') or '')
-        orchestrator_prompt_cache_key = str(latest_orchestrator_call_audit.get('prompt_cache_key') or '')
-        orchestrator_prompt_cache_retention = str(latest_orchestrator_call_audit.get('prompt_cache_retention') or '')
-    for audit in orchestrator_call_audits:
-        usage = audit.get('usage') if isinstance(audit.get('usage'), dict) else {}
-        input_tokens = int(usage.get('input_tokens') or usage.get('prompt_tokens') or 0)
-        details = usage.get('input_tokens_details') if isinstance(usage.get('input_tokens_details'), dict) else usage.get('prompt_tokens_details')
-        cached_tokens = int((details or {}).get('cached_tokens') or (details or {}).get('cache_read_input_tokens') or 0) if isinstance(details, dict) else 0
-        orchestrator_usage_input_tokens += input_tokens
-        orchestrator_provider_cached_input_tokens += cached_tokens
-        orchestrator_stable_prefix_estimated_tokens = max(orchestrator_stable_prefix_estimated_tokens, int(audit.get('stable_prefix_estimated_tokens') or 0))
-        orchestrator_turn_tail_estimated_tokens = max(orchestrator_turn_tail_estimated_tokens, int(audit.get('turn_tail_estimated_tokens') or 0))
-    if isinstance(root_orchestrator_session_summary, dict):
-        orchestrator_session_mode = str(root_orchestrator_session_summary.get('session_mode') or orchestrator_session_mode)
-        orchestrator_provider_session_enabled = bool(root_orchestrator_session_summary.get('provider_session_enabled') or orchestrator_provider_session_enabled)
-        orchestrator_provider_response_id = str(root_orchestrator_session_summary.get('provider_response_id') or orchestrator_provider_response_id)
-        orchestrator_provider_conversation_id = str(root_orchestrator_session_summary.get('provider_conversation_id') or orchestrator_provider_conversation_id)
-        orchestrator_http_session_id = str(root_orchestrator_session_summary.get('http_session_id') or orchestrator_http_session_id)
-        orchestrator_prompt_cache_key = str(root_orchestrator_session_summary.get('prompt_cache_key') or orchestrator_prompt_cache_key)
-    split_child_assignment_count = sum(
-        len(getattr(getattr(child, 'final_output', None), 'assignment_intents', []) or [])
-        for child in child_results
-    )
-    split_child_main_file_count = 0
-    for child in child_results:
-        child_workspace = getattr(child, 'final_workspace', None)
-        child_contract = getattr(child_workspace, 'contract', None)
-        split_child_main_file_count += len(getattr(child_contract, 'main_file_refs', []) or [])
-    human_case_session_summary = next(
-        (
-            audit for audit in reversed(request_audits)
-            if isinstance(audit, dict)
-            and str(audit.get('case_agent_mode') or '') == 'human_case_agent'
-            and str(audit.get('note') or '') == 'orchestrator_agent_session_summary'
-        ),
-        {},
-    )
-    human_case_desk_audit = next(
-        (
-            audit for audit in reversed(request_audits)
-            if isinstance(audit, dict)
-            and str(audit.get('note') or '') == 'human_case_agent_desk_built'
-        ),
-        {},
-    )
-    case_agent_mode = str(
-        (human_case_session_summary or {}).get('case_agent_mode')
-        or (human_case_desk_audit or {}).get('case_agent_mode')
-        or ''
-    )
+    final_output_assignments = list(getattr(final_output, 'assignment_intents', []) or [])
+    expanded_assignment_count = len(recipe_assignments) or len(final_output_assignments) or int((result.raw_runtime_result.get('expanded_assignment_count') or 0) if isinstance(result.raw_runtime_result, dict) else 0)
     canonical_snapshot = {
         'ok': bool(result.ok),
         'status': result.status,
         'case_agent_status': _canonical_case_agent_status(result),
         'case_agent_ok': bool(result.ok),
-        'case_agent_mode': case_agent_mode,
-        'legacy_orchestrator_main_path_used': bool((human_case_session_summary or {}).get('legacy_orchestrator_main_path_used', False)),
-        'legacy_subagent_call_count': int((human_case_session_summary or {}).get('legacy_subagent_call_count', 0)),
-        'semantic_subagent_call_count': int((human_case_session_summary or {}).get('semantic_subagent_call_count', 0)),
-        'first_turn_estimated_tokens': int((human_case_session_summary or {}).get('first_turn_estimated_tokens') or (human_case_desk_audit or {}).get('desk_estimated_tokens') or 0),
-        'agent_facing_locator_count': int((human_case_session_summary or {}).get('agent_facing_locator_count') or (human_case_desk_audit or {}).get('agent_facing_locator_count') or 0),
-        'tool_schema_token_estimate': int((human_case_session_summary or {}).get('tool_schema_token_estimate') or 0),
-        'case_memory_token_estimate': int((human_case_session_summary or {}).get('case_memory_token_estimate') or 0),
-        'submit_rejection_count': int((human_case_session_summary or {}).get('submit_rejection_count') or 0),
-        'submit_rejection_issue_counts': dict((human_case_session_summary or {}).get('submit_rejection_issue_counts') or {}),
-        'human_case_saved_work_unit_count': int((human_case_session_summary or {}).get('saved_work_unit_count') or 0),
-        'human_case_draft_revision_count': int((human_case_session_summary or {}).get('draft_revision_count') or 0),
-        'attention_focus_change_count': int((human_case_session_summary or {}).get('attention_focus_change_count') or 0),
-        'agenda_open_count': int((human_case_session_summary or {}).get('agenda_open_count') or 0),
-        'agenda_closed_count': int((human_case_session_summary or {}).get('agenda_closed_count') or 0),
-        'noise_candidate_count': int((human_case_session_summary or {}).get('noise_candidate_count') or 0),
-        'stall_warning_count': int((human_case_session_summary or {}).get('stall_warning_count') or 0),
-        'no_progress_escape_count': int((human_case_session_summary or {}).get('no_progress_escape_count') or 0),
-        'recovery_frontier_switch_count': int((human_case_session_summary or {}).get('recovery_frontier_switch_count') or 0),
-        'exact_fail_closed_after_frontier_exhausted_count': int((human_case_session_summary or {}).get('exact_fail_closed_after_frontier_exhausted_count') or 0),
-        'weak_related_blocking_action_count': int((human_case_session_summary or {}).get('weak_related_blocking_action_count') or 0),
-        'high_quality_candidate_count_by_turn': list((human_case_session_summary or {}).get('high_quality_candidate_count_by_turn') or []),
-        'diagnostic_candidate_count_by_turn': list((human_case_session_summary or {}).get('diagnostic_candidate_count_by_turn') or []),
-        'noisy_candidate_count_by_turn': list((human_case_session_summary or {}).get('noisy_candidate_count_by_turn') or []),
-        'blocking_action_count_by_turn': list((human_case_session_summary or {}).get('blocking_action_count_by_turn') or []),
-        'manual_vs_agent_divergence_point': str((human_case_session_summary or {}).get('manual_vs_agent_divergence_point') or ''),
-        'resolution_readiness_summary': dict((human_case_session_summary or {}).get('resolution_readiness_summary') or {}),
-        'latest_submit_repair': dict((human_case_session_summary or {}).get('latest_submit_repair') or {}),
-        'human_case_desk_bytes': int((human_case_desk_audit or {}).get('desk_bytes') or 0),
-        'human_case_desk_group_count': int((human_case_desk_audit or {}).get('desk_group_count') or 0),
-        'human_case_first_turn_contains_full_lf_list': bool((human_case_desk_audit or {}).get('first_turn_contains_full_lf_list', False)),
-        'case_agent_error_kind': next((str(err).split('=', 1)[1] for err in result.errors if str(err).startswith('error_kind=')), ''),
+        'case_agent_mode': 'pi_case_agent',
+        'mapping_only': True,
+        'submit_rejection_count': int(result.submit_rejection_count or 0),
+        'submit_rejection_issue_counts': {},
+        'case_agent_error_kind': case_agent_error_kind,
         'product_result_kind': 'fail_closed' if result.status == 'fail_closed' else ('accepted' if result.status == 'accepted' else result.status),
         'case_id': result.case_id,
         'summary': result.summary,
         'final_action': result.final_action,
-        'case_planning_action': str(getattr(planning_output, 'action', '') or ''),
-        'split_child_case_count': len(child_results),
-        'split_child_statuses': [str(getattr(child, 'status', '') or '') for child in child_results],
-        'split_child_case_ids': [str(getattr(child, 'case_id', '') or '') for child in child_results],
-        'split_child_assignment_count': split_child_assignment_count,
         'final_output': _json_safe(final_output) if final_output is not None else None,
-        'assignment_intent_count': len(getattr(final_output, 'assignment_intents', []) or []),
-        'bulk_assignment_intent_count': bulk_assignment_intent_count,
+        'assignment_intent_count': len(final_output_assignments),
+        'bulk_assignment_intent_count': _count_bulk_assignment_intents(final_output, final_verifier_result, result),
         'expanded_assignment_count': expanded_assignment_count,
-        'mapping_draft_row_count': int(local_coverage['mapping_draft_row_count']),
-        'mapping_draft_local_coverage_count': int(local_coverage['mapping_draft_covered_main_count']),
-        'mapping_draft_missing_main_count': int(local_coverage['mapping_draft_missing_main_count']),
         **mapping_draft_metrics,
-        'mapping_draft_open_count': mapping_draft_metrics['mapping_draft_open_count'],
-        'mapping_draft_proposed_count': mapping_draft_metrics['mapping_draft_proposed_count'],
-        'mapping_draft_verified_count': mapping_draft_metrics['mapping_draft_verified_count'],
-        'mapping_draft_unresolved_count': mapping_draft_metrics['mapping_draft_unresolved_count'],
-        'mapping_draft_patch_count': mapping_draft_metrics['mapping_draft_patch_count'],
-        'span_mapping_patch_count': mapping_draft_metrics['span_mapping_patch_count'],
-        'candidate_comparison_count': mapping_draft_metrics['candidate_comparison_count'],
-        'main_file_count': int(getattr(accounting, 'main_file_count', 0) or 0),
-        **_workspace_local_fact_summary(list(result.final_workspace.local_files or [])),
-        'mapped_file_count': int(getattr(accounting, 'mapped_file_count', 0) or 0),
-        'excluded_file_count': int(getattr(accounting, 'excluded_file_count', 0) or 0),
-        'manual_review_file_count': int(getattr(accounting, 'manual_review_file_count', 0) or 0),
-        'needs_more_evidence_file_count': int(getattr(accounting, 'needs_more_evidence_file_count', 0) or 0),
-        'unaligned_file_count': int(getattr(accounting, 'unaligned_file_count', 0) or 0),
-        'open_file_count': int(getattr(accounting, 'open_file_count', 0) or 0),
-        'accounted_for_count': int(getattr(accounting, 'accounted_for_count', 0) or 0),
-        'unresolved_count': int(getattr(accounting, 'unresolved_count', 0) or 0),
-        'accepted_accounting_ready': bool(getattr(accounting, 'accepted_accounting_ready', False)),
-        'span_rows_with_candidates': span_rows_with_candidates,
-        'span_rows_without_candidates': span_rows_without_candidates,
-        'planned_span_request_count': planned_span_request_count,
-        'selected_span_request_count': selected_span_request_count,
-        'completed_span_request_count': completed_span_request_count,
-        'local_child_span_count': local_child_span_count,
-        'local_span_covered_main_count': local_span_covered_main_count,
-        'local_span_missing_main_count': local_span_missing_main_count,
-        'local_span_overlap_count': local_span_overlap_count,
-        'local_span_partition_complete': local_span_partition_complete,
-        'bangumi_span_count': bangumi_span_count,
-        'detail_equivalent_target_span_count': detail_equivalent_target_span_count,
-        'recommended_target_span_request_count': recommended_target_span_request_count,
-        'actual_target_span_request_count': actual_target_span_request_count,
-        'accepted_target_span_request_count': accepted_target_span_request_count,
-        'rejected_target_span_request_count': rejected_target_span_request_count,
-        'rejected_target_span_reason_samples': rejected_target_span_reason_samples,
-        'target_span_request_count': actual_target_span_request_count,
-        'subject_search_attempted_count': subject_search_attempted_count,
-        'episode_list_attempted_count': episode_list_attempted_count,
-        'deferred_evidence_intent_count': deferred_evidence_intent_count,
-        'target_span_blocked_by_missing_items_count': target_span_blocked_by_missing_items_count,
-        'briefing_work_unit_count': len(list(getattr(case_briefing, 'work_units', []) or [])) if case_briefing is not None else 0,
-        'case_understanding_applied': bool(case_understanding_applied),
-        'briefing_memory_lost': bool((briefing_agent_applied or case_understanding_applied) and case_briefing is None),
-        'notebook_update_count': len(list(getattr(investigation_notebook, 'update_log', []) or [])) if investigation_notebook is not None else 0,
-        'case_resolution_ledger_row_count': len(ledger_rows),
-        'ledger_outcome_counts': ledger_outcome_counts,
-        'ledger_blocked_row_count': ledger_blocked_row_count,
-        'ledger_compiled_patch_count': ledger_compiled_patch_count,
-        'ledger_requested_evidence_count': ledger_requested_evidence_count,
-        'open_question_count': len(notebook_open_questions),
-        'human_next_action_blocked_no_new_evidence_count': human_next_action_blocked_count,
-        'child_briefing_count': child_briefing_count,
-        'orchestrator_turn_count': orchestrator_turn_count,
-        'orchestrator_tool_call_counts': orchestrator_tool_call_counts,
-        'orchestrator_tool_sequence': orchestrator_tool_sequence,
-        'root_orchestrator_turn_count': root_orchestrator_turn_count,
-        'root_orchestrator_tool_call_counts': root_orchestrator_tool_call_counts,
-        'root_orchestrator_tool_sequence': root_orchestrator_tool_sequence,
-        'child_orchestrator_session_summaries': child_orchestrator_session_summaries,
-        'tool_rejection_count': orchestrator_tool_rejection_count,
-        'near_turn_limit_unhealthy_count': near_turn_limit_unhealthy_count,
-        'stall_suspected_count': stall_suspected_count,
-        'compact_count': orchestrator_compact_count,
-        'orchestrator_session_mode': orchestrator_session_mode,
-        'orchestrator_provider_session_enabled': orchestrator_provider_session_enabled,
-        'orchestrator_provider_response_id': orchestrator_provider_response_id,
-        'orchestrator_provider_conversation_id': orchestrator_provider_conversation_id,
-        'orchestrator_http_session_id': orchestrator_http_session_id,
-        'orchestrator_prompt_cache_key': orchestrator_prompt_cache_key,
-        'orchestrator_prompt_cache_retention': orchestrator_prompt_cache_retention,
-        'orchestrator_usage_input_tokens': orchestrator_usage_input_tokens,
-        'orchestrator_provider_cached_input_tokens': orchestrator_provider_cached_input_tokens,
-        'orchestrator_provider_cached_input_ratio': (orchestrator_provider_cached_input_tokens / orchestrator_usage_input_tokens) if orchestrator_usage_input_tokens else 0.0,
-        'orchestrator_stable_prefix_estimated_tokens': orchestrator_stable_prefix_estimated_tokens,
-        'orchestrator_turn_tail_estimated_tokens': orchestrator_turn_tail_estimated_tokens,
-        'context_soft_limit_hit_count': context_soft_limit_hit_count,
-        'context_hard_limit_hit_count': context_hard_limit_hit_count,
-        'final_output_assignment_count': len(getattr(final_output, 'assignment_intents', []) or []),
-        'final_output_main_file_count': len(result.final_workspace.contract.main_file_refs),
-        'final_output_main_file_range': f"{result.final_workspace.contract.main_file_refs[0]}..{result.final_workspace.contract.main_file_refs[-1]}" if result.final_workspace.contract.main_file_refs else '',
-        'final_output_main_file_samples': list(result.final_workspace.contract.main_file_refs[:8]),
-        'contract_main_file_count': len(result.final_workspace.contract.main_file_refs),
-        'contract_main_file_range': f"{result.final_workspace.contract.main_file_refs[0]}..{result.final_workspace.contract.main_file_refs[-1]}" if result.final_workspace.contract.main_file_refs else '',
-        'contract_main_file_samples': list(result.final_workspace.contract.main_file_refs[:8]),
-        'visible_target_count': len(result.final_workspace.contract.visible_target_refs),
-        'visible_target_range': f"{result.final_workspace.contract.visible_target_refs[0]}..{result.final_workspace.contract.visible_target_refs[-1]}" if result.final_workspace.contract.visible_target_refs else '',
-        'visible_target_samples': list(result.final_workspace.contract.visible_target_refs[:8]),
-        'duplicate_visible_target_refs': sorted({ref for ref in result.final_workspace.contract.visible_target_refs if result.final_workspace.contract.visible_target_refs.count(ref) > 1}),
-        'visible_target_sample': _sample_cards(result.final_workspace.bangumi_items),
-        'main_file_sample': _sample_cards(result.final_workspace.local_files),
-        'query_card_sample': _query_card_sample(result.final_workspace.query_cards),
+        'organize_recipe': _json_safe(organize_recipe) if organize_recipe is not None else None,
+        'compiled_plan': _json_safe(compiled_plan) if compiled_plan is not None else None,
+        'recipe_verifier_result': _json_safe(final_verifier_result) if final_verifier_result is not None else None,
+        'recipe_rule_count': int(recipe_metrics.get('recipe_rule_count') or 0),
+        'recipe_matched_path_count': int(recipe_metrics.get('matched_path_count') or 0),
+        'recipe_mapped_path_count': int(recipe_metrics.get('mapped_path_count') or 0),
+        'recipe_mapped_target_episode_count': int(recipe_metrics.get('mapped_target_episode_count') or 0),
+        'recipe_single_file_multi_episode_count': int(recipe_metrics.get('single_file_multi_episode_count') or 0),
+        'recipe_excluded_path_count': int(recipe_metrics.get('excluded_path_count') or 0),
+        'recipe_unresolved_path_count': int(recipe_metrics.get('unresolved_path_count') or 0),
+        'recipe_uncovered_path_count': int(recipe_metrics.get('uncovered_path_count') or 0),
+        'recipe_duplicate_coverage_count': int(recipe_metrics.get('duplicate_coverage_count') or 0),
+        'recipe_duplicate_target_count': int(recipe_metrics.get('duplicate_target_count') or 0),
+        'recipe_main_paths': recipe_main_paths,
+        'recipe_covered_paths': recipe_covered_paths,
+        'recipe_uncovered_paths': recipe_uncovered_paths,
+        'recipe_duplicate_coverage_paths': recipe_duplicate_coverage_paths,
+        'recipe_duplicate_target_keys': recipe_duplicate_target_keys,
+        'main_file_count': int(recipe_metrics.get('main_path_count') or len(recipe_main_paths) or 0),
+        **_workspace_local_fact_summary(list(final_workspace.local_files or [])),
+        'mapped_file_count': int(recipe_metrics.get('mapped_file_count') or recipe_metrics.get('mapped_path_count') or 0),
+        'mapped_target_episode_count': int(recipe_metrics.get('mapped_target_episode_count') or 0),
+        'single_file_multi_episode_count': int(recipe_metrics.get('single_file_multi_episode_count') or 0),
+        'excluded_file_count': int(recipe_metrics.get('excluded_path_count') or 0),
+        'resolved_unmapped_file_count': int(recipe_metrics.get('excluded_path_count') or 0),
+        'manual_review_file_count': 0,
+        'needs_more_evidence_file_count': 0,
+        'unaligned_file_count': 0,
+        'open_file_count': 0,
+        'accounted_for_count': int(recipe_metrics.get('matched_path_count') or 0),
+        'unresolved_count': int(recipe_metrics.get('unresolved_path_count') or 0) + int(recipe_metrics.get('uncovered_path_count') or 0) + int(recipe_metrics.get('duplicate_coverage_count') or 0) + int(recipe_metrics.get('duplicate_target_count') or 0),
+        'accepted_accounting_ready': bool(recipe_metrics.get('accepted_accounting_ready')),
+        'local_span_count': len(local_span_cards),
+        'local_span_main_file_count': len(recipe_main_paths),
+        'local_child_span_count': int(local_coverage['local_child_span_count']),
+        'local_span_covered_main_count': int(local_coverage.get('span_covered_main_file_count', local_coverage['covered_main_file_count'])),
+        'local_span_missing_main_count': int(local_coverage.get('span_missing_main_file_count', local_coverage['missing_main_file_count'])),
+        'local_span_overlap_count': int(local_coverage.get('span_overlap_count', local_coverage['overlap_count'])),
+        'local_span_partition_complete': bool(local_coverage.get('span_partition_complete', local_coverage['partition_complete'])),
+        'bangumi_span_count': len(bangumi_span_cards),
+        'detail_equivalent_target_span_count': sum(1 for card in bangumi_span_cards if bool(getattr(card, 'detail_equivalent', False))),
+        'span_alignment_claim_count': 0,
+        'span_rows_with_candidates': sum(1 for card in local_span_cards if list(getattr(card, 'candidate_refs', []) or [])),
+        'span_rows_without_candidates': sum(1 for card in local_span_cards if not list(getattr(card, 'candidate_refs', []) or [])),
+        'planned_span_request_count': sum(int(getattr(card, 'planned_span_request_count', 0) or 0) for card in local_span_cards),
+        'selected_span_request_count': sum(int(getattr(card, 'selected_span_request_count', 0) or 0) for card in local_span_cards),
+        'completed_span_request_count': sum(int(getattr(card, 'completed_span_request_count', 0) or 0) for card in local_span_cards),
+        'recommended_target_span_request_count': len(target_span_requests),
+        'actual_target_span_request_count': len(target_span_requests),
+        'accepted_target_span_request_count': len([req for req in target_span_requests if bool(getattr(req, 'accepted', False))]),
+        'rejected_target_span_request_count': len([req for req in target_span_requests if not bool(getattr(req, 'accepted', False))]),
+        'target_span_request_count': len(target_span_requests),
+        'subject_search_attempted_count': len([req for batch in result.evidence_batches for req in (getattr(batch, 'request_results', []) or []) if str(getattr(req, 'request_type', '') or '') == 'subject_search']),
+        'episode_list_attempted_count': len([req for batch in result.evidence_batches for req in (getattr(batch, 'request_results', []) or []) if str(getattr(req, 'request_type', '') or '') == 'episode_list']),
+        'tool_rejection_count': int(result.submit_rejection_count or 0),
+        'near_turn_limit_unhealthy_count': 0,
+        'stall_suspected_count': 0,
+        'compact_count': 0,
+        'context_soft_limit_hit_count': 0,
+        'context_hard_limit_hit_count': 0,
+        'final_output_assignment_count': expanded_assignment_count,
+        'final_output_main_file_count': len(recipe_main_paths),
+        'final_output_main_file_range': f"{recipe_main_paths[0]}..{recipe_main_paths[-1]}" if recipe_main_paths else '',
+        'final_output_main_file_samples': list(recipe_main_paths[:8]),
+        'contract_main_file_count': len(recipe_main_paths),
+        'contract_main_file_range': f"{recipe_main_paths[0]}..{recipe_main_paths[-1]}" if recipe_main_paths else '',
+        'contract_main_file_samples': list(recipe_main_paths[:8]),
+        'visible_target_count': len(final_workspace.contract.visible_target_refs),
+        'visible_target_range': f"{final_workspace.contract.visible_target_refs[0]}..{final_workspace.contract.visible_target_refs[-1]}" if final_workspace.contract.visible_target_refs else '',
+        'visible_target_samples': list(final_workspace.contract.visible_target_refs[:8]),
+        'duplicate_visible_target_refs': sorted({ref for ref in final_workspace.contract.visible_target_refs if final_workspace.contract.visible_target_refs.count(ref) > 1}),
+        'visible_target_sample': _sample_cards(final_workspace.bangumi_items),
+        'main_file_sample': _sample_cards(final_workspace.local_files),
+        'query_card_sample': _query_card_sample(final_workspace.query_cards),
         'bounded_prompt_enabled': True,
         'bounded_payload_counts': bounded.counts,
         'bounded_payload_bytes': len(json.dumps(bounded.model_dump(mode='json'), ensure_ascii=False)),
@@ -1167,14 +879,14 @@ def run_local_bangumi_case_agent_mapping(*, local_evidence, bangumi_contexts: li
         'query_card_sample_count': len(bounded.query_card_sample),
         'requested_detail_ref_count': len(evidence_response_refs),
         'requested_detail_ref_sample': evidence_response_refs[:8],
-        'requested_detailed_card_count': len([ref for ref in evidence_response_refs if any(card.ref == ref for card in [*result.final_workspace.bangumi_items, *result.final_workspace.local_files])]),
-        'seen_detail_ref_source': 'workspace+evidence_results',
+        'requested_detailed_card_count': len([ref for ref in evidence_response_refs if any(card.ref == ref for card in [*final_workspace.bangumi_items, *final_workspace.local_files])]),
+        'seen_detail_ref_source': 'workspace+pi_tools',
         'seen_detail_ref_sample': seen_detail_refs[:8],
         'seen_detail_ref_count': len(seen_detail_refs),
-        'prompt_be_ref_occurrences': len(re.findall(r'BE\d+', json.dumps(initial_projection, ensure_ascii=False))) if result.judge_outputs else 0,
-        'prompt_file_ref_occurrences': len(re.findall(r'LF\d+', json.dumps(initial_projection, ensure_ascii=False))) if result.judge_outputs else 0,
-        'initial_be_ref_occurrences': len(re.findall(r'BE\d+', json.dumps(initial_projection, ensure_ascii=False))) if result.judge_outputs else 0,
-        'initial_file_ref_occurrences': len(re.findall(r'LF\d+', json.dumps(initial_projection, ensure_ascii=False))) if result.judge_outputs else 0,
+        'prompt_be_ref_occurrences': 0,
+        'prompt_file_ref_occurrences': 0,
+        'initial_be_ref_occurrences': len(re.findall(r'BE\d+', json.dumps(initial_projection, ensure_ascii=False))),
+        'initial_file_ref_occurrences': len(re.findall(r'LF\d+', json.dumps(initial_projection, ensure_ascii=False))),
         'salience_risk_flags': bounded.salience_overview.get('risk_flags', {}),
         'salience_large_case': bool(bounded.salience_overview.get('risk_flags', {}).get('large_case', False)),
         'primary_title_cues': list(getattr(bounded, 'primary_title_cues', []) or [])[:10],
@@ -1189,136 +901,90 @@ def run_local_bangumi_case_agent_mapping(*, local_evidence, bangumi_contexts: li
         'errors': list(result.errors),
         'evidence_batches': [_json_safe(batch) for batch in result.evidence_batches],
         'final_workspace': {
-            'local_file_count': len(result.final_workspace.local_files),
-            'bangumi_subject_count': len(result.final_workspace.bangumi_subjects),
-            'bangumi_group_count': len(result.final_workspace.bangumi_groups),
-            'bangumi_item_count': len(result.final_workspace.bangumi_items),
+            'local_file_count': len(final_workspace.local_files),
+            'bangumi_subject_count': len(final_workspace.bangumi_subjects),
+            'bangumi_group_count': len(final_workspace.bangumi_groups),
+            'bangumi_item_count': len(final_workspace.bangumi_items),
         },
-        'judge_round_actions': _derive_case_judge_round_actions(case_judge_audits),
-        'judge_round_kinds': [str(a.get('round_kind') or '') for a in case_judge_audits] or [
-            'issue_response' if i == len(result.judge_outputs) - 1 and getattr(result.final_workspace, 'verifier_issues', []) else ('evidence_rejudge' if i > 0 and result.evidence_batches else 'initial')
-            for i, _ in enumerate(result.judge_outputs)
-        ],
+        'judge_round_actions': ['submit_verdict' if result.status == 'accepted' else result.status],
+        'judge_round_kinds': ['pi_final'],
         'evidence_request_count': sum(len(getattr(batch, 'request_results', []) or []) for batch in result.evidence_batches),
         'evidence_request_types': [getattr(req, 'request_type', '') for batch in result.evidence_batches for req in (getattr(batch, 'request_results', []) or []) if getattr(req, 'request_type', '')],
         'evidence_response_ref_count': len(evidence_response_refs),
         'evidence_response_ref_samples': evidence_response_refs[:8],
-        'requested_detail_ref_count': len(evidence_response_refs),
-        'requested_detail_ref_sample': evidence_response_refs[:8],
-        'requested_detailed_card_count': len([ref for ref in evidence_response_refs if any(card.ref == ref for card in [*result.final_workspace.bangumi_items, *result.final_workspace.local_files])]),
         'assignable_target_count': len(getattr(bounded, 'assignable_target_refs', []) or []),
-        'seen_detail_ref_count': len(seen_detail_refs),
         'detailed_local_file_count': len(getattr(bounded, 'detailed_local_file_cards', []) or []),
-        'case_judge_configured_interface': top_config,
-        'case_judge_actual_interface': top_actual,
-        'case_judge_streaming': top_streaming,
+        'case_judge_configured_interface': 'pi',
+        'case_judge_actual_interface': 'pi',
+        'case_judge_streaming': 'unknown',
         'case_judge_request_audits': [_json_safe(a) for a in request_audits],
         'case_judge_request_audit_count': len(request_audits),
-        'case_judge_request_audit_round_kinds': [str(a.get('round_kind') or '') for a in case_judge_audits],
+        'case_judge_request_audit_round_kinds': ['pi_tool'],
         'surface_ledger_count': int(bounded.counts.get('visible_target_count') or 0),
-        'plan_status': str(getattr(getattr(result.final_workspace, 'plan_state', None), 'plan_status', 'idle') or 'idle'),
-        'plan_completed_count': len(getattr(getattr(result.final_workspace, 'plan_state', None), 'completed_menu_request_ids', []) or []),
-        'plan_failed_count': len(getattr(getattr(result.final_workspace, 'plan_state', None), 'failed_menu_request_ids', []) or []),
-        'plan_selected_count': len(getattr(getattr(result.final_workspace, 'plan_state', None), 'selected_menu_request_ids', []) or []),
+        'plan_status': str(getattr(getattr(final_workspace, 'plan_state', None), 'plan_status', 'idle') or 'idle'),
+        'plan_completed_count': len(getattr(getattr(final_workspace, 'plan_state', None), 'completed_menu_request_ids', []) or []),
+        'plan_failed_count': len(getattr(getattr(final_workspace, 'plan_state', None), 'failed_menu_request_ids', []) or []),
+        'plan_selected_count': len(getattr(getattr(final_workspace, 'plan_state', None), 'selected_menu_request_ids', []) or []),
         'evidence_menu_count': len(bounded.available_detail_request_types),
-        'evidence_menu_request_count': len(evidence_menu_request_ids),
-        'evidence_menu_span_request_count': len(evidence_menu_span_request_ids),
-        'selected_menu_request_ids': selected_menu_request_ids,
-        'unknown_menu_request_ids': unknown_menu_request_ids,
-        'resolved_menu_request_count': resolved_menu_request_count,
-        'legacy_raw_request_count': legacy_raw_request_count,
-        'normalized_legacy_request_count': normalized_legacy_request_count,
-        'action_policy_allowed': ['request_evidence', 'submit_verdict', 'fail_closed', 'issue_response'],
-        'action_policy_disallowed': [],
+        'evidence_menu_request_count': 0,
+        'evidence_menu_span_request_count': 0,
+        'selected_menu_request_ids': [],
+        'unknown_menu_request_ids': [],
+        'resolved_menu_request_count': 0,
+        'action_policy_allowed': ['submit_organize_recipe_params', 'submit_organize_recipe_params_patch', 'fail_closed', 'goal_complete_after_acceptance'],
+        'action_policy_disallowed': ['repo_write', 'media_mutation', 'task_record_write', 'secret_read'],
         'action_policy_final_opportunity': bool(final_output is not None and result.status in {'fail_closed', 'accepted'}),
-        'notebook_compact_counts': {'rounds': len(result.judge_outputs), 'evidence_requests': len(result.evidence_batches)},
         'issue_router_issue_counts': {'count': len(getattr(final_verifier_result, 'issues', []) or [])},
-        'local_package_analysis_audit': _json_safe(local_package_analysis_audit) if local_package_analysis_audit is not None else {
-            'call_name': 'LocalPackageAnalysis',
-            'schema_name': 'LocalPackageAnalysis',
-            'validation_key': 'search_titles',
-            'input_projection_bytes': 'unavailable',
-            'rendered_prompt_bytes': 'unavailable',
-            'request_body_bytes_estimate': 'unavailable',
-            'output_bytes_estimate': 'unavailable',
-            'search_titles_count': 'unavailable',
-            'title_cues_count': 'unavailable',
-            'release_group_cues_count': 'unavailable',
-            'cache_mode': 'unknown',
-            'cache_key': 'unknown',
-            'cache_event': 'unknown',
-            'configured_interface': 'unknown',
-            'actual_interface': 'unknown',
-            'streaming': 'unknown',
-            'elapsed_ms': 'unavailable',
-            'error_kind': 'unavailable',
-            'message': 'unavailable',
-        },
-        'deterministic_local_supplemental_projection': _json_safe(deterministic_projection_audit),
-        'deterministic_filtered_file_count': int(deterministic_projection_audit.get('filtered_file_count') or 0) if deterministic_projection_audit else 0,
-        'deterministic_filtered_video_count': int(deterministic_projection_audit.get('filtered_video_count') or 0) if deterministic_projection_audit else 0,
-        'error_kind': next((str(err).split('=', 1)[1] for err in result.errors if str(err).startswith('error_kind=')), ''),
+        'local_package_analysis_audit': _json_safe(local_package_analysis_audit),
+        'error_kind': case_agent_error_kind,
+        'pi_run_dir': str(result.run_dir),
+        'pi_case_id': result.case_id,
+        'pi_command': result.pi_command,
+        'pi_provider': result.pi_provider,
+        'pi_model': result.pi_model,
+        'pi_base_url': result.pi_base_url,
+        'pi_runtime_command': list(result.runtime_command or []),
+        'pi_runtime_returncode': result.runtime_returncode,
+        'pi_runtime_result': _json_safe(result.raw_runtime_result),
+        'pi_tool_trace_count': len(result.tool_trace),
+        'pi_tool_call_counts': dict(result.tool_call_counts),
+        'pi_tool_sequence': list(result.tool_sequence),
     }
-    verdict_accounting = _verdict_assignment_accounting(final_dossier, final_output)
-    if canonical_snapshot['status'] == 'accepted' and verdict_accounting:
-        for key, value in verdict_accounting.items():
-            if key == 'expanded_assignment_count':
-                canonical_snapshot[key] = max(int(canonical_snapshot.get(key) or 0), int(value or 0))
-            else:
-                canonical_snapshot[key] = value
-    if canonical_snapshot['status'] == 'accepted' and canonical_snapshot['assignment_intent_count'] > 0:
-        if int(canonical_snapshot.get('contract_main_file_count') or 0) <= 0 and int(bounded.counts.get('main_file_count') or 0) > 0:
-            canonical_snapshot['contract_main_file_count'] = int(bounded.counts['main_file_count'])
-        if int(canonical_snapshot.get('final_output_main_file_count') or 0) <= 0 and int(bounded.counts.get('main_file_count') or 0) > 0:
-            canonical_snapshot['final_output_main_file_count'] = int(bounded.counts['main_file_count'])
-    if canonical_snapshot['status'] == 'accepted' and child_results:
-        child_main_count = split_child_main_file_count or len(result.final_workspace.contract.main_file_refs)
-        child_assignment_count = split_child_assignment_count
-        child_verdict_accounting = _verdict_assignment_accounting(final_dossier, final_output)
-        child_mapped_count = int(child_verdict_accounting.get('mapped_file_count') or 0) if child_verdict_accounting else child_assignment_count
-        child_excluded_count = int(child_verdict_accounting.get('excluded_file_count') or 0) if child_verdict_accounting else 0
-        child_manual_review_count = int(child_verdict_accounting.get('manual_review_file_count') or 0) if child_verdict_accounting else 0
-        child_needs_more_count = int(child_verdict_accounting.get('needs_more_evidence_file_count') or 0) if child_verdict_accounting else 0
-        child_unaligned_count = int(child_verdict_accounting.get('unaligned_file_count') or 0) if child_verdict_accounting else 0
-        child_open_count = int(child_verdict_accounting.get('open_file_count') or 0) if child_verdict_accounting else 0
-        child_accounted_count = int(child_verdict_accounting.get('accounted_for_count') or 0) if child_verdict_accounting else child_main_count
-        child_unresolved_count = int(child_verdict_accounting.get('unresolved_count') or 0) if child_verdict_accounting else 0
-        canonical_snapshot['assignment_intent_count'] = child_assignment_count
-        canonical_snapshot['final_output_assignment_count'] = child_assignment_count
-        canonical_snapshot['expanded_assignment_count'] = max(int(canonical_snapshot.get('expanded_assignment_count') or 0), child_assignment_count)
-        canonical_snapshot['main_file_count'] = child_main_count
-        canonical_snapshot['mapped_file_count'] = child_mapped_count
-        canonical_snapshot['excluded_file_count'] = child_excluded_count
-        canonical_snapshot['manual_review_file_count'] = child_manual_review_count
-        canonical_snapshot['accounted_for_count'] = child_accounted_count
-        canonical_snapshot['unresolved_count'] = child_unresolved_count
-        canonical_snapshot['needs_more_evidence_file_count'] = child_needs_more_count
-        canonical_snapshot['unaligned_file_count'] = child_unaligned_count
-        canonical_snapshot['open_file_count'] = child_open_count
-        canonical_snapshot['accepted_accounting_ready'] = bool(
-            child_main_count > 0
-            and child_accounted_count == child_main_count
-            and child_mapped_count + child_excluded_count + child_manual_review_count == child_main_count
-            and child_unresolved_count == 0
-            and child_needs_more_count == 0
-            and child_unaligned_count == 0
-            and child_open_count == 0
-        )
-        canonical_snapshot['contract_main_file_count'] = child_main_count
-        canonical_snapshot['final_output_main_file_count'] = child_main_count
-    if include_full_dump:
-        canonical_snapshot['contract_main_file_refs'] = list(result.final_workspace.contract.main_file_refs)
-        canonical_snapshot['final_output_main_file_refs'] = list(result.final_workspace.contract.main_file_refs)
-        canonical_snapshot['visible_target_refs'] = list(result.final_workspace.contract.visible_target_refs)
-        canonical_snapshot['query_card_sample'] = _query_card_sample(result.final_workspace.query_cards)
+    if result.status == 'accepted' and compiled_plan is None:
+        verdict_accounting = _verdict_assignment_accounting(final_dossier, final_output)
+        if verdict_accounting:
+            for key, value in verdict_accounting.items():
+                if key == 'expanded_assignment_count':
+                    canonical_snapshot[key] = max(int(canonical_snapshot.get(key) or 0), int(value or 0))
+                else:
+                    canonical_snapshot[key] = value
+    if _snapshot_debug_enabled():
+        canonical_snapshot['contract_main_file_refs'] = list(final_workspace.contract.main_file_refs)
+        canonical_snapshot['final_output_main_file_refs'] = list(final_workspace.contract.main_file_refs)
+        canonical_snapshot['visible_target_refs'] = list(final_workspace.contract.visible_target_refs)
     canonical_snapshot.update(summarize_case_agent_snapshot_refs(canonical_snapshot))
-    canonical_snapshot['oversized_input_call_count'] = sum(1 for row in canonical_snapshot.get('case_judge_request_audits', []) if isinstance(row, dict) and bool(row.get('oversized_input'))) + (1 if bool(getattr(local_package_analysis_audit, 'get', lambda _k, _d=None: None)('oversized_input') if local_package_analysis_audit is not None else False) else 0)
+    canonical_snapshot['oversized_input_call_count'] = 0
+    return canonical_snapshot
+
+
+def run_local_bangumi_case_agent_mapping(*, local_evidence, bangumi_contexts: list[dict[str, object]], ai_client, source_path, bangumi_client=None) -> dict[str, Any]:
+    workspace = _build_workspace(
+        local_evidence=local_evidence,
+        bangumi_contexts=bangumi_contexts,
+    )
+    effective_bangumi_client = bangumi_client if bangumi_client is not None else BangumiClient()
+    result = run_pi_case_agent(
+        workspace=workspace,
+        bangumi_client=effective_bangumi_client,
+        source_path=str(source_path or getattr(local_evidence, 'source_path', '') or ''),
+    )
+    canonical_snapshot = _build_pi_case_agent_snapshot(result)
     return {
         'ok': bool(result.ok),
         'status': result.status,
         'summary': result.summary,
         'snapshot': canonical_snapshot,
-        'result': {'status': result.status, 'ok': bool(result.ok)},
+        'result': {'status': result.status, 'ok': bool(result.ok), 'case_agent_mode': 'pi_case_agent'},
     }
 
 

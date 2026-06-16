@@ -3,115 +3,395 @@
   "files": [
     {
       "path": "[ANK-Raws] わかば＊ガール 01 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).Non Telop Ver.mkv",
-      "size": 211248843
+      "size": 211248843,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 318.485,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] わかば＊ガール 02 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).Non Telop Ver.mkv",
-      "size": 241112244
+      "size": 241112244,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 346.015,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] わかば＊ガール 03 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).Non Telop Ver.mkv",
-      "size": 242607423
+      "size": 242607423,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 355.985,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] わかば＊ガール 04 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).Non Telop Ver.mkv",
-      "size": 209565816
+      "size": 209565816,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 291.875,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] わかば＊ガール 05 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).Non Telop Ver.mkv",
-      "size": 262249048
+      "size": 262249048,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 353.315,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] わかば＊ガール 06 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).Non Telop Ver.mkv",
-      "size": 262607199
+      "size": 262607199,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 347.06,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] わかば＊ガール 07 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).Non Telop Ver.mkv",
-      "size": 263559133
+      "size": 263559133,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 327.245,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] わかば＊ガール 08 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).Non Telop Ver.mkv",
-      "size": 246106504
+      "size": 246106504,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 354.105,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] わかば＊ガール 09 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).Non Telop Ver.mkv",
-      "size": 235995408
+      "size": 235995408,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 360.32,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] わかば＊ガール 10 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).Non Telop Ver.mkv",
-      "size": 267878342
+      "size": 267878342,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 341.385,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] わかば＊ガール 11 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).Non Telop Ver.mkv",
-      "size": 207319434
+      "size": 207319434,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 317.61,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] わかば＊ガール 12 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).Non Telop Ver.mkv",
-      "size": 258238079
+      "size": 258238079,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 343.22,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] わかば＊ガール 13 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).Non Telop Ver.mkv",
-      "size": 283153084
+      "size": 283153084,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 474.975,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] わかば＊ガール 14 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).Non Telop Ver.mkv",
-      "size": 273157738
+      "size": 273157738,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 381.635,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] わかば＊ガール SP01 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 162115757
+      "size": 162115757,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 151.53,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] わかば＊ガール SP02 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 134751561
+      "size": 134751561,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 124.0,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] わかば＊ガール SP03 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 127519907
+      "size": 127519907,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 114.035,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] わかば＊ガール SP04 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 198444852
+      "size": 198444852,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 178.14,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] わかば＊ガール SP05 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 134448657
+      "size": 134448657,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 116.7,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] わかば＊ガール SP06 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 131326435
+      "size": 131326435,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 122.96,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] わかば＊ガール SP07 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 152684721
+      "size": 152684721,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 142.77,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] わかば＊ガール SP08 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 106672766
+      "size": 106672766,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.01,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] わかば＊ガール SP09 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 127519257
+      "size": 127519257,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 115.91,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] わかば＊ガール SP10 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 129085884
+      "size": 129085884,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 109.695,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] わかば＊ガール SP11 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 167091961
+      "size": 167091961,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 128.63,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] わかば＊ガール SP12 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 148468897
+      "size": 148468897,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 152.405,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] わかば＊ガール SP13 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 138863278
+      "size": 138863278,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 126.795,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[ANK-Raws] わかば＊ガール SP14 (BDrip 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 117605736
+      "size": 117605736,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 101.395,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Menu (Vol.1)/00004.png",
@@ -187,7 +467,17 @@
     },
     {
       "path": "Menu (Vol.1)/Menu (Vol.1).mkv",
-      "size": 71826364
+      "size": 71826364,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 90.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Menu (Vol.2)/00004.png",
@@ -259,7 +549,48 @@
     },
     {
       "path": "Menu (Vol.2)/Menu (Vol.2).mkv",
-      "size": 68030957
+      "size": 68030957,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 90.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     }
-  ]
+  ],
+  "local_container_fact_summary": {
+    "container_fact_count": 30,
+    "probe_status_counts": {
+      "available": 30
+    },
+    "duration_seconds_range": [
+      90.09,
+      474.975
+    ],
+    "duration_seconds_samples": [
+      318.485,
+      346.015,
+      355.985,
+      291.875,
+      353.315,
+      347.06
+    ]
+  },
+  "local_container_fact_source": {
+    "kind": "real_local_media_duration_backfill",
+    "media_root": "H:\\Anime",
+    "probe_media": true,
+    "container_probe": "ffprobe",
+    "embedded_in": "files[].container_facts",
+    "matched_file_count": 65,
+    "matched_video_count": 30,
+    "missing_actual_video_count": 0,
+    "match_stats": {
+      "matched_by_root_path": 65
+    }
+  }
 }

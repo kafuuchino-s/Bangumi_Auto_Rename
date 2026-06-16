@@ -7,7 +7,17 @@
     },
     {
       "path": "[VCB-Studio] Inou Battle Within Everyday Life [01][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1142307769
+      "size": 1142307769,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1437.034,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Inou Battle Within Everyday Life [02][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -15,7 +25,17 @@
     },
     {
       "path": "[VCB-Studio] Inou Battle Within Everyday Life [02][Ma10p_1080p][x265_flac].mkv",
-      "size": 900486058
+      "size": 900486058,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1436.94,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Inou Battle Within Everyday Life [03][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -23,7 +43,17 @@
     },
     {
       "path": "[VCB-Studio] Inou Battle Within Everyday Life [03][Ma10p_1080p][x265_flac].mkv",
-      "size": 917382268
+      "size": 917382268,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1437.02,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Inou Battle Within Everyday Life [04][Ma10p_1080p][x265_flac_aac].default.chi.zh-cn.ass",
@@ -31,7 +61,17 @@
     },
     {
       "path": "[VCB-Studio] Inou Battle Within Everyday Life [04][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1036786256
+      "size": 1036786256,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1437.034,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Inou Battle Within Everyday Life [05][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -39,7 +79,17 @@
     },
     {
       "path": "[VCB-Studio] Inou Battle Within Everyday Life [05][Ma10p_1080p][x265_flac].mkv",
-      "size": 854822221
+      "size": 854822221,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1437.02,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Inou Battle Within Everyday Life [06][Ma10p_1080p][x265_flac_aac].default.chi.zh-cn.ass",
@@ -47,7 +97,17 @@
     },
     {
       "path": "[VCB-Studio] Inou Battle Within Everyday Life [06][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 969501336
+      "size": 969501336,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1436.992,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Inou Battle Within Everyday Life [07][Ma10p_1080p][x265_flac_aac].default.chi.zh-cn.ass",
@@ -55,7 +115,17 @@
     },
     {
       "path": "[VCB-Studio] Inou Battle Within Everyday Life [07][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 976186314
+      "size": 976186314,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1437.034,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Inou Battle Within Everyday Life [08][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -63,7 +133,17 @@
     },
     {
       "path": "[VCB-Studio] Inou Battle Within Everyday Life [08][Ma10p_1080p][x265_flac].mkv",
-      "size": 1102128658
+      "size": 1102128658,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1436.98,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Inou Battle Within Everyday Life [09][Ma10p_1080p][x265_flac].default.chi.zh-cn.ass",
@@ -71,7 +151,17 @@
     },
     {
       "path": "[VCB-Studio] Inou Battle Within Everyday Life [09][Ma10p_1080p][x265_flac].mkv",
-      "size": 824135156
+      "size": 824135156,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1437.105,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Inou Battle Within Everyday Life [10][Ma10p_1080p][x265_flac_aac].default.chi.zh-cn.ass",
@@ -79,7 +169,17 @@
     },
     {
       "path": "[VCB-Studio] Inou Battle Within Everyday Life [10][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1021649414
+      "size": 1021649414,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1437.034,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Inou Battle Within Everyday Life [11][Ma10p_1080p][x265_flac_aac].default.chi.zh-cn.ass",
@@ -87,7 +187,17 @@
     },
     {
       "path": "[VCB-Studio] Inou Battle Within Everyday Life [11][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1036931586
+      "size": 1036931586,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1436.864,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Inou Battle Within Everyday Life [12][Ma10p_1080p][x265_flac_aac].default.chi.zh-cn.ass",
@@ -95,7 +205,17 @@
     },
     {
       "path": "[VCB-Studio] Inou Battle Within Everyday Life [12][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 840387215
+      "size": 840387215,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1422.016,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "CDs/[141119] ｢OVERLAPPERS｣ (flac+webp)/Cover.jpg",
@@ -555,67 +675,258 @@
     },
     {
       "path": "SPs/[VCB-Studio] Inou Battle Within Everyday Life [CM01][Ma10p_1080p][x265_flac].mkv",
-      "size": 25350888
+      "size": 25350888,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 18.02,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Inou Battle Within Everyday Life [CM02][Ma10p_1080p][x265_flac].mkv",
-      "size": 26046408
+      "size": 26046408,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 18.02,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Inou Battle Within Everyday Life [CM03][Ma10p_1080p][x265_flac].mkv",
-      "size": 44753862
+      "size": 44753862,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 33.035,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Inou Battle Within Everyday Life [CM04][Ma10p_1080p][x265_flac].mkv",
-      "size": 45452623
+      "size": 45452623,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 33.035,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Inou Battle Within Everyday Life [Event][Ma10p_1080p][x265_aac].mkv",
-      "size": 1288478541
+      "size": 1288478541,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 2715.733,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Inou Battle Within Everyday Life [Menu01][Ma10p_1080p][x265_flac].mkv",
-      "size": 30299747
+      "size": 30299747,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 42.92,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Inou Battle Within Everyday Life [Menu02][Ma10p_1080p][x265_flac].mkv",
-      "size": 32628219
+      "size": 32628219,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 42.92,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Inou Battle Within Everyday Life [Menu03][Ma10p_1080p][x265_flac].mkv",
-      "size": 26256221
+      "size": 26256221,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 42.92,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Inou Battle Within Everyday Life [Menu04][Ma10p_1080p][x265_flac].mkv",
-      "size": 29576074
+      "size": 29576074,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 42.92,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Inou Battle Within Everyday Life [Menu05][Ma10p_1080p][x265_flac].mkv",
-      "size": 28849315
+      "size": 28849315,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 42.92,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Inou Battle Within Everyday Life [Menu06][Ma10p_1080p][x265_flac].mkv",
-      "size": 30054175
+      "size": 30054175,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 42.92,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Inou Battle Within Everyday Life [NCED][Ma10p_1080p][x265_flac].mkv",
-      "size": 97300466
+      "size": 97300466,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.096,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Inou Battle Within Everyday Life [NCOP01][Ma10p_1080p][x265_flac].mkv",
-      "size": 115119509
+      "size": 115119509,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.096,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Inou Battle Within Everyday Life [NCOP02][Ma10p_1080p][x265_flac].mkv",
-      "size": 115457445
+      "size": 115457445,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.096,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Inou Battle Within Everyday Life [PV01][Ma10p_1080p][x265_flac].mkv",
-      "size": 93663422
+      "size": 93663422,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 80.331,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Inou Battle Within Everyday Life [PV02][Ma10p_1080p][x265_flac].mkv",
-      "size": 183597539
+      "size": 183597539,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 151.276,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     }
-  ]
+  ],
+  "local_container_fact_summary": {
+    "container_fact_count": 28,
+    "probe_status_counts": {
+      "available": 28
+    },
+    "duration_seconds_range": [
+      18.02,
+      2715.733
+    ],
+    "duration_seconds_samples": [
+      1437.034,
+      1436.94,
+      1437.02,
+      1437.034,
+      1437.02,
+      1436.992
+    ]
+  },
+  "local_container_fact_source": {
+    "kind": "real_local_media_duration_backfill",
+    "media_root": "H:\\Anime",
+    "probe_media": true,
+    "container_probe": "ffprobe",
+    "embedded_in": "files[].container_facts",
+    "matched_file_count": 154,
+    "matched_video_count": 28,
+    "missing_actual_video_count": 0,
+    "match_stats": {
+      "matched_by_root_path": 154
+    }
+  }
 }

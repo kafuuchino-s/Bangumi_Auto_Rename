@@ -7,7 +7,17 @@
     },
     {
       "path": "[VCB-Studio] Gekijouban Soushuuhen OVERLORD [Ma10p_1080p]/[VCB-Studio] Gekijouban Soushuuhen OVERLORD [01(Fushisha no Ou)][Ma10p_1080p][x265_flac].mkv",
-      "size": 5757557754
+      "size": 5757557754,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 6141.636,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Gekijouban Soushuuhen OVERLORD [Ma10p_1080p]/[VCB-Studio] Gekijouban Soushuuhen OVERLORD [02(Shikkoku no Senshi)][Ma10p_1080p][x265_flac].ass",
@@ -15,39 +25,129 @@
     },
     {
       "path": "[VCB-Studio] Gekijouban Soushuuhen OVERLORD [Ma10p_1080p]/[VCB-Studio] Gekijouban Soushuuhen OVERLORD [02(Shikkoku no Senshi)][Ma10p_1080p][x265_flac].mkv",
-      "size": 5201147053
+      "size": 5201147053,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 5614.068,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Gekijouban Soushuuhen OVERLORD [Ma10p_1080p]/SPs/[VCB-Studio] Gekijouban Soushuuhen OVERLORD [CM01][Ma10p_1080p][x265_flac].mkv",
-      "size": 19464360
+      "size": 19464360,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 16.02,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Gekijouban Soushuuhen OVERLORD [Ma10p_1080p]/SPs/[VCB-Studio] Gekijouban Soushuuhen OVERLORD [CM02][Ma10p_1080p][x265_flac].mkv",
-      "size": 25317337
+      "size": 25317337,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 16.02,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Gekijouban Soushuuhen OVERLORD [Ma10p_1080p]/SPs/[VCB-Studio] Gekijouban Soushuuhen OVERLORD [CM03][Ma10p_1080p][x265_flac].mkv",
-      "size": 38865707
+      "size": 38865707,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 29.53,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Gekijouban Soushuuhen OVERLORD [Ma10p_1080p]/SPs/[VCB-Studio] Gekijouban Soushuuhen OVERLORD [CM04][Ma10p_1080p][x265_flac].mkv",
-      "size": 37047524
+      "size": 37047524,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 28.03,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Gekijouban Soushuuhen OVERLORD [Ma10p_1080p]/SPs/[VCB-Studio] Gekijouban Soushuuhen OVERLORD [CM05][Ma10p_1080p][x265_flac].mkv",
-      "size": 26880610
+      "size": 26880610,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 16.02,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Gekijouban Soushuuhen OVERLORD [Ma10p_1080p]/SPs/[VCB-Studio] Gekijouban Soushuuhen OVERLORD [CM06][Ma10p_1080p][x265_flac].mkv",
-      "size": 41336719
+      "size": 41336719,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 29.53,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Gekijouban Soushuuhen OVERLORD [Ma10p_1080p]/SPs/[VCB-Studio] Gekijouban Soushuuhen OVERLORD [Menu01][Ma10p_1080p][x265_flac].mkv",
-      "size": 23270591
+      "size": 23270591,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 158.16,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 25,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Gekijouban Soushuuhen OVERLORD [Ma10p_1080p]/SPs/[VCB-Studio] Gekijouban Soushuuhen OVERLORD [Menu02][Ma10p_1080p][x265_flac].mkv",
-      "size": 23904383
+      "size": 23904383,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 149.15,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 25,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Gekijouban Soushuuhen OVERLORD [Ma10p_1080p]/SPs/[VCB-Studio] Gekijouban Soushuuhen OVERLORD [SP01][Ma10p_1080p][x265_flac].ass",
@@ -55,7 +155,17 @@
     },
     {
       "path": "[VCB-Studio] Gekijouban Soushuuhen OVERLORD [Ma10p_1080p]/SPs/[VCB-Studio] Gekijouban Soushuuhen OVERLORD [SP01][Ma10p_1080p][x265_flac].mkv",
-      "size": 209964367
+      "size": 209964367,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 781.281,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Gekijouban Soushuuhen OVERLORD [Ma10p_1080p]/SPs/[VCB-Studio] Gekijouban Soushuuhen OVERLORD [SP02][Ma10p_1080p][x265_flac].ass",
@@ -63,15 +173,45 @@
     },
     {
       "path": "[VCB-Studio] Gekijouban Soushuuhen OVERLORD [Ma10p_1080p]/SPs/[VCB-Studio] Gekijouban Soushuuhen OVERLORD [SP02][Ma10p_1080p][x265_flac].mkv",
-      "size": 211257711
+      "size": 211257711,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 782.782,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Gekijouban Soushuuhen OVERLORD [Ma10p_1080p]/SPs/[VCB-Studio] Gekijouban Soushuuhen OVERLORD [SP03 Theater Manners 01][Ma10p_1080p][x265_flac].mkv",
-      "size": 17601488
+      "size": 17601488,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 102.102,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Gekijouban Soushuuhen OVERLORD [Ma10p_1080p]/SPs/[VCB-Studio] Gekijouban Soushuuhen OVERLORD [SP04 Theater Manners 02][Ma10p_1080p][x265_flac].mkv",
-      "size": 17590996
+      "size": 17590996,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 102.102,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD [Ma10p_1080p]/[VCB-Studio] OVERLORD [01][Ma10p_1080p][x265_flac_aac].DMG-chs.ass",
@@ -79,7 +219,17 @@
     },
     {
       "path": "[VCB-Studio] OVERLORD [Ma10p_1080p]/[VCB-Studio] OVERLORD [01][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1195268610
+      "size": 1195268610,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1454.122,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD [Ma10p_1080p]/[VCB-Studio] OVERLORD [02][Ma10p_1080p][x265_flac].DMG-chs.ass",
@@ -87,7 +237,17 @@
     },
     {
       "path": "[VCB-Studio] OVERLORD [Ma10p_1080p]/[VCB-Studio] OVERLORD [02][Ma10p_1080p][x265_flac].mkv",
-      "size": 1075470758
+      "size": 1075470758,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.12,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD [Ma10p_1080p]/[VCB-Studio] OVERLORD [03][Ma10p_1080p][x265_flac].DMG-chs.ass",
@@ -95,7 +255,17 @@
     },
     {
       "path": "[VCB-Studio] OVERLORD [Ma10p_1080p]/[VCB-Studio] OVERLORD [03][Ma10p_1080p][x265_flac].mkv",
-      "size": 1210557415
+      "size": 1210557415,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.992,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD [Ma10p_1080p]/[VCB-Studio] OVERLORD [04][Ma10p_1080p][x265_flac_aac].DMG-chs.ass",
@@ -103,7 +273,17 @@
     },
     {
       "path": "[VCB-Studio] OVERLORD [Ma10p_1080p]/[VCB-Studio] OVERLORD [04][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1250435752
+      "size": 1250435752,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1452.138,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD [Ma10p_1080p]/[VCB-Studio] OVERLORD [05][Ma10p_1080p][x265_flac].DMG-chs.ass",
@@ -111,7 +291,17 @@
     },
     {
       "path": "[VCB-Studio] OVERLORD [Ma10p_1080p]/[VCB-Studio] OVERLORD [05][Ma10p_1080p][x265_flac].mkv",
-      "size": 972504910
+      "size": 972504910,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.035,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD [Ma10p_1080p]/[VCB-Studio] OVERLORD [06][Ma10p_1080p][x265_flac].DMG-chs.ass",
@@ -119,7 +309,17 @@
     },
     {
       "path": "[VCB-Studio] OVERLORD [Ma10p_1080p]/[VCB-Studio] OVERLORD [06][Ma10p_1080p][x265_flac].mkv",
-      "size": 1454592722
+      "size": 1454592722,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.12,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD [Ma10p_1080p]/[VCB-Studio] OVERLORD [07][Ma10p_1080p][x265_flac_aac].DMG-chs.ass",
@@ -127,7 +327,17 @@
     },
     {
       "path": "[VCB-Studio] OVERLORD [Ma10p_1080p]/[VCB-Studio] OVERLORD [07][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1461313903
+      "size": 1461313903,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.05,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD [Ma10p_1080p]/[VCB-Studio] OVERLORD [08][Ma10p_1080p][x265_flac].DMG-chs.ass",
@@ -135,7 +345,17 @@
     },
     {
       "path": "[VCB-Studio] OVERLORD [Ma10p_1080p]/[VCB-Studio] OVERLORD [08][Ma10p_1080p][x265_flac].mkv",
-      "size": 1068979076
+      "size": 1068979076,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1454.12,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD [Ma10p_1080p]/[VCB-Studio] OVERLORD [09][Ma10p_1080p][x265_flac_aac].DMG-chs.ass",
@@ -143,7 +363,17 @@
     },
     {
       "path": "[VCB-Studio] OVERLORD [Ma10p_1080p]/[VCB-Studio] OVERLORD [09][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1239477334
+      "size": 1239477334,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1448.0,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD [Ma10p_1080p]/[VCB-Studio] OVERLORD [10][Ma10p_1080p][x265_flac_aac].DMG-chs.ass",
@@ -151,7 +381,17 @@
     },
     {
       "path": "[VCB-Studio] OVERLORD [Ma10p_1080p]/[VCB-Studio] OVERLORD [10][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1109114201
+      "size": 1109114201,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.136,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD [Ma10p_1080p]/[VCB-Studio] OVERLORD [11][Ma10p_1080p][x265_flac].DMG-chs.ass",
@@ -159,7 +399,17 @@
     },
     {
       "path": "[VCB-Studio] OVERLORD [Ma10p_1080p]/[VCB-Studio] OVERLORD [11][Ma10p_1080p][x265_flac].mkv",
-      "size": 977644737
+      "size": 977644737,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1456.08,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD [Ma10p_1080p]/[VCB-Studio] OVERLORD [12][Ma10p_1080p][x265_flac_aac].DMG-chs.ass",
@@ -167,7 +417,17 @@
     },
     {
       "path": "[VCB-Studio] OVERLORD [Ma10p_1080p]/[VCB-Studio] OVERLORD [12][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1255239900
+      "size": 1255239900,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.136,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD [Ma10p_1080p]/[VCB-Studio] OVERLORD [13][Ma10p_1080p][x265_flac].DMG-chs.ass",
@@ -175,7 +435,17 @@
     },
     {
       "path": "[VCB-Studio] OVERLORD [Ma10p_1080p]/[VCB-Studio] OVERLORD [13][Ma10p_1080p][x265_flac].mkv",
-      "size": 1079230907
+      "size": 1079230907,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1421.045,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD [Ma10p_1080p]/CDs/[150826] ｢Clattanoia｣／OxT (flac)/Cover.jpg",
@@ -1527,123 +1797,423 @@
     },
     {
       "path": "[VCB-Studio] OVERLORD [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD [CM01][Ma10p_1080p][x265_flac].mkv",
-      "size": 24556705
+      "size": 24556705,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 17.017,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD [CM02][Ma10p_1080p][x265_flac].mkv",
-      "size": 47197849
+      "size": 47197849,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 32.032,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD [CM03][Ma10p_1080p][x265_flac].mkv",
-      "size": 23175122
+      "size": 23175122,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 17.017,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD [CM04][Ma10p_1080p][x265_flac].mkv",
-      "size": 43682566
+      "size": 43682566,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 32.032,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD [CM05][Ma10p_1080p][x265_flac].mkv",
-      "size": 23105047
+      "size": 23105047,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 17.017,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD [CM06][Ma10p_1080p][x265_flac].mkv",
-      "size": 16555035
+      "size": 16555035,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 17.017,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD [Menu01][Ma10p_1080p][x265_flac].mkv",
-      "size": 23997052
+      "size": 23997052,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 158.16,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 34,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD [Menu02][Ma10p_1080p][x265_flac].mkv",
-      "size": 21274949
+      "size": 21274949,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 158.16,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 28,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD [Menu03][Ma10p_1080p][x265_flac].mkv",
-      "size": 21836686
+      "size": 21836686,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 158.16,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 31,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD [Menu04][Ma10p_1080p][x265_flac].mkv",
-      "size": 21328986
+      "size": 21328986,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 149.15,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 28,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD [Menu05][Ma10p_1080p][x265_flac].mkv",
-      "size": 20946711
+      "size": 20946711,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 149.15,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 28,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD [Menu06][Ma10p_1080p][x265_flac].mkv",
-      "size": 20903935
+      "size": 20903935,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 149.15,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 28,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD [NCED][Ma10p_1080p][x265_flac].mkv",
-      "size": 73629782
+      "size": 73629782,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD [NCOP][Ma10p_1080p][x265_flac].mkv",
-      "size": 105410165
+      "size": 105410165,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD [Preview01_1][Ma10p_1080p][x265_flac].mkv",
-      "size": 37393084
+      "size": 37393084,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 35.035,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD [Preview01_2][Ma10p_1080p][x265_flac].mkv",
-      "size": 36061664
+      "size": 36061664,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 42.042,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD [Preview02][Ma10p_1080p][x265_flac].mkv",
-      "size": 30164710
+      "size": 30164710,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 30.03,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD [Preview03][Ma10p_1080p][x265_flac].mkv",
-      "size": 42448183
+      "size": 42448183,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 41.041,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD [Preview04][Ma10p_1080p][x265_flac].mkv",
-      "size": 52482368
+      "size": 52482368,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 44.045,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD [Preview05][Ma10p_1080p][x265_flac].mkv",
-      "size": 26564273
+      "size": 26564273,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 33.035,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD [Preview06][Ma10p_1080p][x265_flac].mkv",
-      "size": 36507591
+      "size": 36507591,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 51.051,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD [Preview07][Ma10p_1080p][x265_flac].mkv",
-      "size": 36617678
+      "size": 36617678,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 37.037,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD [Preview08][Ma10p_1080p][x265_flac].mkv",
-      "size": 38229088
+      "size": 38229088,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 39.04,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD [Preview09][Ma10p_1080p][x265_flac].mkv",
-      "size": 42744659
+      "size": 42744659,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 42.042,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD [Preview10][Ma10p_1080p][x265_flac].mkv",
-      "size": 37160268
+      "size": 37160268,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 46.046,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD [Preview11][Ma10p_1080p][x265_flac].mkv",
-      "size": 41673605
+      "size": 41673605,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 49.05,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD [Preview12][Ma10p_1080p][x265_flac].mkv",
-      "size": 28647265
+      "size": 28647265,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 34.035,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD [Preview13][Ma10p_1080p][x265_flac].mkv",
-      "size": 49669632
+      "size": 49669632,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 52.052,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD [PV01][Ma10p_1080p][x265_flac].mkv",
-      "size": 106423249
+      "size": 106423249,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 116.116,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD [PV02][Ma10p_1080p][x265_flac].mkv",
-      "size": 109558207
+      "size": 109558207,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 99.1,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD [SP01][Ma10p_1080p][x265_flac].DMG-chs.ass",
@@ -1651,7 +2221,17 @@
     },
     {
       "path": "[VCB-Studio] OVERLORD [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD [SP01][Ma10p_1080p][x265_flac].mkv",
-      "size": 51270563
+      "size": 51270563,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 182.015,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD [SP02][Ma10p_1080p][x265_flac].DMG-chs.ass",
@@ -1659,7 +2239,17 @@
     },
     {
       "path": "[VCB-Studio] OVERLORD [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD [SP02][Ma10p_1080p][x265_flac].mkv",
-      "size": 44314313
+      "size": 44314313,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 182.015,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD [SP03][Ma10p_1080p][x265_flac].DMG-chs.ass",
@@ -1667,7 +2257,17 @@
     },
     {
       "path": "[VCB-Studio] OVERLORD [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD [SP03][Ma10p_1080p][x265_flac].mkv",
-      "size": 53802941
+      "size": 53802941,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 182.015,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD [SP04][Ma10p_1080p][x265_flac].DMG-chs.ass",
@@ -1675,7 +2275,17 @@
     },
     {
       "path": "[VCB-Studio] OVERLORD [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD [SP04][Ma10p_1080p][x265_flac].mkv",
-      "size": 57466509
+      "size": 57466509,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 182.015,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD [SP05][Ma10p_1080p][x265_flac].DMG-chs.ass",
@@ -1683,7 +2293,17 @@
     },
     {
       "path": "[VCB-Studio] OVERLORD [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD [SP05][Ma10p_1080p][x265_flac].mkv",
-      "size": 59410591
+      "size": 59410591,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 182.015,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD [SP06][Ma10p_1080p][x265_flac].DMG-chs.ass",
@@ -1691,7 +2311,17 @@
     },
     {
       "path": "[VCB-Studio] OVERLORD [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD [SP06][Ma10p_1080p][x265_flac].mkv",
-      "size": 52629424
+      "size": 52629424,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 182.015,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD [SP07][Ma10p_1080p][x265_flac].DMG-chs.ass",
@@ -1699,7 +2329,17 @@
     },
     {
       "path": "[VCB-Studio] OVERLORD [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD [SP07][Ma10p_1080p][x265_flac].mkv",
-      "size": 64699397
+      "size": 64699397,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 182.015,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD [SP08][Ma10p_1080p][x265_flac].DMG-chs.ass",
@@ -1707,7 +2347,17 @@
     },
     {
       "path": "[VCB-Studio] OVERLORD [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD [SP08][Ma10p_1080p][x265_flac].mkv",
-      "size": 81115917
+      "size": 81115917,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 182.015,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD II [Ma10p_1080p]/[VCB-Studio] OVERLORD II [01][Ma10p_1080p][x265_flac].DMG-sc.ass",
@@ -1715,7 +2365,17 @@
     },
     {
       "path": "[VCB-Studio] OVERLORD II [Ma10p_1080p]/[VCB-Studio] OVERLORD II [01][Ma10p_1080p][x265_flac].mkv",
-      "size": 1164216077
+      "size": 1164216077,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1450.95,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD II [Ma10p_1080p]/[VCB-Studio] OVERLORD II [02][Ma10p_1080p][x265_flac].DMG-sc.ass",
@@ -1723,7 +2383,17 @@
     },
     {
       "path": "[VCB-Studio] OVERLORD II [Ma10p_1080p]/[VCB-Studio] OVERLORD II [02][Ma10p_1080p][x265_flac].mkv",
-      "size": 1100948027
+      "size": 1100948027,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.12,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD II [Ma10p_1080p]/[VCB-Studio] OVERLORD II [03][Ma10p_1080p][x265_flac].DMG-sc.ass",
@@ -1731,7 +2401,17 @@
     },
     {
       "path": "[VCB-Studio] OVERLORD II [Ma10p_1080p]/[VCB-Studio] OVERLORD II [03][Ma10p_1080p][x265_flac].mkv",
-      "size": 1387236496
+      "size": 1387236496,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.12,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD II [Ma10p_1080p]/[VCB-Studio] OVERLORD II [04][Ma10p_1080p][x265_flac_aac].DMG-sc.ass",
@@ -1739,7 +2419,17 @@
     },
     {
       "path": "[VCB-Studio] OVERLORD II [Ma10p_1080p]/[VCB-Studio] OVERLORD II [04][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1220658015
+      "size": 1220658015,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.136,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD II [Ma10p_1080p]/[VCB-Studio] OVERLORD II [05][Ma10p_1080p][x265_flac_aac].DMG-sc.ass",
@@ -1747,7 +2437,17 @@
     },
     {
       "path": "[VCB-Studio] OVERLORD II [Ma10p_1080p]/[VCB-Studio] OVERLORD II [05][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1123472267
+      "size": 1123472267,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.136,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD II [Ma10p_1080p]/[VCB-Studio] OVERLORD II [06][Ma10p_1080p][x265_flac].DMG-sc.ass",
@@ -1755,7 +2455,17 @@
     },
     {
       "path": "[VCB-Studio] OVERLORD II [Ma10p_1080p]/[VCB-Studio] OVERLORD II [06][Ma10p_1080p][x265_flac].mkv",
-      "size": 1090795789
+      "size": 1090795789,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.12,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD II [Ma10p_1080p]/[VCB-Studio] OVERLORD II [07][Ma10p_1080p][x265_flac].DMG-sc.ass",
@@ -1763,7 +2473,17 @@
     },
     {
       "path": "[VCB-Studio] OVERLORD II [Ma10p_1080p]/[VCB-Studio] OVERLORD II [07][Ma10p_1080p][x265_flac].mkv",
-      "size": 1056221000
+      "size": 1056221000,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.12,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD II [Ma10p_1080p]/[VCB-Studio] OVERLORD II [08][Ma10p_1080p][x265_flac_aac].DMG-sc.ass",
@@ -1771,7 +2491,17 @@
     },
     {
       "path": "[VCB-Studio] OVERLORD II [Ma10p_1080p]/[VCB-Studio] OVERLORD II [08][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1137783336
+      "size": 1137783336,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.136,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD II [Ma10p_1080p]/[VCB-Studio] OVERLORD II [09][Ma10p_1080p][x265_flac_aac].DMG-sc.ass",
@@ -1779,7 +2509,17 @@
     },
     {
       "path": "[VCB-Studio] OVERLORD II [Ma10p_1080p]/[VCB-Studio] OVERLORD II [09][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1126181214
+      "size": 1126181214,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.136,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD II [Ma10p_1080p]/[VCB-Studio] OVERLORD II [10][Ma10p_1080p][x265_flac].DMG-sc.ass",
@@ -1787,7 +2527,17 @@
     },
     {
       "path": "[VCB-Studio] OVERLORD II [Ma10p_1080p]/[VCB-Studio] OVERLORD II [10][Ma10p_1080p][x265_flac].mkv",
-      "size": 1088065428
+      "size": 1088065428,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.12,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD II [Ma10p_1080p]/[VCB-Studio] OVERLORD II [11][Ma10p_1080p][x265_flac_aac].DMG-sc.ass",
@@ -1795,7 +2545,17 @@
     },
     {
       "path": "[VCB-Studio] OVERLORD II [Ma10p_1080p]/[VCB-Studio] OVERLORD II [11][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1245805220
+      "size": 1245805220,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.136,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD II [Ma10p_1080p]/[VCB-Studio] OVERLORD II [12][Ma10p_1080p][x265_flac].DMG-sc.ass",
@@ -1803,7 +2563,17 @@
     },
     {
       "path": "[VCB-Studio] OVERLORD II [Ma10p_1080p]/[VCB-Studio] OVERLORD II [12][Ma10p_1080p][x265_flac].mkv",
-      "size": 1068738039
+      "size": 1068738039,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.12,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD II [Ma10p_1080p]/[VCB-Studio] OVERLORD II [13][Ma10p_1080p][x265_flac_aac].DMG-sc.ass",
@@ -1811,7 +2581,17 @@
     },
     {
       "path": "[VCB-Studio] OVERLORD II [Ma10p_1080p]/[VCB-Studio] OVERLORD II [13][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1197296414
+      "size": 1197296414,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1421.098,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD II [Ma10p_1080p]/CDs/[180124] ｢GO CRY GO｣／OxT (flac+webp)/01. GO CRY GO.flac",
@@ -2051,99 +2831,339 @@
     },
     {
       "path": "[VCB-Studio] OVERLORD II [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD II [CM01][Ma10p_1080p][x265_flac].mkv",
-      "size": 34137271
+      "size": 34137271,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 32.032,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD II [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD II [CM02][Ma10p_1080p][x265_flac].mkv",
-      "size": 19736841
+      "size": 19736841,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 17.017,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD II [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD II [CM03][Ma10p_1080p][x265_flac].mkv",
-      "size": 19527672
+      "size": 19527672,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 17.017,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD II [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD II [Menu01][Ma10p_1080p][x265_flac].mkv",
-      "size": 22990788
+      "size": 22990788,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 127.13,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 46,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD II [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD II [Menu02][Ma10p_1080p][x265_flac].mkv",
-      "size": 20002738
+      "size": 20002738,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 127.63,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 40,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD II [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD II [Menu03][Ma10p_1080p][x265_flac].mkv",
-      "size": 23963210
+      "size": 23963210,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 138.14,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 40,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD II [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD II [NCED][Ma10p_1080p][x265_flac].mkv",
-      "size": 83305246
+      "size": 83305246,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD II [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD II [NCOP][Ma10p_1080p][x265_flac].mkv",
-      "size": 109837075
+      "size": 109837075,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD II [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD II [Preview01_1][Ma10p_1080p][x265_flac].mkv",
-      "size": 30027862
+      "size": 30027862,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 32.032,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD II [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD II [Preview01_2][Ma10p_1080p][x265_flac].mkv",
-      "size": 26212012
+      "size": 26212012,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 32.032,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD II [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD II [Preview02][Ma10p_1080p][x265_flac].mkv",
-      "size": 25034245
+      "size": 25034245,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 32.032,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD II [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD II [Preview03][Ma10p_1080p][x265_flac].mkv",
-      "size": 29137315
+      "size": 29137315,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 32.032,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD II [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD II [Preview04][Ma10p_1080p][x265_flac].mkv",
-      "size": 25360782
+      "size": 25360782,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 32.032,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD II [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD II [Preview05][Ma10p_1080p][x265_flac].mkv",
-      "size": 28964610
+      "size": 28964610,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 32.032,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD II [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD II [Preview06][Ma10p_1080p][x265_flac].mkv",
-      "size": 24094612
+      "size": 24094612,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 32.032,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD II [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD II [Preview07][Ma10p_1080p][x265_flac].mkv",
-      "size": 22144411
+      "size": 22144411,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 32.032,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD II [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD II [Preview08][Ma10p_1080p][x265_flac].mkv",
-      "size": 24602926
+      "size": 24602926,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 32.032,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD II [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD II [Preview09][Ma10p_1080p][x265_flac].mkv",
-      "size": 25155222
+      "size": 25155222,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 32.032,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD II [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD II [Preview10][Ma10p_1080p][x265_flac].mkv",
-      "size": 23129119
+      "size": 23129119,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 32.032,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD II [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD II [Preview11][Ma10p_1080p][x265_flac].mkv",
-      "size": 22974977
+      "size": 22974977,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 32.032,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD II [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD II [Preview12][Ma10p_1080p][x265_flac].mkv",
-      "size": 24350696
+      "size": 24350696,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 32.032,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD II [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD II [Preview13][Ma10p_1080p][x265_flac].mkv",
-      "size": 40644388
+      "size": 40644388,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 32.032,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD II [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD II [PV01][Ma10p_1080p][x265_flac].mkv",
-      "size": 67817738
+      "size": 67817738,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD II [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD II [PV02][Ma10p_1080p][x265_flac].mkv",
-      "size": 80395990
+      "size": 80395990,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 111.111,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD II [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD II [SP01][Ma10p_1080p][x265_flac].DMG-sc.ass",
@@ -2151,7 +3171,17 @@
     },
     {
       "path": "[VCB-Studio] OVERLORD II [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD II [SP01][Ma10p_1080p][x265_flac].mkv",
-      "size": 30279160
+      "size": 30279160,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD II [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD II [SP02][Ma10p_1080p][x265_flac].DMG-sc.ass",
@@ -2159,7 +3189,17 @@
     },
     {
       "path": "[VCB-Studio] OVERLORD II [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD II [SP02][Ma10p_1080p][x265_flac].mkv",
-      "size": 24347641
+      "size": 24347641,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD II [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD II [SP03][Ma10p_1080p][x265_flac].DMG-sc.ass",
@@ -2167,7 +3207,17 @@
     },
     {
       "path": "[VCB-Studio] OVERLORD II [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD II [SP03][Ma10p_1080p][x265_flac].mkv",
-      "size": 27167230
+      "size": 27167230,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD II [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD II [SP04][Ma10p_1080p][x265_flac].DMG-sc.ass",
@@ -2175,7 +3225,17 @@
     },
     {
       "path": "[VCB-Studio] OVERLORD II [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD II [SP04][Ma10p_1080p][x265_flac].mkv",
-      "size": 23405366
+      "size": 23405366,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD II [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD II [SP05][Ma10p_1080p][x265_flac].DMG-sc.ass",
@@ -2183,7 +3243,17 @@
     },
     {
       "path": "[VCB-Studio] OVERLORD II [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD II [SP05][Ma10p_1080p][x265_flac].mkv",
-      "size": 31796210
+      "size": 31796210,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD II [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD II [SP06][Ma10p_1080p][x265_flac].DMG-sc.ass",
@@ -2191,7 +3261,17 @@
     },
     {
       "path": "[VCB-Studio] OVERLORD II [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD II [SP06][Ma10p_1080p][x265_flac].mkv",
-      "size": 36913626
+      "size": 36913626,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD II [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD II [SP07][Ma10p_1080p][x265_flac].DMG-sc.ass",
@@ -2199,7 +3279,17 @@
     },
     {
       "path": "[VCB-Studio] OVERLORD II [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD II [SP07][Ma10p_1080p][x265_flac].mkv",
-      "size": 28722702
+      "size": 28722702,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD II [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD II [SP08_1][Ma10p_1080p][x265_flac].DMG-sc.ass",
@@ -2207,7 +3297,17 @@
     },
     {
       "path": "[VCB-Studio] OVERLORD II [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD II [SP08_1][Ma10p_1080p][x265_flac].mkv",
-      "size": 26925755
+      "size": 26925755,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD II [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD II [SP08_2][Ma10p_1080p][x265_flac].DMG-sc.ass",
@@ -2215,7 +3315,17 @@
     },
     {
       "path": "[VCB-Studio] OVERLORD II [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD II [SP08_2][Ma10p_1080p][x265_flac].mkv",
-      "size": 27375205
+      "size": 27375205,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD II [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD II [SP09][Ma10p_1080p][x265_flac].DMG-sc.ass",
@@ -2223,7 +3333,17 @@
     },
     {
       "path": "[VCB-Studio] OVERLORD II [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD II [SP09][Ma10p_1080p][x265_flac].mkv",
-      "size": 31317154
+      "size": 31317154,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD II [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD II [SP10][Ma10p_1080p][x265_flac].DMG-sc.ass",
@@ -2231,7 +3351,17 @@
     },
     {
       "path": "[VCB-Studio] OVERLORD II [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD II [SP10][Ma10p_1080p][x265_flac].mkv",
-      "size": 27315946
+      "size": 27315946,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD II [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD II [SP11][Ma10p_1080p][x265_flac].DMG-sc.ass",
@@ -2239,7 +3369,17 @@
     },
     {
       "path": "[VCB-Studio] OVERLORD II [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD II [SP11][Ma10p_1080p][x265_flac].mkv",
-      "size": 30186929
+      "size": 30186929,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD II [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD II [SP12][Ma10p_1080p][x265_flac].DMG-sc.ass",
@@ -2247,7 +3387,17 @@
     },
     {
       "path": "[VCB-Studio] OVERLORD II [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD II [SP12][Ma10p_1080p][x265_flac].mkv",
-      "size": 25983611
+      "size": 25983611,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD II [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD II [SP13][Ma10p_1080p][x265_flac].DMG-sc.ass",
@@ -2255,11 +3405,31 @@
     },
     {
       "path": "[VCB-Studio] OVERLORD II [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD II [SP13][Ma10p_1080p][x265_flac].mkv",
-      "size": 29049706
+      "size": 29049706,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD III [Ma10p_1080p]/[VCB-Studio] OVERLORD III [01][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1095820852
+      "size": 1095820852,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.136,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD III [Ma10p_1080p]/[VCB-Studio] OVERLORD III [01][Ma10p_1080p][x265_flac_aac].sc.ass",
@@ -2267,7 +3437,17 @@
     },
     {
       "path": "[VCB-Studio] OVERLORD III [Ma10p_1080p]/[VCB-Studio] OVERLORD III [02][Ma10p_1080p][x265_flac].mkv",
-      "size": 1230155653
+      "size": 1230155653,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.12,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD III [Ma10p_1080p]/[VCB-Studio] OVERLORD III [02][Ma10p_1080p][x265_flac].sc.ass",
@@ -2275,7 +3455,17 @@
     },
     {
       "path": "[VCB-Studio] OVERLORD III [Ma10p_1080p]/[VCB-Studio] OVERLORD III [03][Ma10p_1080p][x265_flac].mkv",
-      "size": 1217661933
+      "size": 1217661933,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.12,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD III [Ma10p_1080p]/[VCB-Studio] OVERLORD III [03][Ma10p_1080p][x265_flac].sc.ass",
@@ -2283,7 +3473,17 @@
     },
     {
       "path": "[VCB-Studio] OVERLORD III [Ma10p_1080p]/[VCB-Studio] OVERLORD III [04][Ma10p_1080p][x265_flac].mkv",
-      "size": 1118849193
+      "size": 1118849193,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.12,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD III [Ma10p_1080p]/[VCB-Studio] OVERLORD III [04][Ma10p_1080p][x265_flac].sc.ass",
@@ -2291,7 +3491,17 @@
     },
     {
       "path": "[VCB-Studio] OVERLORD III [Ma10p_1080p]/[VCB-Studio] OVERLORD III [05][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1155659932
+      "size": 1155659932,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.136,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD III [Ma10p_1080p]/[VCB-Studio] OVERLORD III [05][Ma10p_1080p][x265_flac_aac].sc.ass",
@@ -2299,7 +3509,17 @@
     },
     {
       "path": "[VCB-Studio] OVERLORD III [Ma10p_1080p]/[VCB-Studio] OVERLORD III [06][Ma10p_1080p][x265_flac].mkv",
-      "size": 1113340776
+      "size": 1113340776,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.12,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD III [Ma10p_1080p]/[VCB-Studio] OVERLORD III [06][Ma10p_1080p][x265_flac].sc.ass",
@@ -2307,7 +3527,17 @@
     },
     {
       "path": "[VCB-Studio] OVERLORD III [Ma10p_1080p]/[VCB-Studio] OVERLORD III [07][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1187309743
+      "size": 1187309743,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.136,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD III [Ma10p_1080p]/[VCB-Studio] OVERLORD III [07][Ma10p_1080p][x265_flac_aac].sc.ass",
@@ -2315,7 +3545,17 @@
     },
     {
       "path": "[VCB-Studio] OVERLORD III [Ma10p_1080p]/[VCB-Studio] OVERLORD III [08][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1224875397
+      "size": 1224875397,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.136,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD III [Ma10p_1080p]/[VCB-Studio] OVERLORD III [08][Ma10p_1080p][x265_flac_aac].sc.ass",
@@ -2323,7 +3563,17 @@
     },
     {
       "path": "[VCB-Studio] OVERLORD III [Ma10p_1080p]/[VCB-Studio] OVERLORD III [09][Ma10p_1080p][x265_flac].mkv",
-      "size": 1256897411
+      "size": 1256897411,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.12,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD III [Ma10p_1080p]/[VCB-Studio] OVERLORD III [09][Ma10p_1080p][x265_flac].sc.ass",
@@ -2331,7 +3581,17 @@
     },
     {
       "path": "[VCB-Studio] OVERLORD III [Ma10p_1080p]/[VCB-Studio] OVERLORD III [10][Ma10p_1080p][x265_flac].mkv",
-      "size": 1153804437
+      "size": 1153804437,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.12,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD III [Ma10p_1080p]/[VCB-Studio] OVERLORD III [10][Ma10p_1080p][x265_flac].sc.ass",
@@ -2339,7 +3599,17 @@
     },
     {
       "path": "[VCB-Studio] OVERLORD III [Ma10p_1080p]/[VCB-Studio] OVERLORD III [11][Ma10p_1080p][x265_flac].mkv",
-      "size": 1362939923
+      "size": 1362939923,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.12,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD III [Ma10p_1080p]/[VCB-Studio] OVERLORD III [11][Ma10p_1080p][x265_flac].sc.ass",
@@ -2347,7 +3617,17 @@
     },
     {
       "path": "[VCB-Studio] OVERLORD III [Ma10p_1080p]/[VCB-Studio] OVERLORD III [12][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1401271667
+      "size": 1401271667,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.136,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD III [Ma10p_1080p]/[VCB-Studio] OVERLORD III [12][Ma10p_1080p][x265_flac_aac].sc.ass",
@@ -2355,7 +3635,17 @@
     },
     {
       "path": "[VCB-Studio] OVERLORD III [Ma10p_1080p]/[VCB-Studio] OVERLORD III [13][Ma10p_1080p][x265_flac_aac].mkv",
-      "size": 1138956094
+      "size": 1138956094,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1421.098,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD III [Ma10p_1080p]/[VCB-Studio] OVERLORD III [13][Ma10p_1080p][x265_flac_aac].sc.ass",
@@ -2495,99 +3785,339 @@
     },
     {
       "path": "[VCB-Studio] OVERLORD III [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD III [CM01][Ma10p_1080p][x265_flac].mkv",
-      "size": 32636010
+      "size": 32636010,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 32.032,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD III [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD III [CM02][Ma10p_1080p][x265_flac].mkv",
-      "size": 28767498
+      "size": 28767498,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 32.032,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD III [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD III [CM03][Ma10p_1080p][x265_flac].mkv",
-      "size": 21561546
+      "size": 21561546,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 17.017,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD III [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD III [CM04][Ma10p_1080p][x265_flac].mkv",
-      "size": 16244745
+      "size": 16244745,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 17.017,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD III [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD III [Menu01][Ma10p_1080p][x265_flac].mkv",
-      "size": 19275655
+      "size": 19275655,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 101.105,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 46,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD III [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD III [Menu02][Ma10p_1080p][x265_flac].mkv",
-      "size": 16235240
+      "size": 16235240,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 101.105,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 40,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD III [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD III [Menu03][Ma10p_1080p][x265_flac].mkv",
-      "size": 15171157
+      "size": 15171157,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 101.105,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 40,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD III [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD III [NCED][Ma10p_1080p][x265_flac].mkv",
-      "size": 81628110
+      "size": 81628110,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD III [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD III [NCOP][Ma10p_1080p][x265_flac].mkv",
-      "size": 121648852
+      "size": 121648852,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD III [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD III [Preview01_1][Ma10p_1080p][x265_flac].mkv",
-      "size": 21829280
+      "size": 21829280,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 32.032,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD III [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD III [Preview01_2][Ma10p_1080p][x265_flac].mkv",
-      "size": 20976831
+      "size": 20976831,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 32.032,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD III [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD III [Preview02][Ma10p_1080p][x265_flac].mkv",
-      "size": 30594701
+      "size": 30594701,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 32.032,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD III [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD III [Preview03][Ma10p_1080p][x265_flac].mkv",
-      "size": 28967492
+      "size": 28967492,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 32.032,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD III [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD III [Preview04][Ma10p_1080p][x265_flac].mkv",
-      "size": 28345825
+      "size": 28345825,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 32.032,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD III [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD III [Preview05][Ma10p_1080p][x265_flac].mkv",
-      "size": 21669104
+      "size": 21669104,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 32.032,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD III [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD III [Preview06][Ma10p_1080p][x265_flac].mkv",
-      "size": 22015357
+      "size": 22015357,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 32.032,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD III [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD III [Preview07][Ma10p_1080p][x265_flac].mkv",
-      "size": 23569092
+      "size": 23569092,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 32.032,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD III [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD III [Preview08][Ma10p_1080p][x265_flac].mkv",
-      "size": 33224347
+      "size": 33224347,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 32.032,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD III [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD III [Preview09][Ma10p_1080p][x265_flac].mkv",
-      "size": 30978268
+      "size": 30978268,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 32.032,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD III [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD III [Preview10][Ma10p_1080p][x265_flac].mkv",
-      "size": 30645760
+      "size": 30645760,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 32.032,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD III [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD III [Preview11][Ma10p_1080p][x265_flac].mkv",
-      "size": 28920055
+      "size": 28920055,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 32.032,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD III [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD III [Preview12][Ma10p_1080p][x265_flac].mkv",
-      "size": 27742933
+      "size": 27742933,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 32.032,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD III [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD III [Preview13][Ma10p_1080p][x265_flac].mkv",
-      "size": 33730806
+      "size": 33730806,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 32.032,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD III [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD III [PV01][Ma10p_1080p][x265_flac].mkv",
-      "size": 88404439
+      "size": 88404439,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 67.067,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD III [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD III [SP01][Ma10p_1080p][x265_flac].f-sc.ass",
@@ -2595,7 +4125,17 @@
     },
     {
       "path": "[VCB-Studio] OVERLORD III [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD III [SP01][Ma10p_1080p][x265_flac].mkv",
-      "size": 32856506
+      "size": 32856506,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD III [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD III [SP02][Ma10p_1080p][x265_flac].f-sc.ass",
@@ -2603,7 +4143,17 @@
     },
     {
       "path": "[VCB-Studio] OVERLORD III [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD III [SP02][Ma10p_1080p][x265_flac].mkv",
-      "size": 30530916
+      "size": 30530916,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD III [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD III [SP03][Ma10p_1080p][x265_flac].f-sc.ass",
@@ -2611,7 +4161,17 @@
     },
     {
       "path": "[VCB-Studio] OVERLORD III [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD III [SP03][Ma10p_1080p][x265_flac].mkv",
-      "size": 28638537
+      "size": 28638537,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD III [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD III [SP04][Ma10p_1080p][x265_flac].f-sc.ass",
@@ -2619,7 +4179,17 @@
     },
     {
       "path": "[VCB-Studio] OVERLORD III [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD III [SP04][Ma10p_1080p][x265_flac].mkv",
-      "size": 31278678
+      "size": 31278678,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD III [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD III [SP05][Ma10p_1080p][x265_flac].f-sc.ass",
@@ -2627,7 +4197,17 @@
     },
     {
       "path": "[VCB-Studio] OVERLORD III [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD III [SP05][Ma10p_1080p][x265_flac].mkv",
-      "size": 25989213
+      "size": 25989213,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD III [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD III [SP06][Ma10p_1080p][x265_flac].f-sc.ass",
@@ -2635,7 +4215,17 @@
     },
     {
       "path": "[VCB-Studio] OVERLORD III [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD III [SP06][Ma10p_1080p][x265_flac].mkv",
-      "size": 29643570
+      "size": 29643570,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD III [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD III [SP07][Ma10p_1080p][x265_flac].f-sc.ass",
@@ -2643,7 +4233,17 @@
     },
     {
       "path": "[VCB-Studio] OVERLORD III [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD III [SP07][Ma10p_1080p][x265_flac].mkv",
-      "size": 24037829
+      "size": 24037829,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD III [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD III [SP08][Ma10p_1080p][x265_flac].f-sc.ass",
@@ -2651,7 +4251,17 @@
     },
     {
       "path": "[VCB-Studio] OVERLORD III [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD III [SP08][Ma10p_1080p][x265_flac].mkv",
-      "size": 26840108
+      "size": 26840108,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD III [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD III [SP09][Ma10p_1080p][x265_flac].f-sc.ass",
@@ -2659,7 +4269,17 @@
     },
     {
       "path": "[VCB-Studio] OVERLORD III [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD III [SP09][Ma10p_1080p][x265_flac].mkv",
-      "size": 30743226
+      "size": 30743226,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD III [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD III [SP10][Ma10p_1080p][x265_flac].f-sc.ass",
@@ -2667,7 +4287,17 @@
     },
     {
       "path": "[VCB-Studio] OVERLORD III [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD III [SP10][Ma10p_1080p][x265_flac].mkv",
-      "size": 23635929
+      "size": 23635929,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD III [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD III [SP11][Ma10p_1080p][x265_flac].f-sc.ass",
@@ -2675,7 +4305,17 @@
     },
     {
       "path": "[VCB-Studio] OVERLORD III [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD III [SP11][Ma10p_1080p][x265_flac].mkv",
-      "size": 25658659
+      "size": 25658659,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD III [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD III [SP12][Ma10p_1080p][x265_flac].f-sc.ass",
@@ -2683,7 +4323,17 @@
     },
     {
       "path": "[VCB-Studio] OVERLORD III [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD III [SP12][Ma10p_1080p][x265_flac].mkv",
-      "size": 29547716
+      "size": 29547716,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD III [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD III [SP13][Ma10p_1080p][x265_flac].f-sc.ass",
@@ -2691,7 +4341,17 @@
     },
     {
       "path": "[VCB-Studio] OVERLORD III [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD III [SP13][Ma10p_1080p][x265_flac].mkv",
-      "size": 32815486
+      "size": 32815486,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD Ple Ple Pleiades [Ma10p_1080p]/[VCB-Studio] OVERLORD Ple Ple Pleiades [Ma10p_1080p][x265_flac].DMG-chs.ass",
@@ -2699,11 +4359,31 @@
     },
     {
       "path": "[VCB-Studio] OVERLORD Ple Ple Pleiades [Ma10p_1080p]/[VCB-Studio] OVERLORD Ple Ple Pleiades [Ma10p_1080p][x265_flac].mkv",
-      "size": 758129964
+      "size": 758129964,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1801.842,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] OVERLORD Ple Ple Pleiades [Ma10p_1080p]/SPs/[VCB-Studio] OVERLORD Ple Ple Pleiades [Menu][Ma10p_1080p][x265].mkv",
-      "size": 26004407
+      "size": 26004407,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 60.06,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 0,
+        "subtitle_stream_count": 4,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     }
   ],
   "local_fact_surface": {
@@ -61675,5 +63355,36 @@
     "subtitle_snippet_text_limit": 120,
     "container_probe": "ffprobe",
     "missing_actual_path_count": 0
+  },
+  "local_container_fact_summary": {
+    "container_fact_count": 168,
+    "probe_status_counts": {
+      "available": 168
+    },
+    "duration_seconds_range": [
+      16.02,
+      6141.636
+    ],
+    "duration_seconds_samples": [
+      6141.636,
+      5614.068,
+      16.02,
+      16.02,
+      29.53,
+      28.03
+    ]
+  },
+  "local_container_fact_source": {
+    "kind": "real_local_media_duration_backfill",
+    "media_root": "H:\\Anime",
+    "probe_media": true,
+    "container_probe": "ffprobe",
+    "embedded_in": "files[].container_facts",
+    "matched_file_count": 676,
+    "matched_video_count": 168,
+    "missing_actual_video_count": 0,
+    "match_stats": {
+      "matched_by_root_path": 676
+    }
   }
 }

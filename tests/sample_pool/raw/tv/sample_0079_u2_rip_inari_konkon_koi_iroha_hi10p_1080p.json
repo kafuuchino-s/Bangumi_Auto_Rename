@@ -7,7 +7,17 @@
     },
     {
       "path": "[U2-Rip]Inari, Konkon, Koi Iroha[01][Hi10p_1080p][x264_2flac].mkv",
-      "size": 950928078
+      "size": 950928078,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1417.006,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[U2-Rip]Inari, Konkon, Koi Iroha[02][Hi10p_1080p][x264_flac].default.chi.zh-cn.ass",
@@ -15,7 +25,17 @@
     },
     {
       "path": "[U2-Rip]Inari, Konkon, Koi Iroha[02][Hi10p_1080p][x264_flac].mkv",
-      "size": 768952822
+      "size": 768952822,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1416.088,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[U2-Rip]Inari, Konkon, Koi Iroha[03][Hi10p_1080p][x264_2flac].default.chi.zh-cn.ass",
@@ -23,7 +43,17 @@
     },
     {
       "path": "[U2-Rip]Inari, Konkon, Koi Iroha[03][Hi10p_1080p][x264_2flac].mkv",
-      "size": 953475041
+      "size": 953475041,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1417.041,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[U2-Rip]Inari, Konkon, Koi Iroha[04][Hi10p_1080p][x264_flac].default.chi.zh-cn.ass",
@@ -31,7 +61,17 @@
     },
     {
       "path": "[U2-Rip]Inari, Konkon, Koi Iroha[04][Hi10p_1080p][x264_flac].mkv",
-      "size": 820368611
+      "size": 820368611,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1416.046,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[U2-Rip]Inari, Konkon, Koi Iroha[05][Hi10p_1080p][x264_flac].default.chi.zh-cn.ass",
@@ -39,7 +79,17 @@
     },
     {
       "path": "[U2-Rip]Inari, Konkon, Koi Iroha[05][Hi10p_1080p][x264_flac].mkv",
-      "size": 902326061
+      "size": 902326061,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1416.964,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[U2-Rip]Inari, Konkon, Koi Iroha[06][Hi10p_1080p][x264_2flac].default.chi.zh-cn.ass",
@@ -47,7 +97,17 @@
     },
     {
       "path": "[U2-Rip]Inari, Konkon, Koi Iroha[06][Hi10p_1080p][x264_2flac].mkv",
-      "size": 1007478114
+      "size": 1007478114,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1416.005,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[U2-Rip]Inari, Konkon, Koi Iroha[07][Hi10p_1080p][x264_flac].default.chi.zh-cn.ass",
@@ -55,7 +115,17 @@
     },
     {
       "path": "[U2-Rip]Inari, Konkon, Koi Iroha[07][Hi10p_1080p][x264_flac].mkv",
-      "size": 879606448
+      "size": 879606448,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1417.089,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[U2-Rip]Inari, Konkon, Koi Iroha[08][Hi10p_1080p][x264_2flac].default.chi.zh-cn.ass",
@@ -63,7 +133,17 @@
     },
     {
       "path": "[U2-Rip]Inari, Konkon, Koi Iroha[08][Hi10p_1080p][x264_2flac].mkv",
-      "size": 999138952
+      "size": 999138952,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1416.046,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[U2-Rip]Inari, Konkon, Koi Iroha[09][Hi10p_1080p][x264_flac].default.chi.zh-cn.ass",
@@ -71,7 +151,17 @@
     },
     {
       "path": "[U2-Rip]Inari, Konkon, Koi Iroha[09][Hi10p_1080p][x264_flac].mkv",
-      "size": 758724436
+      "size": 758724436,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1417.047,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[U2-Rip]Inari, Konkon, Koi Iroha[10][Hi10p_1080p][x264_2flac].default.chi.zh-cn.ass",
@@ -79,7 +169,17 @@
     },
     {
       "path": "[U2-Rip]Inari, Konkon, Koi Iroha[10][Hi10p_1080p][x264_2flac].mkv",
-      "size": 955724249
+      "size": 955724249,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1416.046,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[U2-Rip]Inari, Konkon, Koi Iroha[OVA][Hi10p_1080p][x264_flac].default.chi.zh-cn.ass",
@@ -87,7 +187,17 @@
     },
     {
       "path": "[U2-Rip]Inari, Konkon, Koi Iroha[OVA][Hi10p_1080p][x264_flac].mkv",
-      "size": 773398710
+      "size": 773398710,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1418.0,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "CDs/[140129] 「今日に恋色」／May'n (flac+webp)/Scans/01.webp",
@@ -543,147 +653,538 @@
     },
     {
       "path": "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[CMv2][Hi10p_1080p][x264_flac].mkv",
-      "size": 45824520
+      "size": 45824520,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 49.05,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Menu_OVA_1][Hi10p_1080p][x264_flac].mkv",
-      "size": 18246516
+      "size": 18246516,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 96.1,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Menu_OVA_2][Hi10p_1080p][x264_flac].mkv",
-      "size": 12049318
+      "size": 12049318,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.095,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Menu_OVA_3][Hi10p_1080p][x264_flac].mkv",
-      "size": 10251556
+      "size": 10251556,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 88.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Menu_Vol.1_1][Hi10p_1080p][x264_flac].mkv",
-      "size": 19770672
+      "size": 19770672,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 96.1,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Menu_Vol.1_2][Hi10p_1080p][x264_2flac].mkv",
-      "size": 19590722
+      "size": 19590722,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.095,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Menu_Vol.1_3][Hi10p_1080p][x264_flac].mkv",
-      "size": 12541055
+      "size": 12541055,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.095,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Menu_Vol.2_1][Hi10p_1080p][x264_flac].mkv",
-      "size": 17447289
+      "size": 17447289,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 96.1,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Menu_Vol.2_2][Hi10p_1080p][x264_flac].mkv",
-      "size": 11820969
+      "size": 11820969,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.095,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Menu_Vol.2_3][Hi10p_1080p][x264_flac].mkv",
-      "size": 11637016
+      "size": 11637016,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.095,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Menu_Vol.2_4][Hi10p_1080p][x264_flac].mkv",
-      "size": 10417944
+      "size": 10417944,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 88.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Menu_Vol.3_1][Hi10p_1080p][x264_flac].mkv",
-      "size": 17206871
+      "size": 17206871,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 96.1,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Menu_Vol.3_2][Hi10p_1080p][x264_flac].mkv",
-      "size": 11830244
+      "size": 11830244,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.095,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Menu_Vol.3_3][Hi10p_1080p][x264_flac].mkv",
-      "size": 11796500
+      "size": 11796500,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.095,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Menu_Vol.3_4][Hi10p_1080p][x264_flac].mkv",
-      "size": 10968173
+      "size": 10968173,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 88.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Menu_Vol.4_1][Hi10p_1080p][x264_flac].mkv",
-      "size": 17040433
+      "size": 17040433,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 96.1,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Menu_Vol.4_2][Hi10p_1080p][x264_flac].mkv",
-      "size": 11959552
+      "size": 11959552,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.095,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Menu_Vol.4_3][Hi10p_1080p][x264_flac].mkv",
-      "size": 11879373
+      "size": 11879373,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.095,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Menu_Vol.4_4][Hi10p_1080p][x264_flac].mkv",
-      "size": 10688264
+      "size": 10688264,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 88.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Menu_Vol.4_5][Hi10p_1080p][x264_flac].mkv",
-      "size": 10380821
+      "size": 10380821,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 88.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Menu_Vol.5_1][Hi10p_1080p][x264_flac].mkv",
-      "size": 17101735
+      "size": 17101735,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 96.1,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Menu_Vol.5_2][Hi10p_1080p][x264_2flac].mkv",
-      "size": 19176285
+      "size": 19176285,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.095,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Menu_Vol.5_3][Hi10p_1080p][x264_flac].mkv",
-      "size": 11861442
+      "size": 11861442,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.095,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Menu_Vol.5_4][Hi10p_1080p][x264_flac].mkv",
-      "size": 10673703
+      "size": 10673703,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 88.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[NCED][Hi10p_1080p][x264_flac].mkv",
-      "size": 83949612
+      "size": 83949612,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.095,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[NCOP][Hi10p_1080p][x264_flac].mkv",
-      "size": 101485490
+      "size": 101485490,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.095,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Preview_02][Hi10p_1080p][x264_flac].mkv",
-      "size": 26163060
+      "size": 26163060,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 65.065,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Preview_03][Hi10p_1080p][x264_flac].mkv",
-      "size": 47734649
+      "size": 47734649,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 107.61,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Preview_04][Hi10p_1080p][x264_flac].mkv",
-      "size": 31094493
+      "size": 31094493,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 79.08,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Preview_05][Hi10p_1080p][x264_flac].mkv",
-      "size": 39339524
+      "size": 39339524,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 101.105,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Preview_06][Hi10p_1080p][x264_flac].mkv",
-      "size": 35719781
+      "size": 35719781,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 89.59,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Preview_07][Hi10p_1080p][x264_flac].mkv",
-      "size": 59582844
+      "size": 59582844,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 118.62,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Preview_08][Hi10p_1080p][x264_flac].mkv",
-      "size": 47087759
+      "size": 47087759,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 103.105,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Preview_09][Hi10p_1080p][x264_flac].mkv",
-      "size": 38051570
+      "size": 38051570,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 84.585,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[Preview_10][Hi10p_1080p][x264_flac].mkv",
-      "size": 28384895
+      "size": 28384895,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 62.065,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[U2-Rip]Inari, Konkon, Koi Iroha[PV][Hi10p_1080p][x264_flac].mkv",
-      "size": 69240541
+      "size": 69240541,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 101.105,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     }
-  ]
+  ],
+  "local_container_fact_summary": {
+    "container_fact_count": 47,
+    "probe_status_counts": {
+      "available": 47
+    },
+    "duration_seconds_range": [
+      49.05,
+      1418.0
+    ],
+    "duration_seconds_samples": [
+      1417.006,
+      1416.088,
+      1417.041,
+      1416.046,
+      1416.964,
+      1416.005
+    ]
+  },
+  "local_container_fact_source": {
+    "kind": "real_local_media_duration_backfill",
+    "media_root": "H:\\Anime",
+    "probe_media": true,
+    "container_probe": "ffprobe",
+    "embedded_in": "files[].container_facts",
+    "matched_file_count": 171,
+    "matched_video_count": 47,
+    "missing_actual_video_count": 0,
+    "match_stats": {
+      "matched_by_root_path": 171
+    }
+  }
 }

@@ -7,7 +7,17 @@
     },
     {
       "path": "[U2-RIP]ストライクウィッチーズ_2ND 01 [ふたたび空へ] (BD 1920X1080 X264 FLAC).mkv",
-      "size": 834328210
+      "size": 834328210,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1466.51,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[U2-RIP]ストライクウィッチーズ_2ND 02 [伝説の魔女達] (BD 1920X1080 X264 FLAC).default.chs.ass",
@@ -15,7 +25,17 @@
     },
     {
       "path": "[U2-RIP]ストライクウィッチーズ_2ND 02 [伝説の魔女達] (BD 1920X1080 X264 FLAC).mkv",
-      "size": 967154190
+      "size": 967154190,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1487.445,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[U2-RIP]ストライクウィッチーズ_2ND 03 [一緒にできること] (BD 1920X1080 X264 FLAC).default.chs.ass",
@@ -23,7 +43,17 @@
     },
     {
       "path": "[U2-RIP]ストライクウィッチーズ_2ND 03 [一緒にできること] (BD 1920X1080 X264 FLAC).mkv",
-      "size": 809484477
+      "size": 809484477,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1466.51,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[U2-RIP]ストライクウィッチーズ_2ND 04 [かたい、はやい、ものすご〜い] (BD 1920X1080 X264 FLAC).default.chs.ass",
@@ -31,7 +61,17 @@
     },
     {
       "path": "[U2-RIP]ストライクウィッチーズ_2ND 04 [かたい、はやい、ものすご〜い] (BD 1920X1080 X264 FLAC).mkv",
-      "size": 828398125
+      "size": 828398125,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1487.653,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[U2-RIP]ストライクウィッチーズ_2ND 05 [私のロマーニャ] (BD 1920X1080 X264 FLAC).default.chs.ass",
@@ -39,7 +79,17 @@
     },
     {
       "path": "[U2-RIP]ストライクウィッチーズ_2ND 05 [私のロマーニャ] (BD 1920X1080 X264 FLAC).mkv",
-      "size": 788593045
+      "size": 788593045,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1466.51,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[U2-RIP]ストライクウィッチーズ_2ND 06 [空より高く] (BD 1920X1080 X264 FLAC).default.chs.ass",
@@ -47,7 +97,17 @@
     },
     {
       "path": "[U2-RIP]ストライクウィッチーズ_2ND 06 [空より高く] (BD 1920X1080 X264 FLAC).mkv",
-      "size": 820074516
+      "size": 820074516,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1487.7,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[U2-RIP]ストライクウィッチーズ_2ND 07 [モゾモゾするの] (BD 1920X1080 X264 FLAC).default.chs.ass",
@@ -55,7 +115,17 @@
     },
     {
       "path": "[U2-RIP]ストライクウィッチーズ_2ND 07 [モゾモゾするの] (BD 1920X1080 X264 FLAC).mkv",
-      "size": 618003481
+      "size": 618003481,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1466.51,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[U2-RIP]ストライクウィッチーズ_2ND 08 [翼をください] (BD 1920X1080 X264 FLAC).default.chs.ass",
@@ -63,7 +133,17 @@
     },
     {
       "path": "[U2-RIP]ストライクウィッチーズ_2ND 08 [翼をください] (BD 1920X1080 X264 FLAC).mkv",
-      "size": 748949939
+      "size": 748949939,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1577.66,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[U2-RIP]ストライクウィッチーズ_2ND 09 [明日に架ける橋] (BD 1920X1080 X264 FLAC).default.chs.ass",
@@ -71,7 +151,17 @@
     },
     {
       "path": "[U2-RIP]ストライクウィッチーズ_2ND 09 [明日に架ける橋] (BD 1920X1080 X264 FLAC).mkv",
-      "size": 795143719
+      "size": 795143719,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1467.05,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[U2-RIP]ストライクウィッチーズ_2ND 10 [500 overs] (BD 1920X1080 X264 FLAC).default.chs.ass",
@@ -79,7 +169,17 @@
     },
     {
       "path": "[U2-RIP]ストライクウィッチーズ_2ND 10 [500 overs] (BD 1920X1080 X264 FLAC).mkv",
-      "size": 946195940
+      "size": 946195940,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1487.03,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[U2-RIP]ストライクウィッチーズ_2ND 11 [私であるために] (BD 1920X1080 X264 FLAC).default.chs.ass",
@@ -87,7 +187,17 @@
     },
     {
       "path": "[U2-RIP]ストライクウィッチーズ_2ND 11 [私であるために] (BD 1920X1080 X264 FLAC).mkv",
-      "size": 1071524038
+      "size": 1071524038,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1466.51,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[U2-RIP]ストライクウィッチーズ_2ND 12 [天空より永遠に] (BD 1920X1080 X264 FLAC).default.chs.ass",
@@ -95,7 +205,17 @@
     },
     {
       "path": "[U2-RIP]ストライクウィッチーズ_2ND 12 [天空より永遠に] (BD 1920X1080 X264 FLAC).mkv",
-      "size": 1215561674
+      "size": 1215561674,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1474.557,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[U2-RIP]ストライクウィッチーズ_2ND BK1.rar",
@@ -139,27 +259,87 @@
     },
     {
       "path": "[U2-RIP]ストライクウィッチーズ_2ND CM1 (BD 1920X1080 X264 FLAC).mkv",
-      "size": 20192056
+      "size": 20192056,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 158.16,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[U2-RIP]ストライクウィッチーズ_2ND CM2 (BD 1920X1080 X264 FLAC).mkv",
-      "size": 22077661
+      "size": 22077661,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 158.16,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[U2-RIP]ストライクウィッチーズ_2ND CM3 (BD 1920X1080 X264 FLAC).mkv",
-      "size": 21814475
+      "size": 21814475,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 152.655,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[U2-RIP]ストライクウィッチーズ_2ND CM4 (BD 1920X1080 X264 FLAC).mkv",
-      "size": 22999619
+      "size": 22999619,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 152.655,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[U2-RIP]ストライクウィッチーズ_2ND CM5 (BD 1920X1080 X264 FLAC).mkv",
-      "size": 20332388
+      "size": 20332388,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 158.16,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[U2-RIP]ストライクウィッチーズ_2ND CM6 (BD 1920X1080 X264 FLAC).mkv",
-      "size": 21064926
+      "size": 21064926,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 163.665,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[U2-RIP]ストライクウィッチーズ_2ND Menu-BMP.rar",
@@ -167,63 +347,234 @@
     },
     {
       "path": "[U2-RIP]ストライクウィッチーズ_2ND NCED1 (BD 1920X1080 X264 FLAC).mkv",
-      "size": 71653626
+      "size": 71653626,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 97.1,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[U2-RIP]ストライクウィッチーズ_2ND NCED10 (BD 1920X1080 X264 FLAC).mkv",
-      "size": 80945511
+      "size": 80945511,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 97.1,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[U2-RIP]ストライクウィッチーズ_2ND NCED11 (BD 1920X1080 X264 FLAC).mkv",
-      "size": 80610011
+      "size": 80610011,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 98.1,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[U2-RIP]ストライクウィッチーズ_2ND NCED12 (BD 1920X1080 X264 FLAC).mkv",
-      "size": 268449177
+      "size": 268449177,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 348.77,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[U2-RIP]ストライクウィッチーズ_2ND NCED2 (BD 1920X1080 X264 FLAC).mkv",
-      "size": 71660739
+      "size": 71660739,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 97.556,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[U2-RIP]ストライクウィッチーズ_2ND NCED3 (BD 1920X1080 X264 FLAC).mkv",
-      "size": 71729195
+      "size": 71729195,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 97.1,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[U2-RIP]ストライクウィッチーズ_2ND NCED4 (BD 1920X1080 X264 FLAC).mkv",
-      "size": 71592830
+      "size": 71592830,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 97.1,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[U2-RIP]ストライクウィッチーズ_2ND NCED5 (BD 1920X1080 X264 FLAC).mkv",
-      "size": 71746325
+      "size": 71746325,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 98.1,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[U2-RIP]ストライクウィッチーズ_2ND NCED6 (BD 1920X1080 X264 FLAC).mkv",
-      "size": 71677314
+      "size": 71677314,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 97.1,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[U2-RIP]ストライクウィッチーズ_2ND NCED7 (BD 1920X1080 X264 FLAC).mkv",
-      "size": 70678341
+      "size": 70678341,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 98.1,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[U2-RIP]ストライクウィッチーズ_2ND NCED8 (BD 1920X1080 X264 FLAC).mkv",
-      "size": 70378233
+      "size": 70378233,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 97.1,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[U2-RIP]ストライクウィッチーズ_2ND NCED9 (BD 1920X1080 X264 FLAC).mkv",
-      "size": 80942907
+      "size": 80942907,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 98.1,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[U2-RIP]ストライクウィッチーズ_2ND NCOP1 (BD 1920X1080 X264 FLAC).mkv",
-      "size": 93236490
+      "size": 93236490,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 97.64,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[U2-RIP]ストライクウィッチーズ_2ND NCOP2 (BD 1920X1080 X264 FLAC).mkv",
-      "size": 102186913
+      "size": 102186913,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 97.1,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "CRC32.txt",
       "size": 4414
     }
-  ]
+  ],
+  "local_container_fact_summary": {
+    "container_fact_count": 32,
+    "probe_status_counts": {
+      "available": 32
+    },
+    "duration_seconds_range": [
+      97.1,
+      1577.66
+    ],
+    "duration_seconds_samples": [
+      1466.51,
+      1487.445,
+      1466.51,
+      1487.653,
+      1466.51,
+      1487.7
+    ]
+  },
+  "local_container_fact_source": {
+    "kind": "real_local_media_duration_backfill",
+    "media_root": "H:\\Anime",
+    "probe_media": true,
+    "container_probe": "ffprobe",
+    "embedded_in": "files[].container_facts",
+    "matched_file_count": 56,
+    "matched_video_count": 32,
+    "missing_actual_video_count": 0,
+    "match_stats": {
+      "matched_by_root_path": 56
+    }
+  }
 }

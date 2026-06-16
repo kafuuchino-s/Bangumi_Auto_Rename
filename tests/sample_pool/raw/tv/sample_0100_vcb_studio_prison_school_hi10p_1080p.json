@@ -3,55 +3,185 @@
   "files": [
     {
       "path": "[VCB-Studio] Prison School [01][Hi10p_1080p][x264_2flac].mkv",
-      "size": 1531830182
+      "size": 1531830182,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1482.15,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Prison School [02][Hi10p_1080p][x264_flac].mkv",
-      "size": 1262358702
+      "size": 1262358702,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1482.15,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Prison School [03][Hi10p_1080p][x264_2flac].mkv",
-      "size": 1522886448
+      "size": 1522886448,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1482.15,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Prison School [04][Hi10p_1080p][x264_flac].mkv",
-      "size": 1231072537
+      "size": 1231072537,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1482.15,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Prison School [05][Hi10p_1080p][x264_flac].mkv",
-      "size": 1171164605
+      "size": 1171164605,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1482.15,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Prison School [06][Hi10p_1080p][x264_2flac].mkv",
-      "size": 1422709515
+      "size": 1422709515,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1482.15,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Prison School [07][Hi10p_1080p][x264_flac].mkv",
-      "size": 1270219305
+      "size": 1270219305,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1482.15,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Prison School [08][Hi10p_1080p][x264_2flac].mkv",
-      "size": 1579781097
+      "size": 1579781097,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1482.15,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Prison School [09][Hi10p_1080p][x264_flac].mkv",
-      "size": 1346992178
+      "size": 1346992178,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1482.15,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Prison School [10][Hi10p_1080p][x264_2flac].mkv",
-      "size": 1520544440
+      "size": 1520544440,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1482.15,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Prison School [11][Hi10p_1080p][x264_flac].mkv",
-      "size": 1230376272
+      "size": 1230376272,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1482.15,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Prison School [12][Hi10p_1080p][x264_2flac].mkv",
-      "size": 1696645129
+      "size": 1696645129,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1482.15,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Prison School [OAD][Hi10p_720p][x264_ac3].mkv",
-      "size": 316516780
+      "size": 316516780,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1532.96,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "CDs/[EAC][20150805]「愛のプリズン」／監獄男子 (flac+webp)/1000573547.cue",
@@ -171,83 +301,283 @@
     },
     {
       "path": "SPs/[VCB-Studio] Prison School [CM01][Hi10p_1080p][x264_flac].mkv",
-      "size": 17840320
+      "size": 17840320,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 17.017,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Prison School [CM02][Hi10p_1080p][x264_flac].mkv",
-      "size": 17877730
+      "size": 17877730,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 17.017,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Prison School [CM03][Hi10p_1080p][x264_flac].mkv",
-      "size": 23295011
+      "size": 23295011,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 37.037,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Prison School [CM04][Hi10p_1080p][x264_flac].mkv",
-      "size": 23335914
+      "size": 23335914,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 37.037,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Prison School [CM05][Hi10p_1080p][x264_flac].mkv",
-      "size": 17376997
+      "size": 17376997,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 34.034,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Prison School [CM06][Hi10p_1080p][x264_flac].mkv",
-      "size": 23053299
+      "size": 23053299,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 34.034,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Prison School [CM07][Hi10p_1080p][x264_flac].mkv",
-      "size": 25305790
+      "size": 25305790,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 33.033,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Prison School [CM08][Hi10p_1080p][x264_flac].mkv",
-      "size": 25532993
+      "size": 25532993,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 33.033,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Prison School [CM09][Hi10p_1080p][x264_flac].mkv",
-      "size": 24728629
+      "size": 24728629,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 17.017,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Prison School [CM10][Hi10p_1080p][x264_flac].mkv",
-      "size": 24830349
+      "size": 24830349,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 17.017,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Prison School [CM11][Hi10p_1080p][x264_flac].mkv",
-      "size": 14352495
+      "size": 14352495,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 17.017,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Prison School [CM12][Hi10p_1080p][x264_flac].mkv",
-      "size": 14342073
+      "size": 14342073,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 16.016,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Prison School [IV01][Hi10p_720p][x264_aac].mkv",
-      "size": 861437737
+      "size": 861437737,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 3242.046,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Prison School [IV02][Hi10p_1080p][x264_aac].mkv",
-      "size": 12816458
+      "size": 12816458,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 38.122,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Prison School [Menu01][Hi10p_1080p][x264_flac].mkv",
-      "size": 40512656
+      "size": 40512656,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 107.11,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Prison School [Menu02][Hi10p_1080p][x264_flac].mkv",
-      "size": 37767621
+      "size": 37767621,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 107.11,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Prison School [Menu03][Hi10p_1080p][x264_flac].mkv",
-      "size": 39447940
+      "size": 39447940,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 107.11,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Prison School [Menu04][Hi10p_1080p][x264_flac].mkv",
-      "size": 37675080
+      "size": 37675080,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 107.11,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Prison School [Menu05][Hi10p_1080p][x264_flac].mkv",
-      "size": 39043732
+      "size": 39043732,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 107.11,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Prison School [Menu06][Hi10p_1080p][x264_flac].mkv",
-      "size": 37081178
+      "size": 37081178,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 107.11,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Prison School [Menu_OAD].png",
@@ -255,23 +585,104 @@
     },
     {
       "path": "SPs/[VCB-Studio] Prison School [NCED01][Hi10p_1080p][x264_flac].mkv",
-      "size": 259379903
+      "size": 259379903,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.05,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Prison School [NCED02][Hi10p_1080p][x264_flac].mkv",
-      "size": 284306385
+      "size": 284306385,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.05,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Prison School [NCOP01][Hi10p_1080p][x264_flac].mkv",
-      "size": 153320565
+      "size": 153320565,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.091,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Prison School [PV01][Hi10p_1080p][x264_flac].mkv",
-      "size": 162268073
+      "size": 162268073,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 57.057,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Prison School [PV02][Hi10p_1080p][x264_flac].mkv",
-      "size": 118030562
+      "size": 118030562,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 79.079,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     }
-  ]
+  ],
+  "local_container_fact_summary": {
+    "container_fact_count": 38,
+    "probe_status_counts": {
+      "available": 38
+    },
+    "duration_seconds_range": [
+      16.016,
+      3242.046
+    ],
+    "duration_seconds_samples": [
+      1482.15,
+      1482.15,
+      1482.15,
+      1482.15,
+      1482.15,
+      1482.15
+    ]
+  },
+  "local_container_fact_source": {
+    "kind": "real_local_media_duration_backfill",
+    "media_root": "H:\\Anime",
+    "probe_media": true,
+    "container_probe": "ffprobe",
+    "embedded_in": "files[].container_facts",
+    "matched_file_count": 68,
+    "matched_video_count": 38,
+    "missing_actual_video_count": 0,
+    "match_stats": {
+      "matched_by_root_path": 68
+    }
+  }
 }

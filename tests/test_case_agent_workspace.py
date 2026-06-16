@@ -2,16 +2,12 @@ from src.rename.case_agent.models import (
     BangumiItemCard,
     BangumiSubjectCard,
     CandidateComparison,
-    CaseBriefingOutput,
-    CaseBriefingWorkUnit,
     CaseBudget,
     CaseContract,
     CaseHeader,
     EvidencePlan,
     EvidenceBatchResult,
-    InvestigationNotebook,
     LocalFileCard,
-    NotebookOpenQuestion,
     ProvenanceCard,
     LocalSpanCard,
     MappingDraft,
@@ -145,32 +141,6 @@ def test_workspace_preserves_mapping_draft_after_evidence_batch():
     assert updated.mapping_draft is not None
     assert updated.mapping_draft.rows[0].local_ref == 'LS1'
     assert updated.mapping_draft_candidate_comparisons == [comparison]
-
-
-def test_workspace_rebuilds_preserve_case_briefing_and_notebook():
-    briefing = CaseBriefingOutput(
-        package_shape='tv_plus_extras',
-        work_units=[CaseBriefingWorkUnit(work_unit_ref='WU1', local_refs=['LS1'], file_refs=['LF1'])],
-    )
-    notebook = InvestigationNotebook(open_questions=[NotebookOpenQuestion(question_ref='NQ1', question_kind='subject_recall', question='search subject', local_refs=['LF1'], requested_request_types=['subject_search'])])
-    workspace = CaseEvidenceWorkspace.from_cards(
-        header=CaseHeader(case_id='case-memory'),
-        budget=CaseBudget(max_api_calls_per_case=10),
-        local_files=[LocalFileCard(ref='LF1', path='a.mkv', is_main=True)],
-        local_span_cards=[LocalSpanCard(ref='LS1', span_scope='directory', file_refs=['LF1'], file_ref_count=1)],
-        case_briefing=briefing,
-        investigation_notebook=notebook,
-    )
-
-    added = workspace.with_added_evidence(evidence_results=[EvidenceBatchResult(batch_ref='B1')])
-    queried = added.with_query_cards([])
-    detailed = queried.with_seen_detail_refs(['LF1'])
-    dossier = detailed.to_dossier()
-
-    assert detailed.case_briefing is briefing
-    assert detailed.investigation_notebook.open_questions[0].question_ref == 'NQ1'
-    assert dossier.case_briefing is briefing
-    assert dossier.notebook['investigation_notebook']['counts']['open_question_count'] == 1
 
 
 def test_to_dossier_preserves_previous_bangumi_span_cards():

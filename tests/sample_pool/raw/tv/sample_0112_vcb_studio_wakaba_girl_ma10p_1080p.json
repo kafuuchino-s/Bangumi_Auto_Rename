@@ -7,7 +7,17 @@
     },
     {
       "path": "[VCB-Studio] Wakaba Girl [01][Ma10p_1080p][x265_flac].mkv",
-      "size": 355636530
+      "size": 355636530,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 474.98,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Wakaba Girl [02][Ma10p_1080p][x265_flac].chs.ass",
@@ -15,7 +25,17 @@
     },
     {
       "path": "[VCB-Studio] Wakaba Girl [02][Ma10p_1080p][x265_flac].mkv",
-      "size": 335543898
+      "size": 335543898,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 474.981,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Wakaba Girl [03][Ma10p_1080p][x265_flac].chs.ass",
@@ -23,7 +43,17 @@
     },
     {
       "path": "[VCB-Studio] Wakaba Girl [03][Ma10p_1080p][x265_flac].mkv",
-      "size": 360676592
+      "size": 360676592,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 474.985,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Wakaba Girl [04][Ma10p_1080p][x265_flac].chs.ass",
@@ -31,7 +61,17 @@
     },
     {
       "path": "[VCB-Studio] Wakaba Girl [04][Ma10p_1080p][x265_flac].mkv",
-      "size": 358458469
+      "size": 358458469,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 474.981,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Wakaba Girl [05][Ma10p_1080p][x265_flac].chs.ass",
@@ -39,7 +79,17 @@
     },
     {
       "path": "[VCB-Studio] Wakaba Girl [05][Ma10p_1080p][x265_flac].mkv",
-      "size": 364698968
+      "size": 364698968,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 474.981,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Wakaba Girl [06][Ma10p_1080p][x265_flac].chs.ass",
@@ -47,7 +97,17 @@
     },
     {
       "path": "[VCB-Studio] Wakaba Girl [06][Ma10p_1080p][x265_flac].mkv",
-      "size": 380838297
+      "size": 380838297,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 474.985,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Wakaba Girl [07][Ma10p_1080p][x265_flac].chs.ass",
@@ -55,7 +115,17 @@
     },
     {
       "path": "[VCB-Studio] Wakaba Girl [07][Ma10p_1080p][x265_flac].mkv",
-      "size": 403121581
+      "size": 403121581,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 470.015,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Wakaba Girl [08][Ma10p_1080p][x265_flac].chs.ass",
@@ -63,7 +133,17 @@
     },
     {
       "path": "[VCB-Studio] Wakaba Girl [08][Ma10p_1080p][x265_flac].mkv",
-      "size": 362577968
+      "size": 362577968,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 474.98,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Wakaba Girl [09][Ma10p_1080p][x265_flac].chs.ass",
@@ -71,7 +151,17 @@
     },
     {
       "path": "[VCB-Studio] Wakaba Girl [09][Ma10p_1080p][x265_flac].mkv",
-      "size": 349365055
+      "size": 349365055,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 474.98,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Wakaba Girl [10][Ma10p_1080p][x265_flac].chs.ass",
@@ -79,7 +169,17 @@
     },
     {
       "path": "[VCB-Studio] Wakaba Girl [10][Ma10p_1080p][x265_flac].mkv",
-      "size": 370504608
+      "size": 370504608,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 474.981,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Wakaba Girl [11][Ma10p_1080p][x265_flac].chs.ass",
@@ -87,7 +187,17 @@
     },
     {
       "path": "[VCB-Studio] Wakaba Girl [11][Ma10p_1080p][x265_flac].mkv",
-      "size": 337639578
+      "size": 337639578,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 474.981,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Wakaba Girl [12][Ma10p_1080p][x265_flac].chs.ass",
@@ -95,7 +205,17 @@
     },
     {
       "path": "[VCB-Studio] Wakaba Girl [12][Ma10p_1080p][x265_flac].mkv",
-      "size": 415765612
+      "size": 415765612,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 474.981,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Wakaba Girl [13][Ma10p_1080p][x265_flac].chs.ass",
@@ -103,7 +223,17 @@
     },
     {
       "path": "[VCB-Studio] Wakaba Girl [13][Ma10p_1080p][x265_flac].mkv",
-      "size": 257061143
+      "size": 257061143,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 474.975,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Wakaba Girl [14][Ma10p_1080p][x265_flac].chs.ass",
@@ -111,7 +241,17 @@
     },
     {
       "path": "[VCB-Studio] Wakaba Girl [14][Ma10p_1080p][x265_flac].mkv",
-      "size": 361813951
+      "size": 361813951,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 483.03,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "CDs/[EAC] [150826] わかば＊ガール「初めてガールズ!」／Ray (flac+jpg)/BK/Scan0001.jpg",
@@ -163,7 +303,17 @@
     },
     {
       "path": "SPs/[VCB-Studio] Wakaba Girl [EP01 Non Telop Ver.][Ma10p_1080p][x265_flac].mkv",
-      "size": 351998631
+      "size": 351998631,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 474.98,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Wakaba Girl [EP01 Non Telop Ver.][Ma10p_1080p][x265_flac].Sumisora.sc.ass",
@@ -171,7 +321,17 @@
     },
     {
       "path": "SPs/[VCB-Studio] Wakaba Girl [EP02 Non Telop Ver.][Ma10p_1080p][x265_flac].mkv",
-      "size": 331682630
+      "size": 331682630,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 474.98,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Wakaba Girl [EP02 Non Telop Ver.][Ma10p_1080p][x265_flac].Sumisora.sc.ass",
@@ -179,7 +339,17 @@
     },
     {
       "path": "SPs/[VCB-Studio] Wakaba Girl [EP03 Non Telop Ver.][Ma10p_1080p][x265_flac].mkv",
-      "size": 354651623
+      "size": 354651623,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 474.985,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Wakaba Girl [EP03 Non Telop Ver.][Ma10p_1080p][x265_flac].Sumisora.sc.ass",
@@ -187,7 +357,17 @@
     },
     {
       "path": "SPs/[VCB-Studio] Wakaba Girl [EP04 Non Telop Ver.][Ma10p_1080p][x265_flac].mkv",
-      "size": 353506327
+      "size": 353506327,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 474.981,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Wakaba Girl [EP04 Non Telop Ver.][Ma10p_1080p][x265_flac].Sumisora.sc.ass",
@@ -195,7 +375,17 @@
     },
     {
       "path": "SPs/[VCB-Studio] Wakaba Girl [EP05 Non Telop Ver.][Ma10p_1080p][x265_flac].mkv",
-      "size": 359898899
+      "size": 359898899,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 474.981,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Wakaba Girl [EP05 Non Telop Ver.][Ma10p_1080p][x265_flac].Sumisora.sc.ass",
@@ -203,7 +393,17 @@
     },
     {
       "path": "SPs/[VCB-Studio] Wakaba Girl [EP06 Non Telop Ver.][Ma10p_1080p][x265_flac].mkv",
-      "size": 376694997
+      "size": 376694997,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 474.985,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Wakaba Girl [EP06 Non Telop Ver.][Ma10p_1080p][x265_flac].Sumisora.sc.ass",
@@ -211,7 +411,17 @@
     },
     {
       "path": "SPs/[VCB-Studio] Wakaba Girl [EP07 Non Telop Ver.][Ma10p_1080p][x265_flac].mkv",
-      "size": 397633355
+      "size": 397633355,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 470.015,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Wakaba Girl [EP07 Non Telop Ver.][Ma10p_1080p][x265_flac].Sumisora.sc.ass",
@@ -219,7 +429,17 @@
     },
     {
       "path": "SPs/[VCB-Studio] Wakaba Girl [EP08 Non Telop Ver.][Ma10p_1080p][x265_flac].mkv",
-      "size": 355041244
+      "size": 355041244,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 474.981,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Wakaba Girl [EP08 Non Telop Ver.][Ma10p_1080p][x265_flac].Sumisora.sc.ass",
@@ -227,7 +447,17 @@
     },
     {
       "path": "SPs/[VCB-Studio] Wakaba Girl [EP09 Non Telop Ver.][Ma10p_1080p][x265_flac].mkv",
-      "size": 343149553
+      "size": 343149553,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 474.981,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Wakaba Girl [EP09 Non Telop Ver.][Ma10p_1080p][x265_flac].Sumisora.sc.ass",
@@ -235,7 +465,17 @@
     },
     {
       "path": "SPs/[VCB-Studio] Wakaba Girl [EP10 Non Telop Ver.][Ma10p_1080p][x265_flac].mkv",
-      "size": 365035418
+      "size": 365035418,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 474.981,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Wakaba Girl [EP10 Non Telop Ver.][Ma10p_1080p][x265_flac].Sumisora.sc.ass",
@@ -243,7 +483,17 @@
     },
     {
       "path": "SPs/[VCB-Studio] Wakaba Girl [EP11 Non Telop Ver.][Ma10p_1080p][x265_flac].mkv",
-      "size": 331630934
+      "size": 331630934,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 474.981,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Wakaba Girl [EP11 Non Telop Ver.][Ma10p_1080p][x265_flac].Sumisora.sc.ass",
@@ -251,7 +501,17 @@
     },
     {
       "path": "SPs/[VCB-Studio] Wakaba Girl [EP12 Non Telop Ver.][Ma10p_1080p][x265_flac].mkv",
-      "size": 409924814
+      "size": 409924814,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 474.98,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Wakaba Girl [EP12 Non Telop Ver.][Ma10p_1080p][x265_flac].Sumisora.sc.ass",
@@ -259,7 +519,17 @@
     },
     {
       "path": "SPs/[VCB-Studio] Wakaba Girl [EP13 Non Telop Ver.][Ma10p_1080p][x265_flac].mkv",
-      "size": 251434765
+      "size": 251434765,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 474.975,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Wakaba Girl [EP13 Non Telop Ver.][Ma10p_1080p][x265_flac].Sumisora.sc.ass",
@@ -267,7 +537,17 @@
     },
     {
       "path": "SPs/[VCB-Studio] Wakaba Girl [EP14 Non Telop Ver.][Ma10p_1080p][x265_flac].mkv",
-      "size": 355102933
+      "size": 355102933,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 483.03,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Wakaba Girl [EP14 Non Telop Ver.][Ma10p_1080p][x265_flac].Sumisora.sc.ass",
@@ -275,15 +555,76 @@
     },
     {
       "path": "SPs/[VCB-Studio] Wakaba Girl [Menu01][Ma10p_1080p][x265_flac].mkv",
-      "size": 67893686
+      "size": 67893686,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 90.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Wakaba Girl [Menu02][Ma10p_1080p][x265_flac].mkv",
-      "size": 64209217
+      "size": 64209217,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 90.09,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Wakaba Girl [NCOP][Ma10p_1080p][x265_flac].mkv",
-      "size": 113477153
+      "size": 113477153,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.01,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     }
-  ]
+  ],
+  "local_container_fact_summary": {
+    "container_fact_count": 31,
+    "probe_status_counts": {
+      "available": 31
+    },
+    "duration_seconds_range": [
+      90.09,
+      483.03
+    ],
+    "duration_seconds_samples": [
+      474.98,
+      474.981,
+      474.985,
+      474.981,
+      474.981,
+      474.985
+    ]
+  },
+  "local_container_fact_source": {
+    "kind": "real_local_media_duration_backfill",
+    "media_root": "H:\\Anime",
+    "probe_media": true,
+    "container_probe": "ffprobe",
+    "embedded_in": "files[].container_facts",
+    "matched_file_count": 71,
+    "matched_video_count": 31,
+    "missing_actual_video_count": 0,
+    "match_stats": {
+      "matched_by_root_path": 71
+    }
+  }
 }

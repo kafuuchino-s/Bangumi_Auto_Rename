@@ -157,8 +157,6 @@ def summarize_case_agent_process(snapshot: dict[str, Any]) -> dict[str, Any]:
     planner_selected_menu_request_count = 0
     unknown_menu_request_ids: list[str] = []
     resolved_menu_request_count = 0
-    legacy_raw_request_count = 0
-    normalized_legacy_request_count = 0
     for audit in case_judge_audits:
         if not isinstance(audit, dict):
             continue
@@ -178,8 +176,6 @@ def summarize_case_agent_process(snapshot: dict[str, Any]) -> dict[str, Any]:
         span_ids = [str(v) for v in _as_list(audit.get('evidence_menu_span_request_ids')) if str(v)]
         evidence_menu_span_request_ids.extend(span_ids)
         resolved_menu_request_count += int(audit.get('resolved_menu_request_count') or audit.get('menu_request_count') or 0)
-        legacy_raw_request_count += int(audit.get('legacy_raw_request_count') or 0)
-        normalized_legacy_request_count += int(audit.get('normalized_legacy_request_count') or 0)
     case_judge_round_kinds = [str(a.get('round_kind') or '') for a in case_judge_audits if isinstance(a, dict) and str(a.get('round_kind') or '') in {'initial', 'policy_retry', 'evidence_rejudge', 'issue_response'}]
     if case_judge_round_kinds:
         judge_kinds = case_judge_round_kinds
@@ -273,12 +269,9 @@ def summarize_case_agent_process(snapshot: dict[str, Any]) -> dict[str, Any]:
         'selected_menu_request_ids': list(snapshot.get('selected_menu_request_ids') or selected_menu_request_ids),
         'unknown_menu_request_ids': list(snapshot.get('unknown_menu_request_ids') or unknown_menu_request_ids),
         'resolved_menu_request_count': int(snapshot.get('resolved_menu_request_count') or resolved_menu_request_count),
-        'legacy_raw_request_count': int(snapshot.get('legacy_raw_request_count') or legacy_raw_request_count),
-        'normalized_legacy_request_count': int(snapshot.get('normalized_legacy_request_count') or normalized_legacy_request_count),
         'action_policy_allowed': list(snapshot.get('action_policy_allowed') or []),
         'action_policy_disallowed': list(snapshot.get('action_policy_disallowed') or []),
         'action_policy_final_opportunity': bool(snapshot.get('action_policy_final_opportunity', False)),
-        'notebook_compact_counts': snapshot.get('notebook_compact_counts') if isinstance(snapshot.get('notebook_compact_counts'), dict) else {},
         'issue_router_issue_counts': snapshot.get('issue_router_issue_counts') if isinstance(snapshot.get('issue_router_issue_counts'), dict) else {},
         'local_span_count': int(snapshot.get('local_span_count') or 0),
         'local_child_span_count': local_child_span_count,
@@ -363,7 +356,7 @@ def summarize_case_agent_snapshot_refs(snapshot: dict[str, Any]) -> dict[str, An
         compact_cards.append(compact_card)
     if compact_cards:
         summary['query_card_sample'] = compact_cards
-    for key in ('local_span_count', 'local_child_span_count', 'local_span_covered_main_count', 'local_span_missing_main_count', 'local_span_overlap_count', 'local_span_partition_complete', 'local_span_main_file_count', 'bangumi_span_count', 'detail_equivalent_target_span_count', 'span_alignment_claim_count', 'bulk_assignment_intent_count', 'expanded_assignment_count', 'recommended_target_span_request_count', 'actual_target_span_request_count', 'accepted_target_span_request_count', 'target_span_request_count', 'mapping_draft_row_count', 'mapping_draft_local_coverage_count', 'mapping_draft_missing_main_count', 'mapping_draft_open_count', 'mapping_draft_proposed_count', 'mapping_draft_verified_count', 'mapping_draft_unresolved_count', 'mapping_draft_patch_count', 'span_mapping_patch_count', 'candidate_comparison_count', 'span_rows_with_candidates', 'span_rows_without_candidates', 'planned_span_request_count', 'selected_span_request_count', 'completed_span_request_count', 'main_file_count', 'mapped_file_count', 'excluded_file_count', 'manual_review_file_count', 'needs_more_evidence_file_count', 'unaligned_file_count', 'open_file_count', 'accounted_for_count', 'unresolved_count'):
+    for key in ('local_span_count', 'local_child_span_count', 'local_span_covered_main_count', 'local_span_missing_main_count', 'local_span_overlap_count', 'local_span_partition_complete', 'local_span_main_file_count', 'bangumi_span_count', 'detail_equivalent_target_span_count', 'span_alignment_claim_count', 'bulk_assignment_intent_count', 'expanded_assignment_count', 'recommended_target_span_request_count', 'actual_target_span_request_count', 'accepted_target_span_request_count', 'target_span_request_count', 'mapping_draft_row_count', 'mapping_draft_local_coverage_count', 'mapping_draft_missing_main_count', 'mapping_draft_open_count', 'mapping_draft_proposed_count', 'mapping_draft_verified_count', 'mapping_draft_unresolved_count', 'mapping_draft_patch_count', 'span_mapping_patch_count', 'candidate_comparison_count', 'span_rows_with_candidates', 'span_rows_without_candidates', 'planned_span_request_count', 'selected_span_request_count', 'completed_span_request_count', 'main_file_count', 'mapped_file_count', 'excluded_file_count', 'resolved_unmapped_file_count', 'manual_review_file_count', 'needs_more_evidence_file_count', 'unaligned_file_count', 'open_file_count', 'accounted_for_count', 'unresolved_count'):
         summary[key] = int(snapshot.get(key) or 0)
     summary['accepted_accounting_ready'] = bool(snapshot.get('accepted_accounting_ready', False))
     return summary

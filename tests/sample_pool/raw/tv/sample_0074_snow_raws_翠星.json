@@ -7,7 +7,17 @@
     },
     {
       "path": "[Snow-Raws] 翠星のガルガンティア 第01話(BD 1920x1080 HEVC-YUV420P10 FLACx4).mkv",
-      "size": 2469915426
+      "size": 2469915426,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1424.128,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 4,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] 翠星のガルガンティア 第02話(BD 1920x1080 HEVC-YUV420P10 FLACx4).default.chi.zh-cn.ass",
@@ -15,7 +25,17 @@
     },
     {
       "path": "[Snow-Raws] 翠星のガルガンティア 第02話(BD 1920x1080 HEVC-YUV420P10 FLACx4).mkv",
-      "size": 2036720587
+      "size": 2036720587,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1422.119,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 4,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] 翠星のガルガンティア 第03話(BD 1920x1080 HEVC-YUV420P10 FLACx4).default.chi.zh-cn.ass",
@@ -23,7 +43,17 @@
     },
     {
       "path": "[Snow-Raws] 翠星のガルガンティア 第03話(BD 1920x1080 HEVC-YUV420P10 FLACx4).mkv",
-      "size": 2206034683
+      "size": 2206034683,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1422.11,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 4,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] 翠星のガルガンティア 第04話(BD 1920x1080 HEVC-YUV420P10 FLACx4).default.chi.zh-cn.ass",
@@ -31,7 +61,17 @@
     },
     {
       "path": "[Snow-Raws] 翠星のガルガンティア 第04話(BD 1920x1080 HEVC-YUV420P10 FLACx4).mkv",
-      "size": 1821432767
+      "size": 1821432767,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1435.101,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 4,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] 翠星のガルガンティア 第05話(BD 1920x1080 HEVC-YUV420P10 FLACx4).default.chi.zh-cn.ass",
@@ -39,7 +79,17 @@
     },
     {
       "path": "[Snow-Raws] 翠星のガルガンティア 第05話(BD 1920x1080 HEVC-YUV420P10 FLACx4).mkv",
-      "size": 1973479530
+      "size": 1973479530,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1424.128,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 4,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] 翠星のガルガンティア 第06話(BD 1920x1080 HEVC-YUV420P10 FLACx4).default.chi.zh-cn.ass",
@@ -47,7 +97,17 @@
     },
     {
       "path": "[Snow-Raws] 翠星のガルガンティア 第06話(BD 1920x1080 HEVC-YUV420P10 FLACx4).mkv",
-      "size": 1880477036
+      "size": 1880477036,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1422.119,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 4,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] 翠星のガルガンティア 第07話(BD 1920x1080 HEVC-YUV420P10 FLACx4).default.chi.zh-cn.ass",
@@ -55,7 +115,17 @@
     },
     {
       "path": "[Snow-Raws] 翠星のガルガンティア 第07話(BD 1920x1080 HEVC-YUV420P10 FLACx4).mkv",
-      "size": 1874499072
+      "size": 1874499072,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1422.111,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 4,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] 翠星のガルガンティア 第08話(BD 1920x1080 HEVC-YUV420P10 FLACx4).default.chi.zh-cn.ass",
@@ -63,7 +133,17 @@
     },
     {
       "path": "[Snow-Raws] 翠星のガルガンティア 第08話(BD 1920x1080 HEVC-YUV420P10 FLACx4).mkv",
-      "size": 1719407606
+      "size": 1719407606,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1422.103,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 4,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] 翠星のガルガンティア 第09話(BD 1920x1080 HEVC-YUV420P10 FLACx4).default.chi.zh-cn.ass",
@@ -71,7 +151,17 @@
     },
     {
       "path": "[Snow-Raws] 翠星のガルガンティア 第09話(BD 1920x1080 HEVC-YUV420P10 FLACx4).mkv",
-      "size": 1903450985
+      "size": 1903450985,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1435.104,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 4,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] 翠星のガルガンティア 第10話(BD 1920x1080 HEVC-YUV420P10 FLACx4).default.chi.zh-cn.ass",
@@ -79,7 +169,17 @@
     },
     {
       "path": "[Snow-Raws] 翠星のガルガンティア 第10話(BD 1920x1080 HEVC-YUV420P10 FLACx4).mkv",
-      "size": 1683330875
+      "size": 1683330875,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1424.128,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 4,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] 翠星のガルガンティア 第11話(BD 1920x1080 HEVC-YUV420P10 FLACx4).default.chi.zh-cn.ass",
@@ -87,7 +187,17 @@
     },
     {
       "path": "[Snow-Raws] 翠星のガルガンティア 第11話(BD 1920x1080 HEVC-YUV420P10 FLACx4).mkv",
-      "size": 1695991495
+      "size": 1695991495,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1422.289,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 4,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] 翠星のガルガンティア 第12話(BD 1920x1080 HEVC-YUV420P10 FLACx4).default.chi.zh-cn.ass",
@@ -95,7 +205,17 @@
     },
     {
       "path": "[Snow-Raws] 翠星のガルガンティア 第12話(BD 1920x1080 HEVC-YUV420P10 FLACx4).mkv",
-      "size": 1617355684
+      "size": 1617355684,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1422.115,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 4,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] 翠星のガルガンティア 第13話(BD 1920x1080 HEVC-YUV420P10 FLACx4).default.chi.zh-cn.ass",
@@ -103,7 +223,17 @@
     },
     {
       "path": "[Snow-Raws] 翠星のガルガンティア 第13話(BD 1920x1080 HEVC-YUV420P10 FLACx4).mkv",
-      "size": 1772282452
+      "size": 1772282452,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1435.104,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 4,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] 翠星のガルガンティア 第14話(BD 1920x1080 HEVC-YUV420P10 FLAC).default.chi.zh-cn.ass",
@@ -111,7 +241,17 @@
     },
     {
       "path": "[Snow-Raws] 翠星のガルガンティア 第14話(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 1787973441
+      "size": 1787973441,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1423.005,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Snow-Raws] 翠星のガルガンティア 第15話(BD 1920x1080 HEVC-YUV420P10 FLAC).default.chi.zh-cn.ass",
@@ -119,59 +259,230 @@
     },
     {
       "path": "[Snow-Raws] 翠星のガルガンティア 第15話(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 1711634955
+      "size": 1711634955,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1423.005,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "映像特典/[Snow-Raws] 翠星のガルガンティア CM01(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 91224626
+      "size": 91224626,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 64.065,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "映像特典/[Snow-Raws] 翠星のガルガンティア CM02(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 122786796
+      "size": 122786796,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.22,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "映像特典/[Snow-Raws] 翠星のガルガンティア ED01(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 172465795
+      "size": 172465795,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 93.01,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "映像特典/[Snow-Raws] 翠星のガルガンティア MENU01(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 66077537
+      "size": 66077537,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 60.06,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 1,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "映像特典/[Snow-Raws] 翠星のガルガンティア MENU02(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 85460679
+      "size": 85460679,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 60.06,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 1,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "映像特典/[Snow-Raws] 翠星のガルガンティア MENU03(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 67144566
+      "size": 67144566,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 60.06,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 1,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "映像特典/[Snow-Raws] 翠星のガルガンティア OP01(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 142608612
+      "size": 142608612,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 93.055,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "映像特典/[Snow-Raws] 翠星のガルガンティア OP02(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 142708963
+      "size": 142708963,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 93.055,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "映像特典/[Snow-Raws] 翠星のガルガンティア PV01(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 536330667
+      "size": 536330667,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 364.535,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "映像特典/[Snow-Raws] 翠星のガルガンティア SP01(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 141568389
+      "size": 141568389,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 161.04,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "映像特典/[Snow-Raws] 翠星のガルガンティア SP02(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 212248468
+      "size": 212248468,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 256.01,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "映像特典/[Snow-Raws] 翠星のガルガンティア SP03(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 182432563
+      "size": 182432563,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 149.61,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "映像特典/[Snow-Raws] 翠星のガルガンティア SP04(BD 1920x1080 HEVC-YUV420P10 FLAC).mkv",
-      "size": 793618455
+      "size": 793618455,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1385.22,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 1,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     }
-  ]
+  ],
+  "local_container_fact_summary": {
+    "container_fact_count": 28,
+    "probe_status_counts": {
+      "available": 28
+    },
+    "duration_seconds_range": [
+      60.06,
+      1435.104
+    ],
+    "duration_seconds_samples": [
+      1424.128,
+      1422.119,
+      1422.11,
+      1435.101,
+      1424.128,
+      1422.119
+    ]
+  },
+  "local_container_fact_source": {
+    "kind": "real_local_media_duration_backfill",
+    "media_root": "H:\\Anime",
+    "probe_media": true,
+    "container_probe": "ffprobe",
+    "embedded_in": "files[].container_facts",
+    "matched_file_count": 43,
+    "matched_video_count": 28,
+    "missing_actual_video_count": 0,
+    "match_stats": {
+      "matched_by_root_path": 43
+    }
+  }
 }

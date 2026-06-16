@@ -111,7 +111,7 @@ def build_salience_overview(dossier: CaseDossier) -> dict[str, object]:
                 'count': len(main_files),
                 'boundary_file_refs': boundaries,
                 'sample_refs': main_ref_samples,
-                'note': 'raw local order only; filename numbering is interpreted by LocalStructureAgent',
+                'note': 'raw local order only; filename numbering is interpreted by the Pi Case Agent',
             },
             'boundary_file_refs': boundaries,
         },

@@ -3,6 +3,12 @@ from __future__ import annotations
 from math import inf
 from typing import Any
 
+from src.bangumi.relation_filters import (
+    is_strict_related_relation,
+    normalize_relation_name,
+    strict_requested_relation_keys,
+)
+
 from .broker_budget import BudgetExceeded, BudgetLedger
 from .broker_registry import EvidenceCardRegistry, build_provenance_card
 from .models import (
@@ -15,23 +21,6 @@ from .models import (
 from .source_form import infer_source_form_hint
 from .workspace import CaseEvidenceWorkspace
 
-_DEFAULT_RELATED_RELATION_KINDS = {
-    '\u7eed\u96c6',
-    '\u524d\u4f20',
-    '\u756a\u5916\u7bc7',
-    '\u4e0d\u540c\u6f14\u7ece',
-    '\u6f14\u7ece',
-    '\u603b\u96c6\u7bc7',
-    '\u884d\u751f',
-    'sequel',
-    'prequel',
-    'side_story',
-    'adaptation',
-    'parent',
-    'child',
-    'special',
-}
-
 _RELATION_KIND_TO_CARD_KIND = {
     '\u524d\u4f20': 'prequel',
     '\u7eed\u96c6': 'sequel',
@@ -40,11 +29,19 @@ _RELATION_KIND_TO_CARD_KIND = {
     '\u6f14\u7ece': 'parent',
     '\u884d\u751f': 'child',
     '\u603b\u96c6\u7bc7': 'unknown',
+    'prequel': 'prequel',
+    'sequel': 'sequel',
+    'side_story': 'side_story',
+    'side story': 'side_story',
+    'adaptation': 'adaptation',
+    'parent': 'parent',
+    'child': 'child',
+    'special': 'side_story',
 }
 
 
 def _normalize_relation_name(value: str) -> str:
-    return value.strip()
+    return normalize_relation_name(value)
 
 
 def execute_related_expansion(
@@ -73,7 +70,13 @@ def execute_related_expansion(
     if anchor_card is None or anchor_card.subject_id <= 0:
         return [], [], [], EvidenceRequestResult(request_ref=request.request_ref, accepted=False, notes=['anchor subject missing']), budget
 
-    allowed_relation_kinds = set(request.relation_kinds) or _DEFAULT_RELATED_RELATION_KINDS
+    allowed_relation_keys, disallowed_requested_relations = strict_requested_relation_keys(request.relation_kinds)
+    if disallowed_requested_relations:
+        notes = [f'skipped requested disallowed relation {value}' for value in disallowed_requested_relations]
+    else:
+        notes = []
+    if request.relation_kinds and not allowed_relation_keys:
+        return [], [], [], EvidenceRequestResult(request_ref=request.request_ref, accepted=False, notes=notes), budget
     max_new_subjects = request.max_subjects if request.max_subjects > 0 else inf
     if budget.budget.max_new_subject_cards > 0:
         max_new_subjects = min(max_new_subjects, budget.budget.max_new_subject_cards - budget.budget.used_new_subject_cards)
@@ -83,7 +86,6 @@ def execute_related_expansion(
     subject_cards: list[BangumiSubjectCard] = []
     relation_cards: list[BangumiRelationCard] = []
     provenance_cards: list[ProvenanceCard] = []
-    notes: list[str] = []
     new_subjects_created = 0
 
     try:
@@ -94,12 +96,10 @@ def execute_related_expansion(
     relations = bangumi_client.get_related_subjects(anchor_card.subject_id) or []
     for relation in relations:
         relation_name = _normalize_relation_name(getattr(relation, 'relation', '') or '')
-        if relation_name and relation_name.encode('utf-8', errors='ignore').decode('utf-8', errors='ignore') != relation_name:
-            relation_name = relation_name.encode('latin1', errors='ignore').decode('utf-8', errors='ignore') or relation_name
         if getattr(relation, 'type', 0) != 2:
             notes.append(f'skipped non-anime {relation.id}')
             continue
-        if relation_name not in allowed_relation_kinds:
+        if not is_strict_related_relation(relation_name) or relation_name.casefold() not in allowed_relation_keys:
             notes.append(f'skipped disallowed relation {relation_name or relation.id}')
             continue
         if max_new_subjects != inf and new_subjects_created >= int(max_new_subjects) and relation.id not in registry.subject_id_to_ref:

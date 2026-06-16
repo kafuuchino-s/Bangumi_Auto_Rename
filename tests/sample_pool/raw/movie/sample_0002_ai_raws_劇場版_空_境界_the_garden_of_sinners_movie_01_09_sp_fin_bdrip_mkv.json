@@ -3,83 +3,314 @@
   "files": [
     {
       "path": "[AI-Raws] 劇場版 空の境界 #01 俯瞰風景 (BD HEVC 1920x1080 yuv444p10le FLAC 字幕[日本語／英語])[DB63CC66].mkv",
-      "size": 1783651958
+      "size": 1783651958,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 3009.048,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 2,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[AI-Raws] 劇場版 空の境界 #02 殺人考察(前) (BD HEVC 1920x1080 yuv444p10le FLAC 字幕[日本語／英語])[CF45D43D].mkv",
-      "size": 2214095449
+      "size": 2214095449,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 3601.64,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 2,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[AI-Raws] 劇場版 空の境界 #03 痛覚残留 (BD HEVC 1920x1080 yuv444p10le FLAC 字幕[日本語／英語])[D59D9785].mkv",
-      "size": 2511136125
+      "size": 2511136125,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 3444.485,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 2,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[AI-Raws] 劇場版 空の境界 #04 伽藍の洞 (BD HEVC 1920x1080 yuv444p10le FLAC 字幕[日本語／英語])[DD4E108B].mkv",
-      "size": 1976055409
+      "size": 1976055409,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 2721.761,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 2,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[AI-Raws] 劇場版 空の境界 #05 矛盾螺旋 (BD HEVC 1920x1080 yuv444p10le FLAC 字幕[日本語／英語])[6BE8A810].mkv",
-      "size": 7347825001
+      "size": 7347825001,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 6833.827,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 2,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[AI-Raws] 劇場版 空の境界 #06 忘卻録音 (BD HEVC 1920x1080 yuv444p10le FLAC 字幕[日本語／英語])[7109725D].mkv",
-      "size": 1687176498
+      "size": 1687176498,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 3543.582,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 2,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[AI-Raws] 劇場版 空の境界 #07 殺人考察(後) (BD HEVC 1920x1080 yuv444p10le FLAC 字幕[日本語／英語])[8E949771].mkv",
-      "size": 6274952565
+      "size": 6274952565,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 7200.195,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 2,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[AI-Raws] 劇場版 空の境界 #08 空の境界 (BD HEVC 1920x1080 yuv444p10le FLAC 字幕[日本語／英語])[346B1F64].mkv",
-      "size": 3047557899
+      "size": 3047557899,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1984.316,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 2,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[AI-Raws] 劇場版 空の境界 #09 未来福音 (BD HEVC 1920x1080 yuv444p10le FLAC)[1A799E21].mkv",
-      "size": 4299455217
+      "size": 4299455217,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 5324.32,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[AI-Raws] 劇場版 空の境界 #09 未来福音 extra chorus (BD HEVC 1920x1080 yuv444p10le FLAC)[ECB6AB57].mkv",
-      "size": 1374088538
+      "size": 1374088538,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1919.92,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[AI-Raws] 劇場版 空の境界 Remix - Gate of Seventh Heaven - (BD HEVC 1920x1080 yuv444p10le FLAC 字幕[日本語／英語])[09376BC3].mkv",
-      "size": 4388443192
+      "size": 4388443192,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 3688.73,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 2,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[AI-Raws] 劇場版 空の境界 劇場マナーCM #01 (BD HEVC 1920x1080 yuv444p10le FLAC)[7D9DFA76].mkv",
-      "size": 31559140
+      "size": 31559140,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 47.089,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[AI-Raws] 劇場版 空の境界 劇場マナーCM #02 (BD HEVC 1920x1080 yuv444p10le FLAC)[E1CB6567].mkv",
-      "size": 42861709
+      "size": 42861709,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 56.1,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[AI-Raws] 劇場版 空の境界 劇場マナーCM #03 (BD HEVC 1920x1080 yuv444p10le FLAC)[DBAD976C].mkv",
-      "size": 45280480
+      "size": 45280480,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 59.105,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[AI-Raws] 劇場版 空の境界 劇場マナーCM #04 (BD HEVC 1920x1080 yuv444p10le FLAC)[17FC4840].mkv",
-      "size": 45818902
+      "size": 45818902,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 65.107,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[AI-Raws] 劇場版 空の境界 劇場マナーCM #05 (BD HEVC 1920x1080 yuv444p10le FLAC)[F5AFE5B1].mkv",
-      "size": 37477235
+      "size": 37477235,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 63.065,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[AI-Raws] 劇場版 空の境界 劇場マナーCM #06 (BD HEVC 1920x1080 yuv444p10le FLAC)[B1DE75A1].mkv",
-      "size": 21842328
+      "size": 21842328,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 69.111,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[AI-Raws] 劇場版 空の境界 劇場マナーCM #07 (BD HEVC 1920x1080 yuv444p10le FLAC)[73362D6A].mkv",
-      "size": 52927070
+      "size": 52927070,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 83.125,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[AI-Raws] 劇場版 空の境界 劇場マナーCM #08 (BD HEVC 1920x1080 yuv444p10le FLAC)[23F6DAE3].mkv",
-      "size": 66627270
+      "size": 66627270,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 77.077,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[AI-Raws] 劇場版 空の境界 第七章公開直前特別番組 - 全七章の軌跡 - (BD HEVC 1920x1080 FLAC 字幕[日本語／英語])[5143B1D0].mkv",
-      "size": 1652257098
+      "size": 1652257098,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 2952.116,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 2,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     }
-  ]
+  ],
+  "local_container_fact_summary": {
+    "container_fact_count": 20,
+    "probe_status_counts": {
+      "available": 20
+    },
+    "duration_seconds_range": [
+      47.089,
+      7200.195
+    ],
+    "duration_seconds_samples": [
+      3009.048,
+      3601.64,
+      3444.485,
+      2721.761,
+      6833.827,
+      3543.582
+    ]
+  },
+  "local_container_fact_source": {
+    "kind": "real_local_media_duration_backfill",
+    "media_root": "H:\\Anime",
+    "probe_media": true,
+    "container_probe": "ffprobe",
+    "embedded_in": "files[].container_facts",
+    "matched_file_count": 20,
+    "matched_video_count": 20,
+    "missing_actual_video_count": 0,
+    "match_stats": {
+      "matched_by_root_path": 20
+    }
+  }
 }

@@ -13,11 +13,67 @@ from ..ai.client import AIClient
 from ..config.config_manager import cm
 from ..logger import logger
 from ..utils.path import RECORD_PATH, TASK_PATH
+from .bgm_to_tmdb import (
+    TmdbLegalGraph,
+    TmdbRenamePlan,
+    TmdbRenamePlanRoots,
+    VerifiedBgmToTmdbPlan,
+    compile_bgm_to_tmdb_input,
+    compile_verified_bgm_to_tmdb_rename_plan,
+    run_bgm_to_tmdb_bridge_agent,
+    write_bgm_to_tmdb_rename_plan_artifacts,
+)
 from .case_agent.local_bangumi_entry import run_local_bangumi_case_agent_mapping
+from .case_agent.recipe import CompiledOrganizePlan
 from .cleaner import remove_episode, remove_season, remove_tag
 from .decision_snapshot import write_decision_snapshot
 from .local_evidence import LocalEvidence, build_local_evidence
+from .local_fact_surface import SUBTITLE_EXTENSIONS, _subtitle_matches_video
+from .trans import Trans
 from .utils import VIDEO_SUFFIX
+
+
+# 复用字幕导入的语言映射，用于同目录字幕跟随迁移
+_SUBTITLE_LANGUAGE_MAP: dict[str, tuple[str, bool]] = {
+    # 简体中文
+    'chs': ('zh-CN', True),
+    'sc': ('zh-CN', True),
+    'gb': ('zh-CN', True),
+    '简': ('zh-CN', True),
+    '简体': ('zh-CN', True),
+    '简中': ('zh-CN', True),
+    'zh-hans': ('zh-CN', True),
+    'zh-cn': ('zh-CN', True),
+    'cn': ('zh-CN', True),
+    'chinese': ('zh-CN', True),
+    # 繁体中文
+    'cht': ('zh-TW', False),
+    'tc': ('zh-TW', False),
+    'big5': ('zh-TW', False),
+    '繁': ('zh-TW', False),
+    '繁体': ('zh-TW', False),
+    '繁中': ('zh-TW', False),
+    'zh-hant': ('zh-TW', False),
+    'zh-tw': ('zh-TW', False),
+    'tw': ('zh-TW', False),
+    'zh-hk': ('zh-HK', False),
+    'hk': ('zh-HK', False),
+    # 日语
+    'jp': ('ja', False),
+    'jpn': ('ja', False),
+    'ja': ('ja', False),
+    'japanese': ('ja', False),
+    '日': ('ja', False),
+    '日语': ('ja', False),
+    # 英语
+    'en': ('en', False),
+    'eng': ('en', False),
+    'english': ('en', False),
+    # 韩语
+    'ko': ('ko', False),
+    'kor': ('ko', False),
+    'korean': ('ko', False),
+}
 
 
 EnqueueTask = Callable[..., str]
@@ -30,6 +86,12 @@ FAILURE_MESSAGES = {
     'invalid_path': '[Path] input path is invalid',
     'local_bangumi_case_agent_primary': '[Case Agent] Local->Bangumi mapping-only result written',
     'local_bangumi_case_agent_primary_error': '[Case Agent] Local->Bangumi Case Agent failed',
+    'bgm_to_tmdb_bridge_failed': '[BGM->TMDB] bridge failed',
+    'bgm_to_tmdb_rename_plan_invalid': '[BGM->TMDB] final rename plan rejected',
+    'bgm_to_tmdb_rename_plan_dry_run': '[BGM->TMDB] final rename dry-run plan accepted',
+    'bgm_to_tmdb_no_targetable_files': '[BGM->TMDB] no targetable files to migrate',
+    'bgm_to_tmdb_transfer_failed': '[BGM->TMDB] transfer failed',
+    'bgm_to_tmdb_product_pipeline_error': '[BGM->TMDB] product pipeline failed',
 }
 
 LOCAL_BANGUMI_CASE_AGENT_RESULT_STAGE = 'rename_local_bangumi_case_agent_result'
@@ -49,8 +111,33 @@ def _config_bool(key: str, *, default: bool = False) -> bool:
     return str(value).strip().casefold() in {'1', 'true', 'yes', 'on'}
 
 
+def _config_path_text(key: str) -> str:
+    return str(cm.get_config(key) or '').strip()
+
+
 def _local_bangumi_case_agent_primary_enabled() -> bool:
     return _config_bool('rename_local_bangumi_case_agent_primary_enabled', default=True)
+
+
+def _bgm_to_tmdb_product_pipeline_enabled() -> bool:
+    return _config_bool('rename_bgm_to_tmdb_product_pipeline_enabled', default=False)
+
+
+def _bgm_to_tmdb_execute_enabled() -> bool:
+    return _config_bool('rename_bgm_to_tmdb_execute_enabled', default=False)
+
+
+def _case_agent_result_status(result: dict[str, object]) -> str:
+    case_agent_result = result.get('case_agent_result') if isinstance(result.get('case_agent_result'), dict) else {}
+    snapshot = case_agent_result.get('snapshot') if isinstance(case_agent_result.get('snapshot'), dict) else {}
+    return str(
+        result.get('product_result_kind')
+        or case_agent_result.get('case_agent_status')
+        or case_agent_result.get('status')
+        or snapshot.get('case_agent_status')
+        or snapshot.get('status')
+        or ''
+    ).strip()
 
 
 def _write_local_bangumi_case_agent_result_snapshot(
@@ -302,6 +389,17 @@ class Rename:
                 ai_used=True,
             )
 
+        if _bgm_to_tmdb_product_pipeline_enabled() and _case_agent_result_status(result) == 'accepted':
+            return self._run_bgm_to_tmdb_product_pipeline(
+                path=path,
+                task_uuid=task_uuid,
+                local_bangumi_result=result,
+                is_anime=_is_anime,
+                is_movie=_is_movie,
+                name=cus_name,
+                season_id=cus_season_id,
+            )
+
         extra_task_data: dict[str, object] = {
             'pipeline_mode': 'local_bangumi_case_agent_primary',
             'case_agent_result': result.get('case_agent_result'),
@@ -379,6 +477,345 @@ class Rename:
             'product_result_kind': case_agent_status or 'unknown',
             'task_uuid': task_uuid,
         }
+
+    def _run_bgm_to_tmdb_product_pipeline(
+        self,
+        *,
+        path: Path,
+        task_uuid: str,
+        local_bangumi_result: dict[str, object],
+        is_anime: bool | None,
+        is_movie: bool | None,
+        name: str | None,
+        season_id: int | None,
+    ) -> str | bool:
+        try:
+            compiled_plan = self._extract_compiled_plan(local_bangumi_result)
+            if compiled_plan is None:
+                return self.error_reply(
+                    task_uuid,
+                    self._failure_message('bgm_to_tmdb_product_pipeline_error', 'accepted Local->Bangumi result is missing compiled_plan'),
+                    path,
+                    is_anime,
+                    is_movie,
+                    name=name,
+                    season_id=season_id,
+                    failure_reason='bgm_to_tmdb_product_pipeline_error',
+                    ai_attempted=True,
+                    ai_used=True,
+                    extra_task_data={
+                        'pipeline_mode': 'local_bangumi_to_tmdb_product',
+                        'case_agent_result': local_bangumi_result.get('case_agent_result'),
+                    },
+                )
+
+            bridge_result = run_bgm_to_tmdb_bridge_agent(
+                compiled_plan=compiled_plan,
+                artifact_path='',
+                source_path=path,
+                sample_id=task_uuid,
+            )
+            bridge_input = compile_bgm_to_tmdb_input(compiled_plan, source_path=path)
+            legal_graph = bridge_result.tmdb_legal_graph
+            verified_plan = bridge_result.verified_plan
+            bridge_extra = {
+                'pipeline_mode': 'local_bangumi_to_tmdb_product',
+                'case_agent_result': local_bangumi_result.get('case_agent_result'),
+                'bgm_to_tmdb_bridge_status': bridge_result.status,
+                'bgm_to_tmdb_bridge_summary': bridge_result.summary,
+                'bgm_to_tmdb_bridge_run_dir': str(bridge_result.run_dir),
+                'bgm_to_tmdb_bridge_errors': list(bridge_result.errors),
+                'bgm_to_tmdb_bridge_tool_call_counts': dict(bridge_result.tool_call_counts),
+            }
+            if bridge_result.status != 'accepted' or not bridge_result.ok or verified_plan is None or legal_graph is None:
+                return self.error_reply(
+                    task_uuid,
+                    self._failure_message('bgm_to_tmdb_bridge_failed', bridge_result.summary),
+                    path,
+                    is_anime,
+                    is_movie,
+                    name=name,
+                    season_id=season_id,
+                    failure_reason='bgm_to_tmdb_bridge_failed',
+                    ai_attempted=True,
+                    ai_used=True,
+                    extra_task_data=bridge_extra,
+                )
+
+            roots = self._bgm_to_tmdb_rename_roots(is_anime=is_anime)
+            rename_plan, rename_verifier_result = compile_verified_bgm_to_tmdb_rename_plan(
+                bridge_input=bridge_input,
+                legal_graph=legal_graph,
+                verified_plan=verified_plan,
+                roots=roots,
+                source_root=self._source_root_for_rename_plan(path),
+            )
+            write_bgm_to_tmdb_rename_plan_artifacts(
+                output_dir=bridge_result.run_dir / 'artifacts',
+                rename_plan=rename_plan,
+                verifier_result=rename_verifier_result,
+            )
+            plan_extra = {
+                **bridge_extra,
+                'bgm_to_tmdb_verified_plan': verified_plan.model_dump(mode='json'),
+                'bgm_to_tmdb_rename_plan': rename_plan.model_dump(mode='json'),
+                'bgm_to_tmdb_rename_verifier_result': rename_verifier_result.model_dump(mode='json'),
+                'bgm_to_tmdb_rename_plan_artifacts_dir': str(bridge_result.run_dir / 'artifacts'),
+            }
+            if not rename_verifier_result.passed:
+                return self.error_reply(
+                    task_uuid,
+                    self._failure_message('bgm_to_tmdb_rename_plan_invalid', rename_verifier_result.summary),
+                    path,
+                    is_anime,
+                    is_movie,
+                    name=name,
+                    season_id=season_id,
+                    failure_reason='bgm_to_tmdb_rename_plan_invalid',
+                    ai_attempted=True,
+                    ai_used=True,
+                    extra_task_data=plan_extra,
+                )
+
+            if not _bgm_to_tmdb_execute_enabled():
+                return self.error_reply(
+                    task_uuid,
+                    self._failure_message('bgm_to_tmdb_rename_plan_dry_run', rename_plan.summary),
+                    path,
+                    is_anime,
+                    is_movie,
+                    name=name,
+                    season_id=season_id,
+                    failure_reason='bgm_to_tmdb_rename_plan_dry_run',
+                    ai_attempted=True,
+                    ai_used=True,
+                    extra_task_data={
+                        **plan_extra,
+                        'pipeline_mode': 'local_bangumi_to_tmdb_product_dry_run',
+                        'bgm_to_tmdb_execute_enabled': False,
+                    },
+                )
+
+            transfer_mapping = self._transfer_mapping_from_rename_plan(rename_plan)
+            if not transfer_mapping:
+                return self.error_reply(
+                    task_uuid,
+                    self._failure_message('bgm_to_tmdb_no_targetable_files', rename_plan.summary),
+                    path,
+                    is_anime,
+                    is_movie,
+                    name=name,
+                    season_id=season_id,
+                    failure_reason='bgm_to_tmdb_no_targetable_files',
+                    ai_attempted=True,
+                    ai_used=True,
+                    extra_task_data=plan_extra,
+                )
+
+            transfer_result = Trans(transfer_mapping, task_uuid).trans_file()
+            if transfer_result is not True:
+                return self.error_reply(
+                    task_uuid,
+                    self._failure_message('bgm_to_tmdb_transfer_failed', str(transfer_result)),
+                    path,
+                    is_anime,
+                    is_movie,
+                    name=name,
+                    season_id=season_id,
+                    failure_reason='bgm_to_tmdb_transfer_failed',
+                    ai_attempted=True,
+                    ai_used=True,
+                    extra_task_data=plan_extra,
+                )
+
+            subtitle_mapping = self._collect_and_transfer_subtitle_sidecars(
+                transfer_mapping=transfer_mapping,
+                task_uuid=task_uuid,
+            )
+
+            success_data = self._success_task_data_from_rename_plan(
+                task_uuid=task_uuid,
+                source_path=path,
+                is_anime=is_anime,
+                rename_plan=rename_plan,
+                verified_plan=verified_plan,
+                legal_graph=legal_graph,
+                extra_task_data={
+                    **plan_extra,
+                    'pipeline_mode': 'local_bangumi_to_tmdb_product',
+                    'bgm_to_tmdb_execute_enabled': True,
+                    'transferred_file_count': len(transfer_mapping) + len(subtitle_mapping),
+                    'subtitle_mapping': {str(k): str(v) for k, v in subtitle_mapping.items()},
+                    'subtitle_transfer_failed': False,
+                },
+            )
+            self._write_task_data(success_data)
+            return True
+        except Exception as exc:
+            logger.warning('BGM-to-TMDB product pipeline failed', source_path=str(path), error=str(exc))
+            return self.error_reply(
+                task_uuid,
+                self._failure_message('bgm_to_tmdb_product_pipeline_error', f'{type(exc).__name__}: {exc}'),
+                path,
+                is_anime,
+                is_movie,
+                name=name,
+                season_id=season_id,
+                failure_reason='bgm_to_tmdb_product_pipeline_error',
+                ai_attempted=True,
+                ai_used=True,
+                extra_task_data={'pipeline_mode': 'local_bangumi_to_tmdb_product'},
+            )
+
+    def _collect_and_transfer_subtitle_sidecars(
+        self,
+        *,
+        transfer_mapping: dict[Path, Path],
+        task_uuid: str,
+    ) -> dict[Path, Path]:
+        """收集并迁移同目录外部字幕，返回实际复制的字幕源→目标映射。"""
+        subtitle_mapping: dict[Path, Path] = {}
+        for source_path, target_path in transfer_mapping.items():
+            if not source_path.is_file():
+                continue
+            video_stem = source_path.stem
+            source_dir = source_path.parent
+            for subtitle_path in source_dir.iterdir():
+                if not subtitle_path.is_file():
+                    continue
+                if subtitle_path.suffix.lower() not in SUBTITLE_EXTENSIONS:
+                    continue
+                if not _subtitle_matches_video(video_stem, subtitle_path.stem):
+                    continue
+                target_dir = target_path.parent
+                target_stem = target_path.stem
+                emby_name = _build_emby_subtitle_name(subtitle_path, target_stem)
+                target_subtitle_path = target_dir / emby_name
+                # 去重：同目标路径只保留第一次出现
+                if target_subtitle_path in subtitle_mapping.values():
+                    continue
+                subtitle_mapping[subtitle_path] = target_subtitle_path
+
+        if not subtitle_mapping:
+            return {}
+
+        transfer_result = Trans(
+            subtitle_mapping,
+            task_uuid,
+            force_mode='复制',
+            force_overwrite=cm.get_config('overwrite_existing'),
+            write_record=False,
+        ).trans_file()
+        if transfer_result is not True:
+            logger.warning(
+                '[BGM->TMDB] 字幕跟随迁移失败',
+                task_uuid=task_uuid,
+                error=str(transfer_result),
+            )
+            return {}
+        return subtitle_mapping
+
+    @staticmethod
+    def _extract_compiled_plan(local_bangumi_result: dict[str, object]) -> CompiledOrganizePlan | None:
+        case_agent_result = local_bangumi_result.get('case_agent_result')
+        if not isinstance(case_agent_result, dict):
+            return None
+        snapshot = case_agent_result.get('snapshot')
+        if not isinstance(snapshot, dict):
+            return None
+        compiled_plan = snapshot.get('compiled_plan')
+        if not isinstance(compiled_plan, dict):
+            return None
+        return CompiledOrganizePlan.model_validate(compiled_plan)
+
+    def _bgm_to_tmdb_rename_roots(self, *, is_anime: bool | None) -> TmdbRenamePlanRoots:
+        bangumi_path = _config_path_text('bangumi_path')
+        movie_path = _config_path_text('movie_path')
+        anime_path = _config_path_text('anime_path')
+        anime_movie_path = _config_path_text('anime_movie_path')
+        if is_anime is False:
+            tv_root = bangumi_path or anime_path
+            movie_root = movie_path or anime_movie_path
+        else:
+            tv_root = anime_path or bangumi_path
+            movie_root = anime_movie_path or movie_path
+        return TmdbRenamePlanRoots(tv_root=tv_root, movie_root=movie_root)
+
+    @staticmethod
+    def _source_root_for_rename_plan(path: Path) -> Path:
+        path = Path(path)
+        return path.parent if path.is_file() else path
+
+    @staticmethod
+    def _transfer_mapping_from_rename_plan(rename_plan: TmdbRenamePlan) -> dict[Path, Path]:
+        mapping: dict[Path, Path] = {}
+        for item in rename_plan.items:
+            if item.destination is None:
+                continue
+            if not item.source_abs_path or not item.destination.target_path:
+                continue
+            mapping[Path(item.source_abs_path)] = Path(item.destination.target_path)
+        return mapping
+
+    @staticmethod
+    def _success_task_data_from_rename_plan(
+        *,
+        task_uuid: str,
+        source_path: Path,
+        is_anime: bool | None,
+        rename_plan: TmdbRenamePlan,
+        verified_plan: VerifiedBgmToTmdbPlan,
+        legal_graph: TmdbLegalGraph,
+        extra_task_data: dict[str, object],
+    ) -> dict[str, object]:
+        target_items = [item for item in rename_plan.items if item.destination is not None]
+        first_destination = target_items[0].destination if target_items else None
+        target_roots = sorted({
+            str(Path(item.destination.root_path) / item.destination.work_folder)
+            for item in target_items
+            if item.destination is not None and item.destination.root_path and item.destination.work_folder
+        })
+        tmdb_refs = sorted({
+            item.destination.tmdb_ref
+            for item in target_items
+            if item.destination is not None and item.destination.tmdb_ref
+        })
+        is_movie = bool(first_destination and first_destination.media_type == 'movie')
+        target_root = target_roots[0] if len(target_roots) == 1 else ''
+        task_data: dict[str, object] = {
+            'path': str(source_path),
+            'is_anime': is_anime,
+            'is_movie': is_movie,
+            'name': first_destination.title if first_destination is not None else None,
+            'season_id': None if first_destination is None else (0 if is_movie else first_destination.season_number),
+            'uuid': str(task_uuid),
+            'error': '',
+            'use_ai': True,
+            'ai_attempted': True,
+            'ai_used': True,
+            'ai_confidence': None,
+            'failure_reason': None,
+            'pipeline_mode': 'local_bangumi_to_tmdb_product',
+            'tmdb_id': first_destination.tmdb_id if first_destination is not None else None,
+            'poster_path': None,
+            'tmdb_name': first_destination.title if first_destination is not None else None,
+            'tmdb_year': first_destination.year if first_destination is not None else None,
+            'tmdb_media_type': first_destination.media_type if first_destination is not None else None,
+            'tmdb_genres': [],
+            'release_group': None,
+            'resource_term': None,
+            'target_root': target_root,
+            'target_roots': target_roots,
+            'is_mixed_parent': len(target_roots) > 1 or len(tmdb_refs) > 1,
+            'bgm_to_tmdb_tmdb_refs': tmdb_refs,
+            'bgm_to_tmdb_target_item_count': rename_plan.target_item_count,
+            'bgm_to_tmdb_target_count': verified_plan.tmdb_target_count,
+            'bgm_to_tmdb_absent_count': verified_plan.tmdb_absent_count,
+            'bgm_to_tmdb_supplemental_count': verified_plan.supplemental_count,
+            'bgm_to_tmdb_candidate_count': len(legal_graph.candidates),
+        }
+        task_data.update(extra_task_data)
+        return task_data
 
     @staticmethod
     def _normalize_structural_dir_name(name: str) -> str:
@@ -520,3 +957,34 @@ class Rename:
             task_data.update(extra_task_data)
         self._write_task_data(task_data)
         return error
+
+
+def _build_emby_subtitle_name(subtitle_path: Path, video_stem: str) -> str:
+    """按 Emby 标准构造字幕文件名：video_stem.{lang}[.default]{ext}。"""
+    lang = _detect_subtitle_language(subtitle_path)
+    emby_lang, is_simplified = _normalize_subtitle_language(lang)
+    if is_simplified:
+        return f'{video_stem}.{emby_lang}.default{subtitle_path.suffix.lower()}'
+    return f'{video_stem}.{emby_lang}{subtitle_path.suffix.lower()}'
+
+
+def _detect_subtitle_language(subtitle_path: Path) -> str | None:
+    """从字幕文件名中提取字幕组语言标签（如 chs）。"""
+    stem = subtitle_path.stem
+    # 去掉 video_stem 前缀，保留剩余片段中的语言标记
+    tokens = [item.casefold() for item in re.split(r'[.\s_\-\[\]()]+', stem) if item]
+    # 简体优先命中，避免 zh 等短标签被优先匹配
+    for token in sorted(tokens, key=len, reverse=True):
+        if token in _SUBTITLE_LANGUAGE_MAP:
+            return token
+    return None
+
+
+def _normalize_subtitle_language(lang: str | None) -> tuple[str, bool]:
+    """将字幕组语言标签转换为 Emby 标准代码，并返回是否为简体中文。"""
+    if not lang:
+        return ('zh-CN', True)
+    lang_lower = lang.lower().strip()
+    if lang_lower in _SUBTITLE_LANGUAGE_MAP:
+        return _SUBTITLE_LANGUAGE_MAP[lang_lower]
+    return (lang, False)

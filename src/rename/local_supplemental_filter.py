@@ -68,10 +68,58 @@ _VIDEO_EXTRA_RULES: list[tuple[str, str, str, re.Pattern[str]]] = [
         re.compile(r'(?i)\[S\d+\s+Recap(?:\s+\d+)?\]'),
     ),
     (
+        'recap_token',
+        'non_episode_video',
+        'recap asset',
+        re.compile(r'(?i)(?<![A-Za-z0-9])Recap(?:\d{0,3}|_ALL)?(?![A-Za-z0-9])'),
+    ),
+    (
         'jp_recap_avan',
         'non_episode_video',
         'Japanese recap/avant segment asset',
         re.compile(r'(?:振り返り|ふり返り|振返り)\s*アバン'),
+    ),
+    (
+        'interview_video_token',
+        'bonus_video',
+        'interview-video asset',
+        re.compile(r'(?i)(?:^|[/\[\]\s._-])IV\d{1,3}(?:$|[/\[\]\s._-])'),
+    ),
+    (
+        'bonus_token',
+        'bonus_video',
+        'bonus video asset',
+        re.compile(r'(?i)(?<![A-Za-z0-9])Bonus(?:\d{0,3}|_ALL)?(?![A-Za-z0-9])'),
+    ),
+    (
+        'creditless_textless_token',
+        'creditless_op_ed',
+        'creditless/textless OP/ED asset',
+        re.compile(r'(?i)(?<![A-Za-z0-9])(?:Creditless|Textless|Clean[\s._-]*(?:OP|ED))(?:\d{0,3}|_ALL)?(?![A-Za-z0-9])'),
+    ),
+    (
+        'talk_token',
+        'bonus_video',
+        'cast/staff/after talk asset',
+        re.compile(r'(?i)(?<![A-Za-z0-9])(?:Cast|Staff|After)[\s._-]*Talk(?:\d{0,3}|_ALL)?(?![A-Za-z0-9])'),
+    ),
+    (
+        'making_featurette_token',
+        'bonus_video',
+        'making/featurette asset',
+        re.compile(r'(?i)(?<![A-Za-z0-9])(?:Making|Featurette)(?:\d{0,3}|_ALL)?(?![A-Za-z0-9])'),
+    ),
+    (
+        'spot_token',
+        'pv_cm',
+        'spot promo asset',
+        re.compile(r'(?i)(?<![A-Za-z0-9])SPOT(?:\d{0,3}|_ALL)?(?![A-Za-z0-9])'),
+    ),
+    (
+        'navigation_token',
+        'menu_or_navigation',
+        'navigation asset',
+        re.compile(r'(?i)(?<![A-Za-z0-9])Navigation(?:\d{0,3}|_ALL)?(?![A-Za-z0-9])'),
     ),
     (
         'menu_token',

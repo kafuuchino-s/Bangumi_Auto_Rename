@@ -51,15 +51,21 @@ class Trans:
                 if target_path.is_dir() or source_path.is_dir():
                     continue
                 if target_path.exists():
-                    logger.warning(f'[处理迁移] 目标文件已存在, 拒绝覆盖: {target_path}')
-                    self._rollback_transfers(created_targets, moved_pairs)
-                    return f'partial_failure: target_exists {target_path}'
+                    if not self.overwrite:
+                        logger.warning(f'[处理迁移] 目标文件已存在, 拒绝覆盖: {target_path}')
+                        self._rollback_transfers(created_targets, moved_pairs)
+                        return f'partial_failure: target_exists {target_path}'
+                    logger.warning(f'[处理迁移] 目标文件已存在, 启用覆盖: {target_path}')
+                    target_path.unlink()
                 if not target_path.parent.exists():
                     target_path.parent.mkdir(parents=True, exist_ok=True)
                 if target_path.exists():
-                    logger.warning(f'[处理迁移] 目标文件在写入前再次出现, 拒绝覆盖: {target_path}')
-                    self._rollback_transfers(created_targets, moved_pairs)
-                    return f'partial_failure: target_exists {target_path}'
+                    if not self.overwrite:
+                        logger.warning(f'[处理迁移] 目标文件在写入前再次出现, 拒绝覆盖: {target_path}')
+                        self._rollback_transfers(created_targets, moved_pairs)
+                        return f'partial_failure: target_exists {target_path}'
+                    logger.warning(f'[处理迁移] 目标文件在写入前再次出现, 启用覆盖: {target_path}')
+                    target_path.unlink()
                 if self.mode == '剪切':
                     shutil.move(source_path, target_path)
                     moved_pairs.append((source_path, target_path))

@@ -7,7 +7,17 @@
     },
     {
       "path": "[Salender-Raws] Yondemasuyo, Azazel-san. Z - 01 (BD 1920x1080 x264 FLAC).mkv",
-      "size": 478846487
+      "size": 478846487,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 787.29,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Salender-Raws] Yondemasuyo, Azazel-san. Z - 02 (BD 1920x1080 x264 FLAC).ass",
@@ -15,7 +25,17 @@
     },
     {
       "path": "[Salender-Raws] Yondemasuyo, Azazel-san. Z - 02 (BD 1920x1080 x264 FLAC).mkv",
-      "size": 452816583
+      "size": 452816583,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 787.12,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Salender-Raws] Yondemasuyo, Azazel-san. Z - 03 (BD 1920x1080 x264 FLAC).ass",
@@ -23,7 +43,17 @@
     },
     {
       "path": "[Salender-Raws] Yondemasuyo, Azazel-san. Z - 03 (BD 1920x1080 x264 FLAC).mkv",
-      "size": 425952002
+      "size": 425952002,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 787.12,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Salender-Raws] Yondemasuyo, Azazel-san. Z - 04 (BD 1920x1080 x264 FLAC).ass",
@@ -31,7 +61,17 @@
     },
     {
       "path": "[Salender-Raws] Yondemasuyo, Azazel-san. Z - 04 (BD 1920x1080 x264 FLAC).mkv",
-      "size": 487998982
+      "size": 487998982,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 787.12,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Salender-Raws] Yondemasuyo, Azazel-san. Z - 05 (BD 1920x1080 x264 FLAC).ass",
@@ -39,7 +79,17 @@
     },
     {
       "path": "[Salender-Raws] Yondemasuyo, Azazel-san. Z - 05 (BD 1920x1080 x264 FLAC).mkv",
-      "size": 460386320
+      "size": 460386320,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 787.12,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Salender-Raws] Yondemasuyo, Azazel-san. Z - 06 (BD 1920x1080 x264 FLAC).ass",
@@ -47,7 +97,17 @@
     },
     {
       "path": "[Salender-Raws] Yondemasuyo, Azazel-san. Z - 06 (BD 1920x1080 x264 FLAC).mkv",
-      "size": 467093832
+      "size": 467093832,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 787.12,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Salender-Raws] Yondemasuyo, Azazel-san. Z - 07 (BD 1920x1080 x264 FLAC).ass",
@@ -55,7 +115,17 @@
     },
     {
       "path": "[Salender-Raws] Yondemasuyo, Azazel-san. Z - 07 (BD 1920x1080 x264 FLAC).mkv",
-      "size": 546477622
+      "size": 546477622,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 787.12,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Salender-Raws] Yondemasuyo, Azazel-san. Z - 08 (BD 1920x1080 x264 FLAC).ass",
@@ -63,7 +133,17 @@
     },
     {
       "path": "[Salender-Raws] Yondemasuyo, Azazel-san. Z - 08 (BD 1920x1080 x264 FLAC).mkv",
-      "size": 601025908
+      "size": 601025908,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 787.12,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Salender-Raws] Yondemasuyo, Azazel-san. Z - 09 (BD 1920x1080 x264 FLAC).ass",
@@ -71,7 +151,17 @@
     },
     {
       "path": "[Salender-Raws] Yondemasuyo, Azazel-san. Z - 09 (BD 1920x1080 x264 FLAC).mkv",
-      "size": 593775100
+      "size": 593775100,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 787.12,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Salender-Raws] Yondemasuyo, Azazel-san. Z - 10 (BD 1920x1080 x264 FLAC).ass",
@@ -79,7 +169,17 @@
     },
     {
       "path": "[Salender-Raws] Yondemasuyo, Azazel-san. Z - 10 (BD 1920x1080 x264 FLAC).mkv",
-      "size": 559628845
+      "size": 559628845,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 847.18,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Salender-Raws] Yondemasuyo, Azazel-san. Z - 11 (BD 1920x1080 x264 FLAC).ass",
@@ -87,7 +187,17 @@
     },
     {
       "path": "[Salender-Raws] Yondemasuyo, Azazel-san. Z - 11 (BD 1920x1080 x264 FLAC).mkv",
-      "size": 442955973
+      "size": 442955973,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 787.12,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Salender-Raws] Yondemasuyo, Azazel-san. Z - 12 (BD 1920x1080 x264 FLAC).ass",
@@ -95,7 +205,17 @@
     },
     {
       "path": "[Salender-Raws] Yondemasuyo, Azazel-san. Z - 12 (BD 1920x1080 x264 FLAC).mkv",
-      "size": 722262197
+      "size": 722262197,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 787.12,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Salender-Raws] Yondemasuyo, Azazel-san. Z - 13 (BD 1920x1080 x264 FLAC).ass",
@@ -103,27 +223,87 @@
     },
     {
       "path": "[Salender-Raws] Yondemasuyo, Azazel-san. Z - 13 (BD 1920x1080 x264 FLAC).mkv",
-      "size": 578984891
+      "size": 578984891,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 847.347,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Bonus/[Salender-Raws] Yondemasuyo, Azazel-san. Z - CM 1 (BD 1920x1080 x264 FLAC).mkv",
-      "size": 15082819
+      "size": 15082819,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 16.016,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Bonus/[Salender-Raws] Yondemasuyo, Azazel-san. Z - CM 2 (BD 1920x1080 x264 FLAC).mkv",
-      "size": 10585163
+      "size": 10585163,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 16.016,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Bonus/[Salender-Raws] Yondemasuyo, Azazel-san. Z - CM 3 (BD 1920x1080 x264 FLAC).mkv",
-      "size": 13209868
+      "size": 13209868,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 16.016,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Bonus/[Salender-Raws] Yondemasuyo, Azazel-san. Z - PV 1 (BD 1920x1080 x264 FLAC).mkv",
-      "size": 20888148
+      "size": 20888148,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 31.031,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Bonus/[Salender-Raws] Yondemasuyo, Azazel-san. Z - PV 2 (BD 1920x1080 x264 FLAC).mkv",
-      "size": 11049800
+      "size": 11049800,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 16.016,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Bonus/BD Menu/BD Menu Vol.1.png",
@@ -139,23 +319,104 @@
     },
     {
       "path": "Bonus/NC/[Salender-Raws] Yondemasuyo, Azazel-san. Z - NCED 1 (BD 1920x1080 x264 FLAC).mkv",
-      "size": 28702802
+      "size": 28702802,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 62.062,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Bonus/NC/[Salender-Raws] Yondemasuyo, Azazel-san. Z - NCED 2 (BD 1920x1080 x264 FLAC).mkv",
-      "size": 26233756
+      "size": 26233756,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 62.062,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Bonus/NC/[Salender-Raws] Yondemasuyo, Azazel-san. Z - NCED 3 (BD 1920x1080 x264 FLAC).mkv",
-      "size": 27048959
+      "size": 27048959,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 62.062,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Bonus/NC/[Salender-Raws] Yondemasuyo, Azazel-san. Z - NCED 4 (BD 1920x1080 x264 FLAC).mkv",
-      "size": 26212278
+      "size": 26212278,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 62.062,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Bonus/NC/[Salender-Raws] Yondemasuyo, Azazel-san. Z - NCOP 1 (BD 1920x1080 x264 FLAC).mkv",
-      "size": 60022454
+      "size": 60022454,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 61.061,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     }
-  ]
+  ],
+  "local_container_fact_summary": {
+    "container_fact_count": 23,
+    "probe_status_counts": {
+      "available": 23
+    },
+    "duration_seconds_range": [
+      16.016,
+      847.347
+    ],
+    "duration_seconds_samples": [
+      787.29,
+      787.12,
+      787.12,
+      787.12,
+      787.12,
+      787.12
+    ]
+  },
+  "local_container_fact_source": {
+    "kind": "real_local_media_duration_backfill",
+    "media_root": "H:\\Anime",
+    "probe_media": true,
+    "container_probe": "ffprobe",
+    "embedded_in": "files[].container_facts",
+    "matched_file_count": 39,
+    "matched_video_count": 23,
+    "missing_actual_video_count": 0,
+    "match_stats": {
+      "matched_by_root_path": 39
+    }
+  }
 }

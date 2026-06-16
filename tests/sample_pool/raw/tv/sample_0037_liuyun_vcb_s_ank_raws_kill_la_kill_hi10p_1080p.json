@@ -7,7 +7,17 @@
     },
     {
       "path": "[Liuyun&VCB-S&ANK-Raws] KILL la KILL [01][Hi10p_1080p][x264_flac_aac].mkv",
-      "size": 1713275372
+      "size": 1713275372,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1468.65,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 1,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Liuyun&VCB-S&ANK-Raws] KILL la KILL [02][Hi10p_1080p][x264_flac_aac].ass",
@@ -15,7 +25,17 @@
     },
     {
       "path": "[Liuyun&VCB-S&ANK-Raws] KILL la KILL [02][Hi10p_1080p][x264_flac_aac].mkv",
-      "size": 1504435910
+      "size": 1504435910,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1468.551,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 1,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Liuyun&VCB-S&ANK-Raws] KILL la KILL [03][Hi10p_1080p][x264_flac_aac].ass",
@@ -23,7 +43,17 @@
     },
     {
       "path": "[Liuyun&VCB-S&ANK-Raws] KILL la KILL [03][Hi10p_1080p][x264_flac_aac].mkv",
-      "size": 1618755950
+      "size": 1618755950,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1469.056,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 1,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Liuyun&VCB-S&ANK-Raws] KILL la KILL [04][Hi10p_1080p][x264_flac_aac].ass",
@@ -31,7 +61,17 @@
     },
     {
       "path": "[Liuyun&VCB-S&ANK-Raws] KILL la KILL [04][Hi10p_1080p][x264_flac_aac].mkv",
-      "size": 1535906856
+      "size": 1535906856,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1469.013,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 1,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Liuyun&VCB-S&ANK-Raws] KILL la KILL [05][Hi10p_1080p][x264_flac_aac].ass",
@@ -39,7 +79,17 @@
     },
     {
       "path": "[Liuyun&VCB-S&ANK-Raws] KILL la KILL [05][Hi10p_1080p][x264_flac_aac].mkv",
-      "size": 1306754755
+      "size": 1306754755,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1469.013,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 1,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Liuyun&VCB-S&ANK-Raws] KILL la KILL [06][Hi10p_1080p][x264_flac_aac].ass",
@@ -47,7 +97,17 @@
     },
     {
       "path": "[Liuyun&VCB-S&ANK-Raws] KILL la KILL [06][Hi10p_1080p][x264_flac_aac].mkv",
-      "size": 1725567941
+      "size": 1725567941,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1469.013,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 1,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Liuyun&VCB-S&ANK-Raws] KILL la KILL [07][Hi10p_1080p][x264_flac_aac].ass",
@@ -55,7 +115,17 @@
     },
     {
       "path": "[Liuyun&VCB-S&ANK-Raws] KILL la KILL [07][Hi10p_1080p][x264_flac_aac].mkv",
-      "size": 1436168921
+      "size": 1436168921,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1469.056,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 1,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Liuyun&VCB-S&ANK-Raws] KILL la KILL [08][Hi10p_1080p][x264_flac_aac].ass",
@@ -63,7 +133,17 @@
     },
     {
       "path": "[Liuyun&VCB-S&ANK-Raws] KILL la KILL [08][Hi10p_1080p][x264_flac_aac].mkv",
-      "size": 1471810793
+      "size": 1471810793,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1469.056,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 1,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Liuyun&VCB-S&ANK-Raws] KILL la KILL [09][Hi10p_1080p][x264_flac_aac].ass",
@@ -71,7 +151,17 @@
     },
     {
       "path": "[Liuyun&VCB-S&ANK-Raws] KILL la KILL [09][Hi10p_1080p][x264_flac_aac].mkv",
-      "size": 1757057391
+      "size": 1757057391,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1469.013,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 1,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Liuyun&VCB-S&ANK-Raws] KILL la KILL [10][Hi10p_1080p][x264_flac_aac].ass",
@@ -79,7 +169,17 @@
     },
     {
       "path": "[Liuyun&VCB-S&ANK-Raws] KILL la KILL [10][Hi10p_1080p][x264_flac_aac].mkv",
-      "size": 1731786454
+      "size": 1731786454,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1469.013,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 1,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Liuyun&VCB-S&ANK-Raws] KILL la KILL [11][Hi10p_1080p][x264_flac_aac].ass",
@@ -87,7 +187,17 @@
     },
     {
       "path": "[Liuyun&VCB-S&ANK-Raws] KILL la KILL [11][Hi10p_1080p][x264_flac_aac].mkv",
-      "size": 1715510291
+      "size": 1715510291,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1469.013,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 1,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Liuyun&VCB-S&ANK-Raws] KILL la KILL [12][Hi10p_1080p][x264_flac_aac].ass",
@@ -95,7 +205,17 @@
     },
     {
       "path": "[Liuyun&VCB-S&ANK-Raws] KILL la KILL [12][Hi10p_1080p][x264_flac_aac].mkv",
-      "size": 1769056885
+      "size": 1769056885,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1469.013,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 1,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Liuyun&VCB-S&ANK-Raws] KILL la KILL [13][Hi10p_1080p][x264_flac_aac].ass",
@@ -103,7 +223,17 @@
     },
     {
       "path": "[Liuyun&VCB-S&ANK-Raws] KILL la KILL [13][Hi10p_1080p][x264_flac_aac].mkv",
-      "size": 1335921143
+      "size": 1335921143,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1469.013,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 1,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Liuyun&VCB-S&ANK-Raws] KILL la KILL [14][Hi10p_1080p][x264_flac_aac].ass",
@@ -111,7 +241,17 @@
     },
     {
       "path": "[Liuyun&VCB-S&ANK-Raws] KILL la KILL [14][Hi10p_1080p][x264_flac_aac].mkv",
-      "size": 1688507238
+      "size": 1688507238,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1469.056,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 1,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Liuyun&VCB-S&ANK-Raws] KILL la KILL [15][Hi10p_1080p][x264_flac_aac].ass",
@@ -119,7 +259,17 @@
     },
     {
       "path": "[Liuyun&VCB-S&ANK-Raws] KILL la KILL [15][Hi10p_1080p][x264_flac_aac].mkv",
-      "size": 1680866912
+      "size": 1680866912,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1468.949,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 1,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Liuyun&VCB-S&ANK-Raws] KILL la KILL [16][Hi10p_1080p][x264_flac_aac].ass",
@@ -127,7 +277,17 @@
     },
     {
       "path": "[Liuyun&VCB-S&ANK-Raws] KILL la KILL [16][Hi10p_1080p][x264_flac_aac].mkv",
-      "size": 1315369273
+      "size": 1315369273,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1469.013,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 1,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Liuyun&VCB-S&ANK-Raws] KILL la KILL [17][Hi10p_1080p][x264_flac_aac].ass",
@@ -135,7 +295,17 @@
     },
     {
       "path": "[Liuyun&VCB-S&ANK-Raws] KILL la KILL [17][Hi10p_1080p][x264_flac_aac].mkv",
-      "size": 1376866393
+      "size": 1376866393,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1469.013,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 1,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Liuyun&VCB-S&ANK-Raws] KILL la KILL [18][Hi10p_1080p][x264_flac_aac].ass",
@@ -143,7 +313,17 @@
     },
     {
       "path": "[Liuyun&VCB-S&ANK-Raws] KILL la KILL [18][Hi10p_1080p][x264_flac_aac].mkv",
-      "size": 1717337810
+      "size": 1717337810,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1469.013,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 1,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Liuyun&VCB-S&ANK-Raws] KILL la KILL [19][Hi10p_1080p][x264_flac_aac].ass",
@@ -151,7 +331,17 @@
     },
     {
       "path": "[Liuyun&VCB-S&ANK-Raws] KILL la KILL [19][Hi10p_1080p][x264_flac_aac].mkv",
-      "size": 1543426520
+      "size": 1543426520,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1469.013,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 1,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Liuyun&VCB-S&ANK-Raws] KILL la KILL [20][Hi10p_1080p][x264_flac_aac].ass",
@@ -159,7 +349,17 @@
     },
     {
       "path": "[Liuyun&VCB-S&ANK-Raws] KILL la KILL [20][Hi10p_1080p][x264_flac_aac].mkv",
-      "size": 1521366788
+      "size": 1521366788,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1469.013,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 1,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Liuyun&VCB-S&ANK-Raws] KILL la KILL [21][Hi10p_1080p][x264_flac_2aac].ass",
@@ -167,7 +367,17 @@
     },
     {
       "path": "[Liuyun&VCB-S&ANK-Raws] KILL la KILL [21][Hi10p_1080p][x264_flac_2aac].mkv",
-      "size": 1677763913
+      "size": 1677763913,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1469.013,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 3,
+        "subtitle_stream_count": 1,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Liuyun&VCB-S&ANK-Raws] KILL la KILL [22][Hi10p_1080p][x264_flac_2aac].ass",
@@ -175,7 +385,17 @@
     },
     {
       "path": "[Liuyun&VCB-S&ANK-Raws] KILL la KILL [22][Hi10p_1080p][x264_flac_2aac].mkv",
-      "size": 1468149933
+      "size": 1468149933,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1468.97,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 3,
+        "subtitle_stream_count": 1,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Liuyun&VCB-S&ANK-Raws] KILL la KILL [23][Hi10p_1080p][x264_flac_2aac].ass",
@@ -183,7 +403,17 @@
     },
     {
       "path": "[Liuyun&VCB-S&ANK-Raws] KILL la KILL [23][Hi10p_1080p][x264_flac_2aac].mkv",
-      "size": 1769742026
+      "size": 1769742026,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1469.013,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 3,
+        "subtitle_stream_count": 1,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Liuyun&VCB-S&ANK-Raws] KILL la KILL [24][Hi10p_1080p][x264_flac_aac].ass",
@@ -191,7 +421,17 @@
     },
     {
       "path": "[Liuyun&VCB-S&ANK-Raws] KILL la KILL [24][Hi10p_1080p][x264_flac_aac].mkv",
-      "size": 1902704177
+      "size": 1902704177,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1454.08,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 1,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Liuyun&VCB-S&ANK-Raws] KILL la KILL [25][Hi10p_1080p][x264_flac_aac].ass",
@@ -199,7 +439,17 @@
     },
     {
       "path": "[Liuyun&VCB-S&ANK-Raws] KILL la KILL [25][Hi10p_1080p][x264_flac_aac].mkv",
-      "size": 1861772639
+      "size": 1861772639,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1638.656,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 1,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[Liuyun&VCB-S&ANK-Raws] KILL la KILL [Fonts].7z",
@@ -1367,55 +1617,185 @@
     },
     {
       "path": "SPs/[Liuyun&VCB-S&ANK-Raws] KILL la KILL [KILL la KILL Voices][Hi10p_480p][x264_aac].mkv",
-      "size": 426083698
+      "size": 426083698,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 3403.901,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "720x480",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[Liuyun&VCB-S&ANK-Raws] KILL la KILL [Making of KILL la KILL 500 Days Part1][Hi10p_480p][x264_aac].mkv",
-      "size": 782398298
+      "size": 782398298,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 3035.032,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "720x480",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[Liuyun&VCB-S&ANK-Raws] KILL la KILL [Making of KILL la KILL 500 Days Part2][Hi10p_480p][x264_aac].mkv",
-      "size": 1209537285
+      "size": 1209537285,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 4154.15,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "720x480",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[Liuyun&VCB-S&ANK-Raws] KILL la KILL [Memories of Mikisugi Aikuro][Hi10p_1080p][x264_flac].mkv",
-      "size": 752646490
+      "size": 752646490,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 533.535,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[Liuyun&VCB-S&ANK-Raws] KILL la KILL [Menu01][Hi10p_1080p][x264_flac].mkv",
-      "size": 67572363
+      "size": 67572363,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 75.075,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[Liuyun&VCB-S&ANK-Raws] KILL la KILL [Menu02][Hi10p_1080p][x264_flac].mkv",
-      "size": 71091170
+      "size": 71091170,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 75.075,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[Liuyun&VCB-S&ANK-Raws] KILL la KILL [Menu03][Hi10p_1080p][x264_flac].mkv",
-      "size": 76429806
+      "size": 76429806,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 75.075,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[Liuyun&VCB-S&ANK-Raws] KILL la KILL [Menu04][Hi10p_1080p][x264_flac].mkv",
-      "size": 69861898
+      "size": 69861898,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 75.075,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[Liuyun&VCB-S&ANK-Raws] KILL la KILL [Menu05][Hi10p_1080p][x264_flac].mkv",
-      "size": 77970157
+      "size": 77970157,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 75.075,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[Liuyun&VCB-S&ANK-Raws] KILL la KILL [Menu06][Hi10p_1080p][x264_flac].mkv",
-      "size": 66284160
+      "size": 66284160,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 75.075,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[Liuyun&VCB-S&ANK-Raws] KILL la KILL [Menu07][Hi10p_1080p][x264_flac].mkv",
-      "size": 69623625
+      "size": 69623625,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 75.075,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[Liuyun&VCB-S&ANK-Raws] KILL la KILL [Menu08][Hi10p_1080p][x264_flac].mkv",
-      "size": 66600988
+      "size": 66600988,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 75.075,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[Liuyun&VCB-S&ANK-Raws] KILL la KILL [Menu09][Hi10p_1080p][x264_flac].mkv",
-      "size": 74869119
+      "size": 74869119,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 75.075,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[Liuyun&VCB-S&ANK-Raws] KILL la KILL [Menu_SPDVD01].png",
@@ -1431,159 +1811,580 @@
     },
     {
       "path": "SPs/[Liuyun&VCB-S&ANK-Raws] KILL la KILL [NCED01][Hi10p_1080p][x264_flac].mkv",
-      "size": 58945881
+      "size": 58945881,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[Liuyun&VCB-S&ANK-Raws] KILL la KILL [NCED02_EP07][Hi10p_1080p][x264_flac].mkv",
-      "size": 82462973
+      "size": 82462973,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 93.095,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[Liuyun&VCB-S&ANK-Raws] KILL la KILL [NCED03_EP16-22][Hi10p_1080p][x264_flac].mkv",
-      "size": 84844475
+      "size": 84844475,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[Liuyun&VCB-S&ANK-Raws] KILL la KILL [NCED04_EP23][Hi10p_1080p][x264_flac].mkv",
-      "size": 107525385
+      "size": 107525385,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 112.991,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[Liuyun&VCB-S&ANK-Raws] KILL la KILL [NCED05_EP24][Hi10p_1080p][x264_flac].mkv",
-      "size": 65658748
+      "size": 65658748,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 93.095,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[Liuyun&VCB-S&ANK-Raws] KILL la KILL [NCED06_EP25][Hi10p_1080p][x264_flac].mkv",
-      "size": 95107014
+      "size": 95107014,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[Liuyun&VCB-S&ANK-Raws] KILL la KILL [NCOP01_EP02-03][Hi10p_1080p][x264_flac].mkv",
-      "size": 152216280
+      "size": 152216280,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[Liuyun&VCB-S&ANK-Raws] KILL la KILL [NCOP02_EP04-15][Hi10p_1080p][x264_flac].mkv",
-      "size": 149036806
+      "size": 149036806,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[Liuyun&VCB-S&ANK-Raws] KILL la KILL [NCOP03_EP16-19][Hi10p_1080p][x264_flac].mkv",
-      "size": 136851052
+      "size": 136851052,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 93.095,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[Liuyun&VCB-S&ANK-Raws] KILL la KILL [NCOP04_EP20-21][Hi10p_1080p][x264_flac].mkv",
-      "size": 136843091
+      "size": 136843091,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 93.095,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[Liuyun&VCB-S&ANK-Raws] KILL la KILL [NCOP05_EP22-23][Hi10p_1080p][x264_flac].mkv",
-      "size": 135672770
+      "size": 135672770,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 93.095,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[Liuyun&VCB-S&ANK-Raws] KILL la KILL [NCOP06_EP25][Hi10p_1080p][x264_flac].mkv",
-      "size": 136907395
+      "size": 136907395,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.092,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[Liuyun&VCB-S&ANK-Raws] KILL la KILL [Web Preview 01 (15sec.)][Hi10p_1080p][x264_flac].mkv",
-      "size": 20941183
+      "size": 20941183,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 17.017,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[Liuyun&VCB-S&ANK-Raws] KILL la KILL [Web Preview 01 (30sec.)][Hi10p_1080p][x264_flac].mkv",
-      "size": 47175652
+      "size": 47175652,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 32.032,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[Liuyun&VCB-S&ANK-Raws] KILL la KILL [Web Preview 02][Hi10p_1080p][x264_flac].mkv",
-      "size": 28260986
+      "size": 28260986,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 32.032,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[Liuyun&VCB-S&ANK-Raws] KILL la KILL [Web Preview 03][Hi10p_1080p][x264_flac].mkv",
-      "size": 32225592
+      "size": 32225592,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 32.032,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[Liuyun&VCB-S&ANK-Raws] KILL la KILL [Web Preview 04][Hi10p_1080p][x264_flac].mkv",
-      "size": 35500358
+      "size": 35500358,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 32.032,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[Liuyun&VCB-S&ANK-Raws] KILL la KILL [Web Preview 05][Hi10p_1080p][x264_flac].mkv",
-      "size": 38528039
+      "size": 38528039,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 32.032,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[Liuyun&VCB-S&ANK-Raws] KILL la KILL [Web Preview 06][Hi10p_1080p][x264_flac].mkv",
-      "size": 40567654
+      "size": 40567654,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 32.032,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[Liuyun&VCB-S&ANK-Raws] KILL la KILL [Web Preview 07][Hi10p_1080p][x264_flac].mkv",
-      "size": 27197883
+      "size": 27197883,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 32.032,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[Liuyun&VCB-S&ANK-Raws] KILL la KILL [Web Preview 08][Hi10p_1080p][x264_flac].mkv",
-      "size": 26979260
+      "size": 26979260,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 32.032,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[Liuyun&VCB-S&ANK-Raws] KILL la KILL [Web Preview 09][Hi10p_1080p][x264_flac].mkv",
-      "size": 29404389
+      "size": 29404389,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 32.032,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[Liuyun&VCB-S&ANK-Raws] KILL la KILL [Web Preview 10][Hi10p_1080p][x264_flac].mkv",
-      "size": 38675390
+      "size": 38675390,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 32.032,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[Liuyun&VCB-S&ANK-Raws] KILL la KILL [Web Preview 11][Hi10p_1080p][x264_flac].mkv",
-      "size": 39132621
+      "size": 39132621,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 32.032,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[Liuyun&VCB-S&ANK-Raws] KILL la KILL [Web Preview 12][Hi10p_1080p][x264_flac].mkv",
-      "size": 30419232
+      "size": 30419232,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 32.032,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[Liuyun&VCB-S&ANK-Raws] KILL la KILL [Web Preview 13][Hi10p_1080p][x264_flac].mkv",
-      "size": 23274659
+      "size": 23274659,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 32.032,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[Liuyun&VCB-S&ANK-Raws] KILL la KILL [Web Preview 14][Hi10p_1080p][x264_flac].mkv",
-      "size": 33295405
+      "size": 33295405,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 32.032,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[Liuyun&VCB-S&ANK-Raws] KILL la KILL [Web Preview 15][Hi10p_1080p][x264_flac].mkv",
-      "size": 27815739
+      "size": 27815739,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 32.032,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[Liuyun&VCB-S&ANK-Raws] KILL la KILL [Web Preview 16][Hi10p_1080p][x264_flac].mkv",
-      "size": 20080422
+      "size": 20080422,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 32.032,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[Liuyun&VCB-S&ANK-Raws] KILL la KILL [Web Preview 17][Hi10p_1080p][x264_flac].mkv",
-      "size": 22953069
+      "size": 22953069,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 32.032,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[Liuyun&VCB-S&ANK-Raws] KILL la KILL [Web Preview 18][Hi10p_1080p][x264_flac].mkv",
-      "size": 27062626
+      "size": 27062626,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 32.032,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[Liuyun&VCB-S&ANK-Raws] KILL la KILL [Web Preview 19][Hi10p_1080p][x264_flac].mkv",
-      "size": 31088754
+      "size": 31088754,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 32.032,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[Liuyun&VCB-S&ANK-Raws] KILL la KILL [Web Preview 20][Hi10p_1080p][x264_flac].mkv",
-      "size": 22470714
+      "size": 22470714,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 32.032,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[Liuyun&VCB-S&ANK-Raws] KILL la KILL [Web Preview 21][Hi10p_1080p][x264_flac].mkv",
-      "size": 39188812
+      "size": 39188812,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 32.032,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[Liuyun&VCB-S&ANK-Raws] KILL la KILL [Web Preview 22][Hi10p_1080p][x264_flac].mkv",
-      "size": 29353429
+      "size": 29353429,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 32.032,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[Liuyun&VCB-S&ANK-Raws] KILL la KILL [Web Preview 23][Hi10p_1080p][x264_flac].mkv",
-      "size": 27624740
+      "size": 27624740,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 32.032,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[Liuyun&VCB-S&ANK-Raws] KILL la KILL [Web Preview 24][Hi10p_1080p][x264_flac].mkv",
-      "size": 8777913
+      "size": 8777913,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 32.032,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[Liuyun&VCB-S&ANK-Raws] KILL la KILL [Web Preview 25 (19sec.)][Hi10p_1080p][x264_flac].mkv",
-      "size": 16598183
+      "size": 16598183,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 21.025,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[Liuyun&VCB-S&ANK-Raws] KILL la KILL [Web Preview 25 (31sec.)][Hi10p_1080p][x264_flac].mkv",
-      "size": 32617348
+      "size": 32617348,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 33.035,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     }
-  ]
+  ],
+  "local_container_fact_summary": {
+    "container_fact_count": 77,
+    "probe_status_counts": {
+      "available": 77
+    },
+    "duration_seconds_range": [
+      17.017,
+      4154.15
+    ],
+    "duration_seconds_samples": [
+      1468.65,
+      1468.551,
+      1469.056,
+      1469.013,
+      1469.013,
+      1469.013
+    ]
+  },
+  "local_container_fact_source": {
+    "kind": "real_local_media_duration_backfill",
+    "media_root": "H:\\Anime",
+    "probe_media": true,
+    "container_probe": "ffprobe",
+    "embedded_in": "files[].container_facts",
+    "matched_file_count": 396,
+    "matched_video_count": 77,
+    "missing_actual_video_count": 0,
+    "match_stats": {
+      "matched_by_root_path": 396
+    }
+  }
 }

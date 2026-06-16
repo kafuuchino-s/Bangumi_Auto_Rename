@@ -3,107 +3,367 @@
   "files": [
     {
       "path": "[VCB-Studio] White Album [01][Hi10p_720p][x264_flac].mkv",
-      "size": 319516348
+      "size": 319516348,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1476.011,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] White Album [02][Hi10p_720p][x264_flac].mkv",
-      "size": 252692708
+      "size": 252692708,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1476.01,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] White Album [03][Hi10p_720p][x264_flac].mkv",
-      "size": 186550458
+      "size": 186550458,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1476.011,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] White Album [04][Hi10p_720p][x264_flac].mkv",
-      "size": 280959508
+      "size": 280959508,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1476.075,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] White Album [05][Hi10p_720p][x264_flac].mkv",
-      "size": 258299209
+      "size": 258299209,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1476.01,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] White Album [06][Hi10p_720p][x264_flac].mkv",
-      "size": 212112565
+      "size": 212112565,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1476.01,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] White Album [07][Hi10p_720p][x264_flac].mkv",
-      "size": 287995856
+      "size": 287995856,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1476.011,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] White Album [08][Hi10p_720p][x264_flac].mkv",
-      "size": 283814076
+      "size": 283814076,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1476.011,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] White Album [09][Hi10p_720p][x264_flac].mkv",
-      "size": 262102784
+      "size": 262102784,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1476.01,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] White Album [10][Hi10p_720p][x264_flac].mkv",
-      "size": 297424151
+      "size": 297424151,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1476.011,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] White Album [11][Hi10p_720p][x264_flac].mkv",
-      "size": 305685969
+      "size": 305685969,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1476.01,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] White Album [12][Hi10p_720p][x264_flac].mkv",
-      "size": 350719218
+      "size": 350719218,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1476.01,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] White Album [13v2][Hi10p_720p][x264_flac].mkv",
-      "size": 359666477
+      "size": 359666477,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1476.033,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] White Album [14][Hi10p_720p][x264_flac].mkv",
-      "size": 285216870
+      "size": 285216870,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1476.108,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] White Album [15][Hi10p_720p][x264_flac].mkv",
-      "size": 282118676
+      "size": 282118676,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1476.108,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] White Album [16][Hi10p_720p][x264_flac].mkv",
-      "size": 304249286
+      "size": 304249286,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1476.108,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] White Album [17][Hi10p_720p][x264_flac].mkv",
-      "size": 354978426
+      "size": 354978426,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1476.108,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] White Album [18][Hi10p_720p][x264_flac].mkv",
-      "size": 251609742
+      "size": 251609742,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1476.192,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] White Album [19][Hi10p_720p][x264_flac].mkv",
-      "size": 267047064
+      "size": 267047064,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1476.108,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] White Album [20][Hi10p_720p][x264_flac].mkv",
-      "size": 287970345
+      "size": 287970345,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1476.108,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] White Album [21][Hi10p_720p][x264_flac].mkv",
-      "size": 263470003
+      "size": 263470003,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1476.108,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] White Album [22][Hi10p_720p][x264_flac].mkv",
-      "size": 261290895
+      "size": 261290895,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1476.108,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] White Album [23][Hi10p_720p][x264_flac].mkv",
-      "size": 291453882
+      "size": 291453882,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1476.108,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] White Album [24][Hi10p_720p][x264_flac].mkv",
-      "size": 335164814
+      "size": 335164814,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1476.108,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] White Album [25][Hi10p_720p][x264_flac].mkv",
-      "size": 272277472
+      "size": 272277472,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1476.108,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] White Album [26][Hi10p_720p][x264_flac].mkv",
-      "size": 298310632
+      "size": 298310632,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1476.075,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "CDs/[090121] ｢深愛｣／水樹奈々 (flac+jpg)/KICM-1270.cue",
@@ -731,159 +991,580 @@
     },
     {
       "path": "SPs/[VCB-Studio] White Album [07 Movie Ver.][Hi10p_720p][x264_flac].mkv",
-      "size": 7306885
+      "size": 7306885,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 52.97,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] White Album [07 Rough Sketch Ver.][Hi10p_720p][x264_flac].mkv",
-      "size": 4990963
+      "size": 4990963,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 52.97,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] White Album [08 Movie Ver.][Hi10p_720p][x264_flac].mkv",
-      "size": 31686087
+      "size": 31686087,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 279.112,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] White Album [08 Rough Sketch Ver.][Hi10p_720p][x264_flac].mkv",
-      "size": 22128056
+      "size": 22128056,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 279.112,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] White Album [09 Movie Ver.][Hi10p_720p][x264_flac].mkv",
-      "size": 10183078
+      "size": 10183078,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 55.264,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] White Album [09 Rough Sketch Ver.][Hi10p_720p][x264_flac].mkv",
-      "size": 6629039
+      "size": 6629039,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 55.264,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] White Album [18 Movie Ver.][Hi10p_720p][x264_flac].mkv",
-      "size": 6497746
+      "size": 6497746,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 37.105,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] White Album [18 Rough Sketch Ver.][Hi10p_720p][x264_flac].mkv",
-      "size": 5956889
+      "size": 5956889,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 37.105,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] White Album [19 Movie Ver.][Hi10p_720p][x264_flac].mkv",
-      "size": 15962625
+      "size": 15962625,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 95.56,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] White Album [19 Rough Sketch Ver.][Hi10p_720p][x264_flac].mkv",
-      "size": 14450010
+      "size": 14450010,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 95.56,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] White Album [6m30s Summary][Hi10p_720p][x264_flac].mkv",
-      "size": 90868784
+      "size": 90868784,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 409.41,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] White Album [Concert Digest][Hi10p_1080p][x264_flac].mkv",
-      "size": 1750777587
+      "size": 1750777587,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1263.3,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] White Album [IV01][Hi10p_1080p][x264_flac].mkv",
-      "size": 652885902
+      "size": 652885902,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 685.185,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] White Album [IV02][Hi10p_1080p][x264_flac].mkv",
-      "size": 596946727
+      "size": 596946727,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 712.046,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] White Album [IV03][Hi10p_1080p][x264_flac].mkv",
-      "size": 702263480
+      "size": 702263480,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 767.1,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] White Album [IV04][Hi10p_1080p][x264_flac].mkv",
-      "size": 462457353
+      "size": 462457353,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 707.039,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] White Album [Menu01][Hi10p_1080p][x264_flac].mkv",
-      "size": 19373965
+      "size": 19373965,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 76.68,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] White Album [Menu02][Hi10p_1080p][x264_flac].mkv",
-      "size": 15574382
+      "size": 15574382,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 73.845,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] White Album [Menu03][Hi10p_1080p][x264_flac].mkv",
-      "size": 15578088
+      "size": 15578088,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 92.47,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] White Album [Menu04][Hi10p_1080p][x264_flac].mkv",
-      "size": 27474284
+      "size": 27474284,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 96.03,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] White Album [Menu05][Hi10p_1080p][x264_flac].mkv",
-      "size": 11759145
+      "size": 11759145,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 62.065,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] White Album [Menu06][Hi10p_1080p][x264_flac].mkv",
-      "size": 18030409
+      "size": 18030409,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.226,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] White Album [Menu07][Hi10p_1080p][x264_flac].mkv",
-      "size": 15247432
+      "size": 15247432,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 72.54,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] White Album [Menu08][Hi10p_1080p][x264_flac].mkv",
-      "size": 15185299
+      "size": 15185299,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 77.814,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] White Album [NCED01 Preversion][Hi10p_720p][x264_flac].mkv",
-      "size": 24313377
+      "size": 24313377,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 101.101,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] White Album [NCED01_1][Hi10p_720p][x264_flac].mkv",
-      "size": 23270624
+      "size": 23270624,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 101.105,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] White Album [NCED01_2][Hi10p_720p][x264_flac].mkv",
-      "size": 23305831
+      "size": 23305831,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 101.105,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] White Album [NCED01_3][Hi10p_720p][x264_flac].mkv",
-      "size": 41080947
+      "size": 41080947,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 101.104,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] White Album [NCED01_4][Hi10p_720p][x264_flac].mkv",
-      "size": 43724507
+      "size": 43724507,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 101.104,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] White Album [NCED01_5][Hi10p_720p][x264_flac].mkv",
-      "size": 34079051
+      "size": 34079051,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 101.105,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] White Album [NCED01_6][Hi10p_720p][x264_flac].mkv",
-      "size": 39834458
+      "size": 39834458,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 101.105,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] White Album [NCED02 Preversion][Hi10p_720p][x264_flac].mkv",
-      "size": 31546965
+      "size": 31546965,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 101.105,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] White Album [NCED02][Hi10p_720p][x264_flac].mkv",
-      "size": 35722128
+      "size": 35722128,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 101.105,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] White Album [NCOP01][Hi10p_720p][x264_flac].mkv",
-      "size": 23471426
+      "size": 23471426,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 102.97,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] White Album [NCOP02][Hi10p_720p][x264_flac].mkv",
-      "size": 30491730
+      "size": 30491730,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 101.101,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] White Album [Preview02_1][Hi10p_720p][x264_flac].mkv",
-      "size": 5977106
+      "size": 5977106,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 16.016,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] White Album [Preview02_2][Hi10p_720p][x264_flac].mkv",
-      "size": 5924463
+      "size": 5924463,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 16.016,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] White Album [Preview05][Hi10p_720p][x264_flac].mkv",
-      "size": 4371068
+      "size": 4371068,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 16.016,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] White Album [PV][Hi10p_720p][x264_flac].mkv",
-      "size": 38211393
+      "size": 38211393,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 124.359,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1280x720",
+        "probe_error_class": ""
+      }
     }
-  ]
+  ],
+  "local_container_fact_summary": {
+    "container_fact_count": 65,
+    "probe_status_counts": {
+      "available": 65
+    },
+    "duration_seconds_range": [
+      16.016,
+      1476.192
+    ],
+    "duration_seconds_samples": [
+      1476.011,
+      1476.01,
+      1476.011,
+      1476.075,
+      1476.01,
+      1476.01
+    ]
+  },
+  "local_container_fact_source": {
+    "kind": "real_local_media_duration_backfill",
+    "media_root": "H:\\Anime",
+    "probe_media": true,
+    "container_probe": "ffprobe",
+    "embedded_in": "files[].container_facts",
+    "matched_file_count": 221,
+    "matched_video_count": 65,
+    "missing_actual_video_count": 0,
+    "match_stats": {
+      "matched_by_root_path": 221
+    }
+  }
 }

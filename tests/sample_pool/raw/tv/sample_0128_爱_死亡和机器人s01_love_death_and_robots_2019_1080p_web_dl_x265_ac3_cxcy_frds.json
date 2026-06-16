@@ -19,7 +19,17 @@
     },
     {
       "path": "Love.Death.and.Robots.S01E01.2019.1080p.WEB-DL.x265.10bit.AC3￡cXcY@FRDS.mkv",
-      "size": 331230441
+      "size": 331230441,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1034.432,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 2,
+        "resolution": "1920x960",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Love.Death.and.Robots.S01E02.2019.1080p.WEB-DL.x265.10bit.AC3￡cXcY@FRDS.jpg",
@@ -27,71 +37,272 @@
     },
     {
       "path": "Love.Death.and.Robots.S01E02.2019.1080p.WEB-DL.x265.10bit.AC3￡cXcY@FRDS.mkv",
-      "size": 184219078
+      "size": 184219078,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 696.448,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 2,
+        "resolution": "1920x960",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Love.Death.and.Robots.S01E03.2019.1080p.WEB-DL.x265.10bit.AC3￡cXcY@FRDS.mkv",
-      "size": 426528165
+      "size": 426528165,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 726.432,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 2,
+        "resolution": "1920x960",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Love.Death.and.Robots.S01E04.2019.1080p.WEB-DL.x265.10bit.AC3￡cXcY@FRDS.mkv",
-      "size": 315128910
+      "size": 315128910,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1042.432,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 2,
+        "resolution": "1920x960",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Love.Death.and.Robots.S01E05.2019.1080p.WEB-DL.x265.10bit.AC3￡cXcY@FRDS.mkv",
-      "size": 296113294
+      "size": 296113294,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 780.417,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 2,
+        "resolution": "1920x960",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Love.Death.and.Robots.S01E06.2019.1080p.WEB-DL.x265.10bit.AC3￡cXcY@FRDS.mkv",
-      "size": 78139633
+      "size": 78139633,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 380.417,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 2,
+        "resolution": "1920x960",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Love.Death.and.Robots.S01E07.2019.1080p.WEB-DL.x265.10bit.AC3￡cXcY@FRDS.mkv",
-      "size": 247910379
+      "size": 247910379,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 996.417,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 2,
+        "resolution": "1920x960",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Love.Death.and.Robots.S01E08.2019.1080p.WEB-DL.x265.10bit.AC3￡cXcY@FRDS.mkv",
-      "size": 221222141
+      "size": 221222141,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1032.448,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 2,
+        "resolution": "1920x960",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Love.Death.and.Robots.S01E09.2019.1080p.WEB-DL.x265.10bit.AC3￡cXcY@FRDS.mkv",
-      "size": 164644182
+      "size": 164644182,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 634.432,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 2,
+        "resolution": "1920x960",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Love.Death.and.Robots.S01E10.2019.1080p.WEB-DL.x265.10bit.AC3￡cXcY@FRDS.mkv",
-      "size": 308862912
+      "size": 308862912,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 970.432,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 2,
+        "resolution": "1920x960",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Love.Death.and.Robots.S01E11.2019.1080p.WEB-DL.x265.10bit.AC3￡cXcY@FRDS.mkv",
-      "size": 149175992
+      "size": 149175992,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 604.448,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 2,
+        "resolution": "1920x960",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Love.Death.and.Robots.S01E12.2019.1080p.WEB-DL.x265.10bit.AC3￡cXcY@FRDS.mkv",
-      "size": 169004269
+      "size": 169004269,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 614.417,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 2,
+        "resolution": "1920x960",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Love.Death.and.Robots.S01E13.2019.1080p.WEB-DL.x265.10bit.AC3￡cXcY@FRDS.mkv",
-      "size": 313815097
+      "size": 313815097,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 888.448,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 2,
+        "resolution": "1920x960",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Love.Death.and.Robots.S01E14.2019.1080p.WEB-DL.x265.10bit.AC3￡cXcY@FRDS.mkv",
-      "size": 152147107
+      "size": 152147107,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 624.417,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 2,
+        "resolution": "1920x960",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Love.Death.and.Robots.S01E15.2019.1080p.WEB-DL.x265.10bit.AC3￡cXcY@FRDS.mkv",
-      "size": 105749963
+      "size": 105749963,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 524.417,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 2,
+        "resolution": "1920x960",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Love.Death.and.Robots.S01E16.2019.1080p.WEB-DL.x265.10bit.AC3￡cXcY@FRDS.mkv",
-      "size": 151996852
+      "size": 151996852,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 630.417,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 2,
+        "resolution": "1920x960",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Love.Death.and.Robots.S01E17.2019.1080p.WEB-DL.x265.10bit.AC3￡cXcY@FRDS.mkv",
-      "size": 192595933
+      "size": 192595933,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 474.417,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 2,
+        "resolution": "1920x960",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Love.Death.and.Robots.S01E18.2019.1080p.WEB-DL.x265.10bit.AC3￡cXcY@FRDS.mkv",
-      "size": 589070026
+      "size": 589070026,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 982.432,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 2,
+        "resolution": "1920x960",
+        "probe_error_class": ""
+      }
     }
-  ]
+  ],
+  "local_container_fact_summary": {
+    "container_fact_count": 18,
+    "probe_status_counts": {
+      "available": 18
+    },
+    "duration_seconds_range": [
+      380.417,
+      1042.432
+    ],
+    "duration_seconds_samples": [
+      1034.432,
+      696.448,
+      726.432,
+      1042.432,
+      780.417,
+      380.417
+    ]
+  },
+  "local_container_fact_source": {
+    "kind": "real_local_media_duration_backfill",
+    "media_root": "H:\\Anime",
+    "probe_media": true,
+    "container_probe": "ffprobe",
+    "embedded_in": "files[].container_facts",
+    "matched_file_count": 23,
+    "matched_video_count": 18,
+    "missing_actual_video_count": 0,
+    "match_stats": {
+      "matched_by_root_path": 23
+    }
+  }
 }

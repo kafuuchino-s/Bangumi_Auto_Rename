@@ -74,33 +74,6 @@ def is_special_release_marker_text(text: str) -> bool:
     return bool(re.search(r'(?<![a-z0-9])sp[\s._-]*\d{0,3}(?![a-z0-9])', lowered))
 
 
-def _briefing_marks_singleton_special(span: LocalSpanCard, dossier: CaseDossier) -> bool:
-    briefing = getattr(dossier, 'case_briefing', None)
-    if briefing is None:
-        return False
-    span_ref = str(getattr(span, 'ref', '') or '')
-    file_refs = set(_span_file_refs(span))
-    markers = ('movie', 'special', 'ova', 'oav', 'oad', 'extra')
-    for unit in list(getattr(briefing, 'work_units', []) or []):
-        refs = {
-            *[str(ref or '') for ref in list(getattr(unit, 'local_refs', []) or [])],
-            *[str(ref or '') for ref in list(getattr(unit, 'file_refs', []) or [])],
-            *[str(ref or '') for ref in list(getattr(unit, 'span_refs', []) or [])],
-        }
-        if span_ref not in refs and not (file_refs & refs):
-            continue
-        text = ' '.join([
-            str(getattr(unit, 'unit_kind', '') or ''),
-            str(getattr(unit, 'label', '') or ''),
-            str(getattr(unit, 'reason', '') or ''),
-            *[str(value or '') for value in list(getattr(unit, 'source_form_hints', []) or [])],
-            *[str(value or '') for value in list(getattr(unit, 'title_hints', []) or [])],
-        ]).casefold()
-        if any(marker in text for marker in markers) or re.search(r'(?<![a-z0-9])sp(?![a-z0-9])', text):
-            return True
-    return False
-
-
 def is_special_eligible_span(span: LocalSpanCard | None, dossier: CaseDossier) -> bool:
     if span is None:
         return False
@@ -131,8 +104,6 @@ def is_special_eligible_span(span: LocalSpanCard | None, dossier: CaseDossier) -
             return True
 
     if file_count <= 12 and is_special_release_marker_text(_span_local_text(span, dossier)):
-        return True
-    if file_count == 1 and _briefing_marks_singleton_special(span, dossier):
         return True
     return False
 

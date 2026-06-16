@@ -7,7 +7,17 @@
     },
     {
       "path": "[KNA-Subs&ANK-Raws] Space Dandy Vol.10 (BDrip 1920x1080 x264 FLAC Hi10P)/[KNA-Subs&ANK-Raws] Space Dandy 25 (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
-      "size": 2340351391
+      "size": 2340351391,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.955,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[KNA-Subs&ANK-Raws] Space Dandy Vol.10 (BDrip 1920x1080 x264 FLAC Hi10P)/[KNA-Subs&ANK-Raws] Space Dandy 26 (BDrip 1920x1080 x264 FLAC Hi10P).ass",
@@ -15,7 +25,17 @@
     },
     {
       "path": "[KNA-Subs&ANK-Raws] Space Dandy Vol.10 (BDrip 1920x1080 x264 FLAC Hi10P)/[KNA-Subs&ANK-Raws] Space Dandy 26 (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
-      "size": 1959365328
+      "size": 1959365328,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1452.118,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[KNA-Subs&ANK-Raws] Space Dandy Vol.10 (BDrip 1920x1080 x264 FLAC Hi10P)/[KNA-Subs&ANK-Raws] Space Dandy Extra 05 (BDrip 1920x1080 x264 FLAC Hi10P).ass",
@@ -23,31 +43,101 @@
     },
     {
       "path": "[KNA-Subs&ANK-Raws] Space Dandy Vol.10 (BDrip 1920x1080 x264 FLAC Hi10P)/[KNA-Subs&ANK-Raws] Space Dandy Extra 05 (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
-      "size": 214524293
+      "size": 214524293,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 364.865,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[KNA-Subs&ANK-Raws] Space Dandy Vol.10 (BDrip 1920x1080 x264 FLAC Hi10P)/MENU (Vol.10).mkv",
-      "size": 668935
+      "size": 668935,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1.001,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[KNA-Subs&ANK-Raws] Space Dandy Vol.10 (BDrip 1920x1080 x264 FLAC Hi10P)/オリジナル脚本&設定画&デザイン画(Vol.10)/オリジナル脚本&設定画&デザイン画 01.mkv",
-      "size": 112239292
+      "size": 112239292,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 51.635,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[KNA-Subs&ANK-Raws] Space Dandy Vol.10 (BDrip 1920x1080 x264 FLAC Hi10P)/オリジナル脚本&設定画&デザイン画(Vol.10)/オリジナル脚本&設定画&デザイン画 02.mkv",
-      "size": 147717765
+      "size": 147717765,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 53.012,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[KNA-Subs&ANK-Raws] Space Dandy Vol.10 (BDrip 1920x1080 x264 FLAC Hi10P)/オリジナル脚本&設定画&デザイン画(Vol.10)/オリジナル脚本&設定画&デザイン画 03.mkv",
-      "size": 101450943
+      "size": 101450943,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 32.7,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[KNA-Subs&ANK-Raws] Space Dandy Vol.10 (BDrip 1920x1080 x264 FLAC Hi10P)/オリジナル脚本&設定画&デザイン画(Vol.10)/オリジナル脚本&設定画&デザイン画 04.mkv",
-      "size": 130031932
+      "size": 130031932,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 56.64,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[KNA-Subs&ANK-Raws] Space Dandy Vol.10 (BDrip 1920x1080 x264 FLAC Hi10P)/オリジナル脚本&設定画&デザイン画(Vol.10)/オリジナル脚本&設定画&デザイン画 05.mkv",
-      "size": 222210292
+      "size": 222210292,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 78.287,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[KNA-Subs&ANK-Raws] Space Dandy Vol.6 (BDrip 1920x1080 x264 FLAC Hi10P)/[KNA-Subs&ANK-Raws] Space Dandy 14 (BDrip 1920x1080 x264 FLAC Hi10P).ass",
@@ -55,7 +145,17 @@
     },
     {
       "path": "[KNA-Subs&ANK-Raws] Space Dandy Vol.6 (BDrip 1920x1080 x264 FLAC Hi10P)/[KNA-Subs&ANK-Raws] Space Dandy 14 (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
-      "size": 1427179600
+      "size": 1427179600,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1452.12,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[KNA-Subs&ANK-Raws] Space Dandy Vol.6 (BDrip 1920x1080 x264 FLAC Hi10P)/[KNA-Subs&ANK-Raws] Space Dandy 15 (BDrip 1920x1080 x264 FLAC Hi10P).ass",
@@ -63,47 +163,157 @@
     },
     {
       "path": "[KNA-Subs&ANK-Raws] Space Dandy Vol.6 (BDrip 1920x1080 x264 FLAC Hi10P)/[KNA-Subs&ANK-Raws] Space Dandy 15 (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
-      "size": 1454913051
+      "size": 1454913051,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1452.118,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[KNA-Subs&ANK-Raws] Space Dandy Vol.6 (BDrip 1920x1080 x264 FLAC Hi10P)/[KNA-Subs&ANK-Raws] Space Dandy CM (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
-      "size": 120010264
+      "size": 120010264,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 96.388,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[KNA-Subs&ANK-Raws] Space Dandy Vol.6 (BDrip 1920x1080 x264 FLAC Hi10P)/MENU (Vol.6).mkv",
-      "size": 659755
+      "size": 659755,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1.001,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[KNA-Subs&ANK-Raws] Space Dandy Vol.6 (BDrip 1920x1080 x264 FLAC Hi10P)/オリジナル脚本&設定画&デザイン画(Vol.6)/オリジナル脚本&設定画&デザイン画 01.mkv",
-      "size": 38323379
+      "size": 38323379,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 48.048,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[KNA-Subs&ANK-Raws] Space Dandy Vol.6 (BDrip 1920x1080 x264 FLAC Hi10P)/オリジナル脚本&設定画&デザイン画(Vol.6)/オリジナル脚本&設定画&デザイン画 02.mkv",
-      "size": 45450984
+      "size": 45450984,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 35.369,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[KNA-Subs&ANK-Raws] Space Dandy Vol.6 (BDrip 1920x1080 x264 FLAC Hi10P)/オリジナル脚本&設定画&デザイン画(Vol.6)/オリジナル脚本&設定画&デザイン画 03.mkv",
-      "size": 62801523
+      "size": 62801523,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 27.653,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[KNA-Subs&ANK-Raws] Space Dandy Vol.6 (BDrip 1920x1080 x264 FLAC Hi10P)/オリジナル脚本&設定画&デザイン画(Vol.6)/オリジナル脚本&設定画&デザイン画 04.mkv",
-      "size": 32233077
+      "size": 32233077,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 24.692,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[KNA-Subs&ANK-Raws] Space Dandy Vol.6 (BDrip 1920x1080 x264 FLAC Hi10P)/オリジナル脚本&設定画&デザイン画(Vol.6)/オリジナル脚本&設定画&デザイン画 05.mkv",
-      "size": 51277186
+      "size": 51277186,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 46.672,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[KNA-Subs&ANK-Raws] Space Dandy Vol.6 (BDrip 1920x1080 x264 FLAC Hi10P)/オリジナル脚本&設定画&デザイン画(Vol.6)/オリジナル脚本&設定画&デザイン画 06.mkv",
-      "size": 18455224
+      "size": 18455224,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 26.735,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[KNA-Subs&ANK-Raws] Space Dandy Vol.6 (BDrip 1920x1080 x264 FLAC Hi10P)/オリジナル脚本&設定画&デザイン画(Vol.6)/オリジナル脚本&設定画&デザイン画 07.mkv",
-      "size": 51348171
+      "size": 51348171,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 33.117,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[KNA-Subs&ANK-Raws] Space Dandy Vol.6 (BDrip 1920x1080 x264 FLAC Hi10P)/オリジナル脚本&設定画&デザイン画(Vol.6)/オリジナル脚本&設定画&デザイン画 08.mkv",
-      "size": 19920628
+      "size": 19920628,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 26.61,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[KNA-Subs&ANK-Raws] Space Dandy Vol.7 (BDrip 1920x1080 x264 FLAC Hi10P)/[KNA-Subs&ANK-Raws] Space Dandy 16 (BDrip 1920x1080 x264 FLAC Hi10P).ass",
@@ -111,7 +321,17 @@
     },
     {
       "path": "[KNA-Subs&ANK-Raws] Space Dandy Vol.7 (BDrip 1920x1080 x264 FLAC Hi10P)/[KNA-Subs&ANK-Raws] Space Dandy 16 (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
-      "size": 1547293550
+      "size": 1547293550,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1452.12,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[KNA-Subs&ANK-Raws] Space Dandy Vol.7 (BDrip 1920x1080 x264 FLAC Hi10P)/[KNA-Subs&ANK-Raws] Space Dandy 17 (BDrip 1920x1080 x264 FLAC Hi10P).ass",
@@ -119,7 +339,17 @@
     },
     {
       "path": "[KNA-Subs&ANK-Raws] Space Dandy Vol.7 (BDrip 1920x1080 x264 FLAC Hi10P)/[KNA-Subs&ANK-Raws] Space Dandy 17 (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
-      "size": 1337443773
+      "size": 1337443773,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1452.121,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[KNA-Subs&ANK-Raws] Space Dandy Vol.7 (BDrip 1920x1080 x264 FLAC Hi10P)/[KNA-Subs&ANK-Raws] Space Dandy 18 (BDrip 1920x1080 x264 FLAC Hi10P).ass",
@@ -127,59 +357,199 @@
     },
     {
       "path": "[KNA-Subs&ANK-Raws] Space Dandy Vol.7 (BDrip 1920x1080 x264 FLAC Hi10P)/[KNA-Subs&ANK-Raws] Space Dandy 18 (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
-      "size": 1187913095
+      "size": 1187913095,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1452.118,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[KNA-Subs&ANK-Raws] Space Dandy Vol.7 (BDrip 1920x1080 x264 FLAC Hi10P)/[KNA-Subs&ANK-Raws] Space Dandy CM01 (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
-      "size": 25753420
+      "size": 25753420,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 16.016,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[KNA-Subs&ANK-Raws] Space Dandy Vol.7 (BDrip 1920x1080 x264 FLAC Hi10P)/[KNA-Subs&ANK-Raws] Space Dandy CM02 (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
-      "size": 76952456
+      "size": 76952456,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 48.048,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[KNA-Subs&ANK-Raws] Space Dandy Vol.7 (BDrip 1920x1080 x264 FLAC Hi10P)/MENU (Vol.7).mkv",
-      "size": 660115
+      "size": 660115,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1.001,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[KNA-Subs&ANK-Raws] Space Dandy Vol.7 (BDrip 1920x1080 x264 FLAC Hi10P)/オリジナル脚本&設定画&デザイン画(Vol.7)/オリジナル脚本&設定画&デザイン画 01.mkv",
-      "size": 60989910
+      "size": 60989910,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 31.448,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[KNA-Subs&ANK-Raws] Space Dandy Vol.7 (BDrip 1920x1080 x264 FLAC Hi10P)/オリジナル脚本&設定画&デザイン画(Vol.7)/オリジナル脚本&設定画&デザイン画 02.mkv",
-      "size": 13554170
+      "size": 13554170,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 33.158,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[KNA-Subs&ANK-Raws] Space Dandy Vol.7 (BDrip 1920x1080 x264 FLAC Hi10P)/オリジナル脚本&設定画&デザイン画(Vol.7)/オリジナル脚本&設定画&デザイン画 03.mkv",
-      "size": 46170704
+      "size": 46170704,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 36.12,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[KNA-Subs&ANK-Raws] Space Dandy Vol.7 (BDrip 1920x1080 x264 FLAC Hi10P)/オリジナル脚本&設定画&デザイン画(Vol.7)/オリジナル脚本&設定画&デザイン画 04.mkv",
-      "size": 135488533
+      "size": 135488533,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 32.283,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[KNA-Subs&ANK-Raws] Space Dandy Vol.7 (BDrip 1920x1080 x264 FLAC Hi10P)/オリジナル脚本&設定画&デザイン画(Vol.7)/オリジナル脚本&設定画&デザイン画 05.mkv",
-      "size": 25607558
+      "size": 25607558,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 26.861,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[KNA-Subs&ANK-Raws] Space Dandy Vol.7 (BDrip 1920x1080 x264 FLAC Hi10P)/オリジナル脚本&設定画&デザイン画(Vol.7)/オリジナル脚本&設定画&デザイン画 06.mkv",
-      "size": 36456649
+      "size": 36456649,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 19.019,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[KNA-Subs&ANK-Raws] Space Dandy Vol.7 (BDrip 1920x1080 x264 FLAC Hi10P)/オリジナル脚本&設定画&デザイン画(Vol.7)/オリジナル脚本&設定画&デザイン画 07.mkv",
-      "size": 48187686
+      "size": 48187686,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 50.801,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[KNA-Subs&ANK-Raws] Space Dandy Vol.7 (BDrip 1920x1080 x264 FLAC Hi10P)/オリジナル脚本&設定画&デザイン画(Vol.7)/オリジナル脚本&設定画&デザイン画 08.mkv",
-      "size": 28179617
+      "size": 28179617,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 41.917,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[KNA-Subs&ANK-Raws] Space Dandy Vol.7 (BDrip 1920x1080 x264 FLAC Hi10P)/オリジナル脚本&設定画&デザイン画(Vol.7)/オリジナル脚本&設定画&デザイン画 09.mkv",
-      "size": 148879095
+      "size": 148879095,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 68.444,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[KNA-Subs&ANK-Raws] Space Dandy Vol.7 (BDrip 1920x1080 x264 FLAC Hi10P)/オリジナル脚本&設定画&デザイン画(Vol.7)/オリジナル脚本&設定画&デザイン画 10.mkv",
-      "size": 70872676
+      "size": 70872676,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 48.34,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[KNA-Subs&ANK-Raws] Space Dandy Vol.8 (BDrip 1920x1080 x264 FLAC Hi10P)/[KNA-Subs&ANK-Raws] Space Dandy 19 (BDrip 1920x1080 x264 FLAC Hi10P).ass",
@@ -187,7 +557,17 @@
     },
     {
       "path": "[KNA-Subs&ANK-Raws] Space Dandy Vol.8 (BDrip 1920x1080 x264 FLAC Hi10P)/[KNA-Subs&ANK-Raws] Space Dandy 19 (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
-      "size": 1326489724
+      "size": 1326489724,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1452.12,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[KNA-Subs&ANK-Raws] Space Dandy Vol.8 (BDrip 1920x1080 x264 FLAC Hi10P)/[KNA-Subs&ANK-Raws] Space Dandy 20 (BDrip 1920x1080 x264 FLAC Hi10P).ass",
@@ -195,7 +575,17 @@
     },
     {
       "path": "[KNA-Subs&ANK-Raws] Space Dandy Vol.8 (BDrip 1920x1080 x264 FLAC Hi10P)/[KNA-Subs&ANK-Raws] Space Dandy 20 (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
-      "size": 1536277795
+      "size": 1536277795,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1452.12,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[KNA-Subs&ANK-Raws] Space Dandy Vol.8 (BDrip 1920x1080 x264 FLAC Hi10P)/[KNA-Subs&ANK-Raws] Space Dandy 21 (BDrip 1920x1080 x264 FLAC Hi10P).ass",
@@ -203,7 +593,17 @@
     },
     {
       "path": "[KNA-Subs&ANK-Raws] Space Dandy Vol.8 (BDrip 1920x1080 x264 FLAC Hi10P)/[KNA-Subs&ANK-Raws] Space Dandy 21 (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
-      "size": 1314496862
+      "size": 1314496862,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1452.118,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[KNA-Subs&ANK-Raws] Space Dandy Vol.8 (BDrip 1920x1080 x264 FLAC Hi10P)/[KNA-Subs&ANK-Raws] Space Dandy Extra 03 (BDrip 1920x1080 x264 FLAC Hi10P).ass",
@@ -211,47 +611,157 @@
     },
     {
       "path": "[KNA-Subs&ANK-Raws] Space Dandy Vol.8 (BDrip 1920x1080 x264 FLAC Hi10P)/[KNA-Subs&ANK-Raws] Space Dandy Extra 03 (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
-      "size": 268533459
+      "size": 268533459,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 370.871,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[KNA-Subs&ANK-Raws] Space Dandy Vol.8 (BDrip 1920x1080 x264 FLAC Hi10P)/MENU (Vol.8).mkv",
-      "size": 656334
+      "size": 656334,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1.001,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[KNA-Subs&ANK-Raws] Space Dandy Vol.8 (BDrip 1920x1080 x264 FLAC Hi10P)/オリジナル脚本&設定画&デザイン画(Vol.8)/オリジナル脚本&設定画&デザイン画 01.mkv",
-      "size": 37252084
+      "size": 37252084,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 14.098,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[KNA-Subs&ANK-Raws] Space Dandy Vol.8 (BDrip 1920x1080 x264 FLAC Hi10P)/オリジナル脚本&設定画&デザイン画(Vol.8)/オリジナル脚本&設定画&デザイン画 02.mkv",
-      "size": 24541102
+      "size": 24541102,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 39.206,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[KNA-Subs&ANK-Raws] Space Dandy Vol.8 (BDrip 1920x1080 x264 FLAC Hi10P)/オリジナル脚本&設定画&デザイン画(Vol.8)/オリジナル脚本&設定画&デザイン画 03.mkv",
-      "size": 44043524
+      "size": 44043524,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 21.605,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[KNA-Subs&ANK-Raws] Space Dandy Vol.8 (BDrip 1920x1080 x264 FLAC Hi10P)/オリジナル脚本&設定画&デザイン画(Vol.8)/オリジナル脚本&設定画&デザイン画 04.mkv",
-      "size": 26326489
+      "size": 26326489,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 23.816,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[KNA-Subs&ANK-Raws] Space Dandy Vol.8 (BDrip 1920x1080 x264 FLAC Hi10P)/オリジナル脚本&設定画&デザイン画(Vol.8)/オリジナル脚本&設定画&デザイン画 05.mkv",
-      "size": 27081510
+      "size": 27081510,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 25.734,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[KNA-Subs&ANK-Raws] Space Dandy Vol.8 (BDrip 1920x1080 x264 FLAC Hi10P)/オリジナル脚本&設定画&デザイン画(Vol.8)/オリジナル脚本&設定画&デザイン画 06.mkv",
-      "size": 52666099
+      "size": 52666099,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 27.862,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[KNA-Subs&ANK-Raws] Space Dandy Vol.8 (BDrip 1920x1080 x264 FLAC Hi10P)/オリジナル脚本&設定画&デザイン画(Vol.8)/オリジナル脚本&設定画&デザイン画 07.mkv",
-      "size": 68442791
+      "size": 68442791,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 29.029,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[KNA-Subs&ANK-Raws] Space Dandy Vol.8 (BDrip 1920x1080 x264 FLAC Hi10P)/オリジナル脚本&設定画&デザイン画(Vol.8)/オリジナル脚本&設定画&デザイン画 08.mkv",
-      "size": 71567010
+      "size": 71567010,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 64.773,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[KNA-Subs&ANK-Raws] Space Dandy Vol.8 (BDrip 1920x1080 x264 FLAC Hi10P)/オリジナル脚本&設定画&デザイン画(Vol.8)/オリジナル脚本&設定画&デザイン画 09.mkv",
-      "size": 25760063
+      "size": 25760063,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 34.493,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[KNA-Subs&ANK-Raws] Space Dandy Vol.9 (BDrip 1920x1080 x264 FLAC Hi10P)/[KNA-Subs&ANK-Raws] Space Dandy 22 (BDrip 1920x1080 x264 FLAC Hi10P).ass",
@@ -259,7 +769,17 @@
     },
     {
       "path": "[KNA-Subs&ANK-Raws] Space Dandy Vol.9 (BDrip 1920x1080 x264 FLAC Hi10P)/[KNA-Subs&ANK-Raws] Space Dandy 22 (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
-      "size": 1787462430
+      "size": 1787462430,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1451.995,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[KNA-Subs&ANK-Raws] Space Dandy Vol.9 (BDrip 1920x1080 x264 FLAC Hi10P)/[KNA-Subs&ANK-Raws] Space Dandy 23 (BDrip 1920x1080 x264 FLAC Hi10P).ass",
@@ -267,7 +787,17 @@
     },
     {
       "path": "[KNA-Subs&ANK-Raws] Space Dandy Vol.9 (BDrip 1920x1080 x264 FLAC Hi10P)/[KNA-Subs&ANK-Raws] Space Dandy 23 (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
-      "size": 1378184008
+      "size": 1378184008,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1452.12,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[KNA-Subs&ANK-Raws] Space Dandy Vol.9 (BDrip 1920x1080 x264 FLAC Hi10P)/[KNA-Subs&ANK-Raws] Space Dandy 24 (BDrip 1920x1080 x264 FLAC Hi10P).ass",
@@ -275,7 +805,17 @@
     },
     {
       "path": "[KNA-Subs&ANK-Raws] Space Dandy Vol.9 (BDrip 1920x1080 x264 FLAC Hi10P)/[KNA-Subs&ANK-Raws] Space Dandy 24 (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
-      "size": 1822211300
+      "size": 1822211300,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1452.118,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[KNA-Subs&ANK-Raws] Space Dandy Vol.9 (BDrip 1920x1080 x264 FLAC Hi10P)/[KNA-Subs&ANK-Raws] Space Dandy Extra 04 (BDrip 1920x1080 x264 FLAC Hi10P).ass",
@@ -283,47 +823,178 @@
     },
     {
       "path": "[KNA-Subs&ANK-Raws] Space Dandy Vol.9 (BDrip 1920x1080 x264 FLAC Hi10P)/[KNA-Subs&ANK-Raws] Space Dandy Extra 04 (BDrip 1920x1080 x264 FLAC Hi10P).mkv",
-      "size": 259825775
+      "size": 259825775,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 381.382,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[KNA-Subs&ANK-Raws] Space Dandy Vol.9 (BDrip 1920x1080 x264 FLAC Hi10P)/MENU (Vol.9).mkv",
-      "size": 678418
+      "size": 678418,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 1.001,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[KNA-Subs&ANK-Raws] Space Dandy Vol.9 (BDrip 1920x1080 x264 FLAC Hi10P)/オリジナル脚本&設定画&デザイン画(Vol.9)/オリジナル脚本&設定画&デザイン画 01.mkv",
-      "size": 56438613
+      "size": 56438613,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 24.483,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[KNA-Subs&ANK-Raws] Space Dandy Vol.9 (BDrip 1920x1080 x264 FLAC Hi10P)/オリジナル脚本&設定画&デザイン画(Vol.9)/オリジナル脚本&設定画&デザイン画 02.mkv",
-      "size": 46618403
+      "size": 46618403,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 40.916,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[KNA-Subs&ANK-Raws] Space Dandy Vol.9 (BDrip 1920x1080 x264 FLAC Hi10P)/オリジナル脚本&設定画&デザイン画(Vol.9)/オリジナル脚本&設定画&デザイン画 03.mkv",
-      "size": 72186526
+      "size": 72186526,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 29.572,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[KNA-Subs&ANK-Raws] Space Dandy Vol.9 (BDrip 1920x1080 x264 FLAC Hi10P)/オリジナル脚本&設定画&デザイン画(Vol.9)/オリジナル脚本&設定画&デザイン画 04.mkv",
-      "size": 67090296
+      "size": 67090296,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 27.945,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[KNA-Subs&ANK-Raws] Space Dandy Vol.9 (BDrip 1920x1080 x264 FLAC Hi10P)/オリジナル脚本&設定画&デザイン画(Vol.9)/オリジナル脚本&設定画&デザイン画 05.mkv",
-      "size": 45439385
+      "size": 45439385,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 16.308,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[KNA-Subs&ANK-Raws] Space Dandy Vol.9 (BDrip 1920x1080 x264 FLAC Hi10P)/オリジナル脚本&設定画&デザイン画(Vol.9)/オリジナル脚本&設定画&デザイン画 06.mkv",
-      "size": 47963708
+      "size": 47963708,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 22.231,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[KNA-Subs&ANK-Raws] Space Dandy Vol.9 (BDrip 1920x1080 x264 FLAC Hi10P)/オリジナル脚本&設定画&デザイン画(Vol.9)/オリジナル脚本&設定画&デザイン画 07.mkv",
-      "size": 31667443
+      "size": 31667443,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 12.263,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[KNA-Subs&ANK-Raws] Space Dandy Vol.9 (BDrip 1920x1080 x264 FLAC Hi10P)/オリジナル脚本&設定画&デザイン画(Vol.9)/オリジナル脚本&設定画&デザイン画 08.mkv",
-      "size": 36342844
+      "size": 36342844,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 35.286,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "Fonts.zip",
       "size": 29489489
     }
-  ]
+  ],
+  "local_container_fact_summary": {
+    "container_fact_count": 64,
+    "probe_status_counts": {
+      "available": 64
+    },
+    "duration_seconds_range": [
+      1.001,
+      1452.121
+    ],
+    "duration_seconds_samples": [
+      1451.955,
+      1452.118,
+      364.865,
+      1.001,
+      51.635,
+      53.012
+    ]
+  },
+  "local_container_fact_source": {
+    "kind": "real_local_media_duration_backfill",
+    "media_root": "H:\\Anime",
+    "probe_media": true,
+    "container_probe": "ffprobe",
+    "embedded_in": "files[].container_facts",
+    "matched_file_count": 81,
+    "matched_video_count": 64,
+    "missing_actual_video_count": 0,
+    "match_stats": {
+      "matched_by_root_path": 81
+    }
+  }
 }

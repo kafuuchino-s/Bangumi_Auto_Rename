@@ -3,7 +3,17 @@
   "files": [
     {
       "path": "[VCB-Studio] Hacka Doll [01][Hi10p_1080p][x264_2flac].mkv",
-      "size": 595384627
+      "size": 595384627,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 471.141,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Hacka Doll [01][Hi10p_1080p][x264_2flac].sc.ass",
@@ -11,7 +21,17 @@
     },
     {
       "path": "[VCB-Studio] Hacka Doll [02][Hi10p_1080p][x264_2flac].mkv",
-      "size": 544862661
+      "size": 544862661,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 471.141,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Hacka Doll [02][Hi10p_1080p][x264_2flac].sc.ass",
@@ -19,7 +39,17 @@
     },
     {
       "path": "[VCB-Studio] Hacka Doll [03][Hi10p_1080p][x264_2flac].mkv",
-      "size": 688648413
+      "size": 688648413,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 471.14,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Hacka Doll [03][Hi10p_1080p][x264_2flac].sc.ass",
@@ -27,7 +57,17 @@
     },
     {
       "path": "[VCB-Studio] Hacka Doll [04][Hi10p_1080p][x264_2flac].mkv",
-      "size": 521004966
+      "size": 521004966,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 471.14,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Hacka Doll [04][Hi10p_1080p][x264_2flac].sc.ass",
@@ -35,7 +75,17 @@
     },
     {
       "path": "[VCB-Studio] Hacka Doll [05][Hi10p_1080p][x264_2flac].mkv",
-      "size": 583024210
+      "size": 583024210,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 471.141,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Hacka Doll [05][Hi10p_1080p][x264_2flac].sc.ass",
@@ -43,7 +93,17 @@
     },
     {
       "path": "[VCB-Studio] Hacka Doll [06][Hi10p_1080p][x264_2flac].mkv",
-      "size": 503185916
+      "size": 503185916,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 471.14,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Hacka Doll [06][Hi10p_1080p][x264_2flac].sc.ass",
@@ -51,7 +111,17 @@
     },
     {
       "path": "[VCB-Studio] Hacka Doll [07][Hi10p_1080p][x264_2flac].mkv",
-      "size": 573697693
+      "size": 573697693,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 471.14,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Hacka Doll [07][Hi10p_1080p][x264_2flac].sc.ass",
@@ -59,7 +129,17 @@
     },
     {
       "path": "[VCB-Studio] Hacka Doll [08][Hi10p_1080p][x264_2flac].mkv",
-      "size": 546356960
+      "size": 546356960,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 471.14,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Hacka Doll [08][Hi10p_1080p][x264_2flac].sc.ass",
@@ -67,7 +147,17 @@
     },
     {
       "path": "[VCB-Studio] Hacka Doll [09][Hi10p_1080p][x264_2flac].mkv",
-      "size": 666294175
+      "size": 666294175,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 471.141,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Hacka Doll [09][Hi10p_1080p][x264_2flac].sc.ass",
@@ -75,7 +165,17 @@
     },
     {
       "path": "[VCB-Studio] Hacka Doll [10][Hi10p_1080p][x264_2flac].mkv",
-      "size": 525101026
+      "size": 525101026,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 471.141,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Hacka Doll [10][Hi10p_1080p][x264_2flac].sc.ass",
@@ -83,7 +183,17 @@
     },
     {
       "path": "[VCB-Studio] Hacka Doll [11][Hi10p_1080p][x264_2flac].mkv",
-      "size": 557922780
+      "size": 557922780,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 471.14,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Hacka Doll [11][Hi10p_1080p][x264_2flac].sc.ass",
@@ -91,7 +201,17 @@
     },
     {
       "path": "[VCB-Studio] Hacka Doll [12][Hi10p_1080p][x264_2flac].mkv",
-      "size": 539624669
+      "size": 539624669,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 471.14,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Hacka Doll [12][Hi10p_1080p][x264_2flac].sc.ass",
@@ -99,7 +219,17 @@
     },
     {
       "path": "[VCB-Studio] Hacka Doll [13][Hi10p_1080p][x264_2flac].mkv",
-      "size": 494578866
+      "size": 494578866,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 471.14,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 2,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "[VCB-Studio] Hacka Doll [13][Hi10p_1080p][x264_2flac].sc.ass",
@@ -199,31 +329,132 @@
     },
     {
       "path": "SPs/[VCB-Studio] Hacka Doll [Menu01][Hi444p_1080p][x264_flac].mkv",
-      "size": 52652741
+      "size": 52652741,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 216.22,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Hacka Doll [Menu02][Hi444p_1080p][x264_flac].mkv",
-      "size": 61033228
+      "size": 61033228,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 245.245,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Hacka Doll [NCED01][Hi10p_1080p][x264_flac].mkv",
-      "size": 43098940
+      "size": 43098940,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 27.027,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Hacka Doll [NCED02][Hi10p_1080p][x264_flac].mkv",
-      "size": 66084625
+      "size": 66084625,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 27.027,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Hacka Doll [NCED03][Hi10p_1080p][x264_flac].mkv",
-      "size": 42571631
+      "size": 42571631,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 27.027,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Hacka Doll [NCED04][Hi10p_1080p][x264_flac].mkv",
-      "size": 38250368
+      "size": 38250368,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 27.027,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     },
     {
       "path": "SPs/[VCB-Studio] Hacka Doll [NCOP][Hi10p_1080p][x264_flac].mkv",
-      "size": 112755203
+      "size": 112755203,
+      "container_facts": {
+        "probe_status": "available",
+        "duration_seconds": 91.091,
+        "container_format": "matroska,webm",
+        "video_stream_count": 1,
+        "audio_stream_count": 1,
+        "subtitle_stream_count": 0,
+        "resolution": "1920x1080",
+        "probe_error_class": ""
+      }
     }
-  ]
+  ],
+  "local_container_fact_summary": {
+    "container_fact_count": 20,
+    "probe_status_counts": {
+      "available": 20
+    },
+    "duration_seconds_range": [
+      27.027,
+      471.141
+    ],
+    "duration_seconds_samples": [
+      471.141,
+      471.141,
+      471.14,
+      471.14,
+      471.141,
+      471.14
+    ]
+  },
+  "local_container_fact_source": {
+    "kind": "real_local_media_duration_backfill",
+    "media_root": "H:\\Anime",
+    "probe_media": true,
+    "container_probe": "ffprobe",
+    "embedded_in": "files[].container_facts",
+    "matched_file_count": 56,
+    "matched_video_count": 20,
+    "missing_actual_video_count": 0,
+    "match_stats": {
+      "matched_by_root_path": 56
+    }
+  }
 }

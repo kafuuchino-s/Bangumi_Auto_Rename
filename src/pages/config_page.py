@@ -50,6 +50,8 @@ class ConfigPage(ui.dialog):
                 "anime_movie_path",
                 "mode",
                 "overwrite_existing",
+                "rename_bgm_to_tmdb_product_pipeline_enabled",
+                "rename_bgm_to_tmdb_execute_enabled",
                 "docker_mnt",
                 "host_path_prefix",
                 "log_level",
@@ -416,6 +418,26 @@ class ConfigPage(ui.dialog):
                             self.config, cn
                         )
                     elif cn == "overwrite_existing":
+                        tg = RedToogle(
+                            ["启用", "禁用"],
+                            value="启用" if cm.get_config(cn) else "禁用",
+                            on_change=lambda e, c=cn: self._change(
+                                c, e.value == "启用"
+                            ),
+                        )
+                        tg.style("font-size: 10px")
+                        tg.classes("flex no-wrap w-full")
+                    elif cn == "rename_bgm_to_tmdb_product_pipeline_enabled":
+                        tg = RedToogle(
+                            ["启用", "禁用"],
+                            value="启用" if cm.get_config(cn) else "禁用",
+                            on_change=lambda e, c=cn: self._change(
+                                c, e.value == "启用"
+                            ),
+                        )
+                        tg.style("font-size: 10px")
+                        tg.classes("flex no-wrap w-full")
+                    elif cn == "rename_bgm_to_tmdb_execute_enabled":
                         tg = RedToogle(
                             ["启用", "禁用"],
                             value="启用" if cm.get_config(cn) else "禁用",
