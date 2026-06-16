@@ -230,7 +230,7 @@ def test_product_pipeline_execute_transfers_and_writes_success_task(tmp_path, mo
     assert result is True
     task_data = json.loads((task_path / 'execute-task.json').read_text(encoding='utf-8'))
     record_data = json.loads((record_path / 'execute-task.json').read_text(encoding='utf-8'))
-    target_path = tmp_path / 'Anime' / 'Example Show (2024)' / 'Season 01' / 'Example Show - S01E01.mkv'
+    target_path = tmp_path / 'Anime' / 'Example Show (2024)' / 'Season 1' / 'Example Show - S01E01.mkv'
     assert target_path.read_bytes() == b'episode'
     assert task_data['error'] == ''
     assert task_data['pipeline_mode'] == 'local_bangumi_to_tmdb_product'

@@ -55,7 +55,7 @@ def test_tv_episode_compiles_to_dry_run_season_path_without_mutation(tmp_path: P
     assert plan.items[0].source_abs_path.endswith(str(Path('Source') / 'Show' / 'E01.mkv'))
     assert plan.items[0].destination is not None
     assert Path(plan.items[0].destination.target_path) == (
-        tv_root / 'Example Show (2024)' / 'Season 01' / 'Example Show - S01E01.mkv'
+        tv_root / 'Example Show (2024)' / 'Season 1' / 'Example Show - S01E01.mkv'
     )
     assert not (tv_root / 'Example Show (2024)').exists()
 
@@ -109,7 +109,7 @@ def test_special_season_zero_uses_season_00_path(tmp_path: Path) -> None:
 
     assert result.passed is True
     assert plan.items[0].destination is not None
-    assert plan.items[0].destination.season_folder == 'Season 00'
+    assert plan.items[0].destination.season_folder == 'Season 0'
     assert plan.items[0].destination.episode_token == 'S00E01'
 
 
@@ -282,7 +282,7 @@ def test_target_path_outside_root_is_rejected(tmp_path: Path) -> None:
 
 def test_existing_target_path_is_blocked_by_default(tmp_path: Path) -> None:
     tv_root = tmp_path / 'Anime'
-    target = tv_root / 'Example Show (2024)' / 'Season 01' / 'Example Show - S01E01.mkv'
+    target = tv_root / 'Example Show (2024)' / 'Season 1' / 'Example Show - S01E01.mkv'
     target.parent.mkdir(parents=True)
     target.write_text('exists', encoding='utf-8')
     bridge_input, graph, verified_plan = _verified_bridge(
