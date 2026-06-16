@@ -38,7 +38,9 @@ def test_trans_partial_failure_cleans_previous_targets(tmp_path: Path, monkeypat
     assert not (tmp_path / 'record' / 'uuid-2.json').exists()
 
 
-def test_trans_late_target_exists_refuses_overwrite(tmp_path: Path, monkeypatch):
+def test_trans_late_target_exists_refuses_overwrite_when_disabled(
+    tmp_path: Path, monkeypatch
+):
     monkeypatch.setattr('src.rename.trans.RECORD_PATH', tmp_path / 'record')
     (tmp_path / 'record').mkdir(parents=True, exist_ok=True)
 
@@ -51,9 +53,32 @@ def test_trans_late_target_exists_refuses_overwrite(tmp_path: Path, monkeypatch)
         {source: target},
         'uuid-3',
         force_mode='复制',
-        force_overwrite=True,
+        force_overwrite=False,
     ).trans_file()
 
     assert isinstance(result, str)
     assert target.read_bytes() == b'preexisting'
     assert not (tmp_path / 'record' / 'uuid-3.json').exists()
+
+
+def test_trans_late_target_exists_overwrites_when_enabled(
+    tmp_path: Path, monkeypatch
+):
+    monkeypatch.setattr('src.rename.trans.RECORD_PATH', tmp_path / 'record')
+    (tmp_path / 'record').mkdir(parents=True, exist_ok=True)
+
+    source = tmp_path / 'source.mkv'
+    target = tmp_path / 'target.mkv'
+    source.write_bytes(b'a')
+    target.write_bytes(b'preexisting')
+
+    result = Trans(
+        {source: target},
+        'uuid-4',
+        force_mode='复制',
+        force_overwrite=True,
+    ).trans_file()
+
+    assert result is True
+    assert target.read_bytes() == b'a'
+    assert (tmp_path / 'record' / 'uuid-4.json').exists()

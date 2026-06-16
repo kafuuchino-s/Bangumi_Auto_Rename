@@ -48,8 +48,8 @@ CONFIG_DEFAULT = {
     "rename_local_bangumi_pi_timeout_seconds": 300,
     "rename_local_bangumi_pi_command": "",
     "rename_local_bangumi_case_agent_snapshot_debug": False,
-    "rename_bgm_to_tmdb_product_pipeline_enabled": False,
-    "rename_bgm_to_tmdb_execute_enabled": False,
+    "rename_bgm_to_tmdb_product_pipeline_enabled": True,
+    "rename_bgm_to_tmdb_execute_enabled": True,
     "rename_bgm_to_tmdb_pi_command": "",
     "log_level": "INFO",  # 日志等级
     "queue_max_workers": 1,  # 队列并行处理数
