@@ -184,6 +184,8 @@ def test_product_pipeline_execute_transfers_and_writes_success_task(tmp_path, mo
     parent.mkdir()
     source = parent / 'E01.mkv'
     source.write_bytes(b'episode')
+    (parent / 'E01.chs.ass').write_bytes(b'ass subtitle')
+    (parent / 'E01.srt').write_bytes(b'srt subtitle')
     task_path = tmp_path / 'task'
     record_path = tmp_path / 'record'
     task_path.mkdir()
@@ -238,7 +240,18 @@ def test_product_pipeline_execute_transfers_and_writes_success_task(tmp_path, mo
     assert task_data['tmdb_name'] == 'Example Show'
     assert task_data['season_id'] == 1
     assert task_data['target_root'] == str(tmp_path / 'Anime' / 'Example Show (2024)')
+    assert task_data['transferred_file_count'] == 3
     assert record_data == {str(source.resolve()): str(target_path)}
+
+    target_sub_chs = tmp_path / 'Anime' / 'Example Show (2024)' / 'Season 1' / 'Example Show - S01E01.zh-CN.default.ass'
+    target_sub_srt = tmp_path / 'Anime' / 'Example Show (2024)' / 'Season 1' / 'Example Show - S01E01.zh-CN.default.srt'
+    assert target_sub_chs.read_bytes() == b'ass subtitle'
+    assert target_sub_srt.read_bytes() == b'srt subtitle'
+    assert task_data['subtitle_mapping'] == {
+        str((parent / 'E01.chs.ass').resolve()): str(target_sub_chs),
+        str((parent / 'E01.srt').resolve()): str(target_sub_srt),
+    }
+    assert task_data['subtitle_transfer_failed'] is False
 
 
 def _compiled_plan(source_path: str) -> CompiledOrganizePlan:

@@ -28,8 +28,52 @@ from .case_agent.recipe import CompiledOrganizePlan
 from .cleaner import remove_episode, remove_season, remove_tag
 from .decision_snapshot import write_decision_snapshot
 from .local_evidence import LocalEvidence, build_local_evidence
+from .local_fact_surface import SUBTITLE_EXTENSIONS, _subtitle_matches_video
 from .trans import Trans
 from .utils import VIDEO_SUFFIX
+
+
+# 复用字幕导入的语言映射，用于同目录字幕跟随迁移
+_SUBTITLE_LANGUAGE_MAP: dict[str, tuple[str, bool]] = {
+    # 简体中文
+    'chs': ('zh-CN', True),
+    'sc': ('zh-CN', True),
+    'gb': ('zh-CN', True),
+    '简': ('zh-CN', True),
+    '简体': ('zh-CN', True),
+    '简中': ('zh-CN', True),
+    'zh-hans': ('zh-CN', True),
+    'zh-cn': ('zh-CN', True),
+    'cn': ('zh-CN', True),
+    'chinese': ('zh-CN', True),
+    # 繁体中文
+    'cht': ('zh-TW', False),
+    'tc': ('zh-TW', False),
+    'big5': ('zh-TW', False),
+    '繁': ('zh-TW', False),
+    '繁体': ('zh-TW', False),
+    '繁中': ('zh-TW', False),
+    'zh-hant': ('zh-TW', False),
+    'zh-tw': ('zh-TW', False),
+    'tw': ('zh-TW', False),
+    'zh-hk': ('zh-HK', False),
+    'hk': ('zh-HK', False),
+    # 日语
+    'jp': ('ja', False),
+    'jpn': ('ja', False),
+    'ja': ('ja', False),
+    'japanese': ('ja', False),
+    '日': ('ja', False),
+    '日语': ('ja', False),
+    # 英语
+    'en': ('en', False),
+    'eng': ('en', False),
+    'english': ('en', False),
+    # 韩语
+    'ko': ('ko', False),
+    'kor': ('ko', False),
+    'korean': ('ko', False),
+}
 
 
 EnqueueTask = Callable[..., str]
@@ -584,6 +628,11 @@ class Rename:
                     extra_task_data=plan_extra,
                 )
 
+            subtitle_mapping = self._collect_and_transfer_subtitle_sidecars(
+                transfer_mapping=transfer_mapping,
+                task_uuid=task_uuid,
+            )
+
             success_data = self._success_task_data_from_rename_plan(
                 task_uuid=task_uuid,
                 source_path=path,
@@ -595,7 +644,9 @@ class Rename:
                     **plan_extra,
                     'pipeline_mode': 'local_bangumi_to_tmdb_product',
                     'bgm_to_tmdb_execute_enabled': True,
-                    'transferred_file_count': len(transfer_mapping),
+                    'transferred_file_count': len(transfer_mapping) + len(subtitle_mapping),
+                    'subtitle_mapping': {str(k): str(v) for k, v in subtitle_mapping.items()},
+                    'subtitle_transfer_failed': False,
                 },
             )
             self._write_task_data(success_data)
@@ -615,6 +666,54 @@ class Rename:
                 ai_used=True,
                 extra_task_data={'pipeline_mode': 'local_bangumi_to_tmdb_product'},
             )
+
+    def _collect_and_transfer_subtitle_sidecars(
+        self,
+        *,
+        transfer_mapping: dict[Path, Path],
+        task_uuid: str,
+    ) -> dict[Path, Path]:
+        """收集并迁移同目录外部字幕，返回实际复制的字幕源→目标映射。"""
+        subtitle_mapping: dict[Path, Path] = {}
+        for source_path, target_path in transfer_mapping.items():
+            if not source_path.is_file():
+                continue
+            video_stem = source_path.stem
+            source_dir = source_path.parent
+            for subtitle_path in source_dir.iterdir():
+                if not subtitle_path.is_file():
+                    continue
+                if subtitle_path.suffix.lower() not in SUBTITLE_EXTENSIONS:
+                    continue
+                if not _subtitle_matches_video(video_stem, subtitle_path.stem):
+                    continue
+                target_dir = target_path.parent
+                target_stem = target_path.stem
+                emby_name = _build_emby_subtitle_name(subtitle_path, target_stem)
+                target_subtitle_path = target_dir / emby_name
+                # 去重：同目标路径只保留第一次出现
+                if target_subtitle_path in subtitle_mapping.values():
+                    continue
+                subtitle_mapping[subtitle_path] = target_subtitle_path
+
+        if not subtitle_mapping:
+            return {}
+
+        transfer_result = Trans(
+            subtitle_mapping,
+            task_uuid,
+            force_mode='复制',
+            force_overwrite=cm.get_config('overwrite_existing'),
+            write_record=False,
+        ).trans_file()
+        if transfer_result is not True:
+            logger.warning(
+                '[BGM->TMDB] 字幕跟随迁移失败',
+                task_uuid=task_uuid,
+                error=str(transfer_result),
+            )
+            return {}
+        return subtitle_mapping
 
     @staticmethod
     def _extract_compiled_plan(local_bangumi_result: dict[str, object]) -> CompiledOrganizePlan | None:
@@ -858,3 +957,34 @@ class Rename:
             task_data.update(extra_task_data)
         self._write_task_data(task_data)
         return error
+
+
+def _build_emby_subtitle_name(subtitle_path: Path, video_stem: str) -> str:
+    """按 Emby 标准构造字幕文件名：video_stem.{lang}[.default]{ext}。"""
+    lang = _detect_subtitle_language(subtitle_path)
+    emby_lang, is_simplified = _normalize_subtitle_language(lang)
+    if is_simplified:
+        return f'{video_stem}.{emby_lang}.default{subtitle_path.suffix.lower()}'
+    return f'{video_stem}.{emby_lang}{subtitle_path.suffix.lower()}'
+
+
+def _detect_subtitle_language(subtitle_path: Path) -> str | None:
+    """从字幕文件名中提取字幕组语言标签（如 chs）。"""
+    stem = subtitle_path.stem
+    # 去掉 video_stem 前缀，保留剩余片段中的语言标记
+    tokens = [item.casefold() for item in re.split(r'[.\s_\-\[\]()]+', stem) if item]
+    # 简体优先命中，避免 zh 等短标签被优先匹配
+    for token in sorted(tokens, key=len, reverse=True):
+        if token in _SUBTITLE_LANGUAGE_MAP:
+            return token
+    return None
+
+
+def _normalize_subtitle_language(lang: str | None) -> tuple[str, bool]:
+    """将字幕组语言标签转换为 Emby 标准代码，并返回是否为简体中文。"""
+    if not lang:
+        return ('zh-CN', True)
+    lang_lower = lang.lower().strip()
+    if lang_lower in _SUBTITLE_LANGUAGE_MAP:
+        return _SUBTITLE_LANGUAGE_MAP[lang_lower]
+    return (lang, False)
