@@ -192,3 +192,6 @@ data
 /ARCHITECTURE.md
 /STRUCTURE.md
 /interview/
+
+# VSCode local settings (team no longer uses VSCode; formatting rules live in pyproject.toml and CLAUDE.md)
+/.vscode/
