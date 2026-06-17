@@ -1,8 +1,0 @@
-{
-    "recommendations": [
-        "ms-python.python",
-        "detachhead.basedpyright",
-        "ms-python.isort",
-        "ms-python.black-formatter"
-    ]
-}
