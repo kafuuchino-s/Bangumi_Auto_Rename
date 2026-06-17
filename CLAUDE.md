@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with th
 
 Bangumi Auto Rename（番剧自动重命名）是一个 Python Web 应用。核心不是"重命名器"，而是 **AI-first + strict** 的媒体整理流水线，串联 **任务队列、字幕导入、字幕自动抓取、字幕对齐、Emby 刷新、Telegram 通知**。
 
-当前 Local→Bangumi 主线是 **Case Agent mapping-only**：`Rename.process()` 收集本地视频事实、构建 `LocalEvidence`、调用 Case Agent 做 evidence-driven 判定，产出 `accepted / fail_closed / invalid` 可审计结果。当前阶段不做 TMDB executable target、不生成最终文件名、不触发 Emby。
+当前 Local→Bangumi 主线已完成：**Case Agent evidence-driven mapping + BGM→TMDB 桥接 + 可执行重命名落地**，最终生成目标目录与文件，并触发 Emby 刷新 / Telegram 通知。
 
 核心能力：
 
@@ -80,8 +80,8 @@ docker run -p 5999:5999 bangumi-auto-rename
 | 字幕导入 | `src/subtitle/processor.py` | 解压、AI 映射、语言后缀归一化、可选 ffsubsync |
 | 字幕自动抓取 | `src/subtitle/auto_fetch.py` | 扫描缺失字幕、候选抓取、AI 重排 |
 | 配置中心 | `src/config/config_manager.py` | config 默认值、线程内临时覆盖、路径转换、URL 标准化 |
-| 回归工具 | `src/regression/` | CLI、runner、baseline、report、lanes/rename、compare/rename |
 | Pi sidecar 运行时 | `tools/pi_case_agent_runner.mjs` | Node.js 进程，Case Agent Pi 后端执行 AI 驱动调查 |
+| BGM→TMDB 桥接 | `src/rename/bgm_to_tmdb/` | 将 Bangumi 映射结果桥接到 TMDB 目标路径并执行迁移 |
 
 ## 主流程
 
@@ -90,9 +90,9 @@ Web UI / qBittorrent webhook
 → src/web.py（路径修复 / skip_tags / 去重）
 → src/queue/task_queue.py（并发 worker + 批次收尾）
 → src/rename/process.py
-→ Case Agent primary: local_evidence → case_agent/local_bangumi_entry → pi_runner → evidence_broker → MappingDraft → Verifier
-→ accepted / fail_closed / invalid 落盘
-→ 可选：字幕自动抓取
+→ Case Agent primary: `local_evidence` → `case_agent/local_bangumi_entry` → `pi_runner` → `evidence_broker` → `MappingDraft` → `Verifier`
+→ 接受（`accepted`）的映射经 BGM→TMDB 桥接、目标文件名生成、迁移落盘
+→ 可选：字幕 sidecar 跟随 / 自动抓取
 → 批次结束后：Emby 刷新 + Telegram 汇总
 ```
 
@@ -104,14 +104,15 @@ Web UI / qBittorrent webhook
 
 ## 当前实现认知
 
-### Case Agent mapping-only
+### Case Agent mapping + BGM→TMDB 落地
 
-- 当前 Local→Bangumi 主线：Case Agent 负责 evidence request、MappingDraft、Verifier 合同校验
+- 当前 Local→Bangumi→TMDB 全链路已完成：Case Agent 负责 evidence request、MappingDraft、Verifier 合同校验，判定为 `accepted` 的结果通过 BGM→TMDB 桥接生成 TMDB 目标路径并执行迁移落盘
 - `Rename.process()` 不预先语义拆包；是否拆成 child cases 由 Case Agent planning phase 判断
 - 固定层只做事实抽取和合同校验：visible refs、coverage、duplicate、accounting、hidden refs
 - 不确定判断（候选 ownership、相似作品取舍、special/extra 语义）必须交给 Case Agent 通过 evidence request / MappingDraft / Verifier issue/audit guidance 引导
 - 短 ref（F\*/G\*/C\*/season/node/evidence refs）必须和同 payload 的可读 semantic card 绑定出现
 - `fail_closed` 是合格业务结果；`invalid` 只代表实现或合同错误
+- 已验证 full146 为代表的多样本可端到端落地（包括字幕 sidecar 跟随、Emby 刷新、Telegram 汇总）
 
 ### Pi 后端
 
