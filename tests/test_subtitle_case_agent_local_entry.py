@@ -42,6 +42,111 @@ def test_subtitle_case_agent_primary_enabled_default_is_true():
 
 
 # ---------------------------------------------------------------------------
+# source_video：local 原始文件名作为 AI 证据
+# ---------------------------------------------------------------------------
+
+def test_target_card_carries_source_video_from_processed_task():
+    """record 的 key（local 源文件名）经 ProcessedTask.source_videos ->
+    SubtitleTargetVideoCard.source_video -> readable_target_cards 暴露给 AI。"""
+    from src.subtitle.case_agent.evidence_broker import build_target_video_cards
+    from src.subtitle.case_agent.workspace import build_subtitle_case_workspace
+
+    # 目标名（重命名后）与 local 原始名不同——典型"字幕包与 local 命名一致"场景
+    tasks = [
+        {
+            "uuid": "t1",
+            "title": "Foo",
+            "season": 1,
+            "is_movie": False,
+            "videos": ["Foo - S01E01 - Pilot.mkv"],
+            "target_dir": "/lib/Foo (2020)/Season 01",
+            "video_targets": {},
+            "source_videos": {"Foo - S01E01 - Pilot.mkv": "[SubGroup] Foo 01.mkv"},
+        }
+    ]
+    cards = build_target_video_cards(tasks)
+    assert len(cards) == 1
+    assert cards[0].video == "Foo - S01E01 - Pilot.mkv"
+    assert cards[0].source_video == "[SubGroup] Foo 01.mkv"
+
+    ws = build_subtitle_case_workspace(
+        archive_name="foo.zip",
+        subtitle_files=[],
+        target_videos=cards,
+    )
+    readable = ws.readable_target_cards()
+    assert readable[0]["source_video"] == "[SubGroup] Foo 01.mkv"
+    assert readable[0]["video"] == "Foo - S01E01 - Pilot.mkv"
+
+
+def test_target_card_source_video_empty_when_absent():
+    """旧 record 无 source / 直传字幕场景：source_video 为空，不报错。"""
+    from src.subtitle.case_agent.evidence_broker import build_target_video_cards
+
+    tasks = [
+        {
+            "uuid": "t1",
+            "title": "Foo",
+            "season": 1,
+            "is_movie": False,
+            "videos": ["Foo - S01E01 - Pilot.mkv"],
+            "target_dir": "/lib/Foo (2020)/Season 01",
+            "video_targets": {},
+            # 无 source_videos
+        }
+    ]
+    cards = build_target_video_cards(tasks)
+    assert cards[0].source_video == ""
+
+
+def test_build_processed_task_captures_source_videos_from_record(monkeypatch, tmp_path):
+    """_build_processed_task_from_file 从 record 的 key（local 源路径）抽 source_videos。"""
+    import json
+
+    from src.subtitle.processor import SubtitleProcessor
+    from src.utils.path import TASK_PATH, RECORD_PATH
+
+    task_dir = tmp_path / "task"
+    record_dir = tmp_path / "record"
+    task_dir.mkdir(parents=True, exist_ok=True)
+    record_dir.mkdir(parents=True, exist_ok=True)
+    monkeypatch.setattr("src.subtitle.processor.TASK_PATH", task_dir)
+    monkeypatch.setattr("src.subtitle.processor.RECORD_PATH", record_dir)
+
+    task_uuid = "t-uuid"
+    (task_dir / f"{task_uuid}.json").write_text(
+        json.dumps(
+            {
+                "type": "tv",
+                "uuid": task_uuid,
+                "name": "Foo",
+                "is_movie": False,
+                "season_id": 1,
+                "target_root": str(tmp_path / "lib"),
+            },
+            ensure_ascii=False,
+        ),
+        encoding="utf-8",
+    )
+    # record key = local 源路径, value = 目标路径
+    (record_dir / f"{task_uuid}.json").write_text(
+        json.dumps(
+            {
+                "/downloads/[SubGroup] Foo 01.mkv": "/lib/Foo (2020)/Season 01/Foo - S01E01 - Pilot.mkv",
+            },
+            ensure_ascii=False,
+        ),
+        encoding="utf-8",
+    )
+
+    processor = SubtitleProcessor()
+    task = processor._build_processed_task_from_file(task_dir / f"{task_uuid}.json")
+    assert task is not None
+    assert task["source_videos"] == {"Foo - S01E01 - Pilot.mkv": "[SubGroup] Foo 01.mkv"}
+    assert task["videos"] == ["Foo - S01E01 - Pilot.mkv"]
+
+
+# ---------------------------------------------------------------------------
 # processor.process() 端到端（Case Agent 主路径）
 # ---------------------------------------------------------------------------
 

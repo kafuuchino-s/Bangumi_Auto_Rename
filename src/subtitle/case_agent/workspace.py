@@ -63,6 +63,8 @@ class SubtitleCaseWorkspace:
                 'season': card.season,
                 'is_movie': card.is_movie,
                 'video': card.video,
+                # 重命名前 local 原始文件名（AI 证据，非合法落点）；可能为空。
+                'source_video': card.source_video,
                 'target_dir': card.target_dir,
                 'task_video_count': card.task_video_count,
             }

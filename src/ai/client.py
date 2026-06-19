@@ -1807,8 +1807,13 @@ class AIClient:
                 tasks_info += f"  类型: 电影\n"
             tasks_info += f"  目标目录: {task.get('target_dir', '')}\n"
             tasks_info += "  视频文件:\n"
+            source_videos = task.get('source_videos') or {}
             for video in AIClient._coerce_string_sequence(task.get('videos', [])):  # 显示所有视频
                 tasks_info += f"    - {video}\n"
+                # 重命名前 local 原始文件名（与目标名不同时显示，作为强配对证据）
+                source_video = source_videos.get(video) if isinstance(source_videos, dict) else None
+                if source_video and source_video != video:
+                    tasks_info += f"      (local 原始名: {source_video})\n"
 
         # 构建带结构的字幕信息
         subtitles_info = "压缩包结构（文件夹 -> 字幕文件）：\n"
@@ -1858,6 +1863,9 @@ class AIClient:
    - 无标签时默认为 chs (简体中文)
 5. **重要**: video 字段必须使用视频文件列表中的**精确完整文件名**，不要自己编造或修改！
 6. **每个字幕的 task_uuid 可以不同**，取决于它属于哪个季度或电影
+7. **local 原始名是强配对证据**：视频列表里带 `(local 原始名: ...)` 的是重命名前的本地文件名。
+   当字幕包与本地原始命名高度一致（同字幕组、同编号风格）时，优先用 local 原始名判断集数/版本
+   配对；但 video 字段仍必须填重命名后的精确目标文件名（local 原始名只用于判断，不作为输出值）。
 
 请严格按照以下JSON格式返回：
 {{

@@ -66,6 +66,10 @@ class SubtitleTargetVideoCard(BaseModel):
     """来自已处理任务记录的目标视频事实。
 
     ``ref`` 是固定层分配的短 ref（``TV<idx>``），唯一标识 (task_uuid, video) 组合。
+    ``video`` 是重命名后的目标文件名（合法落点，verifier 据此校验）。
+    ``source_video`` 是重命名前的 local 原始文件名（仅作 AI 匹配证据，不参与
+    合同裁决）；字幕包与 local 命名高度一致时，这是比目标名更强的配对线索。
+    可为空（旧 record 无 source / 直传字幕文件场景）。
     """
 
     ref: str = ''
@@ -74,6 +78,8 @@ class SubtitleTargetVideoCard(BaseModel):
     season: int | None = None
     is_movie: bool = False
     video: str = ''
+    # 重命名前的 local 原始文件名（AI 证据，非合法落点）。
+    source_video: str = ''
     target_dir: str = ''
     # 该任务下视频总数，供 AI 判断"单视频电影直接配对"等。
     task_video_count: int = 0

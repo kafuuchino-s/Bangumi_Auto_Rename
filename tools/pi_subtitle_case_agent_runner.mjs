@@ -162,6 +162,7 @@ const strictMappingDraftSchema = Json.Object({
 const mappingDraftQuickReference = [
   "Mapping draft shape: {\"summary\":\"...\",\"confidence\":\"High\",\"rows\":[{\"row_ref\":\"R1\",\"subtitle_ref\":\"SF1\",\"disposition\":\"map_to_video\",\"target_ref\":\"TV3\",\"language\":\"chs\",\"reason\":\"episode 1 subtitle\"},{\"row_ref\":\"R2\",\"subtitle_ref\":\"SF2\",\"disposition\":\"unmatched\",\"reason\":\"no matching video in target tasks\"}]}.",
   "Use the SF<idx> / TV<idx> short refs shown in get_subtitle_mapping_context. Archive paths, task UUIDs, and video filenames are evidence only; the draft must reference the short refs.",
+  "Each TV<idx> target card has both `video` (post-rename landed filename, the legal landing point) and `source_video` (pre-rename local original filename, evidence only, may be empty). When the subtitle archive shares the release group / naming style of the original local files, `source_video` is a much more direct episode/version pairing hint than `video`; prefer it for matching when non-empty. The verifier still validates against `video`.",
   "disposition: map_to_video (requires target_ref + language like chs/cht/jpn/eng) | unmatched (requires reason, no target_ref) | needs_more_evidence (investigating only, no target_ref; must resolve before submit).",
   "Every subtitle must appear exactly once as map_to_video or unmatched at submit. No needs_more_evidence rows may remain.",
   "Same target video may carry multiple subtitles only if their languages differ.",

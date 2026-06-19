@@ -327,6 +327,7 @@ def run_subtitle_case_agent_mapping(
         )
     return _run_single_shot_backend(
         workspace=workspace,
+        processed_tasks=processed_tasks,
         ai_client=ai_client,
         language_resolver=language_resolver,
         archive_name=archive_name,
@@ -337,22 +338,27 @@ def run_subtitle_case_agent_mapping(
 def _run_single_shot_backend(
     *,
     workspace: SubtitleCaseWorkspace,
+    processed_tasks: Sequence[Mapping[str, object]],
     ai_client: Any,
     language_resolver: LanguageResolver,
     archive_name: str,
     archive_structure: Mapping[str, Sequence[str]] | None,
 ) -> Dict[str, Any]:
-    """Phase 2 单轮后端：调 analyze_subtitle_mapping → 翻译 draft → 合同校验。"""
+    """Phase 2 单轮后端：调 analyze_subtitle_mapping → 翻译 draft → 合同校验。
+
+    直接用调用方传入的 ``processed_tasks``（含 source_videos / video_targets），
+    不从 workspace 反推，避免丢失 local 原始文件名等 AI 证据。
+    """
     # 构建 AI 输入
     if archive_structure is None:
         archive_structure = _build_archive_structure_from_cards(workspace.subtitle_files)
 
-    # 调 AI 单轮
+    # 调 AI 单轮（直接用调用方的 processed_tasks，保留 source_videos / video_targets）
     try:
         ai_result = ai_client.analyze_subtitle_mapping(
             archive_name=archive_name or workspace.archive_name,
             archive_structure=archive_structure,
-            processed_tasks=list(_workspace_tasks_for_ai(workspace)),
+            processed_tasks=list(processed_tasks),
         )
     except Exception as exc:  # noqa: BLE001 - 入口要兜住 AI 实现错误
         snapshot = build_subtitle_case_snapshot(
@@ -418,36 +424,6 @@ def _run_single_shot_backend(
         'compiled_plan': compiled_plan,
     }
 
-
-def _workspace_tasks_for_ai(workspace: SubtitleCaseWorkspace) -> list[dict[str, object]]:
-    """从 workspace 的 target video cards 反推 processed_tasks 形状供 AI 单轮。
-
-    AI 单轮 prompt 期望 processed_tasks（含 uuid/title/season/is_movie/videos/
-    target_dir/video_targets）。单轮后端调用方（processor）本可直接传入，但为保持
-    entry 签名稳定，这里从已展开的 target cards 聚合回任务视图。
-    """
-    tasks_by_uuid: dict[str, dict[str, object]] = {}
-    for card in workspace.target_videos:
-        task = tasks_by_uuid.setdefault(card.task_uuid, {
-            'uuid': card.task_uuid,
-            'title': card.task_title,
-            'season': card.season,
-            'is_movie': card.is_movie,
-            'target_dir': card.target_dir,
-            'videos': [],
-            'video_targets': {},
-        })
-        videos = task['videos']
-        if card.video not in videos:
-            videos.append(card.video)
-        # video_targets 无法从 card 还原完整目标路径；单轮 AI 只用 video 文件名匹配，
-        # 落盘层用 compiled_plan 的 target_dir，故这里留空即可。
-    return list(tasks_by_uuid.values())
-
-
-# ---------------------------------------------------------------------------
-# 内部辅助
-# ---------------------------------------------------------------------------
 
 def _get_config(key: str, default: Any = None) -> Any:
     """读配置（延迟 import，避免循环）。"""

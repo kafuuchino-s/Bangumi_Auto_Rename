@@ -71,6 +71,8 @@ class ProcessedTask(TypedDict):
     target_root: str
     videos: list[str]
     video_targets: dict[str, str]
+    # 目标文件名 -> 重命名前 local 原始文件名（AI 匹配证据，非合法落点）。
+    source_videos: dict[str, str]
     is_movie: bool
 
 
@@ -829,13 +831,21 @@ class SubtitleProcessor:
 
             videos: list[str] = []
             video_targets: dict[str, str] = {}
+            # 目标文件名 -> 重命名前 local 原始文件名（record 的 key 是 local 源路径）。
+            # 仅作 AI 匹配证据，不参与合同裁决；合法落点仍以 video（目标名）为准。
+            source_videos: dict[str, str] = {}
             target_dir = None
             for source, target in record_data.items():
                 if not isinstance(target, str):
                     continue
                 target_path = Path(target)
-                videos.append(target_path.name)
-                video_targets[target_path.name] = str(target_path)
+                target_name = target_path.name
+                videos.append(target_name)
+                video_targets[target_name] = str(target_path)
+                if isinstance(source, str) and source:
+                    source_name = Path(source).name
+                    if source_name and source_name not in source_videos.values():
+                        source_videos.setdefault(target_name, source_name)
                 if target_dir is None:
                     target_dir = str(target_path.parent)
 
@@ -865,6 +875,7 @@ class SubtitleProcessor:
                 "target_root": normalized_target_root,
                 "videos": sorted(videos),
                 "video_targets": video_targets,
+                "source_videos": source_videos,
                 "is_movie": is_movie,
             }
         except Exception as e:

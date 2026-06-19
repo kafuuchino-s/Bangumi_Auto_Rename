@@ -37,6 +37,8 @@ def build_target_video_cards(
         season = season_value if isinstance(season_value, int) else None
         videos = list(task.get('videos') or [])
         video_targets = task.get('video_targets') or {}
+        # video 名 -> 重命名前 local 原始文件名（AI 证据，非合法落点）
+        source_videos = task.get('source_videos') or {}
         target_dir = str(task.get('target_dir') or '')
         task_video_count = len(videos)
         for video in videos:
@@ -49,6 +51,9 @@ def build_target_video_cards(
                 card_target_dir = str(video_target).rsplit('/', 1)[0].rsplit('\\', 1)[0]
             else:
                 card_target_dir = target_dir
+            source_video = ''
+            if isinstance(source_videos, Mapping):
+                source_video = str(source_videos.get(video_str) or '')
             cards.append(
                 SubtitleTargetVideoCard(
                     ref='',  # 由 workspace 分配
@@ -57,6 +62,7 @@ def build_target_video_cards(
                     season=season if not is_movie else None,
                     is_movie=is_movie,
                     video=video_str,
+                    source_video=source_video,
                     target_dir=card_target_dir,
                     task_video_count=task_video_count,
                 )

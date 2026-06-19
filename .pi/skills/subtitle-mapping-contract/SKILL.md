@@ -10,9 +10,11 @@ The final output for this stage is a Python-verifier-accepted subtitle mapping p
 The fixed layer presents two flat fact catalogs via `get_subtitle_mapping_context`:
 
 - **subtitle files** (`SF<idx>` short refs): `archive_path`, `filename`, `language_hint` (raw tag extracted from the filename, e.g. `chs`/`cht`/`jpn`/`eng`; may be empty).
-- **target videos** (`TV<idx>` short refs): `task_uuid`, `task_title`, `season`, `is_movie`, `video` (the exact landed video filename), `target_dir`, `task_video_count`.
+- **target videos** (`TV<idx>` short refs): `task_uuid`, `task_title`, `season`, `is_movie`, `video` (the exact landed video filename), `source_video` (the pre-rename local original filename — evidence only, may be empty), `target_dir`, `task_video_count`.
 
 These short refs are the only identifiers the mapping draft may use. Archive paths, task UUIDs, and video filenames are evidence for your reasoning; they are **not** target IDs in the draft. Copy the `SF<idx>` / `TV<idx>` refs exactly.
+
+**`source_video` is a strong pairing hint**: when the subtitle archive shares its release group / naming style with the original local files (e.g. subtitle `[SubGroup] Foo 01.chs.ass` vs local source `[SubGroup] Foo 01.mkv`), the `source_video` field carries that pre-rename name and is usually a much more direct match than the post-rename `video` (e.g. `Foo - S01E01 - Pilot.mkv`). Prefer `source_video` similarity for episode/version pairing when it is non-empty; the verifier still validates against the post-rename `video` as the legal landing point.
 
 ## Mapping draft shape
 
