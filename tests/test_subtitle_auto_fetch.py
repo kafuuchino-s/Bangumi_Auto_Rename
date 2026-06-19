@@ -7,6 +7,22 @@ from src.subtitle.auto_fetch import SubtitleAutoFetcher
 from src.subtitle.providers import SubtitleCandidate, SubtitleThreadPackage
 
 
+@pytest.fixture(autouse=True)
+def _force_single_shot_backend(monkeypatch):
+    """auto_fetch Case Agent 默认后端已切 pi；本套件测 single_shot 行为，
+    强制钉死 single_shot 避免真起 node sidecar。"""
+    import src.subtitle.auto_fetch as af_mod
+
+    orig = af_mod.cm_get
+
+    def patched(key, default=None):
+        if key == "subtitle_auto_fetch_case_agent_backend":
+            return "single_shot"
+        return orig(key, default)
+
+    monkeypatch.setattr(af_mod, "cm_get", patched)
+
+
 def make_package(package_id, flags, *, has_direct_download=True, page_number=1):
     return SubtitleThreadPackage(
         package_id=package_id,

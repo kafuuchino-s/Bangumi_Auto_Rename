@@ -10,6 +10,14 @@ from ..logger import logger
 from ..rename.utils import VIDEO_SUFFIX
 from ..utils.path import SUBTITLE_UPLOAD_PATH, TASK_PATH
 from ..utils.utils import get_record, get_task, write_task
+from .auto_fetch_case_agent import (
+    AutoFetchCaseWorkspace,
+    build_auto_fetch_case_workspace,
+    build_deterministic_keyword_cards,
+    build_missing_video_cards,
+    build_scan_scope_card,
+    run_auto_fetch_case_agent,
+)
 from .extractor import SUBTITLE_EXTENSIONS
 from .processor import SubtitleProcessor
 from .providers import ACGRIPProvider, SubtitleCandidate, SubtitleThreadPackage
@@ -92,6 +100,19 @@ class SubtitleAutoFetcher:
                 },
             )
 
+        # Case Agent 事实卡工作区（Phase 2：轻 gate + 单轮 AI 适配）
+        case_agent_enabled = bool(
+            cm_get("subtitle_auto_fetch_case_agent_primary_enabled", True)
+        )
+        case_agent_workspace = self._build_case_agent_workspace(
+            task_uuid=task_uuid,
+            task_data=task_data,
+            record_data=record_data,
+            scan_scope=scan_scope,
+            missing_videos=missing_videos,
+            keywords=keywords,
+        )
+
         limit = int(cm_get("subtitle_auto_fetch_candidate_limit", 10) or 10)
         last_result: Optional[Dict[str, Any]] = None
         ai_queries_attempted = False
@@ -127,46 +148,99 @@ class SubtitleAutoFetcher:
                 self.provider.load_thread_packages(candidate) for candidate in candidates
             ]
             candidate_summaries = self._candidate_summaries(candidates)
-            selected_candidate, ai_result = self._select_candidate(
-                task_context,
-                candidates,
-                candidate_summaries,
-            )
-            if selected_candidate is None:
-                rejection_by_ai = bool((ai_result or {}).get("should_use") is False)
-                last_result = {
-                    "status": "skipped" if rejection_by_ai else "failed",
-                    "reason": (
-                        "candidate_ai_rejected"
-                        if rejection_by_ai
-                        else "no_usable_candidate"
-                    ),
-                    "search_keyword": keyword,
-                    "candidate_summaries": candidate_summaries,
-                    "ranked_candidates": candidate_summaries,
-                    "ai_used": ai_result is not None,
-                    "ai_rerank_result": ai_result,
-                    "missing_videos": [str(p) for p in missing_videos],
-                    "scan_scope_type": scan_scope["type"],
-                    "scan_scope_root": scan_scope.get("root"),
-                    "missing_video_count": len(missing_videos),
-                }
-                if not pending_keywords and not ai_queries_attempted:
-                    pending_keywords.extend(
-                        self._build_ai_search_keywords(task_context, tried_keywords)
-                    )
-                    ai_queries_attempted = True
-                continue
 
-            package_summaries = self._thread_package_summaries(
-                selected_candidate.thread_packages
+            # Phase 2：Case Agent 入口分发选帖/选包（轻 gate + 单轮 AI）
+            case_agent_status: Optional[str] = None
+            case_agent_snapshot: Any = None
+            case_select = self._select_via_case_agent(
+                task_context=task_context,
+                candidates=candidates,
+                candidate_summaries=candidate_summaries,
+                workspace=case_agent_workspace if case_agent_enabled else None,
             )
-            selected_package, package_ai_result = self._select_thread_package(
-                task_context,
-                selected_candidate,
-                selected_candidate.thread_packages,
-                package_summaries,
-            )
+            if case_select.get("legacy_fallback"):
+                # Case Agent 不可用 / 关闭：回退旧单轮 AI 选帖/选包
+                selected_candidate, ai_result = self._select_candidate(
+                    task_context,
+                    candidates,
+                    candidate_summaries,
+                )
+                if selected_candidate is None:
+                    rejection_by_ai = bool((ai_result or {}).get("should_use") is False)
+                    last_result = {
+                        "status": "skipped" if rejection_by_ai else "failed",
+                        "reason": (
+                            "candidate_ai_rejected"
+                            if rejection_by_ai
+                            else "no_usable_candidate"
+                        ),
+                        "search_keyword": keyword,
+                        "candidate_summaries": candidate_summaries,
+                        "ranked_candidates": candidate_summaries,
+                        "ai_used": ai_result is not None,
+                        "ai_rerank_result": ai_result,
+                        "pipeline_mode": "auto_fetch_legacy_compat",
+                        "missing_videos": [str(p) for p in missing_videos],
+                        "scan_scope_type": scan_scope["type"],
+                        "scan_scope_root": scan_scope.get("root"),
+                        "missing_video_count": len(missing_videos),
+                    }
+                    if not pending_keywords and not ai_queries_attempted:
+                        pending_keywords.extend(
+                            self._build_ai_search_keywords(task_context, tried_keywords)
+                        )
+                        ai_queries_attempted = True
+                    continue
+
+                package_summaries = self._thread_package_summaries(
+                    selected_candidate.thread_packages
+                )
+                selected_package, package_ai_result = self._select_thread_package(
+                    task_context,
+                    selected_candidate,
+                    selected_candidate.thread_packages,
+                    package_summaries,
+                )
+            else:
+                # Case Agent 主路径
+                case_agent_status = str(case_select.get("case_agent_status") or "")
+                case_agent_snapshot = case_select.get("case_agent_snapshot")
+                ai_result = case_select.get("ai_result")
+                package_ai_result = case_select.get("package_ai_result")
+                package_summaries = case_select.get("package_summaries") or []
+                selected_candidate = case_select.get("selected_candidate")
+                selected_package = case_select.get("selected_package")
+                if selected_candidate is None:
+                    # 候选/选包被拒或无候选：合格 fail_closed，按旧 reason 映射
+                    skip_reason = str(case_select.get("skip_reason") or "no_usable_candidate")
+                    rejection_by_ai = skip_reason in {
+                        "candidate_ai_rejected",
+                        "package_ai_rejected",
+                    }
+                    last_result = {
+                        "status": "skipped" if rejection_by_ai else "failed",
+                        "reason": skip_reason,
+                        "search_keyword": keyword,
+                        "candidate_summaries": candidate_summaries,
+                        "ranked_candidates": candidate_summaries,
+                        "ai_used": ai_result is not None,
+                        "ai_rerank_result": ai_result,
+                        "package_ai_result": package_ai_result,
+                        "pipeline_mode": "auto_fetch_case_agent_primary",
+                        "case_agent_status": case_agent_status,
+                        "case_agent_snapshot": case_agent_snapshot,
+                        "missing_videos": [str(p) for p in missing_videos],
+                        "scan_scope_type": scan_scope["type"],
+                        "scan_scope_root": scan_scope.get("root"),
+                        "missing_video_count": len(missing_videos),
+                    }
+                    if not pending_keywords and not ai_queries_attempted:
+                        pending_keywords.extend(
+                            self._build_ai_search_keywords(task_context, tried_keywords)
+                        )
+                        ai_queries_attempted = True
+                    continue
+
             if (
                 selected_package is None
                 and (package_ai_result or {}).get("should_use") is False
@@ -187,6 +261,13 @@ class SubtitleAutoFetcher:
                     "candidate_summaries": candidate_summaries,
                     "ranked_candidates": candidate_summaries,
                     "package_summaries": package_summaries,
+                    "pipeline_mode": (
+                        "auto_fetch_case_agent_primary"
+                        if case_agent_status
+                        else "auto_fetch_legacy_compat"
+                    ),
+                    "case_agent_status": case_agent_status,
+                    "case_agent_snapshot": case_agent_snapshot,
                     "missing_videos": [str(p) for p in missing_videos],
                     "scan_scope_type": scan_scope["type"],
                     "scan_scope_root": scan_scope.get("root"),
@@ -248,6 +329,11 @@ class SubtitleAutoFetcher:
                 download_result.downloaded_path,
                 target_task_uuid=task_uuid,
             )
+            # fail_closed 解读对齐：processor 的 fail_closed 对外映射 need_confirm +
+            # case_agent_status 审计；auto_fetch 视为"该包未配对成功"的合格可重试结果。
+            processor_case_agent_status = str(
+                processor_result.get("case_agent_status") or ""
+            )
             if processor_result.get("status") == "success":
                 return self._persist_status(
                     task_uuid,
@@ -272,6 +358,13 @@ class SubtitleAutoFetcher:
                         "download_url": download_result.download_url,
                         "downloaded_path": str(download_result.downloaded_path),
                         "processor_result": processor_result,
+                        "pipeline_mode": (
+                            "auto_fetch_case_agent_primary"
+                            if case_agent_status
+                            else "auto_fetch_legacy_compat"
+                        ),
+                        "case_agent_status": case_agent_status,
+                        "case_agent_snapshot": case_agent_snapshot,
                         "missing_videos": [str(p) for p in missing_videos],
                         "scan_scope_type": scan_scope["type"],
                         "scan_scope_root": scan_scope.get("root"),
@@ -298,6 +391,20 @@ class SubtitleAutoFetcher:
                 "download_url": download_result.download_url,
                 "downloaded_path": str(download_result.downloaded_path),
                 "processor_result": processor_result,
+                "pipeline_mode": (
+                    "auto_fetch_case_agent_primary"
+                    if case_agent_status
+                    else "auto_fetch_legacy_compat"
+                ),
+                "case_agent_status": case_agent_status,
+                "case_agent_snapshot": case_agent_snapshot,
+                # 透传 processor 侧的 case_agent_status（fail_closed 等）供审计
+                "processor_case_agent_status": processor_case_agent_status or None,
+                "failure_reason": (
+                    "processor_fail_closed"
+                    if processor_case_agent_status == "fail_closed"
+                    else processor_result.get("error")
+                ),
                 "missing_videos": [str(p) for p in missing_videos],
                 "scan_scope_type": scan_scope["type"],
                 "scan_scope_root": scan_scope.get("root"),
@@ -305,8 +412,11 @@ class SubtitleAutoFetcher:
                 "pages_scanned": selected_candidate.pages_scanned,
                 "pagination_truncated": selected_candidate.pagination_truncated,
             }
+            # fail_closed 对齐：processor fail_closed / need_confirm 均视为该包未配对成功
+            # 的合格可重试结果，触发换关键词重试。
             should_retry_with_next_keyword = (
                 processor_result.get("status") == "need_confirm"
+                or processor_case_agent_status == "fail_closed"
                 or processor_result.get("error")
                 == "AI 无法确定匹配的动漫，请手动选择"
             )
@@ -653,6 +763,178 @@ class SubtitleAutoFetcher:
         title = re.sub(r"^(劇場版|劇場アニメ|TVアニメ)\s*", "", title).strip()
         return title
 
+    def _build_case_agent_workspace(
+        self,
+        *,
+        task_uuid: str,
+        task_data: Dict[str, Any],
+        record_data: dict[str, object],
+        scan_scope: Dict[str, Any],
+        missing_videos: List[Path],
+        keywords: List[str],
+    ) -> Optional[AutoFetchCaseWorkspace]:
+        """构建 auto_fetch Case Agent 事实卡工作区（Phase 2）。"""
+        try:
+            scope_card = build_scan_scope_card(scan_scope)
+            missing_cards = build_missing_video_cards(
+                task_data=task_data,
+                record_data=record_data,
+                missing_videos=missing_videos,
+            )
+            keyword_cards = build_deterministic_keyword_cards(keywords)
+            return build_auto_fetch_case_workspace(
+                task_uuid=task_uuid,
+                scan_scope=scope_card,
+                missing_videos=missing_cards,
+                keywords=keyword_cards,
+            )
+        except Exception as exc:
+            logger.warning(f"[字幕自动抓取] 构建 Case Agent 工作区失败: {exc}")
+            return None
+
+    def _select_via_case_agent(
+        self,
+        *,
+        task_context: Dict[str, Any],
+        candidates: List[SubtitleCandidate],
+        candidate_summaries: List[Dict[str, Any]],
+        workspace: Optional[AutoFetchCaseWorkspace],
+    ) -> Dict[str, Any]:
+        """通过 Case Agent 入口做选帖/选包决策（Phase 2 单轮 + 轻 gate）。
+
+        返回统一 dict 供主循环消费：
+        - accepted：selected_candidate / selected_package 非空，case_agent_status=accepted
+        - fail_closed（候选/包被拒/无候选）：selected_* 为 None，case_agent_status=fail_closed，
+          ``skip_reason`` 映射旧 reason（candidate_ai_rejected/no_usable_candidate/
+          package_ai_rejected/candidate_gate_rejected/package_gate_rejected）
+        - need_confirm / invalid：selected_* 为 None，对应 case_agent_status
+
+        Case Agent 不可用（workspace 为 None）时回退旧链路（caller 据返回的
+        ``legacy_fallback`` 标记走旧 ``_select_candidate``/``_select_thread_package``）。
+        """
+        result: Dict[str, Any] = {
+            "selected_candidate": None,
+            "ai_result": None,
+            "selected_package": None,
+            "package_ai_result": None,
+            "package_summaries": [],
+            "case_agent_status": None,
+            "case_agent_snapshot": None,
+            "skip_reason": None,
+            "legacy_fallback": False,
+        }
+        if workspace is None:
+            result["legacy_fallback"] = True
+            return result
+
+        # 每次调用重置候选事实卡：CD/PK ref 从 1 开始，与本批 candidates 对齐
+        # （workspace 在 process_task 里只建一次，跨关键词复用，候选必须按本次搜索重置）
+        workspace.candidates = []
+
+        entry_result = run_auto_fetch_case_agent(
+            workspace=workspace,
+            candidates=candidates,
+            task_data=task_context,
+            ai_client=self.ai_client,
+            candidate_summaries=candidate_summaries,
+            backend=str(cm_get("subtitle_auto_fetch_case_agent_backend", "single_shot") or "single_shot"),
+            provider=self.provider,
+        )
+        status = str(entry_result.get("status") or "invalid")
+        snapshot = entry_result.get("snapshot") or {}
+        result["case_agent_status"] = status
+        result["case_agent_snapshot"] = snapshot
+        result["ai_result"] = entry_result.get("ai_rerank_result")
+        result["package_ai_result"] = entry_result.get("package_ai_result")
+
+        if status != "accepted":
+            # 映射 fail_closed reason_kind -> 旧 reason（供主循环 skip/failed 分支）
+            reason_kind = str(snapshot.get("reason_kind") or "")
+            # 显式 AI 拒绝 / 轻 gate 拒绝：保持 fail_closed（合格 skip/failed），不回退规则
+            explicit_rejection = reason_kind in {
+                "candidate_ai_rejected",
+                "package_ai_rejected",
+                "candidate_gate_rejected",
+                "package_gate_rejected",
+            }
+            if explicit_rejection:
+                skip_map = {
+                    "candidate_ai_rejected": "candidate_ai_rejected",
+                    "package_ai_rejected": "package_ai_rejected",
+                    "candidate_gate_rejected": "no_usable_candidate",
+                    "package_gate_rejected": "no_usable_candidate",
+                }
+                result["skip_reason"] = skip_map.get(reason_kind, "no_usable_candidate")
+                # package_ai_rejected：候选已被接受，恢复 selected_candidate 供主循环
+                # package-reject 分支的审计字段（pages_scanned 等）使用。
+                if reason_kind == "package_ai_rejected":
+                    selected_ref = str(entry_result.get("selected_candidate_ref") or "")
+                    candidate_index = self._index_candidates_by_ref(candidates, workspace)
+                    selected_candidate = candidate_index.get(selected_ref)
+                    if selected_candidate is not None:
+                        result["selected_candidate"] = selected_candidate
+                        result["package_summaries"] = self._thread_package_summaries(
+                            selected_candidate.thread_packages
+                        )
+                return result
+            # AI 未给出可用选择（no_usable_candidate / no_candidates / need_confirm /
+            # invalid）：single_shot 兼容兜底——回退旧单轮 AI + 规则选帖/选包
+            # （对齐 plan：保留 _pick_best_package_by_rules 作 single_shot 兼容兜底）。
+            result["legacy_fallback"] = True
+            return result
+
+        selected_ref = str(entry_result.get("selected_candidate_ref") or "")
+        package_ref = str(entry_result.get("selected_package_ref") or "")
+        candidate_index = self._index_candidates_by_ref(candidates, workspace)
+        selected_candidate = candidate_index.get(selected_ref)
+        if selected_candidate is None:
+            result["case_agent_status"] = "invalid"
+            result["skip_reason"] = "no_usable_candidate"
+            return result
+        result["selected_candidate"] = selected_candidate
+        package_summaries = self._thread_package_summaries(
+            selected_candidate.thread_packages
+        )
+        result["package_summaries"] = package_summaries
+        # 从选中候选的 thread_packages 按 package_ref 取回 provider 对象
+        result["selected_package"] = self._find_provider_package_by_ref(
+            selected_candidate, workspace, package_ref
+        )
+        return result
+
+    @staticmethod
+    def _index_candidates_by_ref(
+        candidates: List[SubtitleCandidate],
+        workspace: AutoFetchCaseWorkspace,
+    ) -> Dict[str, SubtitleCandidate]:
+        """CD ref -> provider SubtitleCandidate（按 workspace.candidates 顺序对齐）。"""
+        index: Dict[str, SubtitleCandidate] = {}
+        ws_refs = workspace.candidate_refs
+        for idx, candidate in enumerate(candidates):
+            if idx < len(ws_refs):
+                index[ws_refs[idx]] = candidate
+        return index
+
+    @staticmethod
+    def _find_provider_package_by_ref(
+        candidate: SubtitleCandidate,
+        workspace: AutoFetchCaseWorkspace,
+        package_ref: str,
+    ) -> Optional[SubtitleThreadPackage]:
+        """PK ref -> provider SubtitleThreadPackage（按 candidate.packages 顺序对齐）。"""
+        ws_candidate = workspace.candidate_by_ref()
+        # 通过 candidate 的 packages 顺序与 workspace card 顺序对齐
+        ws_pkg_refs = []
+        for cd in workspace.candidates:
+            if cd.detail_url == candidate.detail_url:
+                ws_pkg_refs = [pkg.ref for pkg in cd.packages]
+                break
+        for idx, pkg in enumerate(candidate.thread_packages):
+            ref = ws_pkg_refs[idx] if idx < len(ws_pkg_refs) else ''
+            if ref == package_ref:
+                return pkg
+        return None
+
     def _candidate_summaries(
         self,
         candidates: List[SubtitleCandidate],
@@ -881,6 +1163,15 @@ class SubtitleAutoFetcher:
             task_data["subtitle_fetch_pages_scanned"] = result.get("pages_scanned")
             task_data["subtitle_fetch_pagination_truncated"] = result.get(
                 "pagination_truncated"
+            )
+            # Case Agent 审计透传（对齐 rename / 字幕导入）
+            task_data["subtitle_fetch_pipeline_mode"] = result.get("pipeline_mode")
+            task_data["subtitle_fetch_case_agent_status"] = result.get(
+                "case_agent_status"
+            )
+            task_data["subtitle_fetch_failure_reason"] = result.get("failure_reason")
+            task_data["subtitle_fetch_processor_case_agent_status"] = result.get(
+                "processor_case_agent_status"
             )
             write_task(task_uuid, task_data)
 

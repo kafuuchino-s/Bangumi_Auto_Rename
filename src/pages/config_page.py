@@ -124,6 +124,7 @@ class ConfigPage(ui.dialog):
                 "subtitle_auto_fetch_use_ai_rerank",
                 "subtitle_auto_fetch_search_mode",
                 "subtitle_auto_fetch_save_reason",
+                "subtitle_auto_fetch_case_agent_primary_enabled",
             ]
             for cn in subtitle_auto_fetch_configs:
                 self._create_config_row(cn)
@@ -293,6 +294,16 @@ class ConfigPage(ui.dialog):
                         tg.style("font-size: 10px")
                         tg.classes("flex no-wrap w-full")
                     elif cn == "subtitle_auto_fetch_enabled":
+                        tg = RedToogle(
+                            ["启用", "禁用"],
+                            value="启用" if cm.get_config(cn) else "禁用",
+                            on_change=lambda e, c=cn: self._change(
+                                c, e.value == "启用"
+                            ),
+                        )
+                        tg.style("font-size: 10px")
+                        tg.classes("flex no-wrap w-full")
+                    elif cn == "subtitle_auto_fetch_case_agent_primary_enabled":
                         tg = RedToogle(
                             ["启用", "禁用"],
                             value="启用" if cm.get_config(cn) else "禁用",

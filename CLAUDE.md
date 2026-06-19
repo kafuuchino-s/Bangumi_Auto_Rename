@@ -78,7 +78,8 @@ docker run -p 5999:5999 bangumi-auto-rename
 | Bangumi 辅助上下文 | `src/bangumi/context_builder.py` | 只给 TV prompt 提供桥接证据，不直接决定最终季集 |
 | 字幕导入 | `src/subtitle/processor.py` | 薄入口：解压→Case Agent 入口→accepted 落盘 / fail_closed·need_confirm 合格结果 |
 | 字幕 Case Agent | `src/subtitle/case_agent/` | AI-first + evidence-driven + Verifier 合同；`local_subtitle_entry.py` 分发 pi/single_shot；`pi_runner.py` Pi 后端 |
-| 字幕自动抓取 | `src/subtitle/auto_fetch.py` | 扫描缺失字幕、候选抓取、AI 重排 |
+| 字幕自动抓取 | `src/subtitle/auto_fetch.py` | 薄入口：扫缺失字幕→Case Agent 入口选帖/选包→下载→落 processor；processor fail_closed 视为可重试合格结果 |
+| 抓取 Case Agent | `src/subtitle/auto_fetch_case_agent/` | AI-first + evidence-driven + 轻 submit gate（candidate ranking，无 mapping 合同）；`local_auto_fetch_entry.py` 分发 pi/single_shot；`pi_runner.py` Pi 后端 |
 | 配置中心 | `src/config/config_manager.py` | config 默认值、线程内临时覆盖、路径转换、URL 标准化 |
 | Pi sidecar 运行时 | `tools/pi_case_agent_runner.mjs` | Node.js 进程，Case Agent Pi 后端执行 AI 驱动调查 |
 | BGM→TMDB 桥接 | `src/rename/bgm_to_tmdb/` | 将 Bangumi 映射结果桥接到 TMDB 目标路径并执行迁移 |
@@ -187,10 +188,14 @@ AI TV 映射不只处理视频。若同目录存在同 stem 的字幕（如 `.ch
 - `src/subtitle/processor.py`：字幕导入薄入口——解压→事实卡片→Case Agent 入口→accepted 落盘 / fail_closed·need_confirm 合格结果；语言归一化、可选 ffsubsync、写入目标目录
 - `src/subtitle/case_agent/`：字幕 Case Agent 子系统（对齐 rename）。`local_subtitle_entry.py` 按 `subtitle_case_agent_backend` 分发 `pi`（多轮 evidence-driven）/ `single_shot`（单轮 AI + 合同）；`pi_runner.py`+`pi_tools.py` 跑 Pi sidecar；`verifier.py` 合同校验 coverage/duplicate/accounting/合法目标视频
 - `tools/pi_subtitle_case_agent_runner.mjs` + `.pi/skills/subtitle-mapping-contract/`：Pi sidecar（4 工具）+ 合同 skill
-- `src/subtitle/auto_fetch.py`：只扫描缺失字幕视频；先加载候选帖 / 附件包信息，再让 AI 选择
+- `src/subtitle/auto_fetch.py`：自动抓取薄入口——扫缺失字幕→Case Agent 入口选帖/选包→下载→落 `SubtitleProcessor.process`；processor 落盘产 `fail_closed` 视为"该包未配对成功"的合格可重试结果，换关键词重试
+- `src/subtitle/auto_fetch_case_agent/`：抓取 Case Agent 子系统（对齐 rename / 字幕导入，但 candidate ranking 无 mapping 合同）。`local_auto_fetch_entry.py` 按 `subtitle_auto_fetch_case_agent_backend` 分发 `pi`（多轮 evidence-driven，AI 主动 search/load/inspect 取证）/ `single_shot`（单轮 AI + 轻 gate）；`pi_runner.py`+`pi_tools.py` 跑 Pi sidecar（6 工具）；`verifier.py` 轻 submit gate（候选可下载 / 楼包非 font-patch-only）
+- `tools/pi_auto_fetch_case_agent_runner.mjs` + `.pi/skills/auto-fetch-contract/`：抓取 Pi sidecar（8 代理工具）+ 合同 skill
 - `src/queue/task_queue.py::_start_workers`：批次结束后触发 Emby 刷新与 Telegram 汇总通知
 
 字幕导入四态语义（对齐 rename fail_closed）：`accepted` 落盘 / `fail_closed`（合同不通过，合格，不落盘部分匹配，对外映射 `need_confirm` 带 `case_agent_status` 审计）/ `need_confirm`（AI 空映射或无目标视频）/ `invalid`（实现错误）。`accepted + unmatched` → 落盘已匹配部分 + unmatched 写任务 JSON 待人工。固定层只做事实 + 合同，不确定判断交 AI；已移除 suffix 模糊匹配 / 集数规则 / AI 数量重试兜底。
+
+自动抓取四态语义（对齐 rename / 字幕导入，但 candidate ranking 无 coverage/accounting 合同）：`accepted`（选中帖+包，可下载落 processor）/ `fail_closed`（候选/包被拒或搜不到，合格，换关键词重试）/ `need_confirm`（AI 不确定选哪个）/ `invalid`（实现错误）。processor 落盘产 `fail_closed` → auto_fetch 视为可重试合格结果，透传 `processor_case_agent_status` / `failure_reason` 审计。`MissingVideoCard.source_video`（record key = pre-rename local 源名）与字幕导入 `source_video` 同口径。single_shot 兼容兜底保留 `_pick_best_package_by_rules`。
 
 ## 关键配置项
 
@@ -226,6 +231,7 @@ AI TV 映射不只处理视频。若同目录存在同 stem 的字幕（如 `.ch
 - 对齐：`subtitle_sync_enabled` / `subtitle_sync_mode` / `subtitle_sync_executable` / `subtitle_sync_extra_args` / `subtitle_sync_timeout_seconds` / `subtitle_sync_overwrite_policy`
 - 字幕 Case Agent：`subtitle_case_agent_primary_enabled` / `subtitle_case_agent_backend`（`pi` 默认 / `single_shot`）/ `subtitle_case_agent_pi_case_root` / `subtitle_case_agent_pi_max_turns` / `subtitle_case_agent_pi_timeout_seconds` / `subtitle_case_agent_pi_command`
 - 自动抓取：`subtitle_auto_fetch_enabled` / `subtitle_auto_fetch_provider` / `subtitle_auto_fetch_candidate_limit` / `subtitle_auto_fetch_timeout_seconds` / `subtitle_auto_fetch_browser_enabled` / `subtitle_auto_fetch_acgrip_base_url` / `subtitle_auto_fetch_preferred_language` / `subtitle_auto_fetch_use_ai_rerank` / `subtitle_auto_fetch_search_mode` / `subtitle_auto_fetch_save_reason`
+- 抓取 Case Agent：`subtitle_auto_fetch_case_agent_primary_enabled` / `subtitle_auto_fetch_case_agent_backend`（`pi` 默认 / `single_shot`）/ `subtitle_auto_fetch_case_agent_pi_case_root` / `subtitle_auto_fetch_case_agent_pi_max_turns` / `subtitle_auto_fetch_case_agent_pi_timeout_seconds` / `subtitle_auto_fetch_case_agent_pi_command`
 
 ### 通知
 
