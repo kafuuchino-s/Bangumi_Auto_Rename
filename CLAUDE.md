@@ -59,7 +59,6 @@ docker run -p 5999:5999 bangumi-auto-rename
 
 - Black + isort（`profile = black`, `line_length = 79`, `length_sort = true`）
 - basedpyright（basic）
-- VSCode 保存时自动格式化
 - 注释与 UI 文案以中文为主
 
 ## 关键入口
