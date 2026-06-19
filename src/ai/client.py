@@ -1881,103 +1881,70 @@ class AIClient:
             "只输出 JSON 格式结果。"
         )
 
-        max_retries = 2  # 最多重试2次（共3次尝试）
-        last_result = None
+        # 单轮调用：数量正确性由上层 SubtitleVerifier 合同校验裁决（coverage /
+        # accounting），不匹配则 fail_closed。不再用数量提示重试掩盖 AI 输出问题
+        # （对齐 ai_force_strict + AI-first 改造）。
+        try:
+            result = self._call_openai_simple(
+                system_prompt,
+                prompt,
+                validation_key="mappings",
+                schema=SubtitleMappingResult,
+            )
 
-        for attempt in range(max_retries + 1):
-            try:
-                # 如果是重试，修改 prompt 强调数量问题
-                current_prompt = prompt
-                if attempt > 0 and last_result is not None:
-                    matched_count = len(last_result.mappings)
-                    unmatched_count = len(last_result.unmatched_files)
-                    retry_hint = (
-                        f"\n\n⚠️ **重试提醒**: 上次返回了 {matched_count} 个映射 + "
-                        f"{unmatched_count} 个无法匹配 = {matched_count + unmatched_count}，"
-                        f"但压缩包中共有 {total_files} 个字幕文件。"
-                        f"请确保每个字幕文件都出现在 mappings 或 unmatched_files 中！"
-                    )
-                    current_prompt = prompt + retry_hint
-                    logger.info(
-                        f"[AI字幕匹配] 文件数量不匹配，重试第 {attempt} 次"
-                    )
+            if result:
+                result = result.strip()
+                logger.debug(f"[AI字幕匹配] 原始响应: {result[:500]}...")
 
-                result = self._call_openai_simple(
-                    system_prompt,
-                    current_prompt,
-                    validation_key="mappings",
-                    schema=SubtitleMappingResult,
-                )
+                try:
+                    json_match = re.search(r'\{.*\}', result, re.DOTALL)
+                    if json_match:
+                        json_str = json_match.group()
+                        data = json.loads(json_str)
+                        mapping_result = SubtitleMappingResult(**data)
+                        matched_tasks = set(
+                            m.task_uuid for m in mapping_result.mappings
+                        )
 
-                if result:
-                    result = result.strip()
-                    logger.debug(f"[AI字幕匹配] 原始响应: {result[:500]}...")
+                        matched_count = len(mapping_result.mappings)
+                        unmatched_count = len(mapping_result.unmatched_files)
+                        processed_total = matched_count + unmatched_count
 
-                    try:
-                        json_match = re.search(r'\{.*\}', result, re.DOTALL)
-                        if json_match:
-                            json_str = json_match.group()
-                            data = json.loads(json_str)
-                            mapping_result = SubtitleMappingResult(**data)
-                            # 统计匹配到的任务数
-                            matched_tasks = set(
-                                m.task_uuid for m in mapping_result.mappings
+                        if processed_total != total_files:
+                            # 数量不匹配交由上层 Verifier 合同拦成 fail_closed
+                            logger.warning(
+                                f"[AI字幕匹配] 文件数量不匹配（交合同校验）: "
+                                f"已匹配({matched_count}) + 无法匹配({unmatched_count}) "
+                                f"= {processed_total}, 期望 {total_files}"
                             )
 
-                            # 验证：已匹配 + 无法匹配 = 总数
-                            matched_count = len(mapping_result.mappings)
-                            unmatched_count = len(mapping_result.unmatched_files)
-                            processed_total = matched_count + unmatched_count
-
-                            if processed_total != total_files:
-                                if attempt < max_retries:
-                                    # 还有重试机会，保存结果并继续
-                                    last_result = mapping_result
-                                    logger.warning(
-                                        f"[AI字幕匹配] 文件数量不匹配: "
-                                        f"已匹配({matched_count}) + 无法匹配({unmatched_count}) "
-                                        f"= {processed_total}, 期望 {total_files}"
-                                    )
-                                    continue
-                                else:
-                                    # 最后一次尝试仍然不匹配，记录警告但返回结果
-                                    logger.warning(
-                                        f"[AI字幕匹配] 重试后数量仍不匹配: "
-                                        f"已匹配({matched_count}) + 无法匹配({unmatched_count}) "
-                                        f"= {processed_total}, 共 {total_files} 个字幕"
-                                    )
-
-                            # 记录无法匹配的文件
-                            if unmatched_count > 0:
-                                logger.info(
-                                    f"[AI字幕匹配] {unmatched_count} 个字幕无法匹配: "
-                                    f"{mapping_result.unmatched_files[:5]}..."
-                                    if unmatched_count > 5
-                                    else f"[AI字幕匹配] {unmatched_count} 个字幕无法匹配: "
-                                    f"{mapping_result.unmatched_files}"
-                                )
-
+                        if unmatched_count > 0:
                             logger.info(
-                                f"[AI字幕匹配] 分析完成: "
-                                f"匹配到 {len(matched_tasks)} 个任务, "
-                                f"映射={matched_count}, 无法匹配={unmatched_count}, "
-                                f"置信度={mapping_result.confidence}"
+                                f"[AI字幕匹配] {unmatched_count} 个字幕无法匹配: "
+                                f"{mapping_result.unmatched_files[:5]}..."
+                                if unmatched_count > 5
+                                else f"[AI字幕匹配] {unmatched_count} 个字幕无法匹配: "
+                                f"{mapping_result.unmatched_files}"
                             )
-                            return mapping_result
-                    except json.JSONDecodeError as e:
-                        logger.error(f"[AI字幕匹配] JSON解析失败: {e}")
-                        logger.debug(f"[AI字幕匹配] 响应内容: {result}")
-                    except Exception as e:
-                        logger.error(f"[AI字幕匹配] 模型验证失败: {e}")
 
-            except Exception as e:
-                logger.error(f"[AI字幕匹配] 分析失败: {e}")
-                if attempt < max_retries:
-                    continue
-                return None
+                        logger.info(
+                            f"[AI字幕匹配] 分析完成: "
+                            f"匹配到 {len(matched_tasks)} 个任务, "
+                            f"映射={matched_count}, 无法匹配={unmatched_count}, "
+                            f"置信度={mapping_result.confidence}"
+                        )
+                        return mapping_result
+                except json.JSONDecodeError as e:
+                    logger.error(f"[AI字幕匹配] JSON解析失败: {e}")
+                    logger.debug(f"[AI字幕匹配] 响应内容: {result}")
+                except Exception as e:
+                    logger.error(f"[AI字幕匹配] 模型验证失败: {e}")
 
-        # 所有尝试都失败，返回最后一次的结果（如果有）
-        return last_result
+        except Exception as e:
+            logger.error(f"[AI字幕匹配] 分析失败: {e}")
+            return None
+
+        return None
 
     def choose_subtitle_candidate(
         self,

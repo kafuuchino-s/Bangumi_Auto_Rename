@@ -76,7 +76,8 @@ docker run -p 5999:5999 bangumi-auto-rename
 | 旧 TV 映射/后置校验 | `src/rename/ai_processor.py` | 兼容链路：映射路径校验、重复/越界剔除、Season 0/special 过滤、关联字幕跟随 |
 | AI 提供商 | `src/ai/client.py` | facade；OpenAI 运行时入口、缓存、schema 构建 |
 | Bangumi 辅助上下文 | `src/bangumi/context_builder.py` | 只给 TV prompt 提供桥接证据，不直接决定最终季集 |
-| 字幕导入 | `src/subtitle/processor.py` | 解压、AI 映射、语言后缀归一化、可选 ffsubsync |
+| 字幕导入 | `src/subtitle/processor.py` | 薄入口：解压→Case Agent 入口→accepted 落盘 / fail_closed·need_confirm 合格结果 |
+| 字幕 Case Agent | `src/subtitle/case_agent/` | AI-first + evidence-driven + Verifier 合同；`local_subtitle_entry.py` 分发 pi/single_shot；`pi_runner.py` Pi 后端 |
 | 字幕自动抓取 | `src/subtitle/auto_fetch.py` | 扫描缺失字幕、候选抓取、AI 重排 |
 | 配置中心 | `src/config/config_manager.py` | config 默认值、线程内临时覆盖、路径转换、URL 标准化 |
 | Pi sidecar 运行时 | `tools/pi_case_agent_runner.mjs` | Node.js 进程，Case Agent Pi 后端执行 AI 驱动调查 |
@@ -183,9 +184,13 @@ AI TV 映射不只处理视频。若同目录存在同 stem 的字幕（如 `.ch
 
 ### 字幕导入 / 自动抓取 / 通知
 
-- `src/subtitle/processor.py`：字幕包解压、AI 映射、语言归一化、可选 ffsubsync、写入目标目录
+- `src/subtitle/processor.py`：字幕导入薄入口——解压→事实卡片→Case Agent 入口→accepted 落盘 / fail_closed·need_confirm 合格结果；语言归一化、可选 ffsubsync、写入目标目录
+- `src/subtitle/case_agent/`：字幕 Case Agent 子系统（对齐 rename）。`local_subtitle_entry.py` 按 `subtitle_case_agent_backend` 分发 `pi`（多轮 evidence-driven）/ `single_shot`（单轮 AI + 合同）；`pi_runner.py`+`pi_tools.py` 跑 Pi sidecar；`verifier.py` 合同校验 coverage/duplicate/accounting/合法目标视频
+- `tools/pi_subtitle_case_agent_runner.mjs` + `.pi/skills/subtitle-mapping-contract/`：Pi sidecar（4 工具）+ 合同 skill
 - `src/subtitle/auto_fetch.py`：只扫描缺失字幕视频；先加载候选帖 / 附件包信息，再让 AI 选择
 - `src/queue/task_queue.py::_start_workers`：批次结束后触发 Emby 刷新与 Telegram 汇总通知
+
+字幕导入四态语义（对齐 rename fail_closed）：`accepted` 落盘 / `fail_closed`（合同不通过，合格，不落盘部分匹配，对外映射 `need_confirm` 带 `case_agent_status` 审计）/ `need_confirm`（AI 空映射或无目标视频）/ `invalid`（实现错误）。`accepted + unmatched` → 落盘已匹配部分 + unmatched 写任务 JSON 待人工。固定层只做事实 + 合同，不确定判断交 AI；已移除 suffix 模糊匹配 / 集数规则 / AI 数量重试兜底。
 
 ## 关键配置项
 
@@ -219,6 +224,7 @@ AI TV 映射不只处理视频。若同目录存在同 stem 的字幕（如 `.ch
 ### 字幕
 
 - 对齐：`subtitle_sync_enabled` / `subtitle_sync_mode` / `subtitle_sync_executable` / `subtitle_sync_extra_args` / `subtitle_sync_timeout_seconds` / `subtitle_sync_overwrite_policy`
+- 字幕 Case Agent：`subtitle_case_agent_primary_enabled` / `subtitle_case_agent_backend`（`pi` 默认 / `single_shot`）/ `subtitle_case_agent_pi_case_root` / `subtitle_case_agent_pi_max_turns` / `subtitle_case_agent_pi_timeout_seconds` / `subtitle_case_agent_pi_command`
 - 自动抓取：`subtitle_auto_fetch_enabled` / `subtitle_auto_fetch_provider` / `subtitle_auto_fetch_candidate_limit` / `subtitle_auto_fetch_timeout_seconds` / `subtitle_auto_fetch_browser_enabled` / `subtitle_auto_fetch_acgrip_base_url` / `subtitle_auto_fetch_preferred_language` / `subtitle_auto_fetch_use_ai_rerank` / `subtitle_auto_fetch_search_mode` / `subtitle_auto_fetch_save_reason`
 
 ### 通知

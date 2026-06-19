@@ -60,6 +60,13 @@ CONFIG_DEFAULT = {
     "subtitle_sync_extra_args": "",
     "subtitle_sync_timeout_seconds": 120,
     "subtitle_sync_overwrite_policy": "follow_global",  # follow_global | overwrite | skip
+    # 字幕导入 Case Agent（对齐 rename Local→Bangumi Case Agent）
+    "subtitle_case_agent_primary_enabled": True,  # 默认走 Case Agent + 合同校验；关闭则回退旧 analyze_subtitle_mapping 规则链路
+    "subtitle_case_agent_backend": "pi",  # pi = Pi 多轮 evidence-driven 后端；single_shot = Phase 2 单轮 AI + 合同
+    "subtitle_case_agent_pi_case_root": "data/subtitle_case_agent",
+    "subtitle_case_agent_pi_max_turns": 48,  # 兼容保留，Pi native 模式由 wall-clock timeout 约束
+    "subtitle_case_agent_pi_timeout_seconds": 300,
+    "subtitle_case_agent_pi_command": "",  # 运行命令覆盖（默认走 core sidecar）
     # 字幕自动抓取配置
     "subtitle_auto_fetch_enabled": False,
     "subtitle_auto_fetch_provider": "acgrip",
@@ -139,6 +146,12 @@ CN_MAP = {
     "subtitle_sync_extra_args": "➕ ffsubsync 额外参数",
     "subtitle_sync_timeout_seconds": "⏱️ 对齐超时秒数",
     "subtitle_sync_overwrite_policy": "📝 字幕覆盖策略",
+    "subtitle_case_agent_primary_enabled": "🧭 启用字幕 Case Agent（合同校验）",
+    "subtitle_case_agent_backend": "🧭 字幕 Case Agent 后端",
+    "subtitle_case_agent_pi_case_root": "🧭 字幕 Case Agent 运行目录",
+    "subtitle_case_agent_pi_max_turns": "🧭 字幕 Case Agent 最大轮数（兼容保留，不生效）",
+    "subtitle_case_agent_pi_timeout_seconds": "🧭 字幕 Case Agent 超时秒数",
+    "subtitle_case_agent_pi_command": "🧭 字幕 Case Agent 运行命令覆盖（默认 core）",
     "subtitle_auto_fetch_enabled": "🔎 启用字幕自动抓取",
     "subtitle_auto_fetch_provider": "🌐 字幕抓取源",
     "subtitle_auto_fetch_candidate_limit": "📚 抓取候选上限",

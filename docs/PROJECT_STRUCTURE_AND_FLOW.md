@@ -1,6 +1,6 @@
 # Project Structure And Flow
 
-Bangumi Auto Rename 是 Python + NiceGUI 的媒体整理应用。rename 主线已端到端落地 **Local→Bangumi Case Agent → BGM→TMDB 桥接 → 迁移落盘**，并随带字幕 sidecar 跟随、Emby 刷新与 Telegram 汇总。
+Bangumi Auto Rename 是 Python + NiceGUI 的媒体整理应用。rename 主线已端到端落地 **Local→Bangumi Case Agent → BGM→TMDB 桥接 → 迁移落盘**，并随带字幕 sidecar 跟随、Emby 刷新与 Telegram 汇总。字幕导入链路同样已升级为 **AI-first + evidence-driven + Verifier 合同校验**（字幕 Case Agent，对齐 rename）。
 
 ## Main Flow
 
@@ -16,6 +16,29 @@ Web UI / qBittorrent webhook
 → 可选：字幕 sidecar 跟随 / 自动抓取
 → 批次结束后：Emby 刷新 + Telegram 汇总
 ```
+
+## Subtitle Import Flow
+
+字幕压缩包导入（`src/subtitle/processor.py::SubtitleProcessor.process()`）已改为薄入口，走字幕 Case Agent（`src/subtitle/case_agent/`），与 rename 同构：
+
+```text
+字幕压缩包
+→ extractor 解压 → SubtitleFileCard（SF* 短 ref，事实）
+→ 读 task/record → SubtitleTargetVideoCard（TV* 短 ref，事实）
+→ build_subtitle_case_workspace
+→ run_subtitle_case_agent_mapping（按 subtitle_case_agent_backend 分发）
+   ├─ pi（默认）：Pi 多轮 evidence-driven（本地 HTTP tool server + node sidecar）
+   │   → get_context / validate / submit / fail_closed 工具循环
+   │   → Verifier 合同校验
+   └─ single_shot：单轮 analyze_subtitle_mapping + Verifier 合同
+→ 四态：accepted / fail_closed / need_confirm / invalid
+→ accepted：CompiledSubtitlePlan → Emby 文件名（LANGUAGE_MAP 归一）→ Trans 复制落盘
+   （accepted + unmatched：落盘已匹配部分 + unmatched 写任务 JSON 待人工）
+→ fail_closed / need_confirm：合格结果，写任务 JSON（不落盘部分匹配）
+→ 可选 ffsubsync
+```
+
+固定层只做事实 + 合同（coverage/duplicate/accounting/合法目标视频）；候选归属、版本/语言歧义、跨季归属交 AI 通过 draft 表达。已移除 suffix 模糊匹配 / 集数规则匹配 / AI 数量重试兜底。
 
 兼容旧链路（Case Agent 不可用或关闭时）：
 

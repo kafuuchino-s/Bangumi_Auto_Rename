@@ -195,3 +195,6 @@ data
 
 # VSCode local settings (team no longer uses VSCode; formatting rules live in pyproject.toml and CLAUDE.md)
 /.vscode/
+
+# Pi agent runtime artifacts (auth/models are generated per-run; skills/extensions are source and tracked)
+/.pi/agent/

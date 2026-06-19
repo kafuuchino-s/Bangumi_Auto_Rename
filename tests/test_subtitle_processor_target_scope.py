@@ -6,8 +6,23 @@ import pytest
 from src.subtitle.processor import SubtitleProcessor
 
 
+def _force_single_shot_backend(monkeypatch):
+    """单测走 Phase 2 单轮后端，避免起 Pi sidecar。"""
+    from src.subtitle.case_agent import local_subtitle_entry
+
+    real_get_config = local_subtitle_entry._get_config
+
+    def fake_get_config(key, default=None):
+        if key == "subtitle_case_agent_backend":
+            return "single_shot"
+        return real_get_config(key, default)
+
+    monkeypatch.setattr(local_subtitle_entry, "_get_config", fake_get_config)
+
+
 def test_process_loads_target_tasks_via_precise_helper(monkeypatch, tmp_path):
     processor = SubtitleProcessor()
+    _force_single_shot_backend(monkeypatch)
     archive_path = tmp_path / "archive.rar"
     archive_path.write_bytes(b"data")
 
@@ -61,6 +76,7 @@ def test_process_keeps_precise_target_scope_when_tv_task_has_no_target_root(
     tmp_path,
 ):
     processor = SubtitleProcessor()
+    _force_single_shot_backend(monkeypatch)
     archive_path = tmp_path / "archive.rar"
     archive_path.write_bytes(b"data")
 

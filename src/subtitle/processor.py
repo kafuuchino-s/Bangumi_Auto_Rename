@@ -95,66 +95,6 @@ class SubtitleProcessor:
         self.ai_client = AIClient()
         self.syncer = FFsubsyncRunner()
 
-    @staticmethod
-    def _normalize_archive_path(path: Optional[str]) -> str:
-        """归一化压缩包内部路径，统一分隔符并去除首尾斜杠。"""
-        if not path:
-            return ""
-        return str(path).replace("\\", "/").strip().strip("/")
-
-    def _find_subtitle_file(
-        self,
-        subtitle_files: List[ExtractedSubtitle],
-        subtitle_path: str,
-    ) -> Optional[ExtractedSubtitle]:
-        """根据 AI 返回的字幕路径查找解压后的字幕文件。"""
-        normalized_target = self._normalize_archive_path(subtitle_path)
-        if not normalized_target:
-            return None
-
-        exact_match = next(
-            (
-                sub
-                for sub in subtitle_files
-                if self._normalize_archive_path(sub.archive_path) == normalized_target
-            ),
-            None,
-        )
-        if exact_match:
-            return exact_match
-
-        filename_match = next(
-            (
-                sub
-                for sub in subtitle_files
-                if sub.filename == subtitle_path or sub.filename == Path(normalized_target).name
-            ),
-            None,
-        )
-        if filename_match:
-            return filename_match
-
-        suffix_match = next(
-            (
-                sub
-                for sub in subtitle_files
-                if self._normalize_archive_path(sub.archive_path).endswith(
-                    f"/{normalized_target}"
-                )
-                or self._normalize_archive_path(sub.archive_path).endswith(
-                    normalized_target
-                )
-            ),
-            None,
-        )
-        if suffix_match:
-            logger.info(
-                f"[字幕处理] 字幕路径修正: {subtitle_path} -> {suffix_match.archive_path}"
-            )
-            return suffix_match
-
-        return None
-
     def _normalize_language(self, lang: Optional[str]) -> Tuple[str, bool]:
         """
         将字幕组语言标签转换为 Emby 标准格式
@@ -177,52 +117,83 @@ class SubtitleProcessor:
         # 未知语言，保持原样，不标记为默认
         return (lang, False)
 
-    def _extract_language_from_suffix_part(self, suffix_part: str) -> Optional[str]:
-        """从同名后缀片段中提取语言标签（如 .chs.ass -> chs）。"""
-        if not suffix_part:
-            return None
-
-        lowered = suffix_part.lower().strip()
-        if not lowered:
-            return None
-
-        # 优先匹配更长的语言键，避免 zh 命中 zh-cn 的前缀
-        for key in sorted(LANGUAGE_MAP.keys(), key=len, reverse=True):
-            pattern = (
-                rf"(^|[.\s_\-\[\]\(\)]){re.escape(key)}"
-                rf"($|[.\s_\-\[\]\(\)])"
-            )
-            if re.search(pattern, lowered):
-                return key
-
-        return None
-
     def process(
         self,
         archive_path: Path,
         target_task_uuid: Optional[str] = None,
     ) -> Dict[str, Any]:
         """
-        处理字幕压缩包（支持多季度/多任务）
+        处理字幕压缩包（支持多季度/多任务）——薄入口。
+
+        对齐 rename 的 ``Rename.process()``：固定层抽事实（解压 + 任务记录）→
+        调 Case Agent 入口做 evidence-driven 映射 + Verifier 合同校验 →
+        accepted 落盘 / fail_closed 或 need_confirm 写合格结果 / invalid 记录错误。
 
         Args:
             archive_path: 压缩包路径
             target_task_uuid: 手动指定的目标任务UUID（可选，用于单任务模式）
 
         Returns:
-            处理结果字典
+            处理结果字典（status: success | need_confirm | error）
         """
         _uuid = str(uuid.uuid4())
         logger.info(f"[字幕处理] 开始处理: {archive_path.name}")
 
-        # Step 1: 解压压缩包
+        # Step 1: 解压压缩包（事实抽取）
         subtitle_files = self.extractor.extract(archive_path)
         if not subtitle_files:
             return self._error_result(_uuid, "解压失败", archive_path)
 
         logger.info(f"[字幕处理] 解压成功，找到 {len(subtitle_files)} 个字幕文件")
 
-        # Step 2: 读取已处理任务记录
+        # Step 2: 读取已处理任务记录 + 目标任务作用域收窄
+        processed_tasks, resolve_error = self._resolve_processed_tasks(
+            target_task_uuid=target_task_uuid,
+        )
+        if processed_tasks is None:
+            self.extractor.cleanup(archive_path)
+            return self._error_result(_uuid, resolve_error, archive_path)
+
+        logger.info(f"[字幕处理] 读取到 {len(processed_tasks)} 个已处理任务")
+
+        # Step 3: 压缩包结构（事实，喂 AI）
+        archive_structure = self.extractor.get_archive_structure(subtitle_files)
+        logger.info(f"[字幕处理] 压缩包结构: {list(archive_structure.keys())}")
+
+        case_agent_enabled = bool(
+            cm.get_config("subtitle_case_agent_primary_enabled")
+        )
+
+        if case_agent_enabled:
+            return self._process_case_agent(
+                _uuid=_uuid,
+                archive_path=archive_path,
+                subtitle_files=subtitle_files,
+                processed_tasks=processed_tasks,
+                archive_structure=archive_structure,
+            )
+        return self._process_legacy_compat(
+            _uuid=_uuid,
+            archive_path=archive_path,
+            subtitle_files=subtitle_files,
+            processed_tasks=processed_tasks,
+            archive_structure=archive_structure,
+        )
+
+    # ------------------------------------------------------------------
+    # 目标任务作用域
+    # ------------------------------------------------------------------
+
+    def _resolve_processed_tasks(
+        self,
+        *,
+        target_task_uuid: Optional[str],
+    ) -> Tuple[Optional[List[ProcessedTask]], str]:
+        """读取并按 target_task_uuid 收窄任务作用域。
+
+        返回 ``(tasks_or_None, error_message)``：tasks 为 None 时 error_message
+        给出原因（无任务记录 / 指定任务不存在）。
+        """
         if target_task_uuid:
             processed_tasks = self._load_processed_tasks_for_target_uuid(
                 target_task_uuid
@@ -230,40 +201,133 @@ class SubtitleProcessor:
         else:
             processed_tasks = self._load_processed_tasks(max_tasks=10)
         if not processed_tasks:
-            self.extractor.cleanup(archive_path)
-            return self._error_result(_uuid, "无已处理的任务记录", archive_path)
+            return None, "无已处理的任务记录"
 
-        logger.info(f"[字幕处理] 读取到 {len(processed_tasks)} 个已处理任务")
+        if not target_task_uuid:
+            return processed_tasks, ""
 
-        # Step 3: 如果指定了目标任务，直接使用
-        if target_task_uuid:
-            target_task = next(
-                (t for t in processed_tasks if t["uuid"] == target_task_uuid),
-                None,
+        target_task = next(
+            (t for t in processed_tasks if t["uuid"] == target_task_uuid),
+            None,
+        )
+        if not target_task:
+            return None, f"指定的任务不存在: {target_task_uuid}"
+
+        if target_task.get("is_movie", False):
+            return [target_task], ""
+
+        target_root = str(target_task.get("target_root") or "").strip()
+        if target_root:
+            related_tasks = self._load_processed_tasks(
+                max_tasks=None,
+                target_root=target_root,
             )
-            if not target_task:
-                self.extractor.cleanup(archive_path)
-                return self._error_result(
-                    _uuid, f"指定的任务不存在: {target_task_uuid}", archive_path
-                )
+            return (related_tasks or [target_task]), ""
+        return [target_task], ""
 
-            if target_task.get("is_movie", False):
-                processed_tasks = [target_task]
-            else:
-                target_root = str(target_task.get("target_root") or "").strip()
-                if target_root:
-                    related_tasks = self._load_processed_tasks(
-                        max_tasks=None,
-                        target_root=target_root,
-                    )
-                    processed_tasks = related_tasks or [target_task]
-                else:
-                    processed_tasks = [target_task]
+    # ------------------------------------------------------------------
+    # Case Agent 主路径（合同校验）
+    # ------------------------------------------------------------------
 
-        # Step 4: 获取压缩包结构并调用 AI 分析
-        archive_structure = self.extractor.get_archive_structure(subtitle_files)
-        logger.info(f"[字幕处理] 压缩包结构: {list(archive_structure.keys())}")
+    def _process_case_agent(
+        self,
+        *,
+        _uuid: str,
+        archive_path: Path,
+        subtitle_files: List[ExtractedSubtitle],
+        processed_tasks: List[ProcessedTask],
+        archive_structure: Dict[str, List[str]],
+    ) -> Dict[str, Any]:
+        """Case Agent 主路径：entry → Verifier 合同 → compiled_plan 落盘。"""
+        from .case_agent import run_subtitle_case_agent_mapping
 
+        entry_result = run_subtitle_case_agent_mapping(
+            subtitle_files=subtitle_files,
+            processed_tasks=processed_tasks,
+            ai_client=self.ai_client,
+            source_path=archive_path,
+            language_resolver=self._normalize_language,
+            archive_name=archive_path.name,
+            archive_structure=archive_structure,
+        )
+
+        status = str(entry_result.get("status") or "invalid")
+        snapshot = entry_result.get("snapshot") or {}
+        compiled_plan = entry_result.get("compiled_plan")
+
+        if status == "accepted" and compiled_plan is not None:
+            return self._land_compiled_plan(
+                _uuid=_uuid,
+                archive_path=archive_path,
+                subtitle_files=subtitle_files,
+                processed_tasks=processed_tasks,
+                compiled_plan=compiled_plan,
+                snapshot=snapshot,
+                confidence=str(snapshot.get("draft", {}).get("confidence", "Medium"))
+                if isinstance(snapshot.get("draft"), dict)
+                else "Medium",
+            )
+
+        if status == "need_confirm":
+            self.extractor.cleanup(archive_path)
+            return self._need_confirm_result(
+                _uuid=_uuid,
+                archive_path=archive_path,
+                subtitle_files=subtitle_files,
+                processed_tasks=processed_tasks,
+                snapshot=snapshot,
+                error="AI 无法确定匹配的动漫，请手动选择",
+            )
+
+        if status == "fail_closed":
+            # 合格业务结果：合同不通过，不强行落盘部分匹配
+            self.extractor.cleanup(archive_path)
+            summary = str(entry_result.get("summary") or "字幕映射合同校验未通过")
+            return self._fail_closed_result(
+                _uuid=_uuid,
+                archive_path=archive_path,
+                subtitle_files=subtitle_files,
+                processed_tasks=processed_tasks,
+                snapshot=snapshot,
+                summary=summary,
+            )
+
+        # invalid：实现/合同错误
+        self.extractor.cleanup(archive_path)
+        return self._error_result(
+            _uuid,
+            str(entry_result.get("summary") or "字幕 Case Agent 实现错误"),
+            archive_path,
+            {"case_agent_snapshot": snapshot, "pipeline_mode": "subtitle_case_agent_primary"},
+        )
+
+    # ------------------------------------------------------------------
+    # 兼容路径（Case Agent 关闭时）：单轮 AI + 精确匹配，无合同校验
+    # ------------------------------------------------------------------
+
+    def _process_legacy_compat(
+        self,
+        *,
+        _uuid: str,
+        archive_path: Path,
+        subtitle_files: List[ExtractedSubtitle],
+        processed_tasks: List[ProcessedTask],
+        archive_structure: Dict[str, List[str]],
+    ) -> Dict[str, Any]:
+        """旧兼容路径：直接用 AI 结果精确匹配落盘，无 Verifier 合同。
+
+        保留 analyze_subtitle_mapping 旧路径作为 Case Agent 关闭时兼容；不再做
+        suffix 模糊匹配 / split(" - ") 集数规则匹配（对齐 AI-first 改造）。
+        """
+        from .case_agent import build_subtitle_file_cards, build_target_video_cards
+        from .case_agent import build_subtitle_case_workspace
+        from .case_agent.local_subtitle_entry import (
+            _build_subtitle_path_index,
+            _build_target_index,
+            _resolve_subtitle_ref,
+            _resolve_target_ref,
+        )
+        from .case_agent.models import CompiledSubtitleMapping, CompiledSubtitlePlan
         ai_result = self.ai_client.analyze_subtitle_mapping(
             archive_name=archive_path.name,
             archive_structure=archive_structure,
@@ -272,45 +336,111 @@ class SubtitleProcessor:
 
         if not ai_result or not ai_result.mappings:
             self.extractor.cleanup(archive_path)
-            return {
-                "status": "need_confirm",
-                "uuid": _uuid,
-                "archive_path": str(archive_path),
-                "subtitle_count": len(subtitle_files),
-                "available_tasks": [
-                    {
-                        "uuid": t["uuid"],
-                        "title": t.get("title", ""),
-                        "season": t.get("season", 1),
-                    }
-                    for t in processed_tasks[:10]
-                ],
-                "error": "AI 无法确定匹配的动漫，请手动选择",
-            }
-
-        # Step 5: 统计匹配到的任务
-        matched_task_uuids: Set[str] = set(m.task_uuid for m in ai_result.mappings)
-        matched_tasks_info = []
-        for task_uuid in matched_task_uuids:
-            task = next(
-                (t for t in processed_tasks if t["uuid"] == task_uuid),
-                None,
+            return self._need_confirm_result(
+                _uuid=_uuid,
+                archive_path=archive_path,
+                subtitle_files=subtitle_files,
+                processed_tasks=processed_tasks,
+                snapshot=None,
+                error="AI 无法确定匹配的动漫，请手动选择",
             )
-            if task:
-                if task.get("is_movie", False):
-                    matched_tasks_info.append(f"{task.get('title', '')} (电影)")
-                else:
-                    matched_tasks_info.append(
-                        f"{task.get('title', '')} (Season {task.get('season', 1)})"
-                    )
 
-        logger.info(
-            f"[字幕处理] AI 匹配到 {len(matched_task_uuids)} 个任务: "
-            f"{', '.join(matched_tasks_info)} (置信度: {ai_result.confidence})"
+        # 复用 entry 的精确 ref 解析，构造 compiled_plan 后走统一落盘
+        subtitle_cards = build_subtitle_file_cards(subtitle_files)
+        target_cards = build_target_video_cards(processed_tasks)
+        workspace = build_subtitle_case_workspace(
+            archive_name=archive_path.name,
+            subtitle_files=subtitle_cards,
+            target_videos=target_cards,
+        )
+        sub_index = _build_subtitle_path_index(workspace.subtitle_files)
+        target_index = _build_target_index(workspace.target_videos)
+        sub_by_ref = workspace.subtitle_card_by_ref()
+        target_by_ref = workspace.target_card_by_ref()
+
+        compiled_mappings: List[CompiledSubtitleMapping] = []
+        for mapping in ai_result.mappings:
+            sub_ref = _resolve_subtitle_ref(
+                str(getattr(mapping, "subtitle_path", "") or ""), sub_index
+            )
+            target_ref = _resolve_target_ref(
+                str(getattr(mapping, "task_uuid", "") or ""),
+                str(getattr(mapping, "video", "") or ""),
+                target_index,
+            )
+            if not sub_ref or not target_ref:
+                logger.warning(
+                    f"[字幕处理] 兼容路径无法精确解析映射: "
+                    f"{getattr(mapping, 'subtitle_path', '')} / "
+                    f"{getattr(mapping, 'task_uuid', '')}+{getattr(mapping, 'video', '')}"
+                )
+                continue
+            sub_card = sub_by_ref.get(sub_ref)
+            target_card = target_by_ref.get(target_ref)
+            if sub_card is None or target_card is None:
+                continue
+            emby_lang, is_simplified = self._normalize_language(
+                getattr(mapping, "language", None)
+            )
+            compiled_mappings.append(
+                CompiledSubtitleMapping(
+                    subtitle_ref=sub_ref,
+                    subtitle_archive_path=sub_card.archive_path,
+                    target_ref=target_ref,
+                    task_uuid=target_card.task_uuid,
+                    video=target_card.video,
+                    target_dir=target_card.target_dir,
+                    emby_lang=emby_lang,
+                    is_simplified=is_simplified,
+                    is_movie=target_card.is_movie,
+                )
+            )
+
+        if not compiled_mappings:
+            self.extractor.cleanup(archive_path)
+            return self._error_result(_uuid, "无法建立字幕映射", archive_path)
+
+        compiled_plan = CompiledSubtitlePlan(
+            mappings=compiled_mappings,
+            unmatched_refs=[],
+            summary=str(getattr(ai_result, "reason", "") or "legacy compat plan"),
+        )
+        return self._land_compiled_plan(
+            _uuid=_uuid,
+            archive_path=archive_path,
+            subtitle_files=subtitle_files,
+            processed_tasks=processed_tasks,
+            compiled_plan=compiled_plan,
+            snapshot=None,
+            confidence=str(getattr(ai_result, "confidence", "Medium") or "Medium"),
+            pipeline_mode="subtitle_legacy_compat",
         )
 
-        # Step 6: 构建文件映射（按任务分组）
-        # 创建任务UUID到任务信息的映射
+    # ------------------------------------------------------------------
+    # 落盘（accepted / legacy 共用）
+    # ------------------------------------------------------------------
+
+    def _land_compiled_plan(
+        self,
+        *,
+        _uuid: str,
+        archive_path: Path,
+        subtitle_files: List[ExtractedSubtitle],
+        processed_tasks: List[ProcessedTask],
+        compiled_plan: Any,
+        snapshot: Any,
+        confidence: str,
+        pipeline_mode: str = "subtitle_case_agent_primary",
+    ) -> Dict[str, Any]:
+        """用 CompiledSubtitlePlan 生成 Emby 文件名 → ffsubsync → 复制落盘。
+
+        部分字幕 unmatched 时：落盘已匹配部分，unmatched 写进任务 JSON 作为
+        待人工子项（用户已确认），整体 status=success。
+        """
+        # subtitle archive_path -> ExtractedSubtitle（精确匹配，固定层事实）
+        sub_by_archive = {
+            self._normalize_card_path(sub.archive_path): sub for sub in subtitle_files
+        }
         task_by_uuid: Dict[str, ProcessedTask] = {
             t["uuid"]: t for t in processed_tasks
         }
@@ -319,70 +449,28 @@ class SubtitleProcessor:
         mapping_details: List[Dict[str, Any]] = []
         sync_items: List[Dict[str, Any]] = []
 
-        for mapping in ai_result.mappings:
-            # 找到对应的字幕文件
-            subtitle_file = self._find_subtitle_file(
-                subtitle_files,
-                mapping.subtitle_path,
+        matched_task_uuids: Set[str] = set()
+
+        for compiled in compiled_plan.mappings:
+            sub = sub_by_archive.get(
+                self._normalize_card_path(compiled.subtitle_archive_path)
             )
-            if not subtitle_file:
+            if sub is None:
                 logger.warning(
-                    f"[字幕处理] 字幕文件不存在: {mapping.subtitle_path}"
+                    f"[字幕处理] 落盘时找不到字幕事实: {compiled.subtitle_archive_path}"
+                )
+                continue
+            task = task_by_uuid.get(compiled.task_uuid)
+            if task is None:
+                logger.warning(
+                    f"[字幕处理] 落盘时找不到任务: {compiled.task_uuid}"
                 )
                 continue
 
-            # 找到对应的任务
-            task = task_by_uuid.get(mapping.task_uuid)
-            if not task:
-                logger.warning(
-                    f"[字幕处理] 任务不存在: {mapping.task_uuid}"
-                )
-                continue
-
-            is_movie = task.get("is_movie", False)
-
-            # 验证视频文件名是否存在于任务的视频列表中
-            video_name = mapping.video
-            task_videos = task.get("videos", [])
-            if video_name not in task_videos:
-                # AI 可能返回了不精确的文件名，尝试模糊匹配
-                matched_video = None
-
-                if is_movie and len(task_videos) == 1:
-                    # 电影只有一个视频文件，直接使用
-                    matched_video = task_videos[0]
-                    logger.info(
-                        f"[字幕处理] 电影视频自动匹配: {video_name} -> {matched_video}"
-                    )
-                else:
-                    # 剧集：尝试通过集数匹配
-                    for v in task_videos:
-                        try:
-                            # 提取集数进行匹配（格式：Title - S01E01 - Episode Name）
-                            v_parts = Path(v).stem.split(" - ")
-                            video_parts = Path(video_name).stem.split(" - ")
-                            if len(v_parts) > 1 and len(video_parts) > 1:
-                                if v_parts[1] == video_parts[1]:
-                                    matched_video = v
-                                    break
-                        except (IndexError, AttributeError):
-                            continue
-
-                if matched_video:
-                    if not is_movie:
-                        logger.info(
-                            f"[字幕处理] 视频文件名修正: {video_name} -> {matched_video}"
-                        )
-                    video_name = matched_video
-                else:
-                    logger.warning(
-                        f"[字幕处理] 视频文件不存在于任务中: {video_name}"
-                    )
-                    continue
-
+            video_name = compiled.video
             video_stem = Path(video_name).stem
 
-            # 获取该视频的目标目录（支持电影合集中每部电影不同目录）
+            # 目标目录：video_targets 优先（电影合集每部电影不同目录），否则 task target_dir
             video_targets = task.get("video_targets", {})
             video_target = video_targets.get(video_name)
             if video_target:
@@ -392,24 +480,22 @@ class SubtitleProcessor:
                 target_dir = Path(task["target_dir"])
                 video_path = target_dir / video_name
 
-            # 转换语言代码为 Emby 标准格式
-            emby_lang, is_simplified = self._normalize_language(mapping.language)
-
-            # 构建 Emby 标准格式: video.lang[.default].ext
-            # 简体中文自动添加 .default 标签
-            subtitle_ext = subtitle_file.temp_path.suffix.lower()
+            emby_lang = compiled.emby_lang
+            is_simplified = compiled.is_simplified
+            subtitle_ext = sub.temp_path.suffix.lower()
             if is_simplified:
                 target_name = f"{video_stem}.{emby_lang}.default{subtitle_ext}"
             else:
                 target_name = f"{video_stem}.{emby_lang}{subtitle_ext}"
             target_path = target_dir / target_name
 
-            file_mapping[subtitle_file.temp_path] = target_path
+            file_mapping[sub.temp_path] = target_path
+            matched_task_uuids.add(compiled.task_uuid)
             mapping_detail = {
-                "subtitle": mapping.subtitle_path,
+                "subtitle": compiled.subtitle_archive_path,
                 "video": video_name,
                 "target": target_name,
-                "task_uuid": mapping.task_uuid,
+                "task_uuid": compiled.task_uuid,
                 "task_title": task.get("title", ""),
                 "language": emby_lang,
                 "sync_status": "disabled",
@@ -417,14 +503,14 @@ class SubtitleProcessor:
             mapping_details.append(mapping_detail)
             sync_items.append(
                 {
-                    "source_path": subtitle_file.temp_path,
+                    "source_path": sub.temp_path,
                     "target_path": target_path,
                     "video_path": video_path,
                     "detail": mapping_detail,
                 }
             )
             logger.info(
-                f"[字幕处理] 映射: {mapping.subtitle_path} -> "
+                f"[字幕处理] 映射: {compiled.subtitle_archive_path} -> "
                 f"{task.get('title', '')} / {target_name}"
             )
 
@@ -432,6 +518,14 @@ class SubtitleProcessor:
             self.extractor.cleanup(archive_path)
             return self._error_result(_uuid, "无法建立字幕映射", archive_path)
 
+        # unmatched 待人工子项（archive_path + 原因）
+        unmatched_details = self._build_unmatched_details(
+            compiled_plan=compiled_plan,
+            subtitle_files=subtitle_files,
+            sub_by_archive=sub_by_archive,
+        )
+
+        # ffsubsync（保持现有接线）
         sync_summary = {
             "enabled": False,
             "mode": cm.get_config("subtitle_sync_mode") or "best_effort",
@@ -464,7 +558,7 @@ class SubtitleProcessor:
                     },
                 )
 
-        # Step 7: 执行文件传输（字幕强制使用复制模式）
+        # 执行文件传输（字幕强制使用复制模式）
         force_overwrite = self._resolve_sync_overwrite_policy()
         trans = Trans(
             final_mapping,
@@ -474,24 +568,30 @@ class SubtitleProcessor:
         )
         trans_result = trans.trans_file()
 
-        # Step 8: 清理临时文件
         self.extractor.cleanup(archive_path)
 
         if isinstance(trans_result, str):
             return self._error_result(_uuid, trans_result, archive_path)
 
-        # Step 9: 保存任务记录
+        # 任务记录
+        matched_tasks_info = self._matched_tasks_info(
+            matched_task_uuids=matched_task_uuids,
+            processed_tasks=processed_tasks,
+        )
         result = {
             "status": "success",
             "uuid": _uuid,
             "archive_path": str(archive_path),
             "matched_tasks": list(matched_task_uuids),
             "matched_task": ", ".join(matched_tasks_info),
-            "confidence": ai_result.confidence,
+            "confidence": confidence,
             "matched_count": len(final_mapping),
             "total_subtitles": len(subtitle_files),
             "mappings": mapping_details,
             "sync_summary": sync_summary,
+            "unmatched": unmatched_details,
+            "pipeline_mode": pipeline_mode,
+            "case_agent_snapshot": snapshot,
         }
 
         task_path = TASK_PATH / f"{_uuid}.json"
@@ -509,9 +609,151 @@ class SubtitleProcessor:
         logger.info(
             f"[字幕处理] 完成! 成功匹配 {len(final_mapping)} 个字幕文件 "
             f"到 {len(matched_task_uuids)} 个任务"
+            + (f"，{len(unmatched_details)} 个待人工" if unmatched_details else "")
         )
 
         return result
+
+    # ------------------------------------------------------------------
+    # 合格非落盘结果：need_confirm / fail_closed
+    # ------------------------------------------------------------------
+
+    def _need_confirm_result(
+        self,
+        *,
+        _uuid: str,
+        archive_path: Path,
+        subtitle_files: List[ExtractedSubtitle],
+        processed_tasks: List[ProcessedTask],
+        snapshot: Any,
+        error: str,
+    ) -> Dict[str, Any]:
+        """need_confirm：AI 无法确定匹配，需人工选择目标任务。写合格任务记录。"""
+        result = {
+            "status": "need_confirm",
+            "uuid": _uuid,
+            "archive_path": str(archive_path),
+            "subtitle_count": len(subtitle_files),
+            "available_tasks": [
+                {
+                    "uuid": t["uuid"],
+                    "title": t.get("title", ""),
+                    "season": t.get("season", 1),
+                }
+                for t in processed_tasks[:10]
+            ],
+            "error": error,
+            "pipeline_mode": "subtitle_case_agent_primary",
+            "case_agent_snapshot": snapshot,
+        }
+        self._write_subtitle_task_json(_uuid, result)
+        return result
+
+    def _fail_closed_result(
+        self,
+        *,
+        _uuid: str,
+        archive_path: Path,
+        subtitle_files: List[ExtractedSubtitle],
+        processed_tasks: List[ProcessedTask],
+        snapshot: Any,
+        summary: str,
+    ) -> Dict[str, Any]:
+        """fail_closed：合同校验未通过，合格业务结果，不落盘部分匹配。
+
+        映射到对外 need_confirm 语义（UI/auto_fetch 已识别该状态触发人工/重试），
+        但保留 fail_closed 标记与合同 issue 供审计。
+        """
+        result = {
+            "status": "need_confirm",
+            "uuid": _uuid,
+            "archive_path": str(archive_path),
+            "subtitle_count": len(subtitle_files),
+            "available_tasks": [
+                {
+                    "uuid": t["uuid"],
+                    "title": t.get("title", ""),
+                    "season": t.get("season", 1),
+                }
+                for t in processed_tasks[:10]
+            ],
+            "error": summary,
+            "pipeline_mode": "subtitle_case_agent_primary",
+            "case_agent_status": "fail_closed",
+            "case_agent_snapshot": snapshot,
+        }
+        self._write_subtitle_task_json(_uuid, result)
+        return result
+
+    # ------------------------------------------------------------------
+    # 小工具
+    # ------------------------------------------------------------------
+
+    @staticmethod
+    def _normalize_card_path(path: str) -> str:
+        """归一化字幕 archive_path，与 case_agent.normalize_subtitle_archive_path 同口径。"""
+        text = str(path or "").strip().replace("\\", "/")
+        while text.startswith("./"):
+            text = text[2:]
+        return text.strip("/")
+
+    @staticmethod
+    def _matched_tasks_info(
+        *,
+        matched_task_uuids: Set[str],
+        processed_tasks: List[ProcessedTask],
+    ) -> List[str]:
+        info: List[str] = []
+        for task_uuid in matched_task_uuids:
+            task = next(
+                (t for t in processed_tasks if t["uuid"] == task_uuid),
+                None,
+            )
+            if not task:
+                continue
+            if task.get("is_movie", False):
+                info.append(f"{task.get('title', '')} (电影)")
+            else:
+                info.append(
+                    f"{task.get('title', '')} (Season {task.get('season', 1)})"
+                )
+        return info
+
+    def _build_unmatched_details(
+        self,
+        *,
+        compiled_plan: Any,
+        subtitle_files: List[ExtractedSubtitle],
+        sub_by_archive: Dict[str, ExtractedSubtitle],
+    ) -> List[Dict[str, Any]]:
+        """从 compiled_plan.unmatched_refs 构建待人工子项（archive_path + ref）。"""
+        unmatched_refs = list(getattr(compiled_plan, "unmatched_refs", []) or [])
+        if not unmatched_refs:
+            return []
+        # ref -> archive_path（从 subtitle_files 顺序对齐 SF 分配）
+        ref_to_archive: Dict[str, str] = {}
+        for idx, sub in enumerate(subtitle_files, start=1):
+            ref_to_archive[f"SF{idx}"] = self._normalize_card_path(sub.archive_path)
+        details: List[Dict[str, Any]] = []
+        for ref in unmatched_refs:
+            archive_path = ref_to_archive.get(ref, "")
+            if not archive_path:
+                continue
+            details.append({"ref": ref, "archive_path": archive_path})
+        return details
+
+    def _write_subtitle_task_json(self, _uuid: str, result: Dict[str, Any]) -> None:
+        task_path = TASK_PATH / f"{_uuid}.json"
+        with open(task_path, "w", encoding="UTF-8") as f:
+            json.dump(
+                {
+                    "type": "subtitle",
+                    **result,
+                },
+                f,
+                indent=4,
+                ensure_ascii=False,
+            )
 
     def _load_processed_tasks_for_target_uuid(
         self,

@@ -122,32 +122,94 @@ def _build_process_fixture(
     }
 
 
-def test_find_subtitle_file_matches_suffix_path_with_missing_root(tmp_path):
-    processor = SubtitleProcessor()
-    subtitle_path = tmp_path / "a.ass"
-    subtitle_path.write_text("subtitle", encoding="utf-8")
+def test_entry_resolves_exact_subtitle_path_only(tmp_path):
+    """AI-first 契约：subtitle_path 必须精确匹配固定层 archive_path，不做 suffix 模糊回退。
+
+    取代旧的 _find_subtitle_file suffix 模糊匹配测试（已随 AI-first 改造移除）。
+    固定层事实 archive_path 带多层目录前缀；AI 返回缺前缀的路径无法解析，该行落
+    needs_more_evidence，由合同拦成 fail_closed。
+    """
+    from src.subtitle.case_agent.local_subtitle_entry import (
+        build_subtitle_file_cards,
+        build_subtitle_case_workspace,
+        build_target_video_cards,
+    )
+
+    archive_path = (
+        "[简] 夜樱四重奏 花之歌+星之海/"
+        "[Quetzal] Yozakura Quartet - Hana no Uta/"
+        "[Quetzal] Yozakura Quartet - Hana no Uta 01.chs.ass"
+    )
     subtitle = ExtractedSubtitle(
-        temp_path=subtitle_path,
-        archive_path=(
-            "[简] 夜樱四重奏 花之歌+星之海/"
-            "[Quetzal] Yozakura Quartet - Hana no Uta/"
-            "[Quetzal] Yozakura Quartet - Hana no Uta 01.chs.ass"
-        ),
+        temp_path=tmp_path / "a.ass",
+        archive_path=archive_path,
         filename="[Quetzal] Yozakura Quartet - Hana no Uta 01.chs.ass",
     )
+    subtitle.temp_path.write_text("subtitle", encoding="utf-8")
+    cards = build_subtitle_file_cards([subtitle])
+    assert cards[0].archive_path == archive_path
 
-    matched = processor._find_subtitle_file(
-        [subtitle],
-        (
-            "[Quetzal] Yozakura Quartet - Hana no Uta/"
-            "[Quetzal] Yozakura Quartet - Hana no Uta 01.chs.ass"
-        ),
+    tasks = [
+        {
+            "uuid": "t1",
+            "title": "Yozakura Quartet",
+            "season": 1,
+            "is_movie": False,
+            "videos": ["Yozakura - S01E01.mkv"],
+            "target_dir": str(tmp_path / "lib"),
+            "video_targets": {},
+        }
+    ]
+    workspace = build_subtitle_case_workspace(
+        archive_name="foo.zip",
+        subtitle_files=cards,
+        target_videos=build_target_video_cards(tasks),
     )
+    # 固定层只有 SF1，精确 archive_path 含多层前缀
+    assert workspace.subtitle_refs == ["SF1"]
 
-    assert matched is subtitle
+    # AI 给出精确路径 -> draft 行 map_to_video 解析成功
+    # AI 给出缺前缀路径 -> 解析失败 -> needs_more_evidence -> fail_closed
+    from src.subtitle.case_agent.local_subtitle_entry import (
+        run_subtitle_case_agent_mapping,
+    )
+    from types import SimpleNamespace
+
+    class _FakeAI:
+        def analyze_subtitle_mapping(self, **kwargs):
+            return SimpleNamespace(
+                mappings=[
+                    SimpleNamespace(
+                        subtitle_path="[Quetzal] Yozakura Quartet - Hana no Uta/"
+                        "[Quetzal] Yozakura Quartet - Hana no Uta 01.chs.ass",
+                        task_uuid="t1",
+                        video="Yozakura - S01E01.mkv",
+                        language="chs",
+                    )
+                ],
+                unmatched_files=[],
+                confidence="High",
+                reason="",
+            )
+
+    res = run_subtitle_case_agent_mapping(
+        subtitle_files=[subtitle],
+        processed_tasks=tasks,
+        ai_client=_FakeAI(),
+        source_path=tmp_path / "foo.zip",
+        language_resolver=lambda lang: ("zh-CN", True),
+        backend="single_shot",
+    )
+    # 缺最顶层前缀 -> 精确匹配失败 -> fail_closed（不自动 suffix 回退）
+    assert res["status"] == "fail_closed"
 
 
-def test_process_accepts_ai_subtitle_paths_without_top_level_root(monkeypatch, tmp_path):
+def test_process_accepts_ai_exact_subtitle_path_with_nested_root(monkeypatch, tmp_path):
+    """AI-first 契约：AI 返回的 subtitle_path 必须精确匹配固定层 archive_path。
+
+    取代旧的"缺顶层前缀也能匹配"测试（suffix 模糊匹配已移除）。AI 现在需原样
+    返回含目录前缀的精确路径，processor 经 Case Agent/兼容路径精确解析后落盘。
+    """
     processor, fixture = _build_process_fixture(
         monkeypatch,
         tmp_path,
@@ -174,7 +236,7 @@ def test_process_accepts_ai_subtitle_paths_without_top_level_root(monkeypatch, t
     ai_result = SimpleNamespace(
         mappings=[
             SimpleNamespace(
-                subtitle_path="subs/a.ass",
+                subtitle_path="[简] 合集/subs/a.ass",  # 精确匹配固定层 archive_path
                 task_uuid="task-1",
                 video=fixture["video_name"],
                 language="chs",
