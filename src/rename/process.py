@@ -29,6 +29,7 @@ from .cleaner import remove_episode, remove_season, remove_tag
 from .decision_snapshot import write_decision_snapshot
 from .local_evidence import LocalEvidence, build_local_evidence
 from .local_fact_surface import SUBTITLE_EXTENSIONS, _subtitle_matches_video
+from .get_info import Search
 from .trans import Trans
 from .utils import VIDEO_SUFFIX
 
@@ -795,6 +796,27 @@ class Rename:
         # 从 rename_plan.items 的 bangumi_assignment.target.bangumi_subject_id 收集，
         # 调 BangumiClient.get_subject 拿 name/name_cn。失败/缺失不阻塞落盘（辅助字段）。
         bgm_subject_info = Rename._collect_bgm_subject_names(rename_plan)
+        # 解析 TMDB 海报路径写进 task_data，供 Telegram 通知 send_photo 用。
+        # 旧实现 _resolve_task_poster_path 定义了但从未调用，poster_path 永远硬编码
+        # None，导致 TG 通知永远走 send_message 纯文字、无海报。按 first_destination
+        # 的 tmdb_id/media_type/season 查 TMDB 详情（带缓存），TV 取季海报无则回退
+        # series 海报。失败/缺失不阻塞落盘（辅助字段，poster_path 仍可为 None）。
+        task_poster_path: str | None = None
+        if first_destination is not None and first_destination.tmdb_id:
+            try:
+                _tmdb_search = Search()
+                _tmdb_info = None
+                if first_destination.media_type == 'movie':
+                    _tmdb_info = _tmdb_search.get_movie_info_by_id(first_destination.tmdb_id)
+                else:
+                    _tmdb_info = _tmdb_search.get_tv_info_by_id(first_destination.tmdb_id)
+                task_poster_path = Rename._resolve_task_poster_path(
+                    _tmdb_info,
+                    is_movie=bool(first_destination.media_type == 'movie'),
+                    season_id=(None if first_destination.season_number is None else int(first_destination.season_number)),
+                )
+            except Exception as exc:
+                logger.warning(f'[BGM->TMDB] 解析 TMDB 海报失败（不阻塞）: {exc!r}')
         task_data: dict[str, object] = {
             'path': str(source_path),
             'is_anime': is_anime,
@@ -810,7 +832,7 @@ class Rename:
             'failure_reason': None,
             'pipeline_mode': 'local_bangumi_to_tmdb_product',
             'tmdb_id': first_destination.tmdb_id if first_destination is not None else None,
-            'poster_path': None,
+            'poster_path': task_poster_path,
             'tmdb_name': first_destination.title if first_destination is not None else None,
             'tmdb_year': first_destination.year if first_destination is not None else None,
             'tmdb_media_type': first_destination.media_type if first_destination is not None else None,
@@ -993,8 +1015,8 @@ class Rename:
             key=lambda child: child.relative_to(path).as_posix().casefold(),
         )
 
+    @staticmethod
     def _resolve_task_poster_path(
-        self,
         info: TmdbInfo | None,
         is_movie: bool,
         season_id: int | None,
