@@ -5,9 +5,11 @@
 保留压缩包内的文件夹结构信息。
 """
 
+import hashlib
 import shutil
 import subprocess
 import tempfile
+import time
 import zipfile
 import importlib
 from dataclasses import dataclass
@@ -72,6 +74,15 @@ _ARCHIVE_SUFFIXES = {".zip", ".rar", ".7z"}
 # TID=346 楼主包是 1 层套娃（外层 RAR 含 4 个内层 RAR），2 层足够覆盖正常场景
 _MAX_NEST_DEPTH = 3
 
+# 解压重试（对齐 acgrip download retry）：解压是文件系统操作，Windows 下并发
+# 下载/配对时 extract_dir 可能因文件句柄未释放被占用，shutil.rmtree/mkdir 抛
+# PermissionError(13)，或 rarfile/Bandizip 偶发失败。实测同一包首跑"解压失败"
+# 重跑成功（0066 teekyu 5 个包 post-76298/76301/76920/76921/76927 首跑
+# processor_failed、重跑同包 success；0088 COMPLETE BATCH 首跑 PermissionError、
+# 重跑 success）→ 瞬时失败，重试可恢复。重试前清理该 archive 的 temp_dir 残留。
+_EXTRACT_MAX_ATTEMPTS = 3
+_EXTRACT_RETRY_BACKOFF_SECONDS = 2.0
+
 
 @dataclass
 class ExtractedSubtitle:
@@ -91,6 +102,32 @@ class SubtitleExtractor:
     def __init__(self, temp_dir: Optional[Path] = None):
         self.temp_dir = temp_dir or Path(tempfile.gettempdir()) / "bangumi_subtitle"
         self.temp_dir.mkdir(parents=True, exist_ok=True)
+
+    def _scoped_subdir(self, base_name: str, archive_path: Path) -> Path:
+        """为一次解压生成与 archive_path 绑定的唯一 temp 子目录名。
+
+        旧实现 extract_dir = temp / archive_path.stem，同 stem 包（如同一帖
+        附件被多 subject 各选一次，下载到 sel_3/xx.rar 与 sel_4/xx.rar）stem
+        相同 → 共用同一 extract_dir → 串行第二次 rmtree 时 Windows 文件句柄
+        未释放抛 PermissionError(13)（实测复现：同 stem 串行连续 extract 第二次
+        必 PermissionError，重试 3 次仍失败）。
+
+        加 archive_path 绝对路径短哈希后缀：同路径（重复 extract 同一文件）哈希
+        相同 → cleanup 幂等；不同路径（sel_3 vs sel_4）哈希不同 → 目录隔离，
+        互不 rmtree。base_name 已含 stem，哈希只作区分用。
+        """
+        try:
+            path_key = str(archive_path.resolve())
+        except Exception:
+            path_key = str(archive_path)
+        suffix = hashlib.md5(path_key.encode("utf-8")).hexdigest()[:8]
+        safe_base = base_name or "archive"
+        # Windows 目录名长度上限 255，stem 可能很长（含特殊字符合集名），
+        # 截断保安全 + 留哈希后缀空间。
+        max_base = 200
+        if len(safe_base) > max_base:
+            safe_base = safe_base[:max_base]
+        return self.temp_dir / f"{safe_base}_{suffix}"
 
     @staticmethod
     def _collect_extracted_subtitles(
@@ -131,6 +168,11 @@ class SubtitleExtractor:
         例：acgrip TID=346 楼主包外层 RAR 含 4 个内层 RAR（每季一个），
         不递归则 extractor 只看到 4 个 .rar 报"0 字幕"，递归后解出 138 字幕。
 
+        解压重试：文件系统操作（shutil.rmtree/mkdir/rarfile/Bandizip）在 Windows
+        并发场景下偶发 PermissionError(13) 或返回 None，实测同包重跑可恢复
+        （见 _EXTRACT_MAX_ATTEMPTS 注释）。对异常 + None 重试，空列表（解压成功
+        但 0 字幕，可能套娃包）不重试——交给后续嵌套递归处理。
+
         Args:
             archive_path: 压缩包或字幕文件路径
 
@@ -141,6 +183,69 @@ class SubtitleExtractor:
             logger.error(f"[字幕解压] 文件不存在: {archive_path}")
             return None
 
+        # 单字幕文件不需要解压，直接处理（无重试必要）
+        if archive_path.suffix.lower() in SUBTITLE_EXTENSIONS:
+            return self._handle_direct_subtitle(archive_path)
+
+        last_result: Optional[List[ExtractedSubtitle]] = None
+        for attempt in range(1, _EXTRACT_MAX_ATTEMPTS + 1):
+            # 重试前清理该 archive 的 temp_dir 残留（上一次失败可能留下半解
+            # 目录或被占用文件，Windows 下 rmtree 偶发 PermissionError，重试
+            # 间隔给文件句柄释放时间）。
+            if attempt > 1:
+                self._cleanup_archive_temp(archive_path)
+                time.sleep(_EXTRACT_RETRY_BACKOFF_SECONDS)
+                logger.info(
+                    f"[字幕解压] 第 {attempt}/{_EXTRACT_MAX_ATTEMPTS} 次重试: "
+                    f"{archive_path.name}"
+                )
+            try:
+                result = self._extract_once(archive_path)
+            except (PermissionError, OSError) as exc:
+                logger.warning(
+                    f"[字幕解压] 解压异常 (attempt {attempt}/"
+                    f"{_EXTRACT_MAX_ATTEMPTS}): {exc!r}"
+                )
+                last_result = None
+                continue
+            # None = 解压彻底失败（rarfile/Bandizip 报错），重试可能恢复
+            if result is None:
+                logger.warning(
+                    f"[字幕解压] 解压返回 None (attempt {attempt}/"
+                    f"{_EXTRACT_MAX_ATTEMPTS}): {archive_path.name}"
+                )
+                last_result = None
+                continue
+            # 成功（含空列表 = 解压成功 0 字幕，交给嵌套递归）→ 立即返回
+            return result
+
+        logger.error(
+            f"[字幕解压] 解压重试 {_EXTRACT_MAX_ATTEMPTS} 次仍失败: "
+            f"{archive_path.name}"
+        )
+        return last_result
+
+    def _cleanup_archive_temp(self, archive_path: Path) -> None:
+        """清理该 archive 在 temp_dir 的解压目录残留（重试前调用）。
+
+        精确清理 _scoped_subdir(stem, archive_path) 对应的目录（同路径哈希
+        相同，幂等）。_extract_rar/_extract_zip 写入的就是这个目录。
+        """
+        stem = archive_path.stem
+        if not stem:
+            return
+        extract_dir = self._scoped_subdir(stem, archive_path)
+        try:
+            if extract_dir.exists():
+                shutil.rmtree(extract_dir, ignore_errors=True)
+        except Exception:
+            # 清理本身失败不影响重试（extract_once 内还会 rmtree/mkdir）
+            pass
+
+    def _extract_once(
+        self, archive_path: Path
+    ) -> Optional[List[ExtractedSubtitle]]:
+        """单次解压尝试（extract 的核心逻辑，不含重试编排）。"""
         suffix = archive_path.suffix.lower()
 
         if suffix == ".zip":
@@ -149,9 +254,6 @@ class SubtitleExtractor:
             primary = self._extract_rar(archive_path)
         elif suffix == ".7z":
             primary = self._extract_7z(archive_path)
-        elif suffix in SUBTITLE_EXTENSIONS:
-            # 直接字幕文件，不需要解压
-            return self._handle_direct_subtitle(archive_path)
         else:
             logger.error(f"[字幕解压] 不支持的格式: {suffix}")
             return None
@@ -193,11 +295,15 @@ class SubtitleExtractor:
             )
             return []
 
-        # 外层解压目录名 = outer_archive.stem；嵌套层用 _nest{depth} 后缀隔离
+        # 外层解压目录名 = _scoped_subdir(stem, outer_archive)，与 _extract_rar/
+        # _extract_zip 写入的 extract_dir 一致（同路径哈希相同）。嵌套层用
+        # _nest{depth} 后缀隔离（内层 archive path 不同 → 哈希不同，天然隔离）。
         if depth == 1:
-            extract_dir = self.temp_dir / outer_archive.stem
+            extract_dir = self._scoped_subdir(outer_archive.stem, outer_archive)
         else:
-            extract_dir = self.temp_dir / (outer_archive.stem + f"_nest{depth - 1}")
+            extract_dir = self._scoped_subdir(
+                outer_archive.stem + f"_nest{depth - 1}", outer_archive
+            )
         if not extract_dir.exists():
             return []
 
@@ -226,7 +332,9 @@ class SubtitleExtractor:
         优先用 Bandizip CLI 直接解到目标目录；不可用时回退 _extract_*。
         """
         suffix = archive_path.suffix.lower()
-        nest_dir = self.temp_dir / (archive_path.stem + f"_nest{depth}")
+        nest_dir = self._scoped_subdir(
+            archive_path.stem + f"_nest{depth}", archive_path
+        )
         if nest_dir.exists():
             shutil.rmtree(nest_dir, ignore_errors=True)
 
@@ -273,7 +381,9 @@ class SubtitleExtractor:
         """处理直接上传的字幕文件（非压缩包）"""
         try:
             # 复制到临时目录
-            extract_dir = self.temp_dir / f"direct_{subtitle_path.stem}"
+            extract_dir = self._scoped_subdir(
+                f"direct_{subtitle_path.stem}", subtitle_path
+            )
             if extract_dir.exists():
                 shutil.rmtree(extract_dir)
             extract_dir.mkdir(parents=True, exist_ok=True)
@@ -297,7 +407,7 @@ class SubtitleExtractor:
     def _extract_zip(self, archive_path: Path) -> Optional[List[ExtractedSubtitle]]:
         """解压 ZIP 文件"""
         try:
-            extract_dir = self.temp_dir / archive_path.stem
+            extract_dir = self._scoped_subdir(archive_path.stem, archive_path)
             if extract_dir.exists():
                 shutil.rmtree(extract_dir)
             extract_dir.mkdir(parents=True, exist_ok=True)
@@ -372,7 +482,7 @@ class SubtitleExtractor:
 
     def _extract_rar(self, archive_path: Path) -> Optional[List[ExtractedSubtitle]]:
         """解压 RAR 文件"""
-        extract_dir = self.temp_dir / archive_path.stem
+        extract_dir = self._scoped_subdir(archive_path.stem, archive_path)
         if extract_dir.exists():
             shutil.rmtree(extract_dir)
         extract_dir.mkdir(parents=True, exist_ok=True)
@@ -481,7 +591,7 @@ class SubtitleExtractor:
             return None
 
         try:
-            extract_dir = self.temp_dir / archive_path.stem
+            extract_dir = self._scoped_subdir(archive_path.stem, archive_path)
             if extract_dir.exists():
                 shutil.rmtree(extract_dir)
             extract_dir.mkdir(parents=True, exist_ok=True)
@@ -520,11 +630,11 @@ class SubtitleExtractor:
 
     def cleanup(self, archive_path: Path):
         """清理临时文件"""
-        extract_dir = self.temp_dir / archive_path.stem
+        extract_dir = self._scoped_subdir(archive_path.stem, archive_path)
         if extract_dir.exists():
             shutil.rmtree(extract_dir, ignore_errors=True)
             logger.info(f"[字幕解压] 已清理临时目录: {extract_dir}")
 
     def get_extract_dir(self, archive_path: Path) -> Path:
         """获取解压目录"""
-        return self.temp_dir / archive_path.stem
+        return self._scoped_subdir(archive_path.stem, archive_path)

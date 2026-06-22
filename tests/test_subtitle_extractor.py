@@ -7,8 +7,9 @@ def test_extract_rar_falls_back_to_bandizip(monkeypatch, tmp_path):
     archive_path = tmp_path / "sample.rar"
     archive_path.write_bytes(b"rar")
 
-    extract_dir = tmp_path / "extract_root" / archive_path.stem
     extractor = SubtitleExtractor(temp_dir=tmp_path / "extract_root")
+    # extract_dir 现在带路径哈希后缀（_scoped_subdir），用 get_extract_dir 取真实路径
+    extract_dir = extractor.get_extract_dir(archive_path)
 
     monkeypatch.setattr("src.subtitle.extractor.RAR_AVAILABLE", False)
     monkeypatch.setattr(
@@ -64,6 +65,8 @@ def test_extract_nested_rar_recurses_into_inner_archive(monkeypatch, tmp_path):
     archive_path.write_bytes(b"rar")
     root = tmp_path / "extract_root"
     extractor = SubtitleExtractor(temp_dir=root)
+    # 外层 extract_dir 现在带路径哈希后缀（_scoped_subdir），用 get_extract_dir 取真实路径
+    outer_extract_dir = extractor.get_extract_dir(archive_path)
 
     monkeypatch.setattr("src.subtitle.extractor.RAR_AVAILABLE", False)
     monkeypatch.setattr(
@@ -84,7 +87,7 @@ def test_extract_nested_rar_recurses_into_inner_archive(monkeypatch, tmp_path):
         out_dir = _parse_out_dir(command)
         invocations.append(out_dir)
         out_dir.mkdir(parents=True, exist_ok=True)
-        if out_dir == root / archive_path.stem:
+        if out_dir == outer_extract_dir:
             # 外层：写出 1 个内层 RAR（无字幕）
             (out_dir / "inner.rar").write_bytes(b"rar-inner")
         else:
@@ -186,3 +189,79 @@ def test_extract_non_nested_archive_unchanged(monkeypatch, tmp_path):
     assert len(subtitles) == 2
     # 外层直接解出字幕，不应递归
     assert len(invocations) == 1
+
+
+def test_extract_retries_on_permission_error(monkeypatch, tmp_path):
+    """extract() 对 _extract_once 抛 PermissionError 重试，最终成功。"""
+    archive_path = tmp_path / "sample.rar"
+    archive_path.write_bytes(b"rar")
+    extractor = SubtitleExtractor(temp_dir=tmp_path / "extract_root")
+
+    # 跳过真实 sleep，避免测试慢
+    monkeypatch.setattr("src.subtitle.extractor.time.sleep", lambda s: None)
+
+    calls = {"n": 0}
+
+    def fake_extract_once(self, path):
+        calls["n"] += 1
+        if calls["n"] < 3:
+            raise PermissionError(13, "拒绝访问。")
+        return [object()]  # 第 3 次成功（占位 subtitle，验证返回即可）
+
+    monkeypatch.setattr(SubtitleExtractor, "_extract_once", fake_extract_once)
+    monkeypatch.setattr(
+        SubtitleExtractor, "_cleanup_archive_temp", lambda self, p: None
+    )
+
+    result = extractor.extract(archive_path)
+    assert result is not None
+    assert calls["n"] == 3  # 失败 2 次 + 成功 1 次
+
+
+def test_extract_retries_on_none_then_gives_up(monkeypatch, tmp_path):
+    """extract() 对 _extract_once 返回 None 重试，超过上限返回 None。"""
+    archive_path = tmp_path / "sample.rar"
+    archive_path.write_bytes(b"rar")
+    extractor = SubtitleExtractor(temp_dir=tmp_path / "extract_root")
+
+    monkeypatch.setattr("src.subtitle.extractor.time.sleep", lambda s: None)
+    monkeypatch.setattr(
+        SubtitleExtractor, "_cleanup_archive_temp", lambda self, p: None
+    )
+
+    calls = {"n": 0}
+
+    def fake_extract_once(self, path):
+        calls["n"] += 1
+        return None  # 始终失败
+
+    monkeypatch.setattr(SubtitleExtractor, "_extract_once", fake_extract_once)
+
+    result = extractor.extract(archive_path)
+    assert result is None
+    # _EXTRACT_MAX_ATTEMPTS 默认 3
+    assert calls["n"] == 3
+
+
+def test_extract_does_not_retry_empty_list(monkeypatch, tmp_path):
+    """extract() 对 _extract_once 返回空列表不重试（空列表=解压成功 0 字幕，
+    交给嵌套递归，不是瞬时失败）。"""
+    archive_path = tmp_path / "sample.rar"
+    archive_path.write_bytes(b"rar")
+    extractor = SubtitleExtractor(temp_dir=tmp_path / "extract_root")
+
+    monkeypatch.setattr("src.subtitle.extractor.time.sleep", lambda s: None)
+
+    calls = {"n": 0}
+
+    def fake_extract_once(self, path):
+        calls["n"] += 1
+        return []  # 空列表：解压成功但 0 字幕
+
+    monkeypatch.setattr(SubtitleExtractor, "_extract_once", fake_extract_once)
+
+    result = extractor.extract(archive_path)
+    # 空列表不重试，直接返回（_extract_once 内会走嵌套递归，但这里 mock 了
+    # _extract_once 整体，所以返回 [] 经 extract 的 `return result` 路径）
+    assert result == []
+    assert calls["n"] == 1  # 不重试
