@@ -184,16 +184,15 @@ def test_trigger_telegram_notification_fallback_to_text(monkeypatch):
     assert "🌟 质量： 1080p x265 AAC" in notifier.sent_messages[0]
 
 
-def test_trigger_telegram_notification_all_skipped_reports_zero(monkeypatch, tmp_path):
-    """全跳过场景：record 文件存在但内容为空（本次 0 入库）时，
-    TG 通知应如实报「已入库0个文件」，而非回退到 _batch_success 虚报。
+def test_trigger_telegram_notification_all_skipped_reports_skipped(monkeypatch, tmp_path):
+    """全跳过场景：record 文件存在但内容为空（本次 0 实际落地）且 task_data
+    记 skipped_file_count>0 时，TG 通知应如实显示「跳过入库 N 个文件」，
+    而非「已入库0个文件」伪装无操作、也不回退 _batch_success 虚报。
 
     区分两种 record_targets 为空的情形：
-      - 有 record 文件但空（全跳过）→ had_any_record_file=True → 用 len(targets)=0
+      - 有 record 文件但空（全跳过）→ had_any_record_file=True → landed=0
       - 完全无 record 文件（异常）→ had_any_record_file=False → 回退 _batch_success
     """
-    import json as _json
-
     notifier = _FakeTelegramNotifier(available=True)
     manager = _build_manager_with_stats(total=1, success=1, failed=0, failed_tasks=[])
     manager._batch_success_task_ids = ["task-all-skip"]
@@ -227,6 +226,7 @@ def test_trigger_telegram_notification_all_skipped_reports_zero(monkeypatch, tmp
             "release_group": "",
             "resource_term": "1080p x265 AAC",
             "poster_path": None,
+            "skipped_file_count": 18,
         }
 
     monkeypatch.setattr(manager, "_read_task_data", _read_task_data)
@@ -242,9 +242,62 @@ def test_trigger_telegram_notification_all_skipped_reports_zero(monkeypatch, tmp
 
     assert manager._had_any_record_file is True
     assert len(notifier.sent_messages) == 1
-    # 全跳过如实报 0，不回退到 _batch_success=1
-    assert "📂 已入库0个文件" in notifier.sent_messages[0]
+    # 全跳过如实显示「跳过入库18个文件」，不伪装「已入库0」也不回退「已入库1」
+    assert "📂 跳过入库18个文件" in notifier.sent_messages[0]
     assert "已入库1个文件" not in notifier.sent_messages[0]
+
+
+def test_trigger_telegram_notification_mixed_landed_and_skipped(monkeypatch, tmp_path):
+    """混合场景：本次实际落地 X 个 + 跳过 Y 个已存在，首行显示
+    「已入库 X 个文件（跳过 Y 个已存在）」。"""
+    import json as _json
+
+    notifier = _FakeTelegramNotifier(available=True)
+    manager = _build_manager_with_stats(total=1, success=1, failed=0, failed_tasks=[])
+    manager._batch_success_task_ids = ["task-mix"]
+
+    monkeypatch.setattr("src.queue.task_queue.get_telegram_notifier", lambda: notifier)
+
+    def _get_config(key):
+        if key == "telegram_notify_on_success":
+            return True
+        if key == "telegram_notify_on_failure":
+            return True
+        return None
+
+    monkeypatch.setattr("src.queue.task_queue.cm.get_config", _get_config)
+
+    def _read_task_data(task_id):
+        return {
+            "tmdb_name": "测试番剧",
+            "tmdb_year": "2024",
+            "tmdb_media_type": "tv",
+            "tmdb_genres": [{"name": "动画"}],
+            "name": "测试番剧",
+            "year": "2024",
+            "season_id": 1,
+            "is_anime": True,
+            "is_movie": False,
+            "path": "/tmp/test.mkv",
+            "release_group": "",
+            "resource_term": "1080p x265 AAC",
+            "poster_path": None,
+            "skipped_file_count": 6,
+        }
+
+    monkeypatch.setattr(manager, "_read_task_data", _read_task_data)
+
+    # record 有 12 个实际落地目标
+    record_dir = tmp_path / "record"
+    record_dir.mkdir(parents=True, exist_ok=True)
+    record = {f"/tmp/src{i:02d}.mkv": f"/tmp/测试番剧 - S01E{i:02d}.mkv" for i in range(1, 13)}
+    (record_dir / "task-mix.json").write_text(_json.dumps(record, ensure_ascii=False), encoding="utf-8")
+    monkeypatch.setattr("src.utils.path.RECORD_PATH", record_dir)
+
+    manager._trigger_telegram_notification()
+
+    assert len(notifier.sent_messages) == 1
+    assert "📂 已入库12个文件（跳过6个已存在）" in notifier.sent_messages[0]
 
 
 def test_trigger_telegram_notification_respects_switch(monkeypatch):

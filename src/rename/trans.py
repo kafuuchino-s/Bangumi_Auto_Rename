@@ -55,6 +55,9 @@ class Trans:
         # 历史上 record 直接 dump 原始 R，跳过模式下会把"没落地"伪装成"已入库"，
         # 导致 transferred_file_count 虚高、TG「已入库 N 个文件」与实际落地不符。
         self.landed_mapping: Dict[Path, Path] = {}
+        # 跳过映射 {源:目标}（目标已存在且策略=跳过，本次未落地），供上层通知
+        # 如实显示「跳过入库 N 个文件」而非隐瞒跳过 / 虚报已入库。
+        self.skipped_mapping: Dict[Path, Path] = {}
 
     def trans_file(self):
         path = RECORD_PATH / f'{self.uuid}.json'
@@ -70,6 +73,7 @@ class Trans:
                     if self.overwrite == '跳过':
                         # 跳过已存在目标，继续处理其他文件（不失败不回滚）
                         logger.info(f'[处理迁移] 目标文件已存在, 跳过: {target_path}')
+                        self.skipped_mapping[source_path] = target_path
                         continue
                     logger.warning(f'[处理迁移] 目标文件已存在, 启用覆盖: {target_path}')
                     target_path.unlink()
@@ -78,6 +82,7 @@ class Trans:
                 if target_path.exists():
                     if self.overwrite == '跳过':
                         logger.info(f'[处理迁移] 目标文件在写入前再次出现, 跳过: {target_path}')
+                        self.skipped_mapping[source_path] = target_path
                         continue
                     logger.warning(f'[处理迁移] 目标文件在写入前再次出现, 启用覆盖: {target_path}')
                     target_path.unlink()

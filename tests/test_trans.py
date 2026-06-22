@@ -141,6 +141,9 @@ def test_trans_skip_mode_record_only_lands_actually_written(
     # landed_mapping 只含实际落地的那个
     assert trans.landed_mapping == {src_new: tgt_new}
     assert src_skip not in trans.landed_mapping
+    # skipped_mapping 只含被跳过的那个
+    assert trans.skipped_mapping == {src_skip: tgt_skip}
+    assert src_new not in trans.skipped_mapping
     # record 只写实际落地的
     import json as _json
     record = _json.load(
@@ -155,7 +158,7 @@ def test_trans_skip_mode_all_skipped_writes_empty_record(
     tmp_path: Path, monkeypatch
 ):
     """全跳过：record 为空 dict（反映本次 0 入库），landed_mapping 空，
-    仍返回 True（任务本身无错，只是无需落地）。"""
+    skipped_mapping 含全部被跳过的，仍返回 True（任务本身无错，只是无需落地）。"""
     monkeypatch.setattr('src.rename.trans.RECORD_PATH', tmp_path / 'record')
     (tmp_path / 'record').mkdir(parents=True, exist_ok=True)
 
@@ -175,6 +178,7 @@ def test_trans_skip_mode_all_skipped_writes_empty_record(
 
     assert result is True
     assert trans.landed_mapping == {}
+    assert trans.skipped_mapping == {src: tgt}
     import json as _json
     record = _json.load(
         open(tmp_path / 'record' / 'uuid-all-skip.json', encoding='utf-8')
@@ -205,4 +209,5 @@ def test_trans_overwrite_mode_reland_counts_as_landed(
 
     assert result is True
     assert trans.landed_mapping == {src: tgt}
+    assert trans.skipped_mapping == {}
     assert tgt.read_bytes() == b'fresh'

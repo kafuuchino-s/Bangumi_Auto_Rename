@@ -660,6 +660,9 @@ class Rename:
                     # 个文件」与实际不符。字幕 sidecar 仍按 mapping 条目计（薄入口）。
                     'transferred_file_count': len(transfer_trans.landed_mapping)
                     + len(subtitle_mapping),
+                    # 跳过数（目标已存在且策略=跳过），供 TG 通知如实显示
+                    # 「跳过入库 N 个文件」而非隐瞒跳过。
+                    'skipped_file_count': len(transfer_trans.skipped_mapping),
                     'subtitle_mapping': {str(k): str(v) for k, v in subtitle_mapping.items()},
                     'subtitle_transfer_failed': False,
                 },

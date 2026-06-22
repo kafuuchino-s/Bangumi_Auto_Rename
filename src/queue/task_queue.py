@@ -409,14 +409,26 @@ class TaskQueueManager:
     ) -> str:
         """构建 Telegram caption 文本（入库模板风格）。
 
-        已入库数 = record 中实际落地目标数（跳过的不计入）。
-        - 有 record 文件时（含全跳过空 record）：如实用 len(record_targets)，
-          全跳过即 0，不虚报。
-        - 完全无 record 文件（异常/非 rename 流程）：回退 _batch_success 兜底，
-          至少给一个合理的批次数。
+        首行入库计数如实区分「实际落地」与「跳过已存在」：
+        - landed>0, skipped=0 → 「已入库 X 个文件」
+        - landed>0, skipped>0 → 「已入库 X 个文件（跳过 Y 个已存在）」
+        - landed=0, skipped>0 → 「跳过入库 Y 个文件」（全跳过，不伪装成已入库）
+        - landed=0, skipped=0 → 「已入库 0 个文件」（无操作）
+        landed 来自 record 实际落地目标数；skipped 来自各任务 task_data 的
+        skipped_file_count 汇总。完全无 record 文件（异常/非 rename 流程）时
+        landed 回退 _batch_success 兜底。
         """
         had_record = getattr(self, "_had_any_record_file", False)
-        file_count = len(record_targets) if had_record else self._batch_success
+        landed = len(record_targets) if had_record else self._batch_success
+        skipped = sum(
+            int(d.get("skipped_file_count") or 0) for d in task_details
+        )
+        if landed > 0 and skipped > 0:
+            file_line = f"📂 已入库{landed}个文件（跳过{skipped}个已存在）"
+        elif landed == 0 and skipped > 0:
+            file_line = f"📂 跳过入库{skipped}个文件"
+        else:
+            file_line = f"📂 已入库{landed}个文件"
         title_year = self._build_title_year(task_details)
         season_episode = self._build_season_episode(
             task_details,
@@ -432,7 +444,7 @@ class TaskQueueManager:
         total_size = self._build_total_size(record_targets)
         err_msg = self._build_error_message()
 
-        lines = [f"📂 已入库{file_count}个文件", title_year]
+        lines = [file_line, title_year]
 
         detail_lines: list[str] = []
         if season_episode:
