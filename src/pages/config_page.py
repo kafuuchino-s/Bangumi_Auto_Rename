@@ -429,11 +429,18 @@ class ConfigPage(ui.dialog):
                             self.config, cn
                         )
                     elif cn == "overwrite_existing":
+                        # 两态：覆盖（删旧重落）/ 跳过（跳过已存在继续处理其他）。
+                        # 兼容旧 bool：True→覆盖，False→跳过。
+                        _ow_val = cm.get_config(cn)
+                        if isinstance(_ow_val, bool):
+                            _ow_cur = "覆盖" if _ow_val else "跳过"
+                        else:
+                            _ow_cur = _ow_val if _ow_val in ("覆盖", "跳过") else "跳过"
                         tg = RedToogle(
-                            ["启用", "禁用"],
-                            value="启用" if cm.get_config(cn) else "禁用",
+                            ["覆盖", "跳过"],
+                            value=_ow_cur,
                             on_change=lambda e, c=cn: self._change(
-                                c, e.value == "启用"
+                                c, e.value
                             ),
                         )
                         tg.style("font-size: 10px")

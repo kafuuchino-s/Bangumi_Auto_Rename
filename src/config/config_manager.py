@@ -18,7 +18,7 @@ CONFIG_DEFAULT = {
     "anime_path": "",
     "anime_movie_path": "",
     "mode": "链接",
-    "overwrite_existing": False,  # 是否覆盖已存在的文件
+    "overwrite_existing": "跳过",  # 目标已存在时的策略：'覆盖'（删旧重落）/ '跳过'（跳过已存在继续处理其他）。兼容旧 bool：True→覆盖，False→跳过
     "docker_mnt": "/media",
     "host_path_prefix": "",  # Windows宿主机路径前缀，用于qBittorrent路径转换
     "ai_api_key": "",
@@ -119,7 +119,7 @@ CN_MAP = {
     "anime_path": "🎬 动漫路径",
     "anime_movie_path": "🎬 动漫电影路径",
     "mode": "💿 重命名模式",
-    "overwrite_existing": "🔄 覆盖已存在文件",
+    "overwrite_existing": "🔄 目标已存在策略",
     "docker_mnt": "📁 Docker挂载路径",
     "host_path_prefix": "📁 宿主机路径前缀",
     "ai_api_key": "🤖 OpenAI API密钥",

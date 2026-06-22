@@ -543,12 +543,21 @@ class Rename:
                 )
 
             roots = self._bgm_to_tmdb_rename_roots(is_anime=is_anime)
+            # overwrite_existing 现为两态：'覆盖'/'跳过'（兼容旧 bool：True→覆盖，
+            # False→跳过）。两种策略在 plan Verifier 阶段都不 block——具体差异
+            # （覆盖=删旧重落 / 跳过=跳过已存在）交给 Trans.trans_file 层处理。
+            # 旧实现漏读此 config，永远用默认 'block'，导致重复入队已落盘的包
+            # 被 18 个 target_path_exists blocking 拦在 plan 阶段，用户配了覆盖
+            # 也不生效。
+            _ow = cm.get_config('overwrite_existing')
+            existing_target_policy = 'ignore'  # 覆盖/跳过都不 block
             rename_plan, rename_verifier_result = compile_verified_bgm_to_tmdb_rename_plan(
                 bridge_input=bridge_input,
                 legal_graph=legal_graph,
                 verified_plan=verified_plan,
                 roots=roots,
                 source_root=self._source_root_for_rename_plan(path),
+                existing_target_policy=existing_target_policy,
             )
             write_bgm_to_tmdb_rename_plan_artifacts(
                 output_dir=bridge_result.run_dir / 'artifacts',

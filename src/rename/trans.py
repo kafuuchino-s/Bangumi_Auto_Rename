@@ -9,6 +9,20 @@ from ..utils.path import RECORD_PATH
 from ..config.config_manager import cm
 
 
+# overwrite_existing 策略归一化。config 历史上是 bool（True=覆盖/False=拒绝），
+# 现改为两态字符串：'覆盖' / '跳过'。兼容旧 bool 值：
+#   True  → '覆盖'（目标已存在删旧重落）
+#   False → '跳过'（目标已存在跳过该文件，不失败不回滚——替代旧"拒绝"语义，
+#           因为"整任务失败回滚"在实际使用中无意义，用户要么覆盖要么跳过）
+def _normalize_overwrite_policy(value) -> str:
+    if isinstance(value, bool):
+        return '覆盖' if value else '跳过'
+    if value == '覆盖':
+        return '覆盖'
+    # '跳过' 或任何其他值（含 None/空）默认跳过（更安全，不误删已落盘文件）
+    return '跳过'
+
+
 class Trans:
     def __init__(
         self,
@@ -25,11 +39,11 @@ class Trans:
             R: 源文件到目标文件的映射
             uuid: 任务ID
             force_mode: 强制使用的模式（复制/剪切/链接），None则使用配置
-            force_overwrite: 强制覆盖选项，None则使用配置
+            force_overwrite: 强制覆盖策略（'覆盖'/'跳过'，兼容旧 bool），None则使用配置
             write_record: 是否写入 record 文件（data/record/{uuid}.json）
         """
         self.mode = force_mode or cm.get_config('mode')
-        self.overwrite = (
+        self.overwrite = _normalize_overwrite_policy(
             force_overwrite
             if force_overwrite is not None
             else cm.get_config('overwrite_existing')
@@ -51,19 +65,18 @@ class Trans:
                 if target_path.is_dir() or source_path.is_dir():
                     continue
                 if target_path.exists():
-                    if not self.overwrite:
-                        logger.warning(f'[处理迁移] 目标文件已存在, 拒绝覆盖: {target_path}')
-                        self._rollback_transfers(created_targets, moved_pairs)
-                        return f'partial_failure: target_exists {target_path}'
+                    if self.overwrite == '跳过':
+                        # 跳过已存在目标，继续处理其他文件（不失败不回滚）
+                        logger.info(f'[处理迁移] 目标文件已存在, 跳过: {target_path}')
+                        continue
                     logger.warning(f'[处理迁移] 目标文件已存在, 启用覆盖: {target_path}')
                     target_path.unlink()
                 if not target_path.parent.exists():
                     target_path.parent.mkdir(parents=True, exist_ok=True)
                 if target_path.exists():
-                    if not self.overwrite:
-                        logger.warning(f'[处理迁移] 目标文件在写入前再次出现, 拒绝覆盖: {target_path}')
-                        self._rollback_transfers(created_targets, moved_pairs)
-                        return f'partial_failure: target_exists {target_path}'
+                    if self.overwrite == '跳过':
+                        logger.info(f'[处理迁移] 目标文件在写入前再次出现, 跳过: {target_path}')
+                        continue
                     logger.warning(f'[处理迁移] 目标文件在写入前再次出现, 启用覆盖: {target_path}')
                     target_path.unlink()
                 if self.mode == '剪切':
