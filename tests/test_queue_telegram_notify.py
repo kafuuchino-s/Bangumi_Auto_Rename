@@ -296,6 +296,39 @@ def test_build_season_episode_uses_episode_number_for_season0():
     assert season_episode == "S00E03"
 
 
+def test_build_season_episode_groups_main_episodes_and_specials_separately():
+    """正片 + 特典分开显示：12 正片 + 6 特典应显示
+    「S01E01-E12 + S00E02-E07」，而非旧的「S01E01-E12」（漏特典）。"""
+    manager = _build_manager_with_stats(total=1, success=18, failed=0, failed_tasks=[])
+
+    targets = [
+        Path(f"/tmp/Jinrui - S01E{i:02d} - 1080p.mkv") for i in range(1, 13)
+    ] + [
+        Path(f"/tmp/Jinrui - S00E{i:02d} - Special.mkv") for i in range(2, 8)
+    ]
+
+    season_episode = manager._build_season_episode([{"season_id": 1}], targets)
+
+    assert season_episode == "S01E01-E12 + S00E02-E07"
+
+
+def test_build_season_episode_orders_main_seasons_before_specials():
+    """正片季升序在前，特典（S00）在后；单集不显示范围。"""
+    manager = _build_manager_with_stats(total=1, success=1, failed=0, failed_tasks=[])
+
+    targets = [
+        Path("/tmp/Show - S00E05 - Special.mkv"),
+        Path("/tmp/Show - S02E01 - 1080p.mkv"),
+        Path("/tmp/Show - S01E01 - 1080p.mkv"),
+    ]
+
+    season_episode = manager._build_season_episode(
+        [{"season_id": 1}, {"season_id": 2}, {"season_id": 0}], targets
+    )
+
+    assert season_episode == "S01E01 + S02E01 + S00E05"
+
+
 def test_resolve_task_poster_path_tv_prefers_season_poster():
     renamer = Rename()
     info = {

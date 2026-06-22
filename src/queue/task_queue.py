@@ -524,6 +524,14 @@ class TaskQueueManager:
         task_details: list[TaskData],
         record_targets: list[Path],
     ) -> str:
+        """构建集数行，按 season 分组（正片 + 特典分开显示）。
+
+        旧实现把所有 record_targets 的 episode 号混在一起取 min/max，且 season
+        只取 min(season_ids)，导致含特典（S00）的样本显示「已入库18个文件」
+        但「集数 S01E01-E12」（只正片范围），对不上——18 = 12 正片 + 6 特典。
+        现按 (season, episode) 分组：正片季（season>0）在前，特典（season=0）
+        在后，每组显示 S{ss}E{min}-E{max}，拼接如「S01E01-E12 + S00E01-E07」。
+        """
         season_ids: list[int] = []
         for item in task_details:
             season_id = item.get("season_id")
@@ -533,24 +541,31 @@ class TaskQueueManager:
         if not season_ids:
             return ""
 
-        season = min(season_ids)
-
-        episodes: list[int] = []
+        # 从 record_targets 抽 (season, episode) 对，按 season 分组
+        season_episodes: dict[int, list[int]] = {}
         for target in record_targets:
-            episode = self._extract_episode_from_name(target.name)
-            if episode is not None:
-                episodes.append(episode)
+            se = self._extract_season_episode_from_name(target.name)
+            if se is not None:
+                season, episode = se
+                season_episodes.setdefault(season, []).append(episode)
 
-        if episodes:
-            min_ep = min(episodes)
-            max_ep = max(episodes)
-            if min_ep == max_ep:
-                return f"S{season:02d}E{min_ep:02d}"
-            return f"S{season:02d}E{min_ep:02d}-E{max_ep:02d}"
+        if season_episodes:
+            # 正片季（season>0）升序在前，特典（season=0）在后
+            ordered_seasons = sorted(season_episodes.keys(), key=lambda s: (s == 0, s))
+            parts: list[str] = []
+            for season in ordered_seasons:
+                eps = sorted(set(season_episodes[season]))
+                min_ep, max_ep = eps[0], eps[-1]
+                if min_ep == max_ep:
+                    parts.append(f"S{season:02d}E{min_ep:02d}")
+                else:
+                    parts.append(f"S{season:02d}E{min_ep:02d}-E{max_ep:02d}")
+            return " + ".join(parts)
 
+        # fallback：抽不出 (season, episode) 对，退回旧 season_ids 逻辑
+        season = min(season_ids)
         if season == 0:
             return "S00"
-
         if self._batch_success <= 1:
             return f"S{season:02d}E01"
         return f"S{season:02d}E01-E{self._batch_success:02d}"
@@ -738,6 +753,22 @@ class TaskQueueManager:
                 continue
 
         return None
+
+    def _extract_season_episode_from_name(
+        self, filename: str
+    ) -> tuple[int, int] | None:
+        """从目标文件名提取 (season, episode) 对，供按 season 分组显示集数。
+
+        Emby 风格落地文件名形如「xxx - S01E01.mkv」「xxx - S00E07.mkv」，
+        优先匹配 S(\\d{1,2})E(\\d{1,3})。匹配不到返回 None（调用方走 fallback）。
+        """
+        match = re.search(r"\bS(\d{1,2})E(\d{1,3})\b", filename, re.IGNORECASE)
+        if not match:
+            return None
+        try:
+            return int(match.group(1)), int(match.group(2))
+        except ValueError:
+            return None
 
     def _build_tmdb_poster_url(
         self,
