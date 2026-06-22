@@ -36,7 +36,7 @@ class SubtitleAutoFetcher:
 
         if not task_data:
             return {"status": "skipped", "reason": "task_not_found"}
-        if not record_data:
+        if record_data is None:
             return self._persist_status(
                 task_uuid,
                 {
@@ -46,6 +46,20 @@ class SubtitleAutoFetcher:
             )
 
         scan_scope = self._resolve_scan_scope(task_data, record_data)
+        # 空 record（本次无落地视频，如全跳过任务）：若 scan_scope 能从
+        # task_data.target_root 推断出实际目录（series/movie 分支），仍扫描
+        # 实际目录给已落地视频补字幕；否则（task scope 依赖 record 遍历）无目标
+        # 视频，返回 no_landed_videos 而非伪装 subtitle_already_exists。
+        if not record_data and not scan_scope.get("root"):
+            return self._persist_status(
+                task_uuid,
+                {
+                    "status": "skipped",
+                    "reason": "no_landed_videos",
+                    "scan_scope_type": scan_scope["type"],
+                    "message": "record 为空且无法从 task_data 推断扫描目录，无目标视频",
+                },
+            )
         missing_videos = self._collect_videos_missing_subtitles(scan_scope, record_data)
         if not missing_videos:
             return self._persist_status(
@@ -92,7 +106,7 @@ class SubtitleAutoFetcher:
 
         if not task_data:
             return {"status": "skipped", "reason": "task_not_found"}
-        if not record_data:
+        if record_data is None:
             return self._persist_mapping_status(
                 task_uuid,
                 {"status": "skipped", "reason": "record_not_found"},
@@ -102,6 +116,18 @@ class SubtitleAutoFetcher:
         if missing_videos_override is not None:
             missing_videos = list(missing_videos_override)
         else:
+            # 空 record（本次无落地视频）：仅当 scope 无法从 task_data 推断出
+            # 实际目录时才 no_landed_videos；有 target_root 时仍扫描实际目录。
+            if not record_data and not scan_scope.get("root"):
+                return self._persist_mapping_status(
+                    task_uuid,
+                    {
+                        "status": "skipped",
+                        "reason": "no_landed_videos",
+                        "scan_scope_type": scan_scope["type"],
+                        "message": "record 为空且无法从 task_data 推断扫描目录，无目标视频",
+                    },
+                )
             missing_videos = self._collect_videos_missing_subtitles(
                 scan_scope, record_data
             )
