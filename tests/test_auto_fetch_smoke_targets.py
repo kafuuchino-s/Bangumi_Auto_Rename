@@ -148,6 +148,49 @@ def test_synthesize_targets_mixed_tv_plus_movie_keeps_movie():
     assert mt["source_path"] == "src/Gekijouban.mkv"
 
 
+def test_synthesize_targets_multi_tv_series_no_basename_collision():
+    """多 TV series 合集（0099 P4 本篇 tv:46388 + P4 Golden tv:61465）：
+    两个 series 都用 S01E01 编号，须按各自 series title 生成 target_file，
+    否则同名撞 → missing_videos 重复（39=26 真实 + 13 同名撞），且 Pi 用错
+    subject 名搜不到 P4 Golden 字幕。tv_meta 按 series ref 给各 series title/year。
+    """
+    mapped = [
+        {"source_path": "src/P4_01.mkv", "tmdb_legal_node": "tv:46388:S01E01"},
+        {"source_path": "src/P4_02.mkv", "tmdb_legal_node": "tv:46388:S01E02"},
+        {"source_path": "src/P4G_01.mkv", "tmdb_legal_node": "tv:61465:S01E01"},
+        {"source_path": "src/P4G_02.mkv", "tmdb_legal_node": "tv:61465:S01E02"},
+    ]
+    tv_meta = {
+        "tv:46388": {"title": "Persona4 the ANIMATION", "year": 2011},
+        "tv:61465": {"title": "Persona 4 The Golden Animation", "year": 2014},
+    }
+    ctx = {
+        "mapped": mapped,
+        "display_title": "Persona4 the ANIMATION",
+        "original_title": "",
+        "year": 2011,
+        "media_type": "tv",
+        "movie_meta": {},
+        "tv_meta": tv_meta,
+        "stage2_file_name": "sample.json",
+    }
+    _root, targets = smoke.synthesize_targets(ctx)
+    assert len(targets) == 4
+    # 4 个 target_file 全唯一（不撞 basename）
+    target_files = [t["target_file"] for t in targets]
+    assert len(set(target_files)) == 4
+    # P4 本篇 target 用 P4 本篇 title
+    p4 = [t for t in targets if "Persona4 the ANIMATION" in t["target_file"]]
+    assert len(p4) == 2
+    # P4 Golden target 用 P4 Golden title（独立目录），不用 P4 本篇 title
+    p4g = [t for t in targets if "Golden" in t["target_file"]]
+    assert len(p4g) == 2
+    # P4 Golden 的 S01E01 target 不该和 P4 本篇 S01E01 同路径
+    p4_e01 = [t for t in p4 if "S01E01" in t["target_file"]][0]["target_file"]
+    p4g_e01 = [t for t in p4g if "S01E01" in t["target_file"]][0]["target_file"]
+    assert p4_e01 != p4g_e01
+
+
 def test_extract_sample_context_series_title_uses_actually_mapped_candidate():
     """B8：series title/year 必须取 verified_plan 实际映的 candidate，而非
     legal_graph.candidates[0]。0002 大和号2205 曾因 candidates[0]=movie:860104

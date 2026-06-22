@@ -171,6 +171,21 @@ def extract_sample_context(arts: dict[str, Any]) -> dict[str, Any]:
                 "year": c.get("year"),
             }
 
+    # 多 TV series 合集：一个样本可能映到多个 TMDB tv series（如 0099 P4 本篇
+    # tv:46388 + P4 Golden tv:61465，两个 series 都用 S01E01 编号）。旧实现 tv 分支
+    # 用单一 series title 生成 ep_name → P4 Golden 的 target 用了 P4 本篇 title →
+    # 生成同名 target_file → missing_videos 重复（39=26 真实 + 13 同名撞）。
+    # 按 tv series ref 建各自的 title/year，tv 分支按 node 所属 series 取各自 title。
+    tv_meta: dict[str, dict[str, Any]] = {}
+    for c in candidates:
+        ctype = c.get("type") or c.get("media_type")
+        ref = c.get("tmdb_ref") or ""
+        if ctype == "tv" and ref.startswith("tv:"):
+            tv_meta[ref] = {
+                "title": c.get("display_title") or c.get("title") or "",
+                "year": c.get("year"),
+            }
+
     # series title/year 必须取 verified_plan **实际映的** candidate，而非
     # candidates[0]（legal_graph 候选顺序未必等于实际映的）。0002 大和号2205
     # 曾因 candidates[0]=movie:860104(前章) 而实际映 tv:157583，导致 synthesize
@@ -235,6 +250,7 @@ def extract_sample_context(arts: dict[str, Any]) -> dict[str, Any]:
         "year": year,
         "media_type": media_type,
         "movie_meta": movie_meta,
+        "tv_meta": tv_meta,
         "stage2_file_name": arts["stage2_file"].name,
         # 多季覆盖：per-source BGM subject 映射 + subject media_kind
         "src2subj": src2subj,
@@ -309,6 +325,7 @@ def synthesize_targets(ctx: dict[str, Any]) -> tuple[str, list[dict[str, str]]]:
     movie_base = cm.get_config("movie_path") or cm.get_config("anime_movie_path") or "data/smoke_movie"
     series_root = str(Path(base) / title_with_year)
     movie_meta = ctx.get("movie_meta") or {}
+    tv_meta = ctx.get("tv_meta") or {}
     targets = []
     for item in ctx["mapped"]:
         node = item["tmdb_legal_node"]
@@ -335,10 +352,24 @@ def synthesize_targets(ctx: dict[str, Any]) -> tuple[str, list[dict[str, str]]]:
             continue
         season, episode = parsed
         season_dir = f"Season {season:02d}" if season > 0 else "Season 00"
-        ep_name = f"{safe_title} - S{season:02d}E{episode:02d}.mkv"
+        # 多 TV series 合集：按 node 所属 series ref 查 tv_meta 取各自 title/year
+        # （0099 P4 本篇 tv:46388 + P4 Golden tv:61465，都 S01E01，须用各自 title
+        # 生成 target 否则同名撞 → missing_videos 重复）。tv_meta 无该 series 时
+        # 回退单一 series title（单 series 样本不受影响）。
+        parts = node.split(":")
+        series_ref = ":".join(parts[:2]) if len(parts) >= 2 else node
+        tv_m = tv_meta.get(series_ref) or {}
+        ep_title = tv_m.get("title") or title
+        ep_year = tv_m.get("year") or year
+        ep_safe_title = sanitize_component(ep_title)
+        ep_title_with_year = (
+            f"{ep_safe_title} ({ep_year})" if ep_year else ep_safe_title
+        )
+        ep_series_root = str(Path(base) / ep_title_with_year)
+        ep_name = f"{ep_safe_title} - S{season:02d}E{episode:02d}.mkv"
         targets.append({
             "source_path": item["source_path"],
-            "target_file": str(Path(series_root) / season_dir / ep_name),
+            "target_file": str(Path(ep_series_root) / season_dir / ep_name),
             "season": str(season),
             "episode": str(episode),
         })
