@@ -51,11 +51,13 @@ class Trans:
         self.R = R
         self.uuid = uuid
         self.write_record = write_record
+        # 实际落地映射 {源:目标}（排除跳过的），供上层统计真实入库数 / 通知。
+        # 历史上 record 直接 dump 原始 R，跳过模式下会把"没落地"伪装成"已入库"，
+        # 导致 transferred_file_count 虚高、TG「已入库 N 个文件」与实际落地不符。
+        self.landed_mapping: Dict[Path, Path] = {}
 
     def trans_file(self):
         path = RECORD_PATH / f'{self.uuid}.json'
-
-        _R = {str(k): str(v) for k, v in self.R.items()}
 
         created_targets: list[Path] = []
         moved_pairs: list[tuple[Path, Path]] = []
@@ -96,6 +98,8 @@ class Trans:
                     logger.error('[处理迁移] 模式错误！仅支持剪切, 复制, 链接')
                     self._rollback_transfers(created_targets, moved_pairs)
                     return 'partial_failure: invalid_mode'
+                # 该文件本次实际落地（含覆盖重落），记入 landed_mapping 供统计/通知
+                self.landed_mapping[source_path] = target_path
             except Exception as e:
                 logger.error(str(e))
                 try:
@@ -112,8 +116,12 @@ class Trans:
                 return f'partial_failure: {e}'
 
         if self.write_record:
+            # record 只写本次实际落地的 {源:目标}，不写跳过的——避免跳过模式下
+            # record 含未落地条目，导致 transferred_file_count / TG「已入库 N 个文件」
+            # 虚高（原始 R 含跳过项）。全跳过时 record 为空 dict，反映"本次 0 入库"。
+            landed = {str(k): str(v) for k, v in self.landed_mapping.items()}
             with open(str(path), 'w', encoding='utf-8') as f:
-                json.dump(_R, f, ensure_ascii=False)
+                json.dump(landed, f, ensure_ascii=False)
 
         return True
 

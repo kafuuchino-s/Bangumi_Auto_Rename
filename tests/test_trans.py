@@ -108,3 +108,101 @@ def test_trans_late_target_exists_overwrites_when_enabled(
     assert result is True
     assert target.read_bytes() == b'a'
     assert (tmp_path / 'record' / 'uuid-4.json').exists()
+
+
+def test_trans_skip_mode_record_only_lands_actually_written(
+    tmp_path: Path, monkeypatch
+):
+    """跳过模式：record 只写本次实际落地的 {源:目标}，跳过的不进 record；
+    landed_mapping 也只含落地的。避免上层 transferred_file_count / TG「已入库 N
+    个文件」把跳过的也算进去导致虚高。"""
+    monkeypatch.setattr('src.rename.trans.RECORD_PATH', tmp_path / 'record')
+    (tmp_path / 'record').mkdir(parents=True, exist_ok=True)
+
+    # 两个源 → 两个目标，其中一个目标已存在（会被跳过），另一个会实际落地
+    src_new = tmp_path / 'new.mkv'
+    src_skip = tmp_path / 'skip.mkv'
+    tgt_new = tmp_path / 'out' / 'new.mkv'
+    tgt_skip = tmp_path / 'out' / 'skip.mkv'
+    src_new.write_bytes(b'new')
+    src_skip.write_bytes(b'skip')
+    tgt_skip.parent.mkdir(parents=True, exist_ok=True)
+    tgt_skip.write_bytes(b'preexisting')
+
+    trans = Trans(
+        {src_new: tgt_new, src_skip: tgt_skip},
+        'uuid-skip-mix',
+        force_mode='复制',
+        force_overwrite='跳过',
+    )
+    result = trans.trans_file()
+
+    assert result is True
+    # landed_mapping 只含实际落地的那个
+    assert trans.landed_mapping == {src_new: tgt_new}
+    assert src_skip not in trans.landed_mapping
+    # record 只写实际落地的
+    import json as _json
+    record = _json.load(
+        open(tmp_path / 'record' / 'uuid-skip-mix.json', encoding='utf-8')
+    )
+    assert len(record) == 1
+    assert str(tgt_new) in record.values()
+    assert str(tgt_skip) not in record.values()
+
+
+def test_trans_skip_mode_all_skipped_writes_empty_record(
+    tmp_path: Path, monkeypatch
+):
+    """全跳过：record 为空 dict（反映本次 0 入库），landed_mapping 空，
+    仍返回 True（任务本身无错，只是无需落地）。"""
+    monkeypatch.setattr('src.rename.trans.RECORD_PATH', tmp_path / 'record')
+    (tmp_path / 'record').mkdir(parents=True, exist_ok=True)
+
+    src = tmp_path / 'source.mkv'
+    tgt = tmp_path / 'out' / 'target.mkv'
+    src.write_bytes(b'a')
+    tgt.parent.mkdir(parents=True, exist_ok=True)
+    tgt.write_bytes(b'preexisting')
+
+    trans = Trans(
+        {src: tgt},
+        'uuid-all-skip',
+        force_mode='复制',
+        force_overwrite='跳过',
+    )
+    result = trans.trans_file()
+
+    assert result is True
+    assert trans.landed_mapping == {}
+    import json as _json
+    record = _json.load(
+        open(tmp_path / 'record' / 'uuid-all-skip.json', encoding='utf-8')
+    )
+    assert record == {}
+
+
+def test_trans_overwrite_mode_reland_counts_as_landed(
+    tmp_path: Path, monkeypatch
+):
+    """覆盖模式：目标已存在删旧重落，算本次实际落地，进 record + landed_mapping。"""
+    monkeypatch.setattr('src.rename.trans.RECORD_PATH', tmp_path / 'record')
+    (tmp_path / 'record').mkdir(parents=True, exist_ok=True)
+
+    src = tmp_path / 'source.mkv'
+    tgt = tmp_path / 'out' / 'target.mkv'
+    src.write_bytes(b'fresh')
+    tgt.parent.mkdir(parents=True, exist_ok=True)
+    tgt.write_bytes(b'stale')
+
+    trans = Trans(
+        {src: tgt},
+        'uuid-overwrite',
+        force_mode='复制',
+        force_overwrite='覆盖',
+    )
+    result = trans.trans_file()
+
+    assert result is True
+    assert trans.landed_mapping == {src: tgt}
+    assert tgt.read_bytes() == b'fresh'

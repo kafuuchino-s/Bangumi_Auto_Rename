@@ -622,7 +622,8 @@ class Rename:
                     extra_task_data=plan_extra,
                 )
 
-            transfer_result = Trans(transfer_mapping, task_uuid).trans_file()
+            transfer_trans = Trans(transfer_mapping, task_uuid)
+            transfer_result = transfer_trans.trans_file()
             if transfer_result is not True:
                 return self.error_reply(
                     task_uuid,
@@ -654,7 +655,11 @@ class Rename:
                     **plan_extra,
                     'pipeline_mode': 'local_bangumi_to_tmdb_product',
                     'bgm_to_tmdb_execute_enabled': True,
-                    'transferred_file_count': len(transfer_mapping) + len(subtitle_mapping),
+                    # 实际落地数（排除跳过），而非原始 R 长度——跳过模式下
+                    # transfer_mapping 含未落地条目，会导致计数虚高、TG「已入库 N
+                    # 个文件」与实际不符。字幕 sidecar 仍按 mapping 条目计（薄入口）。
+                    'transferred_file_count': len(transfer_trans.landed_mapping)
+                    + len(subtitle_mapping),
                     'subtitle_mapping': {str(k): str(v) for k, v in subtitle_mapping.items()},
                     'subtitle_transfer_failed': False,
                 },

@@ -184,6 +184,69 @@ def test_trigger_telegram_notification_fallback_to_text(monkeypatch):
     assert "🌟 质量： 1080p x265 AAC" in notifier.sent_messages[0]
 
 
+def test_trigger_telegram_notification_all_skipped_reports_zero(monkeypatch, tmp_path):
+    """全跳过场景：record 文件存在但内容为空（本次 0 入库）时，
+    TG 通知应如实报「已入库0个文件」，而非回退到 _batch_success 虚报。
+
+    区分两种 record_targets 为空的情形：
+      - 有 record 文件但空（全跳过）→ had_any_record_file=True → 用 len(targets)=0
+      - 完全无 record 文件（异常）→ had_any_record_file=False → 回退 _batch_success
+    """
+    import json as _json
+
+    notifier = _FakeTelegramNotifier(available=True)
+    manager = _build_manager_with_stats(total=1, success=1, failed=0, failed_tasks=[])
+    manager._batch_success_task_ids = ["task-all-skip"]
+
+    monkeypatch.setattr(
+        "src.queue.task_queue.get_telegram_notifier",
+        lambda: notifier,
+    )
+
+    def _get_config(key):
+        if key == "telegram_notify_on_success":
+            return True
+        if key == "telegram_notify_on_failure":
+            return True
+        return None
+
+    monkeypatch.setattr("src.queue.task_queue.cm.get_config", _get_config)
+
+    def _read_task_data(task_id):
+        return {
+            "tmdb_name": "测试电影",
+            "tmdb_year": "2024",
+            "tmdb_media_type": "movie",
+            "tmdb_genres": [{"name": "动画"}],
+            "name": "测试电影",
+            "year": "2024",
+            "season_id": 0,
+            "is_anime": False,
+            "is_movie": True,
+            "path": "/tmp/test.mkv",
+            "release_group": "",
+            "resource_term": "1080p x265 AAC",
+            "poster_path": None,
+        }
+
+    monkeypatch.setattr(manager, "_read_task_data", _read_task_data)
+
+    # 真实 record 文件存在但内容为空 dict（全跳过落地 0 个）
+    record_dir = tmp_path / "record"
+    record_dir.mkdir(parents=True, exist_ok=True)
+    (record_dir / "task-all-skip.json").write_text("{}", encoding="utf-8")
+    monkeypatch.setattr("src.utils.path.RECORD_PATH", record_dir)
+
+    # 不 mock _collect_record_targets，走真实路径读空 record
+    manager._trigger_telegram_notification()
+
+    assert manager._had_any_record_file is True
+    assert len(notifier.sent_messages) == 1
+    # 全跳过如实报 0，不回退到 _batch_success=1
+    assert "📂 已入库0个文件" in notifier.sent_messages[0]
+    assert "已入库1个文件" not in notifier.sent_messages[0]
+
+
 def test_trigger_telegram_notification_respects_switch(monkeypatch):
     notifier = _FakeTelegramNotifier(available=True)
     manager = _build_manager_with_stats(total=2, success=2, failed=0, failed_tasks=[])

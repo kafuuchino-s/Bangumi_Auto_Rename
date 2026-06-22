@@ -407,8 +407,16 @@ class TaskQueueManager:
         task_details: list[TaskData],
         record_targets: list[Path],
     ) -> str:
-        """构建 Telegram caption 文本（入库模板风格）。"""
-        file_count = len(record_targets) if record_targets else self._batch_success
+        """构建 Telegram caption 文本（入库模板风格）。
+
+        已入库数 = record 中实际落地目标数（跳过的不计入）。
+        - 有 record 文件时（含全跳过空 record）：如实用 len(record_targets)，
+          全跳过即 0，不虚报。
+        - 完全无 record 文件（异常/非 rename 流程）：回退 _batch_success 兜底，
+          至少给一个合理的批次数。
+        """
+        had_record = getattr(self, "_had_any_record_file", False)
+        file_count = len(record_targets) if had_record else self._batch_success
         title_year = self._build_title_year(task_details)
         season_episode = self._build_season_episode(
             task_details,
@@ -458,15 +466,22 @@ class TaskQueueManager:
         return details
 
     def _collect_record_targets(self) -> list[Path]:
-        """收集成功任务的目标文件路径。"""
+        """收集成功任务的目标文件路径。
+
+        同时记录 self._had_any_record_file：本批成功任务中是否存在 record 文件。
+        用于区分两种 record_targets 为空的情形：
+          - 有 record 文件但内容为空（全跳过，本次 0 入库）→ 真实 0，不回退
+          - 完全无 record 文件（异常/非 rename 流程）→ 回退 _batch_success 兜底
+        """
         from ..utils.path import RECORD_PATH
 
         targets: list[Path] = []
+        had_any_record_file = False
         for task_id in self._batch_success_task_ids:
             record_path = RECORD_PATH / f"{task_id}.json"
             if not record_path.exists():
                 continue
-
+            had_any_record_file = True
             try:
                 with open(record_path, "r", encoding="utf-8") as f:
                     record_data = json.load(f)
@@ -478,6 +493,7 @@ class TaskQueueManager:
             except Exception as e:
                 logger.warning(f"[队列] 读取记录失败: {task_id}, {e}")
 
+        self._had_any_record_file = had_any_record_file
         return targets
 
     def _read_task_data(self, task_id: str) -> TaskData | None:
