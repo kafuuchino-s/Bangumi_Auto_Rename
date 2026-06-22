@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import html
 import re
+import threading
 import time
 from pathlib import Path
 from typing import Any, List, Optional, Tuple
@@ -75,6 +76,31 @@ class ACGRIPProvider(SubtitleProvider):
         self.browser_enabled = bool(
             cm.get_config("subtitle_auto_fetch_browser_enabled")
         )
+        # 长驻 FetcherSession 复用连接（per-thread）。旧实现每次 _fetch_page 都
+        # `with FetcherSession(...) as s: s.get()` 用完销毁，每次重新 TLS 握手 12-16s
+        # （impersonate=chrome 握手包重 + acgrip TLS 协商慢）。复用后同线程第2次起
+        # 0.75s（实测 18x）。thread-local 隔离：下载并发（ThreadPoolExecutor）时各
+        # 线程独立 session 互不干扰，同线程内多次 _fetch_page 复用连接。
+        # browser_enabled=True 时走 DynamicFetcher（无状态，不复用）。
+        self._thread_local = threading.local()
+
+    def _get_session(self):
+        """获取当前线程的长驻 FetcherSession client（懒加载 + 复用连接）。
+
+        browser_enabled=True 时返回 None（调用方走 DynamicFetcher 无状态分支）。
+        FetcherSession 的 `.get` 在 `__enter__()` 返回的 client 上（_SyncSessionLogic），
+        不是 FetcherSession 实例本身，所以存 enter 后的 client 并保持不退出。
+        """
+        if self.browser_enabled or FetcherSession is None:
+            return None
+        client = getattr(self._thread_local, "client", None)
+        if client is None:
+            session = FetcherSession(impersonate="chrome")
+            client = session.__enter__()
+            # 记住 session 以便析构时 __exit__（client 本身无 close）
+            self._thread_local.client = client
+            self._thread_local.session = session
+        return client
 
     def search(self, keyword: str, limit: int = 10) -> List[SubtitleCandidate]:
         keyword = str(keyword or "").strip()
@@ -273,8 +299,25 @@ class ACGRIPProvider(SubtitleProvider):
             logger.info(f"[字幕抓取][ACGRIP] 动态抓取: {url}")
             return DynamicFetcher.fetch(url)
 
-        with FetcherSession(impersonate="chrome") as session:
-            return session.get(url, stealthy_headers=True)
+        # 长驻 FetcherSession 复用连接（per-thread）。首次 TLS 握手 ~13s，同线程
+        # 后续请求复用连接 ~0.75s（18x）。旧实现每次 with FetcherSession 新建销毁，
+        # 每次握手 12-16s 是 acgrip 慢的主因（不是网站慢，是握手成本每次重付）。
+        session = self._get_session()
+        return session.get(url, stealthy_headers=True)
+
+    def close(self) -> None:
+        """清理当前线程的长驻 FetcherSession（可选，进程退出时 OS 自动回收）。
+
+        长进程场景下可主动调 close 释放当前线程的 session 连接。
+        """
+        session = getattr(self._thread_local, "session", None)
+        if session is not None:
+            try:
+                session.__exit__(None, None, None)
+            except Exception:
+                pass
+            self._thread_local.client = None
+            self._thread_local.session = None
 
     def _fetch_thread_pages(self, detail_url: str) -> Tuple[List[Tuple[int, Any]], bool]:
         first_page = self._fetch_page(detail_url)
