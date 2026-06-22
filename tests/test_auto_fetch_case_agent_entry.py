@@ -1,13 +1,20 @@
-"""auto_fetch Case Agent 入口 + fail_closed 解读对齐测试（Phase 2）。
+"""auto_fetch Case Agent 入口 + fail_closed 解读对齐测试（Pi fake runtime）。
 
-验证：
-- ``run_auto_fetch_case_agent`` single_shot 后端四态（accepted/fail_closed/
-  need_confirm/invalid）
-- auto_fetch.py 薄入口分发：Case Agent 主路径 accepted 走下载+processor；
-  fail_closed（候选/包被拒）映射旧 reason；AI 无选择时回退 legacy 规则兜底
+验证（auto_fetch 选帖/选包统一走 Pi evidence-driven 后端，single_shot 已移除）：
+- ``run_auto_fetch_case_agent`` 入口经 ``_run_pi_backend`` → ``run_auto_fetch_case_agent_pi``，
+  四态（accepted/fail_closed/need_confirm/invalid）由 Pi run 结果归一。
+- auto_fetch.py 薄入口：Case Agent 主路径 accepted 走下载 + processor；
+  fail_closed（候选/包被拒 / Pi 无 final）映射 ``reason=pi_fail_closed``，合格 skipped。
 - **fail_closed 解读对齐**：processor 落盘产 fail_closed（对外 need_confirm +
-  case_agent_status 审计）→ auto_fetch 视为可重试合格结果，透传 case_agent_status
-- source_video 证据口径统一（record key -> MissingVideoCard.source_video）
+  case_agent_status 审计）→ auto_fetch 视为该包未配对成功的合格结果，透传
+  ``processor_case_agent_status`` / ``failure_reason`` 审计。
+- source_video 证据口径统一（record key -> MissingVideoCard.source_video）。
+
+**不真起 Pi sidecar / 不发真实 AI**：通过 monkeypatch
+``pi_runner.run_auto_fetch_case_agent_pi`` 注入 ``runtime_invoker``，直接调
+``state.handle_tool`` 编排 tool_call 序列（search → submit_candidate → load →
+submit_package / fail_closed），provider 用 fake。范式见
+``tests/test_auto_fetch_case_agent_pi_runner.py::test_entry_pi_backend_accepted_returns_four_state``。
 """
 
 from __future__ import annotations
@@ -36,25 +43,6 @@ from src.subtitle.providers.base import (
 # ---------------------------------------------------------------------------
 # helpers
 # ---------------------------------------------------------------------------
-
-def _ai_choice(*, should_use=True, selected_index=0, reason="ok", language="简体中文"):
-    return SimpleNamespace(
-        selected_index=selected_index,
-        should_use=should_use,
-        confidence="High",
-        language_assessment=language,
-        reason=reason,
-        warnings=[],
-        model_dump=lambda: {
-            "selected_index": selected_index,
-            "should_use": should_use,
-            "confidence": "High",
-            "language_assessment": language,
-            "reason": reason,
-            "warnings": [],
-        },
-    )
-
 
 def _make_package(package_id, flags, *, has_direct=True):
     return SubtitleThreadPackage(
@@ -110,88 +98,97 @@ def _build_workspace():
     )
 
 
-class _FakeAI:
-    def __init__(self, candidate_choice, package_choice, available=True):
-        self._cand = candidate_choice
-        self._pkg = package_choice
-        self._available = available
+class _FakeProvider:
+    """记录调用的 fake provider（Pi 工具经 handle_tool 调 search/prepare/load）。"""
 
-    def is_available(self):
-        return self._available
+    def __init__(self, candidates_by_keyword=None):
+        self._by_kw = candidates_by_keyword or {}
 
-    def choose_subtitle_candidate(self, task_data, ranked_candidates):
-        return self._cand
+    def search(self, keyword, limit=10):
+        return list(self._by_kw.get(keyword, []))
 
-    def choose_subtitle_thread_package(self, task_data, candidate_data, package_summaries):
-        return self._pkg
+    def prepare_candidate(self, candidate):
+        return candidate
+
+    def load_thread_packages(self, candidate):
+        return candidate
+
+
+def _patch_pi_runner_with_invoker(monkeypatch, tmp_path, invoker):
+    """patch ``pi_runner.run_auto_fetch_case_agent_pi`` 注入 runtime_invoker，
+    并把 _case_root 指到 tmp_path 避免写真 run_dir。返回 (orig_restore)。"""
+    import src.subtitle.auto_fetch_case_agent.pi_runner as pr_mod
+
+    monkeypatch.setattr(pr_mod, "_case_root", lambda: tmp_path)
+    orig_run = pr_mod.run_auto_fetch_case_agent_pi
+
+    def patched_run(*, workspace, provider, task_data, source_label="", runtime_invoker=None):
+        return orig_run(
+            workspace=workspace,
+            provider=provider,
+            task_data=task_data,
+            source_label=source_label,
+            runtime_invoker=invoker,
+        )
+
+    monkeypatch.setattr(pr_mod, "run_auto_fetch_case_agent_pi", patched_run)
 
 
 # ---------------------------------------------------------------------------
-# run_auto_fetch_case_agent 四态
+# run_auto_fetch_case_agent 入口四态（Pi fake runtime 驱动）
 # ---------------------------------------------------------------------------
 
-def test_entry_accepted_returns_selected_candidate_and_package():
-    ws = _build_workspace()
-    cand = _make_candidate("Foo 字幕", packages=[_make_package("p1", ["batch", "simplified"])])
-    ai = _FakeAI(_ai_choice(should_use=True), _ai_choice(should_use=True))
+def test_entry_fail_closed_when_no_candidates(tmp_path, monkeypatch):
+    """Pi 搜不到候选 → fail_closed（合格）。入口层验 Pi run 归一的 fail_closed。"""
+    provider = _FakeProvider({"Foo": []})
+
+    def invoker(state):
+        # Pi 搜空：search_candidates 返回 no_candidates，agent fail_closed
+        state.handle_tool("search_candidates", {"keyword": "Foo"})
+        state.handle_tool(
+            "fail_closed",
+            {"reason": "no candidates match arc", "reason_kind": "no_candidates"},
+        )
+        return {"ok": True, "returncode": 0, "argv": ["fake"]}
+
+    _patch_pi_runner_with_invoker(monkeypatch, tmp_path, invoker)
     result = run_auto_fetch_case_agent(
-        workspace=ws, candidates=[cand], task_data={"uuid": "t1"},
-        ai_client=ai, candidate_summaries=[{"index": 0, "title": "Foo 字幕"}],
+        workspace=_build_workspace(),
+        candidates=[],
+        task_data={"uuid": "t1"},
+        ai_client=None,
+        candidate_summaries=[],
+        backend="pi",
+        provider=provider,
+    )
+    assert result["status"] == "fail_closed"
+
+
+def test_entry_accepted_returns_selected_refs(tmp_path, monkeypatch):
+    """Pi 选帖选包 accepted → 入口返回四态 accepted + selected refs + provider 原始对象。"""
+    cand = _make_candidate("Foo 字幕", packages=[_make_package("p1", ["batch", "simplified"])])
+    provider = _FakeProvider({"Foo": [cand]})
+
+    def invoker(state):
+        state.handle_tool("search_candidates", {"keyword": "Foo"})
+        state.handle_tool("load_candidate_packages", {"candidate_ref": "CD1"})
+        state.handle_tool("submit_package", {"package_ref": "PK1", "reason": "main batch"})
+        return {"ok": True, "returncode": 0, "argv": ["fake"]}
+
+    _patch_pi_runner_with_invoker(monkeypatch, tmp_path, invoker)
+    result = run_auto_fetch_case_agent(
+        workspace=_build_workspace(),
+        candidates=[],
+        task_data={"uuid": "t1"},
+        ai_client=None,
+        candidate_summaries=[],
+        backend="pi",
+        provider=provider,
     )
     assert result["status"] == "accepted"
     assert result["selected_candidate_ref"] == "CD1"
     assert result["selected_package_ref"] == "PK1"
-    assert result["selected_candidate"]["title"] == "Foo 字幕"
-
-
-def test_entry_fail_closed_when_candidate_ai_rejects():
-    ws = _build_workspace()
-    cand = _make_candidate("Wrong Arc", packages=[_make_package("p1", ["batch"])])
-    ai = _FakeAI(_ai_choice(should_use=False, reason="wrong arc"), None)
-    result = run_auto_fetch_case_agent(
-        workspace=ws, candidates=[cand], task_data={"uuid": "t1"},
-        ai_client=ai, candidate_summaries=[{"index": 0, "title": "Wrong Arc"}],
-    )
-    assert result["status"] == "fail_closed"
-    assert result["reason_kind"] == "candidate_ai_rejected"
-    assert result["ai_rerank_result"]["should_use"] is False
-
-
-def test_entry_fail_closed_when_package_ai_rejects_carries_candidate_ref():
-    ws = _build_workspace()
-    cand = _make_candidate("Foo 字幕", packages=[_make_package("p1", ["special"])])
-    ai = _FakeAI(_ai_choice(should_use=True), _ai_choice(should_use=False, reason="special-only"))
-    result = run_auto_fetch_case_agent(
-        workspace=ws, candidates=[cand], task_data={"uuid": "t1"},
-        ai_client=ai, candidate_summaries=[{"index": 0, "title": "Foo 字幕"}],
-    )
-    assert result["status"] == "fail_closed"
-    assert result["reason_kind"] == "package_ai_rejected"
-    # 候选已被接受，ref 透传供调用方恢复 selected_candidate
-    assert result["selected_candidate_ref"] == "CD1"
-    assert result["package_ai_result"]["should_use"] is False
-
-
-def test_entry_invalid_when_ai_unavailable():
-    ws = _build_workspace()
-    cand = _make_candidate("Foo 字幕", packages=[_make_package("p1", ["batch"])])
-    ai = _FakeAI(None, None, available=False)
-    result = run_auto_fetch_case_agent(
-        workspace=ws, candidates=[cand], task_data={"uuid": "t1"},
-        ai_client=ai, candidate_summaries=[{"index": 0, "title": "Foo 字幕"}],
-    )
-    assert result["status"] == "invalid"
-
-
-def test_entry_fail_closed_when_no_candidates():
-    ws = _build_workspace()
-    ai = _FakeAI(None, None)
-    result = run_auto_fetch_case_agent(
-        workspace=ws, candidates=[], task_data={"uuid": "t1"},
-        ai_client=ai, candidate_summaries=[],
-    )
-    assert result["status"] == "fail_closed"
-    assert result["reason_kind"] == "no_candidates"
+    assert "pi_run" in result["snapshot"]
 
 
 # ---------------------------------------------------------------------------
@@ -225,49 +222,38 @@ def _build_fetcher(monkeypatch, tmp_path):
     return fetcher
 
 
-def _force_case_agent_enabled(monkeypatch, enabled=True):
-    """强制 case_agent 主路径启用（config 默认即 True，显式钉死避免环境漂移）。"""
-    import src.subtitle.auto_fetch as af_mod
-
-    orig_cm_get = af_mod.cm_get
-
-    def patched(key, default=None):
-        if key == "subtitle_auto_fetch_case_agent_primary_enabled":
-            return enabled
-        if key == "subtitle_auto_fetch_case_agent_backend":
-            return "single_shot"
-        return orig_cm_get(key, default)
-
-    monkeypatch.setattr(af_mod, "cm_get", patched)
+def _install_pi_invoker(monkeypatch, tmp_path, invoker):
+    """把 fetcher 走的 pi_runner 也注入 invoker（process_task 经 auto_fetch 入口）。"""
+    _patch_pi_runner_with_invoker(monkeypatch, tmp_path, invoker)
 
 
 def test_process_case_agent_accepted_lands_and_persists_pipeline_mode(
     monkeypatch, tmp_path
 ):
+    """Pi accepted → 下载 + processor success → status=success，
+    pipeline_mode=auto_fetch_case_agent_primary，case_agent_status=accepted。"""
     fetcher = _build_fetcher(monkeypatch, tmp_path)
-    _force_case_agent_enabled(monkeypatch, enabled=True)
     cand = _make_candidate(
         "Foo 字幕", packages=[_make_package("p1", ["batch", "simplified"])]
     )
     monkeypatch.setattr(fetcher.provider, "search", lambda keyword, limit=10: [cand])
     monkeypatch.setattr(fetcher.provider, "prepare_candidate", lambda c: c)
     monkeypatch.setattr(fetcher.provider, "load_thread_packages", lambda c: c)
-    monkeypatch.setattr(
-        fetcher.ai_client,
-        "choose_subtitle_candidate",
-        lambda td, rc: _ai_choice(should_use=True, reason="ok"),
-    )
-    monkeypatch.setattr(
-        fetcher.ai_client,
-        "choose_subtitle_thread_package",
-        lambda td, cd, ps: _ai_choice(should_use=True, reason="pick"),
-    )
+
+    def invoker(state):
+        state.handle_tool("search_candidates", {"keyword": "Foo"})
+        state.handle_tool("load_candidate_packages", {"candidate_ref": "CD1"})
+        state.handle_tool("submit_package", {"package_ref": "PK1", "reason": "main batch"})
+        return {"ok": True, "returncode": 0, "argv": ["fake"]}
+
+    _install_pi_invoker(monkeypatch, tmp_path, invoker)
+
     downloaded = tmp_path / "got.zip"
     downloaded.write_text("subtitle", encoding="utf-8")
     monkeypatch.setattr(
         fetcher.provider,
         "download",
-        lambda c, dd, package=None: SimpleNamespace(
+        lambda c, dd, package=None, download_url=None: SimpleNamespace(
             status="success", downloaded_path=downloaded,
             download_url="https://x/got.zip", selected_package=package,
         ),
@@ -283,192 +269,76 @@ def test_process_case_agent_accepted_lands_and_persists_pipeline_mode(
     assert result["case_agent_status"] == "accepted"
 
 
-def test_process_case_agent_candidate_rejected_skips_with_audit(
-    monkeypatch, tmp_path
-):
+def test_process_case_agent_fail_closed_skips_with_audit(monkeypatch, tmp_path):
+    """Pi fail_closed（候选/包被拒或无 final）→ status=skipped，
+    reason 含 pi_fail_closed，case_agent_status=fail_closed（合格，不下载）。"""
     fetcher = _build_fetcher(monkeypatch, tmp_path)
-    _force_case_agent_enabled(monkeypatch, enabled=True)
     cand = _make_candidate("Wrong Arc", packages=[_make_package("p1", ["batch"])])
     monkeypatch.setattr(fetcher.provider, "search", lambda keyword, limit=10: [cand])
     monkeypatch.setattr(fetcher.provider, "prepare_candidate", lambda c: c)
     monkeypatch.setattr(fetcher.provider, "load_thread_packages", lambda c: c)
-    monkeypatch.setattr(
-        fetcher.ai_client,
-        "choose_subtitle_candidate",
-        lambda td, rc: _ai_choice(should_use=False, reason="wrong arc"),
-    )
-    monkeypatch.setattr(
-        fetcher.ai_client,
-        "choose_subtitle_thread_package",
-        lambda *a, **k: _ai_choice(should_use=True),
-    )
+
+    def invoker(state):
+        state.handle_tool("search_candidates", {"keyword": "Foo"})
+        # Pi 判定 arc 不匹配 → fail_closed
+        state.handle_tool(
+            "fail_closed",
+            {"reason": "no candidate matches arc", "reason_kind": "insufficient_evidence"},
+        )
+        return {"ok": True, "returncode": 0, "argv": ["fake"]}
+
+    _install_pi_invoker(monkeypatch, tmp_path, invoker)
     monkeypatch.setattr(
         fetcher.provider, "download",
-        lambda *a, **k: pytest.fail("download should not be called"),
+        lambda *a, **k: pytest.fail("download should not be called on fail_closed"),
     )
     monkeypatch.setattr(
         fetcher.processor, "process",
-        lambda *a, **k: pytest.fail("processor should not be called"),
+        lambda *a, **k: pytest.fail("processor should not be called on fail_closed"),
     )
 
     result = fetcher.process_task("task-1")
     assert result["status"] == "skipped"
-    assert result["reason"] == "candidate_ai_rejected"
     assert result["pipeline_mode"] == "auto_fetch_case_agent_primary"
     assert result["case_agent_status"] == "fail_closed"
-
-
-def test_process_case_agent_falls_back_legacy_when_ai_no_choice(
-    monkeypatch, tmp_path
-):
-    """AI 无选择（返回 None，非显式拒绝）→ single_shot 兼容兜底回退旧规则选帖/选包。"""
-    fetcher = _build_fetcher(monkeypatch, tmp_path)
-    _force_case_agent_enabled(monkeypatch, enabled=True)
-    # 两个包：font-only 与 batch；旧 _pick_best_package_by_rules 应选 batch
-    cand = _make_candidate(
-        "Foo 字幕",
-        packages=[
-            _make_package("font", ["font"]),
-            _make_package("batch", ["batch", "simplified"]),
-        ],
-    )
-    monkeypatch.setattr(fetcher.provider, "search", lambda keyword, limit=10: [cand])
-    monkeypatch.setattr(fetcher.provider, "prepare_candidate", lambda c: c)
-    monkeypatch.setattr(fetcher.provider, "load_thread_packages", lambda c: c)
-    # AI 候选返回 None（不可用/无选择）→ 回退旧链路 candidates[0]
-    monkeypatch.setattr(fetcher.ai_client, "choose_subtitle_candidate", lambda *a, **k: None)
-    monkeypatch.setattr(fetcher.ai_client, "choose_subtitle_thread_package", lambda *a, **k: None)
-    downloaded = tmp_path / "got.zip"
-    downloaded.write_text("subtitle", encoding="utf-8")
-    selected_pkg = {}
-
-    def fake_download(c, dd, package=None):
-        selected_pkg["id"] = package.package_id if package else None
-        return SimpleNamespace(
-            status="success", downloaded_path=downloaded,
-            download_url="https://x/got.zip", selected_package=package,
-        )
-
-    monkeypatch.setattr(fetcher.provider, "download", fake_download)
-    monkeypatch.setattr(
-        fetcher.processor, "process",
-        lambda path, target_task_uuid=None: {"status": "success"},
-    )
-
-    result = fetcher.process_task("task-1")
-    assert result["status"] == "success"
-    # 旧规则兜底选 batch 包（font-only 被规则排除）
-    assert selected_pkg["id"] == "batch"
-    assert result["pipeline_mode"] == "auto_fetch_legacy_compat"
+    # _run_pi_backend fail_closed 归一 reason_kind='pi_fail_closed'，auto_fetch 透传
+    assert result["reason"] == "pi_fail_closed"
 
 
 # ---------------------------------------------------------------------------
-# fail_closed 解读对齐：processor fail_closed → 可重试合格结果 + 审计透传
+# fail_closed 解读对齐：processor fail_closed → 审计透传
 # ---------------------------------------------------------------------------
 
-def test_process_retries_when_processor_returns_fail_closed_with_audit(
+def test_process_persists_processor_case_agent_status_when_processor_fail_closed(
     monkeypatch, tmp_path
 ):
-    """processor 落盘产 fail_closed（对外 need_confirm + case_agent_status）→
-    auto_fetch 视为该包未配对成功的合格可重试结果，换关键词重试，
-    透传 processor_case_agent_status / failure_reason 审计。"""
+    """Pi accepted + 下载成功，但 processor 落盘产 fail_closed（对外 need_confirm）→
+    auto_fetch 视为该包未配对成功的合格可重试结果，最终 failed，
+    透传 processor_case_agent_status=fail_closed + failure_reason=processor_fail_closed。
+
+    （Pi 驱动后无关键词循环重试；本例验单次 accepted→download→processor fail_closed
+    的审计透传，不再验"换词重试"。）"""
     fetcher = _build_fetcher(monkeypatch, tmp_path)
-    _force_case_agent_enabled(monkeypatch, enabled=True)
-
-    # 两个关键词：第一个关键词的包 processor fail_closed；第二个成功
-    cand_wrong = _make_candidate(
-        "Foo 字幕 v1", packages=[_make_package("p1", ["batch", "simplified"])]
-    )
-    cand_correct = _make_candidate(
-        "Foo 字幕 v2", packages=[_make_package("p2", ["batch", "simplified"])]
-    )
-
-    def fake_search(keyword, limit=10):
-        if keyword == "Foo":
-            return [cand_wrong]
-        if keyword == "Foo v2":
-            return [cand_correct]
-        return []
-
-    monkeypatch.setattr(fetcher.provider, "search", fake_search)
-    monkeypatch.setattr(fetcher.provider, "prepare_candidate", lambda c: c)
-    monkeypatch.setattr(fetcher.provider, "load_thread_packages", lambda c: c)
-    monkeypatch.setattr(
-        fetcher.ai_client, "choose_subtitle_candidate",
-        lambda td, rc: _ai_choice(should_use=True, reason="ok"),
-    )
-    monkeypatch.setattr(
-        fetcher.ai_client, "choose_subtitle_thread_package",
-        lambda td, cd, ps: _ai_choice(should_use=True, reason="pick"),
-    )
-
-    downloaded_wrong = tmp_path / "wrong.zip"
-    downloaded_wrong.write_text("s", encoding="utf-8")
-    downloaded_correct = tmp_path / "correct.zip"
-    downloaded_correct.write_text("s", encoding="utf-8")
-    processor_calls = []
-
-    def fake_download(c, dd, package=None):
-        path = downloaded_wrong if "v1" in c.title else downloaded_correct
-        return SimpleNamespace(
-            status="success", downloaded_path=path,
-            download_url=f"https://x/{path.name}", selected_package=package,
-        )
-
-    def fake_process(path, target_task_uuid=None):
-        processor_calls.append(path.name)
-        if path == downloaded_wrong:
-            # processor Case Agent fail_closed：对外 need_confirm + 审计
-            return {
-                "status": "need_confirm",
-                "case_agent_status": "fail_closed",
-                "error": "字幕映射合同校验未通过",
-            }
-        return {"status": "success"}
-
-    monkeypatch.setattr(fetcher.provider, "download", fake_download)
-    monkeypatch.setattr(fetcher.processor, "process", fake_process)
-
-    # 让第二个关键词 "Foo v2" 进入 pending（AI 扩词或确定性词）
-    monkeypatch.setattr(
-        fetcher.ai_client,
-        "generate_subtitle_search_queries",
-        lambda td: ["Foo v2"],
-    )
-
-    result = fetcher.process_task("task-1")
-    assert result["status"] == "success"
-    # 第一个包因 processor fail_closed 被重试，第二个包成功
-    assert processor_calls == ["wrong.zip", "correct.zip"]
-    assert result["pipeline_mode"] == "auto_fetch_case_agent_primary"
-
-
-def test_process_fail_closed_persists_processor_case_agent_status_when_all_fail(
-    monkeypatch, tmp_path
-):
-    """所有关键词都 processor fail_closed → 最终 failed，但 last_result 透传
-    processor_case_agent_status=fail_closed + failure_reason=processor_fail_closed。"""
-    fetcher = _build_fetcher(monkeypatch, tmp_path)
-    _force_case_agent_enabled(monkeypatch, enabled=True)
     cand = _make_candidate(
         "Foo 字幕", packages=[_make_package("p1", ["batch", "simplified"])]
     )
     monkeypatch.setattr(fetcher.provider, "search", lambda keyword, limit=10: [cand])
     monkeypatch.setattr(fetcher.provider, "prepare_candidate", lambda c: c)
     monkeypatch.setattr(fetcher.provider, "load_thread_packages", lambda c: c)
-    monkeypatch.setattr(
-        fetcher.ai_client, "choose_subtitle_candidate",
-        lambda td, rc: _ai_choice(should_use=True, reason="ok"),
-    )
-    monkeypatch.setattr(
-        fetcher.ai_client, "choose_subtitle_thread_package",
-        lambda td, cd, ps: _ai_choice(should_use=True, reason="pick"),
-    )
+
+    def invoker(state):
+        state.handle_tool("search_candidates", {"keyword": "Foo"})
+        state.handle_tool("load_candidate_packages", {"candidate_ref": "CD1"})
+        state.handle_tool("submit_package", {"package_ref": "PK1", "reason": "main batch"})
+        return {"ok": True, "returncode": 0, "argv": ["fake"]}
+
+    _install_pi_invoker(monkeypatch, tmp_path, invoker)
+
     downloaded = tmp_path / "got.zip"
     downloaded.write_text("s", encoding="utf-8")
     monkeypatch.setattr(
         fetcher.provider, "download",
-        lambda c, dd, package=None: SimpleNamespace(
+        lambda c, dd, package=None, download_url=None: SimpleNamespace(
             status="success", downloaded_path=downloaded,
             download_url="https://x/got.zip", selected_package=package,
         ),
@@ -482,10 +352,6 @@ def test_process_fail_closed_persists_processor_case_agent_status_when_all_fail(
         }
 
     monkeypatch.setattr(fetcher.processor, "process", fake_process)
-    # 无 AI 扩词，单关键词耗尽即终止
-    monkeypatch.setattr(
-        fetcher.ai_client, "generate_subtitle_search_queries", lambda td: []
-    )
 
     result = fetcher.process_task("task-1")
     assert result["status"] == "failed"

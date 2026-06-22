@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import html
 import re
+import time
 from pathlib import Path
 from typing import Any, List, Optional, Tuple
 from urllib.parse import quote_plus, unquote, urljoin
@@ -40,41 +41,27 @@ _CLOUD_HOST_KEYWORDS = (
     "alipan",
     "pan.baidu.com",
 )
-_BATCH_KEYWORDS = (
-    "全集",
-    "全季",
-    "合集",
-    "batch",
-    "complete",
-    "full",
-)
-_REVISION_KEYWORDS = (
-    "修正版",
-    "修订",
-    "修正",
-    "校对",
-    "v2",
-    "v3",
-    "rev",
-    "fix",
-)
-_PATCH_KEYWORDS = ("补丁", "patch")
-_SPECIAL_KEYWORDS = (
-    "特典",
-    "ncop",
-    "nced",
-    "pv",
-    "cm",
-    "ova",
-    "oad",
-    "sp",
-    "ex",
-)
-_FONT_KEYWORDS = ("font", "fonts", "字体")
-_SIMPLIFIED_KEYWORDS = ("简体", "简中", "chs", "gb")
-_TRADITIONAL_KEYWORDS = ("繁体", "繁中", "cht", "big5")
-_BILINGUAL_KEYWORDS = ("双语", "简日", "繁日", "中日")
+# 包性质关键词检测已删（AI-first）：_BATCH/_REVISION/_PATCH/_SPECIAL/_FONT/
+# _SIMPLIFIED/_TRADITIONAL/_BILINGUAL 关键词表是硬编码死的，遇日文"フォント"等漏判，
+# 且 special 把 ova/oad/sp 全归一类但 OAD 可能是正片需要的（0045 Gundam OVA 缺字幕）。
+# 包性质（字幕/字体/special/简繁/batch）改由 Pi 看 post_text + links[].label/
+# filename_hint 自判，固定层只给原文事实。package_flags 字段保留空 list 兼容。
 _MAX_THREAD_PAGES = 3
+
+# 下载网络瞬时错误重试：acgrip 偶发 SSL 握手失败（[SSL: WRONG_VERSION_NUMBER]）、
+# 连接重置、超时。这类是网络抖动非业务失败，重试可恢复（0042 sel#2、0045 都踩过）。
+# HTTP 4xx/5xx 中 4xx 是永久拒绝不重试；5xx 是服务端错误可重试。
+_DOWNLOAD_MAX_ATTEMPTS = 3
+_DOWNLOAD_RETRY_BACKOFF_SECONDS = 2.0
+
+
+class DownloadRetryExhausted(Exception):
+    """下载重试耗尽。携带实际尝试次数 attempts 供上层审计。"""
+
+    def __init__(self, message: str, attempts: int, cause: Optional[Exception] = None):
+        super().__init__(message)
+        self.attempts = attempts
+        self.__cause__ = cause
 
 
 class ACGRIPProvider(SubtitleProvider):
@@ -174,6 +161,7 @@ class ACGRIPProvider(SubtitleProvider):
         candidate: SubtitleCandidate,
         destination_dir: Path,
         package: Optional[SubtitleThreadPackage] = None,
+        download_url: Optional[str] = None,
     ) -> SubtitleDownloadResult:
         destination_dir.mkdir(parents=True, exist_ok=True)
 
@@ -199,8 +187,14 @@ class ACGRIPProvider(SubtitleProvider):
                     selected_package=selected_package,
                 )
 
-        download_url = self._pick_download_url(candidate, selected_package)
-        if not download_url:
+        # 附件选择交给 Pi（AI-first）：Pi 通过 submit_package(link_url=...) 指定具体
+        # 附件下载。固定层不打分选"最好的"附件——那属于语义判断（哪个是正片/前篇/
+        # 後篇/简繁），应由 Pi 据 link label/filename + post_text 决定。Pi 未指定
+        # url 时回退取第一个可下载附件（兼容旧调用 + 单附件包无需 Pi 指定）。
+        resolved_url = download_url or self._first_downloadable_url(
+            candidate, selected_package
+        )
+        if not resolved_url:
             return SubtitleDownloadResult(
                 candidate=candidate,
                 downloaded_path=None,
@@ -210,29 +204,65 @@ class ACGRIPProvider(SubtitleProvider):
                 selected_package=selected_package,
             )
 
-        filename = self._infer_filename(candidate, download_url, selected_package)
-        downloaded_path = destination_dir / filename
-
-        try:
-            downloaded_path = self._download_file(download_url, downloaded_path)
-        except Exception as exc:
-            logger.error(f"[字幕抓取][ACGRIP] 下载失败: {exc}")
+        # 固定层硬筛：只收论坛直链（acgrip attachment）或已知字幕/压缩后缀的直链。
+        # 网盘外链（百度/蓝奏/123pan/阿里云盘等）无法直接 HTTP 下载（需登录/提取码/
+        # 浏览器交互），且 Pi 不应把网盘外链当可下载附件提交。这里显式拦截，避免
+        # 下载器去 GET 网盘页面拿到 HTML 当"下载成功"。100% 确定的事实判断（URL host）。
+        if not self._is_downloadable_direct_url(resolved_url):
+            logger.warning(
+                f"[字幕抓取][ACGRIP] 拒绝非论坛直链（网盘外链不可直接下载）: "
+                f"{resolved_url[:80]}"
+            )
             return SubtitleDownloadResult(
                 candidate=candidate,
                 downloaded_path=None,
-                download_url=download_url,
-                status="failed",
-                error=str(exc),
+                download_url=resolved_url,
+                status="no_download",
+                error="链接非论坛直链（网盘外链不可直接下载），请选 acgrip 附件直链",
                 selected_package=selected_package,
             )
 
-        logger.info(f"[字幕抓取][ACGRIP] 下载完成: {downloaded_path}")
+        filename = self._infer_filename(candidate, resolved_url, selected_package)
+        downloaded_path = destination_dir / filename
+
+        attempts = 1
+        try:
+            downloaded_path, attempts = self._download_file(resolved_url, downloaded_path)
+        except DownloadRetryExhausted as exc:
+            logger.error(
+                f"[字幕抓取][ACGRIP] 下载失败（重试 {exc.attempts}/{_DOWNLOAD_MAX_ATTEMPTS} 次后仍失败）: {exc.__cause__}"
+            )
+            return SubtitleDownloadResult(
+                candidate=candidate,
+                downloaded_path=None,
+                download_url=resolved_url,
+                status="failed",
+                error=str(exc.__cause__) if exc.__cause__ else str(exc),
+                selected_package=selected_package,
+                download_attempts=exc.attempts,
+            )
+        except Exception as exc:
+            # 4xx 永久错误等不重试直接抛出的情况（attempts=1）
+            logger.error(f"[字幕抓取][ACGRIP] 下载失败（永久错误，未重试）: {exc}")
+            return SubtitleDownloadResult(
+                candidate=candidate,
+                downloaded_path=None,
+                download_url=resolved_url,
+                status="failed",
+                error=str(exc),
+                selected_package=selected_package,
+                download_attempts=1,
+            )
+
+        retry_note = f"（重试 {attempts - 1} 次后成功）" if attempts > 1 else ""
+        logger.info(f"[字幕抓取][ACGRIP] 下载完成{retry_note}: {downloaded_path}")
         return SubtitleDownloadResult(
             candidate=candidate,
             downloaded_path=downloaded_path,
-            download_url=download_url,
+            download_url=resolved_url,
             status="success",
             selected_package=selected_package,
+            download_attempts=attempts,
         )
 
     def _fetch_page(self, url: str):
@@ -363,7 +393,7 @@ class ACGRIPProvider(SubtitleProvider):
             2000,
         )
         floor_label = self._extract_floor_label(post, floor_index)
-        package_flags = self._detect_package_flags(post_text, links)
+        # package_flags 不再固定层检测（AI-first）：Pi 看 post_text + links 自判包性质。
 
         return SubtitleThreadPackage(
             package_id=f"post-{match.group(1)}",
@@ -375,7 +405,7 @@ class ACGRIPProvider(SubtitleProvider):
             context_text=context_text,
             links=links,
             has_direct_download=any(link.is_direct_download for link in links),
-            package_flags=package_flags,
+            package_flags=[],
         )
 
     def _extract_post_header_text(self, post) -> str:
@@ -487,36 +517,6 @@ class ACGRIPProvider(SubtitleProvider):
             )
         return None
 
-    def _detect_package_flags(
-        self,
-        post_text: str,
-        links: List[SubtitleThreadPackageLink],
-    ) -> List[str]:
-        link_text = " ".join(link.filename_hint or link.label for link in links)
-        combined = html.unescape(f"{post_text} {link_text}").lower()
-        flags: List[str] = []
-        if self._contains_any(combined, _BATCH_KEYWORDS):
-            flags.append("batch")
-        if self._contains_any(combined, _REVISION_KEYWORDS):
-            flags.append("revision")
-        if self._contains_any(combined, _PATCH_KEYWORDS):
-            flags.append("patch")
-        if self._contains_any(combined, _SPECIAL_KEYWORDS):
-            flags.append("special")
-        if self._contains_any(combined, _FONT_KEYWORDS):
-            flags.append("font")
-        if self._contains_any(combined, _SIMPLIFIED_KEYWORDS):
-            flags.append("simplified")
-        if self._contains_any(combined, _TRADITIONAL_KEYWORDS):
-            flags.append("traditional")
-        if self._contains_any(combined, _BILINGUAL_KEYWORDS):
-            flags.append("bilingual")
-        return flags
-
-    @staticmethod
-    def _contains_any(text: str, keywords: Tuple[str, ...]) -> bool:
-        return any(keyword in text for keyword in keywords)
-
     def _fill_candidate_downloads(self, candidate: SubtitleCandidate, detail_page) -> None:
         links = self._collect_download_links_from_node(detail_page)
         attachment_urls, external_urls = self._flatten_links(links)
@@ -549,19 +549,21 @@ class ACGRIPProvider(SubtitleProvider):
         packages: List[SubtitleThreadPackage],
     ) -> Optional[SubtitleThreadPackage]:
         for package in packages:
-            if self._pick_package_download_url(package):
+            if any(link.is_direct_download and link.url for link in package.links):
                 return package
         return None
 
-    def _pick_download_url(
+    def _first_downloadable_url(
         self,
         candidate: SubtitleCandidate,
         package: Optional[SubtitleThreadPackage] = None,
     ) -> Optional[str]:
+        # Pi 未指定具体附件时的兜底：取第一个可下载附件 url。固定层不做"哪个附件
+        # 最好"的语义判断（不打分），交给 Pi 通过 submit_package(link_url=...) 选。
         if package is not None:
-            download_url = self._pick_package_download_url(package)
-            if download_url:
-                return download_url
+            for link in package.links:
+                if link.is_direct_download and link.url:
+                    return link.url
 
         if candidate.attachment_urls:
             return candidate.attachment_urls[0]
@@ -572,43 +574,27 @@ class ACGRIPProvider(SubtitleProvider):
                 return url
         return None
 
-    def _pick_package_download_url(
-        self,
-        package: SubtitleThreadPackage,
-    ) -> Optional[str]:
-        scored_links = []
-        for index, link in enumerate(package.links):
-            if not link.is_direct_download:
-                continue
-            scored_links.append((self._score_package_link(link), -index, link.url))
-        if not scored_links:
-            return None
-        scored_links.sort(reverse=True)
-        return scored_links[0][2]
+    @staticmethod
+    def _is_downloadable_direct_url(url: str) -> bool:
+        """固定层硬筛：url 是否可直接 HTTP 下载（非网盘外链）。
 
-    def _score_package_link(self, link: SubtitleThreadPackageLink) -> int:
-        text = html.unescape(f"{link.label} {link.filename_hint}").lower()
-        suffix = Path((link.filename_hint or link.label or link.url).split("?")[0]).suffix.lower()
-        score = 0
-        if link.kind == "attachment":
-            score += 100
-        if link.is_direct_download:
-            score += 40
-        if suffix in SUBTITLE_EXTENSIONS:
-            score += 35
-        elif suffix in _ARCHIVE_SUFFIXES:
-            score += 20
-        if self._contains_any(text, _BATCH_KEYWORDS):
-            score += 25
-        if self._contains_any(text, _REVISION_KEYWORDS):
-            score += 15
-        if self._contains_any(text, _FONT_KEYWORDS):
-            score -= 80
-        if self._contains_any(text, _PATCH_KEYWORDS):
-            score -= 40
-        if self._contains_any(text, _SPECIAL_KEYWORDS):
-            score -= 30
-        return score
+        100% 确定的事实判断（URL host / 后缀模式），无语义：
+        - acgrip 论坛附件直链（`attachment&aid=`）→ True
+        - 非 acgrip 但 url 路径后缀是压缩包/字幕 → True（其它站点的真直链）
+        - 网盘 host（百度/蓝奏/123pan/阿里云盘等）→ False（需登录/提取码，不可直接 GET）
+        - 其它未知外链 → False（保守拒绝，逼 Pi 选论坛直链）
+        """
+        if not url:
+            return False
+        if _ATTACHMENT_RE.search(url):
+            return True
+        url_lower = url.lower()
+        if any(host in url_lower for host in _CLOUD_HOST_KEYWORDS):
+            return False
+        suffix = Path(unquote(url.split("?")[0])).suffix.lower()
+        if suffix in _ARCHIVE_SUFFIXES or suffix in SUBTITLE_EXTENSIONS:
+            return True
+        return False
 
     def _infer_filename(
         self,
@@ -690,7 +676,12 @@ class ACGRIPProvider(SubtitleProvider):
 
         return self._safe_filename(filename, fallback)
 
-    def _download_file(self, download_url: str, destination: Path) -> Path:
+    def _download_file(self, download_url: str, destination: Path) -> Tuple[Path, int]:
+        """下载文件，对网络瞬时错误（SSL/连接/超时/5xx）重试。
+
+        返回 (resolved_path, attempts)。attempts = 实际尝试次数（含重试）。
+        永久错误（4xx、硬筛拒绝）不重试，直接抛出。
+        """
         headers = {
             "Referer": self.base_url,
             "User-Agent": (
@@ -698,20 +689,53 @@ class ACGRIPProvider(SubtitleProvider):
                 "(KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
             ),
         }
-        with requests.get(
-            download_url,
-            headers=headers,
-            timeout=self.timeout,
-            stream=True,
-        ) as response:
-            response.raise_for_status()
-            resolved_name = self._resolve_download_filename(response, destination.name)
-            resolved_path = destination.with_name(resolved_name)
-            with open(resolved_path, "wb") as file:
-                for chunk in response.iter_content(chunk_size=8192):
-                    if chunk:
-                        file.write(chunk)
-        return resolved_path
+        last_exc: Optional[Exception] = None
+        for attempt in range(1, _DOWNLOAD_MAX_ATTEMPTS + 1):
+            try:
+                with requests.get(
+                    download_url,
+                    headers=headers,
+                    timeout=self.timeout,
+                    stream=True,
+                ) as response:
+                    response.raise_for_status()
+                    resolved_name = self._resolve_download_filename(
+                        response, destination.name
+                    )
+                    resolved_path = destination.with_name(resolved_name)
+                    with open(resolved_path, "wb") as file:
+                        for chunk in response.iter_content(chunk_size=8192):
+                            if chunk:
+                                file.write(chunk)
+                return resolved_path, attempt
+            except requests.exceptions.HTTPError as exc:
+                status_code = exc.response.status_code if exc.response is not None else 0
+                # 4xx 是永久拒绝（403/404/410），重试无意义 → 直接抛
+                if 400 <= status_code < 500:
+                    raise
+                # 5xx 服务端错误 → 可重试
+                last_exc = exc
+                logger.warning(
+                    f"[字幕抓取][ACGRIP] 下载 HTTP {status_code}（第 {attempt}/"
+                    f"{_DOWNLOAD_MAX_ATTEMPTS} 次），重试: {exc}"
+                )
+            except (requests.exceptions.SSLError, requests.exceptions.ConnectionError,
+                    requests.exceptions.Timeout, requests.exceptions.ChunkedEncodingError) as exc:
+                # 网络瞬时错误（SSL 握手失败/连接重置/超时/分块中断）→ 重试
+                last_exc = exc
+                logger.warning(
+                    f"[字幕抓取][ACGRIP] 下载网络瞬时错误（第 {attempt}/"
+                    f"{_DOWNLOAD_MAX_ATTEMPTS} 次），重试: {exc}"
+                )
+            if attempt < _DOWNLOAD_MAX_ATTEMPTS:
+                time.sleep(_DOWNLOAD_RETRY_BACKOFF_SECONDS)
+        # 重试耗尽，抛带 attempts 的异常供上层审计（attempt 此时 = MAX）
+        assert last_exc is not None
+        raise DownloadRetryExhausted(
+            f"下载重试 {attempt} 次后仍失败: {last_exc}",
+            attempts=attempt,
+            cause=last_exc,
+        )
 
     def _unique(self, items: List[str]) -> List[str]:
         seen = set()

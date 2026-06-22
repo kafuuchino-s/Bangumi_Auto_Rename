@@ -15,6 +15,7 @@ AI 多轮调查中动态加入的候选/楼包卡片，暴露给 AI 的合同边
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass, field
 
 from .models import (
@@ -24,6 +25,19 @@ from .models import (
     SearchKeywordCard,
     ThreadPackageCard,
 )
+
+
+def _compact_text(value: str, *, limit: int = 200) -> str:
+    """压缩长文本喂 Pi（参考 rename case_agent._compact_text）。
+
+    readable card 的 post_text/context_text 可能很长（楼层正文全文），
+    一次性灌给 Pi 会撑大 context 导致卡死。readable card 用此压缩成摘要；
+    inspect_package 保留全文（按需深入单包）。
+    """
+    text = re.sub(r'\s+', ' ', str(value or '')).strip()
+    if len(text) <= limit:
+        return text
+    return text[: max(0, limit - 3)].rstrip() + '...'
 
 
 @dataclass
@@ -108,6 +122,18 @@ class AutoFetchCaseWorkspace:
                 'target_path': card.target_path,
                 # 重命名前 local 原始文件名（AI 证据，非合法落点）；可能为空。
                 'source_video': card.source_video,
+                # 方向 A：BGM subject 名（auto_fetch 搜索词来源，Pi 据此 search_candidates_batch）
+                'bgm_subject_name': card.bgm_subject_name,
+                'bgm_subject_name_cn': card.bgm_subject_name_cn,
+                # 多季覆盖：per-video BGM subject（Pi 按 subject 分组多帖多包）。
+                # bangumi_subject_id>0 时本 card 属该 subject；=0 时旧 task 无映射，
+                # Pi 回退 task 级 bgm_subject_name。subject_name=日文原名命中干净但
+                # 可能漏，subject_name_cn=中文命中全含噪音，Pi 多变体搜。
+                'bangumi_subject_id': card.bangumi_subject_id,
+                'subject_name': card.subject_name,
+                'subject_name_cn': card.subject_name_cn,
+                # 用户字幕语言偏好（Pi 据此在简繁双语包间抉择）
+                'preferred_language': card.preferred_language,
             }
             for card in self.missing_videos
         ]
@@ -132,8 +158,17 @@ class AutoFetchCaseWorkspace:
                 'source': card.source,
                 'pages_scanned': card.pages_scanned,
                 'pagination_truncated': card.pagination_truncated,
-                'package_count': len(card.packages),
-                'has_downloadable_attachment': card.has_downloadable_attachment,
+                # 未 load（packages_loaded=False）时包/附件未知，渲染为 null
+                # 表示"未探测"，AI 不得据此判定无附件或 fail_closed。
+                'packages_loaded': card.packages_loaded,
+                'package_count': (
+                    len(card.packages) if card.packages_loaded else None
+                ),
+                'has_downloadable_attachment': (
+                    card.has_downloadable_attachment
+                    if card.packages_loaded
+                    else None
+                ),
                 'packages': self._readable_packages(card),
             }
             for card in self.candidates
@@ -151,12 +186,14 @@ class AutoFetchCaseWorkspace:
                 'floor_label': pkg.floor_label,
                 'post_author': pkg.post_author,
                 'post_time': pkg.post_time,
-                'post_text': pkg.post_text,
-                'context_text': pkg.context_text,
+                # post_text/context_text 压缩成摘要（全文用 inspect_package 按需读）
+                'post_text': _compact_text(pkg.post_text, limit=200),
+                'context_text': _compact_text(pkg.context_text, limit=200),
                 'has_direct_download': pkg.has_direct_download,
                 'package_flags': pkg.package_flags,
                 'has_downloadable_link': pkg.has_downloadable_link,
-                'is_font_or_patch_only': pkg.is_font_or_patch_only,
+                # links 压成 count + 前 2 个样例（完整链接用 inspect_package）
+                'link_count': len(pkg.links),
                 'links': [
                     {
                         'url': link.url,
@@ -165,7 +202,7 @@ class AutoFetchCaseWorkspace:
                         'filename_hint': link.filename_hint,
                         'is_direct_download': link.is_direct_download,
                     }
-                    for link in pkg.links
+                    for link in pkg.links[:2]
                 ],
             }
             for pkg in candidate.packages

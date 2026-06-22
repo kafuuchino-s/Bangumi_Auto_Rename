@@ -519,7 +519,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument('--workers', type=int, default=DEFAULT_WORKERS)
     parser.add_argument('--retry-workers', type=int, default=1, help='Workers for the retry pass of non-accepted samples.')
     parser.add_argument('--max-retries', type=int, default=1, help='Retry passes for non-accepted samples; 0 disables retry.')
-    parser.add_argument('--sample-timeout-seconds', type=int, default=0)
+    parser.add_argument('--sample-timeout-seconds', type=int, default=600, help='Terminate a bridge run that exceeds this wall-clock limit. 0 disables. Default 600s covers complex multi-season samples (e.g. 189-episode Hidamari Sketch) that would otherwise hang with no timeout.')
     parser.add_argument('--output-dir', type=Path, default=None)
     parser.add_argument('--dry-build', action='store_true', help='Parse accepted artifacts and compile bridge input; do not call Pi or TMDB.')
     parser.add_argument('--all', action='store_true', help='Run every selected accepted artifact. Without this and without --limit, limit defaults to 3.')

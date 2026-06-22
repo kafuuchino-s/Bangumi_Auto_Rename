@@ -83,6 +83,13 @@ class SubtitleTargetVideoCard(BaseModel):
     target_dir: str = ''
     # 该任务下视频总数，供 AI 判断"单视频电影直接配对"等。
     task_video_count: int = 0
+    # 该视频所属 BGM subject 的 arc 名（日文原名 / 中文名），来自 rename 落盘的
+    # task_data.bgm_video_subject_map + bgm_subjects。多季番各季 arc 名不同
+    # （如鬼灭 S02 無限列車編 / S03 遊郭編），字幕包按 arc 名发帖，Case Agent
+    # 据此区分同 episode 不同 season（S02E01 vs S03E01 都从 E01 开始，靠 episode
+    # number 无法区分，arc 名是关键证据）。可为空（旧 task 无 subject 映射）。
+    arc_name: str = ''
+    arc_name_cn: str = ''
 
     model_config: ClassVar[ConfigDict] = ConfigDict(extra='forbid')
 
@@ -95,6 +102,20 @@ SubtitleDisposition = Literal[
     'map_to_video',
     'unmatched',
     'needs_more_evidence',
+]
+
+# unmatched 行的结构化原因枚举（AI 产出，固定层透传，processor 据此分类展示）。
+# - no_target_video: 字幕对应的内容（PV/TV-Spot/Picture Drama/OAD/special/花絮/
+#   05.5 等）不在 target videos 里——TMDB 无对应条目或 rename 未映射非正片物料。
+#   processor 把此类移出 unmatched（确定的"无目标"，非"待人工"）。
+# - duplicate_language: 同一 target video 同语言已有字幕，此条是重复（去重）。
+# - no_confident_match: 有 target video 但不确定配哪个（真待人工）。
+# - unknown: AI 未给（兜底，processor 保守留在 unmatched，不误过滤）。
+UnmatchedReasonKind = Literal[
+    'no_target_video',
+    'duplicate_language',
+    'no_confident_match',
+    'unknown',
 ]
 
 
@@ -114,6 +135,9 @@ class SubtitleMappingRow(BaseModel):
     # 原始语言标签（如 chs/cht/jpn），由 processor 的 LANGUAGE_MAP 归一到 Emby 码。
     language: str = ''
     reason: str = ''
+    # 仅 disposition='unmatched' 时有意义：结构化原因，供 processor 分类展示。
+    # map_to_video / needs_more_evidence 行忽略此字段。
+    unmatched_reason_kind: UnmatchedReasonKind = 'unknown'
 
     model_config: ClassVar[ConfigDict] = ConfigDict(extra='forbid')
 
@@ -163,14 +187,35 @@ class CompiledSubtitleMapping(BaseModel):
     model_config: ClassVar[ConfigDict] = ConfigDict(extra='forbid')
 
 
+class CompiledUnmatchedEntry(BaseModel):
+    """单条已验证的 unmatched 字幕：ref + 结构化原因。
+
+    ``reason_kind`` 由 AI 在 draft row 给出（``unmatched_reason_kind``），
+    verifier 透传。processor 据此把 ``no_target_video`` 移出 unmatched
+    （确定的"无目标"），其余留在 unmatched（待人工）。
+    """
+
+    ref: str = ''
+    reason_kind: UnmatchedReasonKind = 'unknown'
+    reason: str = ''
+
+    model_config: ClassVar[ConfigDict] = ConfigDict(extra='forbid')
+
+
 class CompiledSubtitlePlan(BaseModel):
     """verified 后的最终字幕计划，供 processor 落盘。"""
 
     mappings: list[CompiledSubtitleMapping] = Field(default_factory=list)
-    unmatched_refs: list[str] = Field(default_factory=list)
+    # 结构化 unmatched（含 reason_kind，供 processor 分类展示）。
+    unmatched: list[CompiledUnmatchedEntry] = Field(default_factory=list)
     summary: str = ''
 
     model_config: ClassVar[ConfigDict] = ConfigDict(extra='forbid')
+
+    @property
+    def unmatched_refs(self) -> list[str]:
+        """兼容旧消费点：返回 unmatched 的 ref 列表。"""
+        return [entry.ref for entry in self.unmatched if entry.ref]
 
 
 # ---------------------------------------------------------------------------

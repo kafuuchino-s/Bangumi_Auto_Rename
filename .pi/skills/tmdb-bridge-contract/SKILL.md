@@ -68,6 +68,17 @@ Use this pattern:
 
 Episode-title matches are semantic evidence for Pi. They still do not override the verifier: the output remains recipe params that compile to exposed `tv:<id>:SxxEyy` / `movie:<id>` legal nodes, or to `tmdb_target_absent` when the checked TMDB graph genuinely lacks the node.
 
+## Before Fail Closed
+
+`fail_closed` is only for concrete global TMDB ambiguity or contradiction: two or more equally-plausible TMDB refs for the *same* BGM node with no deciding evidence, or a contradiction the hydrated graph cannot resolve. It is not a catch-all for "this path got hard" or "my current draft is incomplete". Before calling `fail_closed`, run this recheck in order:
+
+1. Frontier coverage scan. Re-read the accepted BGM plan and list every BGM-mapped subject/assignment (regular sequence, special, OVA/OAD, movie, span, side-story). Each one must already be covered by a rule in the current recipe params with an explicit disposition (`map_to_tmdb`, `tmdb_absent_group`, or `supplemental_group`). If any BGM-mapped node has *no* rule yet, `fail_closed` is premature: go back to rule drafting.
+2. Anchor check. Confirm at least one TMDB anchor search plus `get_tmdb_legal_graph` hydration was completed for the main BGM subject. Calling `fail_closed` with zero anchor hydration (no search, or a search whose result was never hydrated) is premature.
+3. Unexplored path vs global ambiguity. Distinguish "I never searched this BGM node's TMDB ref" from "I searched and got two indistinguishable TMDB refs". A BGM movie, special, OVA/OAD, or side-story subject whose TMDB ref you never searched or never hydrated is a *missing rule*, not global ambiguity: search the title, hydrate the candidate, then draft `map_to_tmdb` (or `tmdb_absent_group` after a targeted season-0/episode-title check). Only when a searched+hydrated node yields genuinely indistinguishable candidates with no deciding title/alias/year/episode-title/overview evidence is `fail_closed` warranted.
+4. Target-absent first. A BGM node that is real in Bangumi but has no TMDB legal node after a *targeted* check is `tmdb_absent_group`, never `fail_closed`. Re-confirm the targeted check was done (season 0 cards, episode titles, or a separate movie search) before downgrading.
+
+The common failure mode this prevents: anchoring only one TMDB ref (e.g. the TV series), mapping the regular sequence, then `fail_closed`-ing the whole case because a BGM movie/special/side-story in the same package was never searched — when a separate `movie:<id>` search or a season-0 card check would have produced a legal node or a clean `tmdb_absent_group`. If the frontier scan in step 1 is non-empty, you have not finished exploring; do not fail closed.
+
 ## Recipe Params Shape
 
 ```json
@@ -139,4 +150,5 @@ Episode-title matches are semantic evidence for Pi. They still do not override t
 - Repeated recap/summary/CM/bonus-title searches are usually weaker than targeted checks against the TMDB legal graph. Once the graph lacks the needed BGM-mapped node after targeted checks, use `tmdb_absent_group` rather than searching variants of the same missing item.
 - When BGM and TMDB episode titles are available, use them as stronger evidence than a fuzzy series title and mention the episode-title/order/count evidence in the rule `reason`.
 
-If evidence is insufficient to choose between TMDB candidates, fail closed with the conflicting IDs/titles and the exact missing evidence instead of guessing. One otherwise identified BGM episode/special lacking a TMDB legal node is better recorded as `tmdb_target_absent` than treated as global failure.
+- Before any `fail_closed`, complete the `## Before Fail Closed` recheck: every BGM-mapped node must have a rule with an explicit disposition, at least one TMDB anchor must be searched and hydrated, and an unexplored BGM movie/special/OVA/OAD/side-story is a missing rule (search → hydrate → `map_to_tmdb` or `tmdb_absent_group`), not global ambiguity.
+- If evidence is insufficient to choose between TMDB candidates, fail closed with the conflicting IDs/titles and the exact missing evidence instead of guessing. One otherwise identified BGM episode/special lacking a TMDB legal node is better recorded as `tmdb_target_absent` than treated as global failure.

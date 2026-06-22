@@ -141,13 +141,20 @@ function objectSchema(properties) {
 }
 
 const selectionQuickReference = [
-  "Selection workflow: search_candidates(keyword) -> inspect candidate titles/arcs -> submit_candidate(candidate_ref, language, reason) -> load_candidate_packages(candidate_ref) -> inspect_package(package_ref) -> submit_package(package_ref, reason).",
+  "MULTI-SEASON COVERAGE workflow (cover as many missing videos as a human would): group missing videos by `bangumi_subject_id` -> for a subject with uncovered videos, search_candidates(keywords=[subject_name, subject_name_cn, ...variants]) -> inspect titles -> load_candidate_packages -> submit_candidate(candidate_ref, language, bangumi_subject_id, reason) -> inspect_package -> submit_package(package_ref, reason) -> CHECK which missing videos are still uncovered -> pick another uncovered subject's name and search again -> repeat until all covered or all subjects exhausted -> submit_complete(reason).",
+  "A task may span multiple BGM subjects (e.g. Demon Slayer S01+S02+S03+movie = 4 subjects). Each subject usually has its own subtitle thread. ONE thread may cover multiple subjects (e.g. 'ARIA The AVVENIRE + Aria The Arietta' combined OVA thread) — selecting that package once covers both; do NOT select it twice.",
+  "Search-term strategy: prefer per-video `subject_name` (Japanese original, e.g. 鬼滅の刃 遊郭編) — hits cleanly but can miss (無限列車編 only hits movie thread, misses TV arc). Also try `subject_name_cn` (Chinese, 鬼灭之刃 游郭篇) — hits more but noisier (PV/花屏/求字幕 threads). Use MULTIPLE variants (Japanese/Chinese/romanized, with/without 篇/编 suffix), disambiguate from mixed results by thread title + package post_text. Do NOT use TMDB English season names (0 hits). Fall back to task-level bgm_subject_name only when per-video subject_name is empty.",
+  "search_candidates and load_candidate_packages are batch-limited per call: if a result has remaining_keywords / remaining_candidate_refs, more were deferred — inspect what you have first, and only call again with the remaining refs if none covers the missing videos. Do not try to load everything at once.",
+  "CRITICAL: a search hit only returns the thread title. Until you call load_candidate_packages for a candidate, its `packages_loaded=false` and `package_count`/`has_downloadable_attachment` read as `null` (unknown), NOT `0`/`false`. Never read `null` as 'no package' and never fail_closed with no_downloadable_candidates based on `null` package fields — you MUST load_candidate_packages first to turn `null` into a real count. Only after packages_loaded=true can package_count=0 legitimately mean 'no attachment', and even then try another candidate before fail_closed.",
   "Use the CD<idx> candidate refs and PK<idx> package refs shown in context / search results. Titles, detail URLs, and filenames are evidence only; submit must reference the short refs.",
   "Each MV<idx> missing video card has both `video` (post-rename target filename) and `source_video` (pre-rename local original filename, evidence only, may be empty). When the subtitle release group / naming matches the original local files, `source_video` is a stronger pairing hint; prefer it for matching when non-empty.",
-  "submit_candidate gate: candidate must have downloadable attachment or packages.",
-  "submit_package gate: package must have a downloadable link and must NOT be font/patch-only (needs batch/simplified/traditional/bilingual marker).",
-  "If no candidate matches the arc (wrong season/OVA/特别篇), call fail_closed with concrete reason. If genuinely uncertain between candidates, call need_confirm.",
-  "Do not download files inside the agent; submit_package returns the selection for the Python layer to download.",
+  "Each MV<idx> also carries `bangumi_subject_id`/`subject_name`/`subject_name_cn` (per-video BGM subject — group missing videos by this for multi-season coverage) and `preferred_language` (user subtitle language preference, default zh-CN). Use preferred_language to break ties between eligible main-episode packages: zh-CN prefers simplified then bilingual then traditional; zh-TW prefers traditional then bilingual then simplified. This is a preference, not a gate.",
+  "submit_candidate gate: candidate must have packages_loaded=true AND (downloadable attachment or packages). Pass bangumi_subject_id to declare which subject this thread covers. Submitting an unloaded candidate (null package fields) is rejected with a 'load first' hint — call load_candidate_packages then re-submit.",
+  "submit_package gate: package must have a downloadable link (the ONLY package gate — fixed layer no longer rejects font/special packages; package nature is YOUR judgment from post_text + link labels, see SKILL). submit_package DOES NOT finish the case — it appends a selection (returns selections_count + covered_subject_ids). Continue with more subjects or call submit_complete when done. Pass link_url to pin a specific attachment and bangumi_subject_id to declare which subject this selection covers (essential when one package's links map to different subjects).",
+  "submit_complete: terminal accepted path. Requires at least one selection. Does NOT require every subject to have a selection (uncovered subjects with no forum thread are left uncovered — qualified result). If ZERO packages found across all subjects, call fail_closed instead of submit_complete.",
+  "Quality ordering among same-language main-episode packages: prefer `revision` flag (修正版/校对/v2/v3/fix) over unmarked, prefer `batch` over single-episode when missing videos span a season, and read inspect_package `post_text` to judge coverage completeness — floor text is the strongest signal, filenames/flags are hints.",
+  "DO NOT STOP AFTER ONE SUBJECT. A single package usually covers one season; other seasons stay uncovered. You MUST keep searching other subjects until all videos are covered or all subjects are exhausted. fail_closed with no_downloadable_candidates based on null/unloaded package fields is a CONTRACT VIOLATION. If genuinely uncertain between candidates, call need_confirm.",
+  "Do not download files inside the agent; submit_package/submit_complete return the selections for the Python layer to download.",
 ].join("\n");
 
 async function callPythonTool(tool, toolArgs) {
@@ -173,6 +180,16 @@ async function readFinalResult() {
   const response = await fetch(`${server}/final`);
   if (!response.ok) return { ok: false, final_result: null };
   return await response.json();
+}
+
+async function readStateSnapshot() {
+  try {
+    const response = await fetch(`${server}/state`);
+    if (!response.ok) return null;
+    return await response.json();
+  } catch {
+    return null;
+  }
 }
 
 function sleep(ms) {
@@ -366,24 +383,29 @@ const tools = [
   proxyTool(
     "search_candidates",
     "Search Candidates",
-    `Search the subtitle provider for candidates by keyword and load them as CD<idx> facts.\n${selectionQuickReference}`,
-    objectSchema({ keyword: Json.String(), limit: Json.Optional(Json.Number()) }),
+    `Search the subtitle provider for candidates by BGM subject name variants and load them as CD<idx> facts. Pass BGM name variants (name_cn / name / source title) as keywords[]; the tool searches a batch-limited subset per call (primary variants first) and reports remaining_keywords if more are deferred — call again with the remaining keywords only if no loaded candidate matches the arc.\n${selectionQuickReference}`,
+    objectSchema({ keywords: Json.Array(Json.String()), limit: Json.Optional(Json.Number()) }),
     {
-      promptSnippet: "Search the provider for subtitle candidates",
+      promptSnippet: "Search the provider by BGM subject name variants (batch-limited)",
       promptGuidelines: [
-        "Use a keyword derived from the missing video title / source_video hint.",
-        "Inspect returned candidate titles to pick the matching arc.",
+        "Pass BGM subject name variants (bgm_subject_name_cn, bgm_subject_name, source title hint) as keywords[]; primary variants are searched first.",
+        "If the result has remaining_keywords, more variants were deferred — only search them if no loaded candidate matches the arc.",
+        "Inspect returned candidate titles to pick the matching arc (right season / not OVA / not special for main episodes).",
       ],
     },
   ),
   proxyTool(
     "load_candidate_packages",
     "Load Candidate Packages",
-    "Deep-load a candidate's thread packages as PK<idx> facts.",
-    objectSchema({ candidate_ref: Json.String() }),
+    "Deep-load thread packages for candidates as PK<idx> facts. Pass plausible candidate_refs; the tool loads a batch-limited subset per call and reports remaining_candidate_refs if more are deferred — inspect the loaded ones first, then call again with the remaining refs only if none matches.",
+    objectSchema({ candidate_refs: Json.Array(Json.String()) }),
     {
-      promptSnippet: "Deep-load packages for a candidate",
-      promptGuidelines: ["Call after submit_candidate to populate package cards."],
+      promptSnippet: "Deep-load packages for candidates (batch-limited)",
+      promptGuidelines: [
+        "Pass candidate_refs you want to inspect; the tool loads a batch-limited subset per call.",
+        "If the result has remaining_candidate_refs, inspect the loaded candidates first; only load the rest if none matches the arc.",
+        "Call after search_candidates to populate package cards before submit_package.",
+      ],
     },
   ),
   proxyTool(
@@ -393,33 +415,57 @@ const tools = [
     objectSchema({ package_ref: Json.String() }),
     {
       promptSnippet: "Inspect a package before selecting it",
-      promptGuidelines: ["Avoid font/patch-only or special-only packages for main episodes."],
+      promptGuidelines: ["Judge package nature yourself from post_text + link labels. BD-BOX/BDRip/Raw in a label is the video SOURCE the subtitle is timed for, NOT a video file (subtitle forums don't host video); the attachment is almost always a .rar/.zip/.7z/.ass. A 楼主 package may be a nested archive (outer .rar → inner .rar per season); the extractor unpacks nested archives, so select it if post_text confirms subtitles. See SKILL."],
     },
   ),
   proxyTool(
     "submit_candidate",
     "Submit Candidate",
-    `Select a candidate thread + language. Gate: candidate must be downloadable.\n${selectionQuickReference}`,
+    `Select a candidate thread + language. Gate: candidate must have packages_loaded=true AND (downloadable attachment or packages). Submitting an unloaded candidate (null package_count) is rejected — call load_candidate_packages first.\nParam bangumi_subject_id: declare which missing-video subject this thread covers (from the missing video card). One thread may cover several subjects — pass the subject id it is being selected for so the selection is accounted against that subject's uncovered videos. For multi-subject tasks you will call submit_candidate + submit_package again for each remaining subject.\n${selectionQuickReference}`,
     objectSchema({
       candidate_ref: Json.String(),
       language: Json.Optional(Json.String()),
       reason: Json.Optional(Json.String()),
+      bangumi_subject_id: Json.Optional(Json.Number()),
     }),
     {
-      promptSnippet: "Select the matching candidate thread",
-      promptGuidelines: ["Submit the candidate whose arc matches the missing videos."],
+      promptSnippet: "Select the matching candidate thread for a subject",
+      promptGuidelines: ["Submit only after load_candidate_packages (so packages_loaded=true); pick the candidate whose arc matches the missing videos of ONE subject.", "Pass bangumi_subject_id so this selection is accounted against that subject."],
     },
   ),
   proxyTool(
     "submit_package",
     "Submit Package",
-    `Select a package to download. Gate: downloadable + not font/patch-only. This is the terminal accepted path.\n${selectionQuickReference}`,
-    objectSchema({ package_ref: Json.String(), reason: Json.Optional(Json.String()) }),
+    `Select a package to download. Gate: has_downloadable_link (the ONLY package gate — the fixed layer no longer rejects font/special packages; package nature is YOUR judgment, see SKILL "Package nature judgment"). IMPORTANT: submit_package does NOT finish the case — it APPENDS one selection (thread + package + language + bangumi_subject_id). After submit_package, re-check uncovered videos; if more subjects still lack subtitles, search + load + submit_candidate + submit_package again for those subjects. Only when you judge no more useful packages can be obtained, call submit_complete to finish. Do NOT stop after one subject.\n\nATTACHMENT SELECTION (link_url): a package may contain SEVERAL direct-download attachments in one floor — e.g. a thread bundles 前篇 [01-04].zip AND 後篇 [05-08].7z as two separate attachments in the same post. The fixed layer does NOT pick which attachment to download — YOU pick. Call inspect_package first to see every link's label/filename_hint/kind/is_direct_download, then pass link_url with the EXACT url of the attachment that covers the subject's missing videos (match by label/filename: 前篇/前章/01-04 vs 後篇/後章/05-08, simplified .sc vs traditional .tc, etc.). If a package has multiple main-episode attachments covering DIFFERENT episode ranges (like 前篇+後篇), submit_package once per attachment with its link_url — each becomes a separate selection that downloads and pairs independently. If you omit link_url, the first downloadable attachment is used (fine for single-attachment packages, but for multi-attachment packages you SHOULD specify to avoid downloading the wrong one). The link_url must be one of the package's direct-download links (inspect_package shows them).\n\nSUBJECT DECLARATION (bangumi_subject_id): pass bangumi_subject_id to declare which BGM subject this selection covers — essential when one package's links cover DIFFERENT subjects (e.g. 前篇 link → subject 319390, 後篇 link → subject 352905). This keeps the selection accounted against the right subject's uncovered videos. If omitted, the subject from the last submit_candidate for this candidate is used (which may be wrong if you submit_candidate multiple times for the same thread with different subjects — prefer passing it explicitly with link_url).\n${selectionQuickReference}`,
+    objectSchema({
+      package_ref: Json.String(),
+      reason: Json.Optional(Json.String()),
+      link_url: Json.Optional(Json.String()),
+      bangumi_subject_id: Json.Optional(Json.Number()),
+    }),
     {
-      promptSnippet: "Select the package to fetch",
+      promptSnippet: "Append a package selection for one subject",
       promptGuidelines: [
         "Submit only after load_candidate_packages + inspect_package.",
-        "This is the terminal structured-output path for normal completion.",
+        "submit_package APPENDS a selection — it is NOT terminal. Re-check uncovered videos afterwards.",
+        "For multi-subject tasks, repeat submit_candidate + submit_package for each subject that still lacks subtitles.",
+        "For multi-attachment packages, inspect_package first and pass link_url = the exact attachment url covering the subject's episodes (前篇/後篇, simplified/traditional, etc.); submit once per attachment if one floor bundles several main-episode archives.",
+        "Pass bangumi_subject_id with link_url when one package's attachments map to different subjects (前篇→A, 後篇→B), so the selection is accounted against the right subject.",
+        "Package nature (subtitle vs font vs special) is YOUR judgment from post_text + link labels — the fixed layer no longer tags it. See SKILL.",
+      ],
+    },
+  ),
+  proxyTool(
+    "submit_complete",
+    "Submit Complete",
+    `Terminal accepted path. Call ONLY after at least one submit_package has appended a selection. submit_complete finishes the case with all accumulated selections (thread + package + language + bangumi_subject_id tuples). Gate: requires ≥1 selection; does NOT require every missing-video subject to be covered (if some subjects have no acgrip thread / no downloadable package, leave them uncovered and still submit_complete — the workflow reports them as uncovered). Do NOT call submit_complete with zero selections — that is fail_closed, not submit_complete.\n${selectionQuickReference}`,
+    objectSchema({ reason: Json.Optional(Json.String()) }),
+    {
+      promptSnippet: "Finish after accumulating ≥1 package selection",
+      promptGuidelines: [
+        "Call only after ≥1 submit_package.",
+        "Required: at least one selection. Not required: every subject covered.",
+        "If no package could be selected at all, use fail_closed instead.",
       ],
     },
   ),
@@ -434,7 +480,7 @@ const tools = [
     }),
     {
       promptSnippet: "Finish safely with fail_closed",
-      promptGuidelines: ["Use fail_closed for concrete wrong-arc / no-candidate situations."],
+      promptGuidelines: ["Use fail_closed for concrete wrong-arc / no-candidate situations, and ONLY after you have load_candidate_packages for the plausible candidates and confirmed their packages are truly empty (packages_loaded=true, package_count=0). fail_closed with no_downloadable_candidates based on null/unloaded package fields is a contract violation."],
     },
   ),
   proxyTool(
@@ -551,16 +597,41 @@ async function readRunnerProgressNudgeLines() {
   }
   const contextCalls = toolNames.filter((name) => name === "get_auto_fetch_context").length;
   const searchCalls = toolNames.filter((name) => name === "search_candidates").length;
+  const loadCalls = toolNames.filter((name) => name === "load_candidate_packages").length;
   const submitCandCalls = toolNames.filter((name) => name === "submit_candidate").length;
   const submitPkgCalls = toolNames.filter((name) => name === "submit_package").length;
+  const submitCompleteCalls = toolNames.filter((name) => name === "submit_complete").length;
   if (!contextCalls && toolNames.length) {
     lines.push("Next: call get_auto_fetch_context to read missing videos and scan scope.");
   }
   if (contextCalls && !searchCalls && !submitCandCalls) {
-    lines.push("Next: search_candidates with a title/source hint, then submit_candidate.");
+    lines.push("Next: search_candidates with a title/source hint.");
+  }
+  if (searchCalls && !loadCalls) {
+    lines.push("Next: load_candidate_packages for plausible candidates — search only returned thread titles, package_count is still null (unknown). You MUST load before judging downloadability or submit_candidate. Do NOT fail_closed no_downloadable based on null package fields.");
   }
   if (submitCandCalls && !submitPkgCalls) {
-    lines.push("Candidate accepted but no package submitted. load_candidate_packages + inspect_package + submit_package.");
+    lines.push("Candidate accepted but no package submitted. inspect_package + submit_package.");
+  }
+  // 多季覆盖 nudge：读 state 判断已 submit 几个包 + 仍有未覆盖 subject
+  const snapshot = await readStateSnapshot();
+  if (snapshot && snapshot.ok) {
+    const selCount = Number(snapshot.selections_count || 0);
+    const uncovered = Array.isArray(snapshot.uncovered_subject_ids) ? snapshot.uncovered_subject_ids : [];
+    const totalSubjects = Number(snapshot.total_subject_count || 0);
+    if (submitPkgCalls && !submitCompleteCalls && selCount > 0) {
+      lines.push(`submit_package has appended ${selCount} selection(s) but submit_complete has NOT been called.`);
+      if (uncovered.length && totalSubjects > 1) {
+        lines.push(
+          `STILL UNCOVERED: ${uncovered.length} of ${totalSubjects} subject(s) have no package yet (subject ids: ${uncovered.join(", ")}). Do NOT stop now — search_candidates + load_candidate_packages + submit_candidate + submit_package for the remaining subject(s). A single package usually covers one season.`,
+        );
+      } else {
+        lines.push("All subjects are covered (or only one subject exists). If you judge no more useful packages can be obtained, call submit_complete to finish.");
+      }
+    }
+    if (submitCompleteCalls) {
+      lines.push("submit_complete already called — case is terminal.");
+    }
   }
   return lines;
 }
@@ -619,11 +690,13 @@ async function waitForFinalResultWithNudge(session, promptDone) {
     "If a tool action is available, call it now with no explanation. Otherwise provide one concrete blocker sentence.",
     "- get_auto_fetch_context",
     "- search_candidates",
-    "- submit_candidate",
-    "- load_candidate_packages + inspect_package",
-    "- submit_package",
+    "- load_candidate_packages (turns null package_count into a real value — REQUIRED before submit_candidate)",
+    "- submit_candidate (with bangumi_subject_id)",
+    "- inspect_package",
+    "- submit_package (APPENDS a selection — NOT terminal; continue with other subjects)",
+    "- submit_complete (terminal, ONLY after ≥1 submit_package; does NOT require every subject covered)",
     "- patch named gate issue",
-    "- concrete fail_closed / need_confirm",
+    "- concrete fail_closed / need_confirm (only after packages_loaded=true; never on null package fields)",
     ...progressNudgeLines,
     ...gateNudgeLines,
     "Do not show reasoning narrative, reread skills, or inspect old artifacts.",
@@ -647,7 +720,8 @@ async function waitForFinalResultWithNudge(session, promptDone) {
     const hardFinishText = [
       "Hard finish checkpoint: act or close. Do not narrate the decision.",
       "This turn must be exactly one custom tool call or fail_closed/need_confirm; no prose.",
-      "- submit_package",
+      "- submit_package (APPENDS a selection — not terminal)",
+      "- submit_complete (terminal, only after ≥1 submit_package; does NOT require every subject covered)",
       "- patch named gate issue",
       "- concrete fail_closed / need_confirm",
       ...progressLines,
@@ -660,6 +734,71 @@ async function waitForFinalResultWithNudge(session, promptDone) {
       .catch((error) => ({ ok: false, error: error?.stack || error?.message || String(error) }));
     const hardWait = await waitForFinalResultOrIdle(session, hardDone, { waitMs: hardWaitMs });
     nudgeAttempts.push({ phase: "hard_finish", wait_iterations: hardWait.waitIterations, wait_timeout_ms: hardWait.wait_timeout_ms, idle_drained: hardWait.idle_drained, prompt_settled: hardWait.prompt_settled, prompt_error: hardWait.prompt_error, final_result_present: Boolean(hardWait.payload?.final_result) });
+    if (hardWait.payload?.final_result) {
+      finalWait = hardWait;
+    }
+  }
+
+  // Final repair loop（参考 pi_case_agent_runner.mjs）：Pi 卡住/无 final 时多轮
+  // nudge 把它拉回工具调用或 fail_closed，而不是 2 次 nudge 就放弃交 Python 兜底
+  // budget_exhausted。大样本（多候选多包）实测会卡在 load 后无响应，需循环拉回。
+  let repairAttempt = 0;
+  const maxRepairAttempts = 3;
+  while (!finalWait.payload?.final_result && repairAttempt < maxRepairAttempts) {
+    const remainingMs = Math.max(0, totalBudgetMs - (Date.now() - startedAt));
+    if (remainingMs < 20_000) break;
+    const progressLines = await readRunnerProgressNudgeLines();
+    const gateLines = await readLatestGateNudgeLines();
+    const repairText = [
+      "Final repair loop: call one auto fetch tool or close with a concrete evidence reason.",
+      "This turn must be exactly one custom tool call or fail_closed/need_confirm; no prose.",
+      "- submit_package (if a package is chosen — APPENDS a selection, not terminal)",
+      "- submit_complete (if ≥1 package already selected and no more useful packages can be obtained — terminal)",
+      "- patch named gate issue (invalid_ref_shape → use the PK<idx> shown in context; not_downloadable → pick another package; candidate_not_downloadable on unloaded candidate → load_candidate_packages first)",
+      "- load_candidate_packages + inspect_package (if packages still null/unloaded or still gathering evidence)",
+      "- search_candidates (if a remaining uncovered subject still needs a thread)",
+      "- concrete fail_closed / need_confirm (only after packages_loaded=true; null package fields are NOT a fail_closed reason)",
+      ...progressLines,
+      ...gateLines,
+      "No budget_exhausted fail_closed. Do not reread skills or narrate.",
+    ].join("\n");
+    const repairDone = session
+      .prompt(repairText, { expandPromptTemplates: true, source: "api", streamingBehavior: "followUp" })
+      .then(() => ({ ok: true }))
+      .catch((error) => ({ ok: false, error: error?.stack || error?.message || String(error) }));
+    const repairWait = await waitForFinalResultOrIdle(session, repairDone, { waitMs: Math.min(90_000, remainingMs) });
+    nudgeAttempts.push({
+      phase: `final_repair_${repairAttempt + 1}`,
+      wait_iterations: repairWait.waitIterations,
+      wait_timeout_ms: repairWait.wait_timeout_ms,
+      idle_drained: repairWait.idle_drained,
+      prompt_settled: repairWait.prompt_settled,
+      prompt_error: repairWait.prompt_error,
+      final_result_present: Boolean(repairWait.payload?.final_result),
+    });
+    if (repairWait.payload?.final_result) {
+      finalWait = repairWait;
+      break;
+    }
+    // settle wait：repair 后 Pi 可能在 settle 阶段才出 final
+    const remainingAfterRepairMs = Math.max(0, totalBudgetMs - (Date.now() - startedAt));
+    if (!repairWait.idle_drained && remainingAfterRepairMs >= 20_000) {
+      const settleWait = await waitForFinalResultOrIdle(session, repairDone, { waitMs: Math.min(90_000, remainingAfterRepairMs) });
+      nudgeAttempts.push({
+        phase: `final_repair_${repairAttempt + 1}_settle`,
+        wait_iterations: settleWait.waitIterations,
+        wait_timeout_ms: settleWait.wait_timeout_ms,
+        idle_drained: settleWait.idle_drained,
+        prompt_settled: settleWait.prompt_settled,
+        prompt_error: settleWait.prompt_error,
+        final_result_present: Boolean(settleWait.payload?.final_result),
+      });
+      if (settleWait.payload?.final_result) {
+        finalWait = settleWait;
+        break;
+      }
+    }
+    repairAttempt += 1;
   }
   return { ...finalWait, nudge_attempts: nudgeAttempts };
 }

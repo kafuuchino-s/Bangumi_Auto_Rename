@@ -19,7 +19,7 @@
 | Pi sidecar | `tools/pi_subtitle_case_agent_runner.mjs` | 4 工具（get_context/validate/submit/fail_closed），复用 Pi SDK |
 | Pi skill | `.pi/skills/subtitle-mapping-contract/SKILL.md` | 合同：短 ref 体系、disposition 语义、coverage 规则 |
 | 抓取 Case Agent 子系统 | `auto_fetch_case_agent/` | AI-first + evidence-driven + 轻 submit gate，对齐 rename / 字幕导入（candidate ranking，无 mapping 合同） |
-| 抓取 Case Agent 入口 | `auto_fetch_case_agent/local_auto_fetch_entry.py` | `run_auto_fetch_case_agent`：按 `subtitle_auto_fetch_case_agent_backend` 分发 pi / single_shot，返回四态 |
+| 抓取 Case Agent 入口 | `auto_fetch_case_agent/local_auto_fetch_entry.py` | `run_auto_fetch_case_agent`：统一走 Pi evidence-driven 后端（single_shot 已移除，`backend` 参数保留兼容但忽略），返回四态 |
 | 抓取 Case Agent Pi 后端 | `auto_fetch_case_agent/pi_runner.py` + `auto_fetch_case_agent/pi_tools.py` | 多轮 evidence-driven：6 工具（search/load/inspect/submit_candidate/submit_package/fail_closed/need_confirm） |
 | 抓取 Pi sidecar | `tools/pi_auto_fetch_case_agent_runner.mjs` | 8 代理工具，复用 Pi SDK + goal/retry 扩展 |
 | 抓取 Pi skill | `.pi/skills/auto-fetch-contract/SKILL.md` | 合同：选帖/选包工作流、轻 gate、source_video 证据口径 |
@@ -40,10 +40,10 @@
 自动抓取已升级为 **AI-first + evidence-driven + Pi 多轮后端**，与 rename / 字幕导入同构。但 **auto_fetch 是 candidate ranking（选帖/选包），不是 mapping**——没有合法落点空间 / coverage / duplicate / accounting 合同，固定层只做事实抽取 + 轻 submit gate。
 
 - **固定层只做事实 + 轻 gate**：scan_scope / missing_videos（`MissingVideoCard` MV\*，含 `source_video` 与字幕导入同口径）/ 候选（`CandidateCard` CD\*）/ 楼包（`ThreadPackageCard` PK\*）事实卡来自 provider；轻 gate 校验选中候选含可下载附件、选中楼包非 font/patch-only。arc 归属 / 版本语言歧义 / 正片 vs 特典 交 AI。
-- **后端分发**：`subtitle_auto_fetch_case_agent_backend` = `pi`（默认，多轮 evidence-driven，AI 主动 `search_candidates`/`load_candidate_packages`/`inspect_package` 取证）/ `single_shot`（Phase 2 单轮 `choose_subtitle_candidate`/`choose_subtitle_thread_package` + 轻 gate）。
-- **四态语义**：`accepted`（选中帖+包，可下载落 processor）/ `fail_closed`（候选/包被拒或搜不到，合格，换关键词重试）/ `need_confirm`（AI 不确定选哪个）/ `invalid`（实现错误）。
-- **fail_closed 解读对齐**：processor 落盘产 `fail_closed`（对外 `need_confirm` + `case_agent_status` 审计）→ auto_fetch 视为"该包未配对成功"的**合格可重试结果**，触发换关键词重试，透传 `processor_case_agent_status` / `failure_reason` 审计。
-- **single_shot 兼容兜底**：AI 无可用选择（非显式拒绝）时回退旧 `_select_candidate`/`_select_thread_package` + `_pick_best_package_by_rules` 规则选帖/选包（对齐 plan：保留规则兜底，不全删）。
+- **后端分发**：`subtitle_auto_fetch_case_agent_backend` = `pi`（默认，多轮 evidence-driven，Pi sidecar 主动 `search_candidates_batch`/`load_candidate_packages_batch`/`inspect_package` 取证）。**single_shot 已移除**，`backend` 参数保留兼容但忽略（始终 pi）；`choose_subtitle_candidate`/`choose_subtitle_thread_package` 单轮 AI 路径与 `_pick_best_package_by_rules` 规则兜底均已删。
+- **四态语义**：`accepted`（选中帖+包，可下载落 processor）/ `fail_closed`（候选/包被拒或搜不到，合格，`reason_kind='pi_fail_closed'`，单次结束不重试）/ `need_confirm`（Pi 不确定选哪个）/ `invalid`（实现错误）。
+- **fail_closed 解读对齐**：processor 落盘产 `fail_closed`（对外 `need_confirm` + `case_agent_status` 审计）→ auto_fetch 视为"该包未配对成功"的**合格可重试结果**，透传 `processor_case_agent_status` / `failure_reason` 审计。
+- **single_shot / 规则兜底已移除**：auto_fetch 选帖/选包统一走 Pi evidence-driven，无单轮 AI + 规则回退兜底。
 - **证据口径统一**：`MissingVideoCard.source_video`（record key = pre-rename local 源名）与字幕导入 `SubtitleTargetVideoCard.source_video` 同义，统一命名。
 - **审计透传**：`_persist_status` 写 `pipeline_mode` / `case_agent_status` / `case_agent_snapshot` / `failure_reason` / `processor_case_agent_status` 到 task + `data/task/<uuid>.subtitle_fetch.json`。
 

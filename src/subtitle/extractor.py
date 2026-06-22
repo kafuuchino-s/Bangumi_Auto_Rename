@@ -65,6 +65,13 @@ BANDIZIP_CANDIDATES = [
 # 支持的字幕格式
 SUBTITLE_EXTENSIONS = {".ass", ".ssa", ".srt", ".sub", ".idx", ".vtt"}
 
+# 压缩包后缀（用于嵌套压缩包递归解压判定）
+_ARCHIVE_SUFFIXES = {".zip", ".rar", ".7z"}
+
+# 嵌套压缩包递归解压深度上限（防 zip bomb / 病毒套娃）
+# TID=346 楼主包是 1 层套娃（外层 RAR 含 4 个内层 RAR），2 层足够覆盖正常场景
+_MAX_NEST_DEPTH = 3
+
 
 @dataclass
 class ExtractedSubtitle:
@@ -119,6 +126,11 @@ class SubtitleExtractor:
         """
         解压压缩包或处理单个字幕文件，返回字幕文件列表（保留路径结构信息）
 
+        支持嵌套压缩包（套娃包）：解完一层后若结果含内层 .rar/.zip/.7z，
+        递归解到无内层压缩包或达到 _MAX_NEST_DEPTH 上限。
+        例：acgrip TID=346 楼主包外层 RAR 含 4 个内层 RAR（每季一个），
+        不递归则 extractor 只看到 4 个 .rar 报"0 字幕"，递归后解出 138 字幕。
+
         Args:
             archive_path: 压缩包或字幕文件路径
 
@@ -132,17 +144,128 @@ class SubtitleExtractor:
         suffix = archive_path.suffix.lower()
 
         if suffix == ".zip":
-            return self._extract_zip(archive_path)
+            primary = self._extract_zip(archive_path)
         elif suffix == ".rar":
-            return self._extract_rar(archive_path)
+            primary = self._extract_rar(archive_path)
         elif suffix == ".7z":
-            return self._extract_7z(archive_path)
+            primary = self._extract_7z(archive_path)
         elif suffix in SUBTITLE_EXTENSIONS:
             # 直接字幕文件，不需要解压
             return self._handle_direct_subtitle(archive_path)
         else:
             logger.error(f"[字幕解压] 不支持的格式: {suffix}")
             return None
+
+        if primary is None:
+            return None
+
+        # 外层已解出字幕 → 直接返回（绝大多数字幕包到此结束）
+        if primary:
+            return primary
+
+        # 外层 0 字幕 → 尝试递归解嵌套压缩包（套娃包）
+        nested = self._extract_nested_archives(archive_path, depth=1)
+        if nested:
+            logger.info(
+                f"[字幕解压] 嵌套压缩包递归解压成功，"
+                f"外层 0 字幕 → 递归解出 {len(nested)} 个字幕"
+            )
+            return nested
+
+        logger.info("[字幕解压] 外层与内层均无字幕文件")
+        return primary
+
+    def _extract_nested_archives(
+        self, outer_archive: Path, depth: int
+    ) -> List[ExtractedSubtitle]:
+        """
+        递归解压外层压缩包内的内层压缩包（套娃包）。
+
+        纯机械操作：扫描外层解压目录里的 .rar/.zip/.7z，逐个解压，
+        收集所有层级解出的字幕。深度上限 _MAX_NEST_DEPTH 防 zip bomb。
+
+        例：acgrip TID=346 楼主包 = 外层 RAR(4 内层 RAR)，每内层 RAR 含
+        一季的 .ass。不递归只看到 4 个 .rar，递归后 138 字幕。
+        """
+        if depth > _MAX_NEST_DEPTH:
+            logger.warning(
+                f"[字幕解压] 嵌套深度超上限 {_MAX_NEST_DEPTH}，停止递归"
+            )
+            return []
+
+        # 外层解压目录名 = outer_archive.stem；嵌套层用 _nest{depth} 后缀隔离
+        if depth == 1:
+            extract_dir = self.temp_dir / outer_archive.stem
+        else:
+            extract_dir = self.temp_dir / (outer_archive.stem + f"_nest{depth - 1}")
+        if not extract_dir.exists():
+            return []
+
+        all_subtitles: List[ExtractedSubtitle] = []
+        for inner in extract_dir.rglob("*"):
+            if not inner.is_file():
+                continue
+            if inner.suffix.lower() not in _ARCHIVE_SUFFIXES:
+                continue
+
+            inner_subs = self._extract_one_to_nest_dir(inner, depth)
+            if inner_subs:
+                all_subtitles.extend(inner_subs)
+            else:
+                # 这层解出 0 字幕，可能还有更内层，继续递归
+                deeper = self._extract_nested_archives(inner, depth + 1)
+                all_subtitles.extend(deeper)
+
+        return all_subtitles
+
+    def _extract_one_to_nest_dir(
+        self, archive_path: Path, depth: int
+    ) -> Optional[List[ExtractedSubtitle]]:
+        """
+        嵌套解压用：解单个内层压缩包到独立 _nest{depth} 目录（防 stem 撞）。
+        优先用 Bandizip CLI 直接解到目标目录；不可用时回退 _extract_*。
+        """
+        suffix = archive_path.suffix.lower()
+        nest_dir = self.temp_dir / (archive_path.stem + f"_nest{depth}")
+        if nest_dir.exists():
+            shutil.rmtree(nest_dir, ignore_errors=True)
+
+        bandizip = self._find_bandizip_executable()
+        if bandizip is not None and suffix in _ARCHIVE_SUFFIXES:
+            try:
+                nest_dir.mkdir(parents=True, exist_ok=True)
+                result = subprocess.run(
+                    [
+                        str(bandizip),
+                        "x",
+                        "-y",
+                        "-aoa",
+                        f"-o:{nest_dir}",
+                        str(archive_path),
+                    ],
+                    capture_output=True,
+                    text=True,
+                    encoding="utf-8",
+                    errors="ignore",
+                    check=False,
+                )
+                if result.returncode == 0:
+                    return self._collect_extracted_subtitles(nest_dir)
+            except Exception as e:
+                logger.warning(
+                    f"[字幕解压] 嵌套解压失败 (depth={depth}): "
+                    f"{archive_path.name} - {e}"
+                )
+                return None
+
+        # Bandizip 不可用：回退 _extract_*（stem 撞风险低，因内层包名通常不同）
+        if suffix == ".zip":
+            return self._extract_zip(archive_path)
+        if suffix == ".rar":
+            return self._extract_rar(archive_path)
+        if suffix == ".7z":
+            return self._extract_7z(archive_path)
+        return None
 
     def _handle_direct_subtitle(
         self, subtitle_path: Path
@@ -203,9 +326,21 @@ class SubtitleExtractor:
                     except Exception:
                         filename = info.filename
 
-                    # 只提取字幕文件
+                    # 提取字幕文件；内层压缩包（套娃包）也一并写出供递归解压
                     file_path = Path(filename)
-                    if file_path.suffix.lower() not in SUBTITLE_EXTENSIONS:
+                    member_suffix = file_path.suffix.lower()
+                    if member_suffix not in SUBTITLE_EXTENSIONS:
+                        if member_suffix not in _ARCHIVE_SUFFIXES:
+                            continue
+                        # 内层压缩包：写到 extract_dir 供 _extract_nested_archives 扫到
+                        safe_path = (
+                            Path(*file_path.parts) if file_path.parts else file_path
+                        )
+                        target_path = extract_dir / safe_path
+                        target_path.parent.mkdir(parents=True, exist_ok=True)
+                        with zf.open(info) as source:
+                            with open(target_path, "wb") as target:
+                                target.write(source.read())
                         continue
 
                     # 保留文件夹结构解压
@@ -254,9 +389,21 @@ class SubtitleExtractor:
 
                         filename = info.filename
                         file_path = Path(filename)
+                        member_suffix = file_path.suffix.lower()
 
-                        # 只提取字幕文件
-                        if file_path.suffix.lower() not in SUBTITLE_EXTENSIONS:
+                        # 提取字幕文件；内层压缩包（套娃包）也写出供递归解压
+                        if member_suffix not in SUBTITLE_EXTENSIONS:
+                            if member_suffix not in _ARCHIVE_SUFFIXES:
+                                continue
+                            # 内层压缩包：写到 extract_dir 供 _extract_nested_archives 扫到
+                            safe_path = (
+                                Path(*file_path.parts) if file_path.parts else file_path
+                            )
+                            target_path = extract_dir / safe_path
+                            target_path.parent.mkdir(parents=True, exist_ok=True)
+                            with rf.open(info) as source:
+                                with open(target_path, "wb") as target:
+                                    target.write(source.read())
                             continue
 
                         # 保留文件夹结构解压

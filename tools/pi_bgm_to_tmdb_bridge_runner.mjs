@@ -64,6 +64,7 @@ const ACTION_AGENT_OUTPUT_CONTRACT = [
   "Do not print recipe JSON, full mapping tables, full verifier issues, or old artifact excerpts in assistant text.",
   "Tool arguments count as output: keep board notes, snapshots, reasons, and summaries compact.",
   "For the bridge, the first move is one reliable main-title search, then hydrate the TMDB legal graph; do not fail_closed from an empty draft before a plausible anchor exists unless the case input is malformed.",
+  "Do not fail_closed while any BGM-mapped node (regular, special, OVA/OAD, movie, span, side-story) still has no rule: an unsearched BGM movie/special is a missing rule, not global ambiguity.",
   "After a TMDB anchor is hydrated, validate recipe params; do not keep broad-searching recap/summary/CM/bonus-title variants when the graph already carries enough legal-node evidence.",
 ].join("\n");
 
@@ -157,8 +158,10 @@ const bridgeSubmitGuidelines = [
 ].join("\n");
 
 const bridgeFailClosedGuidelines = [
-  "Use fail_closed only for concrete global TMDB ambiguity or contradiction.",
+  "Use fail_closed only for concrete global TMDB ambiguity or contradiction: two or more equally-plausible TMDB refs for the same BGM node with no deciding evidence.",
   "Do not use fail_closed just because one mapped BGM node is absent from TMDB; use tmdb_absent_group for that case.",
+  "Before fail_closed, recheck: (1) every BGM-mapped subject/assignment (regular, special, OVA/OAD, movie, span, side-story) already has a rule with an explicit disposition; (2) at least one TMDB anchor was searched AND hydrated via get_tmdb_legal_graph; (3) any BGM movie/special/OVA/OAD/side-story you never searched or hydrated is a missing rule, not global ambiguity — search the title, hydrate, then map_to_tmdb or tmdb_absent_group.",
+  "The common fail-closed trap: anchor only the TV series, map the regular sequence, then fail_closed the whole case because a BGM movie/special in the same package was never searched. If the frontier scan still has unmapped BGM nodes, you have not finished exploring.",
 ].join("\n");
 
 const bridgeConfidenceSchema = StringEnum(["High", "Medium", "Low"]);
@@ -922,6 +925,7 @@ async function waitForFinalResultWithNudge(session, promptDone) {
       "Hard finish checkpoint: act or close. Do not narrate the decision.",
       "This turn must be exactly one custom tool call or fail_closed; no prose.",
       "Use issue_repair_contexts before cheap patches; target-surface mismatch must be repaired or explicitly exhausted before supplemental.",
+      "Before fail_closed, recheck the frontier: every BGM-mapped node needs a rule, at least one TMDB anchor must be hydrated, and an unsearched BGM movie/special/OVA/OAD/side-story is a missing rule (search→hydrate→map_to_tmdb or tmdb_absent_group), not global ambiguity.",
       "- validate compact recipe params",
       "- patch named verifier issue",
       "- submit accepted",
@@ -959,6 +963,7 @@ async function waitForFinalResultWithNudge(session, promptDone) {
       "Final repair loop: call one bridge tool or close with a concrete evidence reason.",
       "This turn must be exactly one custom tool call or fail_closed; no prose.",
       "Follow issue_repair_contexts/repair_hints. Do not make a mapped BGM node supplemental merely to pass when the context points to a distinct target surface.",
+      "Before fail_closed, recheck the frontier: any BGM movie/special/OVA/OAD/side-story never searched is a missing rule, not global ambiguity.",
       "After verifier feedback, read/status tools are not a repair; use patch, one targeted search/graph check, submit accepted, or concrete fail_closed.",
       "- validate compact recipe params",
       "- patch named verifier issue",
@@ -1041,7 +1046,7 @@ When series title evidence is unclear, use BGM episode_title_cards_sample and th
 Validate early with validate_bgm_to_tmdb_bridge_recipe_params. After it is accepted, submit the same params with submit_bgm_to_tmdb_bridge_recipe_params and then call goal_complete.
 If plausible TMDB refs have been found and hydrated, do not keep searching recap/summary/CM/bonus title variants. Validate current recipe params; if a mapped BGM assignment has no concrete TMDB legal node after targeted season-0/episode-title checks, use tmdb_absent_group for that assignment and keep the rest accepted.
 Do not convert BGM-mapped OVA/OAD/SP/movie/side-story nodes to supplemental to make validation pass; repair TMDB ref, season, episode range, span/movie shape, or target-absent boundary first. supplemental_group is only for assignments already supplemental in the Local-to-Bangumi plan.
-If global TMDB identity evidence is insufficient or contradictory, call fail_closed with concrete related refs, then goal_complete. Do not fail_closed just because an otherwise identified BGM episode/special lacks a TMDB node; use tmdb_absent_group for that case.
+If global TMDB identity evidence is insufficient or contradictory, call fail_closed with concrete related refs, then goal_complete. Do not fail_closed just because an otherwise identified BGM episode/special lacks a TMDB node; use tmdb_absent_group for that case. Before any fail_closed, run the Before Fail Closed recheck: every BGM-mapped node (regular, special, OVA/OAD, movie, span, side-story) must already have a rule with an explicit disposition, at least one TMDB anchor must be searched and hydrated, and any BGM movie/special/OVA/OAD/side-story you never searched is a missing rule (search → hydrate → map_to_tmdb or tmdb_absent_group), not global ambiguity. The common trap is anchoring only the TV series and fail_closed-ing the whole case because a BGM movie/special in the same package was never searched.
 Do not use native tools to edit, write, move, copy, link, rename, or inspect old run artifacts for answers.
 Available lazy skills:
 /skill:tmdb-bridge-contract: use when bridge draft shape, TMDB ID/node policy, or verifier repair is unclear.

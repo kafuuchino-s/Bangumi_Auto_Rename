@@ -81,10 +81,54 @@ def build_missing_video_cards(
     is_movie = bool(task_data.get('is_movie', False))
     season_value = task_data.get('season_id')
     season = season_value if isinstance(season_value, int) else None
+    # 方向 A：Bangumi subject 名（重命名落盘字段，auto_fetch 搜索词来源）
+    bgm_subject_name = str(task_data.get('bgm_subject_name') or '')
+    bgm_subject_name_cn = str(task_data.get('bgm_subject_name_cn') or '')
+    # 多季覆盖：per-video BGM subject 映射 + 每 subject name/name_cn。
+    # 重命名链路落盘时写（process.py::_collect_bgm_subject_names），旧 task 无此
+    # 字段时为空，回退 task 级主体单值 bgm_subject_name。
+    video_subject_map = task_data.get('bgm_video_subject_map') or {}
+    if not isinstance(video_subject_map, Mapping):
+        video_subject_map = {}
+    bgm_subjects_raw = task_data.get('bgm_subjects') or []
+    subject_meta: dict[int, dict[str, str]] = {}
+    if isinstance(bgm_subjects_raw, list):
+        for entry in bgm_subjects_raw:
+            if not isinstance(entry, Mapping):
+                continue
+            sid = entry.get('id')
+            if sid is None:
+                continue
+            try:
+                sid_int = int(sid)
+            except (TypeError, ValueError):
+                continue
+            subject_meta[sid_int] = {
+                'name': str(entry.get('name') or ''),
+                'name_cn': str(entry.get('name_cn') or ''),
+                'media_kind': str(entry.get('media_kind') or ''),
+            }
+    # 用户字幕语言偏好（auto_fetch 主进程塞入 task_context 的
+    # subtitle_auto_fetch_preferred_language，默认 zh-CN）。Pi 据此抉择简繁。
+    preferred_language = str(
+        task_data.get('subtitle_auto_fetch_preferred_language') or ''
+    )
 
     cards: list[MissingVideoCard] = []
     for video_path in missing_videos:
         video_name = video_path.name
+        # per-video subject：按 video basename 查映射，再查 subject name/name_cn
+        sid = 0
+        s_name = ''
+        s_name_cn = ''
+        if video_name in video_subject_map:
+            try:
+                sid = int(video_subject_map[video_name] or 0)
+            except (TypeError, ValueError):
+                sid = 0
+            meta = subject_meta.get(sid) or {}
+            s_name = meta.get('name', '')
+            s_name_cn = meta.get('name_cn', '')
         cards.append(
             MissingVideoCard(
                 ref='',  # 由 workspace 分配
@@ -95,6 +139,12 @@ def build_missing_video_cards(
                 task_title=task_title,
                 season=season if not is_movie else None,
                 is_movie=is_movie,
+                bgm_subject_name=bgm_subject_name,
+                bgm_subject_name_cn=bgm_subject_name_cn,
+                bangumi_subject_id=sid,
+                subject_name=s_name,
+                subject_name_cn=s_name_cn,
+                preferred_language=preferred_language,
             )
         )
     return cards

@@ -48,16 +48,15 @@ Web UI / qBittorrent webhook
 主任务成功后（queue 触发）
 → _resolve_scan_scope（series/movie/task）+ _collect_videos_missing_subtitles
 → build_auto_fetch_case_workspace（MV* 缺失视频 + KW* 关键词，source_video 与字幕导入同口径）
-→ 关键词循环：provider.search → prepare_candidate → load_thread_packages
-→ _select_via_case_agent（按 subtitle_auto_fetch_case_agent_backend 分发）
-   ├─ pi（默认）：Pi 多轮 evidence-driven（AI 主动 search_candidates/load/inspect → submit_candidate → submit_package）
-   │   → 轻 gate（候选可下载 / 楼包非 font-patch-only）
-   └─ single_shot：单轮 choose_subtitle_candidate + choose_subtitle_thread_package + 轻 gate
-       （AI 无可用选择时回退 _pick_best_package_by_rules 规则兜底）
+→ _execute_fetch（Pi 驱动，不预爬）
+→ run_auto_fetch_case_agent → _run_pi_backend → run_auto_fetch_case_agent_pi
+   └─ Pi 多轮 evidence-driven（sidecar 主动 search_candidates_batch(BGM 名) / load_candidate_packages_batch / inspect_package → submit_candidate → submit_package）
+       → 轻 gate（候选可下载 / 楼包非 font-patch-only）
+       （single_shot 单轮 AI + _pick_best_package_by_rules 规则兜底已移除，统一走 Pi）
 → 四态：accepted / fail_closed / need_confirm / invalid
 → accepted：provider.download → SubtitleProcessor.process（落字幕导入链路）
-→ processor 落盘产 fail_closed：auto_fetch 视为"该包未配对成功"的合格可重试结果
-   → 换关键词重试 + 透传 processor_case_agent_status / failure_reason 审计
+→ processor 落盘产 fail_closed：auto_fetch 视为"该包未配对成功"的合格结果
+   → 透传 processor_case_agent_status / failure_reason 审计（单次结束，无外层换词重试）
 → _persist_status 写 pipeline_mode / case_agent_status / case_agent_snapshot
 ```
 

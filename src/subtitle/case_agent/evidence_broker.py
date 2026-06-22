@@ -39,6 +39,8 @@ def build_target_video_cards(
         video_targets = task.get('video_targets') or {}
         # video 名 -> 重命名前 local 原始文件名（AI 证据，非合法落点）
         source_videos = task.get('source_videos') or {}
+        # video 名 -> (arc_name, arc_name_cn)，多季同 episode 配对关键证据
+        video_arc_names = task.get('video_arc_names') or {}
         target_dir = str(task.get('target_dir') or '')
         task_video_count = len(videos)
         for video in videos:
@@ -54,6 +56,13 @@ def build_target_video_cards(
             source_video = ''
             if isinstance(source_videos, Mapping):
                 source_video = str(source_videos.get(video_str) or '')
+            arc_name = ''
+            arc_name_cn = ''
+            if isinstance(video_arc_names, Mapping):
+                arc_tuple = video_arc_names.get(video_str)
+                if isinstance(arc_tuple, (list, tuple)) and len(arc_tuple) == 2:
+                    arc_name = str(arc_tuple[0] or '')
+                    arc_name_cn = str(arc_tuple[1] or '')
             cards.append(
                 SubtitleTargetVideoCard(
                     ref='',  # 由 workspace 分配
@@ -65,6 +74,8 @@ def build_target_video_cards(
                     source_video=source_video,
                     target_dir=card_target_dir,
                     task_video_count=task_video_count,
+                    arc_name=arc_name,
+                    arc_name_cn=arc_name_cn,
                 )
             )
     return cards

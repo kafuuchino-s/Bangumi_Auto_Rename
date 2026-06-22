@@ -144,6 +144,13 @@ function objectSchema(properties) {
 const dispositionSchema = StringEnum(["map_to_video", "unmatched", "needs_more_evidence"]);
 const confidenceSchema = StringEnum(["High", "Medium", "Low"]);
 
+const unmatchedReasonKindSchema = StringEnum([
+  "no_target_video",
+  "duplicate_language",
+  "no_confident_match",
+  "unknown",
+]);
+
 const strictMappingRowSchema = Json.Object({
   row_ref: Json.Optional(Json.String()),
   subtitle_ref: Json.String(),
@@ -151,6 +158,7 @@ const strictMappingRowSchema = Json.Object({
   target_ref: Json.Optional(Json.String()),
   language: Json.Optional(Json.String()),
   reason: Json.Optional(Json.String()),
+  unmatched_reason_kind: Json.Optional(unmatchedReasonKindSchema),
 });
 
 const strictMappingDraftSchema = Json.Object({
@@ -160,10 +168,12 @@ const strictMappingDraftSchema = Json.Object({
 });
 
 const mappingDraftQuickReference = [
-  "Mapping draft shape: {\"summary\":\"...\",\"confidence\":\"High\",\"rows\":[{\"row_ref\":\"R1\",\"subtitle_ref\":\"SF1\",\"disposition\":\"map_to_video\",\"target_ref\":\"TV3\",\"language\":\"chs\",\"reason\":\"episode 1 subtitle\"},{\"row_ref\":\"R2\",\"subtitle_ref\":\"SF2\",\"disposition\":\"unmatched\",\"reason\":\"no matching video in target tasks\"}]}.",
+  "Mapping draft shape: {\"summary\":\"...\",\"confidence\":\"High\",\"rows\":[{\"row_ref\":\"R1\",\"subtitle_ref\":\"SF1\",\"disposition\":\"map_to_video\",\"target_ref\":\"TV3\",\"language\":\"chs\",\"reason\":\"episode 1 subtitle\"},{\"row_ref\":\"R2\",\"subtitle_ref\":\"SF2\",\"disposition\":\"unmatched\",\"unmatched_reason_kind\":\"no_target_video\",\"reason\":\"TV-Spot special has no matching target video\"}]}.",
   "Use the SF<idx> / TV<idx> short refs shown in get_subtitle_mapping_context. Archive paths, task UUIDs, and video filenames are evidence only; the draft must reference the short refs.",
   "Each TV<idx> target card has both `video` (post-rename landed filename, the legal landing point) and `source_video` (pre-rename local original filename, evidence only, may be empty). When the subtitle archive shares the release group / naming style of the original local files, `source_video` is a much more direct episode/version pairing hint than `video`; prefer it for matching when non-empty. The verifier still validates against `video`.",
-  "disposition: map_to_video (requires target_ref + language like chs/cht/jpn/eng) | unmatched (requires reason, no target_ref) | needs_more_evidence (investigating only, no target_ref; must resolve before submit).",
+  "Each TV<idx> target card also carries `arc_name` / `arc_name_cn` (the BGM-subject arc name of its season, e.g. 鬼滅の刃 無限列車編 / 鬼灭之刃 无限列车篇). Multi-season shows all start episodes at E01, so S02E01 and S03E01 both look like 'episode 1'. Match the subtitle's arc name (from its filename/folder, e.g. Mugen Ressha Hen 無限列車編) to the target's arc_name/arc_name_cn to pair the correct season — NEVER pair a 無限列車編 subtitle to a 遊郭編 target just because both are episode 1.",
+  "disposition: map_to_video (requires target_ref + language like chs/cht/jpn) | unmatched (requires reason + unmatched_reason_kind enum, no target_ref) | needs_more_evidence (investigating only, no target_ref; must resolve before submit).",
+  "unmatched_reason_kind (required for unmatched rows): no_target_video (subtitle's content — PV/TV-Spot/Picture Drama/OAD/special/bonus/05.5/menu/creditless — has no matching target video; these never pair, mark here so processor moves them out of needs-human) | duplicate_language (same target video already has a subtitle in this language) | no_confident_match (target videos exist but unsure which one — stays needs-human).",
   "Every subtitle must appear exactly once as map_to_video or unmatched at submit. No needs_more_evidence rows may remain.",
   "Same target video may carry multiple subtitles only if their languages differ.",
   "Language: use raw tags (chs/cht/jpn/eng/ko); the fixed layer normalizes to Emby codes. If a subtitle's language is unclear from the filename, infer from the subtitle group / archive convention; default chs for Chinese archives when no tag is present.",

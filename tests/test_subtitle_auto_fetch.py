@@ -1,3 +1,21 @@
+"""auto_fetch 薄入口 process_task 测试（Pi fake runtime 驱动）。
+
+auto_fetch 选帖/选包统一走 Pi evidence-driven 后端（single_shot 已移除），
+Python 主进程不预爬、不 AI 扩词、无换词重试、无 legacy 规则兜底。本套件覆盖：
+
+- accepted 主路径：Pi 选帖选包 → 下载 → processor success。
+- fail_closed 不下载：Pi 判定无匹配 → skipped，不触发 download/processor。
+- processor fail_closed 审计透传：Pi accepted + 下载成功但 processor 落盘产
+  fail_closed → 最终 failed，透传 processor_case_agent_status / failure_reason。
+- 搜索词构造：``_build_search_keywords`` 主词取 BGM subject 名，回退源目录标题
+  变体（方向 A，确定性变体规范化，不 AI 扩词）。
+
+**不真起 Pi sidecar / 不发真实 AI**：通过 monkeypatch
+``pi_runner.run_auto_fetch_case_agent_pi`` 注入 ``runtime_invoker``，直接调
+``state.handle_tool`` 编排 tool_call 序列，provider 用 fake。范式见
+``tests/test_auto_fetch_case_agent_pi_runner.py::test_entry_pi_backend_accepted_returns_four_state``。
+"""
+
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -7,21 +25,9 @@ from src.subtitle.auto_fetch import SubtitleAutoFetcher
 from src.subtitle.providers import SubtitleCandidate, SubtitleThreadPackage
 
 
-@pytest.fixture(autouse=True)
-def _force_single_shot_backend(monkeypatch):
-    """auto_fetch Case Agent 默认后端已切 pi；本套件测 single_shot 行为，
-    强制钉死 single_shot 避免真起 node sidecar。"""
-    import src.subtitle.auto_fetch as af_mod
-
-    orig = af_mod.cm_get
-
-    def patched(key, default=None):
-        if key == "subtitle_auto_fetch_case_agent_backend":
-            return "single_shot"
-        return orig(key, default)
-
-    monkeypatch.setattr(af_mod, "cm_get", patched)
-
+# ---------------------------------------------------------------------------
+# fixtures / helpers
+# ---------------------------------------------------------------------------
 
 def make_package(package_id, flags, *, has_direct_download=True, page_number=1):
     return SubtitleThreadPackage(
@@ -112,69 +118,60 @@ def build_season0_fetcher(monkeypatch, tmp_path):
     return fetcher, task_uuid
 
 
-def test_process_uses_ai_selected_thread_package(monkeypatch, tmp_path):
+def _patch_pi_runner_with_invoker(monkeypatch, tmp_path, invoker):
+    """patch ``pi_runner.run_auto_fetch_case_agent_pi`` 注入 runtime_invoker，
+    _case_root 指到 tmp_path 避免写真 run_dir。"""
+    import src.subtitle.auto_fetch_case_agent.pi_runner as pr_mod
+
+    monkeypatch.setattr(pr_mod, "_case_root", lambda: tmp_path)
+    orig_run = pr_mod.run_auto_fetch_case_agent_pi
+
+    def patched_run(*, workspace, provider, task_data, source_label="", runtime_invoker=None):
+        return orig_run(
+            workspace=workspace,
+            provider=provider,
+            task_data=task_data,
+            source_label=source_label,
+            runtime_invoker=invoker,
+        )
+
+    monkeypatch.setattr(pr_mod, "run_auto_fetch_case_agent_pi", patched_run)
+
+
+# ---------------------------------------------------------------------------
+# accepted 主路径
+# ---------------------------------------------------------------------------
+
+def test_process_accepted_lands_via_pi_selected_package(monkeypatch, tmp_path):
+    """Pi 选帖选包 accepted → 下载选中的 batch 包 → processor success。"""
     fetcher, task_uuid = build_fetcher(monkeypatch, tmp_path)
     candidate = SubtitleCandidate(
         title="thread-1",
         detail_url="https://bbs.acgrip.com/thread-1",
         source="acgrip",
     )
-    packages = [
+    candidate.thread_packages = [
         make_package("patch", ["patch"]),
         make_package("batch", ["batch", "simplified"]),
     ]
-    candidate.thread_packages = packages
-    candidate.pages_scanned = 2
-
     monkeypatch.setattr(fetcher.provider, "search", lambda keyword, limit=10: [candidate])
-    monkeypatch.setattr(fetcher.provider, "prepare_candidate", lambda candidate: candidate)
-    monkeypatch.setattr(fetcher.provider, "load_thread_packages", lambda candidate: candidate)
-    monkeypatch.setattr(
-        fetcher.ai_client,
-        "choose_subtitle_candidate",
-        lambda task_data, ranked_candidates: SimpleNamespace(
-            selected_index=0,
-            should_use=True,
-            confidence="High",
-            language_assessment="简体中文",
-            reason="thread ok",
-            warnings=[],
-            model_dump=lambda: {
-                "selected_index": 0,
-                "should_use": True,
-                "confidence": "High",
-                "language_assessment": "简体中文",
-                "reason": "thread ok",
-                "warnings": [],
-            },
-        ),
-    )
-    monkeypatch.setattr(
-        fetcher.ai_client,
-        "choose_subtitle_thread_package",
-        lambda task_data, candidate_data, package_summaries: SimpleNamespace(
-            selected_index=1,
-            should_use=True,
-            confidence="High",
-            language_assessment="简体中文",
-            reason="pick batch",
-            warnings=[],
-            model_dump=lambda: {
-                "selected_index": 1,
-                "should_use": True,
-                "confidence": "High",
-                "language_assessment": "简体中文",
-                "reason": "pick batch",
-                "warnings": [],
-            },
-        ),
-    )
+    monkeypatch.setattr(fetcher.provider, "prepare_candidate", lambda c: c)
+    monkeypatch.setattr(fetcher.provider, "load_thread_packages", lambda c: c)
+
+    def invoker(state):
+        state.handle_tool("search_candidates", {"keyword": "Seitokai no Ichizon"})
+        state.handle_tool("load_candidate_packages", {"candidate_ref": "CD1"})
+        # 选 batch 包（PK2），非 patch（PK1）
+        state.handle_tool("submit_package", {"package_ref": "PK2", "reason": "main batch"})
+        return {"ok": True, "returncode": 0, "argv": ["fake"]}
+
+    _patch_pi_runner_with_invoker(monkeypatch, tmp_path, invoker)
 
     downloaded = tmp_path / "picked.zip"
     downloaded.write_text("subtitle", encoding="utf-8")
     download_calls = {}
 
-    def fake_download(candidate, destination_dir, package=None):
+    def fake_download(candidate, destination_dir, package=None, download_url=None):
         download_calls["package"] = package
         return SimpleNamespace(
             status="success",
@@ -185,926 +182,167 @@ def test_process_uses_ai_selected_thread_package(monkeypatch, tmp_path):
 
     monkeypatch.setattr(fetcher.provider, "download", fake_download)
     monkeypatch.setattr(
-        fetcher.processor,
-        "process",
+        fetcher.processor, "process",
         lambda path, target_task_uuid=None: {"status": "success"},
     )
 
     result = fetcher.process_task(task_uuid)
 
     assert result["status"] == "success"
-    assert result["selected_package"]["package_id"] == "batch"
+    assert result["pipeline_mode"] == "auto_fetch_case_agent_primary"
+    assert result["case_agent_status"] == "accepted"
+    # B9 多 selection 结构：result 用 selections 列表，每项含 selected_package
+    assert result["selections_count"] >= 1
+    assert result["selections"][0]["selected_package"]["package_id"] == "batch"
     assert download_calls["package"].package_id == "batch"
-    assert result["package_ai_result"]["selected_index"] == 1
-    assert result["pages_scanned"] == 2
 
 
-def test_process_falls_back_to_rule_package_when_package_ai_fails(monkeypatch, tmp_path):
+# ---------------------------------------------------------------------------
+# fail_closed 不下载
+# ---------------------------------------------------------------------------
+
+def test_process_fail_closed_skips_without_download(monkeypatch, tmp_path):
+    """Pi 判定无匹配候选 → fail_closed → skipped，不触发 download/processor。"""
     fetcher, task_uuid = build_fetcher(monkeypatch, tmp_path)
     candidate = SubtitleCandidate(
-        title="thread-1",
-        detail_url="https://bbs.acgrip.com/thread-1",
+        title="wrong arc",
+        detail_url="https://bbs.acgrip.com/thread-wrong",
         source="acgrip",
     )
-    candidate.thread_packages = [
-        make_package("font", ["font"]),
-        make_package("batch", ["batch", "simplified"]),
-    ]
-
+    candidate.thread_packages = [make_package("batch", ["batch", "simplified"])]
     monkeypatch.setattr(fetcher.provider, "search", lambda keyword, limit=10: [candidate])
-    monkeypatch.setattr(fetcher.provider, "prepare_candidate", lambda candidate: candidate)
-    monkeypatch.setattr(fetcher.provider, "load_thread_packages", lambda candidate: candidate)
-    monkeypatch.setattr(fetcher.ai_client, "choose_subtitle_candidate", lambda *args, **kwargs: None)
-    monkeypatch.setattr(fetcher.ai_client, "choose_subtitle_thread_package", lambda *args, **kwargs: None)
+    monkeypatch.setattr(fetcher.provider, "prepare_candidate", lambda c: c)
+    monkeypatch.setattr(fetcher.provider, "load_thread_packages", lambda c: c)
 
-    downloaded = tmp_path / "fallback.zip"
-    downloaded.write_text("subtitle", encoding="utf-8")
-    selected = {}
-
-    def fake_download(candidate, destination_dir, package=None):
-        selected["package"] = package
-        return SimpleNamespace(
-            status="success",
-            downloaded_path=downloaded,
-            download_url="https://example.com/fallback.zip",
-            selected_package=package,
+    def invoker(state):
+        state.handle_tool("search_candidates", {"keyword": "Seitokai no Ichizon"})
+        state.handle_tool(
+            "fail_closed",
+            {"reason": "no candidate matches arc", "reason_kind": "insufficient_evidence"},
         )
+        return {"ok": True, "returncode": 0, "argv": ["fake"]}
 
-    monkeypatch.setattr(fetcher.provider, "download", fake_download)
+    _patch_pi_runner_with_invoker(monkeypatch, tmp_path, invoker)
     monkeypatch.setattr(
-        fetcher.processor,
-        "process",
-        lambda path, target_task_uuid=None: {"status": "success"},
-    )
-
-    result = fetcher.process_task(task_uuid)
-
-    assert result["status"] == "success"
-    assert selected["package"].package_id == "batch"
-    assert result["selected_package"]["package_id"] == "batch"
-
-
-def test_process_skips_when_package_ai_explicitly_rejects(monkeypatch, tmp_path):
-    fetcher, task_uuid = build_fetcher(monkeypatch, tmp_path)
-    candidate = SubtitleCandidate(
-        title="thread-1",
-        detail_url="https://bbs.acgrip.com/thread-1",
-        source="acgrip",
-    )
-    candidate.thread_packages = [
-        make_package("special", ["special"]),
-        make_package("batch", ["batch", "simplified"]),
-    ]
-    candidate.pages_scanned = 1
-
-    monkeypatch.setattr(fetcher.provider, "search", lambda keyword, limit=10: [candidate])
-    monkeypatch.setattr(fetcher.provider, "prepare_candidate", lambda candidate: candidate)
-    monkeypatch.setattr(fetcher.provider, "load_thread_packages", lambda candidate: candidate)
-    monkeypatch.setattr(
-        fetcher.ai_client,
-        "choose_subtitle_candidate",
-        lambda task_data, ranked_candidates: SimpleNamespace(
-            selected_index=0,
-            should_use=True,
-            confidence="High",
-            language_assessment="简体中文",
-            reason="thread ok",
-            warnings=[],
-            model_dump=lambda: {
-                "selected_index": 0,
-                "should_use": True,
-                "confidence": "High",
-                "language_assessment": "简体中文",
-                "reason": "thread ok",
-                "warnings": [],
-            },
-        ),
+        fetcher.provider, "download",
+        lambda *a, **k: pytest.fail("download should not be called on fail_closed"),
     )
     monkeypatch.setattr(
-        fetcher.ai_client,
-        "choose_subtitle_thread_package",
-        lambda task_data, candidate_data, package_summaries: SimpleNamespace(
-            selected_index=0,
-            should_use=False,
-            confidence="Medium",
-            language_assessment="简体中文",
-            reason="special-only package",
-            warnings=["ova only"],
-            model_dump=lambda: {
-                "selected_index": 0,
-                "should_use": False,
-                "confidence": "Medium",
-                "language_assessment": "简体中文",
-                "reason": "special-only package",
-                "warnings": ["ova only"],
-            },
-        ),
-    )
-
-    monkeypatch.setattr(
-        fetcher.provider,
-        "download",
-        lambda *args, **kwargs: pytest.fail("download should not be called"),
-    )
-    monkeypatch.setattr(
-        fetcher.processor,
-        "process",
-        lambda *args, **kwargs: pytest.fail("processor should not be called"),
+        fetcher.processor, "process",
+        lambda *a, **k: pytest.fail("processor should not be called on fail_closed"),
     )
 
     result = fetcher.process_task(task_uuid)
 
     assert result["status"] == "skipped"
-    assert result["reason"] == "package_ai_rejected"
-    assert result["selected_package"] is None
-    assert result["package_ai_result"]["should_use"] is False
-    assert result["package_ai_result"]["reason"] == "special-only package"
+    assert result["case_agent_status"] == "fail_closed"
+    assert result["reason"] == "pi_fail_closed"
 
 
+# ---------------------------------------------------------------------------
+# processor fail_closed 审计透传
+# ---------------------------------------------------------------------------
 
-
-def test_process_retries_with_path_title_when_primary_search_has_no_candidates(
-    monkeypatch,
-    tmp_path,
+def test_process_persists_processor_case_agent_status_when_processor_fail_closed(
+    monkeypatch, tmp_path
 ):
+    """Pi accepted + 下载成功，但 processor 落盘产 fail_closed → 最终 failed，
+    透传 processor_case_agent_status=fail_closed + failure_reason=processor_fail_closed。"""
     fetcher, task_uuid = build_fetcher(monkeypatch, tmp_path)
-    monkeypatch.setattr(
-        "src.subtitle.auto_fetch.get_task",
-        lambda uuid: {
-            "uuid": uuid,
-            "name": "东京暗鸦",
-            "tmdb_name": "东京暗鸦",
-            "path": str(tmp_path / "[MMZY-Sub&VCB-Studio] Tokyo Ravens [Hi10p_1080p]"),
-            "season_id": 1,
-            "is_movie": False,
-            "target_root": str(tmp_path / "Series"),
-        },
-    )
     candidate = SubtitleCandidate(
-        title="东京暗鸦 / Tokyo Ravens 字幕",
+        title="thread-1",
         detail_url="https://bbs.acgrip.com/thread-1",
         source="acgrip",
     )
-    queries = []
+    candidate.thread_packages = [make_package("batch", ["batch", "simplified"])]
+    monkeypatch.setattr(fetcher.provider, "search", lambda keyword, limit=10: [candidate])
+    monkeypatch.setattr(fetcher.provider, "prepare_candidate", lambda c: c)
+    monkeypatch.setattr(fetcher.provider, "load_thread_packages", lambda c: c)
 
-    def fake_search(keyword, limit=10):
-        queries.append(keyword)
-        if keyword == "东京暗鸦":
-            return []
-        if keyword == "Tokyo Ravens":
-            return [candidate]
-        return []
+    def invoker(state):
+        state.handle_tool("search_candidates", {"keyword": "Seitokai no Ichizon"})
+        state.handle_tool("load_candidate_packages", {"candidate_ref": "CD1"})
+        state.handle_tool("submit_package", {"package_ref": "PK1", "reason": "main batch"})
+        return {"ok": True, "returncode": 0, "argv": ["fake"]}
 
-    monkeypatch.setattr(fetcher.provider, "search", fake_search)
-    monkeypatch.setattr(fetcher.provider, "prepare_candidate", lambda candidate: candidate)
-    monkeypatch.setattr(fetcher.provider, "load_thread_packages", lambda candidate: candidate)
-    monkeypatch.setattr(fetcher.ai_client, "choose_subtitle_candidate", lambda *args, **kwargs: None)
+    _patch_pi_runner_with_invoker(monkeypatch, tmp_path, invoker)
 
-    downloaded = tmp_path / "fallback-search.zip"
-    downloaded.write_text("subtitle", encoding="utf-8")
+    downloaded = tmp_path / "got.zip"
+    downloaded.write_text("s", encoding="utf-8")
     monkeypatch.setattr(
-        fetcher.provider,
-        "download",
-        lambda candidate, destination_dir, package=None: SimpleNamespace(
-            status="success",
-            downloaded_path=downloaded,
-            download_url="https://example.com/fallback-search.zip",
-            selected_package=package,
+        fetcher.provider, "download",
+        lambda c, dd, package=None, download_url=None: SimpleNamespace(
+            status="success", downloaded_path=downloaded,
+            download_url="https://x/got.zip", selected_package=package,
         ),
     )
-    monkeypatch.setattr(
-        fetcher.processor,
-        "process",
-        lambda path, target_task_uuid=None: {"status": "success"},
-    )
-
-    result = fetcher.process_task(task_uuid)
-
-    assert result["status"] == "success"
-    assert queries == ["东京暗鸦", "Tokyo Ravens"]
-
-
-def test_process_passes_loaded_candidate_packages_to_ai(monkeypatch, tmp_path):
-    fetcher, task_uuid = build_fetcher(monkeypatch, tmp_path)
-    external_only = SubtitleCandidate(
-        title="外链候选",
-        detail_url="https://bbs.acgrip.com/thread-external",
-        source="acgrip",
-        external_urls=["https://pan.acgrip.com/"],
-    )
-    direct_candidate = SubtitleCandidate(
-        title="直链候选",
-        detail_url="https://bbs.acgrip.com/thread-direct",
-        source="acgrip",
-    )
-    direct_candidate.thread_packages = [
-        make_package("batch", ["batch", "simplified"]),
-    ]
-
-    monkeypatch.setattr(
-        fetcher.provider,
-        "search",
-        lambda keyword, limit=10: [external_only, direct_candidate],
-    )
-    monkeypatch.setattr(fetcher.provider, "prepare_candidate", lambda candidate: candidate)
-    monkeypatch.setattr(fetcher.provider, "load_thread_packages", lambda candidate: candidate)
-
-    ai_candidate_inputs = {}
-
-    def fake_choose_candidate(task_data, ranked_candidates):
-        ai_candidate_inputs["ranked_candidates"] = ranked_candidates
-        return SimpleNamespace(
-            selected_index=1,
-            should_use=True,
-            confidence="High",
-            language_assessment="简体中文",
-            reason="thread with downloadable package",
-            warnings=[],
-            model_dump=lambda: {
-                "selected_index": 1,
-                "should_use": True,
-                "confidence": "High",
-                "language_assessment": "简体中文",
-                "reason": "thread with downloadable package",
-                "warnings": [],
-            },
-        )
-
-    monkeypatch.setattr(fetcher.ai_client, "choose_subtitle_candidate", fake_choose_candidate)
-    monkeypatch.setattr(
-        fetcher.ai_client,
-        "choose_subtitle_thread_package",
-        lambda task_data, candidate_data, package_summaries: SimpleNamespace(
-            selected_index=0,
-            should_use=True,
-            confidence="High",
-            language_assessment="简体中文",
-            reason="pick loaded batch",
-            warnings=[],
-            model_dump=lambda: {
-                "selected_index": 0,
-                "should_use": True,
-                "confidence": "High",
-                "language_assessment": "简体中文",
-                "reason": "pick loaded batch",
-                "warnings": [],
-            },
-        ),
-    )
-
-    downloaded = tmp_path / "direct.zip"
-    downloaded.write_text("subtitle", encoding="utf-8")
-    download_calls = []
-
-    def fake_download(candidate, destination_dir, package=None):
-        download_calls.append(candidate.title)
-        return SimpleNamespace(
-            status="success",
-            downloaded_path=downloaded,
-            download_url="https://example.com/direct.zip",
-            selected_package=package,
-        )
-
-    monkeypatch.setattr(fetcher.provider, "download", fake_download)
-    monkeypatch.setattr(
-        fetcher.processor,
-        "process",
-        lambda path, target_task_uuid=None: {"status": "success"},
-    )
-
-    result = fetcher.process_task(task_uuid)
-
-    assert result["status"] == "success"
-
-
-def test_process_retries_next_keyword_when_first_candidate_is_wrong_arc(
-    monkeypatch,
-    tmp_path,
-):
-    fetcher, task_uuid = build_season0_fetcher(monkeypatch, tmp_path)
-    wrong_candidate = SubtitleCandidate(
-        title="鬼灭之刃 游郭篇",
-        detail_url="https://bbs.acgrip.com/thread-wrong",
-        source="acgrip",
-    )
-    correct_candidate = SubtitleCandidate(
-        title="剧场版 鬼灭之刃 无限列车篇",
-        detail_url="https://bbs.acgrip.com/thread-correct",
-        source="acgrip",
-    )
-    correct_candidate.thread_packages = [
-        make_package("mugen", ["batch", "simplified"])
-    ]
-    queries = []
-
-    def fake_search(keyword, limit=10):
-        queries.append(keyword)
-        if keyword == "鬼灭之刃":
-            return [wrong_candidate]
-        if keyword == "Gekijouban Kimetsu no Yaiba Mugen Ressha Hen":
-            return [correct_candidate]
-        return []
-
-    monkeypatch.setattr(fetcher.provider, "search", fake_search)
-    monkeypatch.setattr(fetcher.provider, "prepare_candidate", lambda candidate: candidate)
-    monkeypatch.setattr(fetcher.provider, "load_thread_packages", lambda candidate: candidate)
-
-    def fake_choose_candidate(task_data, ranked_candidates):
-        selected_title = ranked_candidates[0]["title"]
-        if "游郭篇" in selected_title:
-            return SimpleNamespace(
-                selected_index=0,
-                should_use=False,
-                confidence="High",
-                language_assessment="简体中文",
-                reason="wrong arc",
-                warnings=["yuukaku mismatch"],
-                model_dump=lambda: {
-                    "selected_index": 0,
-                    "should_use": False,
-                    "confidence": "High",
-                    "language_assessment": "简体中文",
-                    "reason": "wrong arc",
-                    "warnings": ["yuukaku mismatch"],
-                },
-            )
-        return SimpleNamespace(
-            selected_index=0,
-            should_use=True,
-            confidence="High",
-            language_assessment="简体中文",
-            reason="correct arc",
-            warnings=[],
-            model_dump=lambda: {
-                "selected_index": 0,
-                "should_use": True,
-                "confidence": "High",
-                "language_assessment": "简体中文",
-                "reason": "correct arc",
-                "warnings": [],
-            },
-        )
-
-    monkeypatch.setattr(fetcher.ai_client, "choose_subtitle_candidate", fake_choose_candidate)
-    monkeypatch.setattr(
-        fetcher.ai_client,
-        "choose_subtitle_thread_package",
-        lambda *args, **kwargs: SimpleNamespace(
-            selected_index=0,
-            should_use=True,
-            confidence="High",
-            language_assessment="简体中文",
-            reason="pick correct package",
-            warnings=[],
-            model_dump=lambda: {
-                "selected_index": 0,
-                "should_use": True,
-                "confidence": "High",
-                "language_assessment": "简体中文",
-                "reason": "pick correct package",
-                "warnings": [],
-            },
-        ),
-    )
-
-    downloaded = tmp_path / "mugen.zip"
-    downloaded.write_text("subtitle", encoding="utf-8")
-    download_calls = []
-    monkeypatch.setattr(
-        fetcher.provider,
-        "download",
-        lambda candidate, destination_dir, package=None: (
-            download_calls.append(candidate.title)
-            or SimpleNamespace(
-                status="success",
-                downloaded_path=downloaded,
-                download_url="https://example.com/mugen.zip",
-                selected_package=package,
-            )
-        ),
-    )
-    monkeypatch.setattr(
-        fetcher.processor,
-        "process",
-        lambda path, target_task_uuid=None: {"status": "success"},
-    )
-
-    result = fetcher.process_task(task_uuid)
-
-    assert result["status"] == "success"
-    assert queries == ["鬼灭之刃", "Gekijouban Kimetsu no Yaiba Mugen Ressha Hen"]
-    assert download_calls == ["剧场版 鬼灭之刃 无限列车篇"]
-    assert result["search_keyword"] == "Gekijouban Kimetsu no Yaiba Mugen Ressha Hen"
-
-
-def test_process_retries_next_keyword_when_processor_need_confirm(
-    monkeypatch,
-    tmp_path,
-):
-    fetcher, task_uuid = build_season0_fetcher(monkeypatch, tmp_path)
-    wrong_candidate = SubtitleCandidate(
-        title="鬼灭之刃 游郭篇",
-        detail_url="https://bbs.acgrip.com/thread-wrong",
-        source="acgrip",
-    )
-    wrong_candidate.thread_packages = [make_package("wrong", ["batch", "simplified"])]
-    correct_candidate = SubtitleCandidate(
-        title="剧场版 鬼灭之刃 无限列车篇",
-        detail_url="https://bbs.acgrip.com/thread-correct",
-        source="acgrip",
-    )
-    correct_candidate.thread_packages = [
-        make_package("mugen", ["batch", "simplified"])
-    ]
-    queries = []
-    processor_calls = []
-
-    def fake_search(keyword, limit=10):
-        queries.append(keyword)
-        if keyword == "鬼灭之刃":
-            return [wrong_candidate]
-        if keyword == "Gekijouban Kimetsu no Yaiba Mugen Ressha Hen":
-            return [correct_candidate]
-        return []
-
-    monkeypatch.setattr(fetcher.provider, "search", fake_search)
-    monkeypatch.setattr(fetcher.provider, "prepare_candidate", lambda candidate: candidate)
-    monkeypatch.setattr(fetcher.provider, "load_thread_packages", lambda candidate: candidate)
-    monkeypatch.setattr(
-        fetcher.ai_client,
-        "choose_subtitle_candidate",
-        lambda *args, **kwargs: SimpleNamespace(
-            selected_index=0,
-            should_use=True,
-            confidence="High",
-            language_assessment="简体中文",
-            reason="pick current candidate",
-            warnings=[],
-            model_dump=lambda: {
-                "selected_index": 0,
-                "should_use": True,
-                "confidence": "High",
-                "language_assessment": "简体中文",
-                "reason": "pick current candidate",
-                "warnings": [],
-            },
-        ),
-    )
-    monkeypatch.setattr(
-        fetcher.ai_client,
-        "choose_subtitle_thread_package",
-        lambda *args, **kwargs: SimpleNamespace(
-            selected_index=0,
-            should_use=True,
-            confidence="High",
-            language_assessment="简体中文",
-            reason="pick package",
-            warnings=[],
-            model_dump=lambda: {
-                "selected_index": 0,
-                "should_use": True,
-                "confidence": "High",
-                "language_assessment": "简体中文",
-                "reason": "pick package",
-                "warnings": [],
-            },
-        ),
-    )
-
-    downloaded_wrong = tmp_path / "wrong.zip"
-    downloaded_wrong.write_text("subtitle", encoding="utf-8")
-    downloaded_correct = tmp_path / "correct.zip"
-    downloaded_correct.write_text("subtitle", encoding="utf-8")
-
-    def fake_download(candidate, destination_dir, package=None):
-        path = downloaded_wrong if "游郭篇" in candidate.title else downloaded_correct
-        return SimpleNamespace(
-            status="success",
-            downloaded_path=path,
-            download_url=f"https://example.com/{path.name}",
-            selected_package=package,
-        )
 
     def fake_process(path, target_task_uuid=None):
-        processor_calls.append(path.name)
-        if path == downloaded_wrong:
-            return {"status": "need_confirm", "error": "AI 无法确定匹配的动漫，请手动选择"}
-        return {"status": "success"}
+        return {
+            "status": "need_confirm",
+            "case_agent_status": "fail_closed",
+            "error": "字幕映射合同校验未通过",
+        }
 
-    monkeypatch.setattr(fetcher.provider, "download", fake_download)
     monkeypatch.setattr(fetcher.processor, "process", fake_process)
 
     result = fetcher.process_task(task_uuid)
 
-    assert result["status"] == "success"
-    assert queries == ["鬼灭之刃", "Gekijouban Kimetsu no Yaiba Mugen Ressha Hen"]
-    assert processor_calls == ["wrong.zip", "correct.zip"]
-    assert result["search_keyword"] == "Gekijouban Kimetsu no Yaiba Mugen Ressha Hen"
-
-
-def test_process_passes_precise_source_and_target_hints_to_ai(
-    monkeypatch,
-    tmp_path,
-):
-    fetcher, task_uuid = build_season0_fetcher(monkeypatch, tmp_path)
-    candidate = SubtitleCandidate(
-        title="剧场版 鬼灭之刃 无限列车篇",
-        detail_url="https://bbs.acgrip.com/thread-correct",
-        source="acgrip",
-    )
-    candidate.thread_packages = [make_package("mugen", ["batch", "simplified"])]
-    ai_inputs = {}
-
-    monkeypatch.setattr(fetcher.provider, "search", lambda keyword, limit=10: [candidate])
-    monkeypatch.setattr(fetcher.provider, "prepare_candidate", lambda candidate: candidate)
-    monkeypatch.setattr(fetcher.provider, "load_thread_packages", lambda candidate: candidate)
-
-    def fake_choose_candidate(task_data, ranked_candidates):
-        ai_inputs["candidate_task_data"] = task_data
-        return SimpleNamespace(
-            selected_index=0,
-            should_use=True,
-            confidence="High",
-            language_assessment="简体中文",
-            reason="correct arc",
-            warnings=[],
-            model_dump=lambda: {
-                "selected_index": 0,
-                "should_use": True,
-                "confidence": "High",
-                "language_assessment": "简体中文",
-                "reason": "correct arc",
-                "warnings": [],
-            },
-        )
-
-    def fake_choose_package(task_data, candidate_data, package_summaries):
-        ai_inputs["package_task_data"] = task_data
-        return SimpleNamespace(
-            selected_index=0,
-            should_use=True,
-            confidence="High",
-            language_assessment="简体中文",
-            reason="correct package",
-            warnings=[],
-            model_dump=lambda: {
-                "selected_index": 0,
-                "should_use": True,
-                "confidence": "High",
-                "language_assessment": "简体中文",
-                "reason": "correct package",
-                "warnings": [],
-            },
-        )
-
-    monkeypatch.setattr(fetcher.ai_client, "choose_subtitle_candidate", fake_choose_candidate)
-    monkeypatch.setattr(fetcher.ai_client, "choose_subtitle_thread_package", fake_choose_package)
-
-    downloaded = tmp_path / "correct.zip"
-    downloaded.write_text("subtitle", encoding="utf-8")
-    monkeypatch.setattr(
-        fetcher.provider,
-        "download",
-        lambda candidate, destination_dir, package=None: SimpleNamespace(
-            status="success",
-            downloaded_path=downloaded,
-            download_url="https://example.com/correct.zip",
-            selected_package=package,
-        ),
-    )
-    monkeypatch.setattr(
-        fetcher.processor,
-        "process",
-        lambda path, target_task_uuid=None: {"status": "success"},
-    )
-
-    result = fetcher.process_task(task_uuid)
-
-    assert result["status"] == "success"
-    candidate_task_data = ai_inputs["candidate_task_data"]
-    package_task_data = ai_inputs["package_task_data"]
-    assert candidate_task_data["subtitle_auto_fetch_source_title_hint"] == "Gekijouban Kimetsu no Yaiba Mugen Ressha Hen"
-    assert candidate_task_data["subtitle_auto_fetch_is_season_zero_tv"] is True
-    assert candidate_task_data["subtitle_auto_fetch_source_video_names"] == [
-        "[BeanSub&FZSD&VCB-Studio] Gekijouban Kimetsu no Yaiba Mugen Ressha Hen [Ma10p_1080p][x265_flac].mkv"
-    ]
-    assert candidate_task_data["subtitle_auto_fetch_missing_target_video_names"] == [
-        "鬼灭之刃 - S00E14 - 1080p x265 FLAC - BeanSub&FZSD&VCB-Studio.mkv"
-    ]
-
-
-def test_process_uses_ai_query_expansion_after_deterministic_keywords_exhausted(
-    monkeypatch,
-    tmp_path,
-):
-    fetcher, task_uuid = build_season0_fetcher(monkeypatch, tmp_path)
-    candidate = SubtitleCandidate(
-        title="剧场版 鬼灭之刃 无限列车篇",
-        detail_url="https://bbs.acgrip.com/thread-mugen",
-        source="acgrip",
-    )
-    candidate.thread_packages = [make_package("mugen", ["batch", "simplified"])]
-    queries = []
-    ai_calls = []
-
-    def fake_search(keyword, limit=10):
-        queries.append(keyword)
-        if keyword == "鬼灭之刃 无限列车篇":
-            return [candidate]
-        return []
-
-    monkeypatch.setattr(fetcher.provider, "search", fake_search)
-    monkeypatch.setattr(fetcher.provider, "prepare_candidate", lambda candidate: candidate)
-    monkeypatch.setattr(fetcher.provider, "load_thread_packages", lambda candidate: candidate)
-    monkeypatch.setattr(
-        fetcher.ai_client,
-        "generate_subtitle_search_queries",
-        lambda task_data: (
-            ai_calls.append(list(task_data.get("subtitle_auto_fetch_existing_keywords") or []))
-            or ["鬼灭之刃", "鬼灭之刃 无限列车篇"]
-        ),
-    )
-    monkeypatch.setattr(
-        fetcher.ai_client,
-        "choose_subtitle_candidate",
-        lambda *args, **kwargs: SimpleNamespace(
-            selected_index=0,
-            should_use=True,
-            confidence="High",
-            language_assessment="简体中文",
-            reason="correct arc",
-            warnings=[],
-            model_dump=lambda: {
-                "selected_index": 0,
-                "should_use": True,
-                "confidence": "High",
-                "language_assessment": "简体中文",
-                "reason": "correct arc",
-                "warnings": [],
-            },
-        ),
-    )
-    monkeypatch.setattr(
-        fetcher.ai_client,
-        "choose_subtitle_thread_package",
-        lambda *args, **kwargs: SimpleNamespace(
-            selected_index=0,
-            should_use=True,
-            confidence="High",
-            language_assessment="简体中文",
-            reason="pick package",
-            warnings=[],
-            model_dump=lambda: {
-                "selected_index": 0,
-                "should_use": True,
-                "confidence": "High",
-                "language_assessment": "简体中文",
-                "reason": "pick package",
-                "warnings": [],
-            },
-        ),
-    )
-
-    downloaded = tmp_path / "mugen-ai.zip"
-    downloaded.write_text("subtitle", encoding="utf-8")
-    monkeypatch.setattr(
-        fetcher.provider,
-        "download",
-        lambda candidate, destination_dir, package=None: SimpleNamespace(
-            status="success",
-            downloaded_path=downloaded,
-            download_url="https://example.com/mugen-ai.zip",
-            selected_package=package,
-        ),
-    )
-    monkeypatch.setattr(
-        fetcher.processor,
-        "process",
-        lambda path, target_task_uuid=None: {"status": "success"},
-    )
-
-    result = fetcher.process_task(task_uuid)
-
-    assert result["status"] == "success"
-    assert queries == [
-        "鬼灭之刃",
-        "Gekijouban Kimetsu no Yaiba Mugen Ressha Hen",
-        "鬼灭之刃 无限列车篇",
-    ]
-    assert ai_calls == [["鬼灭之刃", "Gekijouban Kimetsu no Yaiba Mugen Ressha Hen"]]
-    assert result["search_keyword"] == "鬼灭之刃 无限列车篇"
-
-
-
-def test_process_skips_ai_query_expansion_when_deterministic_keyword_succeeds(
-    monkeypatch,
-    tmp_path,
-):
-    fetcher, task_uuid = build_fetcher(monkeypatch, tmp_path)
-    candidate = SubtitleCandidate(
-        title="Seitokai no Ichizon 字幕",
-        detail_url="https://bbs.acgrip.com/thread-1",
-        source="acgrip",
-    )
-    candidate.thread_packages = [make_package("batch", ["batch", "simplified"])]
-
-    monkeypatch.setattr(fetcher.provider, "search", lambda keyword, limit=10: [candidate])
-    monkeypatch.setattr(fetcher.provider, "prepare_candidate", lambda candidate: candidate)
-    monkeypatch.setattr(fetcher.provider, "load_thread_packages", lambda candidate: candidate)
-    monkeypatch.setattr(
-        fetcher.ai_client,
-        "generate_subtitle_search_queries",
-        lambda *args, **kwargs: pytest.fail("AI query expansion should not be called"),
-    )
-    monkeypatch.setattr(fetcher.ai_client, "choose_subtitle_candidate", lambda *args, **kwargs: None)
-
-    downloaded = tmp_path / "success.zip"
-    downloaded.write_text("subtitle", encoding="utf-8")
-    monkeypatch.setattr(
-        fetcher.provider,
-        "download",
-        lambda candidate, destination_dir, package=None: SimpleNamespace(
-            status="success",
-            downloaded_path=downloaded,
-            download_url="https://example.com/success.zip",
-            selected_package=package,
-        ),
-    )
-    monkeypatch.setattr(
-        fetcher.processor,
-        "process",
-        lambda path, target_task_uuid=None: {"status": "success"},
-    )
-
-    result = fetcher.process_task(task_uuid)
-
-    assert result["status"] == "success"
-
-
-
-def test_process_appends_deduped_ai_queries_after_existing_keywords(
-    monkeypatch,
-    tmp_path,
-):
-    fetcher, task_uuid = build_season0_fetcher(monkeypatch, tmp_path)
-    queries = []
-
-    monkeypatch.setattr(fetcher.provider, "search", lambda keyword, limit=10: queries.append(keyword) or [])
-    monkeypatch.setattr(
-        fetcher.ai_client,
-        "generate_subtitle_search_queries",
-        lambda task_data: [
-            "鬼灭之刃",
-            "鬼灭之刃 无限列车篇",
-            "鬼灭之刃 无限列车篇",
-            "Mugen Train",
-        ],
-    )
-
-    result = fetcher.process_task(task_uuid)
-
     assert result["status"] == "failed"
+    assert result.get("processor_case_agent_status") == "fail_closed"
+    assert result.get("failure_reason") == "processor_fail_closed"
 
 
-def test_process_filters_overbroad_ai_queries_for_specific_season0_target(
-    monkeypatch,
-    tmp_path,
-):
-    fetcher, task_uuid = build_season0_fetcher(monkeypatch, tmp_path)
-    queries = []
+# ---------------------------------------------------------------------------
+# 搜索词构造：方向 A（BGM subject 名优先 + 源目录标题回退，不 AI 扩词）
+# ---------------------------------------------------------------------------
 
-    monkeypatch.setattr(fetcher.provider, "search", lambda keyword, limit=10: queries.append(keyword) or [])
-    monkeypatch.setattr(
-        fetcher.ai_client,
-        "generate_subtitle_search_queries",
-        lambda task_data: ["鬼灭之刃", "鬼灭之刃 无限列车篇"],
-    )
-
-    result = fetcher.process_task(task_uuid)
-
-    assert result["status"] == "failed"
-    assert queries == [
-        "鬼灭之刃",
-        "Gekijouban Kimetsu no Yaiba Mugen Ressha Hen",
-        "鬼灭之刃 无限列车篇",
-    ]
-
+def test_build_search_keywords_prefers_bgm_subject_name(monkeypatch, tmp_path):
+    """task_data 含 bgm_subject_name_cn / bgm_subject_name → 主词取 BGM 名变体。"""
+    fetcher, _ = build_fetcher(monkeypatch, tmp_path)
+    task_data = {
+        "uuid": "t1",
+        "name": "Seitokai no Ichizon",
+        "bgm_subject_name": "生徒会の一存",
+        "bgm_subject_name_cn": "碧阳学园学生会议事录",
+        "season_id": 1,
+        "is_movie": False,
+    }
+    missing = [tmp_path / "Series" / "Season 1" / "ep1.mkv"]
+    keywords = fetcher._build_search_keywords(task_data, missing)
+    # name_cn 优先；至少含 name_cn 原始变体
+    assert any("碧阳学园学生会议事录" in k for k in keywords)
+    # 也含 name 变体
+    assert any("生徒会の一存" in k for k in keywords)
 
 
-
-
-def test_process_allows_broader_ai_query_for_regular_tv_title(
-    monkeypatch,
-    tmp_path,
-):
-    fetcher, task_uuid = build_fetcher(monkeypatch, tmp_path)
-    monkeypatch.setattr(
-        "src.subtitle.auto_fetch.get_task",
-        lambda uuid: {
-            "uuid": uuid,
-            "name": "夜樱四重奏：花之歌",
-            "tmdb_name": "夜樱四重奏：花之歌",
-            "path": str(tmp_path / "[VCB-Studio] Yozakura Quartet Hana no Uta [1080p]"),
-            "season_id": 1,
-            "is_movie": False,
-            "target_root": str(tmp_path / "Series"),
-        },
-    )
-    monkeypatch.setattr(
-        "src.subtitle.auto_fetch.get_record",
-        lambda uuid: {
-            "a": str(tmp_path / "Series" / "Season 1" / "ep1.mkv")
-        },
-    )
-
-    candidate = SubtitleCandidate(
-        title="夜樱四重奏 字幕",
-        detail_url="https://bbs.acgrip.com/thread-yozakura",
-        source="acgrip",
-    )
-    candidate.thread_packages = [make_package("batch", ["batch", "simplified"])]
-    queries = []
-
-    def fake_search(keyword, limit=10):
-        queries.append(keyword)
-        if keyword == "夜樱四重奏":
-            return [candidate]
-        return []
-
-    monkeypatch.setattr(fetcher.provider, "search", fake_search)
-    monkeypatch.setattr(fetcher.provider, "prepare_candidate", lambda candidate: candidate)
-    monkeypatch.setattr(fetcher.provider, "load_thread_packages", lambda candidate: candidate)
-    monkeypatch.setattr(
-        fetcher.ai_client,
-        "generate_subtitle_search_queries",
-        lambda task_data: ["夜樱四重奏"],
-    )
-    monkeypatch.setattr(
-        fetcher.ai_client,
-        "choose_subtitle_candidate",
-        lambda *args, **kwargs: SimpleNamespace(
-            selected_index=0,
-            should_use=True,
-            confidence="High",
-            language_assessment="简体中文",
-            reason="broad tv query is acceptable",
-            warnings=[],
-            model_dump=lambda: {
-                "selected_index": 0,
-                "should_use": True,
-                "confidence": "High",
-                "language_assessment": "简体中文",
-                "reason": "broad tv query is acceptable",
-                "warnings": [],
-            },
+def test_build_search_keywords_falls_back_to_source_path_title(monkeypatch, tmp_path):
+    """无 BGM 名时回退源目录标题（path）变体；确定性规范化，不 AI 扩词。"""
+    fetcher, _ = build_season0_fetcher(monkeypatch, tmp_path)
+    task_data = {
+        "uuid": "t-season0",
+        "name": "鬼灭之刃",
+        "path": str(
+            tmp_path
+            / "[BeanSub&FZSD&VCB-Studio] Gekijouban Kimetsu no Yaiba Mugen Ressha Hen [Ma10p_1080p]"
         ),
-    )
-    monkeypatch.setattr(
-        fetcher.ai_client,
-        "choose_subtitle_thread_package",
-        lambda *args, **kwargs: SimpleNamespace(
-            selected_index=0,
-            should_use=True,
-            confidence="High",
-            language_assessment="简体中文",
-            reason="pick package",
-            warnings=[],
-            model_dump=lambda: {
-                "selected_index": 0,
-                "should_use": True,
-                "confidence": "High",
-                "language_assessment": "简体中文",
-                "reason": "pick package",
-                "warnings": [],
-            },
-        ),
-    )
+        "season_id": 0,
+        "is_movie": False,
+    }
+    missing = [tmp_path / "SeriesRoot" / "Season 00" / "ep.mkv"]
+    keywords = fetcher._build_search_keywords(task_data, missing)
+    # 源目录标题变体应包含英文主名（ascii_only 变体）
+    assert any("Gekijouban Kimetsu no Yaiba Mugen Ressha Hen" in k for k in keywords)
+    # name 变体也在
+    assert any("鬼灭之刃" in k for k in keywords)
 
-    downloaded = tmp_path / "yozakura.zip"
-    downloaded.write_text("subtitle", encoding="utf-8")
-    monkeypatch.setattr(
-        fetcher.provider,
-        "download",
-        lambda candidate, destination_dir, package=None: SimpleNamespace(
-            status="success",
-            downloaded_path=downloaded,
-            download_url="https://example.com/yozakura.zip",
-            selected_package=package,
-        ),
-    )
-    monkeypatch.setattr(
-        fetcher.processor,
-        "process",
-        lambda path, target_task_uuid=None: {"status": "success"},
-    )
 
-    result = fetcher.process_task(task_uuid)
-
-    assert result["status"] == "success"
-    assert queries == [
-        "夜樱四重奏：花之歌",
-        "夜樱四重奏 花之歌",
-        "Yozakura Quartet Hana no Uta",
-        "夜樱四重奏",
-    ]
-    assert result["search_keyword"] == "夜樱四重奏"
+def test_build_search_keywords_empty_when_no_signal(monkeypatch, tmp_path):
+    """无 BGM 名 / 无 path → 兜底用缺失视频文件 stem（ep1）生成确定性变体。"""
+    fetcher, _ = build_fetcher(monkeypatch, tmp_path)
+    task_data = {"uuid": "t1", "season_id": 1, "is_movie": False}
+    missing = [tmp_path / "Series" / "Season 1" / "ep1.mkv"]
+    keywords = fetcher._build_search_keywords(task_data, missing)
+    # 无 name/path/BGM 名，兜底 missing video 文件 stem "ep1" + 其 digit_spaced 变体 "ep 1"
+    assert "ep1" in keywords
+    assert all("鬼灭" not in k and "Seitokai" not in k for k in keywords)

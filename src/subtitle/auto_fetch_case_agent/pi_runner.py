@@ -42,7 +42,7 @@ from ...rename.case_agent.pi_runner import (
     _config_str,
     _prepare_pi_runtime_model_config,
 )
-from .models import AutoFetchDecision
+from .models import AutoFetchDecision, AutoFetchSelectedCandidate
 from .pi_tools import AutoFetchCaseToolState, _json_safe
 from .workspace import AutoFetchCaseWorkspace
 
@@ -65,6 +65,17 @@ class AutoFetchCaseAgentRunResult:
     final_verifier_result: CaseVerifierResult | None = None
     selected_candidate_ref: str = ''
     selected_package_ref: str = ''
+    # Pi 驱动爬取后，selected 的 provider 原始对象（供 Python 主进程下载）。
+    # sidecar 跑完 tool_state 持有 provider_candidates_by_ref/provider_packages_by_ref，
+    # 这里把 selected 的对象带出，避免 Python 主进程无法下载。
+    selected_provider_candidate: Any = None
+    selected_provider_package: Any = None
+    # 多季覆盖：submit_complete 落 final 含 selections list（每 subject 一条）。
+    # 旧单 submit_package final（无 selections）回退到 selected_candidate_ref/package。
+    # selections_provider 是每 selection 对应的 (candidate, package) provider 原始对象，
+    # 供 auto_fetch 逐个下载。
+    selections: list[AutoFetchSelectedCandidate] = field(default_factory=list)
+    selections_provider: list[tuple[Any, Any]] = field(default_factory=list)
     raw_runtime_result: dict[str, Any] = field(default_factory=dict)
     tool_trace: list[dict[str, Any]] = field(default_factory=list)
     tool_call_counts: dict[str, int] = field(default_factory=dict)
@@ -134,6 +145,11 @@ def run_auto_fetch_case_agent_pi(
             runtime_model_config=runtime_model_config,
         )
 
+    # 兜底：Pi 选了包（state.selections 非空）但没调 submit_complete 就结束
+    # （sidecar 旧行为或 Pi 漏调）→ 自动 submit_complete 落 final，避免误 fail_closed。
+    # force=True 跳过 uncovered 确认（Pi 已结束，nudge 无意义，直接落 final）。
+    if state.final_result is None and state.selections:
+        state.tool_submit_complete(reason='auto: selections present but no submit_complete call', force=True)
     if state.final_result is None and runtime.get('error') == 'timeout':
         auto_timeout_fail_closed = state.auto_fail_closed_no_final_result(
             reason=f'Pi auto fetch case agent runtime exceeded wall-clock timeout of {timeout_seconds} seconds without an accepted selection.',
@@ -159,6 +175,44 @@ def run_auto_fetch_case_agent_pi(
     final_verifier_result = _parse_model(final.get('final_verifier_result'), CaseVerifierResult, errors, 'final_verifier_parse_error')
     decision = _parse_model(final.get('decision'), AutoFetchDecision, errors, 'decision_parse_error')
     trace_summary = state.tool_summary()
+    # 多季覆盖：从 final.selections 构造 selections list + provider 对象。
+    # 兼容旧单 submit_package final（无 selections 字段）：回退到 state.selections
+    # （submit_package 累加的）或 selected_candidate_ref/package。
+    selections: list[AutoFetchSelectedCandidate] = []
+    selections_provider: list[tuple[Any, Any]] = []
+    final_selections_raw = final.get('selections') or []
+    if isinstance(final_selections_raw, list) and final_selections_raw:
+        for sel_raw in final_selections_raw:
+            if not isinstance(sel_raw, dict):
+                continue
+            try:
+                sel = AutoFetchSelectedCandidate(**{
+                    k: v for k, v in sel_raw.items()
+                    if k in AutoFetchSelectedCandidate.model_fields
+                })
+            except Exception:
+                continue
+            selections.append(sel)
+            sel_cand = state.provider_candidates_by_ref.get(sel.candidate_ref)
+            sel_pkg = state.provider_packages_by_ref.get(sel.package_ref)
+            selections_provider.append((sel_cand, sel_pkg))
+    # 兼容旧 final（单 submit_package 落 final 的 selected_candidate_ref/package）
+    sel_cand_ref = str(final.get('selected_candidate_ref') or '')
+    sel_pkg_ref = str(final.get('selected_package_ref') or '')
+    if not selections and sel_cand_ref:
+        # 旧格式或 submit_package 直接落 final 的场景，包装成单 selection
+        legacy_sel = AutoFetchSelectedCandidate(
+            candidate_ref=sel_cand_ref,
+            package_ref=sel_pkg_ref,
+            detail_url=str(final.get('selected_candidate_detail_url') or ''),
+            title=str(final.get('selected_candidate_title') or ''),
+            download_url=str(final.get('download_url') or ''),
+        )
+        selections.append(legacy_sel)
+        selections_provider.append((
+            state.provider_candidates_by_ref.get(sel_cand_ref),
+            state.provider_packages_by_ref.get(sel_pkg_ref),
+        ))
     result = AutoFetchCaseAgentRunResult(
         ok=ok,
         status=status,
@@ -169,8 +223,14 @@ def run_auto_fetch_case_agent_pi(
         errors=errors,
         decision=decision or state.decision,
         final_verifier_result=final_verifier_result or state.verifier_result,
-        selected_candidate_ref=str(final.get('selected_candidate_ref') or ''),
-        selected_package_ref=str(final.get('selected_package_ref') or ''),
+        selected_candidate_ref=sel_cand_ref or (selections[0].candidate_ref if selections else ''),
+        selected_package_ref=sel_pkg_ref or (selections[0].package_ref if selections else ''),
+        selected_provider_candidate=state.provider_candidates_by_ref.get(sel_cand_ref)
+        if sel_cand_ref else (selections_provider[0][0] if selections_provider else None),
+        selected_provider_package=state.provider_packages_by_ref.get(sel_pkg_ref)
+        if sel_pkg_ref else (selections_provider[0][1] if selections_provider else None),
+        selections=selections,
+        selections_provider=selections_provider,
         raw_runtime_result=runtime,
         tool_trace=state.tool_trace,
         tool_call_counts=dict(trace_summary['tool_call_counts']),
@@ -269,7 +329,37 @@ class _ToolRequestHandler(BaseHTTPRequestHandler):
         if self.path == '/final':
             self._send_json({'ok': True, 'final_result': _json_safe(self.server.state.final_result)})
             return
+        if self.path == '/state':
+            self._send_json(self._state_snapshot())
+            return
         self._send_json({'ok': False, 'error': 'not found'}, status=404)
+
+    def _state_snapshot(self) -> dict[str, Any]:
+        """暴露 selections + missing-video subject 覆盖情况，供 sidecar nudge 判断
+        "Pi 选了 1 个包就停了 / 仍有未覆盖 subject"。"""
+        state = self.server.state
+        ws = state.workspace
+        # 所有目标 subject（去重，含 0/空 id 的归到一组）
+        subject_ids: set[int] = set()
+        per_subject_video_count: dict[int, int] = {}
+        for card in ws.missing_videos:
+            sid = getattr(card, 'bangumi_subject_id', 0) or 0
+            subject_ids.add(sid)
+            per_subject_video_count[sid] = per_subject_video_count.get(sid, 0) + 1
+        covered_subjects = sorted(
+            {s.bangumi_subject_id for s in state.selections if s.bangumi_subject_id}
+        )
+        uncovered_subjects = sorted(subject_ids - set(covered_subjects))
+        return {
+            'ok': True,
+            'final_result_present': bool(state.final_result),
+            'selections_count': len(state.selections),
+            'covered_subject_ids': covered_subjects,
+            'uncovered_subject_ids': uncovered_subjects,
+            'total_subject_count': len(subject_ids),
+            'per_subject_video_count': per_subject_video_count,
+            'missing_video_count': len(ws.missing_videos),
+        }
 
     def do_POST(self) -> None:
         if self.path != '/tool':

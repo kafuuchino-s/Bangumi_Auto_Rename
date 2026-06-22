@@ -99,6 +99,115 @@ def test_target_card_source_video_empty_when_absent():
     assert cards[0].source_video == ""
 
 
+def test_target_card_carries_arc_name_from_video_arc_names():
+    """ProcessedTask.video_arc_names -> SubtitleTargetVideoCard.arc_name/arc_name_cn
+    -> readable_target_cards 暴露给 AI。多季同 episode 配对的关键证据（S02E01
+    無限列車編 vs S03E01 遊郭編，都从 E01 开始，靠 arc 名区分）。"""
+    from src.subtitle.case_agent.evidence_broker import build_target_video_cards
+    from src.subtitle.case_agent.workspace import build_subtitle_case_workspace
+
+    tasks = [
+        {
+            "uuid": "t-s2",
+            "title": "Demon Slayer",
+            "season": 2,
+            "is_movie": False,
+            "videos": ["Demon Slayer - S02E01.mkv"],
+            "target_dir": "/lib/Demon Slayer (2019)/Season 02",
+            "video_targets": {},
+            "source_videos": {},
+            "video_arc_names": {
+                "Demon Slayer - S02E01.mkv": ("鬼滅の刃 無限列車編", "鬼灭之刃 无限列车篇"),
+            },
+        },
+        {
+            "uuid": "t-s3",
+            "title": "Demon Slayer",
+            "season": 3,
+            "is_movie": False,
+            "videos": ["Demon Slayer - S03E01.mkv"],
+            "target_dir": "/lib/Demon Slayer (2019)/Season 03",
+            "video_targets": {},
+            "source_videos": {},
+            "video_arc_names": {
+                "Demon Slayer - S03E01.mkv": ("鬼滅の刃 遊郭編", "鬼灭之刃 游郭篇"),
+            },
+        },
+    ]
+    cards = build_target_video_cards(tasks)
+    by_video = {c.video: c for c in cards}
+    # S02E01 的 arc 是無限列車編，S03E01 是遊郭編——区分明确
+    assert by_video["Demon Slayer - S02E01.mkv"].arc_name == "鬼滅の刃 無限列車編"
+    assert by_video["Demon Slayer - S02E01.mkv"].arc_name_cn == "鬼灭之刃 无限列车篇"
+    assert by_video["Demon Slayer - S03E01.mkv"].arc_name == "鬼滅の刃 遊郭編"
+    assert by_video["Demon Slayer - S03E01.mkv"].arc_name_cn == "鬼灭之刃 游郭篇"
+
+    ws = build_subtitle_case_workspace(
+        archive_name="mugen.zip", subtitle_files=[], target_videos=cards,
+    )
+    readable = {r["video"]: r for r in ws.readable_target_cards()}
+    assert readable["Demon Slayer - S02E01.mkv"]["arc_name"] == "鬼滅の刃 無限列車編"
+    assert readable["Demon Slayer - S03E01.mkv"]["arc_name_cn"] == "鬼灭之刃 游郭篇"
+
+
+def test_target_card_arc_name_empty_when_absent():
+    """旧 task 无 video_arc_names：arc_name/arc_name_cn 为空，不报错。"""
+    from src.subtitle.case_agent.evidence_broker import build_target_video_cards
+
+    tasks = [
+        {
+            "uuid": "t1", "title": "Foo", "season": 1, "is_movie": False,
+            "videos": ["Foo - S01E01.mkv"], "target_dir": "/lib/Foo/Season 01",
+            "video_targets": {}, "source_videos": {},
+        }
+    ]
+    cards = build_target_video_cards(tasks)
+    assert cards[0].arc_name == ""
+    assert cards[0].arc_name_cn == ""
+
+
+def test_build_processed_task_captures_video_arc_names_from_task_data(monkeypatch, tmp_path):
+    """_build_processed_task_from_file 从 task_data.bgm_video_subject_map +
+    bgm_subjects 抽 video_arc_names，供 target card 填 arc_name。"""
+    from src.subtitle.processor import SubtitleProcessor
+    from src.utils.path import TASK_PATH, RECORD_PATH
+    from src.utils.utils import write_task
+
+    task_uuid = "arc-task-1"
+    task_data = {
+        "uuid": task_uuid, "type": "rename", "name": "Demon Slayer",
+        "is_movie": False, "season_id": 2,
+        "target_root": str(tmp_path / "Demon Slayer (2019)"),
+        "bgm_video_subject_map": {"Demon Slayer - S02E01.mkv": 350764, "Demon Slayer - S02E02.mkv": 350764},
+        "bgm_subjects": [
+            {"id": 350764, "name": "鬼滅の刃 無限列車編", "name_cn": "鬼灭之刃 无限列车篇", "media_kind": "tv"},
+            {"id": 328195, "name": "鬼滅の刃 遊郭編", "name_cn": "鬼灭之刃 游郭篇", "media_kind": "tv"},
+        ],
+    }
+    write_task(task_uuid, task_data)
+    record = {
+        "[VCB] Kimetsu 27.mkv": str(tmp_path / "Demon Slayer (2019)" / "Season 02" / "Demon Slayer - S02E01.mkv"),
+        "[VCB] Kimetsu 28.mkv": str(tmp_path / "Demon Slayer (2019)" / "Season 02" / "Demon Slayer - S02E02.mkv"),
+    }
+    (RECORD_PATH / f"{task_uuid}.json").write_text(
+        __import__("json").dumps(record, ensure_ascii=False), encoding="utf-8"
+    )
+
+    proc = SubtitleProcessor()
+    task = proc._load_single_processed_task(task_uuid)
+    assert task is not None
+    arc_names = task.get("video_arc_names") or {}
+    assert arc_names.get("Demon Slayer - S02E01.mkv") == ("鬼滅の刃 無限列車編", "鬼灭之刃 无限列车篇")
+    assert arc_names.get("Demon Slayer - S02E02.mkv") == ("鬼滅の刃 無限列車編", "鬼灭之刃 无限列车篇")
+
+    # cleanup
+    for p in (TASK_PATH / f"{task_uuid}.json", RECORD_PATH / f"{task_uuid}.json"):
+        try:
+            p.unlink()
+        except FileNotFoundError:
+            pass
+
+
 def test_build_processed_task_captures_source_videos_from_record(monkeypatch, tmp_path):
     """_build_processed_task_from_file 从 record 的 key（local 源路径）抽 source_videos。"""
     import json
@@ -237,7 +346,14 @@ def test_process_case_agent_accepted_lands_and_records_unmatched_todo(
     assert result["matched_count"] == 1
     assert result["total_subtitles"] == 2
     assert result["pipeline_mode"] == "subtitle_case_agent_primary"
-    assert result["unmatched"] == [{"ref": "SF2", "archive_path": "S1/02.ass"}]
+    # unmatched item 含 reason_kind/reason（结构化分类）；single_shot 旧 AI 路径
+    # 无 reason_kind 信息，默认 'unknown' → 归 unmatched（待人工，不过滤）。
+    assert result["unmatched"] == [
+        {"ref": "SF2", "archive_path": "S1/02.ass",
+         "reason_kind": "unknown", "reason": "ai_unmatched"}
+    ]
+    # no_target_videos 应为空（旧路径无 reason_kind=no_target_video）
+    assert result.get("no_target_videos") == []
     assert s1 in trans_call["R"]
     # 任务 JSON 写盘
     import json
@@ -246,7 +362,11 @@ def test_process_case_agent_accepted_lands_and_records_unmatched_todo(
     data = json.loads(task_files[0].read_text(encoding="utf-8"))
     assert data["type"] == "subtitle"
     assert data["status"] == "success"
-    assert data["unmatched"] == [{"ref": "SF2", "archive_path": "S1/02.ass"}]
+    assert data["unmatched"] == [
+        {"ref": "SF2", "archive_path": "S1/02.ass",
+         "reason_kind": "unknown", "reason": "ai_unmatched"}
+    ]
+    assert data.get("no_target_videos") == []
 
 
 def test_process_case_agent_fail_closed_maps_to_need_confirm(monkeypatch, tmp_path):
@@ -740,3 +860,58 @@ def test_entry_accepted_same_target_different_language(tmp_path):
     assert len(plan.mappings) == 2
     langs = {m.emby_lang for m in plan.mappings}
     assert langs == {"zh-CN", "zh-TW"}
+
+
+# ---------------------------------------------------------------------------
+# unmatched 按 reason_kind 分类（processor._build_unmatched_details）
+# ---------------------------------------------------------------------------
+
+def test_build_unmatched_details_splits_no_target_from_unmatched():
+    """processor 按 unmatched_reason_kind 分类：
+    no_target_video -> no_target_details（过滤出 unmatched）；
+    duplicate_language / no_confident_match / unknown -> unmatched（待人工）。
+    """
+    from src.subtitle.case_agent.models import (
+        CompiledSubtitlePlan,
+        CompiledUnmatchedEntry,
+    )
+    from src.subtitle.extractor import ExtractedSubtitle
+    from src.subtitle.processor import SubtitleProcessor
+
+    # 绕过 __init__（避免起 AIClient/FFsubsyncRunner）
+    proc = SubtitleProcessor.__new__(SubtitleProcessor)
+    subs = [
+        ExtractedSubtitle(temp_path=tmp_path_dummy(1), archive_path="PV.ass", filename="PV.ass"),
+        ExtractedSubtitle(temp_path=tmp_path_dummy(2), archive_path="dup.ass", filename="dup.ass"),
+        ExtractedSubtitle(temp_path=tmp_path_dummy(3), archive_path="unsure.ass", filename="unsure.ass"),
+        ExtractedSubtitle(temp_path=tmp_path_dummy(4), archive_path="unk.ass", filename="unk.ass"),
+    ]
+    plan = CompiledSubtitlePlan(unmatched=[
+        CompiledUnmatchedEntry(ref="SF1", reason_kind="no_target_video", reason="PV no target"),
+        CompiledUnmatchedEntry(ref="SF2", reason_kind="duplicate_language", reason="dup tc"),
+        CompiledUnmatchedEntry(ref="SF3", reason_kind="no_confident_match", reason="unsure ep"),
+        CompiledUnmatchedEntry(ref="SF4", reason_kind="unknown", reason="ai_unmatched"),
+    ])
+    unmatched_details, no_target_details = proc._build_unmatched_details(
+        compiled_plan=plan,
+        subtitle_files=subs,
+        sub_by_archive={},
+    )
+    # no_target 只含 SF1
+    assert [d["ref"] for d in no_target_details] == ["SF1"]
+    assert no_target_details[0]["reason_kind"] == "no_target_video"
+    # unmatched 含其余 3 个（待人工）
+    assert [d["ref"] for d in unmatched_details] == ["SF2", "SF3", "SF4"]
+    assert {d["reason_kind"] for d in unmatched_details} == {
+        "duplicate_language", "no_confident_match", "unknown"
+    }
+    # 每条都带 archive_path + reason
+    for d in unmatched_details + no_target_details:
+        assert d["archive_path"]
+        assert d["reason"]
+
+
+def tmp_path_dummy(i: int):
+    """占位 temp_path（_build_unmatched_details 不读它，只用 archive_path 顺序对齐）。"""
+    from pathlib import Path
+    return Path(f"/tmp/dummy{i}.ass")

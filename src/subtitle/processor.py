@@ -74,6 +74,10 @@ class ProcessedTask(TypedDict):
     # 目标文件名 -> 重命名前 local 原始文件名（AI 匹配证据，非合法落点）。
     source_videos: dict[str, str]
     is_movie: bool
+    # 目标文件名 -> 该视频所属 BGM subject 的 arc 名 (name, name_cn)，来自
+    # task_data.bgm_video_subject_map + bgm_subjects。多季同 episode 配对的关键
+    # 证据（S02E01 vs S03E01 靠 arc 名 無限列車編 / 遊郭編 区分）。
+    video_arc_names: dict[str, tuple[str, str]]
 
 
 class SyncSummary(TypedDict):
@@ -123,6 +127,8 @@ class SubtitleProcessor:
         self,
         archive_path: Path,
         target_task_uuid: Optional[str] = None,
+        *,
+        mapping_only: bool = False,
     ) -> Dict[str, Any]:
         """
         处理字幕压缩包（支持多季度/多任务）——薄入口。
@@ -134,6 +140,9 @@ class SubtitleProcessor:
         Args:
             archive_path: 压缩包路径
             target_task_uuid: 手动指定的目标任务UUID（可选，用于单任务模式）
+            mapping_only: True 时 accepted 不落盘到媒体库，直接返回字幕→视频映射
+                产物（mappings/unmatched/compiled_plan）。用于 auto_fetch 映射模式
+                等不碰媒体库的场景。默认 False（生产落盘行为）。
 
         Returns:
             处理结果字典（status: success | need_confirm | error）
@@ -173,6 +182,7 @@ class SubtitleProcessor:
                 subtitle_files=subtitle_files,
                 processed_tasks=processed_tasks,
                 archive_structure=archive_structure,
+                mapping_only=mapping_only,
             )
         return self._process_legacy_compat(
             _uuid=_uuid,
@@ -180,7 +190,23 @@ class SubtitleProcessor:
             subtitle_files=subtitle_files,
             processed_tasks=processed_tasks,
             archive_structure=archive_structure,
+            mapping_only=mapping_only,
         )
+
+    def process_mapping(
+        self,
+        archive_path: Path,
+        target_task_uuid: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """映射模式入口：accepted 不落盘到媒体库，返回字幕→视频映射产物。
+
+        等价于 ``process(archive_path, target_task_uuid, mapping_only=True)``。
+        供 auto_fetch 映射模式等不碰媒体库的场景使用：解压→Case Agent 映射→
+        Verifier 合同→accepted 返回 mappings/unmatched/compiled_plan，跳过
+        ffsubsync + trans_file 落盘。四态语义不变（accepted/fail_closed/
+        need_confirm/invalid）。
+        """
+        return self.process(archive_path, target_task_uuid, mapping_only=True)
 
     # ------------------------------------------------------------------
     # 目标任务作用域
@@ -239,8 +265,12 @@ class SubtitleProcessor:
         subtitle_files: List[ExtractedSubtitle],
         processed_tasks: List[ProcessedTask],
         archive_structure: Dict[str, List[str]],
+        mapping_only: bool = False,
     ) -> Dict[str, Any]:
-        """Case Agent 主路径：entry → Verifier 合同 → compiled_plan 落盘。"""
+        """Case Agent 主路径：entry → Verifier 合同 → compiled_plan 落盘。
+
+        ``mapping_only=True`` 时 accepted 不落盘，返回映射产物（见 _land_compiled_plan）。
+        """
         from .case_agent import run_subtitle_case_agent_mapping
 
         entry_result = run_subtitle_case_agent_mapping(
@@ -268,6 +298,7 @@ class SubtitleProcessor:
                 confidence=str(snapshot.get("draft", {}).get("confidence", "Medium"))
                 if isinstance(snapshot.get("draft"), dict)
                 else "Medium",
+                mapping_only=mapping_only,
             )
 
         if status == "need_confirm":
@@ -315,6 +346,7 @@ class SubtitleProcessor:
         subtitle_files: List[ExtractedSubtitle],
         processed_tasks: List[ProcessedTask],
         archive_structure: Dict[str, List[str]],
+        mapping_only: bool = False,
     ) -> Dict[str, Any]:
         """旧兼容路径：直接用 AI 结果精确匹配落盘，无 Verifier 合同。
 
@@ -404,7 +436,7 @@ class SubtitleProcessor:
 
         compiled_plan = CompiledSubtitlePlan(
             mappings=compiled_mappings,
-            unmatched_refs=[],
+            unmatched=[],
             summary=str(getattr(ai_result, "reason", "") or "legacy compat plan"),
         )
         return self._land_compiled_plan(
@@ -416,6 +448,7 @@ class SubtitleProcessor:
             snapshot=None,
             confidence=str(getattr(ai_result, "confidence", "Medium") or "Medium"),
             pipeline_mode="subtitle_legacy_compat",
+            mapping_only=mapping_only,
         )
 
     # ------------------------------------------------------------------
@@ -433,11 +466,17 @@ class SubtitleProcessor:
         snapshot: Any,
         confidence: str,
         pipeline_mode: str = "subtitle_case_agent_primary",
+        mapping_only: bool = False,
     ) -> Dict[str, Any]:
         """用 CompiledSubtitlePlan 生成 Emby 文件名 → ffsubsync → 复制落盘。
 
         部分字幕 unmatched 时：落盘已匹配部分，unmatched 写进任务 JSON 作为
         待人工子项（用户已确认），整体 status=success。
+
+        ``mapping_only=True`` 时：在 file_mapping/mapping_details 构造完成后分叉，
+        跳过 ffsubsync + trans_file 落盘，直接返回字幕→视频映射产物（不写媒体库、
+        不写生产 task JSON）。四态语义不变，accepted 仍是 accepted，只是不落盘。
+        供 auto_fetch 映射模式等不碰媒体库的场景使用。
         """
         # subtitle archive_path -> ExtractedSubtitle（精确匹配，固定层事实）
         sub_by_archive = {
@@ -517,15 +556,63 @@ class SubtitleProcessor:
             )
 
         if not file_mapping:
-            self.extractor.cleanup(archive_path)
-            return self._error_result(_uuid, "无法建立字幕映射", archive_path)
+            # Case Agent accepted 但 0 mappings：区分两种情况。
+            # (a) compiled_plan 有 unmatched（全 no_target_video / 全真不确定）→
+            #     合格业务结果（accepted + 0 matched + unmatched 详情），不应报 error。
+            #     例：0045 sel#1 字幕包全是 S1正片/S2 Try/special，落地视频只有
+            #     movie + S00 Battlogue specials，53 字幕全部 no_target_video，
+            #     Case Agent 正确判 accepted，但旧代码这里误判成 error。
+            # (b) compiled_plan 既无 mappings 又无 unmatched → 真实现错误 → error。
+            if not getattr(compiled_plan, "unmatched", None):
+                self.extractor.cleanup(archive_path)
+                return self._error_result(_uuid, "无法建立字幕映射", archive_path)
+            # (a) 走 accepted + 0 matched + unmatched 路径：先算 unmatched 分类，
+            # 再按 mapping_only 分叉返回（跳过 ffsubsync/trans_file，因为没文件要落盘）
+            logger.info(
+                "[字幕处理] Case Agent accepted 但 0 mappings，"
+                f"{len(compiled_plan.unmatched)} 个 unmatched（无目标/待人工），按 accepted 返回"
+            )
 
-        # unmatched 待人工子项（archive_path + 原因）
-        unmatched_details = self._build_unmatched_details(
+        # unmatched 分类：no_target_video（无目标，信息性）vs unmatched（待人工）
+        unmatched_details, no_target_details = self._build_unmatched_details(
             compiled_plan=compiled_plan,
             subtitle_files=subtitle_files,
             sub_by_archive=sub_by_archive,
         )
+
+        # mapping_only 分叉：不落盘到媒体库，直接返回映射产物。
+        # 跳过 ffsubsync + trans_file + 生产 task JSON 写入。cleanup 临时解压目录。
+        if mapping_only:
+            self.extractor.cleanup(archive_path)
+            compiled_plan_dump: Any
+            compiled_plan_dump = (
+                compiled_plan.model_dump(mode="json")
+                if hasattr(compiled_plan, "model_dump")
+                else None
+            )
+            result = {
+                "status": "success",
+                "mapping_only": True,
+                "uuid": _uuid,
+                "archive_path": str(archive_path),
+                "matched_tasks": list(matched_task_uuids),
+                "matched_count": len(file_mapping),
+                "total_subtitles": len(subtitle_files),
+                "mappings": mapping_details,
+                "unmatched": unmatched_details,
+                "no_target_videos": no_target_details,
+                "compiled_plan": compiled_plan_dump,
+                "pipeline_mode": pipeline_mode,
+                "case_agent_snapshot": snapshot,
+                "confidence": confidence,
+            }
+            logger.info(
+                f"[字幕处理] mapping_only 完成! 映射 {len(file_mapping)} 个字幕 "
+                f"到 {len(matched_task_uuids)} 个任务（不落盘）"
+                + (f"，{len(unmatched_details)} 个待人工" if unmatched_details else "")
+                + (f"，{len(no_target_details)} 个无目标视频（已过滤）" if no_target_details else "")
+            )
+            return result
 
         # ffsubsync（保持现有接线）
         sync_summary = {
@@ -592,6 +679,7 @@ class SubtitleProcessor:
             "mappings": mapping_details,
             "sync_summary": sync_summary,
             "unmatched": unmatched_details,
+            "no_target_videos": no_target_details,
             "pipeline_mode": pipeline_mode,
             "case_agent_snapshot": snapshot,
         }
@@ -612,6 +700,7 @@ class SubtitleProcessor:
             f"[字幕处理] 完成! 成功匹配 {len(final_mapping)} 个字幕文件 "
             f"到 {len(matched_task_uuids)} 个任务"
             + (f"，{len(unmatched_details)} 个待人工" if unmatched_details else "")
+            + (f"，{len(no_target_details)} 个无目标视频（已过滤）" if no_target_details else "")
         )
 
         return result
@@ -727,22 +816,46 @@ class SubtitleProcessor:
         compiled_plan: Any,
         subtitle_files: List[ExtractedSubtitle],
         sub_by_archive: Dict[str, ExtractedSubtitle],
-    ) -> List[Dict[str, Any]]:
-        """从 compiled_plan.unmatched_refs 构建待人工子项（archive_path + ref）。"""
-        unmatched_refs = list(getattr(compiled_plan, "unmatched_refs", []) or [])
-        if not unmatched_refs:
-            return []
+    ) -> tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
+        """从 compiled_plan.unmatched（结构化）构建分类子项。
+
+        按 ``unmatched_reason_kind`` 分类：
+        - ``no_target_video`` → no_target_details（确定的"无目标"，非待人工，
+          如 PV/TV-Spot/Picture Drama/OAD/special 等字幕，源视频无 TMDB 落点）。
+        - 其余（duplicate_language / no_confident_match / unknown）→ unmatched
+          details（待人工）。
+
+        返回 (unmatched_details, no_target_details)。
+        """
+        unmatched_entries = list(getattr(compiled_plan, "unmatched", []) or [])
+        if not unmatched_entries:
+            return [], []
         # ref -> archive_path（从 subtitle_files 顺序对齐 SF 分配）
         ref_to_archive: Dict[str, str] = {}
         for idx, sub in enumerate(subtitle_files, start=1):
             ref_to_archive[f"SF{idx}"] = self._normalize_card_path(sub.archive_path)
-        details: List[Dict[str, Any]] = []
-        for ref in unmatched_refs:
+        unmatched_details: List[Dict[str, Any]] = []
+        no_target_details: List[Dict[str, Any]] = []
+        for entry in unmatched_entries:
+            ref = getattr(entry, "ref", "") or ""
+            if not ref:
+                continue
             archive_path = ref_to_archive.get(ref, "")
             if not archive_path:
                 continue
-            details.append({"ref": ref, "archive_path": archive_path})
-        return details
+            reason_kind = str(getattr(entry, "reason_kind", "unknown") or "unknown")
+            reason = str(getattr(entry, "reason", "") or "")
+            item = {
+                "ref": ref,
+                "archive_path": archive_path,
+                "reason_kind": reason_kind,
+                "reason": reason,
+            }
+            if reason_kind == "no_target_video":
+                no_target_details.append(item)
+            else:
+                unmatched_details.append(item)
+        return unmatched_details, no_target_details
 
     def _write_subtitle_task_json(self, _uuid: str, result: Dict[str, Any]) -> None:
         task_path = TASK_PATH / f"{_uuid}.json"
@@ -849,6 +962,40 @@ class SubtitleProcessor:
                 if target_dir is None:
                     target_dir = str(target_path.parent)
 
+            # per-video arc 名：从 task_data.bgm_video_subject_map + bgm_subjects
+            # 反查每个 video 的 subject name/name_cn（多季同 episode 配对关键证据）。
+            video_arc_names: dict[str, tuple[str, str]] = {}
+            bgm_video_subject_map = task_data.get("bgm_video_subject_map") or {}
+            if isinstance(bgm_video_subject_map, dict) and bgm_video_subject_map:
+                bgm_subjects = task_data.get("bgm_subjects") or []
+                subject_meta: dict[int, tuple[str, str]] = {}
+                if isinstance(bgm_subjects, list):
+                    for entry in bgm_subjects:
+                        if not isinstance(entry, dict):
+                            continue
+                        sid = entry.get("id")
+                        if sid is None:
+                            continue
+                        try:
+                            sid_int = int(sid)
+                        except (TypeError, ValueError):
+                            continue
+                        subject_meta[sid_int] = (
+                            str(entry.get("name") or ""),
+                            str(entry.get("name_cn") or ""),
+                        )
+                for vname in videos:
+                    sid = bgm_video_subject_map.get(vname)
+                    if sid is None:
+                        continue
+                    try:
+                        sid_int = int(sid)
+                    except (TypeError, ValueError):
+                        continue
+                    meta = subject_meta.get(sid_int)
+                    if meta is not None:
+                        video_arc_names[vname] = meta
+
             if not videos or not target_dir:
                 return None
 
@@ -877,6 +1024,7 @@ class SubtitleProcessor:
                 "video_targets": video_targets,
                 "source_videos": source_videos,
                 "is_movie": is_movie,
+                "video_arc_names": video_arc_names,
             }
         except Exception as e:
             logger.warning(f"[字幕处理] 读取任务文件失败: {task_file}, {e}")

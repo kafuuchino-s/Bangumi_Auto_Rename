@@ -67,7 +67,8 @@ def _lang_resolver(lang: str) -> tuple[str, bool]:
 
 
 def _row(row_ref: str, subtitle_ref: str, disposition: str = 'map_to_video',
-         target_ref: str = '', language: str = 'chs', reason: str = '') -> SubtitleMappingRow:
+         target_ref: str = '', language: str = 'chs', reason: str = '',
+         unmatched_reason_kind: str = 'unknown') -> SubtitleMappingRow:
     return SubtitleMappingRow(
         row_ref=row_ref,
         subtitle_ref=subtitle_ref,
@@ -75,6 +76,7 @@ def _row(row_ref: str, subtitle_ref: str, disposition: str = 'map_to_video',
         target_ref=target_ref,
         language=language,
         reason=reason,
+        unmatched_reason_kind=unmatched_reason_kind,  # type: ignore[arg-type]
     )
 
 
@@ -408,3 +410,36 @@ def test_compile_collects_unmatched_refs():
     assert plan is not None
     assert plan.unmatched_refs == ['SF2']
     assert len(plan.mappings) == 1
+
+
+def test_compile_propagates_unmatched_reason_kind():
+    """unmatched row 的 unmatched_reason_kind 透传到 compiled plan.unmatched 结构。"""
+    ws = _workspace(count=4)
+    draft = SubtitleMappingDraft(rows=[
+        _row('R1', 'SF1', target_ref='TV1'),
+        _row('R2', 'SF2', disposition='unmatched',
+             reason='TV-Spot special has no matching target video',
+             unmatched_reason_kind='no_target_video'),
+        _row('R3', 'SF3', disposition='unmatched',
+             reason='duplicate TC variant',
+             unmatched_reason_kind='duplicate_language'),
+        _row('R4', 'SF4', disposition='unmatched',
+             reason='unsure which episode',
+             unmatched_reason_kind='no_confident_match'),
+    ])
+    plan, res = verify_and_compile_subtitle_plan(
+        subtitle_files=ws.subtitle_files,
+        target_videos=ws.target_videos,
+        draft=draft,
+        language_resolver=_lang_resolver,
+    )
+    assert res.passed is True
+    assert plan is not None
+    # 结构化 unmatched 保留 reason_kind + reason
+    by_ref = {e.ref: e for e in plan.unmatched}
+    assert by_ref['SF2'].reason_kind == 'no_target_video'
+    assert 'TV-Spot' in by_ref['SF2'].reason
+    assert by_ref['SF3'].reason_kind == 'duplicate_language'
+    assert by_ref['SF4'].reason_kind == 'no_confident_match'
+    # property 兼容：unmatched_refs 仍返回全部 ref
+    assert plan.unmatched_refs == ['SF2', 'SF3', 'SF4']

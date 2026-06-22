@@ -54,6 +54,8 @@ class SubtitleDownloadResult:
     status: str
     error: Optional[str] = None
     selected_package: Optional[SubtitleThreadPackage] = None
+    # 下载实际尝试次数（含网络瞬时错误重试）；1 = 一次成功，>1 = 重试过
+    download_attempts: int = 1
 
 
 class SubtitleProvider(ABC):
@@ -67,5 +69,6 @@ class SubtitleProvider(ABC):
         candidate: SubtitleCandidate,
         destination_dir: Path,
         package: Optional[SubtitleThreadPackage] = None,
+        download_url: Optional[str] = None,
     ) -> SubtitleDownloadResult:
         raise NotImplementedError

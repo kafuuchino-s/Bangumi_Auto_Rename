@@ -33,16 +33,30 @@ from dataclasses import asdict, dataclass, field, is_dataclass
 from pathlib import Path
 from typing import Any, Callable
 
-from src.rename.case_agent.models import CaseVerifierResult
+from src.rename.case_agent.models import CaseVerifierResult, VerifierIssue
 
 from .evidence_broker import candidate_card_from_provider
 from .models import (
     AutoFetchDecision,
+    AutoFetchSelectedCandidate,
     CandidateCard,
     ThreadPackageCard,
 )
 from .verifier import auto_fetch_repair_hints, verify_auto_fetch_decision
 from .workspace import AutoFetchCaseWorkspace
+
+
+# 渐进式取证上限（参考 rename case_agent._EVIDENCE_BATCH_LIMIT）：
+# 大样本（多季番多 BGM 名变体）一次性搜全部词 + 加载全部帖会撑爆 wall-clock。
+# 单次 search 最多搜 N 个词（主词在前），剩余留给 Pi 后续轮次按需搜；
+# 单次 load 最多加载 N 个候选帖，Pi 看完少数不满意再 load 更多。
+_SEARCH_KEYWORD_BATCH_LIMIT = 4
+_LOAD_CANDIDATE_BATCH_LIMIT = 3
+# 并发 I/O 上限（架构加速 A/C）：acgrip search/load 是独立 HTTP 请求，实测
+# 并发 4.9x 加速且无限流。上限 4 避免过高并发触发站点限流；分批 limit 仍控
+# 单次总 I/O 量，并发只改批内执行方式（串行→并行）。
+_SEARCH_CONCURRENCY = 4
+_LOAD_CONCURRENCY = 4
 
 
 # ---------------------------------------------------------------------------
@@ -67,6 +81,18 @@ class AutoFetchCaseToolState:
     final_result: dict[str, Any] | None = None
     last_invalid_submission: dict[str, Any] | None = None
     submit_rejection_count: int = 0
+    # 多季覆盖：累加的选中结果（每 subject 一条），submit_package 不落 final 而是append。
+    # submit_complete 时落 final_result.selections = list[AutoFetchSelectedCandidate]。
+    selections: list[AutoFetchSelectedCandidate] = field(default_factory=list)
+    # submit_complete 确认计数：多 subject 任务 Pi 选部分包就 submit_complete 时，
+    # 第一次不落 final 返回"还有 uncovered subject 确认搜过无帖"提示，逼 Pi 再确认；
+    # 第二次（confirmations>=1）才落 final。防 Pi 偷懒选 1 包就停（0042/0062 波动）。
+    # 不违反"不强制全处置"：第二次 submit_complete 仍可留 uncovered（用户拍板合格）。
+    submit_complete_confirmations: int = 0
+    # B 缓存：已 load 过楼包的 candidate_ref 集合。合帖场景（一帖覆盖多 subject，
+    # 如 0042 ARIA tid=3582 覆盖 3 subject）下 Pi 对同帖多次 load_candidate_packages
+    # 时跳过 provider HTTP，直接复用 workspace 已有包事实卡，省重复 I/O。
+    _loaded_candidate_refs: set[str] = field(default_factory=set)
 
     def __post_init__(self) -> None:
         self.run_dir.mkdir(parents=True, exist_ok=True)
@@ -141,86 +167,269 @@ class AutoFetchCaseToolState:
         return {'ok': True, 'data': self._context_payload(detail=bool(detail))}
 
     # ------------------------------------------------------------------
-    # 工具：search_candidates（AI 主动取证）
+    # 工具：search_candidates（批量搜索，AI 主动取证）
     # ------------------------------------------------------------------
 
-    def tool_search_candidates(self, keyword: str, limit: int = 10) -> dict[str, Any]:
-        keyword = str(keyword or '').strip()
-        if not keyword:
-            return {'ok': False, 'accepted': False, 'error': 'keyword required'}
-        try:
-            raw_candidates = self.provider.search(keyword, limit=int(limit) or 10)
-        except Exception as exc:
-            return {'ok': False, 'accepted': False, 'error': f'provider search failed: {exc}'}
-        if not raw_candidates:
+    def tool_search_candidates(
+        self,
+        keyword: Any = None,
+        keywords: Any = None,
+        limit: int = 10,
+    ) -> dict[str, Any]:
+        """批量搜索字幕候选：注入 CD<idx> 事实卡。
+
+        参数兼容：``keywords``（list[str]）批量优先；``keyword``（str）单词兼容旧调用。
+
+        渐进式分批（参考 rename atlas-first）：单次最多搜
+        ``_SEARCH_KEYWORD_BATCH_LIMIT`` 个词（主词 name_cn/name 在前，由
+        ``_build_search_keywords`` 保序产出），超出部分本次不搜，返回里告知 Pi
+        "还有 N 个词未搜，可再次调用 search_candidates 搜剩余"。大样本（多季番
+        多 BGM 名变体）避免一次性爬全部词撑爆 wall-clock。
+        """
+        kw_list = _coerce_string_list(keywords)
+        if kw_list and isinstance(keyword, str) and keyword.strip():
+            kw_list.append(keyword)
+        if not kw_list and isinstance(keyword, str) and keyword.strip():
+            kw_list = [keyword]
+        kw_list = [str(k or '').strip() for k in kw_list if str(k or '').strip()]
+        if not kw_list:
+            return {'ok': False, 'accepted': False, 'error': 'keyword(s) required'}
+
+        # 分批：本次只搜前 N 个词，剩余留给 Pi 后续轮次
+        searched_kws = kw_list[:_SEARCH_KEYWORD_BATCH_LIMIT]
+        remaining_kws = kw_list[_SEARCH_KEYWORD_BATCH_LIMIT:]
+
+        seen_detail_urls: set[str] = set()
+        all_new_refs: list[str] = []
+        per_keyword: list[dict[str, Any]] = []
+
+        # 并发 search（架构加速 A）：多个关键词的 provider.search 是独立 HTTP
+        # 请求，acgrip 无共享可变状态，实测并发 4.9x 加速且无限流。并发上限
+        # min(词数, _SEARCH_CONCURRENCY) 避免过高并发触发站点限流。
+        from concurrent.futures import ThreadPoolExecutor
+
+        search_kw_results: dict[str, Any] = {}
+
+        def _search_one(kw: str) -> tuple[str, Any]:
+            try:
+                raw_candidates = self.provider.search(kw, limit=int(limit) or 10)
+                return kw, raw_candidates
+            except Exception as exc:
+                return kw, exc
+
+        with ThreadPoolExecutor(max_workers=min(len(searched_kws), _SEARCH_CONCURRENCY)) as ex:
+            for kw, result in ex.map(_search_one, searched_kws):
+                search_kw_results[kw] = result
+
+        # 偶发空结果重试（治 acgrip search 非确定性）：acgrip search.php 偶发
+        # 返回 200 但空结果页（同词串行重试立即命中），并发时更易撞上。对并发
+        # 轮返回 0 命中或异常的词，串行重试 1 次——这是低风险确定性兜底（不改变
+        # Pi 决策语义，只补回被服务端瞬时状态吞掉的真实命中），避免 Pi 据偶发
+        # no_candidates 误判"该 subject 无帖"导致整季漏覆盖（0062 圣战的预兆
+        # 曾因此被漏，实证同词串行稳定 1 命中）。
+        retry_kws = [
+            kw for kw in searched_kws
+            if not search_kw_results.get(kw)
+            or isinstance(search_kw_results.get(kw), Exception)
+        ]
+        for kw in retry_kws:
+            try:
+                raw_retry = self.provider.search(kw, limit=int(limit) or 10)
+                if raw_retry:
+                    search_kw_results[kw] = raw_retry
+            except Exception:
+                pass  # 保留原异常结果，per_keyword 报 error
+
+        for kw in searched_kws:
+            result = search_kw_results[kw]
+            if isinstance(result, Exception):
+                per_keyword.append({'keyword': kw, 'candidate_count': 0, 'error': f'provider search failed: {result}'})
+                continue
+            raw_candidates = result
+            new_refs: list[str] = []
+            for raw in raw_candidates:
+                detail_url = str(getattr(raw, 'detail_url', '') or '')
+                if detail_url and detail_url in seen_detail_urls:
+                    continue
+                if detail_url:
+                    seen_detail_urls.add(detail_url)
+                card = candidate_card_from_provider(raw)
+                indexed = self.workspace.add_candidate(card)
+                self.provider_candidates_by_ref[indexed.ref] = raw
+                new_refs.append(indexed.ref)
+            all_new_refs.extend(new_refs)
+            per_keyword.append({'keyword': kw, 'candidate_count': len(raw_candidates), 'new_candidate_refs': new_refs})
+
+        base: dict[str, Any] = {
+            'keywords': searched_kws,
+            'candidate_count': len(all_new_refs),
+            'new_candidate_refs': all_new_refs,
+            'per_keyword': per_keyword,
+            'candidates': self.workspace.readable_candidate_cards(),
+        }
+        if remaining_kws:
+            base['remaining_keywords'] = remaining_kws
+            base['next_action_hint'] = (
+                f'{len(remaining_kws)} keyword(s) not searched this turn (batch limit '
+                f'{_SEARCH_KEYWORD_BATCH_LIMIT}). If no candidate matches the arc, call '
+                f'search_candidates again with the remaining keywords.'
+            )
+
+        if not all_new_refs:
             return {
                 'ok': True,
                 'accepted': False,
                 'status': 'no_candidates',
-                'keyword': keyword,
-                'candidate_count': 0,
+                **base,
             }
-        # 注入事实卡 + 索引 provider 原始对象
-        new_refs: list[str] = []
-        for raw in raw_candidates:
-            card = candidate_card_from_provider(raw)
-            indexed = self.workspace.add_candidate(card)
-            self.provider_candidates_by_ref[indexed.ref] = raw
-            new_refs.append(indexed.ref)
         return {
             'ok': True,
             'accepted': False,
             'status': 'candidates_loaded',
-            'keyword': keyword,
-            'candidate_count': len(raw_candidates),
-            'new_candidate_refs': new_refs,
-            'candidates': self.workspace.readable_candidate_cards(),
+            **base,
         }
 
     # ------------------------------------------------------------------
-    # 工具：load_candidate_packages（深解析楼包）
+    # 工具：load_candidate_packages（批量深解析楼包）
     # ------------------------------------------------------------------
 
-    def tool_load_candidate_packages(self, candidate_ref: str) -> dict[str, Any]:
-        candidate_ref = str(candidate_ref or '').strip()
-        raw = self.provider_candidates_by_ref.get(candidate_ref)
-        if raw is None:
-            return {'ok': False, 'accepted': False, 'error': f'unknown candidate_ref: {candidate_ref}'}
-        try:
-            prepared = self.provider.prepare_candidate(raw)
-            loaded = self.provider.load_thread_packages(prepared)
-        except Exception as exc:
-            return {'ok': False, 'accepted': False, 'error': f'provider load failed: {exc}'}
-        # 用加载后的 provider 对象替换槽，并重建该候选的楼包事实卡
-        self.provider_candidates_by_ref[candidate_ref] = loaded
-        new_card = candidate_card_from_provider(loaded)
-        new_card = new_card.model_copy(update={'ref': candidate_ref})
-        # 回填 workspace 中对应候选的 packages（保留 ref 分配）
-        ws_candidate = self.workspace.candidate_by_ref().get(candidate_ref)
-        if ws_candidate is not None:
-            packages: list[ThreadPackageCard] = []
-            existing_pkg_refs = [pkg.ref for pkg in ws_candidate.packages]
-            for idx, pkg_card in enumerate(new_card.packages):
-                ref = existing_pkg_refs[idx] if idx < len(existing_pkg_refs) else ''
-                packages.append(pkg_card.model_copy(update={'ref': ref, 'candidate_ref': candidate_ref}))
-                if ref:
-                    self.provider_packages_by_ref[ref] = loaded.thread_packages[idx]
-            updated = ws_candidate.model_copy(update={
-                'packages': packages,
-                'pages_scanned': new_card.pages_scanned,
-                'pagination_truncated': new_card.pagination_truncated,
-                'has_downloadable_attachment': new_card.has_downloadable_attachment,
-            })
-            self.workspace.candidates = [
-                updated if c.ref == candidate_ref else c for c in self.workspace.candidates
-            ]
+    def tool_load_candidate_packages(
+        self,
+        candidate_ref: Any = None,
+        candidate_refs: Any = None,
+    ) -> dict[str, Any]:
+        """批量深解析楼包：加载候选帖的 thread packages 成 PK<idx> 事实卡。
+
+        参数兼容：``candidate_refs``（list[str]）批量优先；``candidate_ref``（str）单帖兼容。
+
+        渐进式分批（参考 rename 按需取证）：单次最多加载
+        ``_LOAD_CANDIDATE_BATCH_LIMIT`` 个候选帖，超出部分本次不加载，返回里告知
+        Pi "还有 N 个候选未加载，可再次调用"。大命中数时避免一次性爬全部帖楼包
+        撑爆 wall-clock；Pi 先 inspect 少数候选选定帖，再 load 选定帖的包。
+        """
+        refs = _coerce_string_list(candidate_refs)
+        if isinstance(candidate_ref, str) and candidate_ref.strip():
+            refs.append(candidate_ref)
+        if not refs and isinstance(candidate_ref, str) and candidate_ref.strip():
+            refs = [candidate_ref]
+        refs = [str(r or '').strip() for r in refs if str(r or '').strip()]
+        if not refs:
+            return {'ok': False, 'accepted': False, 'error': 'candidate_ref(s) required'}
+
+        # 分批：本次只加载前 N 个候选，剩余留给 Pi 后续轮次
+        loaded_target_refs = refs[:_LOAD_CANDIDATE_BATCH_LIMIT]
+        remaining_refs = refs[_LOAD_CANDIDATE_BATCH_LIMIT:]
+
+        loaded_refs: list[str] = []
+        all_package_refs: list[str] = []
+        per_candidate: list[dict[str, Any]] = []
+
+        # B 缓存：跳过已 load 的 candidate_ref（合帖多 subject 复用，省重复 HTTP）。
+        # 幂等：workspace 已有该 ref 的 packages_loaded=True 事实卡，直接报已有包 ref。
+        refs_to_load: list[str] = []
+        cached_refs: list[str] = []
+        for candidate_ref_item in loaded_target_refs:
+            if candidate_ref_item in self._loaded_candidate_refs:
+                cached_refs.append(candidate_ref_item)
+            else:
+                refs_to_load.append(candidate_ref_item)
+
+        # C 并发 load：未缓存的 ref 并发调 provider.prepare_candidate + load_thread_packages
+        # （独立 HTTP，实测并发安全）。结果回主线程串行写 workspace（避免并发写共享态）。
+        from concurrent.futures import ThreadPoolExecutor
+
+        def _load_one(ref: str) -> tuple[str, Any]:
+            raw = self.provider_candidates_by_ref.get(ref)
+            if raw is None:
+                return ref, ValueError('unknown candidate_ref')
+            try:
+                prepared = self.provider.prepare_candidate(raw)
+                loaded = self.provider.load_thread_packages(prepared)
+                return ref, loaded
+            except Exception as exc:
+                return ref, exc
+
+        load_results: dict[str, Any] = {}
+        if refs_to_load:
+            with ThreadPoolExecutor(max_workers=min(len(refs_to_load), _LOAD_CONCURRENCY)) as ex:
+                for ref, result in ex.map(_load_one, refs_to_load):
+                    load_results[ref] = result
+
+        # 主线程串行写 workspace（避免并发写共享态）
+        for candidate_ref_item in loaded_target_refs:
+            # B 缓存命中：复用已有包，不重复 HTTP
+            if candidate_ref_item in cached_refs:
+                ws_candidate = self.workspace.candidate_by_ref().get(candidate_ref_item)
+                pkg_refs = [pkg.ref for pkg in (ws_candidate.packages if ws_candidate else []) if pkg.ref]
+                loaded_refs.append(candidate_ref_item)
+                all_package_refs.extend(pkg_refs)
+                per_candidate.append({'candidate_ref': candidate_ref_item, 'package_refs': pkg_refs, 'cached': True})
+                continue
+
+            result = load_results.get(candidate_ref_item)
+            if isinstance(result, Exception) or result is None:
+                err = 'unknown candidate_ref' if result is None else f'provider load failed: {result}'
+                per_candidate.append({'candidate_ref': candidate_ref_item, 'error': err})
+                continue
+            loaded = result
+            self.provider_candidates_by_ref[candidate_ref_item] = loaded
+            self._loaded_candidate_refs.add(candidate_ref_item)
+            new_card = candidate_card_from_provider(loaded)
+            new_card = new_card.model_copy(update={'ref': candidate_ref_item})
+            ws_candidate = self.workspace.candidate_by_ref().get(candidate_ref_item)
+            pkg_refs: list[str] = []
+            if ws_candidate is not None:
+                packages: list[ThreadPackageCard] = []
+                # 复用已分配的包 ref（幂等：重复 load 同一候选不重复分配），
+                # 对新加载的包（idx 超出已有 ref）分配新 PK<idx>。
+                # 修复：search 阶段候选常不带 packages（acgrip search 只返帖子标题），
+                # load 阶段才填充包；旧逻辑从空 existing_pkg_refs 取 ref 全得空，
+                # 导致 Pi 拿到 PK ref 无法 submit_package。
+                existing_pkg_refs = [pkg.ref for pkg in ws_candidate.packages]
+                existing_pkg_count = len(existing_pkg_refs)
+                for idx, pkg_card in enumerate(new_card.packages):
+                    if idx < existing_pkg_count and existing_pkg_refs[idx]:
+                        ref = existing_pkg_refs[idx]
+                    else:
+                        # 基数 = 当前 workspace 全部已有 package ref 数 + 已本轮新分配数 + 1
+                        base = len(self.workspace.package_refs) + (idx - existing_pkg_count) + 1
+                        ref = f'PK{base}'
+                    packages.append(pkg_card.model_copy(update={'ref': ref, 'candidate_ref': candidate_ref_item}))
+                    if ref:
+                        self.provider_packages_by_ref[ref] = loaded.thread_packages[idx]
+                        pkg_refs.append(ref)
+                updated = ws_candidate.model_copy(update={
+                    'packages': packages,
+                    'pages_scanned': new_card.pages_scanned,
+                    'pagination_truncated': new_card.pagination_truncated,
+                    'has_downloadable_attachment': new_card.has_downloadable_attachment,
+                    'packages_loaded': True,
+                })
+                self.workspace.candidates = [
+                    updated if c.ref == candidate_ref_item else c for c in self.workspace.candidates
+                ]
+            loaded_refs.append(candidate_ref_item)
+            all_package_refs.extend(pkg_refs)
+            per_candidate.append({'candidate_ref': candidate_ref_item, 'package_refs': pkg_refs})
+
+        base: dict[str, Any] = {
+            'candidate_refs': loaded_refs,
+            'package_refs': all_package_refs,
+            'per_candidate': per_candidate,
+            'packages': self.workspace.readable_candidate_cards(),
+        }
+        if remaining_refs:
+            base['remaining_candidate_refs'] = remaining_refs
+            base['next_action_hint'] = (
+                f'{len(remaining_refs)} candidate(s) not loaded this turn (batch limit '
+                f'{_LOAD_CANDIDATE_BATCH_LIMIT}). Inspect the loaded candidates first; '
+                f'if none matches the arc, call load_candidate_packages again with the remaining refs.'
+            )
         return {
             'ok': True,
             'accepted': False,
             'status': 'packages_loaded',
-            'candidate_ref': candidate_ref,
-            'package_refs': [pkg.ref for pkg in (updated.packages if ws_candidate else [])],
-            'packages': self.workspace.readable_candidate_cards(),
+            **base,
         }
 
     # ------------------------------------------------------------------
@@ -247,7 +456,6 @@ class AutoFetchCaseToolState:
                 'has_direct_download': pkg.has_direct_download,
                 'package_flags': list(pkg.package_flags),
                 'has_downloadable_link': pkg.has_downloadable_link,
-                'is_font_or_patch_only': pkg.is_font_or_patch_only,
                 'links': [
                     {
                         'url': link.url,
@@ -270,10 +478,12 @@ class AutoFetchCaseToolState:
         candidate_ref: str,
         language: str = '',
         reason: str = '',
+        bangumi_subject_id: int = 0,
     ) -> dict[str, Any]:
         decision = AutoFetchDecision(
             disposition='select_candidate',
             candidate_ref=str(candidate_ref or ''),
+            bangumi_subject_id=int(bangumi_subject_id or 0),
             language=str(language or ''),
             confidence='Medium',
             reason=str(reason or ''),
@@ -301,6 +511,17 @@ class AutoFetchCaseToolState:
             }
         # 候选阶段 accepted：暂存，提示 AI 继续选包（不落 final_result，等 submit_package）
         candidate = self.workspace.candidate_by_ref().get(decision.candidate_ref)
+        # 多季覆盖：把 Pi 声明的 bangumi_subject_id 存进 candidate card，
+        # 供后续 submit_package 据此给 selection 记 subject_id（审计 + auto_fetch 下载）。
+        if candidate is not None and decision.bangumi_subject_id:
+            self.workspace.candidates = [
+                c.model_copy(update={'bangumi_subject_id': decision.bangumi_subject_id})
+                if c.ref == decision.candidate_ref else c
+                for c in self.workspace.candidates
+            ]
+            candidate = candidate.model_copy(
+                update={'bangumi_subject_id': decision.bangumi_subject_id}
+            )
         self.final_result = None  # 候选阶段不终止
         return {
             'ok': True,
@@ -309,18 +530,50 @@ class AutoFetchCaseToolState:
             'summary': f'Candidate {decision.candidate_ref} accepted; next: load_candidate_packages + submit_package.',
             'candidate_ref': decision.candidate_ref,
             'language': decision.language,
+            'bangumi_subject_id': decision.bangumi_subject_id,
             'next_action': 'submit_package',
         }
 
     # ------------------------------------------------------------------
-    # 工具：submit_package（选中楼包，轻 gate → final accepted）
+    # 工具：submit_package（选中楼包，轻 gate → append selection，不落 final）
     # ------------------------------------------------------------------
 
-    def tool_submit_package(self, package_ref: str, reason: str = '') -> dict[str, Any]:
+    def tool_submit_package(
+        self,
+        package_ref: str,
+        reason: str = '',
+        link_url: Any = None,
+        bangumi_subject_id: Any = None,
+    ) -> dict[str, Any]:
         package_ref = str(package_ref or '').strip()
         pkg_index = self.workspace.package_by_ref()
         pkg = pkg_index.get(package_ref)
         candidate_ref = pkg.candidate_ref if pkg else ''
+        # Pi 指定具体附件 url（AI-first 附件选择）：包内含多个正片附件时（如前篇 zip
+        # + 後篇 7z 分开发在同一楼），Pi 据 link label/filename + post_text 选具体
+        # 附件，透传给 provider.download 按此 url 下。固定层不打分选附件。校验 url
+        # 必须是该包的某个可下载 link（防 Pi 编造 url）。
+        requested_url = str(link_url or '').strip()
+        download_url = ''
+        if pkg:
+            pkg_link_urls = {
+                link.url for link in pkg.links if link.is_direct_download and link.url
+            }
+            if requested_url:
+                if requested_url not in pkg_link_urls:
+                    return {
+                        'ok': False,
+                        'accepted': False,
+                        'status': 'invalid',
+                        'error': (
+                            f'link_url not a direct-download link of package '
+                            f'{package_ref}; call inspect_package to see its links'
+                        ),
+                    }
+                download_url = requested_url
+            elif pkg_link_urls:
+                # Pi 未指定：单附件包直接用；多附件包提示 Pi 应指定
+                download_url = next(iter(pkg_link_urls))
         decision = AutoFetchDecision(
             disposition='select_package',
             candidate_ref=candidate_ref,
@@ -351,35 +604,160 @@ class AutoFetchCaseToolState:
                 'verifier_result': verifier_result.model_dump(mode='json'),
             }
         candidate = self.workspace.candidate_by_ref().get(candidate_ref)
-        download_url = ''
-        if pkg:
-            for link in pkg.links:
-                if link.is_direct_download and link.url:
-                    download_url = link.url
-                    break
+        # subject 归属优先用 Pi 在 submit_package 显式声明的 bangumi_subject_id
+        # （与 link_url 配合：前篇 link→319390，後篇 link→352905）。Pi 对同 CD 多次
+        # submit_candidate 声明不同 subject 时，candidate.bangumi_subject_id 会被
+        # 后声明覆盖，导致 selection subject 错乱（0002 前篇/後篇都被记 319390）。
+        # Pi 显式传 bangumi_subject_id 修正此。未传时回退 candidate 值（兼容）。
+        candidate_sid = int(getattr(candidate, 'bangumi_subject_id', 0) or 0) if candidate else 0
+        try:
+            declared_sid = int(bangumi_subject_id) if bangumi_subject_id is not None else 0
+        except (TypeError, ValueError):
+            declared_sid = 0
+        selection_sid = declared_sid or candidate_sid
+        # 多季覆盖：append 到 selections（不落 final），等全部 subject 处置完
+        # submit_complete 落 final。provider 原始对象已在 provider_packages_by_ref/
+        # provider_candidates_by_ref 按 ref 索引，auto_fetch 下载时按 ref 取。
+        selection = AutoFetchSelectedCandidate(
+            candidate_ref=candidate_ref,
+            package_ref=package_ref,
+            detail_url=candidate.detail_url if candidate else '',
+            title=candidate.title if candidate else '',
+            language='',
+            download_url=download_url,
+            bangumi_subject_id=selection_sid,
+        )
+        self.selections.append(selection)
+        self._write_artifacts(decision, verifier_result)
+        covered_subjects = sorted({s.bangumi_subject_id for s in self.selections if s.bangumi_subject_id})
+        return {
+            'ok': True,
+            'accepted': True,
+            'status': 'package_selected',
+            'summary': (
+                f'Package {package_ref} selected (subject {selection.bangumi_subject_id or "?"}); '
+                f'{len(self.selections)} selection(s) so far. '
+                f'Check remaining uncovered missing videos; search by their subject name '
+                f'for more packages, or submit_complete when all covered / no more candidates.'
+            ),
+            'selected_candidate_ref': candidate_ref,
+            'selected_package_ref': package_ref,
+            'bangumi_subject_id': selection.bangumi_subject_id,
+            'selections_count': len(self.selections),
+            'covered_subject_ids': covered_subjects,
+            'next_action': 'submit_package_or_submit_complete',
+            'verifier_result': verifier_result.model_dump(mode='json'),
+        }
+
+    # ------------------------------------------------------------------
+    # 工具：submit_complete（多季覆盖全部选完 → 落 final accepted）
+    # ------------------------------------------------------------------
+
+    def tool_submit_complete(self, reason: str = '', *, force: bool = False) -> dict[str, Any]:
+        """所有 subject 处置完（选中包或搜尽无帖）→ 落 final accepted。
+
+        Verifier gate：selections 非空 + 每 selection 已过 package gate
+        （submit_package 时已过）。不强制每 subject 处置（真实合帖让"每 subject
+        一选"不成立）。selections 空 → invalid（Pi 没选任何包，应 fail_closed
+        而非 submit_complete）。
+
+        ``force=True`` 跳过 uncovered 确认机制（auto 兜底用：Pi 已结束，nudge 无意义，
+        直接落 final 避免误走 fail_closed）。
+        """
+        decision = AutoFetchDecision(
+            disposition='submit_complete',
+            confidence='Medium',
+            reason=str(reason or ''),
+        )
+        if not self.selections:
+            verifier_result = CaseVerifierResult(
+                passed=False,
+                issues=[VerifierIssue(
+                    ref='', issue_code='no_selections',
+                    severity='blocked',
+                    message='submit_complete requires at least one selection; '
+                            'if no package found for any subject, call fail_closed instead.',
+                )],
+                summary='no_selections',
+            )
+            self.decision = decision
+            self.verifier_result = verifier_result
+            self.submit_rejection_count += 1
+            self._write_artifacts(decision, verifier_result)
+            return {
+                'ok': True, 'accepted': False, 'status': 'invalid',
+                'summary': 'submit_complete rejected: no selections; use fail_closed if nothing found.',
+                'repair_hints': ['Call fail_closed if no package was found for any subject.'],
+                'verifier_result': verifier_result.model_dump(mode='json'),
+            }
+        covered_subjects = sorted(
+            {s.bangumi_subject_id for s in self.selections if s.bangumi_subject_id}
+        )
+        # 多 subject 确认机制：uncovered subject > 0 且 total > 1 且 Pi 还没确认过时，
+        # 不落 final，返回提示逼 Pi 再确认"这些 subject 搜过无帖"。第二次 submit_complete
+        # （confirmations>=1）才落 final。防 Pi 偷懒选 1 包就停（0042/0062 偶发波动）。
+        # 不违反"不强制全处置"：第二次仍可留 uncovered 合格。单 subject 任务不受影响。
+        all_subject_ids: set[int] = set()
+        for card in self.workspace.missing_videos:
+            sid = getattr(card, 'bangumi_subject_id', 0) or 0
+            all_subject_ids.add(sid)
+        uncovered_subjects = sorted(all_subject_ids - set(covered_subjects))
+        total_subjects = len(all_subject_ids)
+        if (
+            uncovered_subjects
+            and total_subjects > 1
+            and self.submit_complete_confirmations < 1
+            and not force
+        ):
+            self.submit_complete_confirmations += 1
+            self.decision = decision
+            hint = (
+                f'Still {len(uncovered_subjects)} of {total_subjects} subject(s) '
+                f'uncovered (ids: {uncovered_subjects}). You selected '
+                f'{len(self.selections)} package(s) covering {covered_subjects}. '
+                f'BEFORE finishing, confirm you actually searched each uncovered '
+                f"subject's name (search_candidates with that subject's "
+                f'subject_name/subject_name_cn) and found no downloadable package. '
+                f'If you have not searched them yet, do so now '
+                f'(search_candidates + load_candidate_packages + submit_package). '
+                f'If you genuinely searched and found no thread/package for them, '
+                f'call submit_complete AGAIN to confirm and finish (uncovered is a '
+                f'valid outcome). DO NOT stop just because one season is covered.'
+            )
+            return {
+                'ok': True, 'accepted': False, 'status': 'need_confirm',
+                'summary': hint,
+                'selections_count': len(self.selections),
+                'covered_subject_ids': covered_subjects,
+                'uncovered_subject_ids': uncovered_subjects,
+                'total_subject_count': total_subjects,
+                'next_action': 'search_uncovered_or_confirm_submit_complete',
+                'repair_hints': [hint],
+            }
+        verifier_result = CaseVerifierResult(passed=True, issues=[], summary='submit_complete')
+        summary = str(reason or f'Pi submitted {len(self.selections)} selection(s) '
+                                f'covering subject(s) {covered_subjects}.')
         self.final_result = {
             'ok': True,
             'accepted': True,
             'status': 'accepted',
-            'summary': str(reason or 'Pi submitted accepted candidate + package selection.'),
-            'final_action': 'submit_package',
+            'summary': summary,
+            'final_action': 'submit_complete',
             'decision': decision.model_dump(mode='json'),
-            'selected_candidate_ref': candidate_ref,
-            'selected_package_ref': package_ref,
-            'selected_candidate_title': candidate.title if candidate else '',
-            'selected_candidate_detail_url': candidate.detail_url if candidate else '',
-            'download_url': download_url,
+            'selections': [s.model_dump(mode='json') for s in self.selections],
+            'selections_count': len(self.selections),
+            'covered_subject_ids': covered_subjects,
             'final_verifier_result': verifier_result.model_dump(mode='json'),
         }
+        self.decision = decision
+        self.verifier_result = verifier_result
         self._write_artifacts(decision, verifier_result)
         self._write_final_result()
         return {
-            'ok': True,
-            'accepted': True,
-            'status': 'accepted',
-            'summary': self.final_result['summary'],
-            'selected_candidate_ref': candidate_ref,
-            'selected_package_ref': package_ref,
+            'ok': True, 'accepted': True, 'status': 'accepted',
+            'summary': summary,
+            'selections_count': len(self.selections),
+            'covered_subject_ids': covered_subjects,
             'verifier_result': verifier_result.model_dump(mode='json'),
         }
 
@@ -523,6 +901,17 @@ class AutoFetchCaseToolState:
 # ---------------------------------------------------------------------------
 # module-level helpers
 # ---------------------------------------------------------------------------
+
+def _coerce_string_list(value: Any) -> list[str]:
+    """把工具参数里的 list[str] 规范成 list[str]（兼容 None/str/单元素）。"""
+    if value is None:
+        return []
+    if isinstance(value, str):
+        return [value] if value.strip() else []
+    if isinstance(value, (list, tuple)):
+        return [str(item or '') for item in value if str(item or '').strip()]
+    return []
+
 
 def _json_safe(value: Any) -> Any:
     if is_dataclass(value) and not isinstance(value, type):

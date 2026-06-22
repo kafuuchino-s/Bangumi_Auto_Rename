@@ -782,6 +782,10 @@ class Rename:
         })
         is_movie = bool(first_destination and first_destination.media_type == 'movie')
         target_root = target_roots[0] if len(target_roots) == 1 else ''
+        # Bangumi subject 名（auto_fetch 字幕搜索词来源，方向 A）。
+        # 从 rename_plan.items 的 bangumi_assignment.target.bangumi_subject_id 收集，
+        # 调 BangumiClient.get_subject 拿 name/name_cn。失败/缺失不阻塞落盘（辅助字段）。
+        bgm_subject_info = Rename._collect_bgm_subject_names(rename_plan)
         task_data: dict[str, object] = {
             'path': str(source_path),
             'is_anime': is_anime,
@@ -813,9 +817,117 @@ class Rename:
             'bgm_to_tmdb_absent_count': verified_plan.tmdb_absent_count,
             'bgm_to_tmdb_supplemental_count': verified_plan.supplemental_count,
             'bgm_to_tmdb_candidate_count': len(legal_graph.candidates),
+            # Bangumi subject 名（auto_fetch 字幕搜索词，方向 A）
+            'bgm_subject_name': bgm_subject_info['name'],
+            'bgm_subject_name_cn': bgm_subject_info['name_cn'],
+            'bgm_subject_ids': bgm_subject_info['subject_ids'],
+            # 多季覆盖：每 subject 的 name/name_cn（Pi 多变体搜）+
+            # per-video→subject 映射（auto_fetch 给每 missing video card 填 subject）。
+            # 旧 task_data 无此字段时 auto_fetch 走旧路径（主体单值）。
+            'bgm_subjects': bgm_subject_info['subjects'],
+            'bgm_video_subject_map': bgm_subject_info['video_subject_map'],
         }
         task_data.update(extra_task_data)
         return task_data
+
+    @staticmethod
+    def _collect_bgm_subject_names(
+        rename_plan: TmdbRenamePlan,
+    ) -> dict[str, object]:
+        """从 rename_plan 收集 Bangumi subject 信息供 auto_fetch 多季覆盖。
+
+        多 subject 合集（如 0091 鬼灭 S01+S02+S03+剧场版 = 4 个 BGM subject）
+        需把每个 subject 的 name/name_cn + per-video→subject 映射都写进 task_data，
+        auto_fetch 据此对每季独立搜字幕帖（Pi 一次选多帖多包）。
+
+        返回：
+        - ``name``/``name_cn``：主体 subject（assignment 数最多）的名，向后兼容
+          旧 auto_fetch 单值字段。
+        - ``subject_ids``：全部 subject id 列表（向后兼容）。
+        - ``subjects``：每 subject {id, name, name_cn, media_kind, assignment_count}，
+          auto_fetch 多季覆盖的搜索词来源（name=日文原名命中干净，name_cn=中文
+          命中全含噪音，Pi 多变体搜）。
+        - ``video_subject_map``：{video_basename: subject_id}，仅 map_to_tmdb 的 item，
+          auto_fetch 据此给每 missing video card 填 per-video subject。
+
+        Bangumi 查询失败不阻塞落盘（该 subject name 空，auto_fetch 回退源目录标题）。
+        """
+        subject_counts: dict[int, int] = {}
+        subject_media_kind: dict[int, str] = {}
+        # video_basename -> subject_id（仅 map_to_tmdb，supplemental 不进 missing）
+        video_subject_map: dict[str, int] = {}
+        for item in rename_plan.items:
+            if item.disposition != 'map_to_tmdb':
+                continue
+            assignment = item.bangumi_assignment
+            if assignment is None:
+                continue
+            subject_id = int(getattr(assignment.target, 'bangumi_subject_id', 0) or 0)
+            if subject_id <= 0:
+                continue
+            subject_counts[subject_id] = subject_counts.get(subject_id, 0) + 1
+            media_kind = str(getattr(assignment.target, 'media_kind', '') or '')
+            if media_kind:
+                subject_media_kind.setdefault(subject_id, media_kind)
+            # 建 video -> subject 映射（用最终落地 video 文件名）
+            target_path = str(item.target_path or '')
+            if target_path:
+                video_basename = Path(target_path).name
+                if video_basename:
+                    video_subject_map[video_basename] = subject_id
+        if not subject_counts:
+            return {
+                'name': '', 'name_cn': '', 'subject_ids': [],
+                'subjects': [], 'video_subject_map': {},
+            }
+        # 主体 subject：assignment 数最多，并列取 id 最小
+        main_subject_id = min(
+            subject_counts, key=lambda sid: (-subject_counts[sid], sid)
+        )
+        subject_ids = sorted(subject_counts.keys())
+        # 对每个 subject 查 name/name_cn（不只主体），失败不阻塞
+        subjects: list[dict[str, object]] = []
+        name = ''
+        name_cn = ''
+        try:
+            from ..bangumi.client import BangumiClient
+            client = BangumiClient()
+            for sid in subject_ids:
+                s_name = ''
+                s_name_cn = ''
+                try:
+                    subject = client.get_subject(sid)
+                    if subject is not None:
+                        s_name = str(subject.name or '')
+                        s_name_cn = str(subject.name_cn or '')
+                except Exception as exc:
+                    logger.warning(
+                        '收集 Bangumi subject 名失败，该 subject name 为空',
+                        subject_id=sid,
+                        error=str(exc),
+                    )
+                subjects.append({
+                    'id': sid,
+                    'name': s_name,
+                    'name_cn': s_name_cn,
+                    'media_kind': subject_media_kind.get(sid, ''),
+                    'assignment_count': subject_counts[sid],
+                })
+                if sid == main_subject_id:
+                    name = s_name
+                    name_cn = s_name_cn
+        except Exception as exc:
+            logger.warning(
+                'BangumiClient 初始化失败，auto_fetch 将回退源目录标题',
+                error=str(exc),
+            )
+        return {
+            'name': name,
+            'name_cn': name_cn,
+            'subject_ids': subject_ids,
+            'subjects': subjects,
+            'video_subject_map': video_subject_map,
+        }
 
     @staticmethod
     def _normalize_structural_dir_name(name: str) -> str:

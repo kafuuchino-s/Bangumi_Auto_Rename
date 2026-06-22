@@ -29,6 +29,7 @@ from .mapping_draft import compute_subtitle_mapping_accounting
 from .models import (
     CompiledSubtitleMapping,
     CompiledSubtitlePlan,
+    CompiledUnmatchedEntry,
     SubtitleFileCard,
     SubtitleMappingDraft,
     SubtitleTargetVideoCard,
@@ -78,10 +79,16 @@ def verify_and_compile_subtitle_plan(
     subtitle_by_ref = {card.ref: card for card in subtitle_files if card.ref}
     target_by_ref = {card.ref: card for card in target_videos if card.ref}
     compiled_mappings: list[CompiledSubtitleMapping] = []
-    unmatched_refs: list[str] = []
+    unmatched_entries: list[CompiledUnmatchedEntry] = []
     for row in draft.rows:
         if row.disposition == 'unmatched':
-            unmatched_refs.append(row.subtitle_ref)
+            unmatched_entries.append(
+                CompiledUnmatchedEntry(
+                    ref=row.subtitle_ref,
+                    reason_kind=row.unmatched_reason_kind or 'unknown',
+                    reason=row.reason or '',
+                )
+            )
             continue
         if row.disposition != 'map_to_video':
             # needs_more_evidence 已被 accounting 校验拦在 passed 之外，这里防御。
@@ -106,7 +113,7 @@ def verify_and_compile_subtitle_plan(
         )
     plan = CompiledSubtitlePlan(
         mappings=compiled_mappings,
-        unmatched_refs=unmatched_refs,
+        unmatched=unmatched_entries,
         summary=draft.summary or 'accepted subtitle mapping plan',
     )
     return plan, result

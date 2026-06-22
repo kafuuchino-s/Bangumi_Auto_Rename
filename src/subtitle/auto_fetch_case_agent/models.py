@@ -44,6 +44,26 @@ class MissingVideoCard(BaseModel):
     task_title: str = ''
     season: int | None = None
     is_movie: bool = False
+    # Bangumi subject 名（方向 A：auto_fetch 搜索词来源）。重命名链路落盘 task 时
+    # 从 BangumiClient.get_subject 查得，evidence_broker 从 task_data 抽入。
+    # Pi 据此调 search_candidates_batch(BGM 名变体) 起步搜帖。可能为空（旧 task）。
+    # 注意：这是 task 级主体 subject 单值（向后兼容），多季合集时只代表主体季。
+    bgm_subject_name: str = ''
+    bgm_subject_name_cn: str = ''
+    # 多季覆盖（per-video BGM subject）：每个 video 所属的 BGM subject id + 名。
+    # 重命名链路落盘时建 video→subject 映射（bgm_video_subject_map）+ 每 subject
+    # name/name_cn（bgm_subjects），evidence_broker 据此填本字段。多季合集（如
+    # 0091 鬼灭 S01+S02+S03+剧场版 = 4 subject）时每 card 带各自 subject，Pi 据此
+    # 按 subject 分组多帖多包覆盖。旧 task 无此字段时为 0/空，Pi 回退 task 级单值。
+    # subject_name=日文原名（命中干净但可能漏），subject_name_cn=中文（命中全含噪音），
+    # Pi 多变体搜。
+    bangumi_subject_id: int = 0
+    subject_name: str = ''
+    subject_name_cn: str = ''
+    # 用户字幕语言偏好（subtitle_auto_fetch_preferred_language，默认 zh-CN）。
+    # Pi 据此在简繁双语包间抉择：zh-CN 优先 simplified/bilingual（简体含双语），
+    # zh-TW 优先 traditional/bilingual。可能为空（旧 task/未配置）。
+    preferred_language: str = ''
 
     model_config: ClassVar[ConfigDict] = ConfigDict(extra='forbid')
 
@@ -105,8 +125,18 @@ class CandidateCard(BaseModel):
     pages_scanned: int = 0
     pagination_truncated: bool = False
     packages: list['ThreadPackageCard'] = Field(default_factory=list)
-    # 候选是否有任何可下载附件（轻 gate 用）
+    # 候选是否有任何可下载附件（轻 gate 用）。仅当 packages_loaded=True 时
+    # 才是已探测真值；search 后未 load 时为 False 表示"未知/未探测"，AI
+    # 不得据此判定无附件，必须先 load_candidate_packages。
     has_downloadable_attachment: bool = False
+    # packages 是否已通过 load_candidate_packages 探测填充。
+    # False = 仅 search 命中标题，包/附件未知；True = 已加载楼包事实。
+    packages_loaded: bool = False
+    # 多季覆盖：submit_candidate 时 Pi 声明本帖对应哪个 BGM subject（搜索词来源季）。
+    # 一个帖可能覆盖多 subject（如 Avvenire+Arietta 合帖），此处记 Pi 选帖时声明的
+    # 主体 subject；submit_package 时据此给 selection 记 subject_id（审计 + auto_fetch
+    # 按 subject 下载）。0 = 未声明（旧/单 subject 场景）。
+    bangumi_subject_id: int = 0
 
     model_config: ClassVar[ConfigDict] = ConfigDict(extra='forbid')
 
@@ -143,19 +173,10 @@ class ThreadPackageCard(BaseModel):
     def has_downloadable_link(self) -> bool:
         return any(link.is_direct_download for link in self.links)
 
-    @property
-    def is_font_or_patch_only(self) -> bool:
-        """轻 gate：是否仅含字体包/补丁包（正片包不应是 font/patch-only）。
-
-        判定：flags 同时命中 font 或 patch，且不命中 batch/simplified/
-        traditional/bilingual 任一正片语言标记。这是 submit_package 的 gate 之一。
-        """
-        flags = {str(flag).lower() for flag in self.package_flags}
-        has_content_marker = bool(
-            flags & {'batch', 'simplified', 'traditional', 'bilingual'}
-        )
-        has_font_or_patch = bool(flags & {'font', 'patch'})
-        return has_font_or_patch and not has_content_marker
+    # is_font_or_patch_only 已删（AI-first）：判"这包是不是字幕包"是语义判断，
+    # 固定层 font 关键词检测不百分百准确（日文"フォント"漏判、OAD 被误归 special
+    # 等）。包性质改由 Pi 看 post_text + links[].label/filename_hint 自判，SKILL 教。
+    # submit_package gate 只留 has_downloadable_link（纯事实：有无可下载 link）。
 
 
 # ---------------------------------------------------------------------------
@@ -163,8 +184,9 @@ class ThreadPackageCard(BaseModel):
 # ---------------------------------------------------------------------------
 
 AutoFetchDisposition = Literal[
-    'select_candidate',  # 选中某帖 + 语言（先选帖）
+    'select_candidate',  # 选中某帖 + 语言（先选帖，声明对应 BGM subject
     'select_package',  # 选中某楼包（再选包）
+    'submit_complete',  # 所有 subject 都处置完，落 final（含全部 selections + 无帖 subject 列表）
     'need_more_evidence',  # 不确定，继续调查
     'unmatched',  # 该关键词搜不到正片候选，合格跳过
 ]
@@ -173,13 +195,19 @@ AutoFetchDisposition = Literal[
 class AutoFetchDecision(BaseModel):
     """AI 的选中决策（草稿，不是 verified plan）。
 
-    两步：先 ``select_candidate`` 锁定帖 + 语言评估，再 ``select_package`` 锁定
-    楼包。两步都过轻 gate 后才 accepted。``reason`` 供审计。
+    多季覆盖（多 BGM subject）：对每个 subject 独立 select_candidate(声明
+    bangumi_subject_id) → select_package，累加 selections；某 subject 无帖则
+    no_candidate_for_subject 声明；全部 subject 处置完 submit_complete 落 final。
+    单 subject 场景仍走 select_candidate → select_package → submit_complete。
+    ``reason`` 供审计。
     """
 
     disposition: AutoFetchDisposition = 'select_candidate'
     candidate_ref: str = ''
     package_ref: str = ''
+    # select_candidate 声明本选对应哪个 BGM subject（多季分组用）；no_candidate_for_subject
+    # 声明哪个 subject 无帖。单 subject 旧场景可为 0（Verifier 回退不强制）。
+    bangumi_subject_id: int = 0
     language: str = ''  # 原始语言标签，与字幕导入同口径
     confidence: Literal['High', 'Medium', 'Low'] = 'Medium'
     reason: str = ''
@@ -195,7 +223,11 @@ AutoFetchStatus = Literal['accepted', 'fail_closed', 'need_confirm', 'invalid']
 
 
 class AutoFetchSelectedCandidate(BaseModel):
-    """accepted 时锁定的选中结果（供 auto_fetch 下载 + 落 processor）。"""
+    """accepted 时锁定的单条选中结果（供 auto_fetch 下载 + 落 processor）。
+
+    多季覆盖时 final_result.selections 是本对象的列表（每 subject 一条）；
+    单 subject 旧场景仍可单条。
+    """
 
     candidate_ref: str = ''
     package_ref: str = ''
@@ -203,6 +235,8 @@ class AutoFetchSelectedCandidate(BaseModel):
     title: str = ''
     language: str = ''
     download_url: str = ''
+    # 本选对应的 BGM subject（多季分组审计 + auto_fetch 按.subject 下载）
+    bangumi_subject_id: int = 0
     # 原始 provider 对象的 JSON 快照（供 auto_fetch 复用 provider.download）
     candidate_snapshot: dict[str, object] = Field(default_factory=dict)
     package_snapshot: dict[str, object] = Field(default_factory=dict)

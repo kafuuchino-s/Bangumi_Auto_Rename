@@ -67,6 +67,10 @@ class SubtitleCaseWorkspace:
                 'source_video': card.source_video,
                 'target_dir': card.target_dir,
                 'task_video_count': card.task_video_count,
+                # 该视频所属 BGM subject 的 arc 名（日文/中文），多季同 episode
+                # 配对关键证据（区分 S02E01 無限列車編 vs S03E01 遊郭編）；可能为空。
+                'arc_name': card.arc_name,
+                'arc_name_cn': card.arc_name_cn,
             }
             for card in self.target_videos
         ]

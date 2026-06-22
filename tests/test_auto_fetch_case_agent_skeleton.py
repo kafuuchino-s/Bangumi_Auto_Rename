@@ -209,17 +209,34 @@ def test_candidate_card_from_provider_no_download_when_only_html_external():
     assert card.has_downloadable_attachment is False
 
 
-def test_package_card_from_provider_font_only_flag_detected():
+def test_package_card_package_flags_no_longer_fixed_layer_detected():
+    """A1：_detect_package_flags 已删（AI-first）。provider 不再给 package 打
+    batch/font/special/简繁等硬编码 flag——Pi 看 post_text + links 自判包性质。
+    card.package_flags 保留字段但固定层不填（由 provider 产 []）。包性质判断
+    不再是固定层事实，gate 不依赖它。
+    """
+    # _pkg helper 仍传 flags 参数（兼容），但 provider 路径产 []。这里直接验证
+    # card 不暴露 is_font_or_patch_only（已删 property）。
     pkg = _pkg('fontpkg', ['font'])
     card = package_card_from_provider(pkg)
-    assert card.is_font_or_patch_only is True
+    # has_downloadable_link 仍是事实派生 property（有可下载 link）
+    assert card.has_downloadable_link is True
+    # is_font_or_patch_only 已删，不应存在
+    assert not hasattr(card, 'is_font_or_patch_only')
 
 
-def test_package_card_from_provider_patch_with_content_marker_not_font_only():
-    # patch + simplified：有正片语言标记，不算 font/patch-only
-    pkg = _pkg('rev', ['patch', 'simplified'])
-    card = package_card_from_provider(pkg)
-    assert card.is_font_or_patch_only is False
+def test_package_card_has_downloadable_link_remains_fact():
+    """A2：submit_package gate 只留 has_downloadable_link（纯事实）。无 link 的包
+    has_downloadable_link=False（gate 会拒），有 link 的 True（gate 放行）。
+    包性质（font/special）不再影响 gate。
+    """
+    pkg_with_link = _pkg('p1', ['font'], has_direct=True)
+    card1 = package_card_from_provider(pkg_with_link)
+    assert card1.has_downloadable_link is True
+
+    pkg_no_link = _pkg('p2', ['font'], has_direct=False)
+    card2 = package_card_from_provider(pkg_no_link)
+    assert card2.has_downloadable_link is False
 
 
 # ---------------------------------------------------------------------------
@@ -341,14 +358,19 @@ def test_gate_accepts_select_package_downloadable_non_font():
     assert result.passed is True
 
 
-def test_gate_rejects_select_package_font_only():
+def test_gate_no_longer_rejects_font_only_package():
+    """A2：font-gate 已删（AI-first）。包性质（font/special）不再固定层判，
+    submit_package gate 只查 has_downloadable_link。font_only 包只要可下载就放行
+    ——Pi 自判是否选字体包（SKILL 教看 post_text 字幕信号）。
+    """
     ws = _ws_with_candidate(downloadable=True, font_only=True)
     decision = AutoFetchDecision(
         disposition='select_package', package_ref='PK1', language='chs'
     )
     result = verify_auto_fetch_decision(workspace=ws, decision=decision)
-    assert result.passed is False
-    assert any(i.issue_code == 'package_font_or_patch_only' for i in result.issues)
+    assert result.passed is True  # font_only 但可下载 → gate 放行
+    # 不再有 package_font_or_patch_only issue
+    assert not any(i.issue_code == 'package_font_or_patch_only' for i in result.issues)
 
 
 def test_gate_rejects_select_package_not_downloadable():

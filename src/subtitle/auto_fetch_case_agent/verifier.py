@@ -91,12 +91,33 @@ def _collect_issues(
                     'unmatched must not carry a package_ref.',
                 )
             )
+    elif disposition == 'submit_complete':
+        # 多季覆盖终止信号：不应携带 candidate_ref/package_ref（ selections 在
+        # tool_state 里，submit_package 时已逐个过 gate，submit_complete 不重查）。
+        # 实质 gate（selections 非空）在 pi_tools.tool_submit_complete 内联校验
+        # （因需访问 state.selections，verifier 签名只有 workspace+decision）。
+        if decision.candidate_ref:
+            issues.append(
+                _issue(
+                    decision.candidate_ref,
+                    'invalid_candidate_on_submit_complete',
+                    'submit_complete must not carry a candidate_ref.',
+                )
+            )
+        if decision.package_ref:
+            issues.append(
+                _issue(
+                    decision.package_ref,
+                    'invalid_package_on_submit_complete',
+                    'submit_complete must not carry a package_ref.',
+                )
+            )
     else:
         issues.append(
             _issue(
                 '',
                 'invalid_disposition',
-                'disposition must be select_candidate / select_package / need_more_evidence / unmatched',
+                'disposition must be select_candidate / select_package / submit_complete / need_more_evidence / unmatched',
             )
         )
 
@@ -121,13 +142,20 @@ def _check_select_candidate(
         return issues
     # 轻 gate：候选含可下载附件
     if not candidate.has_downloadable_attachment and not candidate.packages:
-        issues.append(
-            _issue(
-                ref,
-                'candidate_not_downloadable',
-                'selected candidate has no downloadable attachment or package; pick a candidate with packages',
+        # packages_loaded=False 表示该候选只 search 命中标题、附件未探测；
+        # 引导 Pi 先 load_candidate_packages 再判定，不要直接 fail_closed。
+        if not getattr(candidate, 'packages_loaded', False):
+            hint = (
+                'selected candidate packages not yet loaded (only search title '
+                'known). Call load_candidate_packages to probe attachments before '
+                'deciding no_downloadable or submitting.'
             )
-        )
+        else:
+            hint = (
+                'selected candidate has no downloadable attachment or package; '
+                'pick a candidate with packages'
+            )
+        issues.append(_issue(ref, 'candidate_not_downloadable', hint))
     return issues
 
 
@@ -147,21 +175,14 @@ def _check_select_package(
     if package is None:
         issues.append(_issue(ref, 'unknown_package_ref', 'package_ref must reference a fixed-layer package card'))
         return issues
-    # 轻 gate：楼包含可下载链接
+    # 轻 gate：楼包含可下载链接（纯事实：有无可下载 link）。
+    # 包性质（font/patch-only/special）不再固定层判——AI-first，Pi 看 post_text +
+    # links 自判，SKILL 教。固定层不做"这包是不是字幕包"的语义判断。
     if not getattr(package, 'has_downloadable_link', False):
         issues.append(
             _issue(ref, 'package_not_downloadable', 'selected package has no direct-download link; pick a package with downloadable links')
         )
         return issues
-    # 轻 gate：非 font/patch-only
-    if getattr(package, 'is_font_or_patch_only', False):
-        issues.append(
-            _issue(
-                ref,
-                'package_font_or_patch_only',
-                'selected package is font/patch-only (no subtitle content marker); pick a package with batch/simplified/traditional/bilingual marker',
-            )
-        )
     return issues
 
 
@@ -200,8 +221,6 @@ def auto_fetch_repair_hints(verifier_result: CaseVerifierResult) -> list[str]:
             hints.append('Selected candidate has no downloadable attachment/package; search again or pick a candidate with packages.')
         elif code == 'package_not_downloadable':
             hints.append('Selected package has no direct-download link; pick a package with downloadable links.')
-        elif code == 'package_font_or_patch_only':
-            hints.append('Selected package is font/patch-only; pick a package with batch/simplified/traditional/bilingual subtitle marker.')
         elif code == 'invalid_candidate_on_unmatched':
             hints.append('unmatched must not carry a candidate_ref; use unmatched only when no candidate fits.')
         elif code == 'invalid_package_on_unmatched':

@@ -78,12 +78,16 @@ CONFIG_DEFAULT = {
     "subtitle_auto_fetch_use_ai_rerank": True,
     "subtitle_auto_fetch_search_mode": "auto",
     "subtitle_auto_fetch_save_reason": True,
+    # 多 selection（多 subject）下载+配对并发数。_execute_fetch 逐 selection 串行是
+    # 多 subject 大样本（0042 5 subject 618s）速度瓶颈；并发各 selection 的下载+processor
+    # 配对可显著提速。保守默认 3：每个 selection 跑独立字幕 Case Agent Pi sidecar（Node
+    # 子进程），过高会放大内存/CPU + 触发 acgrip 限流。1 = 串行（旧行为）。
+    "subtitle_auto_fetch_selection_concurrency": 3,
     # 字幕自动抓取 Case Agent（对齐 rename / 字幕导入 Case Agent）
-    "subtitle_auto_fetch_case_agent_primary_enabled": True,  # 默认走 Case Agent + 轻 gate；关闭则回退旧单轮 AI 选帖/选包规则链路
-    "subtitle_auto_fetch_case_agent_backend": "pi",  # pi = Pi 多轮 evidence-driven 后端；single_shot = Phase 2 单轮 AI + 轻 gate 兼容
+    "subtitle_auto_fetch_case_agent_backend": "pi",  # pi = Pi 多轮 evidence-driven 后端；single_shot 已弃用，值忽略始终 pi
     "subtitle_auto_fetch_case_agent_pi_case_root": "data/auto_fetch_case_agent",
     "subtitle_auto_fetch_case_agent_pi_max_turns": 48,  # 兼容保留，Pi native 模式由 wall-clock timeout 约束
-    "subtitle_auto_fetch_case_agent_pi_timeout_seconds": 300,
+    "subtitle_auto_fetch_case_agent_pi_timeout_seconds": 600,
     "subtitle_auto_fetch_case_agent_pi_command": "",  # 运行命令覆盖（默认走 core sidecar）
     "skip_tags": "iyuu,辅种,reseed,skip,no_process",  # 跳过处理的标签
     # Emby通知配置
@@ -169,7 +173,6 @@ CN_MAP = {
     "subtitle_auto_fetch_use_ai_rerank": "🤖 启用AI重排",
     "subtitle_auto_fetch_search_mode": "🔍 字幕搜索模式",
     "subtitle_auto_fetch_save_reason": "📝 保存重排原因",
-    "subtitle_auto_fetch_case_agent_primary_enabled": "🧭 启用抓取 Case Agent（轻合同）",
     "subtitle_auto_fetch_case_agent_backend": "🧭 抓取 Case Agent 后端",
     "subtitle_auto_fetch_case_agent_pi_case_root": "🧭 抓取 Case Agent 运行目录",
     "subtitle_auto_fetch_case_agent_pi_max_turns": "🧭 抓取 Case Agent 最大轮数（兼容保留，不生效）",
