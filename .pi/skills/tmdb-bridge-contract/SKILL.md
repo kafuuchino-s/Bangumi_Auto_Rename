@@ -79,6 +79,17 @@ Episode-title matches are semantic evidence for Pi. They still do not override t
 
 The common failure mode this prevents: anchoring only one TMDB ref (e.g. the TV series), mapping the regular sequence, then `fail_closed`-ing the whole case because a BGM movie/special/side-story in the same package was never searched — when a separate `movie:<id>` search or a season-0 card check would have produced a legal node or a clean `tmdb_absent_group`. If the frontier scan in step 1 is non-empty, you have not finished exploring; do not fail closed.
 
+## Range Field Semantics
+
+`select_bgm.sort_range` and `target_tmdb.episode_range` are expanded into ordered number lists and **paired by position** after both are sorted ascending. `a-b` expands to the inclusive contiguous range `[a, a+1, ..., b]`; comma-separated segments are concatenated in order. The k-th BGM assignment (by ascending sort) maps to the k-th number in the expanded `episode_range`. `episode_range` is therefore an ordered target list, not an absolute-id range: its k-th element is the TMDB episode_number for the k-th selected BGM sort, whatever that sort value is.
+
+Consequences for specials / S00 where BGM and TMDB numbering often differ:
+
+- **TMDB episode_number is absolute, not a refillable slot.** If BGM special `#2-#6` should map to TMDB `S00E02-E06` (titles align `#N -> E0N`), write `sort_range: "2-6"` and `episode_range: "2-6"`. Do NOT write `episode_range: "1-5"` thinking "#2 takes the E01 slot left empty by the missing #1" — that pairs sort2->E1, sort3->E2, ... sort6->E5, a -1 off-by-one shift.
+- **When the source package is missing a numbered special, leave the matching TMDB episode unpaired.** Never shift higher-numbered BGM specials down to fill the gap. Example: source has `#2-#6` but no `#1`; TMDB S00 has `E01(#1)..E06(#6)..E07(妖精笔记)`. Correct: `sort_range: "0,2-6"`, `episode_range: "7,2-6"` — sort0(妖精笔记)->E7, sort2->E2, sort6->E6, and E01 stays unpaired (target-absent for that BGM node if #1 is genuinely absent from the package, or omit E01 from the rule). Wrong: `sort_range: "0,2-6"`, `episode_range: "7,1-5"` — this pairs sort2->E1, ..., sort6->E5 and silently shifts every special by -1.
+- **`episode_range` count must equal the number of selected BGM assignments.** The verifier rejects count mismatch. Multi-segment ranges like `"7,2-6"` are legal as long as the total element count matches.
+- **episode-title / `#N` numbering is the strongest evidence for the `episode_range` value.** When TMDB S00 titles carry `#N` and BGM specials carry the same `#N`, the `episode_range` numbers must equal those `#N` values, not be derived by reordering TMDB slots. If the rule `reason` says `#2-#6 -> S00E02-06`, the `episode_range` must be `2-6`, not `1-5`.
+
 ## Recipe Params Shape
 
 ```json
