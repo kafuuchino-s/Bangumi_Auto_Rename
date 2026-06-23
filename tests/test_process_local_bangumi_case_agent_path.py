@@ -244,7 +244,7 @@ def test_product_pipeline_execute_transfers_and_writes_success_task(tmp_path, mo
     assert record_data == {str(source.resolve()): str(target_path)}
 
     target_sub_chs = tmp_path / 'Anime' / 'Example Show (2024)' / 'Season 1' / 'Example Show - S01E01.zh-CN.default.ass'
-    target_sub_srt = tmp_path / 'Anime' / 'Example Show (2024)' / 'Season 1' / 'Example Show - S01E01.zh-CN.default.srt'
+    target_sub_srt = tmp_path / 'Anime' / 'Example Show (2024)' / 'Season 1' / 'Example Show - S01E01.zh.srt'
     assert target_sub_chs.read_bytes() == b'ass subtitle'
     assert target_sub_srt.read_bytes() == b'srt subtitle'
     assert task_data['subtitle_mapping'] == {
@@ -252,6 +252,143 @@ def test_product_pipeline_execute_transfers_and_writes_success_task(tmp_path, mo
         str((parent / 'E01.srt').resolve()): str(target_sub_srt),
     }
     assert task_data['subtitle_transfer_failed'] is False
+
+
+def test_product_pipeline_fail_closed_retry_recovers_to_accepted(tmp_path, monkeypatch):
+    """段2 桥接首次 fail_closed（假阴性）→ 单次重试转 accepted → 正常落地。
+
+    验证 rename_bgm_to_tmdb_retry_on_fail_closed=True 时，fail_closed 会被重试
+    一次，重试 accepted 则继续落地（不任务失败）。
+    """
+    parent = tmp_path / 'Series Pack'
+    parent.mkdir()
+    source = parent / 'E01.mkv'
+    source.write_bytes(b'episode')
+    task_path = tmp_path / 'task'
+    record_path = tmp_path / 'record'
+    task_path.mkdir()
+    record_path.mkdir()
+    run_dir = tmp_path / 'pi' / 'run'
+    run_dir.mkdir(parents=True)
+
+    class FakeAIClient:
+        def is_available(self):
+            return True
+
+    compiled_plan = _compiled_plan('E01.mkv')
+    graph, verified_plan = _verified_tmdb_plan(compiled_plan)
+
+    def fake_case_agent_primary(**kwargs):
+        return _accepted_case_agent_result(compiled_plan)
+
+    call_count = {'n': 0}
+
+    def fake_bridge_agent(**kwargs):
+        call_count['n'] += 1
+        if call_count['n'] == 1:
+            # 首次假阴性 fail_closed
+            return SimpleNamespace(
+                ok=False,
+                status='fail_closed',
+                summary='Pi fail_closed (false negative)',
+                errors=[],
+                run_dir=run_dir,
+                tool_call_counts={},
+                verified_plan=None,
+                tmdb_legal_graph=None,
+            )
+        # 重试转 accepted
+        return SimpleNamespace(
+            ok=True,
+            status='accepted',
+            summary='bridge accepted on retry',
+            errors=[],
+            run_dir=run_dir,
+            tool_call_counts={'submit_bgm_to_tmdb_bridge_recipe_params': 1},
+            verified_plan=verified_plan,
+            tmdb_legal_graph=graph,
+        )
+
+    monkeypatch.setattr('src.rename.process.AIClient', FakeAIClient)
+    monkeypatch.setattr('src.rename.process._run_local_bangumi_case_agent_primary', fake_case_agent_primary)
+    monkeypatch.setattr('src.rename.process.run_bgm_to_tmdb_bridge_agent', fake_bridge_agent)
+
+    with _temporary_debug_task_record_paths(task_path, record_path):
+        with cm.temporary_config({
+            'rename_bgm_to_tmdb_product_pipeline_enabled': True,
+            'rename_bgm_to_tmdb_execute_enabled': True,
+            'rename_bgm_to_tmdb_retry_on_fail_closed': True,
+            'anime_path': str(tmp_path / 'Anime'),
+            'anime_movie_path': str(tmp_path / 'Anime Movies'),
+            'mode': '复制',
+        }):
+            result = Rename().process(parent, _is_anime=True, _tuuid='retry-task')
+
+    assert result is True
+    assert call_count['n'] == 2  # 首次 fail_closed + 重试 accepted
+    task_data = json.loads((task_path / 'retry-task.json').read_text(encoding='utf-8'))
+    assert task_data['error'] == ''
+    assert task_data['bgm_to_tmdb_bridge_retried_after_fail_closed'] is True
+    target_path = tmp_path / 'Anime' / 'Example Show (2024)' / 'Season 1' / 'Example Show - S01E01.mkv'
+    assert target_path.read_bytes() == b'episode'
+
+
+def test_product_pipeline_fail_closed_no_retry_when_disabled(tmp_path, monkeypatch):
+    """rename_bgm_to_tmdb_retry_on_fail_closed=False 时 fail_closed 不重试，直接任务失败。"""
+    parent = tmp_path / 'Series Pack'
+    parent.mkdir()
+    source = parent / 'E01.mkv'
+    source.write_bytes(b'episode')
+    task_path = tmp_path / 'task'
+    record_path = tmp_path / 'record'
+    task_path.mkdir()
+    record_path.mkdir()
+    run_dir = tmp_path / 'pi' / 'run'
+    run_dir.mkdir(parents=True)
+
+    class FakeAIClient:
+        def is_available(self):
+            return True
+
+    compiled_plan = _compiled_plan('E01.mkv')
+
+    def fake_case_agent_primary(**kwargs):
+        return _accepted_case_agent_result(compiled_plan)
+
+    call_count = {'n': 0}
+
+    def fake_bridge_agent(**kwargs):
+        call_count['n'] += 1
+        return SimpleNamespace(
+            ok=False,
+            status='fail_closed',
+            summary='Pi fail_closed',
+            errors=[],
+            run_dir=run_dir,
+            tool_call_counts={},
+            verified_plan=None,
+            tmdb_legal_graph=None,
+        )
+
+    monkeypatch.setattr('src.rename.process.AIClient', FakeAIClient)
+    monkeypatch.setattr('src.rename.process._run_local_bangumi_case_agent_primary', fake_case_agent_primary)
+    monkeypatch.setattr('src.rename.process.run_bgm_to_tmdb_bridge_agent', fake_bridge_agent)
+
+    with _temporary_debug_task_record_paths(task_path, record_path):
+        with cm.temporary_config({
+            'rename_bgm_to_tmdb_product_pipeline_enabled': True,
+            'rename_bgm_to_tmdb_execute_enabled': True,
+            'rename_bgm_to_tmdb_retry_on_fail_closed': False,
+            'anime_path': str(tmp_path / 'Anime'),
+            'anime_movie_path': str(tmp_path / 'Anime Movies'),
+            'mode': '复制',
+        }):
+            result = Rename().process(parent, _is_anime=True, _tuuid='no-retry-task')
+
+    assert isinstance(result, str)  # 任务失败
+    assert call_count['n'] == 1  # 没重试
+    task_data = json.loads((task_path / 'no-retry-task.json').read_text(encoding='utf-8'))
+    assert task_data['failure_reason'] == 'bgm_to_tmdb_bridge_failed'
 
 
 def _compiled_plan(source_path: str) -> CompiledOrganizePlan:

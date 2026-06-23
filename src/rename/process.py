@@ -128,6 +128,10 @@ def _bgm_to_tmdb_execute_enabled() -> bool:
     return _config_bool('rename_bgm_to_tmdb_execute_enabled', default=False)
 
 
+def _bgm_to_tmdb_retry_on_fail_closed() -> bool:
+    return _config_bool('rename_bgm_to_tmdb_retry_on_fail_closed', default=True)
+
+
 def _case_agent_result_status(result: dict[str, object]) -> str:
     case_agent_result = result.get('case_agent_result') if isinstance(result.get('case_agent_result'), dict) else {}
     snapshot = case_agent_result.get('snapshot') if isinstance(case_agent_result.get('snapshot'), dict) else {}
@@ -528,6 +532,45 @@ class Rename:
                 'bgm_to_tmdb_bridge_errors': list(bridge_result.errors),
                 'bgm_to_tmdb_bridge_tool_call_counts': dict(bridge_result.tool_call_counts),
             }
+            # 段2 桥接 Pi 有非确定性：同输入可能首次 fail_closed（假阴性，本可
+            # 桥接却判不能）、重跑转 accepted（样本池 0040/0102 实证）。生产单次
+            # 跑若不重试，假阴性 fail_closed 会让本可落地的样本直接任务失败。
+            # 仅对 fail_closed 重试一次（不对 invalid/need_confirm/error 重试——
+            # 那些是确定性缺陷或真实不确定，重试无益）。重试仍 fail_closed 则
+            # 接受为终态失败。
+            if (
+                bridge_result.status == 'fail_closed'
+                and _bgm_to_tmdb_retry_on_fail_closed()
+            ):
+                logger.info(
+                    '[BGM→TMDB] 桥接首次 fail_closed，单次重试纠回假阴性'
+                )
+                retry_result = run_bgm_to_tmdb_bridge_agent(
+                    compiled_plan=compiled_plan,
+                    artifact_path='',
+                    source_path=path,
+                    sample_id=task_uuid,
+                )
+                if retry_result.status == 'accepted' and retry_result.ok:
+                    logger.info('[BGM→TMDB] 重试转 accepted，继续落地')
+                    bridge_result = retry_result
+                    legal_graph = bridge_result.tmdb_legal_graph
+                    verified_plan = bridge_result.verified_plan
+                    bridge_extra = {
+                        **bridge_extra,
+                        'bgm_to_tmdb_bridge_status': bridge_result.status,
+                        'bgm_to_tmdb_bridge_summary': bridge_result.summary,
+                        'bgm_to_tmdb_bridge_run_dir': str(bridge_result.run_dir),
+                        'bgm_to_tmdb_bridge_errors': list(bridge_result.errors),
+                        'bgm_to_tmdb_bridge_tool_call_counts': dict(bridge_result.tool_call_counts),
+                        'bgm_to_tmdb_bridge_retried_after_fail_closed': True,
+                    }
+                else:
+                    logger.info(
+                        f'[BGM→TMDB] 重试仍 {retry_result.status}，接受为终态失败'
+                    )
+                    bridge_extra['bgm_to_tmdb_bridge_retried_after_fail_closed'] = True
+                    bridge_extra['bgm_to_tmdb_bridge_retry_status'] = retry_result.status
             if bridge_result.status != 'accepted' or not bridge_result.ok or verified_plan is None or legal_graph is None:
                 return self.error_reply(
                     task_uuid,
@@ -1132,9 +1175,14 @@ def _detect_subtitle_language(subtitle_path: Path) -> str | None:
 
 
 def _normalize_subtitle_language(lang: str | None) -> tuple[str, bool]:
-    """将字幕组语言标签转换为 Emby 标准代码，并返回是否为简体中文。"""
+    """将字幕组语言标签转换为 Emby 标准代码，并返回是否为简体中文。
+
+    未命中已知标签时返回 ``('zh', False)``——归为中文但不指定区域、不加
+    ``.default``，避免把日文/英文/未标记字幕误标成简体中文默认字幕被 Emby
+    优先选中。简体 ``.default`` 只在明确命中简体标记（chs/sc/gb/简 等）时追加。
+    """
     if not lang:
-        return ('zh-CN', True)
+        return ('zh', False)
     lang_lower = lang.lower().strip()
     if lang_lower in _SUBTITLE_LANGUAGE_MAP:
         return _SUBTITLE_LANGUAGE_MAP[lang_lower]

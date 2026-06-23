@@ -3,6 +3,8 @@ from pathlib import Path
 from src.rename.trans import Trans
 from src.utils.path import RECORD_PATH
 
+_EXDEV = 18  # errno.EXDEV: cross-device link
+
 
 def test_trans_failure_does_not_write_record(tmp_path: Path, monkeypatch):
     monkeypatch.setattr('src.rename.trans.RECORD_PATH', tmp_path / 'record')
@@ -211,3 +213,69 @@ def test_trans_overwrite_mode_reland_counts_as_landed(
     assert trans.landed_mapping == {src: tgt}
     assert trans.skipped_mapping == {}
     assert tgt.read_bytes() == b'fresh'
+
+
+def test_trans_hardlink_failure_falls_back_to_symlink_when_enabled(
+    tmp_path: Path, monkeypatch
+):
+    """hardlink_fallback_to_symlink=True（默认）：硬链失败降级软链接，落地成功。"""
+    monkeypatch.setattr('src.rename.trans.RECORD_PATH', tmp_path / 'record')
+    (tmp_path / 'record').mkdir(parents=True, exist_ok=True)
+    monkeypatch.setattr(
+        'src.config.config_manager.cm.get_config',
+        lambda key, _default=None: True if key == 'hardlink_fallback_to_symlink' else '链接',
+    )
+
+    src = tmp_path / 'source.mkv'
+    tgt = tmp_path / 'out' / 'target.mkv'
+    src.write_bytes(b'data')
+    tgt.parent.mkdir(parents=True, exist_ok=True)
+
+    # 模拟硬链失败
+    import src.rename.trans as trans_mod
+    real_link = trans_mod.os.link
+
+    def fail_link(src_p, tgt_p):
+        raise OSError(_EXDEV, 'cross-device link')
+
+    monkeypatch.setattr(trans_mod.os, 'link', fail_link)
+    monkeypatch.setattr(trans_mod.os, 'symlink', trans_mod.os.symlink)
+
+    trans = Trans({src: tgt}, 'uuid-fallback', force_mode='链接')
+    result = trans.trans_file()
+
+    assert result is True
+    assert tgt.is_symlink()
+    assert trans.landed_mapping == {src: tgt}
+
+
+def test_trans_hardlink_failure_no_fallback_when_disabled(
+    tmp_path: Path, monkeypatch
+):
+    """hardlink_fallback_to_symlink=False：硬链失败不降级，记 partial_failure。"""
+    monkeypatch.setattr('src.rename.trans.RECORD_PATH', tmp_path / 'record')
+    (tmp_path / 'record').mkdir(parents=True, exist_ok=True)
+    monkeypatch.setattr(
+        'src.config.config_manager.cm.get_config',
+        lambda key, _default=None: False if key == 'hardlink_fallback_to_symlink' else '链接',
+    )
+
+    src = tmp_path / 'source.mkv'
+    tgt = tmp_path / 'out' / 'target.mkv'
+    src.write_bytes(b'data')
+    tgt.parent.mkdir(parents=True, exist_ok=True)
+
+    import src.rename.trans as trans_mod
+
+    def fail_link(src_p, tgt_p):
+        raise OSError(_EXDEV, 'cross-device link')
+
+    monkeypatch.setattr(trans_mod.os, 'link', fail_link)
+
+    trans = Trans({src: tgt}, 'uuid-no-fallback', force_mode='链接')
+    result = trans.trans_file()
+
+    assert isinstance(result, str)
+    assert 'partial_failure' in result
+    assert not tgt.exists()
+    assert trans.landed_mapping == {}

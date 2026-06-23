@@ -50,6 +50,7 @@ class ConfigPage(ui.dialog):
                 "anime_movie_path",
                 "mode",
                 "overwrite_existing",
+                "hardlink_fallback_to_symlink",
                 "rename_bgm_to_tmdb_product_pipeline_enabled",
                 "rename_bgm_to_tmdb_execute_enabled",
                 "docker_mnt",
@@ -441,6 +442,18 @@ class ConfigPage(ui.dialog):
                             value=_ow_cur,
                             on_change=lambda e, c=cn: self._change(
                                 c, e.value
+                            ),
+                        )
+                        tg.style("font-size: 10px")
+                        tg.classes("flex no-wrap w-full")
+                    elif cn == "hardlink_fallback_to_symlink":
+                        # 链接模式下硬链失败是否降级软链接。True=降级（兼容），
+                        # False=硬链失败记 partial_failure 不静默降级。
+                        tg = RedToogle(
+                            ["启用", "禁用"],
+                            value="启用" if cm.get_config(cn) else "禁用",
+                            on_change=lambda e, c=cn: self._change(
+                                c, e.value == "启用"
                             ),
                         )
                         tg.style("font-size: 10px")

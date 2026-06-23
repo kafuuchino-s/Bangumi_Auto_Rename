@@ -95,8 +95,19 @@ class Trans:
                 elif self.mode == '链接':
                     try:
                         os.link(source_path, target_path)
-                    except:  # noqa:E722
-                        logger.warning('[处理迁移] 无法创建硬链接, 尝试软链接...')
+                    except OSError as link_exc:
+                        # 硬链接失败（常见：跨文件系统）。默认降级软链接保持
+                        # 历史兼容，但软链接语义不同（源删则失效），用户可关
+                        # hardlink_fallback_to_symlink 让硬链失败记 partial_failure
+                        # 而不静默降级。
+                        if not cm.get_config('hardlink_fallback_to_symlink'):
+                            logger.error(
+                                f'[处理迁移] 硬链接失败且未启用降级: {target_path} ({link_exc})'
+                            )
+                            raise
+                        logger.warning(
+                            f'[处理迁移] 无法创建硬链接, 尝试软链接: {target_path} ({link_exc})'
+                        )
                         os.symlink(source_path, target_path)
                     created_targets.append(target_path)
                 else:

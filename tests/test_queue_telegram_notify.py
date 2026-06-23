@@ -445,6 +445,36 @@ def test_build_season_episode_orders_main_seasons_before_specials():
     assert season_episode == "S01E01 + S02E01 + S00E05"
 
 
+def test_build_season_episode_non_contiguous_lists_each_episode():
+    """同季集数不连续时逐个列出，不用 min-max 区间虚报缺失集数。
+
+    S00 只有 E02/E03/E07（缺 E04-E06）→ ``S00E02-E03,E07``，不显示 ``S00E02-E07``。
+    """
+    manager = _build_manager_with_stats(total=1, success=1, failed=0, failed_tasks=[])
+
+    targets = [
+        Path("/tmp/Show - S00E07 - Special.mkv"),
+        Path("/tmp/Show - S00E02 - Special.mkv"),
+        Path("/tmp/Show - S00E03 - Special.mkv"),
+    ]
+
+    season_episode = manager._build_season_episode([{"season_id": 0}], targets)
+
+    assert season_episode == "S00E02-E03,E07"
+
+
+def test_build_season_episode_single_gap_lists_both_sides():
+    """S01 有 E01-E05 + E07-E12（缺 E06）→ 两段分别连续，逗号分隔。"""
+    manager = _build_manager_with_stats(total=1, success=1, failed=0, failed_tasks=[])
+
+    targets = [Path(f"/tmp/Show - S01E{i:02d} - 1080p.mkv") for i in range(1, 6)]
+    targets += [Path(f"/tmp/Show - S01E{i:02d} - 1080p.mkv") for i in range(7, 13)]
+
+    season_episode = manager._build_season_episode([{"season_id": 1}], targets)
+
+    assert season_episode == "S01E01-E05,E07-E12"
+
+
 def test_resolve_task_poster_path_tv_prefers_season_poster():
     renamer = Rename()
     info = {

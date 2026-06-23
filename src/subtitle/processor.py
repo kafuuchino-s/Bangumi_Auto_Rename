@@ -112,8 +112,9 @@ class SubtitleProcessor:
             (Emby标准语言代码, 是否为简体中文)
         """
         if not lang:
-            # 默认简体中文
-            return ("zh-CN", True)
+            # 未检测到语言标记：归为中文但不指定区域、不加 .default，
+            # 避免日文/英文/未标记字幕被误标简体中文默认被 Emby 优先选中。
+            return ("zh", False)
 
         lang_lower = lang.lower().strip()
 

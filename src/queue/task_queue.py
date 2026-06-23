@@ -583,11 +583,7 @@ class TaskQueueManager:
             parts: list[str] = []
             for season in ordered_seasons:
                 eps = sorted(set(season_episodes[season]))
-                min_ep, max_ep = eps[0], eps[-1]
-                if min_ep == max_ep:
-                    parts.append(f"S{season:02d}E{min_ep:02d}")
-                else:
-                    parts.append(f"S{season:02d}E{min_ep:02d}-E{max_ep:02d}")
+                parts.append(f"S{season:02d}{self._format_episode_range(eps)}")
             return " + ".join(parts)
 
         # fallback：抽不出 (season, episode) 对，退回旧 season_ids 逻辑
@@ -597,6 +593,35 @@ class TaskQueueManager:
         if self._batch_success <= 1:
             return f"S{season:02d}E01"
         return f"S{season:02d}E01-E{self._batch_success:02d}"
+
+    @staticmethod
+    def _format_episode_range(eps: list[int]) -> str:
+        """把升序无重 episode 列表渲染成集数段。
+
+        连续段用 ``E01-E12``，不连续时逐个列出 ``E01,E03,E07``，避免 min-max
+        区间虚报中间缺失的集数（如 S00 只有 E02/E03/E07 时不显示 E02-E07）。
+        """
+        if not eps:
+            return ""
+        if len(eps) == 1:
+            return f"E{eps[0]:02d}"
+        # 拆成连续子段
+        segments: list[list[int]] = []
+        start = prev = eps[0]
+        for ep in eps[1:]:
+            if ep == prev + 1:
+                prev = ep
+                continue
+            segments.append([start, prev])
+            start = prev = ep
+        segments.append([start, prev])
+        parts: list[str] = []
+        for s, e in segments:
+            if s == e:
+                parts.append(f"E{s:02d}")
+            else:
+                parts.append(f"E{s:02d}-E{e:02d}")
+        return ",".join(parts)
 
     def _build_category(
         self,

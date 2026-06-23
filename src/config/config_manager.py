@@ -19,6 +19,7 @@ CONFIG_DEFAULT = {
     "anime_movie_path": "",
     "mode": "链接",
     "overwrite_existing": "跳过",  # 目标已存在时的策略：'覆盖'（删旧重落）/ '跳过'（跳过已存在继续处理其他）。兼容旧 bool：True→覆盖，False→跳过
+    "hardlink_fallback_to_symlink": True,  # 链接模式下硬链接失败（如跨文件系统）时是否降级为软链接。False 时硬链失败记 partial_failure，不静默降级（软链接源删则失效，语义与硬链接不同）
     "docker_mnt": "/media",
     "host_path_prefix": "",  # Windows宿主机路径前缀，用于qBittorrent路径转换
     "ai_api_key": "",
@@ -50,6 +51,7 @@ CONFIG_DEFAULT = {
     "rename_local_bangumi_case_agent_snapshot_debug": False,
     "rename_bgm_to_tmdb_product_pipeline_enabled": True,
     "rename_bgm_to_tmdb_execute_enabled": True,
+    "rename_bgm_to_tmdb_retry_on_fail_closed": True,  # 段2 BGM→TMDB 桥接 Pi 有非确定性，fail_closed 可能是假阴性（本可桥接却判不能）。True 时对 fail_closed 单次重试纠回假阴性；重试仍 fail_closed 则接受为终态失败。不对 invalid/need_confirm/error 重试
     "rename_bgm_to_tmdb_pi_command": "",
     "log_level": "INFO",  # 日志等级
     "queue_max_workers": 1,  # 队列并行处理数
@@ -120,6 +122,7 @@ CN_MAP = {
     "anime_movie_path": "🎬 动漫电影路径",
     "mode": "💿 重命名模式",
     "overwrite_existing": "🔄 目标已存在策略",
+    "hardlink_fallback_to_symlink": "🔗 硬链接失败降级软链接",
     "docker_mnt": "📁 Docker挂载路径",
     "host_path_prefix": "📁 宿主机路径前缀",
     "ai_api_key": "🤖 OpenAI API密钥",
@@ -148,6 +151,7 @@ CN_MAP = {
     "rename_local_bangumi_case_agent_snapshot_debug": "🧭 Case Agent snapshot 调试详情",
     "rename_bgm_to_tmdb_product_pipeline_enabled": "🧭 启用 BGM→TMDB 产品链路",
     "rename_bgm_to_tmdb_execute_enabled": "🧭 执行 BGM→TMDB 迁移",
+    "rename_bgm_to_tmdb_retry_on_fail_closed": "🧭 BGM→TMDB fail_closed 单次重试",
     "rename_bgm_to_tmdb_pi_command": "🧭 BGM→TMDB Pi 运行命令覆盖",
     "log_level": "📝 日志等级",
     "queue_max_workers": "🔢 队列并行数（建议1-5）",
