@@ -5,6 +5,10 @@
 data/
 docs/
 tests/
+# Pi 凭据与运行期生成目录不进镜像（凭据经 config/环境变量运行时注入）
+.pi/agent/
+.pi/agents/
+.pi/prompts/
 !tests/example_test_case.json
 !tests/example_expected.json
 !requirements_docker.txt
@@ -13,9 +17,21 @@ __pycache__/
 *.pyo
 *.log
 *.md
+# 放行 Pi sidecar 合同（SKILL.md + references/*.md），*.md 会误滤掉 Pi 全链路合同
+!.pi/skills/**/*.md
 .gitignore
 .env
 nul
 log/
 temp_files.txt
 test_*.txt
+# 本地开发 / 测试临时目录不进镜像（Windows 权限锁会阻断 build context 读取）
+.venv/
+.tmp/
+.pytest_cache/
+.pytest-tmp*
+node_modules/
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+output/

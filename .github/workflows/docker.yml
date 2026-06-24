@@ -1,0 +1,74 @@
+name: docker
+
+# 构建并推送 Docker 镜像到 GHCR，供直接 docker pull 使用。
+# 触发：push 到 web 分支（默认开发分支）/ 打 tag v* / 手动。
+# 镜像：ghcr.io/<owner>/bangumi-auto-rename:<tag>
+#   - web 分支 push → :web + :sha-<short>
+#   - tag v1.2.3    → :1.2.3 + :1.2 + :1 + :latest
+#   - 任意触发      → :sha-<short>
+# 凭据：使用默认 GITHUB_TOKEN（需 packages: write 权限，下方 permissions 已声明）。
+# fork 仓库在本 workflow 命名空间下推（ghcr.io/kafuuchino-s/bangumi-auto-rename）。
+
+on:
+  push:
+    branches: [web]
+    tags: ['v*']
+  workflow_dispatch:
+
+env:
+  # GHCR 镜像名必须小写；仓库名含大写时强制转小写。
+  IMAGE_NAME: ghcr.io/${{ github.repository }}/bangumi-auto-rename
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: 小写化镜像名（GHCR 要求小写）
+        run: |
+          echo "IMAGE_NAME=$(echo '${{ env.IMAGE_NAME }}' | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_ENV"
+
+      - name: 设置 QEMU（多架构预留，当前仅 amd64）
+        uses: docker/setup-qemu-action@v3
+
+      - name: 设置 Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: 登录 GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 生成镜像标签与 labels
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=branch
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{major}}
+            type=sha,prefix=sha-,format=short
+            # tag 触发时额外打 latest
+            type=raw,value=latest,enable=${{ startsWith(github.ref, 'refs/tags/v') }}
+
+      - name: 构建并推送
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          # GitHub Actions 缓存加速（跨 run 复用层）
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
