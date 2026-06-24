@@ -9,7 +9,9 @@ Bangumi Auto Rename 是一条 **AI-first + strict** 的媒体整理流水线，�
 最终把本地文件整理为 Emby 可精准刮削的目录结构。语义推理由 **Pi Case Agent**（Node.js sidecar）承担，固定层只做事实抽取与合同校验。
 
 > [!IMPORTANT]
-> 本项目面向自部署 / 进阶用户。运行需要同时具备 **Python、Node.js、Git** 三套环境，以及可用的 **AI 凭据**、**TMDB API** 与 **Bangumi** 网络。这不是「开箱即用」的轻量工具——它是一条带严格合同校验的重型语义流水线。
+> 本项目面向自部署 / 进阶用户。**从源码运行**需要同时具备 **Python、Node.js、Git** 三套环境，以及可用的 **AI 凭据**、**TMDB API** 与 **Bangumi** 网络。这不是「开箱即用」的轻量工具——它是一条带严格合同校验的重型语义流水线。
+>
+> 若只求运行不求开发，可直接用 [Docker 预构建镜像](#docker)，镜像已内置 Python + Node.js + ffprobe + unrar，宿主机无需另装这些。
 
 > 本仓库为基于原项目 [KimigaiiWuyi/Bangumi_Auto_Rename](https://github.com/KimigaiiWuyi/Bangumi_Auto_Rename) 的二改版本，独立维护，已全面重构为 AI-first 流水线架构。
 
@@ -130,13 +132,27 @@ cd ..
 
 #### Docker
 
+推荐直接拉取 GHCR 预构建镜像（无需本地构建，CI 跟随 `web` 分支自动产出）：
+
 ```shell
-docker build -t bangumi-auto-rename .
-docker run -p 5999:5999 bangumi-auto-rename
+docker pull ghcr.io/kafuuchino-s/bangumi-auto-rename:latest
+docker run -d -p 5999:5999 -v <你的data目录>:/Bangumi_Auto_Rename/data ghcr.io/kafuuchino-s/bangumi-auto-rename:latest
 ```
 
-- 镜像已内置 `ffmpeg` / `unrar` 与配置页 AI 测试样例。
-- 默认按非浏览器抓取构建；若启用 `subtitle_auto_fetch_browser_enabled=true`，需要额外构建带浏览器运行时的镜像。
+- 镜像约 960MB，四阶段构建：前端静态导出 + 静态 `ffprobe` + Python 依赖编译隔离 + Pi sidecar Node 运行时。
+- 内置 `ffprobe`（静态二进制，探媒体元数据）/ `unrar`（字幕解压）/ 配置页 AI 测试样例。
+- **凭据不进镜像**：启动后经 Web 配置页填 `ai_api_key` 等，或挂载 `data/config.json`。
+- `data/` 需挂载到宿主机（保存 config / task / record / ai_analysis / pi_case_agent 等）。
+- 浏览器抓取：浏览器运行时库（libnss3 等）已内置，默认 `subtitle_auto_fetch_browser_enabled=false` 用非浏览器抓取；启用浏览器抓取需在容器内执行 `playwright install` 下载浏览器二进制。
+- 字幕自动对齐（ffsubsync）默认不装（`subtitle_sync_enabled=false`）；需要时在容器内 `pip install ffsubsync`。
+
+本地构建（国内拉 Docker Hub 受 TLS 干扰时可覆盖基础镜像源）：
+
+```shell
+docker build -t bangumi-auto-rename . \
+  --build-arg NODE_IMAGE=swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/library/node:22-bookworm-slim \
+  --build-arg PYTHON_IMAGE=swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/library/python:3.12-slim-bookworm
+```
 
 ### 二、配置与使用
 
