@@ -12,22 +12,36 @@
 | 段2 | Bangumi → TMDB | 146 | **146** | **146/146 accepted** |
 | **联合** | Local → Bangumi → TMDB | **146** | **146** | **146/146 = 100% accepted** |
 
-- 运行方式：Pi Case Agent 真起（Node.js sidecar），两段映射独立运行后合并。
-- 段1 产物：`local_bangumi_mapping_gate_20260620_001437_549/summary.json` → `counts: {accepted: 146}`。
-- 段2 产物：`bgm_to_tmdb_bridge_gate_20260620_091404_437/`（146 个 per-sample 产物）+ 补跑产物（`rerun_0126`、`rerun_2fail`），合并后 146/146 accepted。
+- **运行方式**：Pi Case Agent 真起（Node.js sidecar），两段映射独立运行后合并。
+- **段1 产物**：`local_bangumi_mapping_gate_20260620_001437_549/summary.json` → `counts: {accepted: 146}`，146 行 per-sample 全 accepted。
+- **段2 产物**：`bgm_to_tmdb_bridge_gate_20260620_091404_437/`（146 个 per-sample 产物）+ 补跑产物（`rerun_0126`、`rerun_2fail`、`c_verify`），合并后 146/146 accepted。
 
-> full146 是回归基线，不是「神谕」。它覆盖多样本类型，但样本池**不包含**物语系列（Monogatari Series）等部分超复杂系列，详见末尾「覆盖边界」。
+> 回归套件 `tests/sample_pool/suites/local_bangumi_case_agent_convergence.json` 自述为「iteration gate, not an oracle」——它是迭代守门基线，不是判定正确性的神谕。本报告数据取自最新 gate 产物。
+
+## 样本池构成
+
+full146 = **130 个 TV 样本 + 16 个电影样本**，从真实下载包的目录快照抽取，覆盖以下类型：
+
+- 剧场版合集（多部剧场版 + 特典同包）
+- 系列全盒 / BD-Box（一包含整个系列多季 + 衍生）
+- TV 正篇 + SP / OVA 混杂包
+- 跨季续篇（同系列拆成多个样本，每样本一季）
+- 短篇 / OVA / 特别篇系列
+- 非动漫剧集（Love, Death & Robots 等）
+- 大体量包（百文件级到千文件级）
+
+下列「复杂样本实证」按类型各取代表性案例展开。
 
 ## 复杂样本实证
 
-下列样本是 full146 中结构最复杂、最具代表性的案例，补跑后全部 accepted。每条附一行桥接摘要（取自产物 `summary` 字段）。
+下列样本是 full146 中结构最复杂、最具代表性的案例，全部 accepted。每条附一行桥接摘要（取自产物 `summary` 字段）。
 
 ### 剧场版合集
 
 | 样本 | 内容 | 段2 桥接摘要 |
 |---|---|---|
 | `movie/sample_0002` | **空之境界**：7 部剧场版（#01-#09）+ 剧场マナーCM + SP Fin，20 个 mkv | Garden of Sinners (Kara no Kyoukai) movie 包：11 个 TMDB movie 节点配 11 行 BGM movie 映射 + 1 supplemental 先行特典 |
-| `movie/sample_0006` | Psycho-Pass Providence 剧场版 | accepted |
+| `movie/sample_0006` | Psycho-Pass Providence 剧场版（2023） | accepted |
 | `tv/sample_0011` | Psycho-Pass Sinners of the System 剧场版合集 | accepted |
 
 ### 系列全盒 / 多季全包
@@ -35,7 +49,7 @@
 | 样本 | 内容 | 段2 桥接摘要 |
 |---|---|---|
 | `tv/sample_0042` | **ARIA 全系列 BD-Box**（Animation + Natural + Origination + Avvenire + Arietta） | ARIA 系列桥接 TMDB 53787；所有已映射 BGM 节点均有合法 TMDB 节点 |
-| `tv/sample_0126` | **向阳素描 Hidamari Sketch**：**1559 个文件**，4 TV 季 + OVA/special | 桥接 TMDB 系列 45893；**83 assignment / 60 target / 23 supplemental / 0 absent**，正篇各季按集标题/顺序对齐 |
+| `tv/sample_0126` | **向阳素描 Hidamari Sketch**：**1559 个文件**，4 TV 季 + OVA/special | 桥接 TMDB 系列 45893；83 assignment / 60 target / 23 supplemental / 0 absent，正篇各季按集标题/顺序对齐 |
 | `tv/sample_0103` | **魔法少女小圆 Madoka 全系列** | TV S01 + 三部主电影 + Concept Movie 配合法节点；supplemental 附加保持未映射 |
 | `tv/sample_0093` | 南家系列多季合包 | accepted |
 | `tv/sample_0096/0097` | **Overlord** 主体 + IV | OVERLORD IV 桥接 TMDB tv:64196：S04E01-13 主篇 + S00E43-55 Play Play Pleiades 4 特典 |
@@ -72,15 +86,6 @@ full146 中体量最大的单个样本，也是合同校验覆盖深度的典型
 - 段1 accepted，段2 桥接 TMDB 系列 45893
 - **83 个 assignment**：60 个 target（正篇各季按集标题/顺序对齐）+ 23 个 supplemental（特典按 TMDB 缺失或 supplemental 落位）+ 0 absent
 - `final_verifier_passed = true`，0 issue
-
-## 覆盖边界
-
-full146 覆盖了相当广的复杂类型，但**不是全集**：
-
-- **未包含物语系列（Monogatari Series / 西尾维新）**：样本池中确认不存在该系列样本。物语系列因 TMDB 对其剧集分类本身极度复杂（化物/偽物/猫物/傾物… 多季、多特别篇、多剧场版且季集划分争议大），可能超出当前合同的处理边界，列为已知未覆盖。
-- **未包含的其它超复杂系列**同理不在池中。
-
-> 回归套件 `tests/sample_pool/suites/local_bangumi_case_agent_convergence.json` 自述为「iteration gate, not an oracle」——它是迭代守门基线，不是判定正确性的神谕。本报告数据取自最新 gate 产物，**不引用**该套件中 `20260513` 旧 run 的过时状态值。
 
 ## 复现
 

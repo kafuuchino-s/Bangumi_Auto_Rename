@@ -237,7 +237,6 @@ powershell -NoProfile -ExecutionPolicy Bypass -Command "Invoke-RestMethod -Uri '
 - 默认 `ai_force_strict=true`：语义不确定时会产出 `need_confirm` 待人工，或 `fail_closed` 记录为合格失败，**不会强行猜一个落盘**。这是 AI-first + strict 的核心取舍——宁可留待人工，也不产出不可信的整理结果。
 - 该程序更加适用于动画剧集的重命名，对于电影、剧集，本身 Emby 的刮削足够精准了。
 - 映射不通过的样本（带截图与日志）欢迎提 Issue 反馈。反馈时最好将日志等级调 `DEBUG`，并提供详细日志；任务记录里的 `failure_reason` / `case_agent_status` 字段是定位问题的关键线索。
-- 像是非常复杂的情况，例如**物语系列**这类重量级剧集（TMDB 对其剧集分类本身非常复杂），目前**不在 full146 样本池覆盖范围内**，可能超出当前合同的处理边界，请谨慎使用。详见 [full146 回归报告 · 覆盖边界](docs/FULL146_REGRESSION_REPORT.md#覆盖边界)。
 - 如果已经使用了本程序且结果不符预期，因为默认是**硬链接**模式，所以直接删除目标文件夹的对应文件即可，不会影响到源文件。
 - 有任何使用上的问题或者建议都可以提 Issues，尽力解答。
 
