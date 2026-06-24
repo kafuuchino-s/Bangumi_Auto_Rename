@@ -1,18 +1,31 @@
 ## 简介
 
-- 😣受不了动漫剧集的命名与Emby自动刮削格式不兼容？
+Bangumi Auto Rename 是一条 **AI-first + strict** 的媒体整理流水线，而不是单纯的「重命名器」。
 
-- 🥰本项目可以将**大部分**下载的剧集（包括动漫、电影、番剧等）转为Emby所需要的**文件结构**！
+它把一个本地下载包，串联成一条完整的整理链路：
 
-- 🚀支持剪切、复制、**硬链接（默认）**三种**移动/重命名**方式！
+> **任务队列 → Case Agent 语义映射 → BGM→TMDB 桥接 → 字幕导入 / 自动抓取 → Emby 刷新 → Telegram 通知**
 
-- ✨并且你可以通过简单的配置，让qBittorrent每次下载结束之后**自动执行转换！**
+最终把本地文件整理为 Emby 可精准刮削的目录结构。语义推理由 **Pi Case Agent**（Node.js sidecar）承担，固定层只做事实抽取与合同校验。
 
-- 🤖**AI识别主流程**：当前以 **OpenAI 兼容 API** 为唯一运行时识别引擎，智能分析动漫/剧集/电影映射关系，解决 BD 分集与 TMDB 数据不一致的问题！
+> [!IMPORTANT]
+> 本项目面向自部署 / 进阶用户。运行需要同时具备 **Python、Node.js、Git** 三套环境，以及可用的 **AI 凭据**、**TMDB API** 与 **Bangumi** 网络。这不是「开箱即用」的轻量工具——它是一条带严格合同校验的重型语义流水线。
 
-- 🥳支持复杂的目录结构！以VCB-Studio的**Re:从零开始的异世界生活**剧集合集为例：
+> 本仓库为基于原项目 [KimigaiiWuyi/Bangumi_Auto_Rename](https://github.com/KimigaiiWuyi/Bangumi_Auto_Rename) 的二改版本，独立维护，已全面重构为 AI-first 流水线架构。
 
-```shell
+## 回归基线：full146
+
+项目维护一个 **146 个真实下载包**的样本池（`tests/sample_pool/raw/`），对 Local→Bangumi→TMDB 全链路做 mapping-only 回归。当前基线：
+
+> **段1 Local→Bangumi：146/146 accepted　·　段2 Bangumi→TMDB：146/146 accepted　·　联合 146/146 = 100% accepted**
+
+覆盖空之境界（7 部剧场版合集）、ARIA 全系列 BD-Box、向阳素描（1559 文件 / 4 季 + OVA）、魔法少女小圆全系列、高达创战者、鬼灭多季、Love Death & Robots 等复杂类型。完整 per-sample 结果与复现方式见 [full146 回归报告](docs/FULL146_REGRESSION_REPORT.md)。
+
+## 它解决什么问题
+
+下载来的番剧资源，目录结构往往与 Emby 的刮削口径不兼容。典型如一个合集里同时包含多季正片、剧场版、特别篇：
+
+```text
 ├─[VCB-Studio] Re Zero kara Hajimeru Isekai Seikatsu
 │  ├─[VCB-Studio] Re Zero kara Hajimeru Isekai Seikatsu 2nd Season [Ma10p_1080p]
 │  ├─[VCB-Studio] Re Zero kara Hajimeru Isekai Seikatsu Hyouketsu no Kizuna [Ma10p_1080p]
@@ -20,132 +33,178 @@
 │  ├─[VCB-Studio] Re Zero kara Hajimeru Isekai Seikatsu [Ma10p_1080p]
 ```
 
-可以看到大的集合里面同时包括以下**子文件夹**内容：第一季、第二季、电影冰结之绊、电影雪之回忆，而你只需要运行该程序，即可自动分门别类，**电影/番剧**会被格式化后**分别的**、正确的**复制/硬链接**到**你指定的文件夹**！
+这种集合里混杂着第一季、第二季、两部剧场版。本流水线会：
 
-## AI主流程说明（当前WEB版本）
+- 由 Case Agent 对包内文件做 evidence-driven 映射，判断每个文件属于哪一季 / 哪部剧场版 / 哪个特别篇；
+- 经 BGM→TMDB 桥接生成 TMDB 目标路径（Season 0 / special 的合法落点由 TMDB legal_graph 决定，不是「先映射再过滤」）；
+- 把番剧与电影分别、正确地以硬链接（默认）/复制/移动写入你指定的目录。
 
-🧠 **智能分析能力**
-- 自动识别字幕组的分季与TMDB官方分季的差异
-- 智能处理OVA、特典等特殊内容的归类
-- 根据视频时长判断内容类型（正片/特典/PV等）
-- 提供置信度评估，低置信度结果会单独记录
+## 核心能力
 
-🔧 **可配置项**
-- **OpenAI配置**：支持兼容 API、自定义模型、自动输出格式路由
-- **AI阈值与保存**：可调节置信度阈值，支持自动保存AI分析快照
-- **运行模式**：WEB版默认 `ai_force_strict=true`（AI不可用/低置信度/冲突会直接失败）
-- **Telegram通知**：支持批次汇总通知（可配置成功/失败触发）
+当前已落地的四条主线：
 
-## 使用效果
+- **Local→Bangumi→TMDB 全链路重命名**：本地包文件 → Case Agent evidence-driven 映射（Bangumi 标题/类型/季集）→ BGM→TMDB 桥接生成 TMDB 目标路径 → 迁移落盘。重复/越界由两个 Verifier 合同校验。
+- **字幕导入**：字幕文件或压缩包 → 解压 → Case Agent 字幕→视频配对 → 落盘到目标目录，可选 `ffsubsync` 时间轴对齐。普通重命名任务中的关联字幕会按「复制」方式跟随视频迁移。
+- **字幕自动抓取**：扫描落地后缺字幕的视频 → Case Agent 选帖/选包（acgrip 站点）→ 下载 → 配对落盘。支持**多季覆盖**（一帖可覆盖多 subject，多季番一次补齐）。
+- **批次收尾通知**：批次结束后统一触发 **Emby 刷新** + **Telegram 汇总通知**（可配置成功/失败触发）。
 
-![1.png](https://s2.loli.net/2024/06/26/oe8jrEg7wqdtGZ1.png)
+## 技术架构
 
-![2.png](https://s2.loli.net/2024/06/26/8PmycWaSe3f6htC.png)
+| 层 | 技术 |
+|---|---|
+| 语义推理 | **Pi Case Agent** — Node.js sidecar（`@earendil-works/pi-coding-agent`），4 套 case agent 各带合同 skill（`.pi/skills/`） |
+| 后端 | Python + **FastAPI**（单端口 5999）：`/api/*` + `/sendTask` webhook + 队列调度 |
+| 前端 | **Next.js 16 + React 19 + shadcn/ui + zustand**，`output:export` 静态导出，由 FastAPI 同端口托管 |
+| 校验哲学 | **AI-first + strict**：固定层只做事实抽取与合同校验（coverage / duplicate / 越界 / 合法节点），不确定判断交 Case Agent；`fail_closed` 是合格业务结果，`invalid` 才是实现错误 |
+
+四套 Pi Case Agent 与各自的合同 skill：
+
+| Case Agent | 用途 | 合同 skill |
+|---|---|---|
+| Local→Bangumi | 本地包 → Bangumi subject/episode 映射 | `local-bangumi-organize` |
+| BGM→TMDB 桥接 | Bangumi 映射 → TMDB 合法季集路径 | `tmdb-bridge-contract` |
+| 字幕导入 | 字幕 → 落地视频配对 | `subtitle-mapping-contract` |
+| 字幕自动抓取 | 选帖 / 选包（candidate ranking） | `auto-fetch-contract` |
+
+> 旧的 Python 端 AI 映射链路（ai_processor）已移除，全链路走 Pi Case Agent + BGM→TMDB 桥接。OpenAI 兼容 API 在生产链路下仅作门禁/测试器，Pi 不可用时作为 fallback。
+
+## 界面预览
+
+前端为 **Next.js 16 + React 19 + shadcn/ui + zustand**，静态导出后由 FastAPI 同端口托管。以下截图使用示例数据生成，仅展示界面布局，不代表真实任务/配置。
+
+![任务列表](docs/screenshots/tasks.png)
+
+![字幕导入](docs/screenshots/subtitles.png)
+
+![配置页](docs/screenshots/settings.png)
+
+> 实际界面以 `http://127.0.0.1:5999` 为准。若不构建前端直接启动，访问页面会提示「前端未构建」，API 与 webhook 仍可用。
 
 ## 使用方法
 
-### 零、申请你的API密钥
+### 零、准备 API 密钥
 
-#### TMDB API密钥
-- 进入[TMDB官网](https://www.themoviedb.org/settings/api)申请
-- 复制你的**API 密钥**，后续会用到
+#### TMDB API 密钥
+- 进入 [TMDB 官网](https://www.themoviedb.org/settings/api) 申请
+- 复制你的 **API 密钥**，后续会用到
 
-#### AI API密钥（可选）
-- **OpenAI API**：申请OpenAI API密钥，或使用兼容的国内API服务
+#### AI 凭据（Pi Case Agent）
+- 本项目语义推理走 **Pi Case Agent**，其凭据优先级为：Pi 独立覆盖键 → `ai_*` 配置 → `.pi/agent/auth.json`。
+- **OpenAI 兼容 API**：申请 OpenAI API 密钥，或使用兼容的国内 API 服务
   - 推荐模型：deepseek-reasoner（性价比高，效果好）
-  - 当前支持的输出格式为 `structured_output` / `function_calling` / `text`
-- 如不配置可用的 OpenAI API 密钥（或密钥不可用），任务会按 `ai_unavailable` 失败（默认严格模式）
+- 如不配置任何可用 AI 凭据，任务会按 `ai_unavailable` 失败（默认严格模式 `ai_force_strict=true`）
 
-### 一、安装 (WEB版本)
+### 一、安装
 
-> [!IMPORTANT] 
->
-> WEB版本提高了易用性、和识别准确率, 但要求必须本机内存在git和python环境！
+> [!IMPORTANT]
+> 本版本要求本机存在 **Python、Node.js、Git** 三套环境（Node.js 用于 Pi sidecar 与前端构建）。
 
-- 确保存在Python环境（版本需要`>=3.10`）, Git环境。
-- 命令行执行
-  - `git clone https://github.com/KimigaiiWuyi/Bangumi_Auto_Rename.git -b web`
-  - `cd Bangumi_Auto_Rename`
-  - `pip install -r requirements.txt `
+#### 环境要求
+- Python `>=3.10`
+- Node.js（建议 18+，用于 Pi sidecar 依赖与前端构建）
+- Git
+
+#### 从源码安装
+
+```shell
+git clone https://github.com/kafuuchino-s/Bangumi_Auto_Rename.git -b web
+cd Bangumi_Auto_Rename
+
+# 1. Python 依赖
+pip install -r requirements.txt
+
+# 2. Node.js 依赖（Pi sidecar 运行时）
+npm install
+
+# 3. 构建前端（生成 frontend/out 静态导出）
+cd frontend
+npm install
+npm run build
+cd ..
+```
 
 - 启动
-  - `python -m src.start`
+  - `python -m src.start`（默认端口 5999）
 
+> 若不构建前端直接启动，访问页面会提示「前端未构建」，API 与 webhook 仍可用。
 
-![.jpg](https://s2.loli.net/2025/01/13/f56LsCtKhDm1Oky.jpg)
+#### Docker
 
-### 二、使用
+```shell
+docker build -t bangumi-auto-rename .
+docker run -p 5999:5999 bangumi-auto-rename
+```
 
-- 打开网页之后（默认端口5999，即地址为`http://127.0.0.1:5999`）
-- 先点击右上角配置按钮，配置以下内容：
-  - **基础配置**：TMDB API密钥和各个整理路径
-  - **AI配置**（可选）：配置 OpenAI API 密钥、模型、接口与输出格式等
+- 镜像已内置 `ffmpeg` / `unrar` 与配置页 AI 测试样例。
+- 默认按非浏览器抓取构建；若启用 `subtitle_auto_fetch_browser_enabled=true`，需要额外构建带浏览器运行时的镜像。
+
+### 二、配置与使用
+
+- 打开网页之后（默认端口 5999，即地址为 `http://127.0.0.1:5999`）
+- 先进入配置页，按 5 个场景分组配置：
+  - **通用配置**：TMDB API 密钥、整理路径、传输模式、覆盖策略
+  - **AI 配置**：OpenAI 兼容 API 密钥、Base URL、模型、接口（Pi 凭据 fallback）
+  - **字幕配置**：字幕同步、字幕 Case Agent、自动抓取
+  - **通知配置**：Emby 刷新、Telegram 汇总通知
+  - **高级配置**：队列并发、Docker 路径映射、跳过标签、硬链降级等
 - 点击添加任务即可使用
 
-### 三、AI主流程详细说明
+### 三、AI 主流程说明（Pi Case Agent）
 
-**注意：** 🚨 WEB版默认 `ai_force_strict=true`，AI不可用或结果不满足阈值时任务会失败（不会自动回退到传统规则）。
+> [!WARNING]
+> 默认 `ai_force_strict=true`，AI 不可用或结果不满足合同时任务会失败，**不会自动回退到传统规则**。这是有意的设计，保证结果可解释、可审计。
 
-#### 配置AI功能
-1. 在配置页面的"AI识别配置"部分：
-   - **置信度阈值**：设置结果采用的最低置信度要求
-   - **自动保存AI分析**：启用后会把样例落盘到 `data/ai_analysis`
+#### 工作方式
+- **Pi Case Agent** 采用 evidence-driven 多轮推理：主动发起 evidence request → 构建 MappingDraft → 经 Verifier 合同校验（coverage / duplicate / accounting / 合法节点存在性）。
+- 判定为 `accepted` 的映射经 **BGM→TMDB 桥接** 生成 TMDB 目标路径并执行迁移落盘。
+- Season 0 / special 的合法落点由 TMDB legal_graph 决定，不是「先映射再过滤」。
 
-2. **OpenAI配置**：
-   - **API密钥**：填入你的OpenAI兼容API密钥
-   - **API地址**：默认为OpenAI官方URL，可改为其他兼容服务(一般以/v1结尾)
-   - **模型选择**：推荐使用Deepseek-R1(deepseek-reasoner)
-   - **输出格式与自动路由**：支持 Structured Output / Function Calling / Text，并可自动路由
-   - **API测试**：一键测试当前API支持的格式能力，并可写入推荐格式
+#### 结果四态语义
+- `accepted`：合同通过，落盘
+- `fail_closed`：合同不通过，**合格的失败**（不落盘部分匹配，对外映射 `need_confirm` 带 `case_agent_status` 审计）
+- `need_confirm`：AI 不确定，待人工
+- `invalid`：实现或合同错误
 
-#### AI主流程优势
-- **智能映射**：自动分析本地文件与TMDB数据的对应关系
-- **特殊处理**：识别OVA、特典、剧场版等特殊内容
-- **时长分析**：根据视频时长匹配元数据
-- **置信度评估**：提供分析结果的可信度评分
-- **格式适配**：支持多种输出格式自动路由，降低供应商差异影响
-- **可观测性**：任务记录 `ai_attempted / ai_used / ai_confidence / failure_reason / pipeline_mode`
+#### 可观测性
+任务记录写入 `ai_attempted / ai_used / ai_confidence / failure_reason / pipeline_mode`。
 
 #### 注意事项
-- AI主流程需要网络连接和API调用费用
-- 当前文档与产品面均以 OpenAI 兼容 API 为准
-- 低置信度或映射冲突结果会在日志与任务记录中标记失败原因
-- 编辑任务页可修改 `is_anime / is_movie / 名称 / 季度` 后重试
-- 默认严格模式下，AI分析失败不会自动回退到传统规则
-- 建议先使用 OpenAI API 测试功能验证配置是否正确
+- 需要 Node.js 环境运行 Pi sidecar，并有可用的 AI 凭据（`ai_*` 或 `.pi/agent/auth.json`）
+- 默认严格模式下，AI 分析失败不会自动回退到传统规则
+- 建议先用配置页的 API 测试功能验证凭据是否可用
 
-### 四、字幕导入与自动对齐（ffsubsync）
+### 四、字幕：导入与自动抓取
 
-#### 功能说明
+#### 字幕导入（ffsubsync 对齐）
 - 支持直接导入字幕文件（如 `.ass/.srt/.ssa`）或字幕压缩包（如 `.zip/.rar`）
-- 可基于最近任务记录自动匹配目标视频并重命名到对应目录
-- 支持 `ffsubsync` 自动时间轴对齐，适配不同片源时轴偏移
-- 普通重命名任务中的关联字幕会按“复制”方式写入目标目录（不会受主传输模式影响）
+- 字幕 Case Agent 完成字幕→视频配对，可选 `ffsubsync` 自时间轴对齐（默认 `best_effort`）
+- 普通重命名任务中的关联字幕会按「复制」方式写入目标目录（不受主传输模式影响）
 
-#### 配置入口
-在配置页面的 **字幕同步（ffsubsync）** 区域可设置：
-- `subtitle_sync_enabled`：是否启用自动对齐
-- `subtitle_sync_mode`：`best_effort`（失败回退原字幕）/ `strict`（失败即终止）
-- `subtitle_sync_executable`：`ffsubsync` 可执行文件路径
-- `subtitle_sync_extra_args`：额外参数
-- `subtitle_sync_timeout_seconds`：超时秒数
-- `subtitle_sync_overwrite_policy`：覆盖策略（follow_global/overwrite/skip）
+配置入口（配置页 **字幕配置** Tab）：
+- `subtitle_sync_enabled` / `subtitle_sync_mode`（`best_effort` / `strict`）/ `subtitle_sync_executable` / `subtitle_sync_extra_args` / `subtitle_sync_timeout_seconds` / `subtitle_sync_overwrite_policy`
+- 字幕 Case Agent：`subtitle_case_agent_primary_enabled` / `subtitle_case_agent_backend`（默认 `pi`）
+
+#### 字幕自动抓取（acgrip）
+- 扫描落地后缺字幕的视频 → Case Agent 选帖/选包 → 下载 → 配对落盘
+- 支持**多季覆盖**：一帖可覆盖多 subject，多季番可一次补齐
+- 配对基准 = TMDB 落地视频，字幕 Case Agent 按 `video`（合法落点）+ `source_video`（强配对证据）对齐
+
+配置入口：
+- `subtitle_auto_fetch_enabled` / `subtitle_auto_fetch_provider`（默认 `acgrip`）/ `subtitle_auto_fetch_candidate_limit` / `subtitle_auto_fetch_timeout_seconds` / `subtitle_auto_fetch_browser_enabled` / `subtitle_auto_fetch_acgrip_base_url` / `subtitle_auto_fetch_preferred_language`
 
 #### 依赖说明
-- 使用自动对齐前请确保系统可调用 `ffsubsync`（可执行文件在 PATH 中，或在配置中填绝对路径）。
+- 使用自动对齐前请确保系统可调用 `ffsubsync`（在 PATH 中，或在配置中填绝对路径）。
 
-### 五、在qBittorrent下载完成后自动调用该程序
+### 五、配合 qBittorrent 自动触发
 
-> ⚠注意：箭头处的命令需要根据上面命令行自己写一下，照抄无效！（下面有提供示例）
+> [!WARNING]
+> 旧版截图中的命令示例已过时，请以下方文字命令为准，不要照抄图片。
 
 - 打开软件，**工具** -> **设置** -> 弹出窗口中找到**下载** -> 往下滚动 -> **Torrent完成时运行**
-- 根据自己的配置，写入命令，**应用**保存即可
+- 在输入框中填入适合自己系统的命令（见下方示例），**应用**保存即可
 
-![image.png](https://s2.loli.net/2025/02/02/GfcTiNJXs4EFDWm.png)
-
-- 这里的命令相比于上面的命令行，需要做一些小的调整，首先一点是`path=`的输入，**一定**要用`"%F"`替换（上图可能是`%D`，那是错误的，不要关心图上的命令），这样就是每次种子实际下载的路径了
-- 一个是`tag=`的输入，**可以**用`"$G"`替换，代表着创建种子时候的标签，这里如果下载的是动漫剧集，需要带上`anime`的标签，如果是电影，带上`movie`的标签，方便自动整理到对应路径，如果无任何标签，是否是电影会**自动判断**，是否是动漫则**默认为否**，如果不需要处理，可以传入`no_process`的标签
-- 填入示例如下（按你的系统选择其一）
+- 这里的 `path=` 参数**一定**要用 `"%F"` 替换，这样每次传入的就是种子实际下载路径
+- `tag=` 参数**可以**用 `"$G"` 替换，代表创建种子时的标签。如果是动漫剧集建议带 `anime` 标签，电影建议带 `movie` 标签，方便自动整理到对应路径；无任何标签时，是否电影会**自动判断**，是否动漫则**默认为否**；若不需要处理，可传入 `no_process` 标签
 
 ```shell
 # Linux / macOS (curl)
@@ -165,22 +224,58 @@ powershell -NoProfile -ExecutionPolicy Bypass -Command "Invoke-RestMethod -Uri '
 ### 六、更新
 
 - 进入文件夹内，`cd Bangumi_Auto_Rename`
-- 执行`git pull`
+- 执行 `git pull`
+- 若前端有改动，需在 `frontend/` 下重新执行 `npm run build`
+- 若 Pi sidecar 依赖有改动，需重新执行 `npm install`
 
 ## 需要注意的
 
-- 该程序依靠**TMDB API**（因为Emby也是一样的，可以保证精准度），因此对**网络环境**有一定要求！
-- **AI主流程**需要额外的API调用费用，但可以显著提高动漫识别准确率
-  - OpenAI API：官方按token计费，部分兼容提供商可能提供更便宜或带免费额度的模型
-  - 该功能仍在开发中，欢迎各位提供测试用例
-  - 如需提交AI功能相关的反馈，建议启用`自动保存AI分析`，会在每次AI识别时保存用例至`data/ai_analysis`目录
-- 该程序更加适用于动画剧集的重命名，对于电影、剧集，本身Emby的刮削足够精准了。
-- 识别率并不是100%，如果有识别错误的，带上截图，提Issues！反馈时最好将日志等级调为DEBUG，并提供详细日志。
-- 该程序使用情况覆盖了很多，但是像是非常复杂的情况，例如**物语系列**这种重量级剧集（加上TMDB对于物语系列的剧集分类，非常的复杂），请不要使用本程序
-- 如果已经使用了本程序刮削错误的情况，因为默认是**硬链接**模式，所以直接删除目标文件夹的对应文件即可，不会影响到源文件！
-- 有任何使用上的问题或者建议都可以提Issues，尽力解答！
+- 该程序依靠 **TMDB API**（因为 Emby 也是一样的，可以保证精准度），因此对**网络环境**有一定要求；Local→Bangumi 映射还需要访问 **Bangumi**。
+- **AI 主流程**需要 Node.js 环境运行 Pi sidecar，以及 AI API 调用费用
+  - OpenAI 兼容 API：官方按 token 计费，部分兼容提供商可能提供更便宜或带免费额度的模型
+  - Pi 凭据链：Pi 独立覆盖键 → `ai_*` 配置 → `.pi/agent/auth.json`
+- 默认 `ai_force_strict=true`：语义不确定时会产出 `need_confirm` 待人工，或 `fail_closed` 记录为合格失败，**不会强行猜一个落盘**。这是 AI-first + strict 的核心取舍——宁可留待人工，也不产出不可信的整理结果。
+- 该程序更加适用于动画剧集的重命名，对于电影、剧集，本身 Emby 的刮削足够精准了。
+- 映射不通过的样本（带截图与日志）欢迎提 Issue 反馈。反馈时最好将日志等级调 `DEBUG`，并提供详细日志；任务记录里的 `failure_reason` / `case_agent_status` 字段是定位问题的关键线索。
+- 像是非常复杂的情况，例如**物语系列**这类重量级剧集（TMDB 对其剧集分类本身非常复杂），目前**不在 full146 样本池覆盖范围内**，可能超出当前合同的处理边界，请谨慎使用。详见 [full146 回归报告 · 覆盖边界](docs/FULL146_REGRESSION_REPORT.md#覆盖边界)。
+- 如果已经使用了本程序且结果不符预期，因为默认是**硬链接**模式，所以直接删除目标文件夹的对应文件即可，不会影响到源文件。
+- 有任何使用上的问题或者建议都可以提 Issues，尽力解答。
 
-- 如果本插件对你有帮助，不要忘了点个Star~
+- 如果本插件对你有帮助，不要忘了点个 Star~
 - 本项目仅供学习使用，请勿用于商业用途
-- [爱发电](https://afdian.com/a/KimigaiiWuyi)
-- [GPL-3.0 License](https://github.com/KimigaiiWuyi/Bangumi_Auto_Rename/blob/main/LICENSE) ©[@KimigaiiWuyi](https://github.com/KimigaiiWuyi)
+- [GPL-3.0 License](https://github.com/KimigaiiWuyi/Bangumi_Auto_Rename/blob/main/LICENSE) ©[@KimigaiiWuyi](https://github.com/KimigaiiWuyi)，二改 ©[@kafuuchino-s](https://github.com/kafuuchino-s)
+
+## 致谢
+
+本项目站在许多优秀开源项目与服务之上，在此一并致谢。
+
+### 上游项目
+- **[Bangumi_Auto_Rename](https://github.com/KimigaiiWuyi/Bangumi_Auto_Rename)**（[@KimigaiiWuyi](https://github.com/KimigaiiWuyi)）— 本二改版本的原项目，奠定了 Emby 刮削格式整理与 AI 主流程的最初形态。
+
+### 数据源与服务
+- **[TMDB](https://www.themoviedb.org/)** — 主元数据来源，Emby 刮削口径一致，保证季集精准度。
+- **[Bangumi](https://bgm.tv/)** — 番剧元数据与 subject/episode 证据来源（Local→Bangumi 映射）。
+- **[acgrip](https://acg.rip/)** — 字幕自动抓取站点。
+
+### 语义推理（Pi Case Agent sidecar）
+- **[@earendil-works/pi-coding-agent](https://www.npmjs.com/package/@earendil-works/pi-coding-agent)** / **[@earendil-works/pi-ai](https://www.npmjs.com/package/@earendil-works/pi-ai)** — Pi Case Agent 运行时，承载全部 evidence-driven 语义推理。
+- **[OpenAI Python SDK](https://github.com/openai/openai-python)** — OpenAI 兼容 API 门禁/测试器与 Pi fallback。
+
+### Python 后端
+- **[FastAPI](https://fastapi.tiangolo.com/)** — 后端框架与 webhook 入口。
+- **[tmdbsimple](https://github.com/celiao/tmdbsimple)** — TMDB API 客户端。
+- **[hachoir](https://github.com/vstinner/hachoir)** — 视频元数据（时长等）提取，用于正片/特典类型判断。
+- **[ffsubsync](https://github.com/smacke/ffsubsync)** — 字幕时间轴自动对齐。
+- **[scrapling](https://github.com/D4Vinci/Scrapling)** — 字幕站点抓取。
+- **[rarfile](https://github.com/markokr/rarfile)** / **[py7zr](https://github.com/miurahr/py7zr)** — 字幕压缩包（rar / 7z）解压。
+
+### 前端
+
+> 前端外壳布局与配置页视觉参考了 **[seiri-chan](https://github.com/qaz741wsd856/seiri-chan)**（[@qaz741wsd856](https://github.com/qaz741wsd856)）的设计语言（侧栏 + 统计卡布局、配置页 Switch 横向卡片、section 卡片分组等），本项目以红色品牌色（`oklch(0.63 0.19 25)`）作区分。
+
+- **[Next.js](https://nextjs.org/)** + **[React](https://react.dev/)** — 前端框架。
+- **[shadcn/ui](https://ui.shadcn.com/)** + **[Radix UI](https://www.radix-ui.com/)** — 组件与无障碍原语。
+- **[Zustand](https://github.com/pmndrs/zustand)** — 状态管理。
+- **[Tailwind CSS](https://tailwindcss.com/)** — 样式。
+
+> 完整依赖清单见 `pyproject.toml`（Python）与 `frontend/package.json`（前端）。
