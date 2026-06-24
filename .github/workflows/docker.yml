@@ -1,18 +1,13 @@
 name: docker
 
-# 构建并推送 Docker 镜像到 GHCR，供直接 docker pull 使用。
-# 触发：push 到 web 分支（默认开发分支）/ 打 tag v* / 手动。
-# 镜像：ghcr.io/<owner>/bangumi-auto-rename:<tag>
-#   - web 分支 push → :web + :sha-<short>
-#   - tag v1.2.3    → :1.2.3 + :1.2 + :1 + :latest
-#   - 任意触发      → :sha-<short>
-# 凭据：使用默认 GITHUB_TOKEN（需 packages: write 权限，下方 permissions 已声明）。
-# fork 仓库在本 workflow 命名空间下推（ghcr.io/kafuuchino-s/bangumi-auto-rename）。
+# 构建并推送 Docker 镜像到 GHCR：ghcr.io/<owner>/bangumi-auto-rename:latest
+# 个人自用：web 分支 push / 手动触发，统一只推 :latest（不要版本号/sha/分支 tag）。
+# docker pull ghcr.io/kafuuchino-s/bangumi-auto-rename:latest 永远拿 web 分支最新。
+# 凭据：默认 GITHUB_TOKEN（packages: write 权限，下方 permissions 已声明）。
 
 on:
   push:
     branches: [web]
-    tags: ['v*']
   workflow_dispatch:
 
 env:
@@ -48,28 +43,13 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: 生成镜像标签与 labels
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ env.IMAGE_NAME }}
-          tags: |
-            type=ref,event=branch
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
-            type=semver,pattern={{major}}
-            type=sha,prefix=sha-,format=short
-            # tag 触发时额外打 latest
-            type=raw,value=latest,enable=${{ startsWith(github.ref, 'refs/tags/v') }}
-
-      - name: 构建并推送
+      - name: 构建并推送 :latest
         uses: docker/build-push-action@v6
         with:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          tags: ${{ env.IMAGE_NAME }}:latest
           # GitHub Actions 缓存加速（跨 run 复用层）
           cache-from: type=gha
           cache-to: type=gha,mode=max
