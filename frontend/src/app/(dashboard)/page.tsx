@@ -1,7 +1,6 @@
 "use client";
 
 import { Suspense, useEffect, useMemo, useState } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
 import {
   Table,
   TableHeader,
@@ -49,24 +48,21 @@ function TaskListContent() {
     remove,
     refetchSub,
   } = useTaskStore();
-  const router = useRouter();
-  const searchParams = useSearchParams();
   const [showWizard, setShowWizard] = useState(false);
   const [detailUuid, setDetailUuid] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
 
-  // ?detail=uuid 同步（可分享 URL）
-  useEffect(() => {
-    setDetailUuid(searchParams.get("detail"));
-  }, [searchParams]);
-
+  // 点详情/编辑：直接改本地状态打开 Dialog。
+  // 旧实现用 router.push('/?detail=uuid') 改 URL 来支持可分享链接，
+  // 但 useSearchParams + Suspense 在 URL 变化时会重渲染，造成"整页刷新一下"的视觉。
+  // 本地媒体工具无需分享任务详情链接，改回纯状态切换，点详情瞬间无刷新。
   const onViewDetail = (uuid: string) => {
-    router.push(`/?detail=${uuid}`);
+    setDetailUuid(uuid);
   };
   const onEdit = (uuid: string) => {
     // 编辑复用详情对话框（详情内可重试/删除；字段级编辑待后续增强）
-    router.push(`/?detail=${uuid}`);
+    setDetailUuid(uuid);
   };
 
   // 初次拉取 + 轮询兜底
@@ -270,7 +266,6 @@ function TaskListContent() {
         onOpenChange={(v) => {
           if (!v) {
             setDetailUuid(null);
-            router.push("/");
           }
         }}
       />

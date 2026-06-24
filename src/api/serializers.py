@@ -60,6 +60,12 @@ SUBTITLE_FETCH_STATUS_LABELS: dict[str, str] = {
     "skipped": "未抓取",
 }
 
+# TMDB 媒体类型人话化（详情页展示用，is_anime/is_movie 仅内部落地路由用，不再展示）。
+TMDB_MEDIA_TYPE_LABELS: dict[str, str] = {
+    "tv": "剧集 (TV)",
+    "movie": "电影",
+}
+
 
 def _as_mapping(value: object) -> Mapping[str, object]:
     return value if isinstance(value, Mapping) else {}
@@ -154,6 +160,196 @@ def _format_bool_text(value: Any) -> str:
     if value is False:
         return "否"
     return "自动"
+
+
+# ---- 任务详情：BGM/TMDB 条目 + 映射明细 ----
+
+def _compact_range(nums: list[int]) -> str:
+    """把离散集号压成可读范围，如 [1,2,3,10,11] → '1-3, 10-11'。"""
+    nums = sorted(set(n for n in nums if n is not None))
+    if not nums:
+        return ""
+    parts: list[str] = []
+    start = prev = nums[0]
+    for n in nums[1:]:
+        if n == prev + 1:
+            prev = n
+            continue
+        parts.append(f"{start}-{prev}" if start != prev else f"{start}")
+        start = prev = n
+    parts.append(f"{start}-{prev}" if start != prev else f"{start}")
+    return ", ".join(parts)
+
+
+def _stat_total_size_bytes(items: list[Mapping[str, object]]) -> int:
+    """对所有 rename_plan item 的 source_abs_path 实时 stat 求总字节。
+
+    task JSON 不持久化文件大小，故详情页渲染时实时取。源文件被移走/删除
+    时 stat 失败，静默跳过该条（不计入总量）。
+    """
+    total = 0
+    for it in items:
+        p = _str(it.get("source_abs_path") or it.get("source_path") or "")
+        if not p:
+            continue
+        try:
+            total += Path(p).stat().st_size
+        except OSError:
+            continue
+    return total
+
+
+def _rename_plan_items(task_data: Mapping[str, object]) -> list[Mapping[str, object]]:
+    rp = task_data.get("bgm_to_tmdb_rename_plan") or {}
+    items = rp.get("items") or []
+    return [it for it in items if isinstance(it, Mapping)]
+
+
+def _build_bangumi_subjects(task_data: Mapping[str, object]) -> list[dict[str, Any]]:
+    """BGM 条目列表（支持多 subject），每个含集数范围（regular/special 分开）。
+
+    数据源：task 顶层 bgm_subjects（条目元信息）+ bgm_to_tmdb_rename_plan.items[]
+    的 bangumi_assignment.target（逐条集号，按 episode_type 聚合）。
+    """
+    subjects = task_data.get("bgm_subjects") or []
+    if not isinstance(subjects, list):
+        return []
+    items = _rename_plan_items(task_data)
+    by_sid: dict[int, dict[str, list[int]]] = {}
+    for it in items:
+        tgt = (it.get("bangumi_assignment") or {}).get("target") or {}
+        sid = tgt.get("bangumi_subject_id")
+        et = _str(tgt.get("episode_type") or "regular") or "regular"
+        sort = tgt.get("sort")
+        if not sid or sort is None:
+            continue
+        by_sid.setdefault(int(sid), {"regular": [], "special": []})
+        bucket = "special" if et == "special" else "regular"
+        by_sid[int(sid)][bucket].append(int(sort))
+    out: list[dict[str, Any]] = []
+    for s in subjects:
+        if not isinstance(s, Mapping):
+            continue
+        sid = s.get("id")
+        agg = by_sid.get(int(sid), {}) if sid is not None else {}
+        reg = _compact_range(agg.get("regular", []))
+        spc_count = len(agg.get("special", []))
+        ranges: list[str] = []
+        if reg:
+            ranges.append(f"第{reg}话")
+        if spc_count:
+            # special 的 sort 含 0 且不连续，用计数比范围更清晰。
+            ranges.append(f"special × {spc_count}")
+        out.append({
+            "id": sid,
+            "name": _str(s.get("name")),
+            "name_cn": _str(s.get("name_cn")),
+            "media_kind": _str(s.get("media_kind")),
+            "assignment_count": s.get("assignment_count", "-"),
+            "episode_ranges": " + ".join(ranges),
+        })
+    return out
+
+
+def _build_tmdb_subjects(task_data: Mapping[str, object]) -> list[dict[str, Any]]:
+    """TMDB 条目列表，每个含集数范围（按 season 聚合）。
+
+    数据源：bgm_to_tmdb_rename_plan.items[].destination。单 subject 场景用
+    task 顶层 tmdb_name/tmdb_year 补全元信息。
+    """
+    items = _rename_plan_items(task_data)
+    by_season: dict[int, list[int]] = {}
+    tmdb_refs: dict[str, dict[str, object]] = {}
+    for it in items:
+        dest = it.get("destination") or {}
+        ref = _str(dest.get("tmdb_ref"))
+        sn = dest.get("season_number")
+        en = dest.get("episode_number")
+        if ref and sn is not None and en is not None:
+            tmdb_refs.setdefault(ref, {"tmdb_id": dest.get("tmdb_id"), "media_type": dest.get("media_type")})
+            by_season.setdefault(int(sn), [])
+            by_season[int(sn)].append(int(en))
+    if not tmdb_refs:
+        return []
+    ranges: list[str] = []
+    # 正片 season（>0）在前，S00 special 在后，符合阅读习惯。
+    seasons = sorted(by_season, key=lambda s: (s == 0, s))
+    for sn in seasons:
+        eps = sorted(set(by_season[sn]))
+        if not eps:
+            continue
+        tok = f"S{sn:02d}E{eps[0]:02d}-E{eps[-1]:02d}" if eps[0] != eps[-1] else f"S{sn:02d}E{eps[0]:02d}"
+        ranges.append(tok)
+    ref0 = next(iter(tmdb_refs))
+    info = tmdb_refs[ref0]
+    return [{
+        "tmdb_ref": ref0,
+        "tmdb_id": info.get("tmdb_id") or task_data.get("tmdb_id"),
+        "media_type": _str(info.get("media_type") or task_data.get("tmdb_media_type")),
+        "name": _str(task_data.get("tmdb_name")),
+        "year": task_data.get("tmdb_year", "-"),
+        "episode_ranges": " + ".join(ranges),
+    }]
+
+
+def _build_mapping_details(task_data: Mapping[str, object]) -> list[dict[str, Any]]:
+    """映射明细表：源文件 → BGM 编号 → TMDB 落点 → 置信度（三方纯编号对称）。
+
+    多 subject 时 BGM 编号带 subject 前缀（如 '26449 #1'）。supplemental/
+    未映射行 BGM/TMDB 显示 '-'。置信度取自 bgm_to_tmdb_verified_plan.mappings
+    （rename_plan.items 不带 confidence，两个 list 按 source_path 对齐合并）。
+    """
+    items = _rename_plan_items(task_data)
+    # source_path → confidence（verified_plan 才有 confidence）。
+    conf_by_src: dict[str, str] = {}
+    vp = task_data.get("bgm_to_tmdb_verified_plan") or {}
+    for m in (vp.get("mappings") or []):
+        if isinstance(m, Mapping):
+            conf_by_src[_str(m.get("source_path"))] = _str(m.get("confidence"))
+    sids = set()
+    for it in items:
+        tgt = (it.get("bangumi_assignment") or {}).get("target") or {}
+        sid = tgt.get("bangumi_subject_id")
+        if sid:  # 过滤 None / 0（supplemental 的 target 可能 sid=0）
+            sids.add(int(sid))
+    multi = len(sids) > 1
+    rows: list[dict[str, Any]] = []
+    for it in items:
+        src = _str(it.get("source_path") or "")
+        name = src.rsplit("/", 1)[-1].rsplit("\\", 1)[-1]
+        disposition = _str(it.get("disposition"))
+        tgt = (it.get("bangumi_assignment") or {}).get("target") or {}
+        sid = tgt.get("bangumi_subject_id")
+        et = _str(tgt.get("episode_type") or "")
+        sort = tgt.get("sort")
+        bgm_label = "-"
+        if sort is not None and disposition != "unmapped_supplemental":
+            base = f"#{sort}" if et != "special" else (f"special #{sort}" if sort else "special")
+            bgm_label = f"{sid} {base}" if multi else base
+        elif et == "special":
+            bgm_label = "special"
+        dest = it.get("destination") or {}
+        tok = _str(dest.get("episode_token"))
+        tmdb_label = tok or "-"
+        rows.append({
+            "source_name": name,
+            "source_path": src,
+            "bgm": bgm_label,
+            "tmdb": tmdb_label,
+            "confidence": conf_by_src.get(src) or "-",
+            "disposition": disposition,
+        })
+    return rows
+
+
+def _format_bytes(n: int) -> str:
+    """字节 → 人话大小（GB/MB/KB）。"""
+    if n <= 0:
+        return "-"
+    for unit, factor in (("GB", 1024**3), ("MB", 1024**2), ("KB", 1024)):
+        if n >= factor:
+            return f"{n / factor:.1f} {unit}"
+    return f"{n} B"
 
 
 def _queue_status_text(path: str) -> tuple[str, str]:
@@ -314,6 +510,12 @@ def build_task_detail(uuid: str) -> dict[str, Any]:
     # 字幕自动抓取区块：读子任务文件拿配对统计，仅在触发过 auto_fetch 时展示。
     sf_child = _load_subtitle_fetch_child(uuid)
     subtitle_fetch = _build_subtitle_fetch_section(task_data, sf_child)
+    # BGM/TMDB 条目（对齐展示集数范围）+ 映射明细 + 总大小。
+    rename_items = _rename_plan_items(task_data)
+    bangumi_subjects = _build_bangumi_subjects(task_data)
+    tmdb_subjects = _build_tmdb_subjects(task_data)
+    mapping_details = _build_mapping_details(task_data)
+    total_size = _format_bytes(_stat_total_size_bytes(rename_items))
     return {
         "found": True,
         "uuid": uuid,
@@ -321,8 +523,16 @@ def build_task_detail(uuid: str) -> dict[str, Any]:
             "path": _str(task_data.get("path")),
             "name": _str(task_data.get("name")) or "未知",
             "season_id": task_data.get("season_id", "-"),
-            "is_anime": _format_bool_text(task_data.get("is_anime")),
-            "is_movie": _format_bool_text(task_data.get("is_movie")),
+            # is_anime/is_movie 仅内部落地路由用，不再展示；
+            # 详情页改用 TMDB 权威媒体类型（tmdb_media_type 由 BGM→TMDB 桥接回写）。
+            "tmdb_media_type": _str(task_data.get("tmdb_media_type")),
+            "tmdb_media_type_label": TMDB_MEDIA_TYPE_LABELS.get(
+                _str(task_data.get("tmdb_media_type")),
+                _str(task_data.get("tmdb_media_type")),
+            ),
+            "tmdb_name": _str(task_data.get("tmdb_name")),
+            "tmdb_year": task_data.get("tmdb_year", "-"),
+            "tmdb_id": task_data.get("tmdb_id", "-"),
         },
         "failure": {
             "reason": failure_reason,
@@ -351,6 +561,12 @@ def build_task_detail(uuid: str) -> dict[str, Any]:
         },
         # 仅在触发过 auto_fetch 时存在；前端据此条件渲染字幕区块。
         "subtitle_fetch": subtitle_fetch,
+        # BGM/TMDB 条目（对齐集数范围）+ 映射明细 + 总大小。
+        # 仅在 rename_plan 存在时非空；前端据此条件渲染。
+        "bangumi_subjects": bangumi_subjects,
+        "tmdb_subjects": tmdb_subjects,
+        "mapping_details": mapping_details,
+        "total_size": total_size,
     }
 
 

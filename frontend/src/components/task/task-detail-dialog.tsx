@@ -64,7 +64,7 @@ export function TaskDetailDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-5xl w-[94vw] max-h-[85vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{detail?.basic?.name || "任务详情"}</DialogTitle>
           <DialogDescription className="font-mono text-xs">
@@ -89,9 +89,39 @@ export function TaskDetailDialog({
               <KV k="传入路径" v={detail.basic?.path} />
               <KV k="识别剧集" v={detail.basic?.name} />
               <KV k="季度" v={detail.basic?.season_id} />
-              <KV k="是否动漫" v={detail.basic?.is_anime} />
-              <KV k="是否电影" v={detail.basic?.is_movie} />
             </Section>
+
+            {detail.tmdb_subjects && detail.tmdb_subjects.length > 0 && (
+              <Section title="TMDB 条目">
+                {detail.tmdb_subjects.map((t) => (
+                  <div key={t.tmdb_ref} className="space-y-1.5 border-l-2 border-primary/30 pl-3">
+                    <LinkKV
+                      k="条目 ID"
+                      href={tmdbUrl(t.tmdb_ref, t.tmdb_id)}
+                      text={`${t.tmdb_ref}${t.name ? ` · ${t.name}` : ""}${t.year && t.year !== "-" ? ` (${t.year})` : ""}`}
+                    />
+                    <KV k="媒体类型" v={t.media_type === "movie" ? "电影" : t.media_type === "tv" ? "剧集 (TV)" : t.media_type} />
+                    <KV k="集数范围" v={t.episode_ranges} />
+                  </div>
+                ))}
+              </Section>
+            )}
+
+            {detail.bangumi_subjects && detail.bangumi_subjects.length > 0 && (
+              <Section title="Bangumi 条目">
+                {detail.bangumi_subjects.map((s) => (
+                  <div key={String(s.id)} className="space-y-1.5 border-l-2 border-primary/30 pl-3">
+                    <LinkKV
+                      k="条目 ID"
+                      href={`https://bgm.tv/subject/${s.id}`}
+                      text={`${s.id}${s.name_cn ? ` · ${s.name_cn}` : s.name ? ` · ${s.name}` : ""}`}
+                    />
+                    <KV k="日文名" v={s.name} />
+                    <KV k="集数范围" v={s.episode_ranges} />
+                  </div>
+                ))}
+              </Section>
+            )}
 
             <Section title="失败原因">
               <KV k="失败类" v={detail.failure?.reason} />
@@ -110,8 +140,44 @@ export function TaskDetailDialog({
               <KV k="产品结果类型" v={detail.case_agent?.product_result_kind} />
               <Separator />
               <KV k="目标目录" v={detail.landing?.target_dir} />
-              <KV k="映射条目数" v={detail.landing?.mapping_count} />
             </Section>
+
+            {detail.mapping_details && detail.mapping_details.length > 0 && (
+              <Section
+                title={`映射明细（${detail.mapping_details.length} 条${detail.total_size && detail.total_size !== "-" ? `，总计 ${detail.total_size}` : ""}）`}
+              >
+                <div className="border rounded-md max-h-72 overflow-auto">
+                  <table className="w-full text-xs">
+                    <thead className="sticky top-0 bg-muted/60 backdrop-blur">
+                      <tr className="text-left text-muted-foreground">
+                        <th className="px-2 py-1.5 font-medium">源文件</th>
+                        <th className="px-2 py-1.5 font-medium whitespace-nowrap">BGM</th>
+                        <th className="px-2 py-1.5 font-medium whitespace-nowrap">TMDB</th>
+                        <th className="px-2 py-1.5 font-medium whitespace-nowrap">置信度</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {detail.mapping_details.map((r, i) => (
+                        <tr
+                          key={i}
+                          className="border-t hover:bg-muted/30"
+                          title={r.source_path}
+                        >
+                          <td className="px-2 py-1 truncate max-w-[420px]">
+                            {r.source_name}
+                          </td>
+                          <td className="px-2 py-1 whitespace-nowrap">{r.bgm}</td>
+                          <td className="px-2 py-1 whitespace-nowrap">{r.tmdb}</td>
+                          <td className="px-2 py-1 whitespace-nowrap text-muted-foreground">
+                            {r.confidence}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </Section>
+            )}
 
             {detail.subtitle_fetch && (
               <Section title="字幕自动抓取">
@@ -162,4 +228,27 @@ function KV({ k, v }: { k: string; v?: unknown }) {
       </span>
     </div>
   );
+}
+
+// 带跳转链接的 KV：值显示为可点击外链（新标签打开）。
+function LinkKV({ k, href, text }: { k: string; href: string; text: string }) {
+  return (
+    <div className="flex gap-3">
+      <span className="text-muted-foreground w-24 shrink-0">{k}</span>
+      <a
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="break-all text-primary underline underline-offset-2 hover:opacity-80"
+      >
+        {text || "-"}
+      </a>
+    </div>
+  );
+}
+
+// TMDB ref → themoviedb.org URL（tv:{id} → /tv/{id}，movie:{id} → /movie/{id}）。
+function tmdbUrl(ref: string, id: number | string | null | undefined): string {
+  const kind = ref.startsWith("movie:") ? "movie" : "tv";
+  return `https://www.themoviedb.org/${kind}/${id ?? ""}`;
 }
