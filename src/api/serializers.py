@@ -62,6 +62,25 @@ def _str(value: object) -> str:
     return value if isinstance(value, str) else ("" if value is None else str(value))
 
 
+def _int_or_zero(value: object) -> int:
+    try:
+        return int(value)  # type: ignore[arg-type]
+    except (TypeError, ValueError):
+        return 0
+
+
+def _nested_status(case_agent_result: object) -> str:
+    """从 case_agent_result.{status,snapshot.status} 取状态（新链路口径）。"""
+    mapping = _as_mapping(case_agent_result)
+    return _str(mapping.get("status") or _as_mapping(mapping.get("snapshot")).get("status"))
+
+
+def _nested_snapshot_kind(case_agent_result: object) -> str:
+    """从 case_agent_result.snapshot.product_result_kind 取产品结果类型。"""
+    mapping = _as_mapping(case_agent_result)
+    return _str(_as_mapping(mapping.get("snapshot")).get("product_result_kind"))
+
+
 def _format_bool_text(value: Any) -> str:
     if value is True:
         return "是"
@@ -192,10 +211,39 @@ def build_task_detail(uuid: str) -> dict[str, Any]:
     record_data = _as_mapping(get_record(uuid) or {})
 
     failure_reason = _str(task_data.get("failure_reason"))
+    # Case Agent 状态回退链：新 local_bangumi_to_tmdb_product 链路不写顶层
+    # case_agent_status，成功信号分散在 case_agent_result.status /
+    # bgm_to_tmdb_bridge_status / subtitle_fetch_case_agent_status 里。
     case_agent_status = _str(
-        task_data.get("case_agent_status") or record_data.get("case_agent_status")
+        task_data.get("case_agent_status")
+        or record_data.get("case_agent_status")
+        or _nested_status(task_data.get("case_agent_result"))
+        or task_data.get("bgm_to_tmdb_bridge_status")
+        or task_data.get("subtitle_fetch_case_agent_status")
     )
+    # 产品结果类型回退链：record 无结构化 product_result_kind 时，取 task 顶层
+    # local_bangumi_product_result_kind，再取 case_agent_result.snapshot.product_result_kind。
+    product_result_kind = _str(
+        record_data.get("product_result_kind")
+        or task_data.get("local_bangumi_product_result_kind")
+        or _nested_snapshot_kind(task_data.get("case_agent_result"))
+        or task_data.get("bgm_to_tmdb_bridge_status")
+    )
+    # 落地映射：旧链路 record 是 {"mappings": [...], "target_dir": ...}；
+    # 新 local_bangumi_to_tmdb_product 链路 record 是扁平 {源路径: 目标路径} dict，
+    # 没有 mappings/target_dir key，需要回退到 task 顶层 target_root /
+    # transferred_file_count，并按扁平 dict 计数。
     mappings = record_data.get("mappings")
+    if isinstance(mappings, list):
+        mapping_count = len(mappings)
+    elif isinstance(record_data, Mapping) and record_data:
+        # 扁平 源->目标 dict：条目数即映射数。
+        mapping_count = len(record_data)
+    else:
+        mapping_count = _int_or_zero(task_data.get("transferred_file_count"))
+    target_dir = _str(
+        record_data.get("target_dir") or task_data.get("target_root")
+    )
     return {
         "found": True,
         "uuid": uuid,
@@ -225,11 +273,11 @@ def build_task_detail(uuid: str) -> dict[str, Any]:
             "status_label": CASE_AGENT_STATUS_LABELS.get(
                 case_agent_status, case_agent_status
             ),
-            "product_result_kind": _str(record_data.get("product_result_kind")),
+            "product_result_kind": product_result_kind,
         },
         "landing": {
-            "target_dir": _str(record_data.get("target_dir")),
-            "mapping_count": len(mappings) if isinstance(mappings, list) else 0,
+            "target_dir": target_dir,
+            "mapping_count": mapping_count,
             "mappings": mappings if isinstance(mappings, list) else [],
         },
     }

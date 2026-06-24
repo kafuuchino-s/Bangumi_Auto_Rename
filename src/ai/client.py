@@ -366,44 +366,6 @@ class AIClient:
         """检查AI客户端是否可用"""
         return bool(self.enabled and self._client and self._client.is_available())
 
-    def test_connection(self) -> tuple[bool, str]:
-        """轻量连通性检查：发一个 max_tokens=1 的最小 chat completion，
-        验证 base_url + api_key + model + 网络可达。不跑识别映射、不耗场景 token。
-
-        Returns:
-            (success, message)：成功返回 (True, "AI 连通正常（模型 ...）")；
-            失败返回 (False, 错误人话描述)。
-        """
-        if not self.is_available():
-            return False, "AI 客户端不可用：请检查 API 密钥 / 地址 / 模型是否填写"
-        adapter = self._get_openai_adapter()
-        call_chat = getattr(adapter, "call_via_chat_completions", None) if adapter else None
-        if not callable(call_chat):
-            return False, "AI 客户端未提供 chat completions 入口"
-        try:
-            call_chat(
-                {
-                    "model": cm.get_config("ai_model"),
-                    "messages": [{"role": "user", "content": "hi"}],
-                    "max_tokens": 1,
-                    "temperature": 0,
-                }
-            )
-            return True, f"AI 连通正常（模型 {cm.get_config('ai_model')}）"
-        except Exception as e:  # noqa: BLE001 - 连通测试需捕获所有错误给人话
-            msg = str(e)
-            # 常见错误归类
-            low = msg.lower()
-            if "401" in low or "unauthorized" in low or "invalid api key" in low:
-                return False, "AI 连通失败：API 密钥无效或未授权（401）"
-            if "404" in low or "model" in low and "not found" in low:
-                return False, f"AI 连通失败：模型不存在或地址错误（{cm.get_config('ai_model')}）"
-            if "timeout" in low or "timed out" in low:
-                return False, "AI 连通失败：请求超时，检查 base_url 网络可达性"
-            if "connection" in low or "resolve" in low or "getaddrinfo" in low:
-                return False, "AI 连通失败：无法连接到 API 地址，检查 base_url"
-            return False, f"AI 连通失败：{msg[:200]}"
-
     def extract_title(self, filename: str) -> Optional[str]:
         """
         使用AI从复杂的文件名中提取动漫/电影标题

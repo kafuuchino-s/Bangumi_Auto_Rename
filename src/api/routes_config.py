@@ -78,14 +78,15 @@ def get_field_spec() -> dict[str, Any]:
 async def test_ai() -> dict[str, Any]:
     """测试 AI 连通性（使用当前已保存配置）。
 
-    只做轻量连通检查：发 max_tokens=1 的最小 chat completion，验证
-    base_url + api_key + model + 网络可达。不跑识别映射、不做期望用例比对
-    （旧 Python AI 识别链路已不用于生产，全链路走 Pi）。
+    走与生产 Case Agent 完全相同的 Pi 链路（/responses + provider/baseUrl/apiKey），
+    起最小 agent session 验证「连通 + 会发起 tool_call」两件事。
+    旧的 Python AIClient /chat/completions 门禁已移除（与生产脱节、且只测「能回一个字」
+    无法发现「能回话但不会调工具」的 agentic 能力问题）。
     """
-    from ..ai.client import AIClient
+    from ..ai.pi_healthcheck import run_healthcheck
 
     def _do_test() -> tuple[bool, str]:
-        return AIClient().test_connection()
+        return run_healthcheck()
 
     success, message = await asyncio.get_event_loop().run_in_executor(
         None, _do_test
