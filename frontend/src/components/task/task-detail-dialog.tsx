@@ -102,7 +102,6 @@ export function TaskDetailDialog({
             <Section title="AI 识别">
               <KV k="是否使用 AI" v={detail.ai?.ai_used ? "是" : "否"} />
               <KV k="是否尝试 AI" v={detail.ai?.ai_attempted ? "是" : "否"} />
-              <KV k="AI 置信度" v={detail.ai?.ai_confidence} />
               <KV k="处理链路" v={detail.ai?.pipeline_mode_label} />
             </Section>
 
@@ -113,6 +112,31 @@ export function TaskDetailDialog({
               <KV k="目标目录" v={detail.landing?.target_dir} />
               <KV k="映射条目数" v={detail.landing?.mapping_count} />
             </Section>
+
+            {detail.subtitle_fetch && (
+              <Section title="字幕自动抓取">
+                <KV k="抓取状态" v={detail.subtitle_fetch.status_label} />
+                <KV
+                  k="Case Agent"
+                  v={detail.subtitle_fetch.case_agent_status_label}
+                />
+                <KV k="来源" v={detail.subtitle_fetch.provider} />
+                {detail.subtitle_fetch.failure_reason && (
+                  <KV k="失败原因" v={detail.subtitle_fetch.failure_reason} />
+                )}
+                <Separator />
+                <KV
+                  k="已配对 / 缺字幕"
+                  v={`${detail.subtitle_fetch.matched_count} / ${detail.subtitle_fetch.missing_video_count}`}
+                />
+                <KV k="选中包数" v={detail.subtitle_fetch.selections_count} />
+                <KV k="未配对字幕" v={detail.subtitle_fetch.unmatched_count} />
+                <KV
+                  k="无落点字幕"
+                  v={detail.subtitle_fetch.no_target_count}
+                />
+              </Section>
+            )}
           </div>
         )}
       </DialogContent>

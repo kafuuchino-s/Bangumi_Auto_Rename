@@ -19,9 +19,60 @@ if str(_PROJECT_ROOT) not in sys.path:
 from src.api import serializers
 
 
-def _patch_io(monkeypatch, task: dict | None, record: dict | None):
+def _patch_io(monkeypatch, task: dict | None, record: dict | None, sf_child: dict | None = None):
     monkeypatch.setattr(serializers, "get_task", lambda _uuid: task or {})
     monkeypatch.setattr(serializers, "get_record", lambda _uuid: record)
+    monkeypatch.setattr(serializers, "_load_subtitle_fetch_child", lambda _uuid: sf_child or {})
+
+
+def test_detail_ai_section_has_no_confidence(monkeypatch):
+    """主链路 ai_confidence 已移除（Pi 时代 dead，永远是 -）。"""
+    task = {"name": "x", "pipeline_mode": "local_bangumi_to_tmdb_product", "ai_used": True}
+    _patch_io(monkeypatch, task, {})
+    d = serializers.build_task_detail("uuid-ai")
+    assert "ai_confidence" not in d["ai"]
+    assert d["ai"]["ai_used"] is True
+    assert d["ai"]["pipeline_mode_label"] == "Local→Bangumi→TMDB 产品链路"
+
+
+def test_detail_subtitle_fetch_section_from_child(monkeypatch):
+    """触发过 auto_fetch：字幕区块从子任务文件读配对统计。"""
+    task = {
+        "name": "人类衰退之后",
+        "pipeline_mode": "local_bangumi_to_tmdb_product",
+        "subtitle_fetch_attempted": True,
+        "subtitle_fetch_status": "success",
+        "subtitle_fetch_case_agent_status": "accepted",
+        "subtitle_fetch_provider": "acgrip",
+        "subtitle_fetch_failure_reason": None,
+    }
+    sf_child = {
+        "missing_video_count": 18,
+        "matched_count": 18,
+        "selections_count": 1,
+        "unmatched": [],
+        "no_target_videos": [{"x": 1}],
+    }
+    _patch_io(monkeypatch, task, {}, sf_child)
+    d = serializers.build_task_detail("uuid-sf")
+    sf = d["subtitle_fetch"]
+    assert sf is not None
+    assert sf["status_label"] == "成功"
+    assert sf["case_agent_status_label"] == "已接受（通过合同校验）"
+    assert sf["provider"] == "acgrip"
+    assert sf["matched_count"] == 18
+    assert sf["missing_video_count"] == 18
+    assert sf["unmatched_count"] == 0
+    assert sf["no_target_count"] == 1
+    assert sf["selections_count"] == 1
+
+
+def test_detail_subtitle_fetch_section_absent_when_not_attempted(monkeypatch):
+    """没触发过 auto_fetch 且无子任务文件 → subtitle_fetch 为 None（前端不渲染）。"""
+    task = {"name": "x", "pipeline_mode": "local_bangumi_to_tmdb_product"}
+    _patch_io(monkeypatch, task, {}, None)
+    d = serializers.build_task_detail("uuid-no-sf")
+    assert d["subtitle_fetch"] is None
 
 
 def test_detail_new_pipeline_flat_record_fills_fields(monkeypatch):

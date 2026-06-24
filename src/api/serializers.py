@@ -53,6 +53,13 @@ PIPELINE_MODE_LABELS: dict[str, str] = {
     "local_bangumi_to_tmdb_product_dry_run": "Local→Bangumi→TMDB 预演",
 }
 
+SUBTITLE_FETCH_STATUS_LABELS: dict[str, str] = {
+    "success": "成功",
+    "failed": "失败",
+    "need_confirm": "需人工确认",
+    "skipped": "未抓取",
+}
+
 
 def _as_mapping(value: object) -> Mapping[str, object]:
     return value if isinstance(value, Mapping) else {}
@@ -79,6 +86,66 @@ def _nested_snapshot_kind(case_agent_result: object) -> str:
     """从 case_agent_result.snapshot.product_result_kind 取产品结果类型。"""
     mapping = _as_mapping(case_agent_result)
     return _str(_as_mapping(mapping.get("snapshot")).get("product_result_kind"))
+
+
+def _load_subtitle_fetch_child(uuid: str) -> Mapping[str, object]:
+    """读 {uuid}.subtitle_fetch.json 子任务文件（auto_fetch 附属结果）。
+
+    auto_fetch 是重命名任务批次收尾时触发的附属流程，结果挂在主任务下，
+    文件名带 .subtitle_fetch 后缀。配对统计（matched/missing/unmatched/
+    no_target）只在这个子任务文件里，主 task JSON 顶层没有。
+    """
+    path = TASK_PATH / f"{uuid}.subtitle_fetch.json"
+    if not path.exists():
+        return {}
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        return _as_mapping(data)
+    except (OSError, json.JSONDecodeError):
+        return {}
+
+
+def _build_subtitle_fetch_section(
+    task_data: Mapping[str, object], child: Mapping[str, object]
+) -> dict[str, Any] | None:
+    """构造字幕自动抓取区块。仅在任务实际触发过 auto_fetch 时返回非 None。"""
+    attempted = bool(task_data.get("subtitle_fetch_attempted"))
+    # 没触发过 auto_fetch，且子任务文件也不存在 → 不展示该区块。
+    if not attempted and not child:
+        return None
+    status = _str(task_data.get("subtitle_fetch_status"))
+    case_agent_status = _str(
+        task_data.get("subtitle_fetch_case_agent_status")
+        or child.get("case_agent_status")
+    )
+    failure_reason = _str(task_data.get("subtitle_fetch_failure_reason"))
+    provider = _str(task_data.get("subtitle_fetch_provider"))
+    # 配对统计优先取子任务文件（video 维度），回退主 task 顶层（多为 None）。
+    missing = _int_or_zero(
+        child.get("missing_video_count")
+        if child
+        else task_data.get("subtitle_fetch_missing_video_count")
+    )
+    matched = _int_or_zero(child.get("matched_count") if child else 0)
+    unmatched = len(child.get("unmatched") or []) if child else 0
+    no_target = len(child.get("no_target_videos") or []) if child else 0
+    selections = _int_or_zero(child.get("selections_count") if child else 0)
+    return {
+        "status": status,
+        "status_label": SUBTITLE_FETCH_STATUS_LABELS.get(status, status),
+        "case_agent_status": case_agent_status,
+        "case_agent_status_label": CASE_AGENT_STATUS_LABELS.get(
+            case_agent_status, case_agent_status
+        ),
+        "provider": provider,
+        "failure_reason": failure_reason,
+        "missing_video_count": missing,
+        "matched_count": matched,
+        "unmatched_count": unmatched,
+        "no_target_count": no_target,
+        "selections_count": selections,
+    }
 
 
 def _format_bool_text(value: Any) -> str:
@@ -244,6 +311,9 @@ def build_task_detail(uuid: str) -> dict[str, Any]:
     target_dir = _str(
         record_data.get("target_dir") or task_data.get("target_root")
     )
+    # 字幕自动抓取区块：读子任务文件拿配对统计，仅在触发过 auto_fetch 时展示。
+    sf_child = _load_subtitle_fetch_child(uuid)
+    subtitle_fetch = _build_subtitle_fetch_section(task_data, sf_child)
     return {
         "found": True,
         "uuid": uuid,
@@ -262,7 +332,6 @@ def build_task_detail(uuid: str) -> dict[str, Any]:
         "ai": {
             "ai_used": bool(task_data.get("ai_used")),
             "ai_attempted": bool(task_data.get("ai_attempted")),
-            "ai_confidence": _str(task_data.get("ai_confidence")) or "-",
             "pipeline_mode": _str(task_data.get("pipeline_mode")) or "-",
             "pipeline_mode_label": PIPELINE_MODE_LABELS.get(
                 _str(task_data.get("pipeline_mode")), _str(task_data.get("pipeline_mode"))
@@ -280,6 +349,8 @@ def build_task_detail(uuid: str) -> dict[str, Any]:
             "mapping_count": mapping_count,
             "mappings": mappings if isinstance(mappings, list) else [],
         },
+        # 仅在触发过 auto_fetch 时存在；前端据此条件渲染字幕区块。
+        "subtitle_fetch": subtitle_fetch,
     }
 
 
