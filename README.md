@@ -132,65 +132,54 @@ cd ..
 
 #### Docker
 
-推荐直接拉取 GHCR 预构建镜像（无需本地构建，CI 跟随 `web` 分支自动产出）：
+直接拉取 GHCR 预构建镜像即可运行，无需本地构建。镜像已内置 Python + Node.js + `ffprobe` + `unrar`，时区 `Asia/Shanghai`。
+
+**1. 启动容器**（推荐用 docker-compose）：
+
+```yaml
+# docker-compose.yml
+services:
+  bangumi:
+    image: ghcr.io/kafuuchino-s/bangumi-auto-rename:latest
+    container_name: bangumi
+    restart: unless-stopped
+    ports:
+      - "5999:5999"
+    volumes:
+      # 配置与任务记录（必须挂载，否则重启丢失）
+      - ./data:/Bangumi_Auto_Rename/data
+      # 媒体根目录挂到容器 /media（与配置页 docker_mnt 对齐）
+      - /你的下载目录:/media/downloads
+      - /你的媒体库:/media/library
+```
 
 ```shell
-docker pull ghcr.io/kafuuchino-s/bangumi-auto-rename:latest
-docker run -d -p 5999:5999 \
-  -v <你的data目录>:/Bangumi_Auto_Rename/data \
-  -v <宿主机媒体根目录>:/media \
+docker compose up -d
+```
+
+或裸 `docker run`：
+
+```shell
+docker run -d -p 5999:5999 --name bangumi --restart unless-stopped \
+  -v ./data:/Bangumi_Auto_Rename/data \
+  -v /你的下载目录:/media/downloads \
+  -v /你的媒体库:/media/library \
   ghcr.io/kafuuchino-s/bangumi-auto-rename:latest
 ```
 
-镜像约 960MB，四阶段构建：前端静态导出 + 静态 `ffprobe` + Python 依赖编译隔离 + Pi sidecar Node 运行时。内置 `ffprobe`（探媒体元数据）/ `unrar`（字幕解压）/ 配置页 AI 测试样例。时区已设 `Asia/Shanghai`。
+**2. 打开 `http://<宿主机>:5999`，在配置页按 Tab 填写**：
 
-> [!WARNING]
-> **Docker 部署有几个必须注意的路径 / 链接坑，不配对会导致任务失败或文件失效。**
-
-**① 媒体目录必须挂载，且与 `docker_mnt` 对齐**
-
-程序要读源文件、写整理后的文件。容器内看不到宿主机文件，必须挂载。配置项 `bangumi_path` / `movie_path` / `anime_path` 在容器内是路径，程序会自动加 `docker_mnt` 前缀（默认 `/media`，见配置页「高级配置」）。
-
-- 宿主机媒体根目录挂到容器 `/media`：`-v /mnt/sdb:/media`
-- 配置页里 `bangumi_path` 填 `/media/anime`（程序自动认 `/media` 是挂载点）
-- **不挂载媒体目录 → 程序在容器里看不到文件，任务全失败**
-
-**② 硬链接模式要求源与目标在同一文件系统**
-
-默认 `mode=链接`（硬链接）。硬链接**不能跨文件系统**——下载目录（qBittorrent）和整理目标目录若挂在**不同挂载点**，硬链失败。
-
-- 代码已兜底 `hardlink_fallback_to_symlink=true`：硬链失败降级软链接，但**软链接隐患**：源文件被删（qBittorrent 清理任务）后，整理后的文件失效（指向不存在的源）。
-- **建议**：下载目录与媒体库目录放在**同一宿主文件系统**，挂到容器同一挂载点，硬链接才可用。
-- 若无法保证同文件系统，改 `mode=复制`（占双倍空间但独立）或 `mode=移动`。
-
-**③ `data/` 必须挂载到宿主机**
-
-`data/` 存 `config.json` / `task/` / `record/` / `ai_analysis/` / `pi_case_agent/` / `log/` / `subtitle_upload/`。不挂载 → 容器重启配置与任务记录全丢。
-
-**④ 凭据不进镜像，运行时注入**
-
-镜像不含 `ai_api_key` / `.pi/agent/auth.json`。启动后：
-- 打开 `http://<宿主机>:5999` 配置页填 AI 凭据（`ai_api_key` / `ai_base_url` / `ai_model`）；或挂载已配好的 `data/config.json`。
-- Pi sidecar 凭据链：`rename_local_bangumi_pi_api_key` → 否则 `ai_api_key` → 环境变量 `BAR_PI_CASE_AGENT_API_KEY`。
-
-**⑤ qBittorrent webhook 路径转换**
-
-用 webhook 自动触发时，宿主机传来的路径（如 Windows `D:\downloads\...`）容器不认识。配置 `host_path_prefix`（宿主机前缀）+ `docker_mnt`（容器挂载点），`web.py` 自动转换宿主机路径 → 容器路径。
-
-**⑥ 网络**
-
-- 容器内 5999，映射 `-p 5999:5999`。
-- Pi sidecar 的 tool server 绑定 `127.0.0.1:随机端口`，**仅容器内通信**，无需对外暴露——这是正常的，不要去映射它。
-- Emby 通知：容器需能访问 Emby，`emby_host` 填宿主机可达地址（如 `http://host.docker.internal:8096` 或宿主机 IP）。
-
-**⑦ 默认关闭的可选功能**
-
-| 功能 | 默认 | 启用方式 |
+| 配置页 Tab | 关键项 | 填什么（以上面挂载为例） |
 |---|---|---|
-| 字幕自动对齐 ffsubsync | off | 容器内 `pip install ffsubsync` |
-| 浏览器抓取 DynamicFetcher | off | 容器内 `playwright install` 下载浏览器二进制（运行时库 libnss3 等已内置） |
-| Emby 刷新通知 | off | 配置页填 Emby host / api_key |
-| Telegram 汇总通知 | off | 配置页填 bot token / chat id |
+| 基础 | 媒体库路径（`bangumi_path` 等） | `/media/library/anime` 等容器内路径（程序自动认 `/media` 为挂载点） |
+| 基础 | 传输模式 `mode` | `链接`（硬链接，要求下载目录与媒体库在同一文件系统）/ `复制` / `移动` |
+| AI | `ai_api_key` / `ai_base_url` / `ai_model` | 你的 OpenAI 兼容凭据（Pi sidecar 由此驱动） |
+| 字幕 | 按需开自动抓取 / 对齐 | 默认非浏览器抓取已可用 |
+| 通知 | Emby `emby_host` / Telegram | `http://host.docker.internal:8096`（容器访问宿主机 Emby） |
+| 高级 | `docker_mnt` | 默认 `/media`，与上面挂载点一致即可 |
+| 高级 | `host_path_prefix` | qBittorrent webhook 用：填宿主机下载路径前缀（如 `D:\` 或 `/mnt/sdb`），程序据此把 webhook 传来的宿主机路径转成容器内路径 |
+
+要点：`data/` 必须挂载（保存配置/任务/记录）；媒体目录挂到 `/media`，配置页填容器内路径；硬链接模式要求下载目录与媒体库在同一文件系统，否则降级软链接（源删则失效，建议同盘或改 `复制`/`移动`）。
 
 本地构建（国内拉 Docker Hub 受 TLS 干扰时可覆盖基础镜像源）：
 
