@@ -16,8 +16,9 @@ on:
   workflow_dispatch:
 
 env:
-  # GHCR 镜像名必须小写；仓库名含大写时强制转小写。
-  IMAGE_NAME: ghcr.io/${{ github.repository }}/bangumi-auto-rename
+  # GHCR 镜像名：ghcr.io/<owner>/bangumi-auto-rename（只用 owner，不把仓库名塞进路径）。
+  # owner 小写化（GHCR 要求小写，账号名含大写时强制转小写）。
+  IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/bangumi-auto-rename
 
 permissions:
   contents: read
