@@ -1,0 +1,639 @@
+"""配置页字段元数据（纯数据层，驱动 config_page 渲染）。
+
+设计目标：
+- 把 ``config_page.py`` 里 500 行 if/elif 控件分支收敛成「元数据驱动渲染」。
+- 区分 **常用（用户傻瓜配置）** 与 **高级（开发者/运维）** 两个可见层级：
+  普通用户默认只看到常用项，高级项折叠在「高级设置」开关后。
+- 每项配一句白话 ``help`` 文本 + 默认值提示，降低术语门槛。
+
+约束：
+- 仅描述 ``cm.config`` 中 **现有且已在 config_page 渲染** 的 key，不新增、不丢失。
+- 纯数据模块，无 UI 依赖，便于单独测试与回归。
+- 控件类型 (control) 取值固定为：
+  ``toggle`` / ``select`` / ``number`` / ``input`` / ``secret`` / ``path``
+  其中 ``path`` = 普通 input + 「选择」按钮（local_file_picker）；``secret`` = password input。
+"""
+
+from __future__ import annotations
+
+from typing import Any, Mapping
+
+
+# --------------------------------------------------------------------------- #
+# 控件类型常量
+# --------------------------------------------------------------------------- #
+TOGGLE = "toggle"
+SELECT = "select"
+NUMBER = "number"
+INPUT = "input"
+SECRET = "secret"  # 密钥脱敏输入框
+PATH = "path"  # input + 本地选择按钮
+
+
+# 可见层级
+LEVEL_BASIC = "basic"  # 常用：普通用户必见
+LEVEL_ADVANCED = "advanced"  # 高级：开发者/运维，默认折叠
+
+# 场景 Tab（按「用户做什么」分，而非重要程度）
+# general=基础与路径 / ai=AI 识别 / subtitle=字幕 / notify=通知 / advanced=高级运维
+TAB_GENERAL = "general"
+TAB_AI = "ai"
+TAB_SUBTITLE = "subtitle"
+TAB_NOTIFY = "notify"
+TAB_ADVANCED = "advanced"
+
+# Tab 顺序（驱动前端 SettingsTabs 导航顺序）
+TAB_ORDER = [
+    TAB_GENERAL,
+    TAB_AI,
+    TAB_SUBTITLE,
+    TAB_NOTIFY,
+    TAB_ADVANCED,
+]
+
+
+# 分组 key（同时用于常用/高级区的卡片分组顺序）
+GRP_PATHS = "媒体库路径"
+GRP_TRANSFER = "传输与覆盖"
+GRP_AI = "AI 识别"
+GRP_SUBTITLE_FETCH = "字幕自动抓取"
+GRP_SYNC = "字幕对齐（ffsubsync）"
+GRP_EMBY = "通知：Emby"
+GRP_TELEGRAM = "通知：Telegram"
+GRP_SKIP = "跳过标签"
+GRP_AI_ADV = "AI 高级路由"
+GRP_CASE_AGENT = "Case Agent 运维"
+GRP_BGM_TMDB = "BGM→TMDB 产品链路"
+GRP_SUBTITLE_AGENT = "字幕/抓取 Case Agent"
+GRP_FETCH_ADV = "抓取高级"
+GRP_RUNTIME = "运行时"
+
+
+# 常用区分组顺序
+BASIC_GROUP_ORDER = [
+    GRP_PATHS,
+    GRP_TRANSFER,
+    GRP_AI,
+    GRP_SUBTITLE_FETCH,
+    GRP_SYNC,
+    GRP_EMBY,
+    GRP_TELEGRAM,
+    GRP_SKIP,
+]
+
+# 高级区分组顺序
+ADVANCED_GROUP_ORDER = [
+    GRP_AI_ADV,
+    GRP_CASE_AGENT,
+    GRP_BGM_TMDB,
+    GRP_SUBTITLE_AGENT,
+    GRP_FETCH_ADV,
+    GRP_RUNTIME,
+]
+
+# 分组 → Material icon 名（导航与卡片标题用）
+GROUP_ICON = {
+    GRP_PATHS: "folder",
+    GRP_TRANSFER: "swap_horiz",
+    GRP_AI: "psychology",
+    GRP_SUBTITLE_FETCH: "subtitles",
+    GRP_SYNC: "sync_alt",
+    GRP_EMBY: "cast",
+    GRP_TELEGRAM: "send",
+    GRP_SKIP: "block",
+    GRP_AI_ADV: "route",
+    GRP_CASE_AGENT: "verified_user",
+    GRP_BGM_TMDB: "compare_arrows",
+    GRP_SUBTITLE_AGENT: "rule",
+    GRP_FETCH_ADV: "tune",
+    GRP_RUNTIME: "settings",
+}
+
+
+# --------------------------------------------------------------------------- #
+# 字段规格
+# --------------------------------------------------------------------------- #
+# 每个 entry：
+#   key:        配置 key（与 CONFIG_DEFAULT 对齐）
+#   control:    控件类型
+#   level:      basic / advanced
+#   group:      所属分组
+#   options:    toggle/select 的可选值列表（toggle 为中文/枚举标签，即直接写入配置的值）
+#   min/step:   number 控件约束（max 可选）
+#   placeholder: input 占位提示（可选）
+#   help:       白话说明
+#   default_hint: 默认值的人话提示（可选，用于在标签旁/tooltip 展示）
+# --------------------------------------------------------------------------- #
+FIELD_SPEC: list[Mapping[str, Any]] = [
+    # ============================ 媒体库路径 ============================ #
+    {
+        "key": "api_key",
+        "control": SECRET,
+        "level": LEVEL_BASIC,
+        "group": GRP_PATHS,
+        "tab": TAB_GENERAL,
+        "help": "TMDB 的 API 密钥，用于获取剧集/电影的元数据。在 themoviedb.org 注册后申请。",
+        "default_hint": "必填",
+    },
+    {
+        "key": "bangumi_path",
+        "control": PATH,
+        "level": LEVEL_BASIC,
+        "group": GRP_PATHS,
+        "tab": TAB_GENERAL,
+        "subgroup": "输出路径",
+        "help": "整理后电视剧/番剧 TV 正片的落盘根目录。",
+    },
+    {
+        "key": "anime_path",
+        "control": PATH,
+        "level": LEVEL_BASIC,
+        "group": GRP_PATHS,
+        "tab": TAB_GENERAL,
+        "subgroup": "输出路径",
+        "help": "整理后动漫 TV 正片的落盘根目录。",
+    },
+    {
+        "key": "movie_path",
+        "control": PATH,
+        "level": LEVEL_BASIC,
+        "group": GRP_PATHS,
+        "tab": TAB_GENERAL,
+        "subgroup": "输出路径",
+        "help": "整理后电影的落盘根目录。",
+    },
+    {
+        "key": "anime_movie_path",
+        "control": PATH,
+        "level": LEVEL_BASIC,
+        "group": GRP_PATHS,
+        "tab": TAB_GENERAL,
+        "subgroup": "输出路径",
+        "help": "整理后动漫电影（剧场版）的落盘根目录。",
+    },
+    # ============================ 传输与覆盖 ============================ #
+    {
+        "key": "mode",
+        "control": TOGGLE,
+        "level": LEVEL_BASIC,
+        "group": GRP_TRANSFER,
+        "tab": TAB_GENERAL,
+        "options": ["链接", "复制", "剪切"],
+        "help": "文件落地方式。「链接」= 硬链接，不占额外空间、源删则失效，需同盘；跨盘请改「复制」。",
+        "default_hint": "默认 链接（硬链接）",
+    },
+    {
+        "key": "overwrite_existing",
+        "control": TOGGLE,
+        "level": LEVEL_BASIC,
+        "group": GRP_TRANSFER,
+        "tab": TAB_GENERAL,
+        "options": ["覆盖", "跳过"],
+        "help": "目标文件已存在时：「覆盖」删除旧文件重新落地；「跳过」保留已存在、继续处理其他。",
+        "default_hint": "默认 跳过",
+    },
+    {
+        "key": "hardlink_fallback_to_symlink",
+        "control": TOGGLE,
+        "level": LEVEL_ADVANCED,
+        "group": GRP_TRANSFER,
+        "tab": TAB_ADVANCED,
+        "options": ["启用", "禁用"],
+        "help": "链接模式下硬链接失败（如跨文件系统）时是否降级为软链接。禁用则记为部分失败、不静默降级。",
+        "default_hint": "默认 启用",
+        "bool_toggle": True,
+    },
+    # ============================ AI 识别 ============================ #
+    {
+        "key": "ai_api_key",
+        "control": SECRET,
+        "level": LEVEL_BASIC,
+        "group": GRP_AI,
+        "tab": TAB_AI,
+        "help": "OpenAI（或兼容接口）的 API 密钥，驱动标题提取、候选选择、Case Agent 等 AI 能力。",
+        "default_hint": "必填（启用 AI 识别时）",
+    },
+    {
+        "key": "ai_base_url",
+        "control": INPUT,
+        "level": LEVEL_BASIC,
+        "group": GRP_AI,
+        "tab": TAB_AI,
+        "help": "OpenAI 兼容接口地址。使用第三方中转或自建网关时按需修改。",
+        "default_hint": "默认 https://api.openai.com/v1",
+    },
+    {
+        "key": "ai_model",
+        "control": INPUT,
+        "level": LEVEL_BASIC,
+        "group": GRP_AI,
+        "tab": TAB_AI,
+        "help": "调用的模型名，需与上方接口地址匹配。",
+        "default_hint": "默认 gpt-4o-mini",
+    },
+    {
+        "key": "openai_api_interface",
+        "control": TOGGLE,
+        "level": LEVEL_ADVANCED,
+        "group": GRP_AI_ADV,
+        "tab": TAB_AI,
+        "options": ["responses_api", "chat_completions"],
+        "help": "OpenAI 接口类型。responses_api 为新版，chat_completions 为兼容旧版/第三方。",
+        "default_hint": "默认 responses_api",
+    },
+    # ============================ 字幕自动抓取 ============================ #
+    {
+        "key": "subtitle_auto_fetch_enabled",
+        "control": TOGGLE,
+        "level": LEVEL_BASIC,
+        "group": GRP_SUBTITLE_FETCH,
+        "tab": TAB_SUBTITLE,
+        "options": ["启用", "禁用"],
+        "help": "任务重命名完成后，自动为缺字幕的落地视频抓取字幕。",
+        "default_hint": "默认 禁用",
+        "bool_toggle": True,
+    },
+    {
+        "key": "subtitle_auto_fetch_preferred_language",
+        "control": TOGGLE,
+        "level": LEVEL_BASIC,
+        "group": GRP_SUBTITLE_FETCH,
+        "tab": TAB_SUBTITLE,
+        "options": ["zh-CN", "zh-TW"],
+        "help": "优先抓取的字幕语言：简体或繁体。",
+        "default_hint": "默认 zh-CN",
+    },
+    {
+        "key": "subtitle_auto_fetch_provider",
+        "control": SELECT,
+        "level": LEVEL_ADVANCED,
+        "group": GRP_FETCH_ADV,
+        "tab": TAB_SUBTITLE,
+        "options": ["acgrip"],
+        "help": "字幕抓取源。当前仅支持 acgrip。",
+        "default_hint": "默认 acgrip",
+    },
+    {
+        "key": "subtitle_auto_fetch_candidate_limit",
+        "control": NUMBER,
+        "level": LEVEL_ADVANCED,
+        "group": GRP_FETCH_ADV,
+        "tab": TAB_SUBTITLE,
+        "min": 1,
+        "max": 50,
+        "step": 1,
+        "help": "单次抓取最多候选帖数量。",
+        "default_hint": "默认 10",
+    },
+    {
+        "key": "subtitle_auto_fetch_timeout_seconds",
+        "control": NUMBER,
+        "level": LEVEL_ADVANCED,
+        "group": GRP_FETCH_ADV,
+        "tab": TAB_SUBTITLE,
+        "min": 5,
+        "step": 1,
+        "help": "抓取 Case Agent 单次执行的超时秒数。多季大样本建议调大。",
+        "default_hint": "默认 30",
+    },
+    {
+        "key": "subtitle_auto_fetch_browser_enabled",
+        "control": TOGGLE,
+        "level": LEVEL_ADVANCED,
+        "group": GRP_FETCH_ADV,
+        "tab": TAB_SUBTITLE,
+        "options": ["启用", "禁用"],
+        "help": "是否启用动态浏览器抓取（需要额浏览器依赖）。",
+        "default_hint": "默认 禁用",
+        "bool_toggle": True,
+    },
+    {
+        "key": "subtitle_auto_fetch_acgrip_base_url",
+        "control": INPUT,
+        "level": LEVEL_ADVANCED,
+        "group": GRP_FETCH_ADV,
+        "tab": TAB_SUBTITLE,
+        "help": "ACGRIP 站点地址，仅在使用镜像/反代时修改。",
+        "default_hint": "默认 https://bbs.acgrip.com",
+    },
+    {
+        "key": "subtitle_auto_fetch_use_ai_rerank",
+        "control": TOGGLE,
+        "level": LEVEL_ADVANCED,
+        "group": GRP_FETCH_ADV,
+        "tab": TAB_SUBTITLE,
+        "options": ["启用", "禁用"],
+        "help": "是否用 AI 对抓取候选重新排序。",
+        "default_hint": "默认 启用",
+        "bool_toggle": True,
+    },
+    {
+        "key": "subtitle_auto_fetch_search_mode",
+        "control": TOGGLE,
+        "level": LEVEL_ADVANCED,
+        "group": GRP_FETCH_ADV,
+        "tab": TAB_SUBTITLE,
+        "options": ["auto"],
+        "help": "字幕搜索模式。当前仅 auto。",
+        "default_hint": "默认 auto",
+    },
+    {
+        "key": "subtitle_auto_fetch_save_reason",
+        "control": TOGGLE,
+        "level": LEVEL_ADVANCED,
+        "group": GRP_FETCH_ADV,
+        "tab": TAB_SUBTITLE,
+        "options": ["启用", "禁用"],
+        "help": "是否保存 AI 重排的决策原因，便于审计。",
+        "default_hint": "默认 启用",
+        "bool_toggle": True,
+    },
+    # ============================ 字幕对齐 ============================ #
+    {
+        "key": "subtitle_sync_enabled",
+        "control": TOGGLE,
+        "level": LEVEL_BASIC,
+        "group": GRP_SYNC,
+        "tab": TAB_SUBTITLE,
+        "options": ["启用", "禁用"],
+        "help": "用 ffsubsync 把字幕时间轴对齐到视频。需本机安装 ffsubsync。",
+        "default_hint": "默认 禁用",
+        "bool_toggle": True,
+    },
+    {
+        "key": "subtitle_sync_mode",
+        "control": TOGGLE,
+        "level": LEVEL_ADVANCED,
+        "group": GRP_SYNC,
+        "tab": TAB_SUBTITLE,
+        "options": ["best_effort", "strict"],
+        "help": "best_effort 对齐失败时回退原字幕；strict 对齐失败视为失败。",
+        "default_hint": "默认 best_effort",
+    },
+    {
+        "key": "subtitle_sync_executable",
+        "control": PATH,
+        "level": LEVEL_ADVANCED,
+        "group": GRP_SYNC,
+        "tab": TAB_SUBTITLE,
+        "select_mode": "file",
+        "help": "ffsubsync 可执行文件名或完整路径。",
+        "default_hint": "默认 ffsubsync",
+    },
+    {
+        "key": "subtitle_sync_extra_args",
+        "control": INPUT,
+        "level": LEVEL_ADVANCED,
+        "group": GRP_SYNC,
+        "tab": TAB_SUBTITLE,
+        "help": "传给 ffsubsync 的额外命令行参数。",
+        "default_hint": "默认 空",
+    },
+    {
+        "key": "subtitle_sync_timeout_seconds",
+        "control": NUMBER,
+        "level": LEVEL_ADVANCED,
+        "group": GRP_SYNC,
+        "tab": TAB_SUBTITLE,
+        "min": 10,
+        "step": 1,
+        "help": "单条字幕对齐的超时秒数。",
+        "default_hint": "默认 120",
+    },
+    {
+        "key": "subtitle_sync_overwrite_policy",
+        "control": TOGGLE,
+        "level": LEVEL_ADVANCED,
+        "group": GRP_SYNC,
+        "tab": TAB_SUBTITLE,
+        "options": ["follow_global", "overwrite", "skip"],
+        "help": "对齐产物覆盖策略：follow_global 跟随全局「已存在策略」，overwrite 强制覆盖，skip 跳过已存在。",
+        "default_hint": "默认 follow_global",
+    },
+    # ============================ 通知：Emby ============================ #
+    {
+        "key": "emby_enabled",
+        "control": TOGGLE,
+        "level": LEVEL_BASIC,
+        "group": GRP_EMBY,
+        "tab": TAB_NOTIFY,
+        "options": ["启用", "禁用"],
+        "help": "批次结束后通知 Emby 刷新媒体库。",
+        "default_hint": "默认 禁用",
+        "bool_toggle": True,
+    },
+    {
+        "key": "emby_host",
+        "control": INPUT,
+        "level": LEVEL_BASIC,
+        "group": GRP_EMBY,
+        "tab": TAB_NOTIFY,
+        "help": "Emby 服务器地址，含协议与端口。",
+        "default_hint": "默认 http://localhost:8096",
+    },
+    {
+        "key": "emby_api_key",
+        "control": SECRET,
+        "level": LEVEL_BASIC,
+        "group": GRP_EMBY,
+        "tab": TAB_NOTIFY,
+        "help": "Emby 的 API 密钥，在 Emby 后台「高级 → API 密钥」生成。",
+        "default_hint": "启用 Emby 时必填",
+    },
+    # ============================ 通知：Telegram ============================ #
+    {
+        "key": "telegram_enabled",
+        "control": TOGGLE,
+        "level": LEVEL_BASIC,
+        "group": GRP_TELEGRAM,
+        "tab": TAB_NOTIFY,
+        "options": ["启用", "禁用"],
+        "help": "批次结束后发送 Telegram 汇总通知。",
+        "default_hint": "默认 禁用",
+        "bool_toggle": True,
+    },
+    {
+        "key": "telegram_bot_token",
+        "control": SECRET,
+        "level": LEVEL_BASIC,
+        "group": GRP_TELEGRAM,
+        "tab": TAB_NOTIFY,
+        "help": "Telegram Bot 的 Token，从 @BotFather 获取。",
+        "default_hint": "启用 Telegram 时必填",
+    },
+    {
+        "key": "telegram_chat_id",
+        "control": INPUT,
+        "level": LEVEL_BASIC,
+        "group": GRP_TELEGRAM,
+        "tab": TAB_NOTIFY,
+        "help": "接收通知的会话 ID（个人/群组）。",
+        "default_hint": "启用 Telegram 时必填",
+    },
+    {
+        "key": "telegram_notify_on_success",
+        "control": TOGGLE,
+        "level": LEVEL_BASIC,
+        "group": GRP_TELEGRAM,
+        "tab": TAB_NOTIFY,
+        "options": ["启用", "禁用"],
+        "help": "批次有成功任务时发送通知。",
+        "default_hint": "默认 启用",
+        "bool_toggle": True,
+    },
+    {
+        "key": "telegram_notify_on_failure",
+        "control": TOGGLE,
+        "level": LEVEL_BASIC,
+        "group": GRP_TELEGRAM,
+        "tab": TAB_NOTIFY,
+        "options": ["启用", "禁用"],
+        "help": "批次有失败任务时发送通知。",
+        "default_hint": "默认 启用",
+        "bool_toggle": True,
+    },
+    {
+        "key": "telegram_base_url",
+        "control": INPUT,
+        "level": LEVEL_ADVANCED,
+        "group": GRP_TELEGRAM,
+        "tab": TAB_NOTIFY,
+        "help": "Telegram Bot API 地址，使用反代时修改。",
+        "default_hint": "默认 https://api.telegram.org",
+    },
+    # ============================ 跳过标签 ============================ #
+    {
+        "key": "skip_tags",
+        "control": INPUT,
+        "level": LEVEL_BASIC,
+        "group": GRP_SKIP,
+        "tab": TAB_GENERAL,
+        "help": "qBittorrent webhook 带有这些标签的任务将被跳过不处理，逗号分隔。",
+        "default_hint": "默认 iyuu,辅种,reseed,skip,no_process",
+    },
+    # ============================ BGM→TMDB 产品链路 ============================ #
+    {
+        "key": "rename_bgm_to_tmdb_product_pipeline_enabled",
+        "control": TOGGLE,
+        "level": LEVEL_ADVANCED,
+        "group": GRP_BGM_TMDB,
+        "tab": TAB_ADVANCED,
+        "options": ["启用", "禁用"],
+        "help": "启用 BGM→TMDB 产品桥接链路（Local→Bangumi→TMDB 全链路核心）。",
+        "default_hint": "默认 启用",
+        "bool_toggle": True,
+    },
+    {
+        "key": "rename_bgm_to_tmdb_execute_enabled",
+        "control": TOGGLE,
+        "level": LEVEL_ADVANCED,
+        "group": GRP_BGM_TMDB,
+        "tab": TAB_ADVANCED,
+        "options": ["启用", "禁用"],
+        "help": "是否真正执行 BGM→TMDB 迁移落盘；关闭则只规划不落盘。",
+        "default_hint": "默认 启用",
+        "bool_toggle": True,
+    },
+    # ============================ 运行时 ============================ #
+    {
+        "key": "log_level",
+        "control": TOGGLE,
+        "level": LEVEL_ADVANCED,
+        "group": GRP_RUNTIME,
+        "tab": TAB_ADVANCED,
+        "options": ["DEBUG", "INFO", "WARNING", "ERROR"],
+        "help": "日志等级，影响 data/log/BAR.log 的输出详细度。",
+        "default_hint": "默认 INFO",
+    },
+    {
+        "key": "queue_max_workers",
+        "control": NUMBER,
+        "level": LEVEL_ADVANCED,
+        "group": GRP_RUNTIME,
+        "tab": TAB_ADVANCED,
+        "min": 1,
+        "step": 1,
+        "help": "队列并行处理数。过高会放大 AI/网络并发压力，建议 1-5。",
+        "default_hint": "默认 1",
+    },
+    {
+        "key": "docker_mnt",
+        "control": INPUT,
+        "level": LEVEL_ADVANCED,
+        "group": GRP_RUNTIME,
+        "tab": TAB_ADVANCED,
+        "help": "Docker 容器内挂载根路径，用于宿主机→容器路径转换。",
+        "default_hint": "默认 /media",
+    },
+    {
+        "key": "host_path_prefix",
+        "control": INPUT,
+        "level": LEVEL_ADVANCED,
+        "group": GRP_RUNTIME,
+        "tab": TAB_ADVANCED,
+        "help": "qBittorrent 所在宿主机的路径前缀，用于 webhook 路径转换（Windows 为主）。",
+        "default_hint": "默认 空",
+    },
+]
+
+
+# --------------------------------------------------------------------------- #
+# 查询辅助
+# --------------------------------------------------------------------------- #
+def spec_by_key() -> dict[str, Mapping[str, Any]]:
+    """返回 key -> spec 映射，便于渲染层与测试快速查找。"""
+    return {entry["key"]: entry for entry in FIELD_SPEC}
+
+
+def keys_for_level(level: str) -> list[str]:
+    """返回指定层级的所有 key（保持 FIELD_SPEC 顺序）。"""
+    return [e["key"] for e in FIELD_SPEC if e["level"] == level]
+
+
+def entries_for_level_grouped(level: str) -> dict[str, list[Mapping[str, Any]]]:
+    """按分组聚合指定层级的字段，返回 {group: [spec, ...]}，分组按预设顺序。"""
+    order = BASIC_GROUP_ORDER if level == LEVEL_BASIC else ADVANCED_GROUP_ORDER
+    grouped: dict[str, list[Mapping[str, Any]]] = {g: [] for g in order}
+    for entry in FIELD_SPEC:
+        if entry["level"] != level:
+            continue
+        g = entry["group"]
+        grouped.setdefault(g, []).append(entry)
+    # 过滤空分组
+    return {g: items for g, items in grouped.items() if items}
+
+
+def tab_for_key(key: str) -> str | None:
+    """返回某 key 所属的场景 Tab（无则 None）。"""
+    for entry in FIELD_SPEC:
+        if entry["key"] == key:
+            return entry.get("tab")
+    return None
+
+
+def groups_for_tab(tab: str) -> list[str]:
+    """返回某 Tab 下出现的 group 列表（保持 FIELD_SPEC 顺序去重）。"""
+    seen: list[str] = []
+    for entry in FIELD_SPEC:
+        if entry.get("tab") != tab:
+            continue
+        g = entry["group"]
+        if g not in seen:
+            seen.append(g)
+    return seen
+
+
+def entries_for_tab_grouped(tab: str) -> dict[str, list[Mapping[str, Any]]]:
+    """按场景 Tab 聚合字段，返回 {group: [spec, ...]}，group 顺序按该 Tab 内首次出现顺序。"""
+    grouped: dict[str, list[Mapping[str, Any]]] = {}
+    for entry in FIELD_SPEC:
+        if entry.get("tab") != tab:
+            continue
+        g = entry["group"]
+        grouped.setdefault(g, []).append(entry)
+    return grouped
+
+
+def covered_keys() -> set[str]:
+    """FIELD_SPEC 覆盖的全部 key（用于与 config_page 渲染清单对齐校验）。"""
+    return {e["key"] for e in FIELD_SPEC}

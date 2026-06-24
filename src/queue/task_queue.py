@@ -7,8 +7,6 @@ from datetime import datetime
 from pathlib import Path
 from typing import Callable
 
-from nicegui import run
-
 from ..config.config_manager import cm
 from ..logger import logger
 from ..notification.emby_notify import get_emby_notifier
@@ -262,7 +260,7 @@ class TaskQueueManager:
 
         try:
             # 在线程池中执行实际处理
-            result = await run.io_bound(self._execute_rename, task)
+            result = await asyncio.to_thread(self._execute_rename, task)
 
             if isinstance(result, str):
                 # 返回字符串表示错误
@@ -278,7 +276,7 @@ class TaskQueueManager:
                 persisted_task_id = (
                     getattr(task, "original_uuid", None) or task.task_id
                 )
-                await run.io_bound(self._execute_subtitle_auto_fetch, persisted_task_id)
+                await asyncio.to_thread(self._execute_subtitle_auto_fetch, persisted_task_id)
 
         except Exception as e:
             task.status = TaskStatus.FAILED

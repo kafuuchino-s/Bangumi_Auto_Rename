@@ -32,7 +32,6 @@ def _build_process_fixture(
     )
 
     processor = SubtitleProcessor()
-
     extract_dir = tmp_path / "extract"
     extract_dir.mkdir(parents=True, exist_ok=True)
     source_path = extract_dir / "a.ass"
@@ -95,6 +94,86 @@ def _build_process_fixture(
         "analyze_subtitle_mapping",
         lambda **kwargs: ai_result,
     )
+
+    # Case Agent 是唯一链路后，process() 直接走 _process_case_agent。
+    # 这些 sync 测试关注的是 _land_compiled_plan 的 sync 落盘逻辑，不是 Case Agent
+    # 入口本身；故 mock _process_case_agent 复用已 mock 的 analyze_subtitle_mapping
+    # 构造 compiled_plan，再调真实 _land_compiled_plan，使 sync 行为仍被覆盖。
+    def _fake_case_agent(*, _uuid, archive_path, subtitle_files, processed_tasks,
+                        archive_structure, mapping_only=False):
+        from src.subtitle.case_agent import (
+            build_subtitle_file_cards,
+            build_target_video_cards,
+            build_subtitle_case_workspace,
+        )
+        from src.subtitle.case_agent.local_subtitle_entry import (
+            _build_subtitle_path_index,
+            _build_target_index,
+            _resolve_subtitle_ref,
+            _resolve_target_ref,
+        )
+        from src.subtitle.case_agent.models import (
+            CompiledSubtitleMapping,
+            CompiledSubtitlePlan,
+        )
+        res = processor.ai_client.analyze_subtitle_mapping(
+            archive_name=archive_path.name,
+            archive_structure=archive_structure,
+            processed_tasks=processed_tasks,
+        )
+        if not res or not res.mappings:
+            return processor._need_confirm_result(
+                _uuid=_uuid, archive_path=archive_path,
+                subtitle_files=subtitle_files, processed_tasks=processed_tasks,
+                snapshot=None, error="AI 无法确定",
+            )
+        workspace = build_subtitle_case_workspace(
+            archive_name=archive_path.name,
+            subtitle_files=build_subtitle_file_cards(subtitle_files),
+            target_videos=build_target_video_cards(processed_tasks),
+        )
+        sub_index = _build_subtitle_path_index(workspace.subtitle_files)
+        target_index = _build_target_index(workspace.target_videos)
+        sub_by_ref = workspace.subtitle_card_by_ref()
+        target_by_ref = workspace.target_card_by_ref()
+        compiled = []
+        for mapping in res.mappings:
+            sub_ref = _resolve_subtitle_ref(
+                str(getattr(mapping, "subtitle_path", "") or ""), sub_index
+            )
+            target_ref = _resolve_target_ref(
+                str(getattr(mapping, "task_uuid", "") or ""),
+                str(getattr(mapping, "video", "") or ""), target_index,
+            )
+            if not sub_ref or not target_ref:
+                continue
+            sc = sub_by_ref.get(sub_ref)
+            tc = target_by_ref.get(target_ref)
+            if sc is None or tc is None:
+                continue
+            emby_lang, is_simplified = processor._normalize_language(
+                getattr(mapping, "language", None)
+            )
+            compiled.append(
+                CompiledSubtitleMapping(
+                    subtitle_ref=sub_ref, subtitle_archive_path=sc.archive_path,
+                    target_ref=target_ref, task_uuid=tc.task_uuid, video=tc.video,
+                    target_dir=tc.target_dir, emby_lang=emby_lang,
+                    is_simplified=is_simplified, is_movie=tc.is_movie,
+                )
+            )
+        plan = CompiledSubtitlePlan(
+            mappings=compiled, unmatched=[],
+            summary=str(getattr(res, "reason", "") or "test plan"),
+        )
+        return processor._land_compiled_plan(
+            _uuid=_uuid, archive_path=archive_path, subtitle_files=subtitle_files,
+            processed_tasks=processed_tasks, compiled_plan=plan, snapshot=None,
+            confidence=str(getattr(res, "confidence", "Medium") or "Medium"),
+            pipeline_mode="subtitle_case_agent", mapping_only=mapping_only,
+        )
+
+    monkeypatch.setattr(processor, "_process_case_agent", _fake_case_agent)
 
     if sync_result is None:
         synced_path = extract_dir / ".ffsubsync" / "a.ass"

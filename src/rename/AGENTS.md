@@ -15,7 +15,6 @@
 | 补充文件过滤 | `local_supplemental_filter.py` | 非正片文件判定 |
 | 标题清洗 | `cleaner.py` | 低风险 deterministic 预处理 |
 | 迁移/记录 | `trans.py` | 硬链接 / 复制 / 移动落盘适配层 |
-| 旧 TV 映射 / 后置校验 | `ai_processor.py` | 兼容链路：映射路径校验、重复/越界剔除、Season 0/special 过滤、关联字幕跟随 |
 | Bangumi API | `src/bangumi/` | broker-driven evidence source |
 
 ## Local Rules

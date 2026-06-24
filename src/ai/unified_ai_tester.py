@@ -14,6 +14,7 @@
 """
 
 import json
+import re
 import time
 from collections.abc import Mapping, Sequence
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -239,12 +240,20 @@ class UnifiedAITester:
                 }
 
             # 将AI结果转换为字典，key为file_path
+            # 注：AIEpisodeMapping（AI 原始输出）只含 legal_node_id（如 tmdb:S01E03），
+            # 不含派生字段 tmdb_season/tmdb_episode（那是子类 EpisodeMapping 的字段）。
+            # 这里从 legal_node_id 解析季集，避免 AttributeError。
+            _node_re = re.compile(r"tmdb:S(\d+)E(\d+)")
             actual_mapping: dict[str, ComparableMappingEntry] = {}
             for item in ai_result.file_mapping:
                 file_path = item.file_path or f"#{item.source_index}"
+                season, episode = 0, 0
+                m = _node_re.match(getattr(item, "legal_node_id", "") or "")
+                if m:
+                    season, episode = int(m.group(1)), int(m.group(2))
                 actual_mapping[file_path] = {
-                    "tmdb_season": item.tmdb_season,
-                    "tmdb_episode": item.tmdb_episode,
+                    "tmdb_season": season,
+                    "tmdb_episode": episode,
                     "episode_type": item.episode_type,
                     "confidence": item.confidence,
                 }

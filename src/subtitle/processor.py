@@ -172,20 +172,9 @@ class SubtitleProcessor:
         archive_structure = self.extractor.get_archive_structure(subtitle_files)
         logger.info(f"[字幕处理] 压缩包结构: {list(archive_structure.keys())}")
 
-        case_agent_enabled = bool(
-            cm.get_config("subtitle_case_agent_primary_enabled")
-        )
-
-        if case_agent_enabled:
-            return self._process_case_agent(
-                _uuid=_uuid,
-                archive_path=archive_path,
-                subtitle_files=subtitle_files,
-                processed_tasks=processed_tasks,
-                archive_structure=archive_structure,
-                mapping_only=mapping_only,
-            )
-        return self._process_legacy_compat(
+        # Case Agent 是字幕导入的唯一链路（Pi 后端 default / single_shot 兼容），
+        # 旧 _process_legacy_compat 直落路径已移除（无合同校验、与 strict 定位冲突）。
+        return self._process_case_agent(
             _uuid=_uuid,
             archive_path=archive_path,
             subtitle_files=subtitle_files,
@@ -336,124 +325,7 @@ class SubtitleProcessor:
         )
 
     # ------------------------------------------------------------------
-    # 兼容路径（Case Agent 关闭时）：单轮 AI + 精确匹配，无合同校验
-    # ------------------------------------------------------------------
-
-    def _process_legacy_compat(
-        self,
-        *,
-        _uuid: str,
-        archive_path: Path,
-        subtitle_files: List[ExtractedSubtitle],
-        processed_tasks: List[ProcessedTask],
-        archive_structure: Dict[str, List[str]],
-        mapping_only: bool = False,
-    ) -> Dict[str, Any]:
-        """旧兼容路径：直接用 AI 结果精确匹配落盘，无 Verifier 合同。
-
-        保留 analyze_subtitle_mapping 旧路径作为 Case Agent 关闭时兼容；不再做
-        suffix 模糊匹配 / split(" - ") 集数规则匹配（对齐 AI-first 改造）。
-        """
-        from .case_agent import build_subtitle_file_cards, build_target_video_cards
-        from .case_agent import build_subtitle_case_workspace
-        from .case_agent.local_subtitle_entry import (
-            _build_subtitle_path_index,
-            _build_target_index,
-            _resolve_subtitle_ref,
-            _resolve_target_ref,
-        )
-        from .case_agent.models import CompiledSubtitleMapping, CompiledSubtitlePlan
-        ai_result = self.ai_client.analyze_subtitle_mapping(
-            archive_name=archive_path.name,
-            archive_structure=archive_structure,
-            processed_tasks=processed_tasks,
-        )
-
-        if not ai_result or not ai_result.mappings:
-            self.extractor.cleanup(archive_path)
-            return self._need_confirm_result(
-                _uuid=_uuid,
-                archive_path=archive_path,
-                subtitle_files=subtitle_files,
-                processed_tasks=processed_tasks,
-                snapshot=None,
-                error="AI 无法确定匹配的动漫，请手动选择",
-            )
-
-        # 复用 entry 的精确 ref 解析，构造 compiled_plan 后走统一落盘
-        subtitle_cards = build_subtitle_file_cards(subtitle_files)
-        target_cards = build_target_video_cards(processed_tasks)
-        workspace = build_subtitle_case_workspace(
-            archive_name=archive_path.name,
-            subtitle_files=subtitle_cards,
-            target_videos=target_cards,
-        )
-        sub_index = _build_subtitle_path_index(workspace.subtitle_files)
-        target_index = _build_target_index(workspace.target_videos)
-        sub_by_ref = workspace.subtitle_card_by_ref()
-        target_by_ref = workspace.target_card_by_ref()
-
-        compiled_mappings: List[CompiledSubtitleMapping] = []
-        for mapping in ai_result.mappings:
-            sub_ref = _resolve_subtitle_ref(
-                str(getattr(mapping, "subtitle_path", "") or ""), sub_index
-            )
-            target_ref = _resolve_target_ref(
-                str(getattr(mapping, "task_uuid", "") or ""),
-                str(getattr(mapping, "video", "") or ""),
-                target_index,
-            )
-            if not sub_ref or not target_ref:
-                logger.warning(
-                    f"[字幕处理] 兼容路径无法精确解析映射: "
-                    f"{getattr(mapping, 'subtitle_path', '')} / "
-                    f"{getattr(mapping, 'task_uuid', '')}+{getattr(mapping, 'video', '')}"
-                )
-                continue
-            sub_card = sub_by_ref.get(sub_ref)
-            target_card = target_by_ref.get(target_ref)
-            if sub_card is None or target_card is None:
-                continue
-            emby_lang, is_simplified = self._normalize_language(
-                getattr(mapping, "language", None)
-            )
-            compiled_mappings.append(
-                CompiledSubtitleMapping(
-                    subtitle_ref=sub_ref,
-                    subtitle_archive_path=sub_card.archive_path,
-                    target_ref=target_ref,
-                    task_uuid=target_card.task_uuid,
-                    video=target_card.video,
-                    target_dir=target_card.target_dir,
-                    emby_lang=emby_lang,
-                    is_simplified=is_simplified,
-                    is_movie=target_card.is_movie,
-                )
-            )
-
-        if not compiled_mappings:
-            self.extractor.cleanup(archive_path)
-            return self._error_result(_uuid, "无法建立字幕映射", archive_path)
-
-        compiled_plan = CompiledSubtitlePlan(
-            mappings=compiled_mappings,
-            unmatched=[],
-            summary=str(getattr(ai_result, "reason", "") or "legacy compat plan"),
-        )
-        return self._land_compiled_plan(
-            _uuid=_uuid,
-            archive_path=archive_path,
-            subtitle_files=subtitle_files,
-            processed_tasks=processed_tasks,
-            compiled_plan=compiled_plan,
-            snapshot=None,
-            confidence=str(getattr(ai_result, "confidence", "Medium") or "Medium"),
-            pipeline_mode="subtitle_legacy_compat",
-            mapping_only=mapping_only,
-        )
-
-    # ------------------------------------------------------------------
-    # 落盘（accepted / legacy 共用）
+    # 落盘（accepted 用）
     # ------------------------------------------------------------------
 
     def _land_compiled_plan(

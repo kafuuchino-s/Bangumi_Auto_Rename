@@ -12,7 +12,6 @@ Bangumi Auto Rename（番剧自动重命名）是一个 Python Web 应用。核�
 
 - 基于 TMDB/Bangumi 元数据整理动漫 / 剧集 / 电影
 - Case Agent：Pi 后端驱动 evidence request → MappingDraft → Verifier 合同校验
-- AI 标题提取、媒体类型判断、TMDB 候选选择、剧集映射（兼容旧链路仍可用）
 - 支持硬链接 / 复制 / 移动
 - 字幕压缩包导入与 AI 映射
 - 缺失字幕自动抓取
@@ -73,8 +72,8 @@ docker run -p 5999:5999 bangumi-auto-rename
 | Local→Bangumi Case Agent | `src/rename/case_agent/` | Pi runner/tools、evidence broker、MappingDraft、AssignmentExpander、Verifier |
 | 本地事实抽取 | `src/rename/local_evidence.py` | 本地包文件、主视频候选、补充文件事实 |
 | 补充文件过滤 | `src/rename/local_supplemental_filter.py` | 非正片文件判定 |
-| 旧 TV 映射/后置校验 | `src/rename/ai_processor.py` | 兼容链路：映射路径校验、重复/越界剔除、Season 0/special 过滤、关联字幕跟随 |
-| AI 提供商 | `src/ai/client.py` | facade；OpenAI 运行时入口、缓存、schema 构建 |
+| 关联字幕跟随 / 侧车迁移 | `src/rename/process.py` | `_collect_and_transfer_subtitle_sidecars`：同目录同 stem 字幕跟随视频迁移、语言后缀→Emby 码、`.zh-CN.default` 生成、复制写入 |
+| AI 提供商 | `src/ai/client.py` | facade；OpenAI 运行时入口、缓存、schema 构建；生产链路下 Pi sidecar 接管语义推理，Python AIClient 仅作门禁/测试器 |
 | Bangumi 辅助上下文 | `src/bangumi/context_builder.py` | 只给 TV prompt 提供桥接证据，不直接决定最终季集 |
 | 字幕导入 | `src/subtitle/processor.py` | 薄入口：解压→Case Agent 入口→accepted 落盘 / fail_closed·need_confirm 合格结果 |
 | 字幕 Case Agent | `src/subtitle/case_agent/` | AI-first + evidence-driven + Verifier 合同；`local_subtitle_entry.py` 分发 pi/single_shot；`pi_runner.py` Pi 后端 |
@@ -97,11 +96,7 @@ Web UI / qBittorrent webhook
 → 批次结束后：Emby 刷新 + Telegram 汇总
 ```
 
-兼容旧链路（Case Agent 不可用或关闭时）：
-
-```text
-→ AI 提取标题/类型 → TMDB 候选选择 → TV/Movie 分支 → ai_processor 严格映射 → Trans.trans_file()
-```
+> 旧 Python 端 AI 映射链路（ai_processor.py）已移除，全链路走 Pi Case Agent + bgm_to_tmdb 桥接。Season 0/special 合法落点由 bgm_to_tmdb legal_graph + Verifier 节点存在性校验承载；重复/越界由两个 Verifier 合同校验；关联字幕跟随由 `process.py::_collect_and_transfer_subtitle_sidecars` 承载。
 
 ## 当前实现认知
 
@@ -124,9 +119,8 @@ Web UI / qBittorrent webhook
 
 ### AI-first + strict
 
-- `src/rename/process.py` 会让 AI 提取标题与媒体类型（兼容链路）
-- TV / Movie 都先走 TMDB 搜索，再由确定性规则或 AI 从候选中选择
-- 若 AI 不可用、超时、低置信度、空映射或非法映射，任务会按失败记录
+- 全链路走 Pi Case Agent：语义推理（标题/类型/映射/special 判定）由 Pi sidecar 完成，Python 端 AIClient 不再参与生产推理
+- 若 Pi 不可用、超时、空映射或合同校验不通过，任务按失败记录（`fail_closed`/`invalid`）
 - 任务记录会写入：`ai_attempted`、`ai_used`、`ai_confidence`、`failure_reason`、`pipeline_mode`
 
 ### AI-first 实现偏好
@@ -142,7 +136,7 @@ Web UI / qBittorrent webhook
 
 具体要求：
 
-- 能复用现有 AI 链路时，优先复用 `src/rename/process.py`、`src/ai/client.py`、`src/rename/ai_processor.py`
+- 能复用现有 AI 链路时，优先复用 `src/rename/process.py`、`src/ai/client.py`（Python 端 AI 仅测试器/门禁用）、Pi Case Agent 入口
 - `cleaner.py` / 纯规则逻辑只保留少量低风险、确定性的兜底规范化
 - 不要为了个别样本继续无限扩张标题硬规则、目录硬规则、特判表
 - 回归工具链若与主流程目标一致，尽量也复用主流程的 AI-first 标题解析与候选选择思路
@@ -161,25 +155,26 @@ Web UI / qBittorrent webhook
 
 ### Season 0 / special
 
-当前 Season 0 / special 逻辑以 **AI 映射结果 + TMDB 季集信息** 为准，主要在 `src/rename/ai_processor.py` 中完成：
+Season 0 / special 合法落点由 **bgm_to_tmdb legal_graph** 决定，非"先映射再过滤"：
 
-- 重复映射清洗
-- 越界映射清洗
-- Season 0 / special 语义冲突过滤
-- 按 TMDB 季度信息生成最终文件名
+- `bgm_to_tmdb/recipe.py` 的 `special_sequence` rule → season_number=0（special 显式落 Season 0）
+- `bgm_to_tmdb/graph_builder.py` 按 TMDB season payload 构造 legal_nodes，每季每集一个节点；special/season0 作为 season_number=0 节点存在
+- `bgm_to_tmdb/verifier.py` 校验 mapping 的 `tmdb_legal_node_ids` 必须在 legal_graph 中存在（`unknown_tmdb_legal_node` issue）——无合法节点则 Pi 无法提交合法 mapping
+- 重复/越界由 `case_agent/verifier.py`（coverage/duplicate/accounting）+ `bgm_to_tmdb/verifier.py`（duplicate_target/unknown_tmdb_legal_node）合同校验，不再有"先映射再清洗"中间态
+- 按 TMDB 季度信息生成最终文件名在 `bgm_to_tmdb/rename_plan.py` + `filename_builder`
 
 ### 关联字幕跟随重命名
 
-AI TV 映射不只处理视频。若同目录存在同 stem 的字幕（如 `.chs.ass`、`.tc.srt`），`src/rename/ai_processor.py` 会：
+BGM→TMDB 落地不只处理视频。若同目录存在同 stem 的字幕（如 `.chs.ass`、`.tc.srt`），`src/rename/process.py::_collect_and_transfer_subtitle_sidecars` 会：
 
-- 把字幕作为关联文件加入映射
-- 解析语言后缀并转成 Emby 语言码
-- 生成如 `xxx.zh-CN.default.ass` 的目标文件名
-- 在主任务完成后以复制模式写入目标目录
+- 遍历 transfer_mapping，对每个视频找同目录同 stem 字幕匹配
+- 解析语言后缀（`_SUBTITLE_LANGUAGE_MAP`）并转成 Emby 语言码
+- 生成如 `xxx.zh-CN.default.ass` 的目标文件名（简体加 `.default`，未命中语言不加 default）
+- 在主任务落地后以复制模式写入目标目录，结果写入 `subtitle_mapping`
 
 ### 电影合集
 
-- 单电影：AI 标题提取 + TMDB 候选选择 + 目标文件名生成
+- 单电影：Case Agent 映射 + TMDB 目标文件名生成
 - 多视频目录：可能进入电影合集分析
 - 若合集候选被判定为"单电影 + 附加内容"，会回退到单电影处理并忽略附加内容
 
@@ -307,7 +302,7 @@ AI 测试入口：
 - qBittorrent webhook 的路径未必可直接使用，先看 `src/web.py` 的路径修复与 Docker 映射
 - 默认传输模式是硬链接；字幕导入和关联字幕通常走复制
 - 若要看"为什么任务完成后又触发字幕 / 通知"，先看 `src/queue/task_queue.py`
-- 若要看"为什么字幕被改成 Emby 风格语言后缀"，先看 `src/subtitle/processor.py` 和 `src/rename/ai_processor.py`
+- 若要看"为什么字幕被改成 Emby 风格语言后缀"，先看 `src/subtitle/processor.py`（字幕导入）和 `src/rename/process.py::_collect_and_transfer_subtitle_sidecars`（关联字幕跟随）
 - `requirements_docker.txt` 与主 `requirements.txt` 分离；Docker 镜像的依赖集合和本地开发不完全等价
 - 改 Case Agent 入口路由：看 `process.py` 和 `case_agent/local_bangumi_entry.py`
 - 改判定语义：看 `case_agent/pi_runner.py`、`pi_tools.py`、`verifier.py`、`mapping_draft.py`

@@ -202,6 +202,10 @@ def test_build_tv_context_returns_none_when_search_misses():
 
 
 def test_bangumi_client_retries_retryable_errors(monkeypatch):
+    # 该测试 mock _request_json_uncached 返回 FakeResponse（不可 JSON 序列化），
+    # 而 _request_json 经 get_or_fetch 在 read-write 缓存模式下会 json.dumps 序列化
+    # payload 落盘。关闭元数据缓存，让请求直接走 fetcher 不经过序列化路径。
+    monkeypatch.setenv('BAR_METADATA_CACHE_MODE', 'off')
     client = BangumiClient()
     calls = {"count": 0}
 

@@ -1,4 +1,3 @@
-import os
 import logging
 import time
 from logging.handlers import TimedRotatingFileHandler
@@ -95,20 +94,12 @@ structlog.configure(
 )
 
 logger: structlog.stdlib.BoundLogger = structlog.get_logger()
-logging.getLogger('niceGUI').propagate = False
 
 # AI 库日志
 logging.getLogger('openai').setLevel(logging.WARNING)
 logging.getLogger('httpx').setLevel(logging.WARNING)
 logging.getLogger('httpcore').setLevel(logging.WARNING)
-
-logging.getLogger('google.generativeai').setLevel(logging.WARNING)
-logging.getLogger('google.api_core').setLevel(logging.WARNING)
-logging.getLogger('google.auth').setLevel(logging.WARNING)
 logging.getLogger('urllib3.connectionpool').setLevel(logging.WARNING)
-# 抑制 gRPC 和 Google C++ 底层库的日志
-os.environ['GRPC_VERBOSITY'] = 'ERROR'
-os.environ['GLOG_minloglevel'] = '2'
 
 def update_log_level_from_config() -> None:
     """

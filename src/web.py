@@ -1,14 +1,19 @@
 from pathlib import Path
 
-from fastapi import Request
-from nicegui import app, ui
+from fastapi import FastAPI, Request
+from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
 
 from .config.config_manager import cm
 from .logger import logger
-from .main_page import main_page
-from .pages.data_table_page import create_table
 from .queue.task_queue import get_queue_manager
-from .utils.utils import no_scroll_bar
+from .api import api_router
+
+# 纯 FastAPI 后端（已移除 NiceGUI）：提供 /api/* + /sendTask webhook + 前端静态托管
+app = FastAPI(title="番剧自动重命名 API")
+
+# 挂载 REST API 层（/api/*），供新前端调用；业务逻辑不动
+app.include_router(api_router, prefix='/api')
 
 ANI_TAG = ['动漫', 'anime', '动画']
 MOVIE_TAG = ['电影', 'movie', '剧场', '剧场版']
@@ -137,12 +142,6 @@ def fix_url_encoded_path(path: str) -> str:
     return path
 
 
-@ui.page('/')
-def main():
-    ui.add_head_html(no_scroll_bar)
-    main_page()
-
-
 @app.post('/sendTask')
 async def _send_task(request: Request):
     form_data = dict(await request.form())
@@ -223,7 +222,25 @@ async def _send_task(request: Request):
         is_movie=is_movie,
     )
 
-    create_table.refresh()
-
     logger.info(f'[收到任务] {path} 已加入队列，任务ID: {task_id}')
     return {'code': 200, 'data': '任务已加入队列！'}
+
+
+# ----------------------- 前端静态托管（单端口合一）----------------------- #
+# Next.js 静态导出产物（frontend/out）由 FastAPI 同端口托管。
+# /api/* 与 /sendTask 已注册路由优先；其余路径回退到前端 SPA。
+_FRONTEND_OUT = Path(__file__).resolve().parents[1] / 'frontend' / 'out'
+if _FRONTEND_OUT.is_dir():
+    app.mount('/', StaticFiles(directory=str(_FRONTEND_OUT), html=True), name='frontend')
+else:
+    # 前端未构建：给出提示，避免 StaticFiles 报错
+    @app.get('/', response_class=HTMLResponse)
+    def _frontend_not_built():
+        return (
+            '<html><body style="font-family:system-ui;padding:40px">'
+            '<h2>番剧自动重命名 · API 后端</h2>'
+            '<p>前端未构建。请在 <code>frontend/</code> 执行 <code>npm run build</code> '
+            '生成静态产物后重启。</p>'
+            '<p>API：<code>/api/*</code> ｜ webhook：<code>POST /sendTask</code></p>'
+            '</body></html>'
+        )

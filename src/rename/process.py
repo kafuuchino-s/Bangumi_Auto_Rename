@@ -361,19 +361,11 @@ class Rename:
     ) -> str | bool:
         task_uuid = _tuuid or str(uuid.uuid4())
         ai_client = AIClient()
-        if not ai_client.is_available():
-            return self.error_reply(
-                task_uuid,
-                self._failure_message('ai_unavailable'),
-                path,
-                _is_anime,
-                _is_movie,
-                name=cus_name,
-                season_id=cus_season_id,
-                failure_reason='ai_unavailable',
-                ai_attempted=True,
-                ai_used=False,
-            )
+        # 注：旧 Python AI 时代的 ai_client.is_available() 硬门禁已移除。
+        # 全链路走 Pi Case Agent：Pi 在 ai_* 配置全空时可退到 .pi/agent/auth.json
+        # 自带 auth，不应被 Python AIClient 的可用性拦死。Pi 配置真正缺失时
+        # 由 Pi sidecar 自身报错（比 ai_unavailable 误杀更准确）。ai_client 仍
+        # 实例化以兼容 Case Agent 入口签名（Pi 后端忽略它）。
 
         result = self._run_local_bangumi_case_agent_primary_for_path(
             path=path,
@@ -438,7 +430,7 @@ class Rename:
         ordered_video_files: list[Path] | None = None,
         timings: dict[str, object] | None = None,
     ) -> dict[str, object] | None:
-        if not path.exists() or not ai_client.is_available():
+        if not path.exists():
             return None
 
         def _record_timing(stage: str, started_at: float) -> None:
