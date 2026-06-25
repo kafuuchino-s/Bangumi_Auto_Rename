@@ -31,6 +31,8 @@ google-genai>=0.8.0
 # --- 元数据 / 工具 ---
 tmdbsimple>=2.9.1
 structlog>=24.4.0
+# diskcache：cache/metadata 的 SQLite 后端（碎 JSON+lock 文件迁移目标）
+diskcache>=5.6.0
 pyyaml>=6.0.2
 python-dotenv>=1.0.1
 typing-extensions>=4.12.0

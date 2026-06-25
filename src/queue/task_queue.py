@@ -13,6 +13,7 @@ from ..notification.emby_notify import get_emby_notifier
 from ..notification.telegram_notify import get_telegram_notifier
 from ..rename.cleaner import extract_video_format
 from ..subtitle.auto_fetch import SubtitleAutoFetcher
+from ..utils.metadata_cache import gc_expired
 from .task_status import QueuedTask, TaskStatus
 
 RefreshCallback = Callable[[], None]
@@ -216,6 +217,12 @@ class TaskQueueManager:
         # 所有 worker 完成后，触发 Emby 通知
         self._trigger_emby_notification()
         self._trigger_telegram_notification()
+
+        # 批次收尾：清理过期缓存条目 + 超容量 LRU 淘汰（off 模式内部跳过）
+        try:
+            gc_expired()
+        except Exception:
+            logger.exception('[队列] metadata cache gc 失败')
 
         self._workers_running = False
         self._worker_count = 0
