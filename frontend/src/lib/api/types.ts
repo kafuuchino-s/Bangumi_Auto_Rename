@@ -118,6 +118,7 @@ export interface FieldSpecEntry {
   group: string;
   tab?: string;
   subgroup?: string;
+  label?: string;
   select_mode?: "file" | "directory";
   options?: string[];
   min?: number;

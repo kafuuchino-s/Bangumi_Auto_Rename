@@ -18,6 +18,8 @@ from __future__ import annotations
 
 from typing import Any, Mapping
 
+from ..config.config_manager import CN_MAP
+
 
 # --------------------------------------------------------------------------- #
 # 控件类型常量
@@ -67,6 +69,7 @@ GRP_BGM_TMDB = "BGM→TMDB 产品链路"
 GRP_SUBTITLE_AGENT = "字幕/抓取 Case Agent"
 GRP_FETCH_ADV = "抓取高级"
 GRP_RUNTIME = "运行时"
+GRP_CACHE = "元数据缓存"
 
 
 # 常用区分组顺序
@@ -89,6 +92,7 @@ ADVANCED_GROUP_ORDER = [
     GRP_SUBTITLE_AGENT,
     GRP_FETCH_ADV,
     GRP_RUNTIME,
+    GRP_CACHE,
 ]
 
 # 分组 → Material icon 名（导航与卡片标题用）
@@ -107,6 +111,7 @@ GROUP_ICON = {
     GRP_SUBTITLE_AGENT: "rule",
     GRP_FETCH_ADV: "tune",
     GRP_RUNTIME: "settings",
+    GRP_CACHE: "cached",
 }
 
 
@@ -574,6 +579,50 @@ FIELD_SPEC: list[Mapping[str, Any]] = [
         "help": "qBittorrent 所在宿主机的路径前缀，用于 webhook 路径转换（Windows 为主）。",
         "default_hint": "默认 空",
     },
+    # ============================ 元数据缓存 ============================ #
+    {
+        "key": "metadata_cache_mode",
+        "control": SELECT,
+        "level": LEVEL_ADVANCED,
+        "group": GRP_CACHE,
+        "tab": TAB_ADVANCED,
+        "options": ["read-write", "cache-only", "refresh", "off"],
+        "help": "TMDB/Bangumi API 元数据缓存模式。read-write=命中取缓存否则拉取并写；cache-only=只读缓存不拉网（miss 抛错，适合离线回归）；refresh=强制重拉；off=完全不缓存。改后重启生效。",
+        "default_hint": "默认 read-write",
+    },
+    {
+        "key": "metadata_cache_ttl_days",
+        "control": NUMBER,
+        "level": LEVEL_ADVANCED,
+        "group": GRP_CACHE,
+        "tab": TAB_ADVANCED,
+        "min": 1,
+        "step": 1,
+        "help": "正向结果（有数据的 API 响应）缓存天数。改后对新写入条目生效，已有条目按原 TTL。",
+        "default_hint": "默认 30",
+    },
+    {
+        "key": "metadata_cache_negative_ttl_hours",
+        "control": NUMBER,
+        "level": LEVEL_ADVANCED,
+        "group": GRP_CACHE,
+        "tab": TAB_ADVANCED,
+        "min": 1,
+        "step": 1,
+        "help": "空结果（[] / {}）缓存小时数，避免短时间内反复打空查询。",
+        "default_hint": "默认 6",
+    },
+    {
+        "key": "metadata_cache_max_size_mb",
+        "control": NUMBER,
+        "level": LEVEL_ADVANCED,
+        "group": GRP_CACHE,
+        "tab": TAB_ADVANCED,
+        "min": 1,
+        "step": 1,
+        "help": "缓存磁盘上限（MB）。批次收尾/启动时若超限按 LRU 淘汰旧条目。改后重启生效（size_limit 在打开缓存时确定）。",
+        "default_hint": "默认 500",
+    },
 ]
 
 
@@ -609,6 +658,22 @@ def tab_for_key(key: str) -> str | None:
         if entry["key"] == key:
             return entry.get("tab")
     return None
+
+
+def get_field_spec_with_labels() -> list[dict[str, Any]]:
+    """返回带 ``label``（中文显示名）的 field-spec 拷贝，供前端渲染。
+
+    label 优先级：entry 显式 ``label`` > ``CN_MAP[key]`` > key 本身。
+    单一来源在 ``CN_MAP``（config_manager），避免前端再维护一份重复映射。
+    返回的是浅拷贝字典列表，不修改模块级 ``FIELD_SPEC``。
+    """
+    out: list[dict[str, Any]] = []
+    for entry in FIELD_SPEC:
+        item = dict(entry)
+        if "label" not in item:
+            item["label"] = CN_MAP.get(entry["key"]) or entry["key"]
+        out.append(item)
+    return out
 
 
 def groups_for_tab(tab: str) -> list[str]:

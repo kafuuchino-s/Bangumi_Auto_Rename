@@ -16,7 +16,7 @@ from pydantic import BaseModel
 from ..config.config_manager import cm
 from ..notification.emby_notify import EmbyNotifier
 from ..notification.telegram_notify import TelegramNotifier
-from ..pages.config_field_spec import FIELD_SPEC
+from ..pages.config_field_spec import get_field_spec_with_labels
 from .serializers import _is_secret_key, get_all_config, mask_secrets
 
 router = APIRouter(prefix="/config", tags=["config"])
@@ -70,8 +70,8 @@ def update_config(req: ConfigUpdateRequest) -> dict[str, Any]:
 
 @router.get("/field-spec")
 def get_field_spec() -> dict[str, Any]:
-    """暴露字段元数据（前端元数据驱动渲染）。"""
-    return {"field_spec": list(FIELD_SPEC)}
+    """暴露字段元数据（含中文 label，前端元数据驱动渲染）。"""
+    return {"field_spec": get_field_spec_with_labels()}
 
 
 @router.post("/test-ai")

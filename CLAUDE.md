@@ -235,6 +235,14 @@ BGM→TMDB 落地不只处理视频。若同目录存在同 stem 的字幕（如
 - Emby：`emby_enabled` / `emby_host` / `emby_api_key`
 - Telegram：`telegram_enabled` / `telegram_bot_token` / `telegram_chat_id` / `telegram_notify_on_success` / `telegram_notify_on_failure` / `telegram_base_url`
 
+### 元数据缓存
+
+- 模式：`metadata_cache_mode`（`read-write`/`cache-only`/`refresh`/`off`）
+- TTL：`metadata_cache_ttl_days`（正向）/ `metadata_cache_negative_ttl_hours`（空结果）
+- 上限：`metadata_cache_max_size_mb`（超限 LRU 淘汰）
+- 路径：`BAR_METADATA_CACHE_DIR`（env-only，默认 `data/cache/metadata`）
+- 测试/override：`BAR_METADATA_CACHE_*` env 优先于 config（不改 config 即可临时覆盖）
+
 ## 数据与日志
 
 运行时数据在 `data/`：
@@ -245,10 +253,20 @@ BGM→TMDB 落地不只处理视频。若同目录存在同 stem 的字幕（如
 - `record/`
 - `ai_analysis/`
 - `pi_case_agent/`
-- `cache/`
+- `cache/`（`metadata/` 为 TMDB/Bangumi API 元数据缓存，SQLite(diskcache) 后端，`metadata.db` + blob 子区）
 - `subtitle_upload/`
 - `regression/`
 - `ai_batch_regression/`
+
+`cache/metadata` 缓存后端（`src/utils/metadata_cache.py`）：
+
+- 早期是「一个 API 响应一个碎 JSON + 每个 key 一个 lock 文件」高碎片布局，已迁移到 diskcache（SQLite 索引 + 大 blob 外存，内建 LRU eviction / expire / 跨进程原子互斥）
+- `get_or_fetch` 接口不变：4 态 mode（`read-write`/`cache-only`/`refresh`/`off`）、`MetadataCacheMiss`
+- 配置项 `metadata_cache_mode`/`metadata_cache_ttl_days`/`metadata_cache_negative_ttl_hours`/`metadata_cache_max_size_mb` 已接入 config_manager + field-spec，前端「设置 → 高级 → 元数据缓存」分组可改；`metadata_cache.py` 读 cm.get_config 优先、env（`BAR_METADATA_CACHE_*`）作测试/override 兜底；`BAR_METADATA_CACHE_DIR`（路径）仍 env-only（默认 `data/cache/metadata`）
+- `metadata_cache_max_size_mb` 默认 500，超限 gc 时 LRU 淘汰
+- 首启自动迁移旧碎 JSON 树 → diskcache（哨兵 `.migrated_v1`，旧树保留作回滚保险，确认新缓存正常后可手动删除 `cache/metadata/<provider>/` 与 `_locks/`）
+- 生命周期：启动时（`src/start.py`）+ 批次收尾（`src/queue/task_queue.py` Emby/Telegram 通知后）各跑一次 `gc_expired()`；off 模式跳过
+- Windows 注意：SQLite WAL 在 NTFS 上易被杀毒拖慢，建议把 `data/cache/` 加入杀毒排除项（代码不处理，文档化）
 
 `src/logger.py` 当前行为：
 

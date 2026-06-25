@@ -271,7 +271,7 @@ function FieldRow({
       <div className="flex flex-row items-center justify-between rounded-lg border p-4">
         <div className="space-y-0.5 pr-4">
           <div className="flex items-center gap-1.5">
-            <Label className="text-sm font-medium">{labelOf(entry.key)}</Label>
+            <Label className="text-sm font-medium">{labelOf(entry)}</Label>
             {entry.help && (
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -296,7 +296,7 @@ function FieldRow({
   return (
     <div className="grid gap-1.5">
       <div className="flex items-center gap-1.5">
-        <Label className="text-sm">{labelOf(entry.key)}</Label>
+        <Label className="text-sm">{labelOf(entry)}</Label>
         {entry.help && (
           <Tooltip>
             <TooltipTrigger asChild>
@@ -486,6 +486,8 @@ function PathField({
 }
 
 // 配置 key → 中文标签
+// 注意：label 的单一来源在后端 field-spec 的 `label` 字段（由 CN_MAP 注入）。
+// 此字典仅作过渡回退（后端漏 label 时兜底），新字段应直接在后端 CN_MAP 维护，无需改这里。
 const CN_LABELS: Record<string, string> = {
   api_key: "TMDB API 密钥",
   bangumi_path: "电视剧路径",
@@ -538,6 +540,7 @@ const CN_LABELS: Record<string, string> = {
   queue_max_workers: "队列并行数",
 };
 
-function labelOf(key: string): string {
-  return CN_LABELS[key] ?? key;
+function labelOf(entry: FieldSpecEntry): string {
+  // 优先后端下发的 label；回退本地字典（过渡）；再回退 key
+  return entry.label ?? CN_LABELS[entry.key] ?? entry.key;
 }

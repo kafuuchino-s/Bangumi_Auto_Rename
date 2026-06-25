@@ -103,6 +103,11 @@ CONFIG_DEFAULT = {
     "telegram_notify_on_success": True,  # 成功时通知
     "telegram_notify_on_failure": True,  # 失败时通知
     "telegram_base_url": "https://api.telegram.org",  # Telegram API地址
+    # 元数据缓存（cache/metadata，diskcache/SQLite 后端）
+    "metadata_cache_mode": "read-write",  # 缓存模式：read-write/cache-only/refresh/off
+    "metadata_cache_ttl_days": 30,  # 正向结果缓存天数
+    "metadata_cache_negative_ttl_hours": 6,  # 空结果（[]/{})缓存小时数
+    "metadata_cache_max_size_mb": 500,  # 缓存磁盘上限（MB），超限 gc 时按 LRU 淘汰
 }
 
 # 需要自动添加 docker_mnt 前缀的路径配置项
@@ -194,6 +199,11 @@ CN_MAP = {
     "telegram_notify_on_success": "成功时发送Telegram通知",
     "telegram_notify_on_failure": "失败时发送Telegram通知",
     "telegram_base_url": "Telegram API地址",
+    # 元数据缓存
+    "metadata_cache_mode": "元数据缓存模式",
+    "metadata_cache_ttl_days": "正向缓存天数",
+    "metadata_cache_negative_ttl_hours": "空结果缓存小时数",
+    "metadata_cache_max_size_mb": "缓存磁盘上限（MB）",
 }
 
 
