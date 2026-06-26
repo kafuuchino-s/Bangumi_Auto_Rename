@@ -22,10 +22,11 @@ RUN npm run build
 # 产物在 /build/out
 
 
-# ---- stage 2: 静态 ffprobe（替代 apt ffmpeg 全家桶 579M）----
-# mwader/static-ffmpeg 的 ffprobe 是 glibc 静态链接单文件（134M），bookworm 可直接跑。
-# 主流程 local_fact_surface.py 用 ffprobe 探媒体元数据（时长/分辨率），只需 demuxer，不需编解码器，
-# 但现成静态 ffprobe 都编了全套编解码。相比 apt ffmpeg（带 libllvm 112M + libflite/libmfx/libgl/codec2...）净省 ~445M。
+# ---- stage 2: 静态 ffmpeg/ffprobe（替代 apt ffmpeg 全家桶 579M）----
+# mwader/static-ffmpeg 的 ffmpeg/ffprobe 是 glibc 静态链接单文件（各 ~134M），bookworm 可直接跑。
+# ffprobe：主流程 local_fact_surface.py 探媒体元数据（时长/分辨率），只需 demuxer。
+# ffmpeg：ffsubsync 字幕对齐调用（音频提取/变换，123 处调用 vs ffprobe 27 处），缺它对齐跑不起来。
+# 相比 apt ffmpeg（带 libllvm 112M + libflite/libmfx/libgl/codec2...）净省 ~312M。
 FROM mwader/static-ffmpeg:latest AS ffprobe-src
 
 
@@ -83,9 +84,12 @@ RUN sed -i 's/Components: main$/Components: main contrib non-free non-free-firmw
     && rm -rf /var/lib/apt/lists/* \
     && mkdir -p /Bangumi_Auto_Rename/tests /Bangumi_Auto_Rename/data
 
-# 静态 ffprobe（从 stage 2）
+# 静态 ffmpeg/ffprobe（从 stage 2）：
+#   ffprobe — 主流程探媒体元数据；
+#   ffmpeg — ffsubsync 字幕对齐调用（缺它对齐失败）。
 COPY --from=ffprobe-src /ffprobe /usr/local/bin/ffprobe
-RUN chmod +x /usr/local/bin/ffprobe
+COPY --from=ffprobe-src /ffmpeg /usr/local/bin/ffmpeg
+RUN chmod +x /usr/local/bin/ffprobe /usr/local/bin/ffmpeg
 
 # Python 依赖：从 py-deps 拷编译好的 site-packages（不含 gcc/llvm，已删 playwright/driver）。
 COPY --from=py-deps /usr/local/lib/python3.12/site-packages/ /usr/local/lib/python3.12/site-packages/
