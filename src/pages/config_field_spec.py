@@ -269,6 +269,17 @@ FIELD_SPEC: list[Mapping[str, Any]] = [
         "default_hint": "默认 zh-CN",
     },
     {
+        "key": "subtitle_auto_fetch_skip_if_embedded_language",
+        "control": TOGGLE,
+        "level": LEVEL_BASIC,
+        "group": GRP_SUBTITLE_FETCH,
+        "tab": TAB_SUBTITLE,
+        "options": ["启用", "禁用"],
+        "help": "视频内嵌字幕轨已含优先语言时跳过抓取（ffprobe 探轨；探轨失败回退外挂判定）。",
+        "default_hint": "默认 启用",
+        "bool_toggle": True,
+    },
+    {
         "key": "subtitle_auto_fetch_provider",
         "control": SELECT,
         "level": LEVEL_ADVANCED,

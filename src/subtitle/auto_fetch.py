@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import json
 import re
+import shutil
+import subprocess
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
@@ -659,16 +661,26 @@ class SubtitleAutoFetcher:
         scope_type = str(scan_scope.get("type") or "task")
         root_value = str(scan_scope.get("root") or "").strip()
         root_path = Path(root_value) if root_value else None
+        preferred_language = str(
+            cm_get("subtitle_auto_fetch_preferred_language", "zh-CN") or "zh-CN"
+        )
 
         if scope_type == "series" and root_path:
-            return self._collect_series_videos_missing_subtitles(root_path)
+            return self._collect_series_videos_missing_subtitles(
+                root_path, preferred_language
+            )
         if scope_type == "movie" and root_path:
-            return self._collect_movie_videos_missing_subtitles(root_path, record_data)
-        return self._collect_task_target_videos_missing_subtitles(record_data)
+            return self._collect_movie_videos_missing_subtitles(
+                root_path, record_data, preferred_language
+            )
+        return self._collect_task_target_videos_missing_subtitles(
+            record_data, preferred_language
+        )
 
     def _collect_task_target_videos_missing_subtitles(
         self,
         record_data: dict[str, object],
+        preferred_language: str,
     ) -> List[Path]:
         missing: List[Path] = []
         for target in record_data.values():
@@ -677,16 +689,19 @@ class SubtitleAutoFetcher:
             video_path = Path(target)
             if not self._is_candidate_video(video_path):
                 continue
-            if self._has_sidecar_subtitle(video_path):
+            if self._has_usable_subtitle(video_path, preferred_language):
                 continue
             missing.append(video_path)
         return missing
 
-    def _collect_series_videos_missing_subtitles(self, series_root: Path) -> List[Path]:
+    def _collect_series_videos_missing_subtitles(
+        self, series_root: Path, preferred_language: str
+    ) -> List[Path]:
         if not series_root.exists() or not series_root.is_dir():
             return []
 
-        missing: List[Path] = []
+        # 第一阶段：收集无外挂字幕的候选（外挂判定零成本，先过滤）。
+        candidates: List[Path] = []
         season_dirs = [
             path
             for path in series_root.iterdir()
@@ -698,16 +713,21 @@ class SubtitleAutoFetcher:
                     continue
                 if self._has_sidecar_subtitle(video_path):
                     continue
-                missing.append(video_path)
-        return missing
+                candidates.append(video_path)
+
+        # 第二阶段：对无外挂候选并发探轨，剔除内嵌已含目标语言者。
+        return self._filter_by_embedded_language(candidates, preferred_language)
 
     def _collect_movie_videos_missing_subtitles(
         self,
         movie_root: Path,
         record_data: dict[str, object],
+        preferred_language: str,
     ) -> List[Path]:
         if not movie_root.exists() or not movie_root.is_dir():
-            return self._collect_task_target_videos_missing_subtitles(record_data)
+            return self._collect_task_target_videos_missing_subtitles(
+                record_data, preferred_language
+            )
 
         target_paths = {
             Path(target).resolve()
@@ -715,7 +735,7 @@ class SubtitleAutoFetcher:
             if isinstance(target, str)
             if self._is_candidate_video(Path(target))
         }
-        missing: List[Path] = []
+        candidates: List[Path] = []
         for video_path in sorted(movie_root.iterdir()):
             if not self._is_candidate_video(video_path):
                 continue
@@ -723,8 +743,53 @@ class SubtitleAutoFetcher:
                 continue
             if self._has_sidecar_subtitle(video_path):
                 continue
-            missing.append(video_path)
-        return missing
+            candidates.append(video_path)
+        return self._filter_by_embedded_language(candidates, preferred_language)
+
+    def _filter_by_embedded_language(
+        self, candidates: List[Path], preferred_language: str
+    ) -> List[Path]:
+        """对无外挂字幕的候选并发探轨，剔除内嵌已含目标语言者。
+
+        开关关或无候选时直接返回原列表（不探轨）。探轨失败的候选保留
+        （回退为"缺字幕"，继续抓取）。
+        """
+        if not candidates:
+            return candidates
+        if not cm_get("subtitle_auto_fetch_skip_if_embedded_language", True):
+            return candidates
+        if not preferred_language:
+            return candidates
+
+        skipped: List[Path] = []
+        remaining: List[Path] = []
+
+        def _probe_one(path: Path) -> Tuple[Path, bool]:
+            return path, self._has_embedded_target_language(path, preferred_language)
+
+        with ThreadPoolExecutor(max_workers=_PROBE_CONCURRENCY) as pool:
+            futures = {pool.submit(_probe_one, p): p for p in candidates}
+            for future in as_completed(futures):
+                path = futures[future]
+                try:
+                    _, has_target = future.result()
+                except Exception:
+                    has_target = False
+                if has_target:
+                    skipped.append(path)
+                else:
+                    remaining.append(path)
+
+        if skipped:
+            logger.info(
+                f"[字幕自动抓取] {len(skipped)} 个视频内嵌已含 "
+                f"{preferred_language} 字幕轨，跳过抓取："
+                f"{[p.name for p in skipped[:3]]}{' ...' if len(skipped) > 3 else ''}"
+            )
+        # 保持原目录顺序
+        order = {p: i for i, p in enumerate(candidates)}
+        remaining.sort(key=lambda p: order.get(p, 0))
+        return remaining
 
     def _infer_series_root_from_record(
         self,
@@ -770,6 +835,31 @@ class SubtitleAutoFetcher:
             if matches:
                 return True
         return False
+
+    def _has_embedded_target_language(
+        self, video_path: Path, preferred_language: str
+    ) -> bool:
+        """视频内嵌字幕轨是否已含目标语言。
+
+        鲁棒：开关关 / ffprobe 不可用 / 无字幕轨 / 无命中 → 返回 False
+        （回退到外挂判定，绝不因探轨失败而漏抓）。
+        """
+        if not cm_get("subtitle_auto_fetch_skip_if_embedded_language", True):
+            return False
+        if not preferred_language:
+            return False
+        for raw in _probe_embedded_subtitle_languages(video_path):
+            if _normalize_embedded_language(raw) == preferred_language:
+                return True
+        return False
+
+    def _has_usable_subtitle(
+        self, video_path: Path, preferred_language: str
+    ) -> bool:
+        """已有可用字幕：外挂 sidecar 命中（零成本优先）或内嵌目标语言轨命中。"""
+        if self._has_sidecar_subtitle(video_path):
+            return True
+        return self._has_embedded_target_language(video_path, preferred_language)
 
     def _build_search_keywords(
         self,
@@ -1029,3 +1119,89 @@ def cm_get(key: str, default: Any = None) -> Any:
 
     value = cm.get_config(key)
     return default if value in (None, "") else value
+
+
+# --- 内嵌字幕识别 -----------------------------------------------------------
+# ffprobe 读到的字幕轨语言标签（ISO 639-2 三字母码 chi/jpn/eng/kor，或两字母 zh/ja，
+# 或容器 tag 变体 zh-Hans/Chinese）归一到 Emby 风格，与 subtitle_auto_fetch_preferred_language
+# 同口径比对。chi/zho 无法区分简繁，统一归 zh-CN（保守命中 preferred 默认值）；
+# 仅 zh-tw/zh-hant/zh-hk 归繁体。
+EMBEDDED_LANGUAGE_MAP: Dict[str, str] = {
+    "chi": "zh-CN",
+    "zho": "zh-CN",
+    "zh": "zh-CN",
+    "zh-cn": "zh-CN",
+    "zh-hans": "zh-CN",
+    "chinese": "zh-CN",
+    "zh-tw": "zh-TW",
+    "zh-hant": "zh-TW",
+    "zh-hk": "zh-HK",
+    "jpn": "ja",
+    "ja": "ja",
+    "eng": "en",
+    "en": "en",
+    "kor": "ko",
+    "ko": "ko",
+}
+
+# series/movie scope 并发探轨数（探轨是 subprocess，单 mkv 多在 1-3s，并发控总耗时）。
+_PROBE_CONCURRENCY = 4
+# ffprobe 单文件探轨超时（秒）。
+_PROBE_TIMEOUT_SECONDS = 30
+
+
+def _normalize_embedded_language(raw: Optional[str]) -> Optional[str]:
+    """把 ffprobe 读到的原始语言标签归一到 Emby 风格；未命中返回 None。"""
+    if not raw:
+        return None
+    return EMBEDDED_LANGUAGE_MAP.get(raw.lower().strip())
+
+
+def _probe_embedded_subtitle_languages(video_path: Path) -> List[str]:
+    """轻量 ffprobe 探轨：只取内嵌字幕轨的语言标签原始值。
+
+    返回各 subtitle 轨 tags.language 的原始字符串列表（未归一）。
+    鲁棒：ffprobe 不可用 / 超时 / exit≠0 / JSON 解析失败 / 无字幕轨 → 返回 []。
+    """
+    ffprobe = shutil.which("ffprobe")
+    if not ffprobe:
+        return []
+    try:
+        completed = subprocess.run(
+            [
+                ffprobe,
+                "-v",
+                "error",
+                "-print_format",
+                "json",
+                "-show_streams",
+                str(video_path),
+            ],
+            check=False,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            timeout=_PROBE_TIMEOUT_SECONDS,
+        )
+    except Exception:
+        return []
+    if completed.returncode != 0:
+        return []
+    try:
+        payload = json.loads(completed.stdout or "{}")
+    except json.JSONDecodeError:
+        return []
+    streams = [item for item in payload.get("streams") or [] if isinstance(item, dict)]
+    langs: List[str] = []
+    for stream in streams:
+        if stream.get("codec_type") != "subtitle":
+            continue
+        tags = stream.get("tags")
+        if not isinstance(tags, dict):
+            continue
+        lang = tags.get("language")
+        if lang:
+            langs.append(str(lang))
+    return langs
+
