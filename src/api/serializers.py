@@ -365,9 +365,13 @@ def _queue_status_text(path: str) -> tuple[str, str]:
 
 
 def list_task_rows() -> list[dict[str, Any]]:
-    """任务列表行：合并落盘 task JSON + queue 活跃态。与 create_table 对齐。"""
+    """任务列表行：合并落盘 task JSON + queue 活跃态。与 create_table 对齐。
+
+    每条任务（按 uuid）独立一行——同路径的多次任务（失败→重试→成功）是
+    不同业务事件，不能按 path 合并去重，否则旧失败记录会覆盖新成功记录。
+    """
     queue_mgr = get_queue_manager()
-    rows_by_path: dict[str, dict[str, Any]] = {}
+    rows_by_uuid: dict[str, dict[str, Any]] = {}
 
     if TASK_PATH.exists():
         sorted_files = sorted(
@@ -383,16 +387,28 @@ def list_task_rows() -> list[dict[str, Any]]:
         path = _str(task_data.get("path"))
         if not path:
             continue
+        # 状态归一成短词，供 StatusBadge 精确匹配（成功/失败/处理中/等待处理）。
+        # 完整 error 原文不进列表行——详情页 build_task_detail 直接读 task JSON
+        # 取 error/failure_reason 完整展示，列表只看成败 + 人话短句。
         error_value = task_data.get("error")
-        status = error_value if (isinstance(error_value, str) and error_value) else "成功"
+        failure_reason = _str(task_data.get("failure_reason"))
+        has_error = (isinstance(error_value, str) and error_value) or failure_reason
+        status = "失败" if has_error else "成功"
+        failure_reason_label = (
+            FAILURE_REASON_LABELS.get(failure_reason, failure_reason)
+            if failure_reason
+            else ""
+        )
         ai_used = task_data.get("ai_used", task_data.get("use_ai", False))
         _, queue_status_text = _queue_status_text(path)
-        rows_by_path[path] = {
+        uuid_value = _str(task_data.get("uuid")) or f.stem
+        rows_by_uuid[uuid_value] = {
             "path": path,
             "name": task_data.get("name", "未知"),
-            "uuid": task_data.get("uuid", ""),
+            "uuid": uuid_value,
             "season": task_data.get("season_id", "-"),
             "status": status,
+            "failure_reason_label": failure_reason_label,
             "queue_status": queue_status_text,
             "is_anime": task_data.get("is_anime", False),
             "is_movie": task_data.get("is_movie", False),
@@ -401,7 +417,8 @@ def list_task_rows() -> list[dict[str, Any]]:
 
     # 活跃但未落盘的任务（处理中/队列中）
     for task in queue_mgr.list_active_tasks():
-        if task.path in rows_by_path:
+        task_uuid = task.original_uuid or task.task_id
+        if task_uuid in rows_by_uuid:
             continue
         if task.status == TaskStatus.RUNNING:
             queue_status_text = "执行中..."
@@ -410,19 +427,20 @@ def list_task_rows() -> list[dict[str, Any]]:
             position = queue_mgr.get_queue_position(task.path)
             queue_status_text = f"队列中 #{position}"
             status = "等待处理"
-        rows_by_path[task.path] = {
+        rows_by_uuid[task_uuid] = {
             "path": task.path,
             "name": task.cus_name or Path(task.path).name,
-            "uuid": task.original_uuid or task.task_id,
+            "uuid": task_uuid,
             "season": task.cus_season_id or "-",
             "status": status,
+            "failure_reason_label": "",
             "queue_status": queue_status_text,
             "is_anime": _format_bool_text(task.is_anime),
             "is_movie": _format_bool_text(task.is_movie),
             "ai_used": "待处理",
         }
 
-    rows = list(rows_by_path.values())
+    rows = list(rows_by_uuid.values())
     for index, row in enumerate(rows):
         row["id"] = index
     return rows

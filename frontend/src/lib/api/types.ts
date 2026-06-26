@@ -7,6 +7,7 @@ export interface TaskRow {
   uuid: string;
   season: string | number | null;
   status: string;
+  failure_reason_label: string;
   queue_status: string;
   is_anime: boolean | string;
   is_movie: boolean | string;
