@@ -124,5 +124,17 @@ COPY .pi/extensions/ ./.pi/extensions/
 # rename_local_bangumi_pi_api_key）→ 环境变量 BAR_PI_CASE_AGENT_API_KEY 注入 sidecar。
 # data/ 运行期挂载（config/task/record/ai_analysis/pi_case_agent 等）。
 
+# 非 root 运行：分发场景安全合规，部分 NAS 强制非 root。
+# data/ 是运行期挂载点（首启空），build 时 chown 让挂载侧默认属主对齐；
+# 运行期若挂载了属主不同的 data/，需在挂载侧调整权限（docker run -v 时由宿主侧决定）。
+RUN groupadd -r app && useradd -r -g app -d /Bangumi_Auto_Rename -s /usr/sbin/nologin app \
+    && chown -R app:app /Bangumi_Auto_Rename
+USER app
+
+# 健康检查：用镜像自带的 python3 urllib 调 /health，不依赖 curl（slim 镜像未装）。
+# /health 是 src/web.py 注册的轻量端点，不触发业务/队列，仅返回进程存活信号。
+HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
+    CMD python3 -c "import urllib.request;urllib.request.urlopen('http://localhost:5999/health',timeout=3).read()" || exit 1
+
 EXPOSE 5999
 CMD ["python3", "-m", "src.start"]

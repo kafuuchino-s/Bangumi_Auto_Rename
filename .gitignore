@@ -198,3 +198,7 @@ data
 
 # Pi agent runtime artifacts (auth/models are generated per-run; skills/extensions are source and tracked)
 /.pi/agent/
+
+# 发布构建产物与工作笔记（dist/ 已忽略，补充便携版 staging 与本次计划文件）
+/_portable_staging/
+/plan_release_binary.md

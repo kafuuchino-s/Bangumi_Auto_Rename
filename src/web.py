@@ -15,6 +15,15 @@ app = FastAPI(title="番剧自动重命名 API")
 # 挂载 REST API 层（/api/*），供新前端调用；业务逻辑不动
 app.include_router(api_router, prefix='/api')
 
+
+# 轻量健康检查端点：供 Docker HEALTHCHECK / 容器编排 / NAS GUI 探活。
+# 必须在 _FRONTEND_OUT 的 StaticFiles mount('/') 之前注册，避免被前端 SPA 兜底吞掉。
+# 不触发业务/队列，仅返回进程存活信号。
+@app.get('/health')
+def _health() -> dict[str, str]:
+    return {'status': 'ok'}
+
+
 ANI_TAG = ['动漫', 'anime', '动画']
 MOVIE_TAG = ['电影', 'movie', '剧场', '剧场版']
 

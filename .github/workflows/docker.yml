@@ -4,6 +4,10 @@ name: docker
 # 个人自用：web 分支 push / 手动触发，统一只推 :latest（不要版本号/sha/分支 tag）。
 # docker pull ghcr.io/kafuuchino-s/bangumi-auto-rename:latest 永远拿 web 分支最新。
 # 凭据：默认 GITHUB_TOKEN（packages: write 权限，下方 permissions 已声明）。
+#
+# 注意：本 workflow 只产 dev :latest（web 分支日常）。
+# 正式版本化发布（多架构镜像 + Windows 便携 zip 挂 Release）走 release.yml（push v* tag 触发）。
+# arm64 暂不支持：mwader/static-ffmpeg 的 ffprobe 来源 arm64 可用性未验证，留待后续。
 
 on:
   push:
@@ -30,7 +34,7 @@ jobs:
         run: |
           echo "IMAGE_NAME=$(echo '${{ env.IMAGE_NAME }}' | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_ENV"
 
-      - name: 设置 QEMU（多架构预留，当前仅 amd64）
+      - name: 设置 QEMU（multi-arch 预留：当前仅 amd64，arm64 待 mwader/static-ffmpeg 验证后启用）
         uses: docker/setup-qemu-action@v3
 
       - name: 设置 Docker Buildx

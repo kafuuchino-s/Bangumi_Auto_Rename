@@ -1,0 +1,58 @@
+# Windows 便携版运行时依赖（requirements_docker.txt + Windows 差异）。
+# 用途：scripts/build_windows_portable.ps1 用 pip 装进 python-embeddable 的 site-packages。
+# 与 requirements_docker.txt 的差异：
+#   - 加回 pywin32：Windows 文件浏览路径选择（src/api/routes_files.py 用 win32api.GetLogicalDriveStrings）
+#   - 去除 pywin32 之外的 Linux-only 假设（本文件全 Windows 跑）
+#   - ffsubsync 默认不装（同 Docker，省 numpy 70M）；需要字幕对齐时手动 pip install ffsubsync
+
+# --- Web 后端：FastAPI + uvicorn ---
+fastapi>=0.115.0
+uvicorn>=0.30.0
+starlette>=0.41.0
+pydantic>=2.11.0
+pydantic-core>=2.27.0
+python-multipart>=0.0.20
+jinja2>=3.1.5
+aiofiles>=24.1.0
+orjson>=3.10.0
+
+# --- AI / HTTP ---
+openai>=2.36.0
+httpx>=0.28.0
+requests>=2.31.0
+urllib3>=2.0.0
+certifi>=2024.12.14
+charset-normalizer>=3.3.2
+idna>=3.7
+anyio>=4.8.0
+sniffio>=1.3.1
+h11>=0.14.0
+httpcore>=1.0.7
+google>=3.0.0
+google-genai>=0.8.0
+
+# --- 元数据 / 工具 ---
+tmdbsimple>=2.9.1
+structlog>=24.4.0
+# diskcache：cache/metadata 的 SQLite 后端（碎 JSON+lock 文件迁移目标）
+diskcache>=5.6.0
+pyyaml>=6.0.2
+python-dotenv>=1.0.1
+typing-extensions>=4.12.0
+annotated-types>=0.7.0
+click>=8.1.0
+
+# --- 媒体 / 压缩 / 字幕 ---
+hachoir>=3.3.0
+rarfile>=4.0
+py7zr>=0.22.0
+# ffsubsync（字幕自动对齐）默认 subtitle_sync_enabled=false，不装以省 numpy(70M)+ffsubsync。
+# 需要字幕对齐时另行 pip install ffsubsync。
+# scrapling：装 [fetchers] extra 拿全硬依赖（curl_cffi 非浏览器抓取核心 / playwright import 门槛 / browserforge 指纹）。
+# 浏览器抓取（DynamicFetcher）需额外 playwright install 下载浏览器二进制，默认 browser_enabled=false 不需要。
+scrapling[fetchers]>=0.4.3
+
+# --- Windows 专用 ---
+# pywin32：src/api/routes_files.py 文件浏览路径选择用 win32api.GetLogicalDriveStrings()。
+# 在 try 内，缺失仅降级（路径浏览不可用），但便携版默认带以保完整功能。
+pywin32>=308
