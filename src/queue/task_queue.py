@@ -564,7 +564,17 @@ class TaskQueueManager:
         但「集数 S01E01-E12」（只正片范围），对不上——18 = 12 正片 + 6 特典。
         现按 (season, episode) 分组：正片季（season>0）在前，特典（season=0）
         在后，每组显示 S{ss}E{min}-E{max}，拼接如「S01E01-E12 + S00E01-E07」。
+
+        电影无集数概念（tmdb_media_type=movie 或 is_movie）：整行不显示，
+        避免电影 season_id=0 落到 fallback 输出裸「S00」。
         """
+        if not task_details:
+            return ""
+        first = task_details[0]
+        media_type = str(first.get("tmdb_media_type") or "").lower()
+        if media_type == "movie" or bool(first.get("is_movie")):
+            return ""
+
         season_ids: list[int] = []
         for item in task_details:
             season_id = item.get("season_id")

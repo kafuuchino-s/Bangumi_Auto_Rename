@@ -182,6 +182,9 @@ def test_trigger_telegram_notification_fallback_to_text(monkeypatch):
     assert "🎭 类别： 电影" in notifier.sent_messages[0]
     assert "🏷️ 标签： 动画" in notifier.sent_messages[0]
     assert "🌟 质量： 1080p x265 AAC" in notifier.sent_messages[0]
+    # 电影无集数概念，不应出现「📺 集数：」行（尤其不能是裸 S00）。
+    assert "📺 集数：" not in notifier.sent_messages[0]
+    assert "S00" not in notifier.sent_messages[0]
 
 
 def test_trigger_telegram_notification_all_skipped_reports_skipped(monkeypatch, tmp_path):
@@ -399,6 +402,30 @@ def test_extract_episode_from_name_supports_sxxexx_format():
     manager = _build_manager_with_stats(total=1, success=1, failed=0, failed_tasks=[])
 
     assert manager._extract_episode_from_name("战勇。 - S02E13 - x264 FLAC - Final8.mkv") == 13
+
+
+def test_build_season_episode_movie_returns_empty():
+    """电影无集数概念：tmdb_media_type=movie 或 is_movie 时整行不显示，
+    避免电影 season_id=0 落到 fallback 输出裸「S00」。
+    两种判定口径（tmdb_media_type / is_movie）都覆盖。"""
+    manager = _build_manager_with_stats(total=1, success=1, failed=0, failed_tasks=[])
+
+    # 口径 1：tmdb_media_type=movie
+    assert (
+        manager._build_season_episode(
+            [{"season_id": 0, "tmdb_media_type": "movie", "is_movie": True}],
+            [Path("/tmp/艾特熊和赛娜鼠 (2012).mkv")],
+        )
+        == ""
+    )
+    # 口径 2：仅 is_movie=True（无 tmdb_media_type）
+    assert (
+        manager._build_season_episode(
+            [{"season_id": 0, "is_movie": True}],
+            [Path("/tmp/测试电影.mkv")],
+        )
+        == ""
+    )
 
 
 def test_build_season_episode_uses_episode_number_for_season0():
