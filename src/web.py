@@ -69,7 +69,9 @@ def convert_host_path_to_docker(path: str) -> str:
     host_prefix = host_prefix.rstrip('\\').rstrip('/')
 
     # 检查路径是否以宿主机前缀开头
-    if path.startswith(host_prefix):
+    # Windows 盘符大小写无关（H:\ 与 h:\ 指向同一卷），匹配前缀时按小写比较；
+    # 但截断仍用原 host_prefix 长度，保留 path 后段原始大小写。
+    if path.lower().startswith(host_prefix.lower()):
         # 移除宿主机前缀，替换为Docker挂载路径
         relative_path = path[len(host_prefix):]
         # 替换反斜杠为正斜杠
