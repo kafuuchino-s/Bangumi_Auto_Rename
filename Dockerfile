@@ -125,10 +125,11 @@ RUN npm ci --omit=dev \
     find /Bangumi_Auto_Rename/node_modules -type d -name docs -exec rm -rf {} + 2>/dev/null; \
     true
 
-# Pi sidecar 脚本 + 合同 skills + 工具扩展
+# Pi sidecar 脚本 + 合同 skills + 工具扩展 + 主 prompt 模板
 COPY tools/pi_*.mjs ./tools/
 COPY .pi/skills/ ./.pi/skills/
 COPY .pi/extensions/ ./.pi/extensions/
+COPY .pi/prompts/ ./.pi/prompts/
 
 # 凭据不进镜像：.pi/agent/auth.json 排除，运行时经 config（ai_api_key /
 # rename_local_bangumi_pi_api_key）→ 环境变量 BAR_PI_CASE_AGENT_API_KEY 注入 sidecar。

@@ -8,7 +8,6 @@ tests/
 # Pi 凭据与运行期生成目录不进镜像（凭据经 config/环境变量运行时注入）
 .pi/agent/
 .pi/agents/
-.pi/prompts/
 !tests/example_test_case.json
 !tests/example_expected.json
 !requirements_docker.txt
@@ -17,8 +16,10 @@ __pycache__/
 *.pyo
 *.log
 *.md
-# 放行 Pi sidecar 合同（SKILL.md + references/*.md），*.md 会误滤掉 Pi 全链路合同
+# 放行 Pi sidecar 合同（SKILL.md + references/*.md + prompts/*.md），
+# *.md 会误滤掉 Pi 全链路合同与主 prompt 模板，需显式放行。
 !.pi/skills/**/*.md
+!.pi/prompts/**/*.md
 .gitignore
 .env
 nul
