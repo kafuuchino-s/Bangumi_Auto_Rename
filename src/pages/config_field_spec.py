@@ -141,13 +141,13 @@ FIELD_SPEC: list[Mapping[str, Any]] = [
         "default_hint": "必填",
     },
     {
-        "key": "bangumi_path",
+        "key": "tv_path",
         "control": PATH,
         "level": LEVEL_BASIC,
         "group": GRP_PATHS,
         "tab": TAB_GENERAL,
         "subgroup": "输出路径",
-        "help": "整理后电视剧/番剧 TV 正片的落盘根目录。",
+        "help": "整理后电视剧 TV 正片的落盘根目录。",
     },
     {
         "key": "anime_path",

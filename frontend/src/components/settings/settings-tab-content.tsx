@@ -490,7 +490,7 @@ function PathField({
 // 此字典仅作过渡回退（后端漏 label 时兜底），新字段应直接在后端 CN_MAP 维护，无需改这里。
 const CN_LABELS: Record<string, string> = {
   api_key: "TMDB API 密钥",
-  bangumi_path: "电视剧路径",
+  tv_path: "电视剧路径",
   movie_path: "电影路径",
   anime_path: "动漫路径",
   anime_movie_path: "动漫电影路径",

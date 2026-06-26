@@ -10,7 +10,7 @@ def test_process_enqueues_subtasks_with_structural_directory_name_inheritance(
 ):
     def fake_get_config(key):
         if key in {
-            "bangumi_path",
+            "tv_path",
             "movie_path",
             "anime_path",
             "anime_movie_path",

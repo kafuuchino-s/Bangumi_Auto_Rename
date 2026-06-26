@@ -25,7 +25,7 @@ BACKUP_DIR = Path(__file__).resolve().parent.parent / "data" / ".screenshot_back
 CONFIG_PATH = Path(__file__).resolve().parent.parent / "data" / "config.json"
 
 MOCK_PATH_VALUES = {
-    "bangumi_path": "H:\\Media\\Bangumi",
+    "tv_path": "H:\\Media\\TV",
     "movie_path": "H:\\Media\\Movies",
     "anime_path": "H:\\Media\\Anime Series",
     "anime_movie_path": "H:\\Media\\Anime Movies",

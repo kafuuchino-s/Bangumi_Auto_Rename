@@ -264,13 +264,13 @@ class Rename:
     }
 
     def __init__(self):
-        self.BANGUMI_PATH: Path = Path(str(cm.get_config('bangumi_path') or ''))
+        self.TV_PATH: Path = Path(str(cm.get_config('tv_path') or ''))
         self.MOVIE_PATH: Path = Path(str(cm.get_config('movie_path') or ''))
         self.ANIME_PATH: Path = Path(str(cm.get_config('anime_path') or ''))
         self.ANIME_MOVIE_PATH: Path = Path(str(cm.get_config('anime_movie_path') or ''))
 
         for target in (
-            self.BANGUMI_PATH,
+            self.TV_PATH,
             self.MOVIE_PATH,
             self.ANIME_PATH,
             self.ANIME_MOVIE_PATH,
@@ -782,15 +782,15 @@ class Rename:
         return CompiledOrganizePlan.model_validate(compiled_plan)
 
     def _bgm_to_tmdb_rename_roots(self, *, is_anime: bool | None) -> TmdbRenamePlanRoots:
-        bangumi_path = _config_path_text('bangumi_path')
+        tv_path = _config_path_text('tv_path')
         movie_path = _config_path_text('movie_path')
         anime_path = _config_path_text('anime_path')
         anime_movie_path = _config_path_text('anime_movie_path')
         if is_anime is False:
-            tv_root = bangumi_path or anime_path
+            tv_root = tv_path or anime_path
             movie_root = movie_path or anime_movie_path
         else:
-            tv_root = anime_path or bangumi_path
+            tv_root = anime_path or tv_path
             movie_root = anime_movie_path or movie_path
         return TmdbRenamePlanRoots(tv_root=tv_root, movie_root=movie_root)
 

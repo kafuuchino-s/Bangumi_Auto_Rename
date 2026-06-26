@@ -200,7 +200,7 @@ BGM→TMDB 落地不只处理视频。若同目录存在同 stem 的字幕（如
 
 ### 基础
 
-- 路径：`bangumi_path` / `movie_path` / `anime_path` / `anime_movie_path`
+- 路径：`tv_path` / `movie_path` / `anime_path` / `anime_movie_path`
 - 传输：`mode` / `overwrite_existing`
 - Docker 路径转换：`docker_mnt` / `host_path_prefix`
 - 日志：`log_level`

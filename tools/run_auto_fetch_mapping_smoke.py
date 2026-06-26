@@ -321,7 +321,7 @@ def synthesize_targets(ctx: dict[str, Any]) -> tuple[str, list[dict[str, str]]]:
     # tv（含 mixed tv+movie：如 0091 鬼灭 44 TV + 1 剧场版。movie legal node
     # 在 tv 主体任务里也要合成 target，否则 missing_videos 漏掉剧场版，
     # Pi 看不到就不会选——曾误判"剧场版无帖"，实为 smoke 漏合成 target）。
-    base = cm.get_config("bangumi_path") or cm.get_config("anime_path") or "data/smoke_series"
+    base = cm.get_config("tv_path") or cm.get_config("anime_path") or "data/smoke_series"
     movie_base = cm.get_config("movie_path") or cm.get_config("anime_movie_path") or "data/smoke_movie"
     series_root = str(Path(base) / title_with_year)
     movie_meta = ctx.get("movie_meta") or {}

@@ -147,7 +147,13 @@ export function PathBrowserDialog({
     return result;
   })();
 
-  const currentDriveLetter = (browse?.current ?? "").slice(0, 2).toUpperCase();
+  // 盘符标识：Windows 取首段盘符（"C:"），Linux/Docker 路径用完整路径本身匹配。
+  const driveKey = (drv: string) =>
+    /^[a-z]:/i.test(drv) ? drv.slice(0, 2).toUpperCase() : drv;
+  // 盘符侧栏显示名：Windows 盘符（"C:"），Linux 路径取末段名（/media → "media"）。
+  const driveLabel = (drv: string) =>
+    /^[a-z]:/i.test(drv) ? drv.slice(0, 2).toUpperCase() : drv.split("/").filter(Boolean).pop() || drv;
+  const currentDriveKey = driveKey(browse?.current ?? "");
 
   const handleItemClick = (item: FileItem) => {
     if (item.name === "..") {
@@ -215,8 +221,9 @@ export function PathBrowserDialog({
                 位置
               </div>
               {drives.map((drv) => {
-                const letter = drv.slice(0, 2).toUpperCase();
-                const active = currentDriveLetter === letter;
+                const active =
+                  currentDriveKey === driveKey(drv) ||
+                  (browse?.current ?? "").startsWith(drv);
                 return (
                   <button
                     key={drv}
@@ -233,7 +240,7 @@ export function PathBrowserDialog({
                     title={drv}
                   >
                     <HardDrive className="h-3.5 w-3.5 flex-shrink-0" />
-                    <span className="truncate">{letter}</span>
+                    <span className="truncate">{driveLabel(drv)}</span>
                   </button>
                 );
               })}

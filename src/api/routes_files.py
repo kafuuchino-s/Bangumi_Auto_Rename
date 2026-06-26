@@ -96,17 +96,13 @@ def list_drives() -> dict[str, Any]:
         ]
         drives = [f"/Volumes/{d}" for d in drives]
     elif system == "Linux":
+        # Linux/Docker 下不存在"盘符"概念，容器通常只有一个媒体挂载点。
+        # 把 docker_mnt 挂载根本身作为单一快捷入口返回（而非其子目录），
+        # 避免把整个挂载盘的内容（如 H:\ 全部子目录）铺成侧栏。
         docker_path = cm.get_config("docker_mnt") or "/media"
         import os
 
-        try:
-            drives = [
-                os.path.join(docker_path, d)
-                for d in os.listdir(docker_path)
-                if os.path.isdir(os.path.join(docker_path, d))
-            ]
-        except OSError:
-            drives = []
+        drives = [docker_path] if os.path.isdir(docker_path) else []
     return {"drives": drives, "system": system}
 
 

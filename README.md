@@ -171,7 +171,7 @@ docker run -d -p 5999:5999 --name bangumi --restart unless-stopped \
 
 | 配置页 Tab | 关键项 | 填什么（以上面挂载为例） |
 |---|---|---|
-| 基础 | 媒体库路径（`bangumi_path` 等） | `/media/library/anime` 等容器内路径（程序自动认 `/media` 为挂载点） |
+| 基础 | 媒体库路径（`tv_path` 等） | `/media/library/anime` 等容器内路径（程序自动认 `/media` 为挂载点） |
 | 基础 | 传输模式 `mode` | `链接`（硬链接，要求下载目录与媒体库在同一文件系统）/ `复制` / `移动` |
 | AI | `ai_api_key` / `ai_base_url` / `ai_model` | 你的 OpenAI 兼容凭据（Pi sidecar 由此驱动） |
 | 字幕 | 按需开自动抓取 / 对齐 | 默认非浏览器抓取已可用 |

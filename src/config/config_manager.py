@@ -13,7 +13,7 @@ from ..utils.path import CONFIG_PATH
 
 CONFIG_DEFAULT = {
     "api_key": "",
-    "bangumi_path": "",
+    "tv_path": "",
     "movie_path": "",
     "anime_path": "",
     "anime_movie_path": "",
@@ -111,7 +111,7 @@ CONFIG_DEFAULT = {
 }
 
 # 需要自动添加 docker_mnt 前缀的路径配置项
-PATH_CONFIG_KEYS = {"bangumi_path", "movie_path", "anime_path", "anime_movie_path"}
+PATH_CONFIG_KEYS = {"tv_path", "movie_path", "anime_path", "anime_movie_path"}
 
 AI_CONFIDENCE_THRESHOLD_LABELS = {
     "Low": 1.0,
@@ -121,7 +121,7 @@ AI_CONFIDENCE_THRESHOLD_LABELS = {
 
 CN_MAP = {
     "api_key": "TMDB API密钥",
-    "bangumi_path": "电视剧路径",
+    "tv_path": "电视剧路径",
     "movie_path": "电影路径",
     "anime_path": "动漫路径",
     "anime_movie_path": "动漫电影路径",
@@ -296,6 +296,12 @@ class ConfigManager:
             for key in CONFIG_DEFAULT:
                 if key not in self.config:
                     self.config[key] = CONFIG_DEFAULT[key]
+
+            # 兼容迁移：历史遗留名 bangumi_path → tv_path（语义未变，仅改名）。
+            # 必须在下方「删除未知 key」之前做，否则旧值会被静默清掉导致路径丢失。
+            # 幂等：迁移后旧 bangumi_path 被下方循环删除，二次启动 if 不触发。
+            if 'bangumi_path' in self.config and not self.config.get('tv_path'):
+                self.config['tv_path'] = self.config['bangumi_path']
 
             # 清空不存在的key
             for key in list(self.config.keys()):
