@@ -567,7 +567,7 @@ FIELD_SPEC: list[Mapping[str, Any]] = [
         "level": LEVEL_ADVANCED,
         "group": GRP_RUNTIME,
         "tab": TAB_ADVANCED,
-        "help": "Docker 容器内挂载根路径，用于宿主机→容器路径转换。",
+        "help": "Docker 容器内的媒体挂载根路径。与「宿主机路径前缀」配合：webhook 收到宿主机路径后，去掉前缀、拼到此根下，得到容器内可访问路径。例如前缀 H:\\ + 此处 /media → H:\\Emby\\X 转成 /media/Emby/X。非 Docker / 原生运行留空即可。",
         "default_hint": "默认 /media",
     },
     {
@@ -576,7 +576,7 @@ FIELD_SPEC: list[Mapping[str, Any]] = [
         "level": LEVEL_ADVANCED,
         "group": GRP_RUNTIME,
         "tab": TAB_ADVANCED,
-        "help": "qBittorrent 所在宿主机的路径前缀，用于 webhook 路径转换（Windows 为主）。",
+        "help": "qBittorrent 所在宿主机的路径前缀，用于 webhook 路径转换（Windows 为主）。留空 = 不转换，webhook 路径原样使用（适合 qB 与本程序同机同路径的裸机部署）。Docker 部署填 qB 实际 save path 的盘符根，如 H:\\；盘符大小写无关，H:\\ 与 h:\\ 等价。",
         "default_hint": "默认 空",
     },
     # ============================ 元数据缓存 ============================ #
