@@ -93,6 +93,12 @@ RUN chmod +x /usr/local/bin/ffprobe /usr/local/bin/ffmpeg
 
 # Python 依赖：从 py-deps 拷编译好的 site-packages（不含 gcc/llvm，已删 playwright/driver）。
 COPY --from=py-deps /usr/local/lib/python3.12/site-packages/ /usr/local/lib/python3.12/site-packages/
+# pip 装包时生成的 console_scripts 落在 /usr/local/bin/，stage 4 只 COPY site-packages 会漏掉。
+# 项目经 subtitle_sync_executable 调 ffsubsync 命令（subprocess），缺这个脚本对齐功能不可用。
+# 精确拷 ffsubsync 及其 alias（ffs/subsync），不动 ffmpeg/ffprobe/node 等本 stage 已装的二进制。
+COPY --from=py-deps /usr/local/bin/ffsubsync /usr/local/bin/ffsubsync
+COPY --from=py-deps /usr/local/bin/ffs /usr/local/bin/ffs
+COPY --from=py-deps /usr/local/bin/subsync /usr/local/bin/subsync
 
 # Node.js 22 运行时（Pi sidecar 必需）：从 frontend stage 复制官方 node 镜像的二进制 + npm。
 # node 是真实二进制可直接 COPY；npm/npx 在原镜像里是软链，COPY 单文件会解引用破坏其内部 require，
