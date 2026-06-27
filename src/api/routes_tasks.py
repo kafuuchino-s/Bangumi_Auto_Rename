@@ -93,8 +93,12 @@ def get_task_detail(uuid: str) -> dict[str, Any]:
 
 
 @router.post("")
-def create_task(req: TaskCreateRequest) -> dict[str, Any]:
-    """入队新任务（含路径修复/Docker 转换，复用 web.py）。"""
+async def create_task(req: TaskCreateRequest) -> dict[str, Any]:
+    """入队新任务（含路径修复/Docker 转换，复用 web.py）。
+
+    async def：enqueue() 内部 asyncio.create_task 懒启动 worker 需要运行中
+    的事件循环（对齐 web.py 的 /sendTask，后者本就是 async def）。
+    """
     path = _transform_path(req.path)
     p = Path(path)
     if not p.exists():
@@ -113,8 +117,14 @@ def create_task(req: TaskCreateRequest) -> dict[str, Any]:
 
 
 @router.post("/{uuid}/retry")
-def retry_task(uuid: str) -> dict[str, Any]:
-    """重试任务：删旧记录 + 按原参数重新入队。"""
+async def retry_task(uuid: str) -> dict[str, Any]:
+    """重试任务：按原参数重新入队，入队成功后再删旧记录。
+
+    必须用 async def：enqueue() 内部用 asyncio.create_task 懒启动 worker，
+    需要运行中的事件循环。同步路由跑在 anyio threadpool 线程里无事件循环，
+    会抛 RuntimeError('no running event loop') 导致 500——且旧实现先删记录
+    再入队，入队失败时旧记录已被删，前端再查就 404「任务不存在」。
+    """
     task_data = get_task(uuid)
     if not task_data:
         raise HTTPException(status_code=404, detail="任务数据不存在")
@@ -127,23 +137,28 @@ def retry_task(uuid: str) -> dict[str, Any]:
     if queue_mgr.is_path_in_queue(path):
         raise HTTPException(status_code=409, detail="该任务已在队列中")
 
-    # 删旧记录
-    for p in (TASK_PATH / f"{uuid}.json", RECORD_PATH / f"{uuid}.json"):
-        if p.exists():
-            p.unlink()
-
+    # 先入队，成功后再删旧记录——避免入队失败时丢失任务记录
     task_id = queue_mgr.enqueue(
         path=path,
         is_anime=task_data.get("is_anime"),
         is_movie=task_data.get("is_movie"),
         original_uuid=uuid,
     )
+
+    for p in (TASK_PATH / f"{uuid}.json", RECORD_PATH / f"{uuid}.json"):
+        if p.exists():
+            p.unlink()
+
     return {"code": 200, "data": "任务已重新入队", "task_id": task_id}
 
 
 @router.post("/{uuid}/edit")
-def edit_task(uuid: str, req: TaskEditRequest) -> dict[str, Any]:
-    """编辑任务信息后重新入队（对齐 edit_page 逻辑）。"""
+async def edit_task(uuid: str, req: TaskEditRequest) -> dict[str, Any]:
+    """编辑任务信息后重新入队（对齐 edit_page 逻辑）。
+
+    async def：enqueue() 内部 asyncio.create_task 懒启动 worker 需要运行中
+    的事件循环（对齐 /sendTask）。
+    """
     task_data = get_task(uuid)
     if not task_data:
         raise HTTPException(status_code=404, detail="任务数据不存在")
