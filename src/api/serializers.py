@@ -263,10 +263,16 @@ def _build_tmdb_subjects(task_data: Mapping[str, object]) -> list[dict[str, Any]
     for it in items:
         dest = it.get("destination") or {}
         ref = _str(dest.get("tmdb_ref"))
+        if not ref:
+            continue
         sn = dest.get("season_number")
         en = dest.get("episode_number")
-        if ref and sn is not None and en is not None:
-            tmdb_refs.setdefault(ref, {"tmdb_id": dest.get("tmdb_id"), "media_type": dest.get("media_type")})
+        # 只要 destination 带 tmdb_ref 就登记一个条目（movie 的 season/episode
+        # 为 null，没有季集概念，但仍是合法 TMDB 落点，必须展示条目 ID/媒体类型）。
+        tmdb_refs.setdefault(
+            ref, {"tmdb_id": dest.get("tmdb_id"), "media_type": dest.get("media_type")}
+        )
+        if sn is not None and en is not None:
             by_season.setdefault(int(sn), [])
             by_season[int(sn)].append(int(en))
     if not tmdb_refs:

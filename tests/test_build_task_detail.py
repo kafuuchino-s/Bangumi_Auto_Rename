@@ -225,6 +225,48 @@ def test_detail_bangumi_tmdb_subjects_and_episode_ranges(monkeypatch):
     assert tmdb["tmdb_id"] == 53356
 
 
+def test_detail_tmdb_subjects_movie_has_no_season_episode(monkeypatch):
+    """movie 落点 destination.season_number/episode_number 为 null，仍须展示 TMDB 条目。
+
+    回归 3388cffd / f98abe74：movie 没有季集概念，旧逻辑卡在
+    ``if ref and sn is not None and en is not None`` 导致 tmdb_subjects 为空，
+    前端「TMDB 条目」区块不渲染。
+    """
+    task = {
+        "name": "机动战士高达SEED FREEDOM", "pipeline_mode": "local_bangumi_to_tmdb_product",
+        "tmdb_id": 1146972, "tmdb_name": "机动战士高达SEED FREEDOM", "tmdb_year": 2024,
+        "tmdb_media_type": "movie",
+        "bgm_subjects": [{"id": 337586, "name": "機動戦士ガンダムSEED FREEDOM",
+                          "name_cn": "机动战士高达SEED FREEDOM", "media_kind": "movie",
+                          "assignment_count": 1}],
+        "bgm_to_tmdb_rename_plan": {"items": [
+            {
+                "source_path": "gundam.mkv", "source_abs_path": r"H:\fake\gundam.mkv",
+                "disposition": "map_to_tmdb", "tmdb_legal_node_ids": ["movie:1146972"],
+                "destination": {"tmdb_ref": "movie:1146972", "tmdb_id": 1146972,
+                                "media_type": "movie", "season_number": None,
+                                "episode_number": None, "episode_token": ""},
+                "bangumi_assignment": {"target": {"bangumi_subject_id": 337586,
+                                                   "episode_type": "regular", "sort": 1}},
+            },
+        ]},
+        "bgm_to_tmdb_verified_plan": {"mappings": [
+            {"source_path": "gundam.mkv", "confidence": "High"}]},
+    }
+    _patch_io(monkeypatch, task, {})
+    d = serializers.build_task_detail("uuid-movie")
+    # movie 仍须有 TMDB 条目（不再因 null season/episode 被丢弃）。
+    assert len(d["tmdb_subjects"]) == 1
+    t = d["tmdb_subjects"][0]
+    assert t["tmdb_ref"] == "movie:1146972"
+    assert t["tmdb_id"] == 1146972
+    assert t["media_type"] == "movie"
+    assert t["name"] == "机动战士高达SEED FREEDOM"
+    assert t["year"] == 2024
+    # movie 无季集，集数范围为空（前端显示 -）。
+    assert t["episode_ranges"] == ""
+
+
 def test_detail_mapping_details_three_way_with_confidence(monkeypatch):
     """映射明细三方纯编号对照，置信度从 verified_plan 合并。"""
     task = {
