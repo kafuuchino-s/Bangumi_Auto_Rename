@@ -280,6 +280,33 @@ def test_pi_runner_maps_chat_completions_config_for_pi(tmp_path):
     assert result.ok is True
 
 
+def test_pi_runner_maps_anthropic_messages_config_for_pi(tmp_path):
+    def fake_runtime(state):
+        models_payload = json.loads((state.run_dir / 'pi_agent_config' / 'models.json').read_text(encoding='utf-8'))
+        provider = models_payload['providers']['bangumi-config-openai']
+        assert provider['api'] == 'anthropic-messages'
+        assert 'authHeader' not in provider
+        case_input = json.loads((state.run_dir / 'case_input.json').read_text(encoding='utf-8'))
+        assert case_input['pi_api'] == 'anthropic-messages'
+        return {
+            'ok': True,
+            'returncode': 0,
+            'argv': ['fake'],
+            'tool_result': state.handle_tool('submit_organize_recipe_params', {'recipe_params': _recipe_params(), 'summary': 'done'}),
+        }
+
+    with cm.temporary_config({
+        'rename_local_bangumi_pi_case_root': str(tmp_path),
+        'ai_model': 'claude-sonnet-4-6',
+        'ai_base_url': 'https://proxy.example.com',
+        'ai_api_key': 'sk-ant-test',
+        'openai_api_interface': 'anthropic_messages',
+    }):
+        result = run_pi_case_agent(workspace=_workspace(), bangumi_client=object(), source_path='tests/sample', runtime_invoker=fake_runtime)
+
+    assert result.ok is True
+
+
 def test_pi_runtime_command_uses_timeout_only_without_turn_cap(tmp_path):
     argv = _runtime_command(
         '',

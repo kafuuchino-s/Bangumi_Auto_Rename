@@ -224,8 +224,8 @@ FIELD_SPEC: list[Mapping[str, Any]] = [
         "level": LEVEL_BASIC,
         "group": GRP_AI,
         "tab": TAB_AI,
-        "help": "OpenAI 兼容接口地址。使用第三方中转或自建网关时按需修改。",
-        "default_hint": "默认 https://api.openai.com/v1",
+        "help": "模型网关根地址（全局唯一，不要带 /v1）。Pi / 门禁 / 测试器共用；Pi SDK 与 OpenAI SDK 会自行拼接 /v1、/v1/messages 等路径。",
+        "default_hint": "默认 https://api.openai.com（无 /v1）",
     },
     {
         "key": "ai_model",
@@ -242,9 +242,9 @@ FIELD_SPEC: list[Mapping[str, Any]] = [
         "level": LEVEL_ADVANCED,
         "group": GRP_AI_ADV,
         "tab": TAB_AI,
-        "options": ["responses_api", "chat_completions"],
-        "help": "OpenAI 接口类型。responses_api 为新版，chat_completions 为兼容旧版/第三方。",
-        "default_hint": "默认 responses_api",
+        "options": ["anthropic_messages", "responses_api", "chat_completions"],
+        "help": "Pi Case Agent 与 AI 门禁使用的模型协议。anthropic_messages：Anthropic Messages（Claude 官方或兼容代理）；responses_api / chat_completions：OpenAI 兼容网关。改后需重启进程并点「测试 AI」。",
+        "default_hint": "默认 responses_api；无 OpenAI 模型时选 anthropic_messages",
     },
     # ============================ 字幕自动抓取 ============================ #
     {

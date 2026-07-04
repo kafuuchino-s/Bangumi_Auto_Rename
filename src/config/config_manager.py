@@ -23,13 +23,13 @@ CONFIG_DEFAULT = {
     "docker_mnt": "/media",
     "host_path_prefix": "",  # Windows宿主机路径前缀，用于qBittorrent路径转换
     "ai_api_key": "",
-    "ai_base_url": "https://api.openai.com/v1",
+    "ai_base_url": "https://api.openai.com",
     "ai_model": "gpt-4o-mini",
     "ai_temperature": 1.0,  # OpenAI温度
     "ai_force_strict": True,
     "ai_confidence_threshold": "Medium",
     "openai_output_format": "structured_output",  # OpenAI输出格式选择
-    "openai_api_interface": "responses_api",  # OpenAI接口类型：responses_api/chat_completions
+    "openai_api_interface": "responses_api",  # Pi 协议：anthropic_messages/responses_api/chat_completions
     "openai_auto_routing_enabled": True,  # OpenAI自动路由
     "openai_auto_format_order": [
         "structured_output",
@@ -138,7 +138,7 @@ CN_MAP = {
     "ai_confidence_threshold": "AI置信度阈值",
     "ai_request_timeout_seconds": "AI请求超时秒数",
     "openai_output_format": "OpenAI输出格式",
-    "openai_api_interface": "OpenAI接口类型",
+    "openai_api_interface": "Pi 模型协议",
     "openai_auto_routing_enabled": "OpenAI自动路由",
     "openai_auto_format_order": "OpenAI自动路由顺序",
     "openai_format_stats": "OpenAI格式测试统计",

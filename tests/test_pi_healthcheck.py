@@ -37,12 +37,51 @@ def _hc_result(**over) -> str:
 
 
 def test_run_healthcheck_success(monkeypatch):
-    """连通 + 工具调用都通过 → success=True，message 含 /responses + 模型名。"""
+    """连通 + 工具调用都通过 → success=True，message 含协议标签 + 模型名。"""
+    from src.config.config_manager import cm
+
     monkeypatch.setattr(pi_healthcheck.subprocess, 'run', lambda *a, **k: _completed(_hc_result()))
-    ok, msg = pi_healthcheck.run_healthcheck()
+    with cm.temporary_config(
+        {
+            'ai_model': 'deepseek-v4-flash',
+            'ai_base_url': 'https://api.bbbc.eu.org',
+            'ai_api_key': 'sk-test',
+            'openai_api_interface': 'responses_api',
+        }
+    ):
+        ok, msg = pi_healthcheck.run_healthcheck()
     assert ok is True
     assert 'deepseek-v4-flash' in msg
-    assert '/responses' in msg
+    assert 'Responses' in msg
+
+
+def test_run_healthcheck_success_anthropic_messages_label(monkeypatch):
+    """anthropic_messages 配置 → 门禁成功文案为 Anthropic Messages（非 Responses）。"""
+    captured: dict[str, list[str]] = {}
+
+    def _capture_run(argv, **kwargs):
+        captured['argv'] = list(argv)
+        return _completed(_hc_result(model='grok-composer-2.5-fast'))
+
+    monkeypatch.setattr(pi_healthcheck.subprocess, 'run', _capture_run)
+    from src.config.config_manager import cm
+
+    with cm.temporary_config(
+        {
+            'ai_model': 'grok-composer-2.5-fast',
+            'ai_base_url': 'https://api.bbbc.eu.org',
+            'ai_api_key': 'sk-test',
+            'openai_api_interface': 'anthropic_messages',
+        }
+    ):
+        ok, msg = pi_healthcheck.run_healthcheck()
+
+    assert ok is True
+    assert 'Anthropic Messages' in msg
+    assert 'grok-composer-2.5-fast' in msg
+    argv = captured.get('argv') or []
+    api_idx = argv.index('--api')
+    assert argv[api_idx + 1] == 'anthropic-messages'
 
 
 def test_run_healthcheck_connected_but_no_tool_call(monkeypatch):
@@ -137,8 +176,3 @@ def test_resolve_model_config_missing_returns_none(monkeypatch):
     assert '配置不完整' in msg
 
 
-def test_pi_api_from_config_mapping():
-    """openai_api_interface → pi api 映射与 pi_runner 同口径。"""
-    assert pi_healthcheck._pi_api_from_config('responses_api') == 'openai-responses'
-    assert pi_healthcheck._pi_api_from_config('chat_completions') == 'openai-completions'
-    assert pi_healthcheck._pi_api_from_config('') == 'openai-responses'

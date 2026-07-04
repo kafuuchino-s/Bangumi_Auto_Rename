@@ -21,6 +21,7 @@ from pathlib import Path
 from typing import Any
 
 from ..config.config_manager import cm
+from .pi_api_config import healthcheck_api_label, pi_api_from_config
 
 # 与 pi_runner / pi_ai_healthcheck.mjs 同口径。
 _PI_API_KEY_ENV = 'BAR_PI_CASE_AGENT_API_KEY'
@@ -36,14 +37,6 @@ def _config_str(key: str, default: str = '') -> str:
     return str(value if value is not None else default)
 
 
-def _pi_api_from_config(value: str) -> str:
-    """与 pi_runner._pi_api_from_config 同口径。"""
-    interface = str(value or '').strip().casefold()
-    if interface == 'chat_completions':
-        return 'openai-completions'
-    return 'openai-responses'
-
-
 def _resolve_model_config() -> dict[str, str] | None:
     """解析 healthcheck 需要的 provider/model/base_url/api/api_key。
 
@@ -55,7 +48,7 @@ def _resolve_model_config() -> dict[str, str] | None:
     if not model or not base_url or not api_key:
         return None
     provider = _config_str('rename_local_bangumi_pi_provider', _DEFAULT_PI_PROVIDER).strip() or _DEFAULT_PI_PROVIDER
-    api = _pi_api_from_config(
+    api = pi_api_from_config(
         _config_str('rename_local_bangumi_pi_api_interface', '').strip()
         or _config_str('openai_api_interface', 'responses_api')
     )
@@ -146,7 +139,8 @@ def run_healthcheck(timeout_seconds: int = 35) -> tuple[bool, str]:
     if connectivity_ok and tool_call_ok:
         preview = str(result.get('reply_preview') or '').strip()
         suffix = f'（{preview[:60]}）' if preview else ''
-        return True, f'AI 门禁通过（模型 {model}，/responses 链路 + 工具调用正常）{suffix}'
+        label = healthcheck_api_label(cfg['api'])
+        return True, f'AI 门禁通过（模型 {model}，{label} 链路 + 工具调用正常）{suffix}'
 
     if not connectivity_ok:
         return False, _classify_error(error or 'model did not return an assistant message')

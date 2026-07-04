@@ -50,6 +50,8 @@ class OpenAIClient(BaseAIClient):
 
     def is_available(self) -> bool:
         """检查OpenAI客户端是否可用"""
+        if self.api_interface == "anthropic_messages":
+            return False
         return bool(self.enabled and self.client and self.api_key)
 
     def resolve_api_interface(self, interface_value: object) -> str:
@@ -382,8 +384,12 @@ class OpenAIClient(BaseAIClient):
         return None
 
     def _resolve_api_interface(self, interface_value: Optional[str]) -> str:
-        if interface_value in ["responses_api", "chat_completions"]:
+        if interface_value in ("responses_api", "chat_completions", "anthropic_messages"):
             return interface_value
+
+        normalized = str(interface_value or "").strip().casefold().replace("-", "_")
+        if normalized == "anthropic_messages":
+            return "anthropic_messages"
 
         if interface_value:
             logger.warning(

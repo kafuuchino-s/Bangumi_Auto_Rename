@@ -13,6 +13,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from typing import Any, Callable, Iterator
 
+from ...ai.pi_api_config import pi_api_from_config, pi_provider_uses_bearer_auth
 from ...config.config_manager import cm
 from .models import CaseJudgeOutput, CaseVerifierResult, MappingDraft
 from .pi_tools import PiCaseToolState, _json_safe
@@ -96,13 +97,6 @@ def _safe_case_id(value: str) -> str:
     return (text or 'case')[:80]
 
 
-def _pi_api_from_config(value: str) -> str:
-    interface = str(value or '').strip().casefold()
-    if interface == 'chat_completions':
-        return 'openai-completions'
-    return 'openai-responses'
-
-
 def _prepare_pi_runtime_model_config(run_dir: Path) -> PiRuntimeModelConfig | None:
     model = _config_str('rename_local_bangumi_pi_model', '').strip() or _config_str('ai_model', '').strip()
     base_url = _config_str('rename_local_bangumi_pi_base_url', '').strip() or _config_str('ai_base_url', '').strip()
@@ -110,35 +104,36 @@ def _prepare_pi_runtime_model_config(run_dir: Path) -> PiRuntimeModelConfig | No
     if not model or not base_url or not api_key:
         return None
     provider = _config_str('rename_local_bangumi_pi_provider', _DEFAULT_PI_PROVIDER).strip() or _DEFAULT_PI_PROVIDER
-    api = _pi_api_from_config(_config_str('rename_local_bangumi_pi_api_interface', '').strip() or _config_str('openai_api_interface', 'responses_api'))
+    api = pi_api_from_config(
+        _config_str('rename_local_bangumi_pi_api_interface', '').strip()
+        or _config_str('openai_api_interface', 'responses_api')
+    )
     agent_dir = run_dir / 'pi_agent_config'
     agent_dir.mkdir(parents=True, exist_ok=True)
-    models_payload = {
-        'providers': {
-            provider: {
-                'baseUrl': base_url.rstrip('/'),
-                'api': api,
-                'apiKey': _PI_CONFIG_API_KEY_ENV,
-                'authHeader': True,
-                'models': [
-                    {
-                        'id': model,
-                        'name': f'Bangumi config {model}',
-                        'reasoning': True,
-                        'input': ['text'],
-                        'contextWindow': 400000,
-                        'maxTokens': 32000,
-                        'cost': {
-                            'input': 0,
-                            'output': 0,
-                            'cacheRead': 0,
-                            'cacheWrite': 0,
-                        },
-                    }
-                ],
+    provider_entry: dict[str, Any] = {
+        'baseUrl': base_url.rstrip('/'),
+        'api': api,
+        'apiKey': _PI_CONFIG_API_KEY_ENV,
+        'models': [
+            {
+                'id': model,
+                'name': f'Bangumi config {model}',
+                'reasoning': True,
+                'input': ['text'],
+                'contextWindow': 400000,
+                'maxTokens': 32000,
+                'cost': {
+                    'input': 0,
+                    'output': 0,
+                    'cacheRead': 0,
+                    'cacheWrite': 0,
+                },
             }
-        }
+        ],
     }
+    if pi_provider_uses_bearer_auth(api):
+        provider_entry['authHeader'] = True
+    models_payload = {'providers': {provider: provider_entry}}
     (agent_dir / 'models.json').write_text(json.dumps(models_payload, ensure_ascii=False, indent=2, sort_keys=True), encoding='utf-8')
     return PiRuntimeModelConfig(
         agent_dir=agent_dir,
