@@ -24,8 +24,9 @@ def _health() -> dict[str, str]:
     return {'status': 'ok'}
 
 
-ANI_TAG = ['动漫', 'anime', '动画']
-MOVIE_TAG = ['电影', 'movie', '剧场', '剧场版']
+ANI_CATEGORY = {'动漫', 'anime', '动画'}
+MOVIE_CATEGORY = {'电影', 'movie', '剧场', '剧场版'}
+TV_CATEGORY = 'tv'
 
 
 def _form_value_to_text(value: object) -> str:
@@ -45,10 +46,15 @@ def _form_value_to_bool(value: object) -> bool:
 
 
 def _parse_tag_list(value: object) -> list[str]:
-    """将 qBittorrent 的逗号分隔标签归一为小写精确匹配列表。"""
+    """将逗号分隔的配置或 qBittorrent 标签归一为精确匹配列表。"""
     if not isinstance(value, str):
         return []
     return [tag.strip().lower() for tag in value.split(",") if tag.strip()]
+
+
+def _normalize_category(value: object) -> str:
+    """归一 qBittorrent 单值分类；分类本身不按逗号拆分。"""
+    return value.strip().lower() if isinstance(value, str) else ''
 
 
 def get_skip_tags() -> list[str]:
@@ -56,9 +62,9 @@ def get_skip_tags() -> list[str]:
     return _parse_tag_list(cm.get_config("skip_tags"))
 
 
-def get_allowed_tags() -> list[str]:
-    """从配置获取仅处理的白名单标签列表；空列表表示不限制。"""
-    return _parse_tag_list(cm.get_config("allowed_tags"))
+def get_allowed_categories() -> list[str]:
+    """从配置获取仅处理的分类白名单；空列表表示不限制。"""
+    return _parse_tag_list(cm.get_config("allowed_categories"))
 
 
 def convert_host_path_to_docker(path: str) -> str:
@@ -178,9 +184,21 @@ async def _send_task(request: Request):
         recovered = None
     if recovered and recovered != raw_path:
         path = recovered
-    is_anime: bool | None = _form_value_to_bool(form_data.get('is_anime'))
+    is_anime_raw = form_data.get('is_anime')
+    is_movie_raw = form_data.get('is_movie')
+    is_anime = (
+        _form_value_to_bool(is_anime_raw)
+        if is_anime_raw is not None
+        else None
+    )
+    is_movie = (
+        _form_value_to_bool(is_movie_raw)
+        if is_movie_raw is not None
+        else None
+    )
     no_process = _form_value_to_bool(form_data.get('no_process'))
     tag = _form_value_to_text(form_data.get('tag'))
+    category = _normalize_category(form_data.get('category'))
 
     tag_list = _parse_tag_list(tag)
 
@@ -209,18 +227,18 @@ async def _send_task(request: Request):
         }
 
     # 空白名单表示保持历史行为：所有 webhook 任务均可继续处理。
-    allowed_tags = get_allowed_tags()
-    if allowed_tags and not any(tag in allowed_tags for tag in tag_list):
-        received_tags = ','.join(tag_list) or '无'
+    allowed_categories = get_allowed_categories()
+    if allowed_categories and category not in allowed_categories:
+        received_category = category or '无'
         logger.info(
-            f'[结束任务] {path} 忽略：未命中允许标签；'
-            f'接收={received_tags}，允许={",".join(allowed_tags)}。'
+            f'[结束任务] {path} 忽略：未命中允许分类；'
+            f'接收={received_category}，允许={",".join(allowed_categories)}。'
         )
         return {
             'code': 202,
             'data': (
-                f'{path}忽略, 未命中允许标签！'
-                f'接收：{received_tags}；允许：{",".join(allowed_tags)}'
+                f'{path}忽略, 未命中允许分类！'
+                f'接收：{received_category}；允许：{",".join(allowed_categories)}'
             ),
         }
 
@@ -229,23 +247,15 @@ async def _send_task(request: Request):
         logger.error(f'[结束任务] 路径{path}不存在！')
         return {'code': 404, 'data': f'路径{path}不存在！'}
 
-    if not is_anime:
-        for i in ANI_TAG:
-            if i in tag_list:
-                is_anime = True
-                break
-        else:
-            # 没有动漫标签时设为 None，让后续代码根据 TMDB genre 自动判断
-            is_anime = None
-    else:
-        is_anime = None
+    # qBittorrent 分类决定初始媒体类型提示；显式表单值优先。
+    if is_anime is None:
+        if category in ANI_CATEGORY:
+            is_anime = True
+        elif category in MOVIE_CATEGORY or category == TV_CATEGORY:
+            is_anime = False
 
-    for i in MOVIE_TAG:
-        if i in tag_list:
-            is_movie = True
-            break
-    else:
-        is_movie = None
+    if is_movie is None and category in MOVIE_CATEGORY:
+        is_movie = True
 
     queue_mgr = get_queue_manager()
 

@@ -65,7 +65,7 @@ docker run -p 5999:5999 bangumi-auto-rename
 | Task | Location | Notes |
 |------|----------|-------|
 | 进程启动 | `src/start.py` | `python -m src.start` 最终落到 `ui.run(...)` |
-| Webhook 入站 | `src/web.py` | skip_tags、宿主机→Docker 路径转换、URL 路径修复、队列去重 |
+| Webhook 入站 | `src/web.py` | `allowed_categories` 分类白名单、skip_tags、宿主机→Docker 路径转换、URL 路径修复、队列去重 |
 | UI 主页 | `src/main_page.py` | 连接添加任务、字幕导入、配置页、表格刷新 |
 | 队列与批次收尾 | `src/queue/task_queue.py` | worker 懒启动；成功任务后可触发字幕自动抓取；drain 后统一通知 |
 | 主重命名入口 | `src/rename/process.py` | `Rename.process()` / `_process()`：Case Agent primary 路由、目录拆子任务、迁移落盘 |
@@ -87,7 +87,7 @@ docker run -p 5999:5999 bangumi-auto-rename
 
 ```text
 Web UI / qBittorrent webhook
-→ src/web.py（路径修复 / skip_tags / 去重）
+→ src/web.py（分类白名单 / 路径修复 / skip_tags / 去重）
 → src/queue/task_queue.py（并发 worker + 批次收尾）
 → src/rename/process.py
 → Case Agent primary: `local_evidence` → `case_agent/local_bangumi_entry` → `pi_runner` → `evidence_broker` → `MappingDraft` → `Verifier`
@@ -146,7 +146,9 @@ Web UI / qBittorrent webhook
 
 `src/web.py` 负责：
 
-- `skip_tags` 跳过标签
+- `allowed_categories`：仅影响 qBittorrent webhook 的分类白名单；空值不限制。qB 命令以 `category=%L` 传入单值分类，白名单精确匹配（忽略大小写与首尾空格）；`no_process` 和 `skip_tags` 优先
+- `skip_tags`：只检查 qB `tag=%G` 标签（如 `reseed`、`辅种`），不承担媒体分类
+- 分类提供初始路由提示：`动漫`/`anime`/`动画`→动漫，`电影`/`movie`/`剧场`/`剧场版`→普通电影，`tv`→普通 TV；显式 `is_anime`/`is_movie` 表单值优先
 - `host_path_prefix` / `docker_mnt` 的 Windows 宿主机 → Docker 路径映射
 - URL 编码异常路径修复（如 `+` 被解成空格）
 - 队列去重：同一路径不重复入队
@@ -207,7 +209,7 @@ BGM→TMDB 落地不只处理视频。若同目录存在同 stem 的字幕（如
 - Docker 路径转换：`docker_mnt` / `host_path_prefix`
 - 日志：`log_level`
 - 队列：`queue_max_workers`
-- 跳过标签：`skip_tags`
+- Webhook 过滤：`allowed_categories`（qB 分类白名单）/ `skip_tags`（qB 标签跳过）
 
 ### AI
 
@@ -311,7 +313,7 @@ AI 测试入口：
 - 不要让 Bangumi 直接决定 season number；它只是辅助证据，不是权威映射源。
 - 不要假设 `data/` 是临时垃圾目录；这里保存 config、task、record、AI 分析、字幕抓取产物。
 - 不要把队列收尾理解成"每个任务立刻通知"；当前设计是批次结束后统一 Emby/Telegram 汇总。
-- 不要忽略 `src/web.py` 的路径修复与 skip_tags 逻辑；外部路径未必能直接用。
+- 不要忽略 `src/web.py` 的 `allowed_categories` / skip_tags、路径修复逻辑；外部路径未必能直接用。
 - 不要为 sample-pool 个例写样本专属 alias、硬编码 title 或固定 file→legal_node 正映射。
 - 不要让固定层把局部、脆弱、语义性的 overlap/bridge 判断升级成 hard blocker。
 - 若文档与代码冲突，以当前代码和本文件为准。

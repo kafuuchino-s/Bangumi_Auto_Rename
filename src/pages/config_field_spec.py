@@ -62,7 +62,7 @@ GRP_SUBTITLE_FETCH = "字幕自动抓取"
 GRP_SYNC = "字幕对齐（ffsubsync）"
 GRP_EMBY = "通知：Emby"
 GRP_TELEGRAM = "通知：Telegram"
-GRP_SKIP = "跳过标签"
+GRP_SKIP = "Webhook 过滤与分类"
 GRP_AI_ADV = "AI 高级路由"
 GRP_CASE_AGENT = "Case Agent 运维"
 GRP_BGM_TMDB = "BGM→TMDB 产品链路"
@@ -517,14 +517,14 @@ FIELD_SPEC: list[Mapping[str, Any]] = [
         "help": "Telegram Bot API 地址，使用反代时修改。",
         "default_hint": "默认 https://api.telegram.org",
     },
-    # ============================ Webhook 标签 ============================ #
+    # ============================ Webhook 过滤与分类 ============================ #
     {
-        "key": "allowed_tags",
+        "key": "allowed_categories",
         "control": INPUT,
         "level": LEVEL_BASIC,
         "group": GRP_SKIP,
         "tab": TAB_GENERAL,
-        "help": "仅影响 qBittorrent webhook；留空不限制。填写后必须命中至少一个精确标签才会入队，no_process 和跳过标签优先。",
+        "help": "仅影响 qBittorrent webhook；留空不限制。填写后必须通过 category=%L 命中至少一个精确分类才会入队，no_process 和跳过标签优先。",
         "default_hint": "留空=不限制；示例 动漫,电影,tv",
     },
     {

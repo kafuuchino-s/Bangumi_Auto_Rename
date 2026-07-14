@@ -255,22 +255,22 @@ docker build -t bangumi-auto-rename . \
 - 在输入框中填入适合自己系统的命令（见下方示例），**应用**保存即可
 
 - 这里的 `path=` 参数**一定**要用 `"%F"` 替换，这样每次传入的就是种子实际下载路径
-- `tag=` 参数**可以**用 `"$G"` 替换，代表创建种子时的标签。如果是动漫剧集建议带 `anime` 标签，电影建议带 `movie` 标签，方便自动整理到对应路径；在「仅处理标签（白名单）」留空时，无任何标签也会入队，是否电影会**自动判断**，是否动漫则**默认为否**；若不需要处理，可传入 `no_process` 标签
-- 设置页的「仅处理标签（白名单）」可填 `动漫,电影,tv`：留空表示不限制；填写后 `/sendTask` 必须命中至少一个逗号分隔的**精确标签**才会入队（忽略大小写与首尾空格），无标签任务也会忽略。`skip_tags` 与显式 `no_process=true` 始终优先于白名单，例如 `动漫,reseed` 仍会被跳过。
+- `category=` 参数使用 `"%L"` 传入 qBittorrent 的单个分类；推荐分类为 `动漫`、`电影`、`tv`，它会决定初始媒体类型倾向。`tag=` 参数使用 `"%G"` 传入标签，仍用于 `skip_tags`（如 `reseed`、`辅种`）；若不需要处理，可传入 `no_process` 标签。
+- 设置页的「仅处理分类（白名单）」可填 `动漫,电影,tv`：留空表示不限制；填写后 `/sendTask` 的 `category=%L` 必须命中一个逗号分隔的**精确分类**才会入队（忽略大小写与首尾空格），未传分类也会忽略。`skip_tags` 与显式 `no_process=true` 始终优先于分类白名单，例如分类为 `动漫`、标签为 `reseed` 的任务仍会被跳过。
 
 ```shell
 # Linux / macOS (curl)
-curl --data-urlencode "path=%F" --data-urlencode "tag=%G" "http://127.0.0.1:5999/sendTask" -f
+curl --data-urlencode "path=%F" --data-urlencode "category=%L" --data-urlencode "tag=%G" "http://127.0.0.1:5999/sendTask" -f
 ```
 
 ```powershell
-# Windows (PowerShell，推荐)
+# Windows (PowerShell，推荐：传分类与标签)
+powershell -NoProfile -ExecutionPolicy Bypass -Command "Invoke-RestMethod -Uri 'http://localhost:5999/sendTask' -Method Post -Body @{ path='%F'; category='%L'; tag='%G' } | Out-Null"
+```
+
+```powershell
+# Windows (PowerShell，仅路径；仅在未启用分类白名单时适用)
 powershell -NoProfile -ExecutionPolicy Bypass -Command "Invoke-RestMethod -Uri 'http://localhost:5999/sendTask' -Method Post -Body @{ path='%F' } | Out-Null"
-```
-
-```powershell
-# Windows (PowerShell，带 tag)
-powershell -NoProfile -ExecutionPolicy Bypass -Command "Invoke-RestMethod -Uri 'http://localhost:5999/sendTask' -Method Post -Body @{ path='%F'; tag='%G' } | Out-Null"
 ```
 
 ### 六、更新

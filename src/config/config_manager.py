@@ -92,7 +92,7 @@ CONFIG_DEFAULT = {
     "subtitle_auto_fetch_case_agent_pi_max_turns": 48,  # 兼容保留，Pi native 模式由 wall-clock timeout 约束
     "subtitle_auto_fetch_case_agent_pi_timeout_seconds": 600,
     "subtitle_auto_fetch_case_agent_pi_command": "",  # 运行命令覆盖（默认走 core sidecar）
-    "allowed_tags": "",  # 仅处理的 webhook 标签；空值表示不限制
+    "allowed_categories": "",  # 仅处理的 qBittorrent 分类；空值表示不限制
     "skip_tags": "iyuu,辅种,reseed,skip,no_process",  # 跳过处理的标签
     # Emby通知配置
     "emby_enabled": False,  # 是否启用Emby通知
@@ -190,7 +190,7 @@ CN_MAP = {
     "subtitle_auto_fetch_case_agent_pi_max_turns": "抓取 Case Agent 最大轮数（兼容保留，不生效）",
     "subtitle_auto_fetch_case_agent_pi_timeout_seconds": "抓取 Case Agent 超时秒数",
     "subtitle_auto_fetch_case_agent_pi_command": "抓取 Case Agent 运行命令覆盖（默认 core）",
-    "allowed_tags": "仅处理标签（白名单，逗号分隔）",
+    "allowed_categories": "仅处理分类（白名单，逗号分隔）",
     "skip_tags": "跳过处理的标签（逗号分隔）",
     # Emby通知配置
     "emby_enabled": "启用Emby通知",
@@ -296,10 +296,20 @@ class ConfigManager:
                     time.sleep(0.05 * (attempt + 1))
             if last_error is not None:
                 raise last_error
+            original_keys = set(self.config)
+
             # 对没有的值，添加默认值
             for key in CONFIG_DEFAULT:
                 if key not in self.config:
                     self.config[key] = CONFIG_DEFAULT[key]
+
+            # 兼容迁移：上一版 webhook 标签白名单 → qBittorrent 分类白名单。
+            # 必须检查原始 key 是否存在，避免用户显式保存空新值后被旧值复活。
+            if (
+                "allowed_tags" in original_keys
+                and "allowed_categories" not in original_keys
+            ):
+                self.config["allowed_categories"] = self.config["allowed_tags"]
 
             # 兼容迁移：历史遗留名 bangumi_path → tv_path（语义未变，仅改名）。
             # 必须在下方「删除未知 key」之前做，否则旧值会被静默清掉导致路径丢失。
