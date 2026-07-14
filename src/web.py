@@ -44,11 +44,21 @@ def _form_value_to_bool(value: object) -> bool:
     return False
 
 
+def _parse_tag_list(value: object) -> list[str]:
+    """将 qBittorrent 的逗号分隔标签归一为小写精确匹配列表。"""
+    if not isinstance(value, str):
+        return []
+    return [tag.strip().lower() for tag in value.split(",") if tag.strip()]
+
+
 def get_skip_tags() -> list[str]:
-    """从配置获取跳过标签列表"""
-    skip_tags_raw = cm.get_config("skip_tags")
-    skip_tags_str = skip_tags_raw if isinstance(skip_tags_raw, str) else ''
-    return [tag.strip().lower() for tag in skip_tags_str.split(",") if tag.strip()]
+    """从配置获取跳过标签列表。"""
+    return _parse_tag_list(cm.get_config("skip_tags"))
+
+
+def get_allowed_tags() -> list[str]:
+    """从配置获取仅处理的白名单标签列表；空列表表示不限制。"""
+    return _parse_tag_list(cm.get_config("allowed_tags"))
 
 
 def convert_host_path_to_docker(path: str) -> str:
@@ -172,15 +182,7 @@ async def _send_task(request: Request):
     no_process = _form_value_to_bool(form_data.get('no_process'))
     tag = _form_value_to_text(form_data.get('tag'))
 
-    tag_list = [str(i).strip().lower() for i in tag.split(',')]
-
-    # 检查是否包含跳过标签（IYUU辅种等）
-    skip_tags = get_skip_tags()
-    for skip in skip_tags:
-        if skip in tag_list:
-            no_process = True
-            logger.info(f'[收到任务] 检测到跳过标签: {skip}')
-            break
+    tag_list = _parse_tag_list(tag)
 
     if not path:
         logger.error('[结束任务] 路径为空！')
@@ -193,8 +195,34 @@ async def _send_task(request: Request):
     path = fix_url_encoded_path(path)
 
     if no_process:
-        logger.info(f'[结束任务] {path}忽略, 不处理！')
-        return {'code': 202, 'data': f'{path}忽略, 不处理！'}
+        logger.info(f'[结束任务] {path} 忽略：no_process 已启用。')
+        return {'code': 202, 'data': f'{path}忽略, no_process 已启用！'}
+
+    # 跳过标签优先于白名单，避免辅种等任务被意外放行。
+    skip_tags = get_skip_tags()
+    matched_skip_tag = next((tag for tag in tag_list if tag in skip_tags), None)
+    if matched_skip_tag:
+        logger.info(f'[结束任务] {path} 忽略：命中跳过标签 {matched_skip_tag}。')
+        return {
+            'code': 202,
+            'data': f'{path}忽略, 命中跳过标签：{matched_skip_tag}！',
+        }
+
+    # 空白名单表示保持历史行为：所有 webhook 任务均可继续处理。
+    allowed_tags = get_allowed_tags()
+    if allowed_tags and not any(tag in allowed_tags for tag in tag_list):
+        received_tags = ','.join(tag_list) or '无'
+        logger.info(
+            f'[结束任务] {path} 忽略：未命中允许标签；'
+            f'接收={received_tags}，允许={",".join(allowed_tags)}。'
+        )
+        return {
+            'code': 202,
+            'data': (
+                f'{path}忽略, 未命中允许标签！'
+                f'接收：{received_tags}；允许：{",".join(allowed_tags)}'
+            ),
+        }
 
     _path = Path(path)
     if not _path.exists():

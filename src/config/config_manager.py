@@ -92,6 +92,7 @@ CONFIG_DEFAULT = {
     "subtitle_auto_fetch_case_agent_pi_max_turns": 48,  # 兼容保留，Pi native 模式由 wall-clock timeout 约束
     "subtitle_auto_fetch_case_agent_pi_timeout_seconds": 600,
     "subtitle_auto_fetch_case_agent_pi_command": "",  # 运行命令覆盖（默认走 core sidecar）
+    "allowed_tags": "",  # 仅处理的 webhook 标签；空值表示不限制
     "skip_tags": "iyuu,辅种,reseed,skip,no_process",  # 跳过处理的标签
     # Emby通知配置
     "emby_enabled": False,  # 是否启用Emby通知
@@ -189,6 +190,7 @@ CN_MAP = {
     "subtitle_auto_fetch_case_agent_pi_max_turns": "抓取 Case Agent 最大轮数（兼容保留，不生效）",
     "subtitle_auto_fetch_case_agent_pi_timeout_seconds": "抓取 Case Agent 超时秒数",
     "subtitle_auto_fetch_case_agent_pi_command": "抓取 Case Agent 运行命令覆盖（默认 core）",
+    "allowed_tags": "仅处理标签（白名单，逗号分隔）",
     "skip_tags": "跳过处理的标签（逗号分隔）",
     # Emby通知配置
     "emby_enabled": "启用Emby通知",

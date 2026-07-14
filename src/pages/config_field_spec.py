@@ -517,7 +517,16 @@ FIELD_SPEC: list[Mapping[str, Any]] = [
         "help": "Telegram Bot API 地址，使用反代时修改。",
         "default_hint": "默认 https://api.telegram.org",
     },
-    # ============================ 跳过标签 ============================ #
+    # ============================ Webhook 标签 ============================ #
+    {
+        "key": "allowed_tags",
+        "control": INPUT,
+        "level": LEVEL_BASIC,
+        "group": GRP_SKIP,
+        "tab": TAB_GENERAL,
+        "help": "仅影响 qBittorrent webhook；留空不限制。填写后必须命中至少一个精确标签才会入队，no_process 和跳过标签优先。",
+        "default_hint": "留空=不限制；示例 动漫,电影,tv",
+    },
     {
         "key": "skip_tags",
         "control": INPUT,
