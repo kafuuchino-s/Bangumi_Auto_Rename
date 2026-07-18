@@ -8,6 +8,7 @@ import {
   refetchSubtitle,
 } from "@/lib/api/client";
 import type { TaskRow } from "@/lib/api/types";
+import { apiErrorMessage } from "@/lib/api/errors";
 
 export type ViewMode = "table" | "card";
 
@@ -68,7 +69,7 @@ export const useTaskStore = create<TaskState>((set, get) => ({
       const tasks = await getTasks();
       set({ tasks, loading: false });
     } catch (e) {
-      set({ error: (e as Error).message, loading: false });
+      set({ error: apiErrorMessage(e), loading: false });
     }
   },
   retry: async (uuid) => {

@@ -1,8 +1,11 @@
 from pathlib import Path
 
 from fastapi import FastAPI, Request
-from fastapi.responses import HTMLResponse
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
+from starlette.datastructures import Headers
+from starlette.exceptions import HTTPException
 
 from .config.config_manager import cm
 from .logger import logger
@@ -12,8 +15,73 @@ from .api import api_router
 # 纯 FastAPI 后端（已移除 NiceGUI）：提供 /api/* + /sendTask webhook + 前端静态托管
 app = FastAPI(title="番剧自动重命名 API")
 
+
+def _http_error_code(status_code: int, detail: object) -> tuple[str, dict[str, object]]:
+    text = str(detail or "")
+    lowered = text.lower()
+    params: dict[str, object] = {}
+    if status_code == 404:
+        if "路径" in text or "path" in lowered:
+            code = "path_not_found"
+        elif "字幕" in text or "subtitle" in lowered:
+            code = "subtitle_not_found"
+        elif "任务" in text or "task" in lowered:
+            code = "task_not_found"
+        elif "文件" in text or "file" in lowered:
+            code = "file_not_found"
+        else:
+            code = "resource_not_found"
+    elif status_code == 409:
+        code = "task_conflict"
+    elif status_code == 403:
+        code = "permission_denied"
+    elif status_code == 422:
+        code = "validation_error"
+    elif status_code >= 500:
+        code = "internal_error"
+    else:
+        code = "invalid_request"
+    if code == "path_not_found" and text:
+        params["path"] = text.split(":", 1)[-1].strip()
+    return code, params
+
+
+@app.exception_handler(HTTPException)
+async def _api_http_error(request: Request, exc: HTTPException):
+    if not request.url.path.startswith("/api"):
+        return JSONResponse({"detail": exc.detail}, status_code=exc.status_code)
+    code, params = _http_error_code(exc.status_code, exc.detail)
+    return JSONResponse(
+        {"error": {"code": code, "params": params, "message": str(exc.detail or code)}},
+        status_code=exc.status_code,
+    )
+
+
+@app.exception_handler(RequestValidationError)
+async def _api_validation_error(request: Request, exc: RequestValidationError):
+    if not request.url.path.startswith("/api"):
+        return JSONResponse({"detail": exc.errors()}, status_code=422)
+    return JSONResponse(
+        {
+            "error": {
+                "code": "validation_error",
+                "params": {"fields": exc.errors()},
+                "message": "Request validation failed",
+            }
+        },
+        status_code=422,
+    )
+
 # 挂载 REST API 层（/api/*），供新前端调用；业务逻辑不动
 app.include_router(api_router, prefix='/api')
+
+
+@app.api_route('/api', methods=['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS', 'HEAD'])
+@app.api_route('/api/{path:path}', methods=['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS', 'HEAD'])
+async def _api_not_found(path: str = ''):
+    """Keep unknown API paths inside the v2 error envelope."""
+    target = f'/api/{path}' if path else '/api'
+    raise HTTPException(status_code=404, detail=f'API path not found: {target}')
 
 
 # 轻量健康检查端点：供 Docker HEALTHCHECK / 容器编排 / NAS GUI 探活。
@@ -276,11 +344,51 @@ async def _send_task(request: Request):
 
 
 # ----------------------- 前端静态托管（单端口合一）----------------------- #
-# Next.js 静态导出产物（frontend/out）由 FastAPI 同端口托管。
+# Vite 静态构建产物（frontend/out）由 FastAPI 同端口托管。
 # /api/* 与 /sendTask 已注册路由优先；其余路径回退到前端 SPA。
 _FRONTEND_OUT = Path(__file__).resolve().parents[1] / 'frontend' / 'out'
+
+
+class SPAStaticFiles(StaticFiles):
+    """Serve Vite assets and fall back only for HTML navigation requests.
+
+    A normal ``StaticFiles(html=True)`` mount does not resolve a deep link such
+    as ``/settings/general`` to the SPA entrypoint.  Conversely, falling back
+    every 404 would hide missing JavaScript/CSS and misspelled API endpoints.
+    This class keeps those boundaries explicit.
+    """
+
+    _RESERVED_PREFIXES = {'api', 'sendTask', 'health'}
+
+    def __init__(self, *args: object, **kwargs: object) -> None:
+        kwargs['html'] = False
+        super().__init__(*args, **kwargs)
+
+    @classmethod
+    def _is_reserved(cls, path: str) -> bool:
+        first = path.lstrip('/').split('/', 1)[0]
+        return first in cls._RESERVED_PREFIXES
+
+    async def get_response(self, path: str, scope: object):  # type: ignore[override]
+        if self._is_reserved(path):
+            raise HTTPException(status_code=404)
+        if path in {'', '/', '.'}:
+            return await super().get_response('index.html', scope)  # type: ignore[arg-type]
+        try:
+            return await super().get_response(path, scope)  # type: ignore[arg-type]
+        except HTTPException as exc:
+            if exc.status_code != 404:
+                raise
+            headers = Headers(scope=scope)  # type: ignore[arg-type]
+            accepts_html = 'text/html' in headers.get('accept', '').lower()
+            requested = Path(path)
+            if (not accepts_html and path not in {'', '/'}) or requested.suffix:
+                raise
+            return await super().get_response('index.html', scope)  # type: ignore[arg-type]
+
+
 if _FRONTEND_OUT.is_dir():
-    app.mount('/', StaticFiles(directory=str(_FRONTEND_OUT), html=True), name='frontend')
+    app.mount('/', SPAStaticFiles(directory=str(_FRONTEND_OUT)), name='frontend')
 else:
     # 前端未构建：给出提示，避免 StaticFiles 报错
     @app.get('/', response_class=HTMLResponse)

@@ -6,7 +6,7 @@ ARG NODE_IMAGE=node:22-bookworm-slim
 ARG PYTHON_IMAGE=python:3.12-slim-bookworm
 
 # ---- stage 1: 前端静态导出构建器 ----
-# Next.js 16 静态导出（output: export）→ frontend/out，由运行期 FastAPI 同端口托管。
+# Vite + React 静态构建 → frontend/out，由运行期 FastAPI 同端口托管。
 # node 22：Pi sidecar 依赖（@earendil-works/pi-tui / undici@8）要求 node >=22.19，本地开发亦用 node 22。
 FROM ${NODE_IMAGE} AS frontend
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { usePathname } from "next/navigation";
+import { Outlet, useLocation } from "react-router-dom";
 import { useSidebarStore } from "@/store/sidebar-store";
 import { useMobile } from "@/hooks/use-mobile";
 import { TopNavbar } from "@/components/layout/top-navbar";
@@ -15,14 +15,10 @@ function _sidebarDefaultOpen(pathname: string, isLgUp: boolean) {
   return pathname === "/"; // 桌面端仅任务页展开
 }
 
-export default function DashboardLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function DashboardLayout() {
   const { isOpen, toggle, setOpen, setMobile } = useSidebarStore();
   const isMobile = useMobile();
-  const pathname = usePathname();
+  const { pathname } = useLocation();
 
   // 同步 isMobile 到 store
   useEffect(() => {
@@ -85,7 +81,7 @@ export default function DashboardLayout({
         <TopNavbar onToggleSidebar={toggle} />
 
         <main className="flex-1 overflow-hidden relative">
-          <div className="h-full p-6 overflow-y-auto">{children}</div>
+          <div className="h-full p-6 overflow-y-auto"><Outlet /></div>
         </main>
       </div>
     </div>

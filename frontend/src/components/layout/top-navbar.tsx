@@ -1,85 +1,62 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import {
-  ListTodo,
-  Subtitles,
-  Settings,
-  FileText,
-  Menu,
-} from "lucide-react";
+import { NavLink, useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { ListTodo, Subtitles, Settings, FileText, Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { LocaleSwitcher } from "@/components/locale-switcher";
 
 const navItems = [
-  { href: "/", label: "任务", icon: ListTodo },
-  { href: "/subtitles", label: "字幕", icon: Subtitles },
-  { href: "/logs", label: "日志", icon: FileText },
-  { href: "/settings", label: "配置", icon: Settings },
-];
+  { href: "/", key: "tasks", icon: ListTodo },
+  { href: "/subtitles", key: "subtitles", icon: Subtitles },
+  { href: "/logs", key: "logs", icon: FileText },
+  { href: "/settings", key: "settings", icon: Settings },
+] as const;
 
-export function TopNavbar({
-  onToggleSidebar,
-}: {
-  onToggleSidebar?: () => void;
-}) {
-  const pathname = usePathname();
+export function TopNavbar({ onToggleSidebar }: { onToggleSidebar?: () => void }) {
+  const { pathname } = useLocation();
+  const { t } = useTranslation("navigation");
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="flex h-14 items-center px-4 gap-3">
-        {/* 菜单切换（小屏抽屉用；桌面端侧栏常驻不显示） */}
         {onToggleSidebar && (
           <Button
             variant="ghost"
             size="icon"
             className="h-9 w-9 lg:hidden"
             onClick={onToggleSidebar}
-            title="切换侧栏"
+            title={t("toggleSidebar")}
+            aria-label={t("toggleSidebar")}
           >
             <Menu className="h-5 w-5" />
           </Button>
         )}
-
-        {/* Logo（红色品牌方块 + 标题） */}
-        <Link href="/" prefetch={false} className="flex items-center gap-2 flex-shrink-0">
-          <span className="h-8 w-8 rounded-lg bg-primary text-primary-foreground flex items-center justify-center font-bold text-sm">
-            番
-          </span>
-          <span className="text-base font-bold hidden sm:inline-block">
-            番剧自动重命名
-          </span>
-        </Link>
-
-        {/* 导航 */}
-        <nav className="flex items-center gap-1 ml-2">
+        <NavLink to="/" className="flex items-center gap-2 flex-shrink-0" aria-label={t("brand")}>
+          <span className="h-8 w-8 rounded-lg bg-primary text-primary-foreground flex items-center justify-center font-bold text-sm">{t("brandMark")}</span>
+          <span className="text-base font-bold hidden sm:inline-block">{t("brand")}</span>
+        </NavLink>
+        <nav className="flex items-center gap-1 ml-2" aria-label={t("brand")}>
           {navItems.map((item) => {
-            const active =
-              item.href === "/"
-                ? pathname === "/"
-                : pathname.startsWith(item.href);
+            const active = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
             const Icon = item.icon;
             return (
-              <Link
+              <NavLink
                 key={item.href}
-                href={item.href}
-                prefetch={false}
+                to={item.href}
+                end={item.href === "/"}
                 className={cn(
                   "flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-sm font-medium transition-colors",
-                  active
-                    ? "bg-accent text-accent-foreground"
-                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                  active ? "bg-accent text-accent-foreground" : "text-muted-foreground hover:text-foreground hover:bg-muted",
                 )}
               >
                 <Icon className="h-4 w-4" />
-                <span className="hidden md:inline-block">{item.label}</span>
-              </Link>
+                <span className="hidden md:inline-block">{t(item.key)}</span>
+              </NavLink>
             );
           })}
         </nav>
-
-        {/* 右侧留空（主题切换在侧栏底部） */}
-        <div className="ml-auto" />
+        <div className="ml-auto"><LocaleSwitcher /></div>
       </div>
     </header>
   );

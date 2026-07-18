@@ -1,5 +1,5 @@
-import { redirect } from "next/navigation";
+import { Navigate } from "react-router-dom";
 
 export default function SettingsPage() {
-  redirect("/settings/general");
+  return <Navigate to="/settings/general" replace />;
 }

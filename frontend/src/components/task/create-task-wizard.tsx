@@ -15,6 +15,7 @@ import { Input } from "@/components/ui/input";
 import { createTask } from "@/lib/api/client";
 import { PathBrowserDialog } from "@/components/settings/path-browser-dialog";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 type Step = "path" | "confirm";
 
@@ -36,6 +37,7 @@ export function CreateTaskWizard({
   onOpenChange: (v: boolean) => void;
   onCreated: () => void;
 }) {
+  const { t } = useTranslation("tasks");
   const [step, setStep] = useState<Step>("path");
   const [path, setPath] = useState("");
   const [browserOpen, setBrowserOpen] = useState(false);
@@ -65,11 +67,11 @@ export function CreateTaskWizard({
       } catch {
         /* localStorage 不可用时静默跳过 */
       }
-      toast.success("任务已加入队列");
+      toast.success(t("taskEnqueued"));
       onOpenChange(false);
       onCreated();
     } catch (e) {
-      toast.error("添加失败: " + (e as Error).message);
+      toast.error(t("addFailed", { message: (e as Error).message }));
     } finally {
       setSubmitting(false);
     }
@@ -81,15 +83,15 @@ export function CreateTaskWizard({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle>添加任务</DialogTitle>
+          <DialogTitle>{t("add")}</DialogTitle>
           <DialogDescription>
-            选择本地媒体目录，程序将自动整理并重命名。
+            {t("addDescription")}
           </DialogDescription>
         </DialogHeader>
 
         {/* 步骤指示 */}
         <div className="flex items-center gap-2 mb-2">
-          {["选择路径", "确认入队"].map((label, i) => (
+          {[t("stepPath"), t("stepConfirm")].map((label, i) => (
             <div key={label} className="flex items-center gap-2">
               <div
                 className={`flex items-center gap-1.5 text-sm ${
@@ -119,17 +121,18 @@ export function CreateTaskWizard({
           <div className="space-y-3">
             <div className="flex gap-2">
               <Input
-                placeholder="粘贴路径，或点浏览选择…"
+                placeholder={t("pathPlaceholder")}
+                aria-label={t("path")}
                 value={path}
                 onChange={(e) => setPath(e.target.value)}
               />
               <Button variant="outline" onClick={() => setBrowserOpen(true)}>
                 <FolderOpen className="h-4 w-4" />
-                浏览
+                {t("browse")}
               </Button>
             </div>
             <div className="text-xs text-muted-foreground">
-              支持直接粘贴路径，或使用浏览选择目录。媒体类型将由程序自动判定。
+              {t("pathHelp")}
             </div>
           </div>
         )}
@@ -139,18 +142,18 @@ export function CreateTaskWizard({
           <div className="space-y-3">
             <div className="border rounded-md p-4 space-y-2">
               <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">路径</span>
+                <span className="text-muted-foreground">{t("path")}</span>
                 <span className="font-mono text-xs break-all text-right max-w-[60%]">
                   {path}
                 </span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">媒体类型</span>
-                <span>自动判断</span>
+                <span className="text-muted-foreground">{t("mediaType")}</span>
+                <span>{t("autoDetect")}</span>
               </div>
             </div>
             <div className="text-xs text-muted-foreground">
-              入队后将自动执行：标题提取 → TMDB/Bangumi 映射 → 重命名落盘 → 字幕/通知。
+              {t("pipelineSummary")}
             </div>
           </div>
         )}
@@ -158,16 +161,16 @@ export function CreateTaskWizard({
         <DialogFooter className="gap-2">
           {step === "path" && (
             <Button onClick={() => setStep("confirm")} disabled={!path.trim()}>
-              下一步
+              {t("nextStep")}
             </Button>
           )}
           {step === "confirm" && (
             <>
               <Button variant="outline" onClick={() => setStep("path")}>
-                上一步
+                {t("previousStep")}
               </Button>
               <Button onClick={handleSubmit} disabled={submitting}>
-                {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "确认入队"}
+                {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : t("confirmEnqueue")}
               </Button>
             </>
           )}
@@ -184,7 +187,7 @@ export function CreateTaskWizard({
         }}
         initialPath={path}
         selectMode="directory"
-        title="选择媒体目录"
+        title={t("chooseMediaDirectory")}
       />
     </Dialog>
   );

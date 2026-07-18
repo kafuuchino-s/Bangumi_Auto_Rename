@@ -13,8 +13,7 @@
 # testing
 /coverage
 
-# next.js
-/.next/
+# Vite
 /out/
 
 # production

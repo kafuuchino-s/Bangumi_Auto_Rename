@@ -1,15 +1,11 @@
 "use client";
 
 import { Suspense, useEffect, useMemo, useState } from "react";
-import {
-  Table,
-  TableHeader,
-  TableHead,
-  TableRow,
-} from "@/components/ui/table";
+import { useTranslation } from "react-i18next";
+import { AlertCircle, Plus, RefreshCw } from "lucide-react";
+import { Table, TableHeader, TableHead, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { RefreshCw, Plus, AlertCircle } from "lucide-react";
 import { useTaskStore } from "@/store/task-store";
 import { TasksToolbar } from "@/components/task/tasks-toolbar";
 import { TaskTableBody } from "@/components/task/task-table-body";
@@ -17,258 +13,88 @@ import { TaskCards } from "@/components/task/task-cards";
 import { Pagination } from "@/components/task/pagination";
 import { TaskDetailDialog } from "@/components/task/task-detail-dialog";
 import { CreateTaskWizard } from "@/components/task/create-task-wizard";
-import {
-  TaskTableSkeleton,
-  EmptyState,
-} from "@/components/task/task-loading-states";
+import { TaskTableSkeleton, EmptyState } from "@/components/task/task-loading-states";
 import { getTasksStream } from "@/lib/api/client";
 import type { TaskRow } from "@/lib/api/types";
 
 export default function TaskListPage() {
-  return (
-    <Suspense
-      fallback={<div className="text-muted-foreground">加载中…</div>}
-    >
-      <TaskListContent />
-    </Suspense>
-  );
+  const { t } = useTranslation("common");
+  return <Suspense fallback={<div className="text-muted-foreground">{t("loading")}</div>}><TaskListContent /></Suspense>;
 }
 
 function TaskListContent() {
-  const {
-    tasks,
-    loading,
-    error,
-    filters,
-    fetchTasks,
-    viewMode,
-    selected,
-    toggleSelected,
-    retry,
-    remove,
-    refetchSub,
-  } = useTaskStore();
+  const { t } = useTranslation("tasks");
+  const { tasks, loading, error, filters, fetchTasks, viewMode, selected, toggleSelected, retry, remove, refetchSub } = useTaskStore();
   const [showWizard, setShowWizard] = useState(false);
   const [detailUuid, setDetailUuid] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
 
-  // 点详情/编辑：直接改本地状态打开 Dialog。
-  // 旧实现用 router.push('/?detail=uuid') 改 URL 来支持可分享链接，
-  // 但 useSearchParams + Suspense 在 URL 变化时会重渲染，造成"整页刷新一下"的视觉。
-  // 本地媒体工具无需分享任务详情链接，改回纯状态切换，点详情瞬间无刷新。
-  const onViewDetail = (uuid: string) => {
-    setDetailUuid(uuid);
-  };
-  const onEdit = (uuid: string) => {
-    // 编辑复用详情对话框（详情内可重试/删除；字段级编辑待后续增强）
-    setDetailUuid(uuid);
-  };
-
-  // 初次拉取 + 轮询兜底
   useEffect(() => {
-    fetchTasks();
-    const t = setInterval(fetchTasks, 8000);
-    return () => clearInterval(t);
+    void fetchTasks();
+    const timer = window.setInterval(() => void fetchTasks(), 8000);
+    return () => window.clearInterval(timer);
   }, [fetchTasks]);
 
-  // SSE 实时推送（有连接时由浏览器维持，失败静默回退到轮询）
   useEffect(() => {
-    let es: EventSource | null = null;
+    let stream: EventSource | null = null;
     try {
-      es = getTasksStream();
-      es.onmessage = (ev) => {
+      stream = getTasksStream();
+      stream.onmessage = (event) => {
         try {
-          const parsed = JSON.parse(ev.data);
-          const rows = (parsed?.tasks ?? []) as TaskRow[];
+          const payload = JSON.parse(event.data);
+          const rows = (payload?.data?.tasks ?? payload?.tasks ?? []) as TaskRow[];
           useTaskStore.setState({ tasks: rows, loading: false, error: null });
-        } catch {
-          /* ignore */
-        }
+        } catch { /* polling remains the fallback */ }
       };
-      es.onerror = () => {
-        /* 静默，轮询兜底 */
-      };
-    } catch {
-      /* SSE 不可用 */
-    }
-    return () => es?.close();
+    } catch { /* EventSource is optional */ }
+    return () => stream?.close();
   }, []);
 
-  // 筛选：search + status + type（统计+筛选器在全局左栏）
-  const filtered = useMemo(() => {
-    const q = filters.search.trim().toLowerCase();
-    return tasks.filter((t) => {
-      if (q) {
-        const hit = [t.path, t.name, t.uuid, t.status].some((s) =>
-          String(s).toLowerCase().includes(q)
-        );
-        if (!hit) return false;
-      }
-      if (filters.status.length > 0 && !filters.status.includes(t.status))
-        return false;
-      if (filters.type.length > 0) {
-        const a = String(t.is_anime);
-        const m = String(t.is_movie);
-        if (!filters.type.includes(a) && !filters.type.includes(m))
-          return false;
-      }
-      return true;
-    });
-  }, [tasks, filters]);
+  const filtered = useMemo(() => tasks.filter((task) => {
+    const query = filters.search.trim().toLowerCase();
+    if (query && ![task.path, task.name, task.uuid, task.status].some((value) => String(value ?? "").toLowerCase().includes(query))) return false;
+    if (filters.status.length && !filters.status.includes(task.status)) return false;
+    if (filters.type.length) {
+      const type = task.is_anime === true ? "anime" : task.is_movie === true ? "movie" : "other";
+      if (!filters.type.includes(type)) return false;
+    }
+    return true;
+  }), [tasks, filters]);
 
-  // 筛选变化重置页码
-  useEffect(() => {
-    setPage(1);
-  }, [filters]);
-
-  const total = filtered.length;
-  const totalPages = Math.ceil(total / pageSize) || 1;
+  useEffect(() => setPage(1), [filters]);
+  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
   const paged = filtered.slice((page - 1) * pageSize, page * pageSize);
-
-  const allPageSelected =
-    paged.length > 0 && paged.every((t) => selected.has(t.uuid));
-  const somePageSelected = paged.some((t) => selected.has(t.uuid));
-
+  const allSelected = paged.length > 0 && paged.every((task) => selected.has(task.uuid));
+  const someSelected = paged.some((task) => selected.has(task.uuid));
   const toggleSelectAll = () => {
-    if (allPageSelected) {
-      const next = new Set(selected);
-      paged.forEach((t) => next.delete(t.uuid));
-      useTaskStore.setState({ selected: next });
-    } else {
-      const next = new Set(selected);
-      paged.forEach((t) => next.add(t.uuid));
-      useTaskStore.setState({ selected: next });
-    }
-  };
-
-  // 卡片视图操作回调
-  const handleRetry = async (uuid: string) => {
-    try {
-      await retry(uuid);
-    } catch {
-      /* toast 在 store 外层已处理 */
-    }
-  };
-  const handleRemove = async (uuid: string) => {
-    try {
-      await remove(uuid);
-    } catch {
-      /* ignore */
-    }
-  };
-  const handleRefetch = async (uuid: string) => {
-    try {
-      await refetchSub(uuid);
-    } catch {
-      /* ignore */
-    }
+    const next = new Set(selected);
+    if (allSelected) paged.forEach((task) => next.delete(task.uuid));
+    else paged.forEach((task) => next.add(task.uuid));
+    useTaskStore.setState({ selected: next });
   };
 
   return (
     <div className="space-y-4">
-      {/* 标题行 + 刷新/添加（统计+筛选在全局左栏） */}
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-bold">任务列表</h1>
+        <h1 className="text-xl font-bold">{t("title")}</h1>
         <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={fetchTasks}>
-            <RefreshCw className="h-4 w-4" />
-            刷新
-          </Button>
-          <Button size="sm" onClick={() => setShowWizard(true)}>
-            <Plus className="h-4 w-4" />
-            添加任务
-          </Button>
+          <Button variant="outline" size="sm" onClick={() => void fetchTasks()}><RefreshCw className="h-4 w-4" />{t("refresh", { ns: "common" })}</Button>
+          <Button size="sm" onClick={() => setShowWizard(true)}><Plus className="h-4 w-4" />{t("add")}</Button>
         </div>
       </div>
-
       <TasksToolbar pageSize={pageSize} setPageSize={setPageSize} />
-
-      {error && (
-        <div className="flex items-center gap-2 text-destructive text-sm border border-destructive/30 bg-destructive/5 rounded-md p-2">
-          <AlertCircle className="h-4 w-4" />
-          加载失败: {error}
-        </div>
-      )}
-
-      {loading && tasks.length === 0 ? (
-        <TaskTableSkeleton />
-      ) : total === 0 ? (
-        <EmptyState
-          onAction={() => setShowWizard(true)}
-          actionLabel="添加第一个任务"
-        />
-      ) : viewMode === "table" ? (
-        <div className="border rounded-md">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-10">
-                  <Checkbox
-                    checked={
-                      allPageSelected
-                        ? true
-                        : somePageSelected
-                        ? "indeterminate"
-                        : false
-                    }
-                    onCheckedChange={toggleSelectAll}
-                  />
-                </TableHead>
-                <TableHead className="w-12">ID</TableHead>
-                <TableHead>传入路径</TableHead>
-                <TableHead>识别剧集</TableHead>
-                <TableHead className="text-center">季度</TableHead>
-                <TableHead>状态</TableHead>
-                <TableHead className="text-center">队列状态</TableHead>
-                <TableHead className="text-right">操作</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TaskTableBody
-              rows={paged}
-              selected={selected}
-              onToggle={toggleSelected}
-              onViewDetail={onViewDetail}
-              onEdit={onEdit}
-            />
-          </Table>
-        </div>
-      ) : (
-        <TaskCards
-          tasks={paged}
-          selected={selected}
-          onToggle={toggleSelected}
-          onViewDetail={onViewDetail}
-          onRetry={handleRetry}
-          onEdit={onEdit}
-          onRefetch={handleRefetch}
-          onRemove={handleRemove}
-        />
-      )}
-
-      <Pagination
-        page={page}
-        totalPages={totalPages}
-        total={total}
-        pageSize={pageSize}
-        onPageChange={setPage}
-      />
-
-      <CreateTaskWizard
-        open={showWizard}
-        onOpenChange={setShowWizard}
-        onCreated={fetchTasks}
-      />
-
-      <TaskDetailDialog
-        uuid={detailUuid}
-        open={detailUuid !== null}
-        onOpenChange={(v) => {
-          if (!v) {
-            setDetailUuid(null);
-          }
-        }}
-      />
+      {error && <div className="flex items-center gap-2 text-destructive text-sm border border-destructive/30 bg-destructive/5 rounded-md p-2"><AlertCircle className="h-4 w-4" />{t("error", { ns: "common" })}: {error}</div>}
+      {loading && tasks.length === 0 ? <TaskTableSkeleton /> : filtered.length === 0 ? <EmptyState onAction={() => setShowWizard(true)} actionLabel={t("addFirst")} /> : viewMode === "table" ? (
+        <div className="border rounded-md"><Table><TableHeader><TableRow>
+          <TableHead className="w-10"><Checkbox checked={allSelected ? true : someSelected ? "indeterminate" : false} onCheckedChange={toggleSelectAll} /></TableHead>
+          <TableHead className="w-12">ID</TableHead><TableHead>{t("path")}</TableHead><TableHead>{t("recognizedTitle")}</TableHead>
+          <TableHead className="text-center">{t("season")}</TableHead><TableHead>{t("status")}</TableHead><TableHead className="text-center">{t("queuePosition")}</TableHead><TableHead className="text-right">{t("actions")}</TableHead>
+        </TableRow></TableHeader><TaskTableBody rows={paged} selected={selected} onToggle={toggleSelected} onViewDetail={setDetailUuid} onEdit={setDetailUuid} /></Table></div>
+      ) : <TaskCards tasks={paged} selected={selected} onToggle={toggleSelected} onViewDetail={setDetailUuid} onRetry={(uuid) => void retry(uuid)} onEdit={setDetailUuid} onRefetch={(uuid) => void refetchSub(uuid)} onRemove={(uuid) => void remove(uuid)} />}
+      <Pagination page={page} totalPages={totalPages} total={filtered.length} pageSize={pageSize} onPageChange={setPage} />
+      <CreateTaskWizard open={showWizard} onOpenChange={setShowWizard} onCreated={() => void fetchTasks()} />
+      <TaskDetailDialog uuid={detailUuid} open={detailUuid !== null} onOpenChange={(open) => !open && setDetailUuid(null)} />
     </div>
   );
 }

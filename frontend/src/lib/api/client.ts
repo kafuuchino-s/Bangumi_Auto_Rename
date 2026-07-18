@@ -1,5 +1,4 @@
-// API client：对齐后端 /api/* 端点（src/api/）
-// 开发期由 next.config.ts rewrites 代理 /api/* → http://localhost:5999/api/*
+// API client for the FastAPI /api/* endpoints. Vite proxies these paths in development.
 
 import type {
   BrowseResult,
@@ -11,16 +10,32 @@ import type {
   SubtitleRow,
   TaskDetail,
   TaskRow,
+  ApiErrorBody,
 } from "./types";
 
 const BASE = "/api";
 
-async function json<T>(res: Response): Promise<T> {
-  if (!res.ok) {
-    const detail = await res.text().catch(() => res.statusText);
-    throw new Error(`${res.status}: ${detail}`);
+export class ApiClientError extends Error {
+  readonly code: string;
+  readonly params: Record<string, unknown>;
+  readonly status: number;
+
+  constructor(status: number, body: Partial<ApiErrorBody> | null, fallback: string) {
+    const error = body?.error;
+    super(error?.message || fallback);
+    this.name = "ApiClientError";
+    this.status = status;
+    this.code = error?.code || "unknown_error";
+    this.params = error?.params || {};
   }
-  return res.json() as Promise<T>;
+}
+
+async function json<T>(res: Response): Promise<T> {
+  const body = await res.json().catch(() => null) as Record<string, unknown> | null;
+  if (!res.ok) {
+    throw new ApiClientError(res.status, body as Partial<ApiErrorBody> | null, res.statusText);
+  }
+  return (body && "data" in body ? body.data : body) as T;
 }
 
 // ----------------------- 任务 ----------------------- //
@@ -37,7 +52,7 @@ export async function createTask(body: {
   path: string;
   is_anime?: boolean | null;
   is_movie?: boolean | null;
-}): Promise<{ code: number; data: string; task_id: string | null }> {
+}): Promise<{ task_id: string | null }> {
   return json(
     await fetch(`${BASE}/tasks`, {
       method: "POST",

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { CheckCircle2, XCircle, Loader2, Clock, Activity } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -13,6 +14,7 @@ import { useLayoutStore } from "@/store/layout-store";
 import type { DashboardStats } from "@/lib/api/types";
 
 export function DashboardStatsCompact() {
+  const { t } = useTranslation("tasks");
   const { layoutVariant } = useLayoutStore();
   const minimal = layoutVariant === "minimal";
   const [stats, setStats] = useState<DashboardStats | null>(null);
@@ -36,7 +38,7 @@ export function DashboardStatsCompact() {
       es.onmessage = (ev) => {
         try {
           const parsed = JSON.parse(ev.data);
-          const s = (parsed?.stats ?? parsed) as DashboardStats;
+          const s = (parsed?.data?.stats ?? parsed?.stats ?? parsed?.data ?? parsed) as DashboardStats;
           if (active) setStats(s);
         } catch {
           /* ignore */
@@ -57,25 +59,25 @@ export function DashboardStatsCompact() {
   const items = [
     {
       icon: Loader2,
-      label: "处理中",
+      label: t("running"),
       value: stats?.running ?? 0,
       color: "text-blue-600 dark:text-blue-400",
     },
     {
       icon: Clock,
-      label: "等待中",
+      label: t("pending"),
       value: stats?.pending ?? 0,
       color: "text-amber-600 dark:text-amber-400",
     },
     {
       icon: CheckCircle2,
-      label: "今日成功",
+      label: t("completed"),
       value: stats?.today_success ?? 0,
       color: "text-green-600 dark:text-green-400",
     },
     {
       icon: XCircle,
-      label: "今日失败",
+      label: t("failed"),
       value: stats?.today_failed ?? 0,
       color: "text-red-600 dark:text-red-400",
     },
@@ -155,6 +157,7 @@ export function ScanProgress({
   running: number;
   pending: number;
 }) {
+  const { t } = useTranslation("tasks");
   const total = running + pending;
   if (total === 0) return null;
   const pct = running > 0 ? 30 : 10;
@@ -162,7 +165,7 @@ export function ScanProgress({
     <div className="flex items-center gap-2 mb-4">
       <Activity className="h-4 w-4 text-primary animate-pulse" />
       <span className="text-sm text-muted-foreground">
-        {running > 0 ? `正在处理 ${running} 个任务` : `${pending} 个任务排队中`}
+        {running > 0 ? t("progressRunning", { count: running }) : t("progressPending", { count: pending })}
       </span>
       <div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden max-w-xs">
         <div

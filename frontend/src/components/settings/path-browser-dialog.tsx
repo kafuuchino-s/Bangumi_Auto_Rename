@@ -24,6 +24,7 @@ import { browseFiles, listDrives } from "@/lib/api/client";
 import type { BrowseResult, FileItem } from "@/lib/api/types";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "react-i18next";
 
 // 成熟文件选择器：面包屑导航 + 路径输入框 + 左侧盘符栏 + 搜索 + 分页 +
 // 单击选中 / 双击进入。selectMode: directory(选目录) | file(选文件)。
@@ -33,7 +34,7 @@ export function PathBrowserDialog({
   onConfirm,
   initialPath = "",
   selectMode = "directory",
-  title = "选择路径",
+  title,
 }: {
   open: boolean;
   onOpenChange: (v: boolean) => void;
@@ -42,6 +43,8 @@ export function PathBrowserDialog({
   selectMode?: "directory" | "file";
   title?: string;
 }) {
+  const { t } = useTranslation("settings");
+  const dialogTitle = title ?? t("pathTitle");
   const [browse, setBrowse] = useState<BrowseResult | null>(null);
   const [pathInput, setPathInput] = useState("");
   const [searchInput, setSearchInput] = useState("");
@@ -72,7 +75,7 @@ export function PathBrowserDialog({
       if (opts?.page !== undefined) setPage(opts.page);
     } catch (e) {
       if (opts?.isFallback) {
-        toast.error("浏览失败: " + (e as Error).message);
+        toast.error(`${t("browsing")}: ${(e as Error).message}`);
       } else {
         // 首次失败（路径无效/无权限）→ 兜底到系统默认根
         doBrowse("", { search: "", page: 1, isFallback: true });
@@ -210,7 +213,7 @@ export function PathBrowserDialog({
     <Dialog open={open} onOpenChange={(v) => onOpenChange(v)}>
       <DialogContent className="sm:max-w-5xl w-[94vw]">
         <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
+          <DialogTitle>{dialogTitle}</DialogTitle>
         </DialogHeader>
 
         <div className="flex gap-3 h-[60vh] min-w-0 overflow-hidden">
@@ -218,7 +221,7 @@ export function PathBrowserDialog({
           {drives.length > 0 && (
             <div className="w-28 flex-shrink-0 border-r pr-2 overflow-y-auto">
               <div className="text-xs text-muted-foreground px-2 py-1 sticky top-0 bg-background">
-                位置
+                {t("location")}
               </div>
               {drives.map((drv) => {
                 const active =
@@ -252,7 +255,7 @@ export function PathBrowserDialog({
             {/* 面包屑 */}
             <div className="flex items-center gap-1 flex-wrap text-sm min-h-6">
               {crumbs.length === 0 ? (
-                <span className="text-muted-foreground text-xs">未选择</span>
+                <span className="text-muted-foreground text-xs">{t("notSelected")}</span>
               ) : (
                 crumbs.map((c, i) => (
                   <span key={c.path} className="flex items-center gap-1 min-w-0">
@@ -272,7 +275,7 @@ export function PathBrowserDialog({
                       {c.label}
                     </button>
                     {i < crumbs.length - 1 && (
-                      <span className="text-muted-foreground text-xs flex-shrink-0">›</span>
+                      <span className="text-muted-foreground text-xs flex-shrink-0">{t("breadcrumbSeparator")}</span>
                     )}
                   </span>
                 ))
@@ -284,7 +287,8 @@ export function PathBrowserDialog({
               value={pathInput}
               onChange={(e) => setPathInput(e.target.value)}
               onKeyDown={handlePathInputEnter}
-              placeholder="输入路径回车跳转"
+              placeholder={t("pathInputPlaceholder")}
+              aria-label={t("pathInputLabel")}
               className="text-sm font-mono"
             />
 
@@ -294,7 +298,8 @@ export function PathBrowserDialog({
               <Input
                 value={searchInput}
                 onChange={(e) => onSearchChange(e.target.value)}
-                placeholder="按名称过滤…"
+                placeholder={t("searchPlaceholder")}
+                aria-label={t("searchLabel")}
                 className="pl-8 text-sm"
               />
             </div>
@@ -303,11 +308,11 @@ export function PathBrowserDialog({
             <div className="flex-1 min-h-0 min-w-0 border rounded-md overflow-y-auto overflow-x-hidden bg-background">
               {loading ? (
                 <div className="flex items-center justify-center gap-2 py-12 text-sm text-muted-foreground">
-                  <Loader2 className="h-4 w-4 animate-spin" /> 正在浏览…
+                  <Loader2 className="h-4 w-4 animate-spin" /> {t("browsing")}
                 </div>
               ) : !browse || browse.items.length === 0 ? (
                 <div className="py-12 text-center text-sm text-muted-foreground">
-                  空目录
+                  {t("emptyDirectory")}
                 </div>
               ) : (
                 browse.items.map((item) => {
@@ -348,7 +353,7 @@ export function PathBrowserDialog({
             {/* 分页栏 */}
             {totalPages > 1 && (
               <div className="flex items-center justify-between text-xs text-muted-foreground">
-                <span>共 {browse?.total ?? 0} 项</span>
+                <span>{t("totalItems", { count: browse?.total ?? 0 })}</span>
                 <div className="flex items-center gap-1">
                   <Button
                     variant="outline"
@@ -379,13 +384,13 @@ export function PathBrowserDialog({
 
         <DialogFooter className="gap-2 sm:gap-2 items-center">
           <span className="text-sm text-muted-foreground mr-auto truncate flex-1 min-w-0">
-            已选：{selected || "无"}
+            {t("selectedPath", { path: selected || t("noSelection") })}
           </span>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
-            取消
+            {t("cancel", { ns: "common" })}
           </Button>
           <Button onClick={handleConfirm} disabled={!selected}>
-            确认选择
+            {t("confirmSelection")}
           </Button>
         </DialogFooter>
       </DialogContent>

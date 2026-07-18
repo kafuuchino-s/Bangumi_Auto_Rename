@@ -8,9 +8,11 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useLayoutStore } from "@/store/layout-store";
+import { useTranslation } from "react-i18next";
 
 export function LayoutToggleButton() {
   const { layoutVariant, toggleLayout } = useLayoutStore();
+  const { t } = useTranslation("navigation");
   const isMinimal = layoutVariant === "minimal";
   return (
     <Tooltip>
@@ -19,7 +21,8 @@ export function LayoutToggleButton() {
           variant="ghost"
           size="icon"
           onClick={toggleLayout}
-          title={isMinimal ? "切换为紧凑布局" : "切换为极简布局"}
+          title={isMinimal ? t("layoutCompact") : t("layoutMinimal")}
+          aria-label={isMinimal ? t("layoutCompact") : t("layoutMinimal")}
         >
           {isMinimal ? (
             <LayoutList className="h-4 w-4" />
@@ -29,7 +32,7 @@ export function LayoutToggleButton() {
         </Button>
       </TooltipTrigger>
       <TooltipContent>
-        {isMinimal ? "紧凑布局（显示标题）" : "极简布局（仅数字）"}
+        {isMinimal ? t("layoutCompactHint") : t("layoutMinimalHint")}
       </TooltipContent>
     </Tooltip>
   );

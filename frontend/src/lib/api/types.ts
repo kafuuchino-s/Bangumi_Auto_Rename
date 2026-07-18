@@ -6,12 +6,13 @@ export interface TaskRow {
   name: string | null;
   uuid: string;
   season: string | number | null;
-  status: string;
-  failure_reason_label: string;
-  queue_status: string;
-  is_anime: boolean | string;
-  is_movie: boolean | string;
-  ai_used: string;
+  status: "pending" | "running" | "completed" | "failed" | string;
+  failure_reason: string | null;
+  queue_position: number | null;
+  queue_status?: string;
+  is_anime: boolean | null;
+  is_movie: boolean | null;
+  ai_used: boolean | null;
 }
 
 export interface TaskDetail {
@@ -22,25 +23,21 @@ export interface TaskDetail {
     name: string;
     season_id: string | number | null;
     tmdb_media_type: string;
-    tmdb_media_type_label: string;
     tmdb_name: string;
     tmdb_year: string | number | null;
     tmdb_id: string | number | null;
   };
   failure?: {
     reason: string;
-    reason_label: string;
     error: string;
   };
   ai?: {
     ai_used: boolean;
     ai_attempted: boolean;
     pipeline_mode: string;
-    pipeline_mode_label: string;
   };
   case_agent?: {
     status: string;
-    status_label: string;
     product_result_kind: string;
   };
   landing?: {
@@ -50,9 +47,7 @@ export interface TaskDetail {
   };
   subtitle_fetch?: {
     status: string;
-    status_label: string;
     case_agent_status: string;
-    case_agent_status_label: string;
     provider: string;
     failure_reason: string;
     missing_video_count: number;
@@ -67,7 +62,7 @@ export interface TaskDetail {
     name_cn: string;
     media_kind: string;
     assignment_count: number | string;
-    episode_ranges: string;
+    episode_ranges: { kind: string; start: number; end: number }[];
   }[];
   tmdb_subjects?: {
     tmdb_ref: string;
@@ -75,16 +70,19 @@ export interface TaskDetail {
     media_type: string;
     name: string;
     year: number | string;
-    episode_ranges: string;
+    episode_ranges: { season: number; start: number; end: number }[];
   }[];
   mapping_details?: {
     source_name: string;
     source_path: string;
-    bgm: string;
-    tmdb: string;
-    confidence: string;
+    bgm?: string;
+    tmdb?: string;
+    bangumi_target?: Record<string, unknown>;
+    tmdb_target?: Record<string, unknown>;
+    confidence: string | null;
     disposition: string;
   }[];
+  total_size_bytes?: number;
   total_size?: string;
 }
 
@@ -93,8 +91,9 @@ export interface SubtitleRow {
   archive: string;
   archive_path: string;
   matched_task: string;
-  matched_count: string;
-  sync: string;
+  matched_count: number;
+  total_count: number;
+  sync: { enabled: boolean; success: number; attempted: number; fallback: number };
   status: string;
   uuid: string;
 }
@@ -119,14 +118,11 @@ export interface FieldSpecEntry {
   group: string;
   tab?: string;
   subgroup?: string;
-  label?: string;
   select_mode?: "file" | "directory";
   options?: string[];
   min?: number;
   max?: number;
   step?: number;
-  help?: string;
-  default_hint?: string;
   bool_toggle?: boolean;
 }
 
@@ -155,4 +151,12 @@ export interface LogTailResult {
   lines: string[];
   count: number;
   file: string;
+}
+
+export interface ApiErrorBody {
+  error: {
+    code: string;
+    params: Record<string, unknown>;
+    message: string;
+  };
 }

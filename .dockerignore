@@ -28,11 +28,17 @@ temp_files.txt
 test_*.txt
 # 本地开发 / 测试临时目录不进镜像（Windows 权限锁会阻断 build context 读取）
 .venv/
-.tmp/
+.tmp
+.tmp/**
+**/.tmp/**
+pytest-of-*/
+**/pytest-of-*/**
+**/pytest/**
+.tmp/pytest/pytest-of-kafuuchino
+.tmp/pytest/pytest-of-kafuuchino/**
 .pytest_cache/
 .pytest-tmp*
 node_modules/
 frontend/node_modules/
-frontend/.next/
 frontend/out/
 output/

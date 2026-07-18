@@ -1,20 +1,18 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
+import { useTranslation } from "react-i18next";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { RotateCw, Trash2 } from "lucide-react";
 import { getTaskDetail, retryTask, deleteTask } from "@/lib/api/client";
+import { apiErrorMessage } from "@/lib/api/errors";
 import type { TaskDetail } from "@/lib/api/types";
 import { toast } from "sonner";
 import { useTaskStore } from "@/store/task-store";
+import { useLocale } from "@/i18n/provider";
+import { formatBytes as intlBytes, formatNumber } from "@/lib/format";
 
 export function TaskDetailDialog({
   uuid,
@@ -23,8 +21,10 @@ export function TaskDetailDialog({
 }: {
   uuid: string | null;
   open: boolean;
-  onOpenChange: (v: boolean) => void;
+  onOpenChange: (open: boolean) => void;
 }) {
+  const { t } = useTranslation("tasks");
+  const { locale } = useLocale();
   const [detail, setDetail] = useState<TaskDetail | null>(null);
   const [loading, setLoading] = useState(false);
   const { fetchTasks } = useTaskStore();
@@ -32,175 +32,150 @@ export function TaskDetailDialog({
   useEffect(() => {
     if (!open || !uuid) return;
     setLoading(true);
-    getTaskDetail(uuid)
+    setDetail(null);
+    void getTaskDetail(uuid)
       .then(setDetail)
-      .catch((e) => toast.error("加载详情失败: " + e.message))
+      .catch((error) => toast.error(apiErrorMessage(error)))
       .finally(() => setLoading(false));
   }, [open, uuid]);
 
-  const handleRetry = async () => {
+  const retry = async () => {
     if (!uuid) return;
     try {
       await retryTask(uuid);
-      toast.success("任务已重新入队");
+      toast.success(t("taskEnqueued"));
       onOpenChange(false);
-      fetchTasks();
-    } catch (e) {
-      toast.error("重试失败: " + (e as Error).message);
+      void fetchTasks();
+    } catch (error) {
+      toast.error(apiErrorMessage(error));
     }
   };
 
-  const handleDelete = async () => {
+  const remove = async () => {
     if (!uuid) return;
     try {
       await deleteTask(uuid);
-      toast.success("已删除任务记录");
+      toast.success(t("taskDeleted"));
       onOpenChange(false);
-      fetchTasks();
-    } catch (e) {
-      toast.error("删除失败: " + (e as Error).message);
+      void fetchTasks();
+    } catch (error) {
+      toast.error(apiErrorMessage(error));
     }
   };
 
+  const basic = detail?.basic;
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-5xl w-[94vw] max-h-[85vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{detail?.basic?.name || "任务详情"}</DialogTitle>
-          <DialogDescription className="font-mono text-xs">
-            {uuid}
-          </DialogDescription>
+          <DialogTitle>{basic?.name || t("detail", { ns: "common" })}</DialogTitle>
+          <DialogDescription className="font-mono text-xs">{uuid}</DialogDescription>
         </DialogHeader>
-
-        {loading && <div className="text-muted-foreground py-8 text-center">加载中…</div>}
-
+        {loading && <div className="text-muted-foreground py-8 text-center">{t("loading", { ns: "common" })}</div>}
         {detail && !loading && (
           <div className="space-y-4">
             <div className="flex gap-2 justify-end">
-              <Button variant="outline" size="sm" onClick={handleRetry}>
-                <RotateCw className="h-3.5 w-3.5" />重试
+              <Button variant="outline" size="sm" onClick={() => void retry()}>
+                <RotateCw className="h-3.5 w-3.5" />{t("retry", { ns: "common" })}
               </Button>
-              <Button variant="destructive" size="sm" onClick={handleDelete}>
-                <Trash2 className="h-3.5 w-3.5" />删除
+              <Button variant="destructive" size="sm" onClick={() => void remove()}>
+                <Trash2 className="h-3.5 w-3.5" />{t("delete", { ns: "common" })}
               </Button>
             </div>
 
-            <Section title="基本信息">
-              <KV k="传入路径" v={detail.basic?.path} />
-              <KV k="识别剧集" v={detail.basic?.name} />
-              <KV k="季度" v={detail.basic?.season_id} />
+            <Section title={t("detail", { ns: "common" })}>
+              <KV k={t("path")} v={basic?.path} />
+              <KV k={t("recognizedTitle")} v={basic?.name} />
+              <KV k={t("season")} v={basic?.season_id} />
             </Section>
 
-            {detail.tmdb_subjects && detail.tmdb_subjects.length > 0 && (
-              <Section title="TMDB 条目">
-                {detail.tmdb_subjects.map((t) => (
-                  <div key={t.tmdb_ref} className="space-y-1.5 border-l-2 border-primary/30 pl-3">
+            {detail.tmdb_subjects?.length ? (
+              <Section title={t("detailTmdb")}>
+                {detail.tmdb_subjects.map((subject) => (
+                  <div key={subject.tmdb_ref} className="space-y-1.5 border-l-2 border-primary/30 pl-3">
                     <LinkKV
-                      k="条目 ID"
-                      href={tmdbUrl(t.tmdb_ref, t.tmdb_id)}
-                      text={`${t.tmdb_ref}${t.name ? ` · ${t.name}` : ""}${t.year && t.year !== "-" ? ` (${t.year})` : ""}`}
+                      k={t("detailId")}
+                      href={tmdbUrl(subject.tmdb_ref, subject.tmdb_id)}
+                      text={`${subject.tmdb_ref}${subject.name ? ` · ${subject.name}` : ""}${subject.year ? ` (${subject.year})` : ""}`}
                     />
-                    <KV k="媒体类型" v={t.media_type === "movie" ? "电影" : t.media_type === "tv" ? "剧集 (TV)" : t.media_type} />
-                    <KV k="集数范围" v={t.episode_ranges} />
+                    <KV k={t("detailType")} v={subject.media_type} />
+                    <KV k={t("detailEpisodes")} v={formatRanges(subject.episode_ranges, locale, t("special"))} />
                   </div>
                 ))}
               </Section>
-            )}
+            ) : null}
 
-            {detail.bangumi_subjects && detail.bangumi_subjects.length > 0 && (
-              <Section title="Bangumi 条目">
-                {detail.bangumi_subjects.map((s) => (
-                  <div key={String(s.id)} className="space-y-1.5 border-l-2 border-primary/30 pl-3">
+            {detail.bangumi_subjects?.length ? (
+              <Section title={t("detailBangumi")}>
+                {detail.bangumi_subjects.map((subject) => (
+                  <div key={String(subject.id)} className="space-y-1.5 border-l-2 border-primary/30 pl-3">
                     <LinkKV
-                      k="条目 ID"
-                      href={`https://bgm.tv/subject/${s.id}`}
-                      text={`${s.id}${s.name_cn ? ` · ${s.name_cn}` : s.name ? ` · ${s.name}` : ""}`}
+                      k={t("detailId")}
+                      href={`https://bgm.tv/subject/${subject.id}`}
+                      text={`${subject.id}${subject.name_cn ? ` · ${subject.name_cn}` : subject.name ? ` · ${subject.name}` : ""}`}
                     />
-                    <KV k="日文名" v={s.name} />
-                    <KV k="集数范围" v={s.episode_ranges} />
+                    <KV k={t("detailName")} v={subject.name} />
+                    <KV k={t("detailEpisodes")} v={formatRanges(subject.episode_ranges, locale, t("special"))} />
                   </div>
                 ))}
               </Section>
-            )}
+            ) : null}
 
-            <Section title="失败原因">
-              <KV k="失败类" v={detail.failure?.reason} />
-              <KV k="说明" v={detail.failure?.reason_label} />
-              <KV k="原始错误" v={detail.failure?.error} />
+            <Section title={t("failed")}>
+              <KV k={t("detailCode")} v={detail.failure?.reason} />
+              <KV k={t("detailDiagnostic")} v={detail.failure?.error} />
             </Section>
 
-            <Section title="AI 识别">
-              <KV k="是否使用 AI" v={detail.ai?.ai_used ? "是" : "否"} />
-              <KV k="是否尝试 AI" v={detail.ai?.ai_attempted ? "是" : "否"} />
-              <KV k="处理链路" v={detail.ai?.pipeline_mode_label} />
+            <Section title={t("detailAi")}>
+              <KV k={t("detailUsed")} v={booleanText(detail.ai?.ai_used, t)} />
+              <KV k={t("detailAttempted")} v={booleanText(detail.ai?.ai_attempted, t)} />
+              <KV k={t("detailPipeline")} v={detail.ai?.pipeline_mode} />
             </Section>
 
-            <Section title="Case Agent / 落地">
-              <KV k="状态" v={detail.case_agent?.status_label} />
-              <KV k="产品结果类型" v={detail.case_agent?.product_result_kind} />
+            <Section title={t("detailCaseAgent")}>
+              <KV k={t("status")} v={detail.case_agent?.status} />
+              <KV k={t("detailResult")} v={detail.case_agent?.product_result_kind} />
               <Separator />
-              <KV k="目标目录" v={detail.landing?.target_dir} />
+              <KV k={t("detailTarget")} v={detail.landing?.target_dir} />
             </Section>
 
-            {detail.mapping_details && detail.mapping_details.length > 0 && (
-              <Section
-                title={`映射明细（${detail.mapping_details.length} 条${detail.total_size && detail.total_size !== "-" ? `，总计 ${detail.total_size}` : ""}）`}
-              >
+            {detail.mapping_details?.length ? (
+              <Section title={`${t("detailMapping", { count: formatNumber(detail.mapping_details.length, locale) })}${detail.total_size_bytes ? ` · ${intlBytes(detail.total_size_bytes, locale)}` : ""}`}>
                 <div className="border rounded-md max-h-72 overflow-auto">
                   <table className="w-full text-xs">
-                    <thead className="sticky top-0 bg-muted/60 backdrop-blur">
+                    <thead className="sticky top-0 bg-muted/60">
                       <tr className="text-left text-muted-foreground">
-                        <th className="px-2 py-1.5 font-medium">源文件</th>
-                        <th className="px-2 py-1.5 font-medium whitespace-nowrap">BGM</th>
-                        <th className="px-2 py-1.5 font-medium whitespace-nowrap">TMDB</th>
-                        <th className="px-2 py-1.5 font-medium whitespace-nowrap">置信度</th>
+                        <th className="px-2 py-1.5">{t("detailSource")}</th>
+                        <th className="px-2 py-1.5">{t("detailBangumi")}</th>
+                        <th className="px-2 py-1.5">{t("detailTmdb")}</th>
+                        <th className="px-2 py-1.5">{t("detailConfidence")}</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {detail.mapping_details.map((r, i) => (
-                        <tr
-                          key={i}
-                          className="border-t hover:bg-muted/30"
-                          title={r.source_path}
-                        >
-                          <td className="px-2 py-1 truncate max-w-[420px]">
-                            {r.source_name}
-                          </td>
-                          <td className="px-2 py-1 whitespace-nowrap">{r.bgm}</td>
-                          <td className="px-2 py-1 whitespace-nowrap">{r.tmdb}</td>
-                          <td className="px-2 py-1 whitespace-nowrap text-muted-foreground">
-                            {r.confidence}
-                          </td>
+                      {detail.mapping_details.map((row, index) => (
+                        <tr key={index} className="border-t">
+                          <td className="px-2 py-1 truncate max-w-[420px]" title={row.source_path}>{row.source_name}</td>
+                          <td className="px-2 py-1">{formatTarget(row.bangumi_target ?? row.bgm)}</td>
+                          <td className="px-2 py-1">{formatTarget(row.tmdb_target ?? row.tmdb)}</td>
+                          <td className="px-2 py-1 text-muted-foreground">{row.confidence ?? t("notAvailable", { ns: "common" })}</td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
                 </div>
               </Section>
-            )}
+            ) : null}
 
             {detail.subtitle_fetch && (
-              <Section title="字幕自动抓取">
-                <KV k="抓取状态" v={detail.subtitle_fetch.status_label} />
-                <KV
-                  k="Case Agent"
-                  v={detail.subtitle_fetch.case_agent_status_label}
-                />
-                <KV k="来源" v={detail.subtitle_fetch.provider} />
-                {detail.subtitle_fetch.failure_reason && (
-                  <KV k="失败原因" v={detail.subtitle_fetch.failure_reason} />
-                )}
+              <Section title={t("detailSubtitleFetch")}>
+                <KV k={t("status")} v={detail.subtitle_fetch.status} />
+                <KV k={t("detailCaseAgent")} v={detail.subtitle_fetch.case_agent_status} />
+                <KV k={t("detailProvider")} v={detail.subtitle_fetch.provider} />
+                <KV k={t("detailFailure")} v={detail.subtitle_fetch.failure_reason} />
                 <Separator />
-                <KV
-                  k="已配对 / 缺字幕"
-                  v={`${detail.subtitle_fetch.matched_count} / ${detail.subtitle_fetch.missing_video_count}`}
-                />
-                <KV k="选中包数" v={detail.subtitle_fetch.selections_count} />
-                <KV k="未配对字幕" v={detail.subtitle_fetch.unmatched_count} />
-                <KV
-                  k="无落点字幕"
-                  v={detail.subtitle_fetch.no_target_count}
-                />
+                <KV k={t("detailMatched")} v={formatNumber(detail.subtitle_fetch.matched_count, locale)} />
+                <KV k={t("detailSelections")} v={formatNumber(detail.subtitle_fetch.selections_count, locale)} />
+                <KV k={t("detailUnmatched")} v={formatNumber(detail.subtitle_fetch.unmatched_count, locale)} />
               </Section>
             )}
           </div>
@@ -211,44 +186,45 @@ export function TaskDetailDialog({
 }
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <div className="space-y-2">
-      <h3 className="text-sm font-semibold">{title}</h3>
-      <div className="space-y-1.5 text-sm">{children}</div>
-    </div>
-  );
+  return <div className="space-y-2"><h3 className="text-sm font-semibold">{title}</h3><div className="space-y-1.5 text-sm">{children}</div></div>;
 }
 
 function KV({ k, v }: { k: string; v?: unknown }) {
-  return (
-    <div className="flex gap-3">
-      <span className="text-muted-foreground w-24 shrink-0">{k}</span>
-      <span className="break-all">
-        {v === undefined || v === null || v === "" ? "-" : String(v)}
-      </span>
-    </div>
-  );
+  return <div className="flex gap-3"><span className="text-muted-foreground w-28 shrink-0">{k}</span><span className="break-all">{v === undefined || v === null || v === "" ? "-" : String(v)}</span></div>;
 }
 
-// 带跳转链接的 KV：值显示为可点击外链（新标签打开）。
 function LinkKV({ k, href, text }: { k: string; href: string; text: string }) {
-  return (
-    <div className="flex gap-3">
-      <span className="text-muted-foreground w-24 shrink-0">{k}</span>
-      <a
-        href={href}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="break-all text-primary underline underline-offset-2 hover:opacity-80"
-      >
-        {text || "-"}
-      </a>
-    </div>
-  );
+  return <div className="flex gap-3"><span className="text-muted-foreground w-28 shrink-0">{k}</span><a href={href} target="_blank" rel="noopener noreferrer" className="break-all text-primary underline">{text || "-"}</a></div>;
 }
 
-// TMDB ref → themoviedb.org URL（tv:{id} → /tv/{id}，movie:{id} → /movie/{id}）。
+function booleanText(value: boolean | null | undefined, t: (key: string, options?: Record<string, unknown>) => string) {
+  if (value == null) return "-";
+  return value ? t("yes", { ns: "common" }) : t("no", { ns: "common" });
+}
+
+function formatRanges(value: unknown, locale: "zh-CN" | "en-US", specialLabel: string): string {
+  if (!Array.isArray(value)) return value == null ? "-" : String(value);
+  return value.map((range) => {
+    if (!range || typeof range !== "object") return String(range);
+    const item = range as Record<string, unknown>;
+    if (item.kind === "special") return `${specialLabel} · ${formatNumber(Number(item.count ?? 0), locale)}`;
+    if (item.season !== undefined) {
+      const start = formatNumber(Number(item.start), locale);
+      const end = formatNumber(Number(item.end ?? item.start), locale);
+      return `S${String(item.season).padStart(2, "0")}E${start}–E${end}`;
+    }
+    return `${formatNumber(Number(item.start), locale)}–${formatNumber(Number(item.end ?? item.start), locale)}`;
+  }).join(" + ");
+}
+
+function formatTarget(value: unknown): string {
+  if (value == null) return "-";
+  if (typeof value === "string") return value;
+  if (typeof value !== "object") return String(value);
+  const item = value as Record<string, unknown>;
+  return String(item.episode_token ?? item.ref ?? item.sort ?? item.id ?? "-");
+}
+
 function tmdbUrl(ref: string, id: number | string | null | undefined): string {
-  const kind = ref.startsWith("movie:") ? "movie" : "tv";
-  return `https://www.themoviedb.org/${kind}/${id ?? ""}`;
+  return `https://www.themoviedb.org/${ref.startsWith("movie:") ? "movie" : "tv"}/${id ?? ""}`;
 }

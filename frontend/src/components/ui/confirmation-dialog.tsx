@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "react-i18next";
 
 type ConfirmVariant = "default" | "destructive" | "retry" | "cancel";
 
@@ -27,8 +28,8 @@ export function ConfirmationDialog({
   onOpenChange,
   title,
   description,
-  confirmLabel = "确认",
-  cancelLabel = "取消",
+  confirmLabel,
+  cancelLabel,
   confirmVariant = "default",
   onConfirm,
   loading = false,
@@ -43,6 +44,9 @@ export function ConfirmationDialog({
   onConfirm: () => void;
   loading?: boolean;
 }) {
+  const { t } = useTranslation("common");
+  const resolvedConfirmLabel = confirmLabel ?? t("confirm");
+  const resolvedCancelLabel = cancelLabel ?? t("cancel");
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
@@ -60,14 +64,14 @@ export function ConfirmationDialog({
             onClick={() => onOpenChange(false)}
             disabled={loading}
           >
-            {cancelLabel}
+            {resolvedCancelLabel}
           </Button>
           <Button
             className={cn(variantClass[confirmVariant])}
             onClick={onConfirm}
             disabled={loading}
           >
-            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : confirmLabel}
+            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : resolvedConfirmLabel}
           </Button>
         </DialogFooter>
       </DialogContent>
