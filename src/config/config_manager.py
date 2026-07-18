@@ -4,6 +4,7 @@ import tempfile
 import time
 import platform
 import threading
+import shutil
 from contextlib import contextmanager
 from pathlib import Path
 from urllib.parse import urlparse
@@ -12,33 +13,21 @@ from typing import Any, Dict
 from ..utils.path import CONFIG_PATH
 
 CONFIG_DEFAULT = {
+    "config_schema_version": 2,
     "api_key": "",
     "tv_path": "",
     "movie_path": "",
     "anime_path": "",
     "anime_movie_path": "",
-    "mode": "链接",
-    "overwrite_existing": "跳过",  # 目标已存在时的策略：'覆盖'（删旧重落）/ '跳过'（跳过已存在继续处理其他）。兼容旧 bool：True→覆盖，False→跳过
+    "mode": "link",
+    "overwrite_existing": "skip",  # canonical IDs; old Chinese values/bools are accepted at the read boundary
     "hardlink_fallback_to_symlink": True,  # 链接模式下硬链接失败（如跨文件系统）时是否降级为软链接。False 时硬链失败记 partial_failure，不静默降级（软链接源删则失效，语义与硬链接不同）
     "docker_mnt": "/media",
     "host_path_prefix": "",  # Windows宿主机路径前缀，用于qBittorrent路径转换
     "ai_api_key": "",
     "ai_base_url": "https://api.openai.com",
     "ai_model": "gpt-4o-mini",
-    "ai_temperature": 1.0,  # OpenAI温度
-    "ai_force_strict": True,
-    "ai_confidence_threshold": "Medium",
-    "openai_output_format": "structured_output",  # OpenAI输出格式选择
     "openai_api_interface": "responses_api",  # Pi 协议：anthropic_messages/responses_api/chat_completions
-    "openai_auto_routing_enabled": True,  # OpenAI自动路由
-    "openai_auto_format_order": [
-        "structured_output",
-        "function_calling",
-        "text",
-    ],  # OpenAI自动路由顺序
-    "openai_format_stats": {},  # OpenAI格式测试统计
-    "ai_auto_save": False,  # 是否自动保存AI分析结果
-    "ai_response_cache_enabled": False,  # 兼容旧配置页；本地响应缓存已停用，provider input cache 由请求侧审计
     "rename_local_bangumi_case_agent_primary_enabled": True,
     "rename_local_bangumi_case_agent_backend": "pi",
     "rename_local_bangumi_case_agent_max_evidence_batches": 12,
@@ -63,8 +52,8 @@ CONFIG_DEFAULT = {
     "subtitle_sync_timeout_seconds": 120,
     "subtitle_sync_overwrite_policy": "follow_global",  # follow_global | overwrite | skip
     # 字幕导入 Case Agent（对齐 rename Local→Bangumi Case Agent）
-    "subtitle_case_agent_primary_enabled": True,  # 默认走 Case Agent + 合同校验；关闭则回退旧 analyze_subtitle_mapping 规则链路
-    "subtitle_case_agent_backend": "pi",  # pi = Pi 多轮 evidence-driven 后端；single_shot = Phase 2 单轮 AI + 合同
+    "subtitle_case_agent_primary_enabled": True,  # Case Agent contract path remains enabled
+    "subtitle_case_agent_backend": "pi",  # Pi is the only supported subtitle backend
     "subtitle_case_agent_pi_case_root": "data/subtitle_case_agent",
     "subtitle_case_agent_pi_max_turns": 48,  # 兼容保留，Pi native 模式由 wall-clock timeout 约束
     "subtitle_case_agent_pi_timeout_seconds": 300,
@@ -87,7 +76,7 @@ CONFIG_DEFAULT = {
     # 子进程），过高会放大内存/CPU + 触发 acgrip 限流。1 = 串行（旧行为）。
     "subtitle_auto_fetch_selection_concurrency": 3,
     # 字幕自动抓取 Case Agent（对齐 rename / 字幕导入 Case Agent）
-    "subtitle_auto_fetch_case_agent_backend": "pi",  # pi = Pi 多轮 evidence-driven 后端；single_shot 已弃用，值忽略始终 pi
+    "subtitle_auto_fetch_case_agent_backend": "pi",  # Pi is the only supported auto-fetch backend
     "subtitle_auto_fetch_case_agent_pi_case_root": "data/auto_fetch_case_agent",
     "subtitle_auto_fetch_case_agent_pi_max_turns": 48,  # 兼容保留，Pi native 模式由 wall-clock timeout 约束
     "subtitle_auto_fetch_case_agent_pi_timeout_seconds": 600,
@@ -115,101 +104,15 @@ CONFIG_DEFAULT = {
 # 需要自动添加 docker_mnt 前缀的路径配置项
 PATH_CONFIG_KEYS = {"tv_path", "movie_path", "anime_path", "anime_movie_path"}
 
-AI_CONFIDENCE_THRESHOLD_LABELS = {
-    "Low": 1.0,
-    "Medium": 2.0,
-    "High": 3.0,
-}
-
+# Compatibility labels for older extension imports. New field specs use locale resources.
 CN_MAP = {
-    "api_key": "TMDB API密钥",
-    "tv_path": "电视剧路径",
-    "movie_path": "电影路径",
-    "anime_path": "动漫路径",
-    "anime_movie_path": "动漫电影路径",
-    "mode": "重命名模式",
-    "overwrite_existing": "目标已存在策略",
-    "hardlink_fallback_to_symlink": "硬链接失败降级软链接",
-    "docker_mnt": "Docker挂载路径",
-    "host_path_prefix": "宿主机路径前缀",
-    "ai_api_key": "OpenAI API密钥",
-    "ai_base_url": "OpenAI API地址",
-    "ai_model": "OpenAI模型",
-    "ai_force_strict": "AI严格模式（运维）",
-    "ai_confidence_threshold": "AI置信度阈值",
-    "ai_request_timeout_seconds": "AI请求超时秒数",
-    "openai_output_format": "OpenAI输出格式",
-    "openai_api_interface": "Pi 模型协议",
-    "openai_auto_routing_enabled": "OpenAI自动路由",
-    "openai_auto_format_order": "OpenAI自动路由顺序",
-    "openai_format_stats": "OpenAI格式测试统计",
-    "ai_temperature": "OpenAI温度",
-    "ai_auto_save": "自动保存AI分析",
-    "ai_response_cache_enabled": "AI本地响应缓存（已停用）",
-    "rename_local_bangumi_case_agent_primary_enabled": "启用 Local→Bangumi Case Agent primary",
-    "rename_local_bangumi_case_agent_backend": "Local→Bangumi Case Agent backend",
-    "rename_local_bangumi_pi_case_root": "Pi Case Agent 运行目录",
-    "rename_local_bangumi_pi_max_turns": "Pi Case Agent 最大轮数（兼容保留，不生效）",
-    "rename_local_bangumi_pi_timeout_seconds": "Pi Case Agent 超时秒数",
-    "rename_local_bangumi_pi_command": "Pi Case Agent 运行命令覆盖（默认 core）",
-    "rename_local_bangumi_case_agent_max_evidence_batches": "Case Agent 最大证据批次",
-    "rename_local_bangumi_case_agent_max_issue_response_rounds": "Case Agent 最大修正轮数",
-    "rename_local_bangumi_case_agent_max_requests_per_batch": "Case Agent 每批最大证据请求",
-    "rename_local_bangumi_case_agent_snapshot_debug": "Case Agent snapshot 调试详情",
-    "rename_bgm_to_tmdb_product_pipeline_enabled": "启用 BGM→TMDB 产品链路",
-    "rename_bgm_to_tmdb_execute_enabled": "执行 BGM→TMDB 迁移",
-    "rename_bgm_to_tmdb_retry_on_fail_closed": "BGM→TMDB fail_closed 单次重试",
-    "rename_bgm_to_tmdb_pi_command": "BGM→TMDB Pi 运行命令覆盖",
-    "log_level": "日志等级",
-    "queue_max_workers": "队列并行数（建议1-5）",
-    "subtitle_sync_enabled": "启用字幕自动对齐(ffsubsync)",
-    "subtitle_sync_mode": "字幕对齐模式",
-    "subtitle_sync_executable": "ffsubsync 可执行文件",
-    "subtitle_sync_extra_args": "ffsubsync 额外参数",
-    "subtitle_sync_timeout_seconds": "对齐超时秒数",
-    "subtitle_sync_overwrite_policy": "字幕覆盖策略",
-    "subtitle_case_agent_primary_enabled": "启用字幕 Case Agent（合同校验）",
-    "subtitle_case_agent_backend": "字幕 Case Agent 后端",
-    "subtitle_case_agent_pi_case_root": "字幕 Case Agent 运行目录",
-    "subtitle_case_agent_pi_max_turns": "字幕 Case Agent 最大轮数（兼容保留，不生效）",
-    "subtitle_case_agent_pi_timeout_seconds": "字幕 Case Agent 超时秒数",
-    "subtitle_case_agent_pi_command": "字幕 Case Agent 运行命令覆盖（默认 core）",
-    "subtitle_auto_fetch_enabled": "启用字幕自动抓取",
-    "subtitle_auto_fetch_provider": "字幕抓取源",
-    "subtitle_auto_fetch_candidate_limit": "抓取候选上限",
-    "subtitle_auto_fetch_timeout_seconds": "抓取超时秒数",
-    "subtitle_auto_fetch_browser_enabled": "启用动态浏览器抓取",
-    "subtitle_auto_fetch_acgrip_base_url": "ACGRIP 地址",
-    "subtitle_auto_fetch_preferred_language": "优先字幕语言",
-    "subtitle_auto_fetch_skip_if_embedded_language": "内嵌字幕命中则跳过",
-    "subtitle_auto_fetch_use_ai_rerank": "启用AI重排",
-    "subtitle_auto_fetch_search_mode": "字幕搜索模式",
-    "subtitle_auto_fetch_save_reason": "保存重排原因",
-    "subtitle_auto_fetch_case_agent_backend": "抓取 Case Agent 后端",
-    "subtitle_auto_fetch_case_agent_pi_case_root": "抓取 Case Agent 运行目录",
-    "subtitle_auto_fetch_case_agent_pi_max_turns": "抓取 Case Agent 最大轮数（兼容保留，不生效）",
-    "subtitle_auto_fetch_case_agent_pi_timeout_seconds": "抓取 Case Agent 超时秒数",
-    "subtitle_auto_fetch_case_agent_pi_command": "抓取 Case Agent 运行命令覆盖（默认 core）",
     "allowed_categories": "仅处理分类（白名单，逗号分隔）",
     "skip_tags": "跳过处理的标签（逗号分隔）",
-    # Emby通知配置
-    "emby_enabled": "启用Emby通知",
-    "emby_host": "Emby服务器地址",
-    "emby_api_key": "Emby API密钥",
-    # Telegram通知配置
-    "telegram_enabled": "启用Telegram通知",
-    "telegram_bot_token": "Telegram Bot Token",
-    "telegram_chat_id": "Telegram Chat ID",
-    "telegram_notify_on_success": "成功时发送Telegram通知",
-    "telegram_notify_on_failure": "失败时发送Telegram通知",
-    "telegram_base_url": "Telegram API地址",
-    # 元数据缓存
-    "metadata_cache_mode": "元数据缓存模式",
-    "metadata_cache_ttl_days": "正向缓存天数",
-    "metadata_cache_negative_ttl_hours": "空结果缓存小时数",
-    "metadata_cache_max_size_mb": "缓存磁盘上限（MB）",
+    "ai_api_key": "OpenAI API 密钥",
+    "ai_base_url": "OpenAI API 地址",
+    "ai_model": "OpenAI 模型",
+    "openai_api_interface": "Pi 模型协议",
 }
-
 
 class ConfigManager:
     def __init__(self) -> None:
@@ -286,7 +189,8 @@ class ConfigManager:
             for attempt in range(5):
                 try:
                     with open(CONFIG_PATH, 'r', encoding='UTF-8') as f:
-                        self.config = json.load(f)
+                        loaded = json.load(f)
+                        self.config = loaded if isinstance(loaded, dict) else {}
                     last_error = None
                     break
                 except PermissionError as exc:
@@ -297,11 +201,20 @@ class ConfigManager:
             if last_error is not None:
                 raise last_error
             original_keys = set(self.config)
+            self._migrate_i18n_v2(original_keys)
 
             # 对没有的值，添加默认值
             for key in CONFIG_DEFAULT:
                 if key not in self.config:
                     self.config[key] = CONFIG_DEFAULT[key]
+
+            # Pi is the only runtime AI backend; normalize retired protocol/backend values.
+            if self.config.get("openai_api_interface") == "anthropic_messages":
+                self.config["openai_api_interface"] = "responses_api"
+            if self.config.get("subtitle_case_agent_backend") != "pi":
+                self.config["subtitle_case_agent_backend"] = "pi"
+
+
 
             # 兼容迁移：上一版 webhook 标签白名单 → qBittorrent 分类白名单。
             # 必须检查原始 key 是否存在，避免用户显式保存空新值后被旧值复活。
@@ -329,6 +242,55 @@ class ConfigManager:
             if not self._readonly_mode:
                 self.write_config()
 
+    @staticmethod
+    def _canonical_mode(value: object) -> str:
+        aliases = {
+            "link": "link", "链接": "link", "hardlink": "link",
+            "copy": "copy", "复制": "copy",
+            "move": "move", "剪切": "move", "移动": "move",
+        }
+        return aliases.get(str(value).strip().lower(), "link")
+
+    @staticmethod
+    def _canonical_overwrite(value: object) -> str:
+        if isinstance(value, bool):
+            return "overwrite" if value else "skip"
+        aliases = {
+            "overwrite": "overwrite", "覆盖": "overwrite",
+            "skip": "skip", "跳过": "skip", "拒绝": "skip",
+        }
+        return aliases.get(str(value).strip().lower(), "skip")
+
+    def _migrate_i18n_v2(self, original_keys: set[str]) -> None:
+        """Normalize historic enum values once, with an atomic rollback copy."""
+        raw_version = self.config.get("config_schema_version", 1)
+        try:
+            version = int(raw_version)
+        except (TypeError, ValueError):
+            version = 1
+        needs_migration = version < 2 or self.config.get("mode") not in {"link", "copy", "move"}
+        needs_migration = needs_migration or self.config.get("overwrite_existing") not in {"overwrite", "skip"}
+        if not needs_migration:
+            return
+        backup = CONFIG_PATH.with_name("config.pre-i18n-v2.json")
+        if CONFIG_PATH.exists() and not backup.exists() and not self._readonly_mode:
+            CONFIG_PATH.parent.mkdir(parents=True, exist_ok=True)
+            fd, temp_name = tempfile.mkstemp(
+                prefix=f".{backup.name}.", suffix=".tmp", dir=str(CONFIG_PATH.parent)
+            )
+            try:
+                os.close(fd)
+                shutil.copy2(CONFIG_PATH, temp_name)
+                os.replace(temp_name, backup)
+            finally:
+                if os.path.exists(temp_name):
+                    os.unlink(temp_name)
+        self.config["mode"] = self._canonical_mode(self.config.get("mode"))
+        self.config["overwrite_existing"] = self._canonical_overwrite(
+            self.config.get("overwrite_existing")
+        )
+        self.config["config_schema_version"] = 2
+
     def get_config(self, key: str) -> Any:
         runtime_overrides = self._get_runtime_overrides()
         if key in runtime_overrides:
@@ -351,28 +313,6 @@ class ConfigManager:
             return value
         else:
             return ''
-
-    def get_ai_confidence_threshold_score(self, value: object | None = None) -> float:
-        """将 ai_confidence_threshold 配置归一化为运行时可比较的分值。"""
-        raw_value = self.get_config("ai_confidence_threshold") if value is None else value
-
-        if isinstance(raw_value, (int, float)):
-            return float(raw_value)
-
-        if isinstance(raw_value, str):
-            normalized_value = raw_value.strip()
-            if not normalized_value:
-                return AI_CONFIDENCE_THRESHOLD_LABELS["Medium"]
-
-            if normalized_value in AI_CONFIDENCE_THRESHOLD_LABELS:
-                return AI_CONFIDENCE_THRESHOLD_LABELS[normalized_value]
-
-            try:
-                return float(normalized_value)
-            except ValueError:
-                return AI_CONFIDENCE_THRESHOLD_LABELS["Medium"]
-
-        return AI_CONFIDENCE_THRESHOLD_LABELS["Medium"]
 
     def _convert_path_for_current_platform(self, path: str) -> str:
         """
@@ -418,6 +358,12 @@ class ConfigManager:
     def set_config(self, key: str, value: Any) -> bool:
         with self._io_lock:
             if key in CONFIG_DEFAULT:
+                if key == "mode":
+                    value = self._canonical_mode(value)
+                elif key == "overwrite_existing":
+                    value = self._canonical_overwrite(value)
+                elif key == "config_schema_version":
+                    value = 2
                 # 对URL类型的配置项进行特殊处理
                 if key.endswith('_base_url') and value and isinstance(value, str):
                     value = self._normalize_url(value)

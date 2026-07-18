@@ -17,6 +17,7 @@ from ..subtitle.processor import SubtitleProcessor
 from ..utils.path import SUBTITLE_UPLOAD_PATH, TASK_PATH
 from ..utils.utils import get_task
 from .serializers import list_subtitle_rows
+from .contract import canonical_subtitle_rows, ok
 
 router = APIRouter(prefix="/subtitle", tags=["subtitle"])
 
@@ -26,7 +27,7 @@ SUPPORTED_EXTENSIONS = {".zip", ".rar", ".ass", ".ssa", ".srt", ".sub", ".vtt"}
 @router.get("/tasks")
 def get_subtitle_tasks() -> dict[str, Any]:
     """字幕任务列表。"""
-    return {"tasks": list_subtitle_rows()}
+    return ok({"tasks": canonical_subtitle_rows(list_subtitle_rows())})
 
 
 @router.post("/import")
@@ -50,7 +51,7 @@ async def import_subtitle(file: UploadFile = File(...)) -> dict[str, Any]:
     result = await asyncio.get_event_loop().run_in_executor(
         None, processor.process, upload_path
     )
-    return {"result": result}
+    return ok(result, result="subtitle_imported")
 
 
 @router.delete("/{uuid}")
@@ -60,7 +61,7 @@ def delete_subtitle(uuid: str) -> dict[str, Any]:
     if not p.exists():
         raise HTTPException(status_code=404, detail="字幕任务记录不存在")
     p.unlink()
-    return {"code": 200, "data": "已删除字幕任务记录"}
+    return ok({}, result="subtitle_deleted")
 
 
 @router.delete("/{uuid}/archive")
@@ -73,7 +74,7 @@ def clean_subtitle_archive(uuid: str) -> dict[str, Any]:
     if not archive_path.exists():
         raise HTTPException(status_code=404, detail="压缩包已不存在")
     archive_path.unlink()
-    return {"code": 200, "data": f"已清除压缩包: {archive_path.name}"}
+    return ok({}, result="subtitle_archive_deleted")
 
 
 @router.post("/{uuid}/retry")
@@ -95,4 +96,4 @@ async def retry_subtitle(uuid: str) -> dict[str, Any]:
     result = await asyncio.get_event_loop().run_in_executor(
         None, processor.process, archive_path
     )
-    return {"result": result}
+    return ok(result, result="subtitle_retried")

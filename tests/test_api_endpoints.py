@@ -32,8 +32,9 @@ def test_get_tasks_returns_list():
         r = c.get("/api/tasks")
         assert r.status_code == 200
         data = r.json()
-        assert "tasks" in data
-        assert isinstance(data["tasks"], list)
+        assert set(data) == {"data"}
+        assert "tasks" in data["data"]
+        assert isinstance(data["data"]["tasks"], list)
 
 
 def test_get_task_detail_not_found():
@@ -48,7 +49,7 @@ def test_get_config_masks_secrets():
     with _client() as c:
         r = c.get("/api/config")
         assert r.status_code == 200
-        config = r.json()["config"]
+        config = r.json()["data"]["config"]
         # 密钥类字段若非空应为星号
         for key in ("ai_api_key", "emby_api_key", "telegram_bot_token", "api_key"):
             v = config.get(key)
@@ -61,7 +62,7 @@ def test_get_field_spec():
     with _client() as c:
         r = c.get("/api/config/field-spec")
         assert r.status_code == 200
-        spec = r.json()["field_spec"]
+        spec = r.json()["data"]["field_spec"]
         assert isinstance(spec, list)
         assert len(spec) > 0
         # 每个 entry 必备字段
@@ -76,7 +77,7 @@ def test_get_dashboard_stats():
     with _client() as c:
         r = c.get("/api/dashboard")
         assert r.status_code == 200
-        stats = r.json()
+        stats = r.json()["data"]
         for key in ("running", "pending", "today_success", "today_failed",
                     "today_total", "success_rate"):
             assert key in stats
@@ -87,7 +88,7 @@ def test_get_log_tail():
     with _client() as c:
         r = c.get("/api/logs/tail?n=50")
         assert r.status_code == 200
-        data = r.json()
+        data = r.json()["data"]
         assert "lines" in data
         assert isinstance(data["lines"], list)
 
@@ -97,7 +98,7 @@ def test_get_subtitle_tasks():
     with _client() as c:
         r = c.get("/api/subtitle/tasks")
         assert r.status_code == 200
-        assert isinstance(r.json()["tasks"], list)
+        assert isinstance(r.json()["data"]["tasks"], list)
 
 
 def test_browse_files_invalid_path():
@@ -112,7 +113,7 @@ def test_browse_files_drives():
     with _client() as c:
         r = c.get("/api/files/drives")
         assert r.status_code == 200
-        data = r.json()
+        data = r.json()["data"]
         assert "drives" in data
         assert "system" in data
 

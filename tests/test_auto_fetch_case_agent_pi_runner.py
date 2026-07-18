@@ -955,7 +955,6 @@ def test_entry_pi_backend_accepted_returns_four_state(tmp_path, monkeypatch):
     try:
         result = run_auto_fetch_case_agent(
             workspace=_workspace(), candidates=[cand], task_data={"uuid": "t1"},
-            ai_client=None, candidate_summaries=[{"index": 0, "title": "Foo 字幕"}],
             backend="pi", provider=provider,
         )
     finally:

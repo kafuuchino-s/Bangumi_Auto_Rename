@@ -283,8 +283,8 @@ def test_processor_process_mapping_returns_mapping_not_land(monkeypatch, tmp_pat
         },
     )
 
-    def fake_entry(*, subtitle_files, processed_tasks, ai_client, source_path,
-                   language_resolver, archive_name, archive_structure):
+    def fake_entry(*, subtitle_files, processed_tasks, source_path,
+                   language_resolver, archive_name):
         return {
             "status": "accepted",
             "snapshot": {"draft": {"confidence": "High"}},

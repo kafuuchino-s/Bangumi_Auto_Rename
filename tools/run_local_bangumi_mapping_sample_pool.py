@@ -17,7 +17,6 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-from src.ai.client import AIClient
 from src.bangumi.client import BangumiClient
 from src.config.config_manager import cm
 from src.rename.case_agent.local_bangumi_entry import run_local_bangumi_case_agent_mapping
@@ -730,7 +729,6 @@ def _run_mapping_sample_uncapped(
                     result = run_local_bangumi_case_agent_mapping(
                         local_evidence=evidence,
                         bangumi_contexts=[],
-                        ai_client=AIClient(),
                         source_path=sample,
                         bangumi_client=BangumiClient(),
                     )
@@ -738,7 +736,6 @@ def _run_mapping_sample_uncapped(
                 result = run_local_bangumi_case_agent_mapping(
                     local_evidence=evidence,
                     bangumi_contexts=[],
-                    ai_client=AIClient(),
                     source_path=sample,
                     bangumi_client=BangumiClient(),
                 )
@@ -997,12 +994,6 @@ def main() -> int:
     if args.dry_build:
         rows = _run_in_parallel(samples, _dry_build_row, worker_count=args.workers)
     else:
-        ai_client = AIClient()
-        if not ai_client.is_available():
-            summary = {"ok": False, "error": "AI client is not available", "samples": [path.as_posix() for path in samples]}
-            (output_dir / "summary.json").write_text(json.dumps(summary, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-            print(json.dumps(summary, ensure_ascii=False, indent=2))
-            return 2
         rows = _run_in_parallel(
             samples,
             _run_mapping_sample,

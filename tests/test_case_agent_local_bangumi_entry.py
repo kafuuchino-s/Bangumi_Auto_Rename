@@ -166,7 +166,11 @@ def test_local_bangumi_entry_uses_pi_backend_snapshot(monkeypatch, tmp_path):
     monkeypatch.setattr('src.rename.case_agent.local_bangumi_entry.run_pi_case_agent', fake_run_pi_case_agent)
     monkeypatch.setattr('src.rename.case_agent.local_bangumi_entry.BangumiClient', lambda: object())
 
-    result = run_local_bangumi_case_agent_mapping(local_evidence=_local_evidence(), bangumi_contexts=[], ai_client=object(), source_path='tests/sample')
+    result = run_local_bangumi_case_agent_mapping(
+        local_evidence=_local_evidence(),
+        bangumi_contexts=[],
+        source_path='tests/sample',
+    )
 
     assert result['ok'] is True
     assert result['status'] == 'fail_closed'

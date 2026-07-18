@@ -11,6 +11,7 @@ from starlette.responses import StreamingResponse
 
 from ..utils.path import log_path
 from .serializers import read_log_tail
+from .contract import ok
 
 router = APIRouter(prefix="/logs", tags=["logs"])
 
@@ -19,7 +20,7 @@ router = APIRouter(prefix="/logs", tags=["logs"])
 def get_log_tail(n: int = Query(200, ge=1, le=2000)) -> dict[str, Any]:
     """日志末尾 n 行（已格式化）。"""
     lines = read_log_tail(n)
-    return {"lines": lines, "count": len(lines), "file": log_path.name}
+    return ok({"lines": lines, "count": len(lines), "file": log_path.name})
 
 
 @router.get("/stream")

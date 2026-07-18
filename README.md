@@ -56,7 +56,7 @@ Bangumi Auto Rename 是一条 **AI-first + strict** 的媒体整理流水线，�
 |---|---|
 | 语义推理 | **Pi Case Agent** — Node.js sidecar（`@earendil-works/pi-coding-agent`），4 套 case agent 各带合同 skill（`.pi/skills/`） |
 | 后端 | Python + **FastAPI**（单端口 5999）：`/api/*` + `/sendTask` webhook + 队列调度 |
-| 前端 | **Next.js 16 + React 19 + shadcn/ui + zustand**，`output:export` 静态导出，由 FastAPI 同端口托管 |
+| 前端 | **Vite + React 19 + React Router + shadcn/ui + zustand**，静态构建输出到 `frontend/out/`，由 FastAPI 同端口托管 |
 | 校验哲学 | **AI-first + strict**：固定层只做事实抽取与合同校验（coverage / duplicate / 越界 / 合法节点），不确定判断交 Case Agent；`fail_closed` 是合格业务结果，`invalid` 才是实现错误 |
 
 四套 Pi Case Agent 与各自的合同 skill：
@@ -68,11 +68,11 @@ Bangumi Auto Rename 是一条 **AI-first + strict** 的媒体整理流水线，�
 | 字幕导入 | 字幕 → 落地视频配对 | `subtitle-mapping-contract` |
 | 字幕自动抓取 | 选帖 / 选包（candidate ranking） | `auto-fetch-contract` |
 
-> 旧的 Python 端 AI 映射链路（ai_processor）已移除，全链路走 Pi Case Agent + BGM→TMDB 桥接。OpenAI 兼容 API 在生产链路下仅作门禁/测试器，Pi 不可用时作为 fallback。
+> 旧的 Python 端 AI 映射链路（ai_processor）已移除，全链路走 Pi Case Agent + BGM→TMDB 桥接。Pi sidecar 是唯一生产 AI 执行路径。
 
 ## 界面预览
 
-前端为 **Next.js 16 + React 19 + shadcn/ui + zustand**，静态导出后由 FastAPI 同端口托管。以下截图使用示例数据生成，仅展示界面布局，不代表真实任务/配置。
+前端为 **Vite + React 19 + React Router + shadcn/ui + zustand**，静态构建后由 FastAPI 同端口托管。以下截图使用示例数据生成，仅展示界面布局，不代表真实任务/配置。
 
 ![任务列表](docs/screenshots/tasks.png)
 
@@ -94,7 +94,7 @@ Bangumi Auto Rename 是一条 **AI-first + strict** 的媒体整理流水线，�
 - 本项目语义推理走 **Pi Case Agent**，其凭据优先级为：Pi 独立覆盖键 → `ai_*` 配置 → `.pi/agent/auth.json`。
 - **OpenAI 兼容 API**：申请 OpenAI API 密钥，或使用兼容的国内 API 服务
   - 推荐模型：deepseek-reasoner（性价比高，效果好）
-- 如不配置任何可用 AI 凭据，任务会按 `ai_unavailable` 失败（默认严格模式 `ai_force_strict=true`）
+- 如未配置可用的 Pi 凭据，任务会按 `pi_unavailable` / `provider_failure` 失败。
 
 ### 一、安装
 
@@ -194,7 +194,7 @@ docker build -t bangumi-auto-rename . \
 - 打开网页之后（默认端口 5999，即地址为 `http://127.0.0.1:5999`）
 - 先进入配置页，按 5 个场景分组配置：
   - **通用配置**：TMDB API 密钥、整理路径、传输模式、覆盖策略
-  - **AI 配置**：OpenAI 兼容 API 密钥、Base URL、模型、接口（Pi 凭据 fallback）
+  - **AI 配置**：OpenAI 兼容 API 密钥、Base URL、模型、接口（Pi sidecar 凭据）
   - **字幕配置**：字幕同步、字幕 Case Agent、自动抓取
   - **通知配置**：Emby 刷新、Telegram 汇总通知
   - **高级配置**：队列并发、Docker 路径映射、跳过标签、硬链降级等
@@ -203,7 +203,7 @@ docker build -t bangumi-auto-rename . \
 ### 三、AI 主流程说明（Pi Case Agent）
 
 > [!WARNING]
-> 默认 `ai_force_strict=true`，AI 不可用或结果不满足合同时任务会失败，**不会自动回退到传统规则**。这是有意的设计，保证结果可解释、可审计。
+> Pi 不可用或结果不满足合同时任务会失败，**不会自动回退到传统规则**。这是有意的设计，保证结果可解释、可审计。
 
 #### 工作方式
 - **Pi Case Agent** 采用 evidence-driven 多轮推理：主动发起 evidence request → 构建 MappingDraft → 经 Verifier 合同校验（coverage / duplicate / accounting / 合法节点存在性）。
@@ -286,7 +286,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -Command "Invoke-RestMethod -Uri '
 - **AI 主流程**需要 Node.js 环境运行 Pi sidecar，以及 AI API 调用费用
   - OpenAI 兼容 API：官方按 token 计费，部分兼容提供商可能提供更便宜或带免费额度的模型
   - Pi 凭据链：Pi 独立覆盖键 → `ai_*` 配置 → `.pi/agent/auth.json`
-- 默认 `ai_force_strict=true`：语义不确定时会产出 `need_confirm` 待人工，或 `fail_closed` 记录为合格失败，**不会强行猜一个落盘**。这是 AI-first + strict 的核心取舍——宁可留待人工，也不产出不可信的整理结果。
+- Pi 语义不确定时会产出 `need_confirm` 待人工，或 `fail_closed` 记录为合格失败，**不会强行猜一个落盘**。这是 AI-first + strict 的核心取舍。
 - 该程序更加适用于动画剧集的重命名，对于电影、剧集，本身 Emby 的刮削足够精准了。
 - 映射不通过的样本（带截图与日志）欢迎提 Issue 反馈。反馈时最好将日志等级调 `DEBUG`，并提供详细日志；任务记录里的 `failure_reason` / `case_agent_status` 字段是定位问题的关键线索。
 - 如果已经使用了本程序且结果不符预期，因为默认是**硬链接**模式，所以直接删除目标文件夹的对应文件即可，不会影响到源文件。
@@ -310,7 +310,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -Command "Invoke-RestMethod -Uri '
 
 ### 语义推理（Pi Case Agent sidecar）
 - **[@earendil-works/pi-coding-agent](https://www.npmjs.com/package/@earendil-works/pi-coding-agent)** / **[@earendil-works/pi-ai](https://www.npmjs.com/package/@earendil-works/pi-ai)** — Pi Case Agent 运行时，承载全部 evidence-driven 语义推理。
-- **[OpenAI Python SDK](https://github.com/openai/openai-python)** — OpenAI 兼容 API 门禁/测试器与 Pi fallback。
+- **Pi sidecar（`@earendil-works/pi-coding-agent`）** — 生产语义推理与工具调用的唯一 AI 执行层。
 
 ### Python 后端
 - **[FastAPI](https://fastapi.tiangolo.com/)** — 后端框架与 webhook 入口。
@@ -324,7 +324,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -Command "Invoke-RestMethod -Uri '
 
 > 前端外壳布局与配置页视觉参考了 **[seiri-chan](https://github.com/qaz741wsd856/seiri-chan)**（[@qaz741wsd856](https://github.com/qaz741wsd856)）的设计语言（侧栏 + 统计卡布局、配置页 Switch 横向卡片、section 卡片分组等），本项目以红色品牌色（`oklch(0.63 0.19 25)`）作区分。
 
-- **[Next.js](https://nextjs.org/)** + **[React](https://react.dev/)** — 前端框架。
+- **[Vite](https://vite.dev/)** + **[React](https://react.dev/)** + **[React Router](https://reactrouter.com/)** — 前端构建与路由。
 - **[shadcn/ui](https://ui.shadcn.com/)** + **[Radix UI](https://www.radix-ui.com/)** — 组件与无障碍原语。
 - **[Zustand](https://github.com/pmndrs/zustand)** — 状态管理。
 - **[Tailwind CSS](https://tailwindcss.com/)** — 样式。

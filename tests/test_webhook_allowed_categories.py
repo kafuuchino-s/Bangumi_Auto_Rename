@@ -203,14 +203,14 @@ def test_allowed_categories_config_and_field_spec_are_exposed():
     assert response.status_code == 200
     entry = next(
         item
-        for item in response.json()["field_spec"]
+        for item in response.json()["data"]["field_spec"]
         if item["key"] == "allowed_categories"
     )
-    assert entry["label"] == CN_MAP["allowed_categories"]
+    assert "label" not in entry
     assert entry["control"] == "input"
     assert entry["level"] == "basic"
     assert entry["tab"] == "general"
-    assert entry["group"] == "Webhook 过滤与分类"
+    assert entry["group"] == "webhook_filters"
 
 
 def test_api_task_creation_does_not_use_webhook_category_whitelist(
@@ -228,5 +228,5 @@ def test_api_task_creation_does_not_use_webhook_category_whitelist(
         )
 
     assert response.status_code == 200
-    assert response.json()["task_id"] == "test-task-id"
+    assert response.json()["data"]["task_id"] == "test-task-id"
     assert len(queue.enqueued) == 1

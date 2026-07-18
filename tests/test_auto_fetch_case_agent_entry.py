@@ -156,8 +156,6 @@ def test_entry_fail_closed_when_no_candidates(tmp_path, monkeypatch):
         workspace=_build_workspace(),
         candidates=[],
         task_data={"uuid": "t1"},
-        ai_client=None,
-        candidate_summaries=[],
         backend="pi",
         provider=provider,
     )
@@ -180,8 +178,6 @@ def test_entry_accepted_returns_selected_refs(tmp_path, monkeypatch):
         workspace=_build_workspace(),
         candidates=[],
         task_data={"uuid": "t1"},
-        ai_client=None,
-        candidate_summaries=[],
         backend="pi",
         provider=provider,
     )

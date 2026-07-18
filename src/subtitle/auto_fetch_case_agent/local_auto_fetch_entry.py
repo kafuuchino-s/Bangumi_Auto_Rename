@@ -8,8 +8,8 @@ workspace → 调 ``_run_pi_backend`` → ``run_auto_fetch_case_agent_pi``：Pi 
 ``inspect_package`` 多轮取证后 ``submit_candidate`` / ``submit_package``，
 ``verify_auto_fetch_decision`` 轻 gate 校验 → 返回四态结果。
 
-**single_shot 已移除**：auto_fetch 选帖/选包统一走 Pi evidence-driven 后端，
-``backend`` 参数保留兼容但忽略（始终 Pi）；``ai_client`` / ``candidate_summaries``
+**Pi-only**：auto_fetch 选帖/选包统一走 Pi evidence-driven 后端，
+``backend`` 参数保留兼容但忽略（始终 Pi）；旧兼容参数
 保留兼容但 Pi 后端不用（Pi sidecar 自带 AI）。
 
 固定层只做事实 + 轻 gate：
@@ -71,8 +71,6 @@ def _run_pi_backend(
     workspace: AutoFetchCaseWorkspace,
     candidates: "list[Any]",
     task_data: Mapping[str, object],
-    ai_client: Any,
-    candidate_summaries: "list[dict[str, Any]]",
     provider: Any = None,
 ) -> dict[str, Any]:
     """Pi evidence-driven 后端（Pi 驱动爬取，对齐重命名链路）。
@@ -187,19 +185,17 @@ def run_auto_fetch_case_agent(
     workspace: AutoFetchCaseWorkspace,
     candidates: "list[Any]",
     task_data: Mapping[str, object],
-    ai_client: Any,
-    candidate_summaries: "list[dict[str, Any]]",
     backend: str = 'pi',
     provider: Any = None,
 ) -> dict[str, Any]:
     """Pi 驱动选帖/选包决策（四态，对齐重命名链路）。
 
-    **single_shot 已移除**：auto_fetch 选帖/选包统一走 Pi evidence-driven 后端。
+    **Pi-only**：auto_fetch 选帖/选包统一走 Pi evidence-driven 后端。
     Pi sidecar 自己调 ``search_candidates_batch(BGM 名)`` / ``load_candidate_packages_batch``
     / ``inspect_package`` 多轮取证后 submit，Python 主进程不预爬。
 
     ``candidates`` 参数保留兼容（测试注入初始候选），生产 Pi 驱动模式传空。
-    ``backend`` 参数保留兼容但忽略（始终 Pi）；``ai_client``/``candidate_summaries``
+    ``backend`` 参数保留兼容但忽略（始终 Pi）；旧兼容参数
     保留兼容但 Pi 后端不用。
 
     Args:
@@ -209,8 +205,6 @@ def run_auto_fetch_case_agent(
         workspace=workspace,
         candidates=candidates,
         task_data=task_data,
-        ai_client=ai_client,
-        candidate_summaries=candidate_summaries,
         provider=provider,
     )
 

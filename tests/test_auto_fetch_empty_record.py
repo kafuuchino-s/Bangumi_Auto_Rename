@@ -55,8 +55,7 @@ def test_empty_record_with_target_root_still_scans_library(monkeypatch, tmp_path
     # 短路 Pi：让 case agent 直接 fail_closed，验证前面 scope+collect 真的走到了
     captured = {}
 
-    def fake_entry(*, workspace, candidates, task_data, ai_client,
-                   candidate_summaries, backend, provider):
+    def fake_entry(*, workspace, candidates, task_data, backend, provider):
         missing = list(workspace.missing_videos)
         captured["missing"] = missing
         captured["scope_type"] = (

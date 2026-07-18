@@ -247,7 +247,6 @@ def test_runtime_no_final_budget_exhausted_is_retried(tmp_path: Path, monkeypatc
         supplemental_candidate_count = 0
 
     monkeypatch.setattr(runner, "local_evidence_from_raw_sample", lambda _sample: FakeEvidence())
-    monkeypatch.setattr(runner, "AIClient", lambda: object())
     monkeypatch.setattr(runner, "BangumiClient", lambda: object())
     attempts = []
 
@@ -316,7 +315,6 @@ def test_strict_fail_closed_is_retried(tmp_path: Path, monkeypatch):
         supplemental_candidate_count = 0
 
     monkeypatch.setattr(runner, "local_evidence_from_raw_sample", lambda _sample: FakeEvidence())
-    monkeypatch.setattr(runner, "AIClient", lambda: object())
     monkeypatch.setattr(runner, "BangumiClient", lambda: object())
     attempts = []
 

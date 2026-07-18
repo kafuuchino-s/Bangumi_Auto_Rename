@@ -12,6 +12,20 @@ from src.rename.case_agent.recipe import (
 from tools import run_bgm_to_tmdb_bridge_sample_pool as sample_runner
 
 
+def test_default_accepted_root_prefers_fullest_valid_generated_root(tmp_path, monkeypatch) -> None:
+    monkeypatch.setattr(sample_runner, 'REPO_ROOT', tmp_path)
+    generated_root = tmp_path / 'tests' / 'sample_pool' / 'generated'
+    small_root = generated_root / 'local_bangumi_mapping_gate_20260718_200000_000'
+    full_root = generated_root / 'local_bangumi_mapping_gate_20260718_190000_000'
+    _write_artifact(small_root / 'sample_small.json', 'small.mkv')
+    for index in range(2):
+        _write_artifact(full_root / f'sample_full_{index}.json', f'full-{index}.mkv')
+
+    assert sample_runner._default_accepted_root() == Path(
+        'tests/sample_pool/generated/local_bangumi_mapping_gate_20260718_190000_000'
+    )
+
+
 def test_sample_runner_dry_builds_accepted_artifacts(tmp_path) -> None:
     accepted_root = tmp_path / 'accepted'
     output_dir = tmp_path / 'out'

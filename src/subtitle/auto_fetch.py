@@ -8,7 +8,6 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
-from ..ai.client import AIClient
 from ..logger import logger
 from ..rename.utils import VIDEO_SUFFIX
 from ..utils.path import SUBTITLE_UPLOAD_PATH, TASK_PATH
@@ -30,7 +29,6 @@ class SubtitleAutoFetcher:
     def __init__(self) -> None:
         self.provider = ACGRIPProvider()
         self.processor = SubtitleProcessor()
-        self.ai_client = AIClient()
 
     def process_task(self, task_uuid: str) -> Dict[str, Any]:
         task_data = get_task(task_uuid)
@@ -256,8 +254,6 @@ class SubtitleAutoFetcher:
             workspace=case_agent_workspace,
             candidates=[],
             task_data=task_context,
-            ai_client=self.ai_client,
-            candidate_summaries=[],
             backend="pi",
             provider=self.provider,
         )

@@ -967,7 +967,7 @@ def _build_pi_case_agent_snapshot(result: PiCaseAgentRunResult) -> dict[str, Any
     return canonical_snapshot
 
 
-def run_local_bangumi_case_agent_mapping(*, local_evidence, bangumi_contexts: list[dict[str, object]], ai_client, source_path, bangumi_client=None) -> dict[str, Any]:
+def run_local_bangumi_case_agent_mapping(*, local_evidence, bangumi_contexts: list[dict[str, object]], source_path, bangumi_client=None) -> dict[str, Any]:
     workspace = _build_workspace(
         local_evidence=local_evidence,
         bangumi_contexts=bangumi_contexts,

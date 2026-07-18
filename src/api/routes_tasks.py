@@ -24,6 +24,7 @@ from ..subtitle.auto_fetch import SubtitleAutoFetcher
 from ..utils.path import RECORD_PATH, TASK_PATH
 from ..utils.utils import get_task, write_task
 from .serializers import build_task_detail, list_task_rows
+from .contract import canonical_detail, canonical_task_rows, ok
 
 router = APIRouter(prefix="/tasks", tags=["tasks"])
 
@@ -65,7 +66,7 @@ def _text_to_bool(text: Any) -> bool | None:
 @router.get("")
 def get_tasks() -> dict[str, Any]:
     """任务列表（合并落盘 + 队列活跃态）。"""
-    return {"tasks": list_task_rows()}
+    return ok({"tasks": canonical_task_rows(list_task_rows())})
 
 
 @router.get("/stream")
@@ -74,7 +75,7 @@ async def tasks_stream() -> StreamingResponse:
 
     async def event_generator():
         while True:
-            payload = {"tasks": list_task_rows()}
+            payload = {"data": {"tasks": canonical_task_rows(list_task_rows())}}
             yield f"data: {json.dumps(payload, ensure_ascii=False)}\n\n"
             await asyncio.sleep(2.0)
 
@@ -89,7 +90,7 @@ def get_task_detail(uuid: str) -> dict[str, Any]:
     detail = build_task_detail(uuid)
     if not detail.get("found"):
         raise HTTPException(status_code=404, detail="任务不存在")
-    return detail
+    return ok(canonical_detail(detail))
 
 
 @router.post("")
@@ -106,14 +107,14 @@ async def create_task(req: TaskCreateRequest) -> dict[str, Any]:
 
     queue_mgr = get_queue_manager()
     if queue_mgr.is_path_in_queue(str(p)):
-        return {"code": 200, "data": "任务已在队列中", "task_id": None}
+        return ok({"task_id": None}, result="task_already_queued")
 
     task_id = queue_mgr.enqueue(
         path=str(p),
         is_anime=req.is_anime,
         is_movie=req.is_movie,
     )
-    return {"code": 200, "data": "任务已加入队列", "task_id": task_id}
+    return ok({"task_id": task_id}, result="task_enqueued")
 
 
 @router.post("/{uuid}/retry")
@@ -149,7 +150,7 @@ async def retry_task(uuid: str) -> dict[str, Any]:
         if p.exists():
             p.unlink()
 
-    return {"code": 200, "data": "任务已重新入队", "task_id": task_id}
+    return ok({"task_id": task_id}, result="task_requeued")
 
 
 @router.post("/{uuid}/edit")
@@ -191,7 +192,7 @@ async def edit_task(uuid: str, req: TaskEditRequest) -> dict[str, Any]:
         cus_name=updated.get("name"),
         cus_season_id=updated.get("season_id"),
     )
-    return {"code": 200, "data": "修改成功，任务已加入队列", "task_id": task_id}
+    return ok({"task_id": task_id}, result="task_edited")
 
 
 @router.delete("/{uuid}")
@@ -204,7 +205,7 @@ def delete_task(uuid: str) -> dict[str, Any]:
             removed += 1
     if removed == 0:
         raise HTTPException(status_code=404, detail="任务记录不存在")
-    return {"code": 200, "data": f"已删除 {removed} 个记录"}
+    return ok({"removed": removed}, result="task_deleted")
 
 
 @router.post("/{uuid}/refetch-subtitle")
@@ -226,9 +227,4 @@ def refetch_subtitle(uuid: str) -> dict[str, Any]:
         raise HTTPException(status_code=409, detail="任务仍在队列中，暂不能重跑字幕抓取")
 
     result = SubtitleAutoFetcher().process_task(uuid)
-    return {
-        "code": 200,
-        "status": result.get("status"),
-        "reason": result.get("reason"),
-        "result": result,
-    }
+    return ok(result, result="subtitle_refetch_started")

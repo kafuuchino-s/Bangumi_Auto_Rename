@@ -4,7 +4,7 @@
 subprocess 调 `tools/pi_ai_healthcheck.mjs` 起一个最小 agent session（挂 1 个 ping_reply
 customTool），验证模型「连通 + 会发起 tool_call」两件事。
 
-替换旧的 `AIClient.test_connection()`（走 Python OpenAI SDK /chat/completions，与生产
+Pi healthcheck is the only AI connectivity gate; it exercises the same Responses/sidecar path as production.
 Pi sidecar 的 /responses 脱节，且只测「能回一个字」不测工具调用，无法发现今天
 deepseek-v4-flash 那种「能回话但不会调工具推进 workflow」的问题）。
 
@@ -62,7 +62,7 @@ def _resolve_model_config() -> dict[str, str] | None:
 
 
 def _classify_error(error: str) -> str:
-    """把底层错误串归类成人话，与旧 AIClient.test_connection 的口径对齐。"""
+    """Classify provider errors for the Pi healthcheck response."""
     low = (error or '').lower()
     if '401' in low or 'unauthorized' in low or 'invalid api key' in low:
         return 'AI 连通失败：API 密钥无效或未授权（401）'

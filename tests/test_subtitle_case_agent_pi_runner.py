@@ -345,7 +345,6 @@ def test_pi_runner_entry_with_fake_env(monkeypatch, tmp_path):
     res = run_subtitle_case_agent_mapping(
         subtitle_files=_subs(tmp_path),
         processed_tasks=tasks,
-        ai_client=None,
         source_path=tmp_path / "foo.zip",
         language_resolver=_lang_resolver,
         archive_name="foo.zip",

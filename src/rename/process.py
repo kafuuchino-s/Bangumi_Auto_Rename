@@ -9,7 +9,6 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import Any
 
-from ..ai.client import AIClient
 from ..config.config_manager import cm
 from ..logger import logger
 from ..utils.path import RECORD_PATH, TASK_PATH
@@ -165,7 +164,6 @@ def _run_local_bangumi_case_agent_primary(
     *,
     local_evidence: LocalEvidence,
     bangumi_contexts: list[dict[str, object]],
-    ai_client: AIClient,
     source_path: Path,
 ) -> dict[str, Any]:
     try:
@@ -187,7 +185,6 @@ def _run_local_bangumi_case_agent_primary(
         result = run_local_bangumi_case_agent_mapping(
             local_evidence=local_evidence,
             bangumi_contexts=bangumi_contexts,
-            ai_client=ai_client,
             source_path=source_path,
         )
         payload = dict(result)
@@ -360,17 +357,10 @@ class Rename:
         _is_sub_task: bool = False,
     ) -> str | bool:
         task_uuid = _tuuid or str(uuid.uuid4())
-        ai_client = AIClient()
-        # 注：旧 Python AI 时代的 ai_client.is_available() 硬门禁已移除。
-        # 全链路走 Pi Case Agent：Pi 在 ai_* 配置全空时可退到 .pi/agent/auth.json
-        # 自带 auth，不应被 Python AIClient 的可用性拦死。Pi 配置真正缺失时
-        # 由 Pi sidecar 自身报错（比 ai_unavailable 误杀更准确）。ai_client 仍
-        # 实例化以兼容 Case Agent 入口签名（Pi 后端忽略它）。
 
         result = self._run_local_bangumi_case_agent_primary_for_path(
             path=path,
             task_uuid=task_uuid,
-            ai_client=ai_client,
         )
         if result is None:
             return self.error_reply(
@@ -426,7 +416,6 @@ class Rename:
         *,
         path: Path,
         task_uuid: str,
-        ai_client: AIClient,
         ordered_video_files: list[Path] | None = None,
         timings: dict[str, object] | None = None,
     ) -> dict[str, object] | None:
@@ -453,7 +442,6 @@ class Rename:
         case_agent_result = _run_local_bangumi_case_agent_primary(
             local_evidence=local_evidence,
             bangumi_contexts=[],
-            ai_client=ai_client,
             source_path=path,
         )
         case_agent_status = str(

@@ -199,6 +199,64 @@ def _stat_total_size_bytes(items: list[Mapping[str, object]]) -> int:
     return total
 
 
+def _range_objects(text: str, *, kind: str = "regular") -> list[dict[str, Any]]:
+    """Turn the legacy compact range text into locale-neutral numbers."""
+    out: list[dict[str, Any]] = []
+    for token in text.replace(" + ", ",").split(","):
+        token = token.strip()
+        if not token:
+            continue
+        if "-" in token:
+            left, right = token.split("-", 1)
+        else:
+            left = right = token
+        try:
+            out.append({"kind": kind, "start": int(left), "end": int(right)})
+        except ValueError:
+            continue
+    return out
+
+
+class _RangeList(list[dict[str, Any]]):
+    """Structured list with a read-only compatibility view for old callers.
+
+    The HTTP contract serializes this as ordinary objects.  A few third-party
+    extensions still perform membership/index checks against the former compact
+    strings, so keeping those checks here avoids a needless runtime break.
+    """
+
+    @staticmethod
+    def _legacy(item: Mapping[str, Any]) -> str:
+        if item.get("kind") == "special":
+            return f"special × {item.get('count', 0)}"
+        if "season" in item:
+            season = int(item.get("season", 0))
+            start = int(item.get("start", 0))
+            end = int(item.get("end", start))
+            return f"S{season:02d}E{start:02d}-E{end:02d}" if start != end else f"S{season:02d}E{start:02d}"
+        start = int(item.get("start", 0))
+        end = int(item.get("end", start))
+        return f"第{start}-{end}话" if start != end else f"第{start}话"
+
+    def __contains__(self, value: object) -> bool:
+        if isinstance(value, str):
+            return any(self._legacy(item) == value for item in self)
+        return super().__contains__(value)
+
+    def index(self, value: object, *args: Any) -> int:  # type: ignore[override]
+        if isinstance(value, str):
+            for index, item in enumerate(self):
+                if self._legacy(item) == value:
+                    return index
+            raise ValueError(f"{value!r} is not in range list")
+        return super().index(value, *args)
+
+    def __eq__(self, other: object) -> bool:
+        if other == "":
+            return len(self) == 0
+        return super().__eq__(other)
+
+
 def _rename_plan_items(task_data: Mapping[str, object]) -> list[Mapping[str, object]]:
     rp = task_data.get("bgm_to_tmdb_rename_plan") or {}
     items = rp.get("items") or []
@@ -245,8 +303,11 @@ def _build_bangumi_subjects(task_data: Mapping[str, object]) -> list[dict[str, A
             "name": _str(s.get("name")),
             "name_cn": _str(s.get("name_cn")),
             "media_kind": _str(s.get("media_kind")),
-            "assignment_count": s.get("assignment_count", "-"),
-            "episode_ranges": " + ".join(ranges),
+            "assignment_count": int(s.get("assignment_count", 0) or 0),
+            "episode_ranges": _RangeList(
+                _range_objects(reg)
+                + ([{"kind": "special", "count": spc_count}] if spc_count else [])
+            ),
         })
     return out
 
@@ -277,15 +338,14 @@ def _build_tmdb_subjects(task_data: Mapping[str, object]) -> list[dict[str, Any]
             by_season[int(sn)].append(int(en))
     if not tmdb_refs:
         return []
-    ranges: list[str] = []
+    ranges: list[dict[str, int]] = []
     # 正片 season（>0）在前，S00 special 在后，符合阅读习惯。
     seasons = sorted(by_season, key=lambda s: (s == 0, s))
     for sn in seasons:
         eps = sorted(set(by_season[sn]))
         if not eps:
             continue
-        tok = f"S{sn:02d}E{eps[0]:02d}-E{eps[-1]:02d}" if eps[0] != eps[-1] else f"S{sn:02d}E{eps[0]:02d}"
-        ranges.append(tok)
+        ranges.append({"season": int(sn), "start": eps[0], "end": eps[-1]})
     ref0 = next(iter(tmdb_refs))
     info = tmdb_refs[ref0]
     return [{
@@ -293,8 +353,8 @@ def _build_tmdb_subjects(task_data: Mapping[str, object]) -> list[dict[str, Any]
         "tmdb_id": info.get("tmdb_id") or task_data.get("tmdb_id"),
         "media_type": _str(info.get("media_type") or task_data.get("tmdb_media_type")),
         "name": _str(task_data.get("tmdb_name")),
-        "year": task_data.get("tmdb_year", "-"),
-        "episode_ranges": " + ".join(ranges),
+        "year": task_data.get("tmdb_year"),
+        "episode_ranges": _RangeList(ranges),
     }]
 
 
@@ -328,21 +388,32 @@ def _build_mapping_details(task_data: Mapping[str, object]) -> list[dict[str, An
         sid = tgt.get("bangumi_subject_id")
         et = _str(tgt.get("episode_type") or "")
         sort = tgt.get("sort")
-        bgm_label = "-"
-        if sort is not None and disposition != "unmapped_supplemental":
-            base = f"#{sort}" if et != "special" else (f"special #{sort}" if sort else "special")
-            bgm_label = f"{sid} {base}" if multi else base
-        elif et == "special":
-            bgm_label = "special"
         dest = it.get("destination") or {}
-        tok = _str(dest.get("episode_token"))
-        tmdb_label = tok or "-"
+        legacy_bgm = "-"
+        if sort is not None and disposition != "unmapped_supplemental":
+            legacy_bgm = f"#{sort}" if et != "special" else (f"special #{sort}" if sort else "special")
+        elif et == "special":
+            legacy_bgm = "special"
+        legacy_tmdb = _str(dest.get("episode_token")) or "-"
         rows.append({
             "source_name": name,
             "source_path": src,
-            "bgm": bgm_label,
-            "tmdb": tmdb_label,
-            "confidence": conf_by_src.get(src) or "-",
+            "bangumi_target": {
+                "subject_id": sid,
+                "episode_type": et or None,
+                "sort": int(sort) if sort is not None else None,
+            },
+            "tmdb_target": {
+                "ref": _str(dest.get("tmdb_ref")) or None,
+                "id": dest.get("tmdb_id"),
+                "media_type": _str(dest.get("media_type")) or None,
+                "episode_token": _str(dest.get("episode_token")) or None,
+            },
+            # Deprecated compact fields are removed by canonical_detail before
+            # they cross the HTTP boundary.
+            "bgm": legacy_bgm,
+            "tmdb": legacy_tmdb,
+            "confidence": conf_by_src.get(src) or None,
             "disposition": disposition,
         })
     return rows
@@ -414,6 +485,7 @@ def list_task_rows() -> list[dict[str, Any]]:
             "uuid": uuid_value,
             "season": task_data.get("season_id", "-"),
             "status": status,
+            "failure_reason": failure_reason or None,
             "failure_reason_label": failure_reason_label,
             "queue_status": queue_status_text,
             "is_anime": task_data.get("is_anime", False),
@@ -439,6 +511,7 @@ def list_task_rows() -> list[dict[str, Any]]:
             "uuid": task_uuid,
             "season": task.cus_season_id or "-",
             "status": status,
+            "failure_reason": None,
             "failure_reason_label": "",
             "queue_status": queue_status_text,
             "is_anime": _format_bool_text(task.is_anime),
@@ -467,21 +540,19 @@ def list_subtitle_rows() -> list[dict[str, Any]]:
         status = "成功" if task_data.get("status") == "success" else "失败"
         archive_name = Path(_str(task_data.get("archive_path"))).name
         sync_summary = _as_mapping(task_data.get("sync_summary"))
-        if sync_summary.get("enabled"):
-            sync_text = (
-                f"{sync_summary.get('success', 0)}/"
-                f"{sync_summary.get('attempted', 0)}, "
-                f"回退{sync_summary.get('fallback', 0)}"
-            )
-        else:
-            sync_text = "-"
         rows.append({
             "id": index,
             "archive": archive_name,
             "archive_path": _str(task_data.get("archive_path")),
             "matched_task": _str(task_data.get("matched_task")) or "-",
-            "matched_count": f"{task_data.get('matched_count', 0)}/{task_data.get('total_subtitles', 0)}",
-            "sync": sync_text,
+            "matched_count": int(task_data.get("matched_count", 0) or 0),
+            "total_count": int(task_data.get("total_subtitles", 0) or 0),
+            "sync": {
+                "enabled": bool(sync_summary.get("enabled")),
+                "success": int(sync_summary.get("success", 0) or 0),
+                "attempted": int(sync_summary.get("attempted", 0) or 0),
+                "fallback": int(sync_summary.get("fallback", 0) or 0),
+            },
             "status": status,
             "uuid": _str(task_data.get("uuid")),
         })
@@ -591,6 +662,7 @@ def build_task_detail(uuid: str) -> dict[str, Any]:
         "tmdb_subjects": tmdb_subjects,
         "mapping_details": mapping_details,
         "total_size": total_size,
+        "total_size_bytes": _stat_total_size_bytes(rename_items),
     }
 
 

@@ -7,7 +7,6 @@ dependencies = [
     "tmdbsimple>=2.9.1",
     "pywin32>=308",
     "structlog>=24.4.0",
-    "openai>=2.36.0",
     "hachoir>=3.3.0",
     "rarfile>=4.0",
     "py7zr>=0.22.0",
@@ -17,6 +16,7 @@ dependencies = [
     "uvicorn>=0.30.0",
     "pydantic>=2.11.0",
     "requests>=2.31.0",
+    "httpx>=0.28.0",
     "python-multipart>=0.0.20",
     "diskcache>=5.6.0",
 ]

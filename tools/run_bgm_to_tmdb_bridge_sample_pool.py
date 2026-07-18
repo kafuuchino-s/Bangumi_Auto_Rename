@@ -23,10 +23,41 @@ from src.rename.bgm_to_tmdb import (
 )
 
 
-DEFAULT_ACCEPTED_ROOT = Path(
+LEGACY_ACCEPTED_ROOT = Path(
     'tests/sample_pool/generated/pi_full146_gpt54mini_workers10_runner_repair_20260531_112000'
 )
 DEFAULT_WORKERS = 3
+
+
+def _default_accepted_root() -> Path:
+    """Pick the fullest valid Local→Bangumi artifact root automatically.
+
+    Generated sample directories are intentionally ignored by git and their
+    timestamped names change after every run.  The old hard-coded full146 path
+    may therefore disappear even though a newer accepted root is available.
+    Prefer the root with the most accepted artifacts, using mtime as a
+    deterministic tie-breaker, and retain the historical path as a final
+    fallback for callers that create it later.
+    """
+    generated_root = REPO_ROOT / 'tests' / 'sample_pool' / 'generated'
+    candidates = [
+        path
+        for path in generated_root.glob('local_bangumi_mapping_gate_*')
+        if path.is_dir()
+    ]
+    scored: list[tuple[int, float, Path]] = []
+    for candidate in candidates:
+        try:
+            count = len(iter_accepted_compiled_plan_artifacts(candidate))
+            mtime = candidate.stat().st_mtime
+        except OSError:
+            continue
+        if count:
+            scored.append((count, mtime, candidate))
+    if scored:
+        selected = max(scored, key=lambda item: (item[0], item[1]))[2]
+        return selected.relative_to(REPO_ROOT)
+    return LEGACY_ACCEPTED_ROOT
 
 
 def _json_safe(value: Any) -> Any:
@@ -511,7 +542,7 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         description='Run BGM-to-TMDB Pi bridge dry-run from accepted Local-to-Bangumi artifacts.'
     )
-    parser.add_argument('--accepted-root', type=Path, default=DEFAULT_ACCEPTED_ROOT)
+    parser.add_argument('--accepted-root', type=Path, default=None)
     parser.add_argument('--artifact', action='append', type=Path, default=[], help='Accepted artifact JSON path; can be repeated.')
     parser.add_argument('--sample', action='append', default=[], help='Substring filter over artifact path/stem; can be repeated.')
     parser.add_argument('--limit', type=int, default=None)
@@ -525,7 +556,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument('--all', action='store_true', help='Run every selected accepted artifact. Without this and without --limit, limit defaults to 3.')
     args = parser.parse_args(argv)
 
-    accepted_root = args.accepted_root
+    accepted_root = args.accepted_root or _default_accepted_root()
     if not accepted_root.is_absolute():
         accepted_root = REPO_ROOT / accepted_root
     output_dir = args.output_dir or _default_output_dir()

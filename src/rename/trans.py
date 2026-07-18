@@ -15,12 +15,25 @@ from ..config.config_manager import cm
 #   False → '跳过'（目标已存在跳过该文件，不失败不回滚——替代旧"拒绝"语义，
 #           因为"整任务失败回滚"在实际使用中无意义，用户要么覆盖要么跳过）
 def _normalize_overwrite_policy(value) -> str:
+    if isinstance(value, str):
+        normalized = value.strip().lower()
+        if normalized in {'overwrite', '覆盖'}:
+            return 'overwrite'
+        if normalized in {'skip', '跳过', '拒绝'}:
+            return 'skip'
     if isinstance(value, bool):
-        return '覆盖' if value else '跳过'
-    if value == '覆盖':
-        return '覆盖'
+        return 'overwrite' if value else 'skip'
     # '跳过' 或任何其他值（含 None/空）默认跳过（更安全，不误删已落盘文件）
-    return '跳过'
+    return 'skip'
+
+
+def _normalize_mode(value: object) -> str:
+    aliases = {
+        'link': 'link', '链接': 'link', 'hardlink': 'link',
+        'copy': 'copy', '复制': 'copy',
+        'move': 'move', '剪切': 'move', '移动': 'move',
+    }
+    return aliases.get(str(value or '').strip().lower(), 'link')
 
 
 class Trans:
@@ -42,7 +55,7 @@ class Trans:
             force_overwrite: 强制覆盖策略（'覆盖'/'跳过'，兼容旧 bool），None则使用配置
             write_record: 是否写入 record 文件（data/record/{uuid}.json）
         """
-        self.mode = force_mode or cm.get_config('mode')
+        self.mode = _normalize_mode(force_mode or cm.get_config('mode'))
         self.overwrite = _normalize_overwrite_policy(
             force_overwrite
             if force_overwrite is not None
@@ -70,7 +83,7 @@ class Trans:
                 if target_path.is_dir() or source_path.is_dir():
                     continue
                 if target_path.exists():
-                    if self.overwrite == '跳过':
+                    if self.overwrite == 'skip':
                         # 跳过已存在目标，继续处理其他文件（不失败不回滚）
                         logger.info(f'[处理迁移] 目标文件已存在, 跳过: {target_path}')
                         self.skipped_mapping[source_path] = target_path
@@ -80,19 +93,19 @@ class Trans:
                 if not target_path.parent.exists():
                     target_path.parent.mkdir(parents=True, exist_ok=True)
                 if target_path.exists():
-                    if self.overwrite == '跳过':
+                    if self.overwrite == 'skip':
                         logger.info(f'[处理迁移] 目标文件在写入前再次出现, 跳过: {target_path}')
                         self.skipped_mapping[source_path] = target_path
                         continue
                     logger.warning(f'[处理迁移] 目标文件在写入前再次出现, 启用覆盖: {target_path}')
                     target_path.unlink()
-                if self.mode == '剪切':
+                if self.mode == 'move':
                     shutil.move(source_path, target_path)
                     moved_pairs.append((source_path, target_path))
-                elif self.mode == '复制':
+                elif self.mode == 'copy':
                     shutil.copy(source_path, target_path)
                     created_targets.append(target_path)
-                elif self.mode == '链接':
+                elif self.mode == 'link':
                     try:
                         os.link(source_path, target_path)
                     except OSError as link_exc:
@@ -119,9 +132,9 @@ class Trans:
             except Exception as e:
                 logger.error(str(e))
                 try:
-                    if self.mode in {'复制', '链接'} and target_path.exists():
+                    if self.mode in {'copy', 'link'} and target_path.exists():
                         target_path.unlink()
-                    elif self.mode == '剪切' and target_path.exists():
+                    elif self.mode == 'move' and target_path.exists():
                         if source_path.exists():
                             target_path.unlink()
                         else:

@@ -9,6 +9,7 @@ from typing import Any
 from fastapi import APIRouter, HTTPException, Query
 
 from ..config.config_manager import cm
+from .contract import ok
 
 router = APIRouter(prefix="/files", tags=["files"])
 
@@ -64,7 +65,7 @@ def browse(
     parent_path = str(p.parent) if p != p.parent else None
     if parent_path is not None:
         result.insert(0, {"name": "..", "path": parent_path, "is_dir": True})
-    return {
+    return ok({
         "current": str(p),
         "parent": parent_path,
         "items": result,
@@ -72,7 +73,7 @@ def browse(
         "page": page,
         "limit": limit,
         "total_pages": total_pages,
-    }
+    })
 
 
 @router.get("/drives")
@@ -103,7 +104,7 @@ def list_drives() -> dict[str, Any]:
         import os
 
         drives = [docker_path] if os.path.isdir(docker_path) else []
-    return {"drives": drives, "system": system}
+    return ok({"drives": drives, "system": system})
 
 
 def _default_root() -> str:

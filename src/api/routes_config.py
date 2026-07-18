@@ -18,6 +18,7 @@ from ..notification.emby_notify import EmbyNotifier
 from ..notification.telegram_notify import TelegramNotifier
 from ..pages.config_field_spec import get_field_spec_with_labels
 from .serializers import _is_secret_key, get_all_config, mask_secrets
+from .contract import canonical_field_spec, ok
 
 router = APIRouter(prefix="/config", tags=["config"])
 
@@ -27,17 +28,13 @@ class ConfigUpdateRequest(BaseModel):
 
 
 # 运行时统计字段，保存时跳过（由测试流程维护）
-_RUNTIME_MANAGED_KEYS = {
-    "openai_auto_routing_enabled",
-    "openai_auto_format_order",
-    "openai_format_stats",
-}
+_RUNTIME_MANAGED_KEYS: set[str] = set()
 
 
 @router.get("")
 def get_config() -> dict[str, Any]:
     """读取全部配置（密钥脱敏）。"""
-    return {"config": mask_secrets(get_all_config())}
+    return ok({"config": mask_secrets(get_all_config())})
 
 
 @router.put("")
@@ -65,13 +62,13 @@ def update_config(req: ConfigUpdateRequest) -> dict[str, Any]:
             continue
         cm.set_config(k, v)
 
-    return {"code": 200, "data": "配置保存成功"}
+    return ok({}, result="config_saved")
 
 
 @router.get("/field-spec")
 def get_field_spec() -> dict[str, Any]:
     """暴露字段元数据（含中文 label，前端元数据驱动渲染）。"""
-    return {"field_spec": get_field_spec_with_labels()}
+    return ok({"field_spec": canonical_field_spec(get_field_spec_with_labels())})
 
 
 @router.post("/test-ai")
@@ -80,7 +77,7 @@ async def test_ai() -> dict[str, Any]:
 
     走与生产 Case Agent 完全相同的 Pi 链路（/responses + provider/baseUrl/apiKey），
     起最小 agent session 验证「连通 + 会发起 tool_call」两件事。
-    旧的 Python AIClient /chat/completions 门禁已移除（与生产脱节、且只测「能回一个字」
+    Pi healthcheck 使用与生产 sidecar 相同的协议和 tool-call 路径。
     无法发现「能回话但不会调工具」的 agentic 能力问题）。
     """
     from ..ai.pi_healthcheck import run_healthcheck
@@ -91,7 +88,10 @@ async def test_ai() -> dict[str, Any]:
     success, message = await asyncio.get_event_loop().run_in_executor(
         None, _do_test
     )
-    return {"success": success, "message": message}
+    return ok(
+        {"success": success, "message": message},
+        result="test_passed" if success else "test_failed",
+    )
 
 
 @router.post("/test-emby")
@@ -101,7 +101,10 @@ async def test_emby() -> dict[str, Any]:
     success, message = await asyncio.get_event_loop().run_in_executor(
         None, notifier.test_connection
     )
-    return {"success": success, "message": message}
+    return ok(
+        {"success": success, "message": message},
+        result="test_passed" if success else "test_failed",
+    )
 
 
 @router.post("/test-telegram")
@@ -114,6 +117,9 @@ async def test_telegram() -> dict[str, Any]:
         success, message = await asyncio.get_event_loop().run_in_executor(
             None, notifier.test_connection
         )
-        return {"success": success, "message": message}
+        return ok(
+            {"success": success, "message": message},
+            result="test_passed" if success else "test_failed",
+        )
     finally:
         cm.set_config("telegram_enabled", original_enabled)

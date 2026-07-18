@@ -96,9 +96,6 @@ structlog.configure(
 logger: structlog.stdlib.BoundLogger = structlog.get_logger()
 
 # AI 库日志
-logging.getLogger('openai').setLevel(logging.WARNING)
-logging.getLogger('httpx').setLevel(logging.WARNING)
-logging.getLogger('httpcore').setLevel(logging.WARNING)
 logging.getLogger('urllib3.connectionpool').setLevel(logging.WARNING)
 
 def update_log_level_from_config() -> None:

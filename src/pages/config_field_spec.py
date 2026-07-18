@@ -21,6 +21,7 @@ from typing import Any, Mapping
 from ..config.config_manager import CN_MAP
 
 
+
 # --------------------------------------------------------------------------- #
 # 控件类型常量
 # --------------------------------------------------------------------------- #
@@ -224,7 +225,7 @@ FIELD_SPEC: list[Mapping[str, Any]] = [
         "level": LEVEL_BASIC,
         "group": GRP_AI,
         "tab": TAB_AI,
-        "help": "模型网关根地址（全局唯一，不要带 /v1）。Pi / 门禁 / 测试器共用；Pi SDK 与 OpenAI SDK 会自行拼接 /v1、/v1/messages 等路径。",
+        "help": "模型网关根地址（全局唯一，不要带 /v1）。Pi sidecar 会按所选协议调用该地址。",
         "default_hint": "默认 https://api.openai.com（无 /v1）",
     },
     {
@@ -242,9 +243,9 @@ FIELD_SPEC: list[Mapping[str, Any]] = [
         "level": LEVEL_ADVANCED,
         "group": GRP_AI_ADV,
         "tab": TAB_AI,
-        "options": ["anthropic_messages", "responses_api", "chat_completions"],
-        "help": "Pi Case Agent 与 AI 门禁使用的模型协议。anthropic_messages：Anthropic Messages（Claude 官方或兼容代理）；responses_api / chat_completions：OpenAI 兼容网关。改后需重启进程并点「测试 AI」。",
-        "default_hint": "默认 responses_api；无 OpenAI 模型时选 anthropic_messages",
+        "options": ["responses_api", "chat_completions"],
+        "help": "Pi Case Agent 使用的模型协议。responses_api / chat_completions：OpenAI 兼容网关。改后需重启进程并点「测试 AI」。",
+        "default_hint": "默认 responses_api",
     },
     # ============================ 字幕自动抓取 ============================ #
     {
@@ -681,17 +682,15 @@ def tab_for_key(key: str) -> str | None:
 
 
 def get_field_spec_with_labels() -> list[dict[str, Any]]:
-    """返回带 ``label``（中文显示名）的 field-spec 拷贝，供前端渲染。
+    """Return a copy of structural field metadata.
 
-    label 优先级：entry 显式 ``label`` > ``CN_MAP[key]`` > key 本身。
-    单一来源在 ``CN_MAP``（config_manager），避免前端再维护一份重复映射。
-    返回的是浅拷贝字典列表，不修改模块级 ``FIELD_SPEC``。
+    Wording, help text and option labels are intentionally resolved by the
+    frontend locale dictionaries, never by this backend serializer.
     """
     out: list[dict[str, Any]] = []
     for entry in FIELD_SPEC:
         item = dict(entry)
-        if "label" not in item:
-            item["label"] = CN_MAP.get(entry["key"]) or entry["key"]
+        item.setdefault("label", CN_MAP.get(entry["key"]) or entry["key"])
         out.append(item)
     return out
 

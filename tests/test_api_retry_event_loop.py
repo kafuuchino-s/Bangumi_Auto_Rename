@@ -94,7 +94,7 @@ def test_retry_returns_200_and_reenqueues(tmp_task_dirs, monkeypatch):
 
     assert r.status_code == 200, r.text
     body = r.json()
-    assert body["task_id"] == "new-task-id-xyz"
+    assert body["data"]["task_id"] == "new-task-id-xyz"
     assert captured["path"] == "/media/Anime/Sample"
     assert captured["original_uuid"] == uuid
     # 入队成功后旧记录被删

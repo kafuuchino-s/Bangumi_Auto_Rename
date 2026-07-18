@@ -11,7 +11,6 @@ import uuid
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Set, Tuple, TypedDict
 
-from ..ai.client import AIClient
 from ..config.config_manager import cm
 from ..logger import logger
 from ..rename.trans import Trans
@@ -98,7 +97,6 @@ class SubtitleProcessor:
 
     def __init__(self):
         self.extractor = SubtitleExtractor()
-        self.ai_client = AIClient()
         self.syncer = FFsubsyncRunner()
 
     def _normalize_language(self, lang: Optional[str]) -> Tuple[str, bool]:
@@ -168,18 +166,13 @@ class SubtitleProcessor:
 
         logger.info(f"[字幕处理] 读取到 {len(processed_tasks)} 个已处理任务")
 
-        # Step 3: 压缩包结构（事实，喂 AI）
-        archive_structure = self.extractor.get_archive_structure(subtitle_files)
-        logger.info(f"[字幕处理] 压缩包结构: {list(archive_structure.keys())}")
 
-        # Case Agent 是字幕导入的唯一链路（Pi 后端 default / single_shot 兼容），
-        # 旧 _process_legacy_compat 直落路径已移除（无合同校验、与 strict 定位冲突）。
+        # Case Agent 是字幕导入的唯一链路，始终使用 Pi evidence-driven 后端。
         return self._process_case_agent(
             _uuid=_uuid,
             archive_path=archive_path,
             subtitle_files=subtitle_files,
             processed_tasks=processed_tasks,
-            archive_structure=archive_structure,
             mapping_only=mapping_only,
         )
 
@@ -254,7 +247,6 @@ class SubtitleProcessor:
         archive_path: Path,
         subtitle_files: List[ExtractedSubtitle],
         processed_tasks: List[ProcessedTask],
-        archive_structure: Dict[str, List[str]],
         mapping_only: bool = False,
     ) -> Dict[str, Any]:
         """Case Agent 主路径：entry → Verifier 合同 → compiled_plan 落盘。
@@ -266,11 +258,9 @@ class SubtitleProcessor:
         entry_result = run_subtitle_case_agent_mapping(
             subtitle_files=subtitle_files,
             processed_tasks=processed_tasks,
-            ai_client=self.ai_client,
             source_path=archive_path,
             language_resolver=self._normalize_language,
             archive_name=archive_path.name,
-            archive_structure=archive_structure,
         )
 
         status = str(entry_result.get("status") or "invalid")

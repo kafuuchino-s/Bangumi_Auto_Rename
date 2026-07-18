@@ -1,10 +1,10 @@
 # Project Structure And Flow
 
-Bangumi Auto Rename 是 Python + NiceGUI 的媒体整理应用。rename 主线已端到端落地 **Local→Bangumi Case Agent → BGM→TMDB 桥接 → 迁移落盘**，并随带字幕 sidecar 跟随、Emby 刷新与 Telegram 汇总。字幕导入链路同样已升级为 **AI-first + evidence-driven + Verifier 合同校验**（字幕 Case Agent，对齐 rename）。
+Bangumi Auto Rename 是 Python + FastAPI + Vite 的媒体整理应用。rename 主线已端到端落地 **Local→Bangumi Case Agent → BGM→TMDB 桥接 → 迁移落盘**，并随带字幕 sidecar 跟随、Emby 刷新与 Telegram 汇总。字幕导入链路同样已升级为 **AI-first + evidence-driven + Verifier 合同校验**（字幕 Case Agent，对齐 rename）。
 
 ## Main Flow
 
-```text
+无 Python AI 直连或 Pi-only 回退；字幕导入统一由 Pi Case Agent 产生映射，再由 Verifier 与落盘层处理。
 Web UI / qBittorrent webhook
 → src/web.py path normalization and queue entry
 → src/queue/task_queue.py workers
@@ -15,7 +15,7 @@ Web UI / qBittorrent webhook
 → accepted 经 BGM→TMDB 桥接：TMDB 合法落点、最终文件名、迁移落盘
 → 可选：字幕 sidecar 跟随 / 自动抓取
 → 批次结束后：Emby 刷新 + Telegram 汇总
-```
+    └─ Pi 多轮 evidence-driven（sidecar 主动 search_candidates_batch / load_candidate_packages_batch / inspect_package → submit_candidate / submit_package）→ 四态：accepted / fail_closed / need_confirm / invalid
 
 ## Subtitle Import Flow
 
@@ -30,7 +30,7 @@ Web UI / qBittorrent webhook
    ├─ pi（默认）：Pi 多轮 evidence-driven（本地 HTTP tool server + node sidecar）
    │   → get_context / validate / submit / fail_closed 工具循环
    │   → Verifier 合同校验
-   └─ single_shot：单轮 analyze_subtitle_mapping + Verifier 合同
+   └─ Pi 多轮 evidence-driven + Verifier 合同
 → 四态：accepted / fail_closed / need_confirm / invalid
 → accepted：CompiledSubtitlePlan → Emby 文件名（LANGUAGE_MAP 归一）→ Trans 复制落盘
    （accepted + unmatched：落盘已匹配部分 + unmatched 写任务 JSON 待人工）
@@ -52,7 +52,7 @@ Web UI / qBittorrent webhook
 → run_auto_fetch_case_agent → _run_pi_backend → run_auto_fetch_case_agent_pi
    └─ Pi 多轮 evidence-driven（sidecar 主动 search_candidates_batch(BGM 名) / load_candidate_packages_batch / inspect_package → submit_candidate → submit_package）
        → 轻 gate（候选可下载 / 楼包非 font-patch-only）
-       （single_shot 单轮 AI + _pick_best_package_by_rules 规则兜底已移除，统一走 Pi）
+       （无 Pi-only 或规则兜底，统一走 Pi）
 → 四态：accepted / fail_closed / need_confirm / invalid
 → accepted：provider.download → SubtitleProcessor.process（落字幕导入链路）
 → processor 落盘产 fail_closed：auto_fetch 视为"该包未配对成功"的合格结果
@@ -65,7 +65,7 @@ Web UI / qBittorrent webhook
 兼容旧链路（Case Agent 不可用或关闭时）：
 
 ```text
-→ AI 提取标题/类型 → TMDB 候选选择 → TV/Movie 分支 → ai_processor 严格映射 → Trans.trans_file()
+→ AI 提取标题/类型 → TMDB 候选选择 → TV/Movie 分支 → Pi Case Agent 严格映射 → Trans.trans_file()
 ```
 
 ## Rename Boundary

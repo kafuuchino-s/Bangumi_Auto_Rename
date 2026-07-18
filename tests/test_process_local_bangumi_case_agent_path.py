@@ -34,7 +34,6 @@ def test_local_bangumi_primary_writes_only_case_agent_stage(monkeypatch):
     result = _run_local_bangumi_case_agent_primary(
         local_evidence=type('LocalEvidence', (), {'source_path': 'tests/sample', 'files': [_File('f1', 'ep1.mkv', 'ep1.mkv')]})(),
         bangumi_contexts=[],
-        ai_client=object(),
         source_path='tests/sample',
     )
 
@@ -53,12 +52,6 @@ def test_case_agent_primary_receives_parent_directory_without_fixed_split(tmp_pa
 
     captured: dict[str, object] = {}
 
-    class FakeAIClient:
-        def is_available(self):
-            return True
-
-        def analyze_local_package(self, *args, **kwargs):
-            raise AssertionError('Case Agent primary must not use fixed pre-agent package analysis')
 
     def fake_case_agent_primary(**kwargs):
         local_evidence = kwargs['local_evidence']
@@ -71,8 +64,6 @@ def test_case_agent_primary_receives_parent_directory_without_fixed_split(tmp_pa
 
     def fake_error_reply(self, task_uuid, message, path, *args, extra_task_data=None, **kwargs):
         return {'task_uuid': task_uuid, 'message': message, 'extra_task_data': extra_task_data or {}}
-
-    monkeypatch.setattr('src.rename.process.AIClient', FakeAIClient)
     monkeypatch.setattr('src.rename.process._run_local_bangumi_case_agent_primary', fake_case_agent_primary)
     monkeypatch.setattr(Rename, 'error_reply', fake_error_reply)
 
@@ -94,18 +85,12 @@ def test_case_agent_primary_does_not_require_tmdb_key(tmp_path, monkeypatch):
 
     captured: dict[str, object] = {}
 
-    class FakeAIClient:
-        def is_available(self):
-            return True
-
     def fake_case_agent_primary(**kwargs):
         captured['called'] = True
         return {'ok': True, 'status': 'accepted', 'summary': 'mapped to bangumi only'}
 
     def fake_error_reply(self, task_uuid, message, path, *args, extra_task_data=None, **kwargs):
         return {'task_uuid': task_uuid, 'message': message, 'extra_task_data': extra_task_data or {}}
-
-    monkeypatch.setattr('src.rename.process.AIClient', FakeAIClient)
     monkeypatch.setattr('src.rename.process._run_local_bangumi_case_agent_primary', fake_case_agent_primary)
     monkeypatch.setattr(Rename, 'error_reply', fake_error_reply)
 
@@ -131,10 +116,6 @@ def test_product_pipeline_dry_run_compiles_final_plan_without_transfer(tmp_path,
     run_dir = tmp_path / 'pi' / 'run'
     run_dir.mkdir(parents=True)
 
-    class FakeAIClient:
-        def is_available(self):
-            return True
-
     compiled_plan = _compiled_plan('E01.mkv')
     graph, verified_plan = _verified_tmdb_plan(compiled_plan)
 
@@ -155,8 +136,6 @@ def test_product_pipeline_dry_run_compiles_final_plan_without_transfer(tmp_path,
 
     def fail_transfer(*args, **kwargs):
         raise AssertionError('dry-run product pipeline must not call Trans')
-
-    monkeypatch.setattr('src.rename.process.AIClient', FakeAIClient)
     monkeypatch.setattr('src.rename.process._run_local_bangumi_case_agent_primary', fake_case_agent_primary)
     monkeypatch.setattr('src.rename.process.run_bgm_to_tmdb_bridge_agent', fake_bridge_agent)
     monkeypatch.setattr('src.rename.process.Trans', fail_transfer)
@@ -193,10 +172,6 @@ def test_product_pipeline_execute_transfers_and_writes_success_task(tmp_path, mo
     run_dir = tmp_path / 'pi' / 'run'
     run_dir.mkdir(parents=True)
 
-    class FakeAIClient:
-        def is_available(self):
-            return True
-
     compiled_plan = _compiled_plan('E01.mkv')
     graph, verified_plan = _verified_tmdb_plan(compiled_plan)
 
@@ -214,8 +189,6 @@ def test_product_pipeline_execute_transfers_and_writes_success_task(tmp_path, mo
             verified_plan=verified_plan,
             tmdb_legal_graph=graph,
         )
-
-    monkeypatch.setattr('src.rename.process.AIClient', FakeAIClient)
     monkeypatch.setattr('src.rename.process._run_local_bangumi_case_agent_primary', fake_case_agent_primary)
     monkeypatch.setattr('src.rename.process.run_bgm_to_tmdb_bridge_agent', fake_bridge_agent)
 
@@ -271,10 +244,6 @@ def test_product_pipeline_fail_closed_retry_recovers_to_accepted(tmp_path, monke
     run_dir = tmp_path / 'pi' / 'run'
     run_dir.mkdir(parents=True)
 
-    class FakeAIClient:
-        def is_available(self):
-            return True
-
     compiled_plan = _compiled_plan('E01.mkv')
     graph, verified_plan = _verified_tmdb_plan(compiled_plan)
 
@@ -308,8 +277,6 @@ def test_product_pipeline_fail_closed_retry_recovers_to_accepted(tmp_path, monke
             verified_plan=verified_plan,
             tmdb_legal_graph=graph,
         )
-
-    monkeypatch.setattr('src.rename.process.AIClient', FakeAIClient)
     monkeypatch.setattr('src.rename.process._run_local_bangumi_case_agent_primary', fake_case_agent_primary)
     monkeypatch.setattr('src.rename.process.run_bgm_to_tmdb_bridge_agent', fake_bridge_agent)
 
@@ -346,10 +313,6 @@ def test_product_pipeline_fail_closed_no_retry_when_disabled(tmp_path, monkeypat
     run_dir = tmp_path / 'pi' / 'run'
     run_dir.mkdir(parents=True)
 
-    class FakeAIClient:
-        def is_available(self):
-            return True
-
     compiled_plan = _compiled_plan('E01.mkv')
 
     def fake_case_agent_primary(**kwargs):
@@ -369,8 +332,6 @@ def test_product_pipeline_fail_closed_no_retry_when_disabled(tmp_path, monkeypat
             verified_plan=None,
             tmdb_legal_graph=None,
         )
-
-    monkeypatch.setattr('src.rename.process.AIClient', FakeAIClient)
     monkeypatch.setattr('src.rename.process._run_local_bangumi_case_agent_primary', fake_case_agent_primary)
     monkeypatch.setattr('src.rename.process.run_bgm_to_tmdb_bridge_agent', fake_bridge_agent)
 

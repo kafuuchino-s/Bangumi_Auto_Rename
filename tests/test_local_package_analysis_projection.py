@@ -71,11 +71,6 @@ def test_lpa_projection_is_compact_and_sampled() -> None:
     assert any(ref in projection['query_card_sample'][0]['source_ref_samples'] for ref in ['LF1', 'LF239', 'LF478'])
 
     # Release group must remain separate from primary title cue extraction.
-    ai_client = SimpleNamespace(
-        analyze_local_package=lambda *args, **kwargs: (_ for _ in ()).throw(AssertionError('LPA should not run')),
-        get_last_ai_call_audit=lambda: {'call_name': 'LocalPackageAnalysis', 'unexpected': True},
-    )
-
     def fake_run_pi_case_agent(*, workspace, bangumi_client, source_path):
         from src.rename.case_agent.pi_runner import PiCaseAgentRunResult
         from src.rename.case_agent.models import CaseJudgeOutput, CaseVerifierResult
@@ -106,7 +101,6 @@ def test_lpa_projection_is_compact_and_sampled() -> None:
                 files=[SimpleNamespace(file_id='x1', name='ep001.mkv', relative_path='root/ep001.mkv', is_main_video_candidate=True)],
             ),
             bangumi_contexts=[],
-            ai_client=ai_client,
             source_path='tests/sample',
         )
     finally:
