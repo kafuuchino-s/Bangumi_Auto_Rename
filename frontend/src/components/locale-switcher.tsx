@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { useLocale } from "@/i18n/provider";
+import { useLocale } from "@/i18n/use-locale";
 
 export function LocaleSwitcher() {
   const { t } = useTranslation("navigation");

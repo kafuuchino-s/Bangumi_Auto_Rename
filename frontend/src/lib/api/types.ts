@@ -111,6 +111,10 @@ export interface ConfigDict {
   [key: string]: unknown;
 }
 
+export interface ModelDiscoveryResult {
+  models: string[];
+}
+
 export interface FieldSpecEntry {
   key: string;
   control: string;

@@ -57,6 +57,86 @@ def test_get_config_masks_secrets():
                 assert set(v) == {"*"}, f"{key} 未脱敏: {v}"
 
 
+def test_discover_models_uses_unsaved_request_config(monkeypatch):
+    """Model discovery accepts unsaved settings and returns normalized IDs."""
+    from src.api import routes_config
+
+    calls = []
+
+    def fake_discovery(base_url, api_key, api_interface):
+        calls.append((base_url, api_key, api_interface))
+        return ["gpt-4o", "deepseek-chat"]
+
+    monkeypatch.setattr(routes_config, "_run_model_discovery", fake_discovery)
+    with _client() as c:
+        response = c.post(
+            "/api/config/discover-models",
+            json={
+                "base_url": "https://gateway.example.test",
+                "api_key": "sk-unsaved",
+                "api_interface": "chat_completions",
+            },
+        )
+
+    assert response.status_code == 200
+    assert response.json() == {
+        "data": {"models": ["gpt-4o", "deepseek-chat"]},
+        "result": "models_discovered",
+    }
+    assert calls == [
+        (
+            "https://gateway.example.test",
+            "sk-unsaved",
+            "chat_completions",
+        )
+    ]
+
+
+def test_discover_models_reuses_saved_key_for_masked_value(monkeypatch):
+    """A masked UI secret is resolved from the server-side config."""
+    from src.api import routes_config
+
+    saved = {
+        "rename_local_bangumi_pi_base_url": "",
+        "ai_base_url": "https://saved.example.test",
+        "rename_local_bangumi_pi_api_key": "",
+        "ai_api_key": "sk-saved",
+        "rename_local_bangumi_pi_api_interface": "",
+        "openai_api_interface": "responses_api",
+    }
+    calls = []
+
+    monkeypatch.setattr(routes_config.cm, "get_config", saved.get)
+
+    def fake_discovery(base_url, api_key, api_interface):
+        calls.append((base_url, api_key, api_interface))
+        return ["saved-model"]
+
+    monkeypatch.setattr(routes_config, "_run_model_discovery", fake_discovery)
+    with _client() as c:
+        response = c.post(
+            "/api/config/discover-models",
+            json={"base_url": "https://unsaved.example.test", "api_key": "********"},
+        )
+
+    assert response.status_code == 200
+    assert calls == [
+        ("https://unsaved.example.test", "sk-saved", "responses_api")
+    ]
+
+
+def test_discover_models_requires_api_key():
+    """Model discovery rejects an empty request key before starting Node."""
+    with _client() as c:
+        response = c.post(
+            "/api/config/discover-models",
+            json={"base_url": "https://gateway.example.test", "api_key": ""},
+        )
+
+    assert response.status_code == 400
+    assert "API" in response.json()["detail"]
+
+
 def test_get_field_spec():
     """GET /api/config/field-spec 返回字段元数据列表。"""
     with _client() as c:

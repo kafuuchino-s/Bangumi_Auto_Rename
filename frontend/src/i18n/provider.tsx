@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { I18nextProvider, useTranslation } from "react-i18next";
 import { i18n } from ".";
 import {
@@ -8,13 +8,8 @@ import {
   type LocalePreference,
 } from "./locale";
 
-interface LocaleContextValue {
-  preference: LocalePreference;
-  locale: Locale;
-  setPreference: (preference: LocalePreference) => void;
-}
-
-const LocaleContext = createContext<LocaleContextValue | null>(null);
+import { LocaleContext } from "./locale-context";
+import type { LocaleContextValue } from "./locale-context";
 
 export function I18nProvider({
   children,
@@ -74,10 +69,4 @@ export function I18nProvider({
       <LocaleContext.Provider value={value}>{children}</LocaleContext.Provider>
     </I18nextProvider>
   );
-}
-
-export function useLocale(): LocaleContextValue {
-  const value = useContext(LocaleContext);
-  if (!value) throw new Error("useLocale must be used inside I18nProvider");
-  return value;
 }

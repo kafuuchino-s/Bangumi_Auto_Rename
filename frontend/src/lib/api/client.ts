@@ -7,6 +7,7 @@ import type {
   DrivesResult,
   FieldSpecEntry,
   LogTailResult,
+  ModelDiscoveryResult,
   SubtitleRow,
   TaskDetail,
   TaskRow,
@@ -147,6 +148,20 @@ export async function getFieldSpec(): Promise<FieldSpecEntry[]> {
 
 export async function testAi() {
   return json(await fetch(`${BASE}/config/test-ai`, { method: "POST" }));
+}
+
+export async function discoverModels(config: {
+  base_url?: string;
+  api_key?: string;
+  api_interface?: string;
+}): Promise<ModelDiscoveryResult> {
+  return json<ModelDiscoveryResult>(
+    await fetch(`${BASE}/config/discover-models`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(config),
+    })
+  );
 }
 
 export async function testEmby() {

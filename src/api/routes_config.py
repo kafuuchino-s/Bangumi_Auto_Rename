@@ -8,11 +8,16 @@
 from __future__ import annotations
 
 import asyncio
+import json
+import os
+import subprocess
+from pathlib import Path
 from typing import Any
 
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
+from ..ai.pi_api_config import pi_api_from_config
 from ..config.config_manager import cm
 from ..notification.emby_notify import EmbyNotifier
 from ..notification.telegram_notify import TelegramNotifier
@@ -29,6 +34,157 @@ class ConfigUpdateRequest(BaseModel):
 
 # 运行时统计字段，保存时跳过（由测试流程维护）
 _RUNTIME_MANAGED_KEYS: set[str] = set()
+_PI_MODEL_DISCOVERY_API_KEY_ENV = "BAR_PI_CASE_AGENT_API_KEY"
+_PI_MODEL_DISCOVERY_SCRIPT = (
+    Path(__file__).resolve().parents[2] / "tools" / "pi_model_discovery.mjs"
+)
+
+
+class ModelDiscoveryRequest(BaseModel):
+    """Model discovery request; the API key is used only for this request."""
+
+    base_url: str | None = None
+    api_key: str | None = None
+    api_interface: str | None = None
+
+
+def _config_text(key: str) -> str:
+    try:
+        value = cm.get_config(key)
+    except Exception:
+        value = None
+    return str(value or "").strip()
+
+
+def _is_masked_secret(value: str | None) -> bool:
+    return bool(value) and set(value or "") == {"*"}
+
+
+def _effective_model_discovery_config(
+    req: ModelDiscoveryRequest,
+) -> tuple[str, str, str]:
+    """Resolve request values; a masked key reuses the saved server-side key."""
+    configured_base_url = (
+        _config_text("rename_local_bangumi_pi_base_url")
+        or _config_text("ai_base_url")
+    )
+    configured_api_key = (
+        _config_text("rename_local_bangumi_pi_api_key")
+        or _config_text("ai_api_key")
+    )
+    configured_interface = (
+        _config_text("rename_local_bangumi_pi_api_interface")
+        or _config_text("openai_api_interface")
+        or "responses_api"
+    )
+
+    base_url = (
+        str(req.base_url).strip()
+        if req.base_url is not None
+        else configured_base_url
+    )
+    if req.api_key is None or _is_masked_secret(req.api_key):
+        api_key = configured_api_key
+    else:
+        api_key = str(req.api_key).strip()
+    api_interface = (
+        str(req.api_interface).strip()
+        if req.api_interface is not None
+        else configured_interface
+    )
+    return base_url, api_key, api_interface
+
+
+def _run_model_discovery(
+    base_url: str,
+    api_key: str,
+    api_interface: str,
+    *,
+    timeout_seconds: int = 20,
+) -> list[str]:
+    """Query models through the Pi-side Node tool, not a Python provider client."""
+    if not _PI_MODEL_DISCOVERY_SCRIPT.exists():
+        raise HTTPException(
+            status_code=500,
+            detail="模型发现脚本缺失",
+        )
+
+    api = pi_api_from_config(api_interface)
+    argv = [
+        "node",
+        str(_PI_MODEL_DISCOVERY_SCRIPT),
+        "--base-url",
+        base_url,
+        "--api",
+        api,
+        "--timeout",
+        str(max(5, min(timeout_seconds - 5, 30))),
+    ]
+    env = os.environ.copy()
+    env[_PI_MODEL_DISCOVERY_API_KEY_ENV] = api_key
+
+    try:
+        completed = subprocess.run(
+            argv,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            timeout=timeout_seconds,
+            env=env,
+            shell=False,
+        )
+    except subprocess.TimeoutExpired as exc:
+        raise HTTPException(
+            status_code=504,
+            detail="模型列表拉取超时",
+        ) from exc
+    except FileNotFoundError as exc:
+        raise HTTPException(
+            status_code=500,
+            detail="模型列表拉取失败：未找到 node 可执行文件",
+        ) from exc
+
+    result: dict[str, Any] | None = None
+    stdout = (completed.stdout or "").strip()
+    if stdout:
+        try:
+            result = json.loads(stdout.splitlines()[-1])
+        except json.JSONDecodeError:
+            result = None
+
+    if not isinstance(result, dict):
+        raise HTTPException(
+            status_code=502,
+            detail="模型列表拉取失败：sidecar 未返回有效结果",
+        )
+    if not result.get("ok"):
+        error = str(result.get("error") or "模型服务未返回模型列表")
+        code = str(result.get("code") or "provider_error")
+        if code in {"incomplete_config", "unsupported_protocol"}:
+            status_code = 400
+        elif code == "unauthorized":
+            status_code = 502
+        elif "超时" in error:
+            status_code = 504
+        else:
+            status_code = 502
+        raise HTTPException(
+            status_code=status_code,
+            detail=f"模型列表拉取失败：{error}",
+        )
+
+    raw_models = result.get("models")
+    if not isinstance(raw_models, list):
+        raise HTTPException(
+            status_code=502,
+            detail="模型列表拉取失败：返回格式不受支持",
+        )
+    models = sorted(
+        {str(model).strip() for model in raw_models if str(model).strip()},
+        key=str.casefold,
+    )
+    return models
 
 
 @router.get("")
@@ -69,6 +225,23 @@ def update_config(req: ConfigUpdateRequest) -> dict[str, Any]:
 def get_field_spec() -> dict[str, Any]:
     """暴露字段元数据（含中文 label，前端元数据驱动渲染）。"""
     return ok({"field_spec": canonical_field_spec(get_field_spec_with_labels())})
+
+
+@router.post("/discover-models")
+def discover_models(req: ModelDiscoveryRequest) -> dict[str, Any]:
+    """Fetch available model IDs from the current OpenAI-compatible gateway.
+
+    The request may contain unsaved settings from the UI. A masked or omitted
+    API key reuses the saved server-side key and is never returned.
+    """
+    base_url, api_key, api_interface = _effective_model_discovery_config(req)
+    if not base_url or not cm.validate_url(base_url):
+        raise HTTPException(status_code=400, detail="模型接口地址无效")
+    if not api_key:
+        raise HTTPException(status_code=400, detail="模型列表拉取失败：请填写 API 密钥")
+
+    models = _run_model_discovery(base_url, api_key, api_interface)
+    return ok({"models": models}, result="models_discovered")
 
 
 @router.post("/test-ai")

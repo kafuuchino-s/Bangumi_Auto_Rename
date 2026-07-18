@@ -11,7 +11,7 @@ import { apiErrorMessage } from "@/lib/api/errors";
 import type { TaskDetail } from "@/lib/api/types";
 import { toast } from "sonner";
 import { useTaskStore } from "@/store/task-store";
-import { useLocale } from "@/i18n/provider";
+import { useLocale } from "@/i18n/use-locale";
 import { formatBytes as intlBytes, formatNumber } from "@/lib/format";
 
 export function TaskDetailDialog({
