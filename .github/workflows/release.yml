@@ -19,10 +19,14 @@ env:
   IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/bangumi-auto-rename
 
 jobs:
+  quality:
+    uses: ./.github/workflows/quality.yml
+
   # ============================================================
   # docker：amd64 镜像，推 :latest + :vX.Y.Z + :sha-<short>
   # ============================================================
   docker:
+    needs: quality
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -72,6 +76,7 @@ jobs:
   # portable：Windows 便携 zip，挂 GitHub Release
   # ============================================================
   portable:
+    needs: quality
     runs-on: windows-latest
     steps:
       - name: Checkout
