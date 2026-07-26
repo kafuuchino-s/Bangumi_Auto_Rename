@@ -324,6 +324,7 @@ def test_pi_runtime_command_uses_timeout_only_without_turn_cap(tmp_path):
 
 def test_node_runner_loads_project_extension_tools_without_subagents_or_mapping_draft():
     text = (REPO_ROOT / 'tools' / 'pi_case_agent_runner.mjs').read_text(encoding='utf-8')
+    shared_text = (REPO_ROOT / 'tools' / 'pi_runner_shared.mjs').read_text(encoding='utf-8')
     extension_text = (REPO_ROOT / '.pi' / 'extensions' / 'local-bangumi-tools' / 'index.js').read_text(encoding='utf-8')
     extension_package = json.loads((REPO_ROOT / '.pi' / 'extensions' / 'local-bangumi-tools' / 'package.json').read_text(encoding='utf-8'))
     local_entry_text = (REPO_ROOT / 'src' / 'rename' / 'case_agent' / 'local_bangumi_entry.py').read_text(encoding='utf-8')
@@ -500,8 +501,9 @@ def test_node_runner_loads_project_extension_tools_without_subagents_or_mapping_
     assert 'sample_0096' not in text
     assert 'OVERLORD' not in text
     assert 'Ple Ple' not in text
-    assert 'function effectiveRuntimeBudgetSeconds()' in text
-    assert 'Math.max(finishBeforeSeconds, timeoutSeconds - 5)' in text
+    assert 'effectiveRuntimeBudgetSeconds(caseInput.runtime_policy)' in text
+    assert 'export function effectiveRuntimeBudgetSeconds(runtimePolicy)' in shared_text
+    assert 'Math.max(finishBeforeSeconds, timeoutSeconds - 5)' in shared_text
     assert 'Math.min(45_000, Math.floor(totalBudgetMs * 0.15))' in text
     assert 'Decision row shape is compact:' not in text
     assert 'Example decisions:' not in text
