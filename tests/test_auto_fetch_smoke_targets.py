@@ -139,7 +139,11 @@ def test_synthesize_targets_mixed_tv_plus_movie_keeps_movie():
     tv_targets = [t for t in targets if "S01E0" in t["target_file"]]
     assert len(tv_targets) == 2
     # movie target 走 movie root + 独立 title/year 目录
-    movie_targets = [t for t in targets if "movie" not in t["target_file"] and "S0" not in t["target_file"]]
+    movie_targets = [
+        target
+        for target in targets
+        if target["source_path"] == "src/Gekijouban.mkv"
+    ]
     assert len(movie_targets) == 1
     mt = movie_targets[0]
     assert "Demon Slayer Mugen Train (2020)" in mt["target_file"]  # sanitize 去掉冒号

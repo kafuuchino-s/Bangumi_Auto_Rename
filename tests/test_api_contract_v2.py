@@ -5,9 +5,10 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
-from src.web import app
+from src.web import SPAStaticFiles, app
 
 
 def test_success_and_error_envelopes() -> None:
@@ -48,16 +49,35 @@ def test_bad_file_path_uses_a_stable_error_code(tmp_path: Path) -> None:
     assert response.json()["error"]["code"] == "invalid_request"
 
 
-def test_spa_fallback_does_not_hide_assets_or_api() -> None:
-    client = TestClient(app)
+def test_spa_fallback_does_not_hide_assets_or_api(tmp_path: Path) -> None:
+    frontend_out = tmp_path / "out"
+    frontend_out.mkdir()
+    (frontend_out / "index.html").write_text(
+        '<html><body><div id="root"></div></body></html>', encoding="utf-8"
+    )
+
+    spa_app = FastAPI()
+
+    @spa_app.get("/api/known")
+    def _known_api() -> dict[str, bool]:
+        return {"ok": True}
+
+    spa_app.mount(
+        "/", SPAStaticFiles(directory=str(frontend_out)), name="frontend-test"
+    )
+    client = TestClient(spa_app)
     html = client.get("/settings/general", headers={"accept": "text/html"})
     assert html.status_code == 200
-    assert "<div id=\"root\">" in html.text
+    assert '<div id="root">' in html.text
     assert client.get("/assets/missing.js").status_code == 404
-    unknown_api = client.get("/api/unknown")
+    assert client.get("/api/known").json() == {"ok": True}
+    assert client.get("/api/unknown").status_code == 404
+
+    production_client = TestClient(app)
+    unknown_api = production_client.get("/api/unknown")
     assert unknown_api.status_code == 404
     assert unknown_api.json()["error"]["code"] == "path_not_found"
-    assert client.get("/health").json() == {"status": "ok"}
+    assert production_client.get("/health").json() == {"status": "ok"}
 
 
 def test_config_v2_migration_is_idempotent(tmp_path: Path, monkeypatch) -> None:
