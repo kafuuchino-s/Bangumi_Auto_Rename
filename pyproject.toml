@@ -1,6 +1,6 @@
 [project]
 name = "Bangumi_Auto_Rename"
-version = "0.2.1"
+version = "0.3.0"
 description = "Default template for PDM package"
 authors = [{ name = "KimigaiiWuyi", email = "444835641@qq.com" }]
 dependencies = [

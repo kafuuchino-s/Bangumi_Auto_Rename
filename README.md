@@ -15,6 +15,8 @@ Bangumi Auto Rename 是一条 **AI-first + strict** 的媒体整理流水线，�
 
 > 本仓库为基于原项目 [KimigaiiWuyi/Bangumi_Auto_Rename](https://github.com/KimigaiiWuyi/Bangumi_Auto_Rename) 的二改版本，独立维护，已全面重构为 AI-first 流水线架构。
 
+版本变化见 [CHANGELOG](CHANGELOG.md)；跨版本部署前请阅读 [升级指南](docs/UPGRADING.md)。
+
 ## 回归基线：full146
 
 项目维护一个 **146 个真实下载包**的样本池（`tests/sample_pool/raw/`），对 Local→Bangumi→TMDB 全链路做 mapping-only 回归。当前基线：
