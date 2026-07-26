@@ -13,6 +13,25 @@ from types import SimpleNamespace
 import pytest
 
 from src.ai import pi_healthcheck
+from src.config.config_manager import cm
+
+
+@pytest.fixture(autouse=True)
+def _configured_healthcheck():
+    """为 mock subprocess 测试提供确定且不含真实密钥的 AI 配置。"""
+    with cm.temporary_config(
+        {
+            'rename_local_bangumi_pi_model': '',
+            'rename_local_bangumi_pi_base_url': '',
+            'rename_local_bangumi_pi_api_key': '',
+            'rename_local_bangumi_pi_api_interface': '',
+            'ai_model': 'test-model',
+            'ai_base_url': 'https://example.invalid',
+            'ai_api_key': 'sk-test',
+            'openai_api_interface': 'responses_api',
+        }
+    ):
+        yield
 
 
 def _completed(stdout: str = '', stderr: str = '', returncode: int = 0) -> subprocess.CompletedProcess:
@@ -38,8 +57,6 @@ def _hc_result(**over) -> str:
 
 def test_run_healthcheck_success(monkeypatch):
     """连通 + 工具调用都通过 → success=True，message 含协议标签 + 模型名。"""
-    from src.config.config_manager import cm
-
     monkeypatch.setattr(pi_healthcheck.subprocess, 'run', lambda *a, **k: _completed(_hc_result()))
     with cm.temporary_config(
         {
@@ -64,7 +81,6 @@ def test_run_healthcheck_success_anthropic_messages_label(monkeypatch):
         return _completed(_hc_result(model='grok-composer-2.5-fast'))
 
     monkeypatch.setattr(pi_healthcheck.subprocess, 'run', _capture_run)
-    from src.config.config_manager import cm
 
     with cm.temporary_config(
         {
@@ -161,8 +177,7 @@ def test_run_healthcheck_node_missing(monkeypatch):
 
 def test_resolve_model_config_missing_returns_none(monkeypatch):
     """缺 api_key 等必填 → _resolve_model_config 返回 None，run_healthcheck 给「配置不完整」。"""
-    # 临时清空关键配置。
-    from src.config.config_manager import cm
+    # 临时清空所有支持的模型配置来源。
     with cm.temporary_config({
         'rename_local_bangumi_pi_model': '',
         'rename_local_bangumi_pi_base_url': '',
