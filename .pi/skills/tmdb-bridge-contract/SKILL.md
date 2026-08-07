@@ -13,16 +13,30 @@ Bangumi identity comes from the accepted compiled plan: `source_path`, `bangumi_
 
 TMDB names are semantic evidence, not output identity. Use `display_title`, `original_name`, `original_title`, aliases, year, overview, season cards, episode cards, and URL slug text such as `45844-space-battleship-yamato-2199` to decide whether a TMDB candidate matches the Bangumi plan. The verifier accepts only explicit bridge outcomes: `map_to_tmdb` with TMDB IDs/legal nodes, `tmdb_target_absent` for BGM nodes that TMDB does not expose, or `unmapped_supplemental` for Local-to-Bangumi supplemental files.
 
+`media_kind` on an accepted BGM assignment is source-side catalog evidence, not a TMDB `media_type` decision. A movie-shaped BGM subject may contain multiple ordered chapter assignments or a multi-episode span. In that shape, compare both a TV episode-sequence graph and a movie aggregate graph before choosing a target or `tmdb_target_absent`; do not turn `media_kind: "movie"` into a movie target without checking source cardinality, order, titles, and runtime.
+
 ## Workflow
 
 1. Read grouped BGM subject cards and assignments with `get_bgm_to_tmdb_bridge_context`. Accepted Local-to-Bangumi artifacts can be reused directly; a Local-to-Bangumi rerun is unnecessary.
-2. Search TMDB candidates by Bangumi/local human titles. Compare candidate cards by ID, title, original name, aliases, year, overview, season names, and episode lists.
-3. Draft compact recipe params. Prefer one rule for a contiguous TV sequence, one rule for a movie, one rule for a special sequence, one span rule for one source covering multiple episodes, one `tmdb_absent_group` rule for BGM nodes that TMDB lacks, and one supplemental rule for extras.
-4. Call `validate_bgm_to_tmdb_bridge_recipe_params`. Validation hydrates declared `tmdb_ref` values, compiles params to a raw bridge draft, runs the node verifier, and returns repair hints or review warnings.
-5. Keep repairs targeted to the rule named by the verifier. Broad search is useful again only when the verifier asks for missing TMDB evidence.
-6. After validation returns `accepted:true`, call `submit_bgm_to_tmdb_bridge_recipe_params` with the same params.
+2. If a subject card contains `external_mapping_hints`, use them only as candidate recall evidence. When context says `unique_prefetched_candidate_ready=true`, follow its `next_action` and call `get_tmdb_legal_graph` first; do not call title search before inspecting that graph. ExtLinker/Fribb season and offset fields are weak locators, not final recipe values. If hints are missing, conflicting, or the graph does not fit, use normal TMDB text search.
+3. Search TMDB candidates by Bangumi/local human titles only when the hint/legal-graph path is unavailable or has a concrete gap. Compare candidate cards by ID, title, original name, aliases, year, overview, season names, and episode lists. When context reports an ordered movie-shaped source surface, search both `tv` and `movie` target shapes before drafting a movie or target-absent rule.
+4. Draft compact recipe params. Prefer one rule for a contiguous TV sequence, one rule for a movie, one rule for a special sequence, one span rule for one source covering multiple episodes, one `tmdb_absent_group` rule for BGM nodes that TMDB lacks, and one supplemental rule for extras.
+5. Call `validate_bgm_to_tmdb_bridge_recipe_params`. Validation hydrates declared `tmdb_ref` values, compiles params to a raw bridge draft, runs the node verifier, and returns repair hints or review warnings.
+6. Keep repairs targeted to the rule named by the verifier. Broad search is useful again only when the verifier asks for missing TMDB evidence.
+7. After validation returns `accepted:true`, call `submit_bgm_to_tmdb_bridge_recipe_params` with the same params.
 
 Search is for finding plausible TMDB refs, not for exhaustively proving every recap/summary/CM/bonus title. After a plausible series/movie candidate is found and hydrated, recipe validation is the next stronger evidence layer. If validation shows a mapped Bangumi episode/special has no concrete TMDB legal node, a targeted season-0/episode-title check can justify `tmdb_absent_group` for that BGM node instead of failing the whole case.
+
+## Source Shape Versus TMDB Shape
+
+The accepted BGM plan describes the source surface; it does not predetermine the final TMDB media type. When a `movie`-shaped source card contains multiple ordered assignments or a multi-episode span:
+
+1. Search and hydrate a plausible `tv` candidate, then compare episode count, order, title, and runtime with the BGM episode cards.
+2. Search and hydrate a plausible `movie` candidate, then compare aggregate title and runtime evidence with the complete source span.
+3. Choose `episode_sequence`, `movie`, or `tmdb_absent_group` only after checking which legal graph covers the complete accepted BGM frontier. A movie node that represents a whole span must not be attached to only one of several separate local files.
+
+A `tmdb_target_absent` disposition is valid only after the relevant alternate target shape has been searched and hydrated. Python validates the Agent's chosen shape; it does not select TV versus movie.
+
 
 ## Franchise Anchor First
 
@@ -34,7 +48,7 @@ Additional title searches are most useful when the hydrated graph does not expos
 - Search an OVA/OAD/special title when season 0 cards do not contain a matching title/order/count.
 - Search recap/summary/CM/digest titles after the main graph is anchored; once the graph shows no legal node, `tmdb_absent_group` fits BGM-mapped nodes and `supplemental_group` fits Local-to-Bangumi supplemental files.
 
-Preferred evidence ladder: anchor search -> hydrated TMDB legal graph -> season/episode-card comparison -> recipe validation -> targeted verifier repair. If the first hydrated graph already contains the seasons and S00 specials needed by the BGM subject cards, separate searches for each subject title are unnecessary.
+Preferred evidence ladder: unique prehydrated external hint -> hydrated TMDB legal graph -> season/episode-card comparison -> recipe validation. When no unique ready hint exists, use anchor search -> hydrated TMDB legal graph -> season/episode-card comparison -> recipe validation -> targeted verifier repair. If the first hydrated graph already contains the seasons and S00 specials needed by the BGM subject cards, separate searches for each subject title are unnecessary.
 
 ## TMDB Legal Graph Closure
 
@@ -73,7 +87,7 @@ Episode-title matches are semantic evidence for Pi. They still do not override t
 `fail_closed` is only for concrete global TMDB ambiguity or contradiction: two or more equally-plausible TMDB refs for the *same* BGM node with no deciding evidence, or a contradiction the hydrated graph cannot resolve. It is not a catch-all for "this path got hard" or "my current draft is incomplete". Before calling `fail_closed`, run this recheck in order:
 
 1. Frontier coverage scan. Re-read the accepted BGM plan and list every BGM-mapped subject/assignment (regular sequence, special, OVA/OAD, movie, span, side-story). Each one must already be covered by a rule in the current recipe params with an explicit disposition (`map_to_tmdb`, `tmdb_absent_group`, or `supplemental_group`). If any BGM-mapped node has *no* rule yet, `fail_closed` is premature: go back to rule drafting.
-2. Anchor check. Confirm at least one TMDB anchor search plus `get_tmdb_legal_graph` hydration was completed for the main BGM subject. Calling `fail_closed` with zero anchor hydration (no search, or a search whose result was never hydrated) is premature.
+2. Anchor check. Confirm either a TMDB anchor title search plus `get_tmdb_legal_graph` hydration, or the context's `unique_prefetched_candidate_ready=true` followed by `get_tmdb_legal_graph` hydration, was completed for the main BGM subject. Calling `fail_closed` with zero anchor hydration is premature.
 3. Unexplored path vs global ambiguity. Distinguish "I never searched this BGM node's TMDB ref" from "I searched and got two indistinguishable TMDB refs". A BGM movie, special, OVA/OAD, or side-story subject whose TMDB ref you never searched or never hydrated is a *missing rule*, not global ambiguity: search the title, hydrate the candidate, then draft `map_to_tmdb` (or `tmdb_absent_group` after a targeted season-0/episode-title check). Only when a searched+hydrated node yields genuinely indistinguishable candidates with no deciding title/alias/year/episode-title/overview evidence is `fail_closed` warranted.
 4. Target-absent first. A BGM node that is real in Bangumi but has no TMDB legal node after a *targeted* check is `tmdb_absent_group`, never `fail_closed`. Re-confirm the targeted check was done (season 0 cards, episode titles, or a separate movie search) before downgrading.
 
@@ -161,5 +175,5 @@ Consequences for specials / S00 where BGM and TMDB numbering often differ:
 - Repeated recap/summary/CM/bonus-title searches are usually weaker than targeted checks against the TMDB legal graph. Once the graph lacks the needed BGM-mapped node after targeted checks, use `tmdb_absent_group` rather than searching variants of the same missing item.
 - When BGM and TMDB episode titles are available, use them as stronger evidence than a fuzzy series title and mention the episode-title/order/count evidence in the rule `reason`.
 
-- Before any `fail_closed`, complete the `## Before Fail Closed` recheck: every BGM-mapped node must have a rule with an explicit disposition, at least one TMDB anchor must be searched and hydrated, and an unexplored BGM movie/special/OVA/OAD/side-story is a missing rule (search → hydrate → `map_to_tmdb` or `tmdb_absent_group`), not global ambiguity.
+- Before any `fail_closed`, complete the `## Before Fail Closed` recheck: every BGM-mapped node must have a rule with an explicit disposition, and either a TMDB anchor must be searched and hydrated or a unique external candidate must be prehydrated and hydrated. An unexplored BGM movie/special/OVA/OAD/side-story is a missing rule (search → hydrate → `map_to_tmdb` or `tmdb_absent_group`), not global ambiguity.
 - If evidence is insufficient to choose between TMDB candidates, fail closed with the conflicting IDs/titles and the exact missing evidence instead of guessing. One otherwise identified BGM episode/special lacking a TMDB legal node is better recorded as `tmdb_target_absent` than treated as global failure.

@@ -6,11 +6,15 @@ import unicodedata
 from copy import deepcopy
 from dataclasses import asdict, dataclass, field, is_dataclass
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 from ..case_agent.models import CaseVerifierResult
 from ..get_info import Search
 from .compiler import build_tmdb_legal_graph
+from .external_hints import (
+    ExternalMappingIndex,
+    load_configured_external_mapping_index,
+)
 from .graph_builder import (
     build_tmdb_movie_candidate_card,
     build_tmdb_tv_candidate_card,
@@ -38,7 +42,7 @@ class BgmToTmdbBridgeToolState:
     run_dir: Path
     artifact_path: str = ''
     sample_id: str = ''
-    tmdb_search: Any | None = None
+    tmdb_search: Any = None
     tool_trace: list[dict[str, Any]] = field(default_factory=list)
     bridge_draft: BgmToTmdbMappingDraft | None = None
     recipe_params: BgmToTmdbRecipeParams | None = None
@@ -50,12 +54,53 @@ class BgmToTmdbBridgeToolState:
     submit_rejection_count: int = 0
     search_call_count: int = 0
     search_guidance_soft_limit: int = 8
+    external_hints_mode: str = ''
+    external_mapping_index: ExternalMappingIndex | None = None
+    external_hint_hydrated_refs: set[str] = field(default_factory=set)
+    external_hint_prefetch_enabled: bool = True
+    external_hint_prefetch_errors: list[str] = field(default_factory=list)
+    external_hint_prefetch_omitted_refs: list[str] = field(default_factory=list)
+    external_hint_search_shortcut_count: int = 0
 
     def __post_init__(self) -> None:
         self.run_dir.mkdir(parents=True, exist_ok=True)
         (self.run_dir / 'artifacts').mkdir(parents=True, exist_ok=True)
         if self.tmdb_search is None:
             self.tmdb_search = Search()
+        if self.external_mapping_index is None:
+            self.external_hints_mode, self.external_mapping_index = load_configured_external_mapping_index()
+        else:
+            self.external_hints_mode = str(self.external_hints_mode or 'off').strip().casefold()
+            if self.external_hints_mode not in {'off', 'shadow', 'assist'}:
+                self.external_hints_mode = 'off'
+        self._write_external_mapping_audit()
+        if self.external_hints_mode == 'assist' and self.external_hint_prefetch_enabled:
+            self._prefetch_external_hint_graph()
+            self._write_external_mapping_audit()
+
+    def _write_external_mapping_audit(self) -> None:
+        assert self.external_mapping_index is not None
+        (self.run_dir / 'artifacts' / 'external_mapping_hint_audit.json').write_text(
+            json.dumps(
+                {
+                    'mode': self.external_hints_mode,
+                    'agent_visible': self.external_hints_mode == 'assist',
+                    'index': self.external_mapping_index.audit_payload(),
+                    'runtime': {
+                        'prefetch_enabled': bool(self.external_hint_prefetch_enabled),
+                        'prefetched_refs': sorted(self.external_hint_hydrated_refs),
+                        'prefetch_errors': list(self.external_hint_prefetch_errors),
+                        'prefetch_omitted_refs': list(self.external_hint_prefetch_omitted_refs),
+                        'search_shortcut_count': self.external_hint_search_shortcut_count,
+                    },
+                },
+                ensure_ascii=False,
+                indent=2,
+                sort_keys=True,
+            ),
+            encoding='utf-8',
+        )
+
 
     def case_input(self) -> dict[str, Any]:
         artifacts_dir = self.run_dir / 'artifacts'
@@ -128,6 +173,26 @@ class BgmToTmdbBridgeToolState:
         media_type = str(media_type or 'multi').strip().casefold()
         limit = max(1, min(20, int(max_candidates or 6)))
         year_value = int(year or 0) or None
+        shortcut = self._prefetched_anchor_candidates(media_type=media_type, query=query, limit=limit)
+        if shortcut is not None:
+            self.external_hint_search_shortcut_count += 1
+            return {
+                'ok': True,
+                'query': query,
+                'media_type': media_type,
+                'candidate_count': len(shortcut),
+                'candidates': [candidate.model_dump(mode='json') for candidate in shortcut],
+                'search_source': 'external_hint_prefetch',
+                'network_request_skipped': True,
+                'search_guidance': search_guidance,
+                'search_strategy_hints': [
+                    'These candidates were pre-hydrated from read-only external mapping hints; compare them with the accepted BGM plan before drafting.',
+                    'If none fits the BGM frontier, run another title search to widen the candidate set.',
+                    *self._target_shape_search_hints(media_type),
+                ],
+            }
+        if media_type not in {'multi', 'tv', 'movie'}:
+            return {'ok': False, 'accepted': False, 'error': 'media_type must be multi, tv, or movie'}
         if media_type == 'tv':
             raw_candidates = self.tmdb_search.search_tv_by_query(query, year=year_value, limit=limit) or []
             media_hint = 'tv'
@@ -154,6 +219,7 @@ class BgmToTmdbBridgeToolState:
             'search_strategy_hints': [
                 'For multi-season franchise packages, once this search returns a plausible series candidate, prefer legal-graph hydration as the next evidence layer before deciding whether additional season/OVA/OAD title searches are useful.',
                 'Use hydrated season cards, season 0 cards, and episode titles to decide whether additional title searches are actually needed.',
+                *self._target_shape_search_hints(media_type),
             ],
         }
         if self.search_call_count >= self.search_guidance_soft_limit:
@@ -164,6 +230,28 @@ class BgmToTmdbBridgeToolState:
                 'For recap/summary/CM/package extras, use tmdb_absent_group when BGM has a mapped node but TMDB exposes no legal node after targeted checks.',
             ]
         return result
+
+    def _prefetched_anchor_candidates(
+        self,
+        *,
+        media_type: str,
+        query: str,
+        limit: int,
+    ) -> list[TmdbCandidateCard] | None:
+        if self.external_hints_mode != 'assist' or self.search_call_count != 1:
+            return None
+        if not self.external_hint_hydrated_refs:
+            return None
+        candidates = [
+            candidate
+            for candidate in self.legal_graph.candidates
+            if candidate.tmdb_ref in self.external_hint_hydrated_refs
+            and (media_type == 'multi' or candidate.media_type == media_type)
+        ]
+        if not candidates:
+            return None
+        del query
+        return candidates[: max(1, min(20, int(limit or 6)))]
 
     def tool_get_tmdb_legal_graph(self, tmdb_refs: list[str] | None = None) -> dict[str, Any]:
         refs = _dedupe_nonempty([str(ref or '').strip() for ref in (tmdb_refs or [])])
@@ -297,6 +385,32 @@ class BgmToTmdbBridgeToolState:
             'verified_plan': verified_plan.model_dump(mode='json'),
         }
 
+    def _prefetch_external_hint_graph(self) -> None:
+        if self.external_mapping_index is None:
+            return
+        subject_ids = {
+            int(assignment.target_span.bangumi_subject_id or assignment.target.bangumi_subject_id or 0)
+            for assignment in self.bridge_input.assignments
+            if assignment.is_mapped_bangumi
+        }
+        refs = sorted({
+            hint.tmdb_ref
+            for subject_id in subject_ids
+            for hint in self.external_mapping_index.hints_for_subject(subject_id)
+        })
+        max_refs = 16
+        if len(refs) > max_refs:
+            self.external_hint_prefetch_omitted_refs = refs[max_refs:]
+            refs = refs[:max_refs]
+        if not refs:
+            return
+        try:
+            result = self._hydrate_tmdb_refs(refs)
+        except Exception as exc:
+            self.external_hint_prefetch_errors.append(f'{type(exc).__name__}: {exc}')
+            return
+        self.external_hint_prefetch_errors.extend(str(error) for error in result.get('errors') or [])
+
     def _hydrate_tmdb_refs(self, refs: list[str]) -> dict[str, Any]:
         refs = _dedupe_nonempty([str(ref or '').strip() for ref in refs])
         if not refs:
@@ -306,6 +420,11 @@ class BgmToTmdbBridgeToolState:
                 'candidate_count': 0,
                 'tmdb_legal_graph': self.legal_graph.model_dump(mode='json'),
             }
+        hint_refs = {
+            hint.tmdb_ref
+            for hints in (self.external_mapping_index.hints_by_subject.values() if self.external_mapping_index else ())
+            for hint in hints
+        }
         candidates: list[TmdbCandidateCard] = []
         errors: list[str] = []
         existing = self.legal_graph.candidate_map()
@@ -337,13 +456,23 @@ class BgmToTmdbBridgeToolState:
                         translations=translations,
                     )
                 )
+        loaded_refs = {
+            candidate.tmdb_ref
+            for candidate in candidates
+        }
+        self.external_hint_hydrated_refs.update(loaded_refs.intersection(hint_refs))
         if candidates:
             self._merge_legal_graph(candidates)
+        target_shape_guidance: list[str] = []
+        for ref in refs:
+            media_type, _ = _parse_tmdb_ref(ref)
+            target_shape_guidance.extend(self._target_shape_search_hints(media_type))
         return {
             'ok': not errors or bool(candidates),
             'errors': errors,
             'candidate_count': len(candidates),
             'tmdb_legal_graph': self.legal_graph.model_dump(mode='json'),
+            'target_shape_guidance': _dedupe_nonempty(target_shape_guidance),
         }
 
     def _get_bgm_aligned_tv_info(self, tmdb_id: int) -> dict[str, Any] | None:
@@ -537,13 +666,98 @@ class BgmToTmdbBridgeToolState:
             'tool_call_counts': _counter([str(row.get('tool') or '') for row in self.tool_trace]),
             'tool_sequence': [str(row.get('tool') or '') for row in self.tool_trace],
             'submit_rejection_count': self.submit_rejection_count,
+            'external_hints_mode': self.external_hints_mode,
+            'external_hint_count': self.external_mapping_index.hint_count if self.external_mapping_index else 0,
+            'external_hint_subject_count': self.external_mapping_index.subject_count if self.external_mapping_index else 0,
+            'external_hint_hydrated_refs': sorted(self.external_hint_hydrated_refs),
+            'external_hint_prefetch_errors': list(self.external_hint_prefetch_errors),
+            'external_hint_prefetch_omitted_refs': list(self.external_hint_prefetch_omitted_refs),
+            'external_hint_search_shortcut_count': self.external_hint_search_shortcut_count,
         }
 
+    def _external_hint_action_payload(self) -> dict[str, Any]:
+        if self.external_hints_mode != 'assist' or self.external_mapping_index is None:
+            return {
+                'hint_refs': [],
+                'prefetched_refs': sorted(self.external_hint_hydrated_refs),
+                'unique_prefetched_candidate_ready': False,
+                'next_action': 'Use normal title search when a TMDB anchor is needed.',
+            }
+        subject_ids = {
+            int(assignment.target_span.bangumi_subject_id or assignment.target.bangumi_subject_id or 0)
+            for assignment in self.bridge_input.assignments
+            if assignment.is_mapped_bangumi
+        }
+        hint_refs = sorted({
+            hint.tmdb_ref
+            for subject_id in subject_ids
+            for hint in self.external_mapping_index.hints_for_subject(subject_id)
+        })
+        ready = len(hint_refs) == 1 and hint_refs[0] in self.external_hint_hydrated_refs
+        if ready:
+            next_action = (
+                f'First action: call get_tmdb_legal_graph with {hint_refs[0]}. '
+                'This is a read-only external candidate hint; compare the hydrated graph before drafting. '
+                'Use title search only if the graph does not fit or the verifier reports a gap.'
+            )
+        elif hint_refs:
+            next_action = (
+                'External candidate hints exist but are missing or conflicting. '
+                'Hydrate the visible hint refs together when useful, then use title search for unresolved candidates.'
+            )
+        else:
+            next_action = 'Use normal title search when a TMDB anchor is needed.'
+        return {
+            'hint_refs': hint_refs,
+            'prefetched_refs': sorted(self.external_hint_hydrated_refs),
+            'unique_prefetched_candidate_ready': ready,
+            'next_action': next_action,
+        }
+
+    def _target_shape_search_hints(self, media_type: str) -> list[str]:
+        shapes = _ordered_movie_source_shapes(self.bridge_input)
+        if not shapes:
+            return []
+        shape_label = '; '.join(
+            f"subject {shape['bangumi_subject_id']} has {shape['source_item_count']} ordered source items"
+            + (f" ({shape['sort_range']})" if shape['sort_range'] else '')
+            for shape in shapes
+        )
+        base = (
+            f'BGM source-shape evidence: {shape_label}. '
+            'source media_kind="movie" is source-side catalog evidence, not a TMDB target-media decision.'
+        )
+        if media_type == 'movie':
+            return [
+                base,
+                'Before drafting a movie rule or tmdb_absent_group, search the same anchor with media_type="tv" and compare episode count, order, title, and runtime against the ordered BGM cards.',
+            ]
+        if media_type == 'tv':
+            return [
+                base,
+                'Compare this TV episode graph with a movie aggregate graph when the source card may represent a chapterized film; choose only after checking which graph covers the complete accepted source frontier.',
+            ]
+        return [
+            base,
+            'Compare both TV episode-sequence and movie-aggregate candidates before drafting a target or tmdb_absent_group for this ordered source surface.',
+        ]
+
     def _context_payload(self, *, detail: bool = False) -> dict[str, Any]:
+        external_hint_action = self._external_hint_action_payload()
         payload: dict[str, Any] = {
             'bridge_input': self.bridge_input.model_dump(mode='json'),
-            'bangumi_subject_cards': _subject_cards(self.bridge_input),
+            'bangumi_subject_cards': _subject_cards(
+                self.bridge_input,
+                external_mapping_index=self.external_mapping_index,
+                external_hints_mode=self.external_hints_mode,
+            ),
             'tmdb_legal_graph': self.legal_graph.model_dump(mode='json'),
+            'external_mapping': {
+                'mode': self.external_hints_mode,
+                'agent_visible': self.external_hints_mode == 'assist',
+                'audit': self.external_mapping_index.audit_payload() if self.external_mapping_index else {},
+                **external_hint_action,
+            },
             'bridge_contract': {
                 'identity_policy': 'TMDB titles, original names, aliases, and slugs are semantic evidence only; mapped targets must use tv:<tmdb_id>:SxxEyy or movie:<tmdb_id> legal nodes. BGM assignments that TMDB does not expose may be marked tmdb_target_absent.',
                 'final_tools': ['validate_bgm_to_tmdb_bridge_recipe_params', 'submit_bgm_to_tmdb_bridge_recipe_params', 'fail_closed'],
@@ -554,9 +768,14 @@ class BgmToTmdbBridgeToolState:
                     'tmdb_target_absent for BGM assignments that TMDB does not expose as legal nodes after targeted title/episode-title checks',
                     'unmapped_supplemental only for Local-to-Bangumi supplemental/non-Bangumi assignments',
                 ],
-                'search_policy': 'Search enough to identify plausible TMDB refs, then validate. Prefer anchor-first hydration over searching every season/special title. Do not exhaust turns searching recap/summary/CM/bonus variants when TMDB exposes no legal node.',
+                'search_policy': (
+                    external_hint_action['next_action']
+                    if external_hint_action['unique_prefetched_candidate_ready']
+                    else 'Search enough to identify plausible TMDB refs, then validate. Prefer anchor-first hydration over searching every season/special title. Do not exhaust turns searching recap/summary/CM/bonus variants when TMDB exposes no legal node.'
+                ),
                 'franchise_anchor_policy': 'For multi-season franchise packages, search one strong franchise/series anchor, hydrate it, and compare season/S00/episode cards before doing separate season, OVA, OAD, or special title searches.',
                 'episode_title_policy': 'When series title evidence is ambiguous, compare BGM episode_title_cards_sample with the hydrated TMDB legal-node episode titles shown in this context. The fixed layer presents one BGM-aligned TMDB evidence view when it can, so recipe params can stay language-agnostic and focus on visible title/order/count alignment.',
+                'target_shape_policy': _target_shape_policy(self.bridge_input),
                 'search_guidance': self._search_guidance_payload(),
                 'dry_run_only': True,
             },
@@ -599,6 +818,7 @@ class BgmToTmdbBridgeToolState:
         review_warnings: list[dict[str, Any]] | None = None,
         rule_match_counts: dict[str, int] | None = None,
     ) -> None:
+        self._write_external_mapping_audit()
         artifacts_dir = self.run_dir / 'artifacts'
         if recipe_params is not None:
             (artifacts_dir / 'bgm_to_tmdb_recipe_params.json').write_text(
@@ -716,7 +936,12 @@ def _review_warning_hints(review_warnings: list[dict[str, Any]]) -> list[str]:
     return _dedupe_nonempty(hints)
 
 
-def _subject_cards(bridge_input: BgmToTmdbInput) -> list[dict[str, Any]]:
+def _subject_cards(
+    bridge_input: BgmToTmdbInput,
+    *,
+    external_mapping_index: ExternalMappingIndex | None = None,
+    external_hints_mode: str = 'off',
+) -> list[dict[str, Any]]:
     grouped: dict[tuple[int, str], list[Any]] = {}
     supplemental: list[Any] = []
     for assignment in bridge_input.assignments:
@@ -744,7 +969,7 @@ def _subject_cards(bridge_input: BgmToTmdbInput) -> list[dict[str, Any]]:
             for assignment in assignments
         ])
         rule_counts = _counter([str(assignment.rule_name or '') for assignment in assignments])
-        cards.append({
+        card = {
             'bangumi_subject_id': subject_id,
             'media_kind': media_kind,
             'assignment_count': len(assignments),
@@ -767,12 +992,19 @@ def _subject_cards(bridge_input: BgmToTmdbInput) -> list[dict[str, Any]]:
                 if assignment.target.title
             ])[:8],
             'episode_title_cards_sample': _episode_title_cards(assignments),
+            'source_shape_observation': _source_shape_observation(assignments, media_kind),
             'source_path_sample': [
                 normalize_source_path(assignment.source_path)
                 for assignment in assignments[:8]
             ],
             'span_assignment_count': sum(1 for assignment in assignments if assignment.is_span),
-        })
+        }
+        if external_hints_mode == 'assist' and external_mapping_index is not None:
+            card['external_mapping_hints'] = [
+                hint.payload()
+                for hint in external_mapping_index.hints_for_subject(subject_id)
+            ]
+        cards.append(card)
 
     if supplemental:
         cards.append({
@@ -794,6 +1026,86 @@ def _subject_cards(bridge_input: BgmToTmdbInput) -> list[dict[str, Any]]:
             ],
         })
     return cards
+
+
+def _source_shape_observation(assignments: list[Any], media_kind: str) -> dict[str, Any]:
+    mapped = [assignment for assignment in assignments if assignment.is_mapped_bangumi]
+    sorts = _numbers([
+        assignment.target.sort
+        for assignment in mapped
+        if assignment.target.sort is not None
+    ])
+    span_item_count = sum(
+        len(assignment.target_span.episode_ids)
+        for assignment in mapped
+    )
+    source_item_count = max(len(mapped), len(sorts), span_item_count)
+    ordered = source_item_count > 1 and bool(sorts or span_item_count)
+    movie_shape_comparison = media_kind == 'movie' and ordered
+    return {
+        'source_media_kind': media_kind,
+        'source_item_count': source_item_count,
+        'ordered_source_items': ordered,
+        'sort_range': _range_label(sorts),
+        'span_item_count': span_item_count,
+        'source_media_kind_is_not_tmdb_media_type': True,
+        'target_shape_comparison_required': movie_shape_comparison,
+        'target_shape_candidates': (
+            ['tv_episode_sequence', 'movie_aggregate']
+            if movie_shape_comparison
+            else []
+        ),
+    }
+
+
+def _ordered_movie_source_shapes(bridge_input: BgmToTmdbInput) -> list[dict[str, Any]]:
+    grouped: dict[tuple[int, str], list[Any]] = {}
+    for assignment in bridge_input.assignments:
+        if not assignment.is_mapped_bangumi:
+            continue
+        subject_id = int(
+            assignment.target_span.bangumi_subject_id
+            or assignment.target.bangumi_subject_id
+            or 0
+        )
+        media_kind = str(
+            assignment.target_span.media_kind
+            or assignment.target.media_kind
+            or ''
+        )
+        grouped.setdefault((subject_id, media_kind), []).append(assignment)
+
+    shapes: list[dict[str, Any]] = []
+    for (subject_id, media_kind), assignments in sorted(grouped.items()):
+        observation = _source_shape_observation(assignments, media_kind)
+        if not observation['target_shape_comparison_required']:
+            continue
+        shapes.append({
+            'bangumi_subject_id': subject_id,
+            'source_item_count': observation['source_item_count'],
+            'sort_range': observation['sort_range'],
+            'span_item_count': observation['span_item_count'],
+        })
+    return shapes
+
+
+def _target_shape_policy(bridge_input: BgmToTmdbInput) -> dict[str, Any]:
+    shapes = _ordered_movie_source_shapes(bridge_input)
+    return {
+        'source_media_kind_is_not_tmdb_media_type': True,
+        'comparison_required': bool(shapes),
+        'ordered_movie_source_shapes': shapes,
+        'candidate_target_shapes': (
+            ['tv_episode_sequence', 'movie_aggregate']
+            if shapes
+            else []
+        ),
+        'instruction': (
+            'Compare TV episode-sequence and movie-aggregate legal graphs before drafting a target or tmdb_absent_group.'
+            if shapes
+            else 'Use the accepted BGM assignment shape and hydrated legal graph as semantic evidence.'
+        ),
+    }
 
 
 def _episode_title_cards(assignments: list[Any], *, limit: int = 16) -> list[dict[str, Any]]:
@@ -1042,8 +1354,10 @@ _CJK_ALIGNMENT_TRANSLATION = str.maketrans({
 
 
 def _json_safe(value: Any) -> Any:
+    if isinstance(value, type):
+        return str(value)
     if is_dataclass(value):
-        return asdict(value)
+        return asdict(cast(Any, value))
     if hasattr(value, 'model_dump'):
         return value.model_dump(mode='json')
     if isinstance(value, dict):

@@ -1,0 +1,20 @@
+[
+  {
+    "type": "TV",
+    "anidb_id": 10111,
+    "themoviedb_id": {"tv": 67048},
+    "season": {"tmdb": 1}
+  },
+  {
+    "type": "TV",
+    "anidb_id": 9127,
+    "themoviedb_id": {"tv": 324877},
+    "season": {"tmdb": 1},
+    "episode_offset": {"tmdb": 0}
+  },
+  {
+    "type": "MOVIE",
+    "anidb_id": 99999,
+    "themoviedb_id": {"movie": [632088, 632089]}
+  }
+]

@@ -61,7 +61,8 @@ const ACTION_AGENT_OUTPUT_CONTRACT = [
   "When a custom tool or goal_complete is available, call it directly with no prose; otherwise write one short blocker sentence.",
   "Do not print recipe JSON, full mapping tables, full verifier issues, or old artifact excerpts in assistant text.",
   "Tool arguments count as output: keep board notes, snapshots, reasons, and summaries compact.",
-  "For the bridge, the first move is one reliable main-title search, then hydrate the TMDB legal graph; do not fail_closed from an empty draft before a plausible anchor exists unless the case input is malformed.",
+  "For the bridge, follow the context's external-hint next_action when it is present; otherwise the first move is one reliable main-title search, then hydrate the TMDB legal graph; do not fail_closed from an empty draft before a plausible anchor exists unless the case input is malformed.",
+  "When context reports an ordered movie-shaped source surface, source media_kind is source-side evidence rather than a TMDB media-type decision: compare both tv episode-sequence and movie-aggregate legal graphs before drafting a movie or tmdb_absent_group.",
   "Do not fail_closed while any BGM-mapped node (regular, special, OVA/OAD, movie, span, side-story) still has no rule: an unsearched BGM movie/special is a missing rule, not global ambiguity.",
   "After a TMDB anchor is hydrated, validate recipe params; do not keep broad-searching recap/summary/CM/bonus-title variants when the graph already carries enough legal-node evidence.",
 ].join("\n");
@@ -75,7 +76,8 @@ This session runs as an action-oriented bridge agent. Reason internally, then ex
 - On a turn that can call a custom tool or goal_complete, call the tool directly and omit explanatory prose.
 - Do not print chain-of-thought, self-review headings, mapping tables, recipe JSON, drafts, verifier issue dumps, or copied tool JSON.
 - A normal non-final text-only response is at most one short blocker sentence naming the next missing fact or terminal fail_closed reason.
-- When a TMDB anchor is plausible, hydrate the legal graph and draft compact recipe params.
+  - When a TMDB anchor is plausible, hydrate the legal graph and draft compact recipe params.
+  - When the context reports an ordered movie-shaped source surface, source media_kind is not the final TMDB media type; compare the TV episode-sequence and movie-aggregate graphs before choosing a target shape or tmdb_absent_group.
 - When the draft is complete, validate_bgm_to_tmdb_bridge_recipe_params is the next visible action; do not describe that you are ready.
 - When validation is accepted, submit with submit_bgm_to_tmdb_bridge_recipe_params and then call goal_complete; do not summarize before submitting.
 - Keep validation_snapshot, patch_delta, submit_snapshot, reason, and summary short. Transaction notes use strict small envelopes, not arbitrary JSON.
@@ -86,6 +88,16 @@ if (!inputPath || !outputPath || !server || !token) {
 }
 
 const caseInput = JSON.parse(await fs.readFile(inputPath, "utf8"));
+const externalMappingContext = caseInput?.context?.external_mapping || {};
+const externalHintGraphRefs = Array.isArray(externalMappingContext.prefetched_refs)
+  ? externalMappingContext.prefetched_refs.map((ref) => String(ref || "").trim()).filter(Boolean)
+  : [];
+const externalHintGraphFirst = Boolean(
+  externalMappingContext.agent_visible &&
+  externalMappingContext.unique_prefetched_candidate_ready &&
+  externalHintGraphRefs.length === 1,
+);
+const externalHintNextAction = String(externalMappingContext.next_action || "");
 const eventLog = [];
 const assistantMessages = [];
 let turnCount = 0;
@@ -139,7 +151,9 @@ const Json = {
 };
 
 const bridgeSearchGuidelines = [
-  "Search to identify one plausible TMDB anchor, not to prove every title variant.",
+  externalHintGraphFirst
+    ? `A unique external candidate is already pre-hydrated (${externalHintGraphRefs.join(", ")}). Do not call this tool first; call get_tmdb_legal_graph for that ref and use title search only for a graph miss or conflict.`
+    : "Search to identify one plausible TMDB anchor, not to prove every title variant.",
   "After one anchor is plausible, hydrate the legal graph and compare episode titles, order, counts, and season cards before more searching.",
   "Use targeted season-0 or episode-title checks for BGM nodes that TMDB might not expose; then prefer tmdb_absent_group instead of widening the search loop.",
 ].join("\n");
@@ -158,7 +172,7 @@ const bridgeSubmitGuidelines = [
 const bridgeFailClosedGuidelines = [
   "Use fail_closed only for concrete global TMDB ambiguity or contradiction: two or more equally-plausible TMDB refs for the same BGM node with no deciding evidence.",
   "Do not use fail_closed just because one mapped BGM node is absent from TMDB; use tmdb_absent_group for that case.",
-  "Before fail_closed, recheck: (1) every BGM-mapped subject/assignment (regular, special, OVA/OAD, movie, span, side-story) already has a rule with an explicit disposition; (2) at least one TMDB anchor was searched AND hydrated via get_tmdb_legal_graph; (3) any BGM movie/special/OVA/OAD/side-story you never searched or hydrated is a missing rule, not global ambiguity — search the title, hydrate, then map_to_tmdb or tmdb_absent_group.",
+  "Before fail_closed, recheck: (1) every BGM-mapped subject/assignment (regular, special, OVA/OAD, movie, span, side-story) already has a rule with an explicit disposition; (2) at least one TMDB anchor was searched and hydrated via get_tmdb_legal_graph, or a unique external candidate was prehydrated and hydrated; (3) any BGM movie/special/OVA/OAD/side-story you never searched or hydrated is a missing rule, not global ambiguity — search the title, hydrate, then map_to_tmdb or tmdb_absent_group.",
   "The common fail-closed trap: anchor only the TV series, map the regular sequence, then fail_closed the whole case because a BGM movie/special in the same package was never searched. If the frontier scan still has unmapped BGM nodes, you have not finished exploring.",
 ].join("\n");
 
@@ -403,8 +417,16 @@ const tools = [
       max_candidates: Json.Optional(Json.Number()),
     }),
     {
-      promptSnippet: "Search for one plausible TMDB anchor",
-      promptGuidelines: bridgeSearchGuidelines.split("\n"),
+      promptSnippet: externalHintGraphFirst
+        ? `Hydrate the preloaded external candidate ${externalHintGraphRefs[0]} first`
+        : "Search for one plausible TMDB anchor",
+      promptGuidelines: externalHintGraphFirst
+        ? [
+            `First action: call get_tmdb_legal_graph with ${externalHintGraphRefs[0]}.`,
+            "Treat the external ref as read-only candidate evidence and compare its legal graph before any title search.",
+            "Use search_tmdb_candidates only if the graph is missing, contradictory, or does not cover the BGM frontier.",
+          ]
+        : bridgeSearchGuidelines.split("\n"),
     },
   ),
   proxyTool(
@@ -413,11 +435,18 @@ const tools = [
     "Hydrate TMDB details and legal nodes for refs such as tv:45844 or movie:1234.",
     objectSchema({ tmdb_refs: Json.Array(Json.String()) }),
     {
-      promptSnippet: "Hydrate the candidate TMDB legal graph",
-      promptGuidelines: [
-        "Use this after a plausible TMDB ref is found.",
-        "Compare season cards, episode titles, aliases, year, and overview against the accepted BGM plan.",
-      ],
+      promptSnippet: externalHintGraphFirst
+        ? `Hydrate the preloaded external candidate ${externalHintGraphRefs[0]}`
+        : "Hydrate the candidate TMDB legal graph",
+      promptGuidelines: externalHintGraphFirst
+        ? [
+            `Call this first with ${externalHintGraphRefs[0]}; the candidate was recalled from read-only external evidence.`,
+            "Compare titles, aliases, years, season cards, and episode cards; do not treat season or offset hints as final decisions.",
+          ]
+        : [
+            "Use this after a plausible TMDB ref is found.",
+            "Compare season cards, episode titles, aliases, year, and overview against the accepted BGM plan.",
+          ],
     },
   ),
   proxyTool(
@@ -850,7 +879,7 @@ async function waitForFinalResultWithNudge(session, promptDone) {
       "Hard finish checkpoint: act or close. Do not narrate the decision.",
       "This turn must be exactly one custom tool call or fail_closed; no prose.",
       "Use issue_repair_contexts before cheap patches; target-surface mismatch must be repaired or explicitly exhausted before supplemental.",
-      "Before fail_closed, recheck the frontier: every BGM-mapped node needs a rule, at least one TMDB anchor must be hydrated, and an unsearched BGM movie/special/OVA/OAD/side-story is a missing rule (search→hydrate→map_to_tmdb or tmdb_absent_group), not global ambiguity.",
+      "Before fail_closed, recheck the frontier: every BGM-mapped node needs a rule, at least one TMDB anchor must be searched and hydrated or a unique external candidate must be prehydrated and hydrated, and an unsearched BGM movie/special/OVA/OAD/side-story is a missing rule (search→hydrate→map_to_tmdb or tmdb_absent_group), not global ambiguity.",
       "- validate compact recipe params",
       "- patch named verifier issue",
       "- submit accepted",
@@ -963,7 +992,12 @@ Complete this BGM-to-TMDB bridge dry-run.
 Read the case input JSON at: ${inputPath}
 This input already contains an accepted Local-to-Bangumi compiled_plan. Do not rerun Local-to-Bangumi.
 Use get_bgm_to_tmdb_bridge_context for the accepted BGM assignments and current TMDB graph.
-Use search_tmdb_candidates to find possible TMDB IDs. Recipe validation hydrates declared TMDB refs automatically; call get_tmdb_legal_graph only when you need detailed season cards before drafting.
+${externalHintGraphFirst
+    ? `The context has a unique pre-hydrated external candidate: ${externalHintGraphRefs.join(", ")}. Follow this first action exactly: ${externalHintNextAction || `call get_tmdb_legal_graph with ${externalHintGraphRefs[0]}`}. Do not call search_tmdb_candidates before inspecting that graph; use title search only if the graph misses or conflicts.`
+    : "If the context contains external_mapping_hints, treat them as read-only candidate recall evidence: prefer get_tmdb_legal_graph for a plausible hint before broad title searches, but compare hydrated titles, years, aliases, season cards, and episode cards. ExtLinker/Fribb season or offset values are weak locators, never final recipe values; keep text search available when hints conflict or are absent."}
+${externalHintGraphFirst
+    ? "When the pre-hydrated graph is insufficient or contradictory, use search_tmdb_candidates to widen recall."
+    : "Use search_tmdb_candidates to find possible TMDB IDs."} Recipe validation hydrates declared TMDB refs automatically; call get_tmdb_legal_graph when you need detailed season cards before drafting.
 ${recipeParamsQuickReference}
 For multi-season franchise packages, after one anchor search finds a plausible result, use its hydrated legal graph as the next evidence layer before deciding whether individual season/OVA/OAD/special searches are useful. Use the hydrated season cards, season 0 cards, aliases, and episode titles to decide whether more searches are necessary.
 Treat the accepted BGM plan as the frontier. After the main TMDB anchor is hydrated, keep BGM specials, OVA/OAD, recap movies, spans, and side-story subjects in a TMDB side frontier; map any frontier node explained by hydrated legal nodes, then search additional TMDB titles only for graph misses or conflicting candidates.
@@ -971,7 +1005,7 @@ When series title evidence is unclear, use BGM episode_title_cards_sample and th
 Validate early with validate_bgm_to_tmdb_bridge_recipe_params. After it is accepted, submit the same params with submit_bgm_to_tmdb_bridge_recipe_params and then call goal_complete.
 If plausible TMDB refs have been found and hydrated, do not keep searching recap/summary/CM/bonus title variants. Validate current recipe params; if a mapped BGM assignment has no concrete TMDB legal node after targeted season-0/episode-title checks, use tmdb_absent_group for that assignment and keep the rest accepted.
 Do not convert BGM-mapped OVA/OAD/SP/movie/side-story nodes to supplemental to make validation pass; repair TMDB ref, season, episode range, span/movie shape, or target-absent boundary first. supplemental_group is only for assignments already supplemental in the Local-to-Bangumi plan.
-If global TMDB identity evidence is insufficient or contradictory, call fail_closed with concrete related refs, then goal_complete. Do not fail_closed just because an otherwise identified BGM episode/special lacks a TMDB node; use tmdb_absent_group for that case. Before any fail_closed, run the Before Fail Closed recheck: every BGM-mapped node (regular, special, OVA/OAD, movie, span, side-story) must already have a rule with an explicit disposition, at least one TMDB anchor must be searched and hydrated, and any BGM movie/special/OVA/OAD/side-story you never searched is a missing rule (search → hydrate → map_to_tmdb or tmdb_absent_group), not global ambiguity. The common trap is anchoring only the TV series and fail_closed-ing the whole case because a BGM movie/special in the same package was never searched.
+If global TMDB identity evidence is insufficient or contradictory, call fail_closed with concrete related refs, then goal_complete. Do not fail_closed just because an otherwise identified BGM episode/special lacks a TMDB node; use tmdb_absent_group for that case. Before any fail_closed, run the Before Fail Closed recheck: every BGM-mapped node (regular, special, OVA/OAD, movie, span, side-story) must already have a rule with an explicit disposition, and at least one TMDB anchor must be searched and hydrated or a unique external candidate must be prehydrated and hydrated. Any BGM movie/special/OVA/OAD/side-story you never searched or hydrated is a missing rule (search → hydrate → map_to_tmdb or tmdb_absent_group), not global ambiguity. The common trap is anchoring only the TV series and fail_closed-ing the whole case because a BGM movie/special in the same package was never searched.
 Do not use native tools to edit, write, move, copy, link, rename, or inspect old run artifacts for answers.
 Available lazy skills:
 /skill:tmdb-bridge-contract: use when bridge draft shape, TMDB ID/node policy, or verifier repair is unclear.

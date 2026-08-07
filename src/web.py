@@ -359,6 +359,14 @@ class SPAStaticFiles(StaticFiles):
     """
 
     _RESERVED_PREFIXES = {'api', 'sendTask', 'health'}
+    _MEDIA_TYPES = {
+        '.css': 'text/css; charset=utf-8',
+        '.js': 'text/javascript; charset=utf-8',
+        '.mjs': 'text/javascript; charset=utf-8',
+        '.json': 'application/json; charset=utf-8',
+        '.svg': 'image/svg+xml',
+        '.webmanifest': 'application/manifest+json',
+    }
 
     def __init__(self, *args: object, **kwargs: object) -> None:
         kwargs['html'] = False
@@ -369,13 +377,24 @@ class SPAStaticFiles(StaticFiles):
         first = path.lstrip('/').split('/', 1)[0]
         return first in cls._RESERVED_PREFIXES
 
+    @classmethod
+    def _set_media_type(cls, response: object, path: str) -> None:
+        suffix = Path(path).suffix.casefold()
+        media_type = cls._MEDIA_TYPES.get(suffix)
+        if media_type and hasattr(response, 'headers'):
+            response.headers['content-type'] = media_type  # type: ignore[attr-defined]
+
     async def get_response(self, path: str, scope: object):  # type: ignore[override]
         if self._is_reserved(path):
             raise HTTPException(status_code=404)
         if path in {'', '/', '.'}:
-            return await super().get_response('index.html', scope)  # type: ignore[arg-type]
+            response = await super().get_response('index.html', scope)  # type: ignore[arg-type]
+            self._set_media_type(response, 'index.html')
+            return response
         try:
-            return await super().get_response(path, scope)  # type: ignore[arg-type]
+            response = await super().get_response(path, scope)  # type: ignore[arg-type]
+            self._set_media_type(response, path)
+            return response
         except HTTPException as exc:
             if exc.status_code != 404:
                 raise
@@ -384,7 +403,9 @@ class SPAStaticFiles(StaticFiles):
             requested = Path(path)
             if (not accepts_html and path not in {'', '/'}) or requested.suffix:
                 raise
-            return await super().get_response('index.html', scope)  # type: ignore[arg-type]
+            response = await super().get_response('index.html', scope)  # type: ignore[arg-type]
+            self._set_media_type(response, 'index.html')
+            return response
 
 
 if _FRONTEND_OUT.is_dir():

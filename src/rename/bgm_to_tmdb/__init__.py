@@ -5,6 +5,13 @@ from .artifacts import (
 )
 from .compiler import build_tmdb_legal_graph, compile_bgm_to_tmdb_input
 from .dry_run import BGM_TO_TMDB_BRIDGE_RESULT_STAGE, run_bgm_to_tmdb_bridge_dry_run
+from .external_hints import (
+    ExternalMappingIndex,
+    ExternalTmdbHint,
+    clear_external_mapping_index_cache,
+    load_configured_external_mapping_index,
+    load_external_mapping_index,
+)
 from .graph_builder import (
     build_tmdb_legal_graph_from_payloads,
     build_tmdb_movie_candidate_card,
@@ -65,6 +72,11 @@ __all__ = [
     'BgmToTmdbRecipeParams',
     'BgmToTmdbRecipeRule',
     'BgmToTmdbTmdbTarget',
+    'ExternalMappingIndex',
+    'ExternalTmdbHint',
+    'clear_external_mapping_index_cache',
+    'load_configured_external_mapping_index',
+    'load_external_mapping_index',
     'TmdbCandidateCard',
     'TmdbRenameDestination',
     'TmdbRenamePlan',

@@ -555,13 +555,22 @@ function PathField({
   const [open, setOpen] = useState(false);
   const selectMode = entry.select_mode === "file" ? "file" : "directory";
   const strVal = typeof value === "string" ? value : "";
+  const isSnapshotPath =
+    entry.key === "rename_bgm_extlinker_snapshot_path" ||
+    entry.key === "rename_bgm_fribb_snapshot_path";
   return (
     <div className="flex gap-2">
       <Input
         type="text"
         value={strVal}
         onChange={(e) => setField(entry.key, e.target.value)}
-        placeholder={selectMode === "file" ? t("filePathPlaceholder") : t("directoryPathPlaceholder")}
+        placeholder={
+          isSnapshotPath
+            ? t("snapshotPathPlaceholder")
+            : selectMode === "file"
+              ? t("filePathPlaceholder")
+              : t("directoryPathPlaceholder")
+        }
       />
       <Button
         type="button"

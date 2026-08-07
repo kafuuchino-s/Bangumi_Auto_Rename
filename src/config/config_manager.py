@@ -41,6 +41,9 @@ CONFIG_DEFAULT = {
     "rename_bgm_to_tmdb_product_pipeline_enabled": True,
     "rename_bgm_to_tmdb_execute_enabled": True,
     "rename_bgm_to_tmdb_retry_on_fail_closed": True,  # 段2 BGM→TMDB 桥接 Pi 有非确定性，fail_closed 可能是假阴性（本可桥接却判不能）。True 时对 fail_closed 单次重试纠回假阴性；重试仍 fail_closed 则接受为终态失败。不对 invalid/need_confirm/error 重试
+    "rename_bgm_external_hints_mode": "off",  # off | shadow | assist；外部映射只提供 BGM→TMDB 候选证据
+    "rename_bgm_extlinker_snapshot_path": "",  # BangumiExtLinker anime_map.json 本地快照
+    "rename_bgm_fribb_snapshot_path": "",  # Fribb anime-list-full.json 本地快照
     "rename_bgm_to_tmdb_pi_command": "",
     "log_level": "INFO",  # 日志等级
     "queue_max_workers": 1,  # 队列并行处理数

@@ -56,6 +56,9 @@ def test_spa_fallback_does_not_hide_assets_or_api(tmp_path: Path) -> None:
         '<html><body><div id="root"></div></body></html>', encoding="utf-8"
     )
 
+    (frontend_out / "app.js").write_text("console.log('ok');", encoding="utf-8")
+    (frontend_out / "app.css").write_text("body { color: red; }", encoding="utf-8")
+
     spa_app = FastAPI()
 
     @spa_app.get("/api/known")
@@ -69,6 +72,8 @@ def test_spa_fallback_does_not_hide_assets_or_api(tmp_path: Path) -> None:
     html = client.get("/settings/general", headers={"accept": "text/html"})
     assert html.status_code == 200
     assert '<div id="root">' in html.text
+    assert client.get("/app.js").headers["content-type"] == "text/javascript; charset=utf-8"
+    assert client.get("/app.css").headers["content-type"] == "text/css; charset=utf-8"
     assert client.get("/assets/missing.js").status_code == 404
     assert client.get("/api/known").json() == {"ok": True}
     assert client.get("/api/unknown").status_code == 404
@@ -106,6 +111,18 @@ def test_field_spec_and_config_enums_are_stable_ids() -> None:
     overwrite = next(item for item in spec if item["key"] == "overwrite_existing")
     assert mode["options"] == ["link", "copy", "move"]
     assert overwrite["options"] == ["overwrite", "skip"]
+    external_mode = next(item for item in spec if item["key"] == "rename_bgm_external_hints_mode")
+    assert external_mode["control"] == "select"
+    assert external_mode["options"] == ["off", "shadow", "assist"]
+    assert external_mode["level"] == "advanced"
+    for key in (
+        "rename_bgm_extlinker_snapshot_path",
+        "rename_bgm_fribb_snapshot_path",
+    ):
+        snapshot = next(item for item in spec if item["key"] == key)
+        assert snapshot["control"] == "path"
+        assert snapshot["select_mode"] == "file"
+
     assert all("label" not in item and "help" not in item for item in spec)
 
 

@@ -17,7 +17,10 @@ def extract_accepted_compiled_plan_payload(payload: dict[str, Any]) -> dict[str,
     if not isinstance(payload, dict):
         raise ValueError('sample artifact payload must be a JSON object')
     status = str(payload.get('status') or '').strip()
-    snapshot = payload.get('snapshot') if isinstance(payload.get('snapshot'), dict) else payload
+    snapshot_value = payload.get('snapshot')
+    snapshot: dict[str, Any] = (
+        snapshot_value if isinstance(snapshot_value, dict) else payload
+    )
     snapshot_status = str(snapshot.get('status') or snapshot.get('case_agent_status') or '').strip()
     accepted_contract_ok = payload.get('accepted_contract_ok')
     if accepted_contract_ok is None:

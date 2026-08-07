@@ -1,0 +1,20 @@
+[
+  {
+    "name": "Barakamon",
+    "name_cn": "元气囝仔",
+    "bgm_id": "83868",
+    "anidb_id": "10111",
+    "tmdb_id": "tv/67048/season/0"
+  },
+  {
+    "name": "Psycho-Pass Extended Edition",
+    "bgm_id": "103906",
+    "anidb_id": "9127",
+    "tmdb_id": "tv/324877/season/1"
+  },
+  {
+    "name": "Ambiguous movie split",
+    "bgm_id": "285410",
+    "tmdb_id": "movie/632088"
+  }
+]

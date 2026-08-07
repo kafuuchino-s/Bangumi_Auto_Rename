@@ -15,5 +15,8 @@ def test_local_bangumi_case_agent_defaults_are_present():
     assert CONFIG_DEFAULT['rename_bgm_to_tmdb_product_pipeline_enabled'] is True
     assert CONFIG_DEFAULT['rename_bgm_to_tmdb_execute_enabled'] is True
     assert CONFIG_DEFAULT['rename_bgm_to_tmdb_pi_command'] == ''
+    assert CONFIG_DEFAULT['rename_bgm_external_hints_mode'] == 'off'
+    assert CONFIG_DEFAULT['rename_bgm_extlinker_snapshot_path'] == ''
+    assert CONFIG_DEFAULT['rename_bgm_fribb_snapshot_path'] == ''
 
     assert 'rename_llm_planning_view_enabled' not in CONFIG_DEFAULT

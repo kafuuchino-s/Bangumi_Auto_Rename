@@ -261,6 +261,10 @@ def test_node_sidecar_uses_pi_core_bridge_tools_and_read_only_native_tools() -> 
     assert native_names.isdisjoint({'write', 'edit', 'bash', 'shell', 'delete'})
     assert 'get_bgm_to_tmdb_bridge_context' in text
     assert 'search_tmdb_candidates' in text
+    assert 'external_mapping_hints' in text
+    assert 'read-only candidate recall evidence' in text
+    assert 'unique_prefetched_candidate_ready' in text
+    assert 'Do not call search_tmdb_candidates before inspecting' in text
     assert 'get_tmdb_legal_graph' in text
     assert 'validate_bgm_to_tmdb_bridge_recipe_params' in text
     assert 'submit_bgm_to_tmdb_bridge_recipe_params' in text
@@ -276,6 +280,9 @@ def test_node_sidecar_uses_pi_core_bridge_tools_and_read_only_native_tools() -> 
     assert re.search(r'(?<![A-Za-z0-9_])submit_bgm_to_tmdb_bridge(?![A-Za-z0-9_])', text) is None
     assert 'tmdb-bridge-contract' in text
     assert 'one anchor search' in text
+    assert 'ordered movie-shaped source surface' in text
+    assert 'compare both tv episode-sequence and movie-aggregate legal graphs' in text
+    assert 'media_kind is not the final TMDB media type' in text
     assert 'hydrated legal graph as the next evidence layer' in text
     assert 'Treat the accepted BGM plan as the frontier.' in text
     assert 'TMDB side frontier' in text
