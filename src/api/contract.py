@@ -194,7 +194,7 @@ def canonical_field_spec(entries: list[Mapping[str, Any]]) -> list[dict[str, Any
             "ai 识别": "ai_recognition", "ai 高级路由": "ai_routing",
             "bgm→tmdb 产品链路": "bgm_tmdb_pipeline", "webhook 过滤与分类": "webhook_filters",
             "传输与覆盖": "transfer", "元数据缓存": "metadata_cache", "媒体库路径": "media_paths",
-            "字幕对齐（ffsubsync）": "subtitle_sync", "字幕自动抓取": "subtitle_fetch",
+            "重命名标题": "rename_titles", "字幕对齐（ffsubsync）": "subtitle_sync", "字幕自动抓取": "subtitle_fetch",
             "抓取高级": "subtitle_fetch_advanced", "运行时": "runtime",
             "通知：emby": "notify_emby", "通知：telegram": "notify_telegram", "输出路径": "output_paths",
         }

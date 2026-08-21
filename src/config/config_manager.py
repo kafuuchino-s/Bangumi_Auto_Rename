@@ -12,6 +12,17 @@ from typing import Any, Dict
 
 from ..utils.path import CONFIG_PATH
 
+
+TITLE_LANGUAGE_OPTIONS = (
+    "auto",
+    "zh-CN",
+    "zh-TW",
+    "ja-JP",
+    "original",
+    "en-US",
+)
+DEFAULT_TITLE_LANGUAGE_ORDER = ["auto"]
+
 CONFIG_DEFAULT = {
     "config_schema_version": 2,
     "api_key": "",
@@ -19,6 +30,7 @@ CONFIG_DEFAULT = {
     "movie_path": "",
     "anime_path": "",
     "anime_movie_path": "",
+    "rename_output_title_language_order": list(DEFAULT_TITLE_LANGUAGE_ORDER),
     "mode": "link",
     "overwrite_existing": "skip",  # canonical IDs; old Chinese values/bools are accepted at the read boundary
     "hardlink_fallback_to_symlink": True,  # 链接模式下硬链接失败（如跨文件系统）时是否降级为软链接。False 时硬链失败记 partial_failure，不静默降级（软链接源删则失效，语义与硬链接不同）
@@ -206,10 +218,14 @@ class ConfigManager:
             original_keys = set(self.config)
             self._migrate_i18n_v2(original_keys)
 
-            # 对没有的值，添加默认值
             for key in CONFIG_DEFAULT:
                 if key not in self.config:
-                    self.config[key] = CONFIG_DEFAULT[key]
+                    default = CONFIG_DEFAULT[key]
+                    self.config[key] = list(default) if isinstance(default, list) else default
+
+            self.config["rename_output_title_language_order"] = self._canonical_title_language_order(
+                self.config.get("rename_output_title_language_order")
+            )
 
             # Pi is the only runtime AI backend; normalize retired protocol/backend values.
             if self.config.get("openai_api_interface") == "anthropic_messages":
@@ -244,6 +260,20 @@ class ConfigManager:
             # 重新写回
             if not self._readonly_mode:
                 self.write_config()
+
+    @staticmethod
+    def _canonical_title_language_order(value: object) -> list[str]:
+        raw_values = value if isinstance(value, (list, tuple)) else [value]
+        order: list[str] = []
+        for raw in raw_values:
+            language = str(raw or "").strip()
+            if language not in TITLE_LANGUAGE_OPTIONS:
+                continue
+            if language == "auto":
+                return ["auto"]
+            if language not in order:
+                order.append(language)
+        return order or list(DEFAULT_TITLE_LANGUAGE_ORDER)
 
     @staticmethod
     def _canonical_mode(value: object) -> str:
@@ -367,6 +397,8 @@ class ConfigManager:
                     value = self._canonical_overwrite(value)
                 elif key == "config_schema_version":
                     value = 2
+                elif key == "rename_output_title_language_order":
+                    value = self._canonical_title_language_order(value)
                 # 对URL类型的配置项进行特殊处理
                 if key.endswith('_base_url') and value and isinstance(value, str):
                     value = self._normalize_url(value)

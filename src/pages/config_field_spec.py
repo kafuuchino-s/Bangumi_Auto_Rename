@@ -10,7 +10,7 @@
 - 仅描述 ``cm.config`` 中 **现有且已在 config_page 渲染** 的 key，不新增、不丢失。
 - 纯数据模块，无 UI 依赖，便于单独测试与回归。
 - 控件类型 (control) 取值固定为：
-  ``toggle`` / ``select`` / ``number`` / ``input`` / ``secret`` / ``path``
+  ``toggle`` / ``select`` / ``ordered_select`` / ``number`` / ``input`` / ``secret`` / ``path``
   其中 ``path`` = 普通 input + 「选择」按钮（local_file_picker）；``secret`` = password input。
 """
 
@@ -18,7 +18,7 @@ from __future__ import annotations
 
 from typing import Any, Mapping
 
-from ..config.config_manager import CN_MAP
+from ..config.config_manager import CN_MAP, TITLE_LANGUAGE_OPTIONS
 
 
 
@@ -27,6 +27,7 @@ from ..config.config_manager import CN_MAP
 # --------------------------------------------------------------------------- #
 TOGGLE = "toggle"
 SELECT = "select"
+ORDERED_SELECT = "ordered_select"
 NUMBER = "number"
 INPUT = "input"
 SECRET = "secret"  # 密钥脱敏输入框
@@ -57,6 +58,7 @@ TAB_ORDER = [
 
 # 分组 key（同时用于常用/高级区的卡片分组顺序）
 GRP_PATHS = "媒体库路径"
+GRP_RENAME = "重命名标题"
 GRP_TRANSFER = "传输与覆盖"
 GRP_AI = "AI 识别"
 GRP_SUBTITLE_FETCH = "字幕自动抓取"
@@ -76,6 +78,7 @@ GRP_CACHE = "元数据缓存"
 # 常用区分组顺序
 BASIC_GROUP_ORDER = [
     GRP_PATHS,
+    GRP_RENAME,
     GRP_TRANSFER,
     GRP_AI,
     GRP_SUBTITLE_FETCH,
@@ -99,6 +102,7 @@ ADVANCED_GROUP_ORDER = [
 # 分组 → Material icon 名（导航与卡片标题用）
 GROUP_ICON = {
     GRP_PATHS: "folder",
+    GRP_RENAME: "title",
     GRP_TRANSFER: "swap_horiz",
     GRP_AI: "psychology",
     GRP_SUBTITLE_FETCH: "subtitles",
@@ -176,6 +180,16 @@ FIELD_SPEC: list[Mapping[str, Any]] = [
         "tab": TAB_GENERAL,
         "subgroup": "输出路径",
         "help": "整理后动漫电影（剧场版）的落盘根目录。",
+    },
+    {
+        "key": "rename_output_title_language_order",
+        "control": ORDERED_SELECT,
+        "level": LEVEL_BASIC,
+        "group": GRP_RENAME,
+        "tab": TAB_GENERAL,
+        "options": list(TITLE_LANGUAGE_OPTIONS),
+        "help": "选择最终目录名和文件名的标题语言；可多选，按选择顺序作为优先级。自动判断保持当前行为。",
+        "default_hint": "默认 自动判断",
     },
     # ============================ 传输与覆盖 ============================ #
     {

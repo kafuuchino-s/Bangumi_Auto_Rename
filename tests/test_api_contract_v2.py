@@ -111,6 +111,18 @@ def test_field_spec_and_config_enums_are_stable_ids() -> None:
     overwrite = next(item for item in spec if item["key"] == "overwrite_existing")
     assert mode["options"] == ["link", "copy", "move"]
     assert overwrite["options"] == ["overwrite", "skip"]
+    title_languages = next(
+        item for item in spec if item["key"] == "rename_output_title_language_order"
+    )
+    assert title_languages["control"] == "ordered_select"
+    assert title_languages["options"] == [
+        "auto",
+        "zh-CN",
+        "zh-TW",
+        "ja-JP",
+        "original",
+        "en-US",
+    ]
     external_mode = next(item for item in spec if item["key"] == "rename_bgm_external_hints_mode")
     assert external_mode["control"] == "select"
     assert external_mode["options"] == ["off", "shadow", "assist"]

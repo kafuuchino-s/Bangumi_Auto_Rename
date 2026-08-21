@@ -2,12 +2,31 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { AlertTriangle, FlaskConical, Loader2, RefreshCw, Save } from "lucide-react";
+import {
+  AlertTriangle,
+  ArrowDown,
+  ArrowUp,
+  ChevronDown,
+  FlaskConical,
+  FolderOpen,
+  Loader2,
+  RefreshCw,
+  Save,
+  X,
+} from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   Select,
   SelectContent,
@@ -15,7 +34,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { FolderOpen } from "lucide-react";
 import { PathBrowserDialog } from "./path-browser-dialog";
 import {
   getConfig,
@@ -337,6 +355,16 @@ function Control({
     );
   }
 
+  if (k === "rename_output_title_language_order") {
+    return (
+      <OrderedSelectField
+        entry={entry}
+        value={value}
+        setField={setField}
+      />
+    );
+  }
+
   if (control === "toggle" || control === "select") {
     const opts = options ?? [];
     const cur = typeof value === "string" ? value : opts[0];
@@ -437,6 +465,154 @@ function Control({
       value={typeof value === "string" ? value : ""}
       onChange={(e) => setField(k, e.target.value)}
     />
+  );
+}
+
+function normalizeOrderedValues(value: unknown, options: string[]): string[] {
+  const raw = Array.isArray(value) ? value : typeof value === "string" ? [value] : [];
+  const allowed = new Set(options);
+  return raw.filter(
+    (item, index): item is string =>
+      typeof item === "string" &&
+      allowed.has(item) &&
+      raw.indexOf(item) === index,
+  );
+}
+
+function OrderedSelectField({
+  entry,
+  value,
+  setField,
+}: {
+  entry: FieldSpecEntry;
+  value: unknown;
+  setField: (k: string, v: unknown) => void;
+}) {
+  const { t } = useTranslation("settings");
+  const options = entry.options ?? [];
+  const selected = normalizeOrderedValues(value, options);
+  const hasAuto = options.includes("auto");
+  const displayLabel = (option: string) =>
+    t(`option.${option}`, { defaultValue: option });
+
+  const updateOrder = (next: string[]) => {
+    setField(entry.key, next.length > 0 || !hasAuto ? next : ["auto"]);
+  };
+
+  const toggleOption = (option: string) => {
+    if (option === "auto") {
+      updateOrder(["auto"]);
+      return;
+    }
+    const next = selected.filter((item) => item !== "auto");
+    if (next.includes(option)) {
+      updateOrder(next.filter((item) => item !== option));
+    } else {
+      updateOrder([...next, option]);
+    }
+  };
+
+  const move = (index: number, direction: -1 | 1) => {
+    const nextIndex = index + direction;
+    if (nextIndex < 0 || nextIndex >= selected.length) return;
+    const next = [...selected];
+    [next[index], next[nextIndex]] = [next[nextIndex], next[index]];
+    updateOrder(next);
+  };
+
+  const remove = (option: string) => {
+    updateOrder(selected.filter((item) => item !== option));
+  };
+
+  return (
+    <div className="space-y-2">
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full justify-between font-normal"
+            title={selected.map(displayLabel).join(" > ")}
+          >
+            <span className="truncate">
+              {selected.length > 0
+                ? selected.map(displayLabel).join(" > ")
+                : t("orderedTitleLanguageEmpty")}
+            </span>
+            <ChevronDown className="ml-2 h-4 w-4 shrink-0 text-muted-foreground" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="start" className="min-w-[18rem]">
+          <DropdownMenuLabel>{t("orderedTitleLanguageChoose")}</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          {options.map((option) => (
+            <DropdownMenuCheckboxItem
+              key={option}
+              checked={selected.includes(option)}
+              onSelect={(event) => {
+                event.preventDefault();
+                toggleOption(option);
+              }}
+            >
+              {displayLabel(option)}
+            </DropdownMenuCheckboxItem>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      {selected.length > 0 && selected[0] !== "auto" && (
+        <div className="space-y-1 rounded-md border bg-muted/20 p-2">
+          <div className="text-xs text-muted-foreground">
+            {t("orderedTitleLanguagePriority")}
+          </div>
+          {selected.map((option, index) => (
+            <div
+              key={option}
+              className="flex min-h-8 items-center gap-2 rounded-md bg-background px-2"
+            >
+              <span className="w-5 text-center text-xs text-muted-foreground">
+                {index + 1}
+              </span>
+              <span className="min-w-0 flex-1 truncate text-sm">
+                {displayLabel(option)}
+              </span>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon-xs"
+                disabled={index === 0}
+                onClick={() => move(index, -1)}
+                title={t("orderedTitleLanguageMoveUp")}
+                aria-label={t("orderedTitleLanguageMoveUp")}
+              >
+                <ArrowUp />
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon-xs"
+                disabled={index === selected.length - 1}
+                onClick={() => move(index, 1)}
+                title={t("orderedTitleLanguageMoveDown")}
+                aria-label={t("orderedTitleLanguageMoveDown")}
+              >
+                <ArrowDown />
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon-xs"
+                onClick={() => remove(option)}
+                title={t("orderedTitleLanguageRemove")}
+                aria-label={t("orderedTitleLanguageRemove")}
+              >
+                <X />
+              </Button>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
   );
 }
 

@@ -104,4 +104,42 @@ describe("settings interactions", () => {
     );
     expect(toast.success).toHaveBeenCalledWith("saveSuccess");
   });
+
+  it("keeps selected title languages in priority order when saving", async () => {
+    api.getConfig.mockResolvedValue({
+      rename_output_title_language_order: ["zh-CN"],
+    });
+    api.getFieldSpec.mockResolvedValue([
+      {
+        key: "rename_output_title_language_order",
+        control: "ordered_select",
+        level: "basic",
+        group: "rename_titles",
+        tab: "general",
+        options: ["auto", "zh-CN", "zh-TW", "en-US", "original"],
+      },
+    ]);
+
+    render(<SettingsTabContent tab="general" />);
+
+    const titleLanguageTrigger = await screen.findByRole("button", {
+      name: "option.zh-CN",
+    });
+    fireEvent.keyDown(titleLanguageTrigger, {
+      key: "Enter",
+      code: "Enter",
+      charCode: 13,
+    });
+    fireEvent.click(
+      await screen.findByRole("menuitemcheckbox", { name: "option.en-US" }),
+    );
+    fireEvent.keyDown(screen.getByRole("menu"), { key: "Escape" });
+    fireEvent.click(screen.getByRole("button", { name: "save" }));
+
+    await waitFor(() =>
+      expect(api.updateConfig).toHaveBeenCalledWith({
+        rename_output_title_language_order: ["zh-CN", "en-US"],
+      }),
+    );
+  });
 });

@@ -32,6 +32,7 @@ from .recipe import (
     compile_and_verify_bgm_to_tmdb_recipe_params,
     declared_tmdb_refs,
 )
+from .title_policy import configured_title_language_order, resolve_output_title
 from .verifier import verify_and_compile_bgm_to_tmdb_plan, verify_bgm_to_tmdb_draft
 
 
@@ -61,6 +62,7 @@ class BgmToTmdbBridgeToolState:
     external_hint_prefetch_errors: list[str] = field(default_factory=list)
     external_hint_prefetch_omitted_refs: list[str] = field(default_factory=list)
     external_hint_search_shortcut_count: int = 0
+    output_title_cache: dict[tuple[str, int, str], str] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
         self.run_dir.mkdir(parents=True, exist_ok=True)
@@ -430,7 +432,7 @@ class BgmToTmdbBridgeToolState:
         existing = self.legal_graph.candidate_map()
         for ref in refs:
             if ref in existing:
-                candidates.append(existing[ref])
+                candidates.append(self._apply_output_title_policy(existing[ref]))
                 continue
             media_type, tmdb_id = _parse_tmdb_ref(ref)
             if not media_type or tmdb_id <= 0:
@@ -441,7 +443,11 @@ class BgmToTmdbBridgeToolState:
                 if not tv_info:
                     errors.append(f'tv:{tmdb_id} details not found')
                     continue
-                candidates.append(build_tmdb_tv_candidate_card(tv_info))
+                candidates.append(
+                    self._apply_output_title_policy(
+                        build_tmdb_tv_candidate_card(tv_info)
+                    )
+                )
             else:
                 movie_info = self.tmdb_search.get_movie_info_by_id(tmdb_id)
                 if not movie_info:
@@ -450,10 +456,12 @@ class BgmToTmdbBridgeToolState:
                 alternative_titles = _safe_call(self.tmdb_search._tmdb_movie_alternative_titles, tmdb_id) or {}
                 translations = _safe_call(self.tmdb_search._tmdb_movie_translations, tmdb_id) or {}
                 candidates.append(
-                    build_tmdb_movie_candidate_card(
-                        movie_info,
-                        alternative_titles=alternative_titles,
-                        translations=translations,
+                    self._apply_output_title_policy(
+                        build_tmdb_movie_candidate_card(
+                            movie_info,
+                            alternative_titles=alternative_titles,
+                            translations=translations,
+                        )
                     )
                 )
         loaded_refs = {
@@ -530,6 +538,65 @@ class BgmToTmdbBridgeToolState:
             tv_info = _safe_call(getattr(self.tmdb_search, 'fill_season_info', None), tv_info) or tv_info
 
         return self._enrich_tv_alias_metadata(tv_info)
+
+    def _apply_output_title_policy(self, candidate: TmdbCandidateCard) -> TmdbCandidateCard:
+        order = configured_title_language_order()
+        if order == ['auto']:
+            return candidate
+
+        localized_titles: dict[str, str] = {}
+        languages_to_fetch = [*order, 'en-US']
+        for language in languages_to_fetch:
+            if language in {'auto', 'original'} or language in localized_titles:
+                continue
+            localized_titles[language] = self._fetch_output_title(
+                candidate.media_type,
+                candidate.tmdb_id,
+                language,
+            )
+
+        current_title = candidate.display_title
+        original_title = (
+            candidate.original_name
+            if candidate.media_type == 'tv'
+            else candidate.original_title
+        )
+        title = resolve_output_title(
+            order,
+            localized_titles=localized_titles,
+            original_title=original_title,
+            current_title=current_title,
+        )
+        if not title or title == current_title:
+            return candidate
+        return candidate.model_copy(update={'display_title': title})
+
+    def _fetch_output_title(
+        self,
+        media_type: str,
+        tmdb_id: int,
+        language: str,
+    ) -> str:
+        cache_key = (media_type, int(tmdb_id), language)
+        if cache_key in self.output_title_cache:
+            return self.output_title_cache[cache_key]
+
+        payload: Any = None
+        if media_type == 'tv':
+            fetcher = getattr(self.tmdb_search, '_tmdb_tv_info', None)
+        else:
+            fetcher = getattr(self.tmdb_search, '_tmdb_movie_info', None)
+        if callable(fetcher):
+            payload = _safe_call(fetcher, int(tmdb_id), language=language)
+
+        if not isinstance(payload, dict):
+            title = ''
+        elif media_type == 'tv':
+            title = str(payload.get('name') or payload.get('title') or '').strip()
+        else:
+            title = str(payload.get('title') or payload.get('name') or '').strip()
+        self.output_title_cache[cache_key] = title
+        return title
 
     def _enrich_tv_alias_metadata(self, tv_info: dict[str, Any]) -> dict[str, Any]:
         enriched = _safe_call(getattr(self.tmdb_search, 'enrich_tv_alias_metadata', None), tv_info)

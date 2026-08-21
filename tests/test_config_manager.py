@@ -86,3 +86,20 @@ def test_explicit_empty_category_key_does_not_restore_legacy_value(
     persisted = json.loads(config_path.read_text(encoding="UTF-8"))
     assert persisted["allowed_categories"] == ""
     assert "allowed_tags" not in persisted
+
+
+def test_title_language_order_is_normalized_and_persisted(tmp_path, monkeypatch):
+    manager, config_path = _load_config_manager_from_data(
+        tmp_path,
+        monkeypatch,
+        {"rename_output_title_language_order": ["zh-CN", "zh-CN", "invalid"]},
+    )
+
+    assert manager.get_config("rename_output_title_language_order") == ["zh-CN"]
+    manager.set_config(
+        "rename_output_title_language_order",
+        ["auto", "en-US", "en-US"],
+    )
+
+    persisted = json.loads(config_path.read_text(encoding="UTF-8"))
+    assert persisted["rename_output_title_language_order"] == ["auto"]
