@@ -92,9 +92,6 @@ def _health() -> dict[str, str]:
     return {'status': 'ok'}
 
 
-ANI_CATEGORY = {'动漫', 'anime', '动画'}
-MOVIE_CATEGORY = {'电影', 'movie', '剧场', '剧场版'}
-TV_CATEGORY = 'tv'
 
 
 def _form_value_to_text(value: object) -> str:
@@ -315,16 +312,8 @@ async def _send_task(request: Request):
         logger.error(f'[结束任务] 路径{path}不存在！')
         return {'code': 404, 'data': f'路径{path}不存在！'}
 
-    # qBittorrent 分类决定初始媒体类型提示；显式表单值优先。
-    if is_anime is None:
-        if category in ANI_CATEGORY:
-            is_anime = True
-        elif category in MOVIE_CATEGORY or category == TV_CATEGORY:
-            is_anime = False
-
-    if is_movie is None and category in MOVIE_CATEGORY:
-        is_movie = True
-
+    # category 只用于 webhook 白名单准入，不参与媒体类型或落盘根判断。
+    # 显式 is_anime/is_movie 仍保留给 API 调用方；qB 默认不传这两个字段。
     queue_mgr = get_queue_manager()
 
     # 检查是否已在队列中

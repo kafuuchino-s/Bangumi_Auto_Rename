@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import { StatusBadge } from "./status-badge";
+import { getTaskMediaType } from "@/lib/task-media-type";
 import type { TaskRow } from "@/lib/api/types";
 
 export function TaskCards({ tasks, selected, onToggle, onViewDetail, onRetry, onEdit, onRefetch, onRemove }: {
@@ -17,9 +18,8 @@ export function TaskCards({ tasks, selected, onToggle, onViewDetail, onRetry, on
   const { t } = useTranslation("tasks");
   const [deleteUuid, setDeleteUuid] = useState<string | null>(null);
   return <><div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">{tasks.map((task) => {
-    const isMovie = task.is_movie === true;
-    const type = isMovie ? "movie" : task.is_anime === true ? "anime" : "other";
-    const Icon = isMovie ? Film : Tv;
+    const type = getTaskMediaType(task);
+    const Icon = task.is_movie === true ? Film : Tv;
     return <div key={task.uuid} className="border rounded-lg p-3 bg-card hover:shadow-sm transition-shadow cursor-pointer" onClick={() => onViewDetail(task.uuid)}>
       <div className="flex items-start gap-2 mb-2"><Checkbox checked={selected.has(task.uuid)} onCheckedChange={() => onToggle(task.uuid)} onClick={(event) => event.stopPropagation()} /><div className="flex-1 min-w-0"><div className="flex items-center gap-1.5 flex-wrap"><Icon className="h-3.5 w-3.5 text-muted-foreground" /><span className="text-xs text-muted-foreground">{t(type)}</span><StatusBadge status={task.status} /></div><div className="mt-1 font-medium text-sm truncate" title={task.name || task.path}>{task.name || task.path}</div></div>
         <DropdownMenu><DropdownMenuTrigger asChild><Button variant="ghost" size="icon" className="h-7 w-7 flex-shrink-0" onClick={(event) => event.stopPropagation()} aria-label={t("actions")}><MoreHorizontal className="h-4 w-4" /></Button></DropdownMenuTrigger><DropdownMenuContent align="end">

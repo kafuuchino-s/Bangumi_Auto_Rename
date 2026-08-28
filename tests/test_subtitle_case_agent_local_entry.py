@@ -224,6 +224,7 @@ def test_build_processed_task_captures_source_videos_from_record(monkeypatch, tm
                 "type": "tv",
                 "uuid": task_uuid,
                 "name": "Foo",
+                "is_anime": True,
                 "is_movie": False,
                 "season_id": 1,
                 "target_root": str(tmp_path / "lib"),
@@ -248,6 +249,41 @@ def test_build_processed_task_captures_source_videos_from_record(monkeypatch, tm
     assert task is not None
     assert task["source_videos"] == {"Foo - S01E01 - Pilot.mkv": "[SubGroup] Foo 01.mkv"}
     assert task["videos"] == ["Foo - S01E01 - Pilot.mkv"]
+    assert task["is_anime"] is True
+
+
+def test_matched_tasks_info_distinguishes_anime_movies():
+    from src.subtitle.processor import ProcessedTask, SubtitleProcessor
+
+    def movie_task(
+        *, uuid: str, title: str, is_anime: bool
+    ) -> ProcessedTask:
+        return {
+            "uuid": uuid,
+            "title": title,
+            "year": 2025,
+            "season": None,
+            "target_dir": "/lib/movies",
+            "target_root": "/lib",
+            "videos": ["movie.mkv"],
+            "video_targets": {"movie.mkv": "/lib/movies/movie.mkv"},
+            "source_videos": {},
+            "is_anime": is_anime,
+            "is_movie": True,
+            "video_arc_names": {},
+        }
+
+    tasks = [
+        movie_task(uuid="anime-movie", title="Anime Movie", is_anime=True),
+        movie_task(uuid="live-action", title="Live Action", is_anime=False),
+    ]
+
+    info = SubtitleProcessor._matched_tasks_info(
+        matched_task_uuids={"anime-movie", "live-action"},
+        processed_tasks=tasks,
+    )
+
+    assert set(info) == {"Anime Movie (动漫电影)", "Live Action (电影)"}
 
 
 # ---------------------------------------------------------------------------

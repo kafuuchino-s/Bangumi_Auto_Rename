@@ -7,17 +7,17 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { useTaskStore } from "@/store/task-store";
+import { getTaskMediaType } from "@/lib/task-media-type";
+import type { TaskMediaType } from "@/lib/task-media-type";
 
 const STATUS_OPTIONS = ["completed", "failed", "running", "pending"] as const;
-const TYPE_OPTIONS = ["anime", "movie", "other"] as const;
+const TYPE_OPTIONS: TaskMediaType[] = ["anime", "animeMovie", "movie", "other"];
 
 export function TaskFilters() {
   const { t } = useTranslation("tasks");
   const { filters, setFilters, resetFilters, tasks } = useTaskStore();
   const statusCount = (status: string) => tasks.filter((task) => task.status === status).length;
-  const typeCount = (type: string) => tasks.filter((task) => (
-    type === "anime" ? task.is_anime === true : type === "movie" ? task.is_movie === true : task.is_anime !== true && task.is_movie !== true
-  )).length;
+  const typeCount = (type: TaskMediaType) => tasks.filter((task) => getTaskMediaType(task) === type).length;
   const toggle = (key: "status" | "type", value: string, checked: boolean) => {
     const current = filters[key];
     setFilters({ [key]: checked ? [...current, value] : current.filter((item) => item !== value) });

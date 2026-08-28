@@ -72,6 +72,7 @@ class ProcessedTask(TypedDict):
     video_targets: dict[str, str]
     # 目标文件名 -> 重命名前 local 原始文件名（AI 匹配证据，非合法落点）。
     source_videos: dict[str, str]
+    is_anime: bool
     is_movie: bool
     # 目标文件名 -> 该视频所属 BGM subject 的 arc 名 (name, name_cn)，来自
     # task_data.bgm_video_subject_map + bgm_subjects。多季同 episode 配对的关键
@@ -666,7 +667,8 @@ class SubtitleProcessor:
             if not task:
                 continue
             if task.get("is_movie", False):
-                info.append(f"{task.get('title', '')} (电影)")
+                media_label = "动漫电影" if task.get("is_anime", False) else "电影"
+                info.append(f"{task.get('title', '')} ({media_label})")
             else:
                 info.append(
                     f"{task.get('title', '')} (Season {task.get('season', 1)})"
@@ -785,7 +787,8 @@ class SubtitleProcessor:
             if task_data.get("error"):
                 return None
 
-            is_movie = task_data.get("is_movie", False)
+            is_anime = task_data.get("is_anime", False) is True
+            is_movie = task_data.get("is_movie", False) is True
             task_uuid = task_data.get("uuid", task_file.stem)
             normalized_target_root = self._normalize_target_root(
                 task_data.get("target_root")
@@ -886,6 +889,7 @@ class SubtitleProcessor:
                 "videos": sorted(videos),
                 "video_targets": video_targets,
                 "source_videos": source_videos,
+                "is_anime": is_anime,
                 "is_movie": is_movie,
                 "video_arc_names": video_arc_names,
             }

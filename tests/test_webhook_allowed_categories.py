@@ -93,8 +93,52 @@ def test_category_whitelist_accepts_exact_normalized_category(
     assert queue.enqueued == [
         {
             "path": str(tmp_path),
-            "is_anime": False,
+            "is_anime": None,
             "is_movie": None,
+        }
+    ]
+
+
+def test_category_is_admission_metadata_not_media_classification(
+    tmp_path: Path, monkeypatch
+):
+    queue = _patch_webhook_dependencies(
+        monkeypatch, allowed_categories="动漫,电影,tv"
+    )
+
+    for category in ("动漫", "电影", "tv"):
+        status, body = _send_task(tmp_path, category=category)
+        assert status == 200
+        assert body["code"] == 200
+
+    assert queue.enqueued == [
+        {
+            "path": str(tmp_path),
+            "is_anime": None,
+            "is_movie": None,
+        }
+    ] * 3
+
+
+def test_explicit_media_flags_remain_available_to_api_callers(
+    tmp_path: Path, monkeypatch
+):
+    queue = _patch_webhook_dependencies(monkeypatch, allowed_categories="电影")
+
+    status, body = _send_task(
+        tmp_path,
+        category="电影",
+        is_anime="true",
+        is_movie="false",
+    )
+
+    assert status == 200
+    assert body["code"] == 200
+    assert queue.enqueued == [
+        {
+            "path": str(tmp_path),
+            "is_anime": True,
+            "is_movie": False,
         }
     ]
 
@@ -149,46 +193,6 @@ def test_explicit_no_process_takes_precedence_over_category_whitelist(
     assert queue.enqueued == []
 
 
-def test_categories_supply_initial_media_type_hints(tmp_path: Path, monkeypatch):
-    """qB 分类为获准任务提供初始根目录提示。"""
-    for category, expected_anime, expected_movie in (
-        ("动漫", True, None),
-        ("电影", False, True),
-        ("tv", False, None),
-        ("其他", None, None),
-    ):
-        queue = _patch_webhook_dependencies(monkeypatch, allowed_categories="")
-
-        status, body = _send_task(tmp_path, category=category)
-
-        assert status == 200
-        assert body["code"] == 200
-        assert queue.enqueued[0]["is_anime"] is expected_anime
-        assert queue.enqueued[0]["is_movie"] is expected_movie
-
-
-def test_explicit_media_type_flags_override_category_hints(
-    tmp_path: Path, monkeypatch
-):
-    """调用方显式传入类型时，不被 qB 分类提示覆盖。"""
-    queue = _patch_webhook_dependencies(monkeypatch, allowed_categories="")
-
-    status, body = _send_task(
-        tmp_path,
-        category="电影",
-        is_anime="true",
-        is_movie="false",
-    )
-
-    assert status == 200
-    assert body["code"] == 200
-    assert queue.enqueued == [
-        {
-            "path": str(tmp_path),
-            "is_anime": True,
-            "is_movie": False,
-        }
-    ]
 
 
 def test_allowed_categories_config_and_field_spec_are_exposed():

@@ -15,6 +15,7 @@ import { TaskDetailDialog } from "@/components/task/task-detail-dialog";
 import { CreateTaskWizard } from "@/components/task/create-task-wizard";
 import { TaskTableSkeleton, EmptyState } from "@/components/task/task-loading-states";
 import { getTasksStream } from "@/lib/api/client";
+import { getTaskMediaType } from "@/lib/task-media-type";
 import type { TaskRow } from "@/lib/api/types";
 
 export default function TaskListPage() {
@@ -56,7 +57,7 @@ function TaskListContent() {
     if (query && ![task.path, task.name, task.uuid, task.status].some((value) => String(value ?? "").toLowerCase().includes(query))) return false;
     if (filters.status.length && !filters.status.includes(task.status)) return false;
     if (filters.type.length) {
-      const type = task.is_anime === true ? "anime" : task.is_movie === true ? "movie" : "other";
+      const type = getTaskMediaType(task);
       if (!filters.type.includes(type)) return false;
     }
     return true;

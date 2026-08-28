@@ -104,6 +104,24 @@ def test_case_agent_primary_does_not_require_tmdb_key(tmp_path, monkeypatch):
     assert result['extra_task_data']['case_agent_result']['status'] == 'accepted'
 
 
+def test_rename_roots_default_to_anime_when_entry_has_no_media_hint(tmp_path):
+    config = {
+        'tv_path': str(tmp_path / 'TV'),
+        'movie_path': str(tmp_path / 'Movies'),
+        'anime_path': str(tmp_path / 'Anime'),
+        'anime_movie_path': str(tmp_path / 'Anime Movies'),
+    }
+
+    with cm.temporary_config(config):
+        default_roots = Rename()._bgm_to_tmdb_rename_roots(is_anime=None)
+        non_anime_roots = Rename()._bgm_to_tmdb_rename_roots(is_anime=False)
+
+    assert default_roots.tv_root == config['anime_path']
+    assert default_roots.movie_root == config['anime_movie_path']
+    assert non_anime_roots.tv_root == config['tv_path']
+    assert non_anime_roots.movie_root == config['movie_path']
+
+
 def test_product_pipeline_dry_run_compiles_final_plan_without_transfer(tmp_path, monkeypatch):
     parent = tmp_path / 'Series Pack'
     parent.mkdir()
@@ -200,7 +218,7 @@ def test_product_pipeline_execute_transfers_and_writes_success_task(tmp_path, mo
             'anime_movie_path': str(tmp_path / 'Anime Movies'),
             'mode': '复制',
         }):
-            result = Rename().process(parent, _is_anime=True, _tuuid='execute-task')
+            result = Rename().process(parent, _tuuid='execute-task')
 
     assert result is True
     task_data = json.loads((task_path / 'execute-task.json').read_text(encoding='utf-8'))
@@ -208,6 +226,8 @@ def test_product_pipeline_execute_transfers_and_writes_success_task(tmp_path, mo
     target_path = tmp_path / 'Anime' / 'Example Show (2024)' / 'Season 1' / 'Example Show - S01E01.mkv'
     assert target_path.read_bytes() == b'episode'
     assert task_data['error'] == ''
+    assert task_data['is_anime'] is True
+    assert task_data['is_movie'] is False
     assert task_data['pipeline_mode'] == 'local_bangumi_to_tmdb_product'
     assert task_data['tmdb_id'] == 42
     assert task_data['tmdb_name'] == 'Example Show'

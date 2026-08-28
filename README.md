@@ -257,7 +257,7 @@ docker build -t bangumi-auto-rename . \
 - 在输入框中填入适合自己系统的命令（见下方示例），**应用**保存即可
 
 - 这里的 `path=` 参数**一定**要用 `"%F"` 替换，这样每次传入的就是种子实际下载路径
-- `category=` 参数使用 `"%L"` 传入 qBittorrent 的单个分类；推荐分类为 `动漫`、`电影`、`tv`，它会决定初始媒体类型倾向。`tag=` 参数使用 `"%G"` 传入标签，仍用于 `skip_tags`（如 `reseed`、`辅种`）；若不需要处理，可传入 `no_process` 标签。
+- `category=` 参数使用 `"%L"` 传入 qBittorrent 的单个分类，仅用于 webhook 准入过滤和审计，不参与 TV/Movie、动漫/非动漫或落盘根判断。`tag=` 参数使用 `"%G"` 传入标签，仍用于 `skip_tags`（如 `reseed`、`辅种`）；若不需要处理，可传入 `no_process` 标签。
 - 设置页的「仅处理分类（白名单）」可填 `动漫,电影,tv`：留空表示不限制；填写后 `/sendTask` 的 `category=%L` 必须命中一个逗号分隔的**精确分类**才会入队（忽略大小写与首尾空格），未传分类也会忽略。`skip_tags` 与显式 `no_process=true` 始终优先于分类白名单，例如分类为 `动漫`、标签为 `reseed` 的任务仍会被跳过。
 
 ```shell

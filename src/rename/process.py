@@ -566,7 +566,8 @@ class Rename:
                     extra_task_data=bridge_extra,
                 )
 
-            roots = self._bgm_to_tmdb_rename_roots(is_anime=is_anime)
+            effective_is_anime = is_anime is not False
+            roots = self._bgm_to_tmdb_rename_roots(is_anime=effective_is_anime)
             # overwrite_existing 现为两态：'覆盖'/'跳过'（兼容旧 bool：True→覆盖，
             # False→跳过）。两种策略在 plan Verifier 阶段都不 block——具体差异
             # （覆盖=删旧重落 / 跳过=跳过已存在）交给 Trans.trans_file 层处理。
@@ -670,7 +671,7 @@ class Rename:
             success_data = self._success_task_data_from_rename_plan(
                 task_uuid=task_uuid,
                 source_path=path,
-                is_anime=is_anime,
+                is_anime=effective_is_anime,
                 rename_plan=rename_plan,
                 verified_plan=verified_plan,
                 legal_graph=legal_graph,
