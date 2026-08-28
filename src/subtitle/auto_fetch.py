@@ -25,6 +25,20 @@ from .processor import SubtitleProcessor
 from .providers import ACGRIPProvider, SubtitleCandidate, SubtitleThreadPackage
 
 
+_EXPLICIT_SIDE_CONTENT_RE = re.compile(
+    r"(?<![A-Za-z0-9])(OVA|OAB|OAD|SP|SPECIALS?)(?![A-Za-z])",
+    re.IGNORECASE,
+)
+_SIDE_CONTENT_LABELS = {
+    "ova": "OVA",
+    "oab": "OAB",
+    "oad": "OAD",
+    "sp": "SP",
+    "special": "Special",
+    "specials": "Special",
+}
+
+
 class SubtitleAutoFetcher:
     def __init__(self) -> None:
         self.provider = ACGRIPProvider()
@@ -206,6 +220,9 @@ class SubtitleAutoFetcher:
         task_context["subtitle_auto_fetch_source_video_names"] = [
             Path(str(source)).name for source in record_data.keys()
         ]
+        task_context["subtitle_auto_fetch_missing_source_video_names"] = (
+            self._collect_missing_source_video_names(record_data, missing_videos)
+        )
         task_context["subtitle_auto_fetch_missing_target_video_names"] = [
             path.name for path in missing_videos
         ]
@@ -865,8 +882,8 @@ class SubtitleAutoFetcher:
         """构造搜索关键词（方向 A：优先 Bangumi subject 名，不用 TMDB 名）。
 
         字幕组命名常按 Bangumi 中文名/日文名发帖，比 TMDB 本地化标题更贴合搜索。
-        顺序：bgm_subject_name / bgm_subject_name_cn（重命名落盘字段）→ name →
-        源目录标题 → 兜底 missing video 文件名。确定性变体由
+        顺序：bgm_subject_name_cn / bgm_subject_name（重命名落盘字段）→ name →
+        源目录标题 → 显式侧内容标签组合 → 兜底 missing video 文件名。确定性变体由
         ``_append_search_keyword_variants`` 生成（空格/数字分隔/ascii-only），
         **不 AI 扩词**（避免引入不确定性）。
         """
@@ -879,20 +896,81 @@ class SubtitleAutoFetcher:
             logger.info(f"[字幕自动抓取] 当前搜索模式: {search_mode}")
 
         keywords: List[str] = []
+        title_values: List[str] = []
         # 方向 A：BGM subject 名优先（auto_fetch 搜索词来源）
         for key in ("bgm_subject_name_cn", "bgm_subject_name", "name"):
-            self._append_search_keyword_variants(keywords, task_data.get(key))
+            value = str(task_data.get(key) or "").strip()
+            if value:
+                title_values.append(value)
+            self._append_search_keyword_variants(keywords, value)
 
         source_path = str(task_data.get("path") or "").strip()
         if source_path:
-            self._append_search_keyword_variants(
-                keywords,
-                self._extract_title_from_source_path(source_path),
-            )
+            source_title = self._extract_title_from_source_path(source_path)
+            if source_title:
+                title_values.append(source_title)
+            self._append_search_keyword_variants(keywords, source_title)
+
+        side_labels = self._extract_explicit_side_content_labels(
+            task_data.get("subtitle_auto_fetch_missing_source_video_names")
+        )
+        unique_titles: List[str] = []
+        seen_titles: set[str] = set()
+        for title in title_values:
+            folded = title.casefold()
+            if folded in seen_titles:
+                continue
+            seen_titles.add(folded)
+            unique_titles.append(title)
+        for label in side_labels:
+            for title in unique_titles:
+                self._append_search_keyword_variants(
+                    keywords,
+                    f"{title} {label}",
+                )
 
         if not keywords and fallback_videos:
             self._append_search_keyword_variants(keywords, fallback_videos[0].stem)
         return keywords
+
+    @staticmethod
+    def _collect_missing_source_video_names(
+        record_data: Dict[str, object],
+        missing_videos: List[Path],
+    ) -> List[str]:
+        """按目标 basename 反查缺字幕视频对应的原始文件名。"""
+        missing_target_names = {path.name for path in missing_videos}
+        source_names: List[str] = []
+        seen: set[str] = set()
+        for source, target in record_data.items():
+            if not isinstance(source, str) or not isinstance(target, str):
+                continue
+            if Path(target).name not in missing_target_names:
+                continue
+            source_name = Path(source).name
+            folded = source_name.casefold()
+            if not source_name or folded in seen:
+                continue
+            source_names.append(source_name)
+            seen.add(folded)
+        return source_names
+
+    @staticmethod
+    def _extract_explicit_side_content_labels(values: Any) -> List[str]:
+        """从原始文件名提取带清晰边界的侧内容标签。"""
+        if not isinstance(values, (list, tuple, set)):
+            return []
+        labels: List[str] = []
+        seen: set[str] = set()
+        for value in values:
+            for match in _EXPLICIT_SIDE_CONTENT_RE.finditer(str(value or "")):
+                label = _SIDE_CONTENT_LABELS[match.group(1).casefold()]
+                folded = label.casefold()
+                if folded in seen:
+                    continue
+                labels.append(label)
+                seen.add(folded)
+        return labels
 
     @staticmethod
     def _append_search_keyword_variants(

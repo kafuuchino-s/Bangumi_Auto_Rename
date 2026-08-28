@@ -239,6 +239,51 @@ def test_process_fail_closed_skips_without_download(monkeypatch, tmp_path):
     assert result["reason"] == "pi_fail_closed"
 
 
+def test_process_exposes_missing_source_side_keyword_to_pi(monkeypatch, tmp_path):
+    """生产入口按 record 反查 OVA 源文件，并把组合关键词写入 Pi workspace。"""
+    fetcher = SubtitleAutoFetcher()
+    task_uuid = "tari-tari"
+    target = tmp_path / "TARI TARI (2012)" / "Season 0" / "TARI TARI - S00E01.mkv"
+    target.parent.mkdir(parents=True)
+    target.write_text("video", encoding="utf-8")
+    source = tmp_path / "Source" / (
+        "[Liuyun&VCB-Studio] Tari Tari [OVA][Ma10p_1080p].mkv"
+    )
+    monkeypatch.setattr(
+        "src.subtitle.auto_fetch.get_task",
+        lambda uuid: {
+            "uuid": uuid,
+            "name": "TARI TARI",
+            "bgm_subject_name": "TARI TARI",
+            "season_id": 1,
+            "is_movie": False,
+            "target_root": str(target.parents[1]),
+        },
+    )
+    monkeypatch.setattr(
+        "src.subtitle.auto_fetch.get_record",
+        lambda uuid: {str(source): str(target)},
+    )
+    captured = {}
+
+    def invoker(state):
+        captured["keywords"] = [
+            card["keyword"] for card in state.workspace.readable_keyword_cards()
+        ]
+        state.handle_tool(
+            "fail_closed",
+            {"reason": "dry-run", "reason_kind": "insufficient_evidence"},
+        )
+        return {"ok": True, "returncode": 0, "argv": ["fake"]}
+
+    _patch_pi_runner_with_invoker(monkeypatch, tmp_path, invoker)
+
+    result = fetcher.process_task(task_uuid)
+
+    assert result["status"] == "skipped"
+    assert captured["keywords"] == ["TARI TARI", "TARI TARI OVA"]
+
+
 # ---------------------------------------------------------------------------
 # processor fail_closed 审计透传
 # ---------------------------------------------------------------------------
@@ -314,6 +359,59 @@ def test_build_search_keywords_prefers_bgm_subject_name(monkeypatch, tmp_path):
     assert any("碧阳学园学生会议事录" in k for k in keywords)
     # 也含 name 变体
     assert any("生徒会の一存" in k for k in keywords)
+
+
+def test_build_search_keywords_adds_explicit_missing_side_label(
+    monkeypatch, tmp_path
+):
+    """缺失视频源文件显式标为 OVA 时，追加作品名 + OVA 确定性变体。"""
+    fetcher, _ = build_fetcher(monkeypatch, tmp_path)
+    task_data = {
+        "uuid": "tari-tari",
+        "name": "TARI TARI",
+        "bgm_subject_name": "TARI TARI",
+        "subtitle_auto_fetch_missing_source_video_names": [
+            "[Liuyun&VCB-Studio] Tari Tari [OVA][Ma10p_1080p].mkv"
+        ],
+    }
+
+    keywords = fetcher._build_search_keywords(
+        task_data,
+        [tmp_path / "TARI TARI - S00E01.mkv"],
+    )
+
+    assert keywords[0] == "TARI TARI"
+    assert "TARI TARI OVA" in keywords
+
+
+def test_collect_missing_source_video_names_scopes_to_missing_targets(tmp_path):
+    """同包正片和 OVA 并存时，只把缺字幕目标对应的源文件送去扩词。"""
+    target_main = tmp_path / "Season 1" / "TARI TARI - S01E01.mkv"
+    target_ova = tmp_path / "Season 0" / "TARI TARI - S00E01.mkv"
+    record_data = {
+        "[Group] TARI TARI [01].mkv": str(target_main),
+        "[Group] TARI TARI [OVA].mkv": str(target_ova),
+    }
+
+    source_names = SubtitleAutoFetcher._collect_missing_source_video_names(
+        record_data,
+        [target_ova],
+    )
+
+    assert source_names == ["[Group] TARI TARI [OVA].mkv"]
+
+
+def test_extract_side_labels_requires_explicit_token_boundaries():
+    """SP 不能从普通单词中截取，但 [SP01] 和 Specials 属于明确标签。"""
+    labels = SubtitleAutoFetcher._extract_explicit_side_content_labels(
+        [
+            "[Group] WASP Episode 01.mkv",
+            "[Group] Show [SP01].mkv",
+            "[Group] Show Specials.mkv",
+        ]
+    )
+
+    assert labels == ["SP", "Special"]
 
 
 def test_build_search_keywords_falls_back_to_source_path_title(monkeypatch, tmp_path):
