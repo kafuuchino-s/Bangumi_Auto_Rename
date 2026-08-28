@@ -43,6 +43,7 @@ py7zr>=0.22.0
 # 默认 subtitle_sync_enabled=false（CONFIG_DEFAULT 全局默认安全），用户在 UI 开启即用。
 ffsubsync>=0.5.0
 # scrapling：装 [fetchers] extra 拿全硬依赖（curl_cffi 非浏览器抓取核心 / playwright import 门槛 / browserforge 指纹），
-# Dockerfile 装完删 patchright（反检测浏览器后端，138M 死重）+ playwright/driver（133M Node 浏览器驱动）。
+# Dockerfile 装完只删 patchright/playwright 的浏览器 driver 死重，保留 Python 层；Scrapling 静态 Fetcher
+# 也会导入 patchright._impl._errors，不能删除整个 patchright 包。
 # 浏览器抓取（DynamicFetcher）需额外 `playwright install` 下载浏览器二进制，默认 browser_enabled=false 不需要。
 scrapling[fetchers]>=0.4.3

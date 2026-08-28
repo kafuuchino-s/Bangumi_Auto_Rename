@@ -44,10 +44,11 @@ RUN apt-get update \
         build-essential libc6-dev \
     && pip install --no-cache-dir --upgrade pip \
     && pip install --no-cache-dir -r requirements_docker.txt \
-    # 删死重（默认 browser_enabled=false 用不到浏览器抓取）：
-    #   - patchright（138M，scrapling 的反检测浏览器后端，非硬依赖）
-    #   - playwright/driver（133M Node 浏览器驱动；scrapling.fetchers 顶层 import 只需 playwright Python 层）
-    && rm -rf /usr/local/lib/python3.12/site-packages/patchright \
+    # 删浏览器 driver 死重（默认 browser_enabled=false 用不到浏览器抓取）：
+    #   - patchright/driver（约 107M）；保留 Python 层，Scrapling 静态 Fetcher
+    #     的 ResponseFactory 也会导入 patchright._impl._errors
+    #   - playwright/driver（约 133M Node 浏览器驱动）；保留 Python 层供 import
+    && rm -rf /usr/local/lib/python3.12/site-packages/patchright/driver \
               /usr/local/lib/python3.12/site-packages/playwright/driver \
     # 清运行期冗余（在 COPY 到最终镜像前删，真正省体积；分层 rm 不省下层）：
     #   - __pycache__（43M .pyc，运行期自动重建）、包内 tests（4M）、pip 自身（13M，装完依赖不再需要）
@@ -91,8 +92,12 @@ COPY --from=ffprobe-src /ffprobe /usr/local/bin/ffprobe
 COPY --from=ffprobe-src /ffmpeg /usr/local/bin/ffmpeg
 RUN chmod +x /usr/local/bin/ffprobe /usr/local/bin/ffmpeg
 
-# Python 依赖：从 py-deps 拷编译好的 site-packages（不含 gcc/llvm，已删 playwright/driver）。
+# Python 依赖：从 py-deps 拷编译好的 site-packages（不含 gcc/llvm，已删浏览器 driver）。
 COPY --from=py-deps /usr/local/lib/python3.12/site-packages/ /usr/local/lib/python3.12/site-packages/
+# 发布门：ACGRIP 默认静态抓取依赖 FetcherSession；DynamicFetcher 虽默认关闭，
+# provider 与其同模块导入。两者必须在精简 driver 后仍可导入，防止运行时把依赖
+# 缺失误表现为 no_candidates。
+RUN python3 -c "from scrapling.fetchers import DynamicFetcher, FetcherSession"
 # pip 装包时生成的 console_scripts 落在 /usr/local/bin/，stage 4 只 COPY site-packages 会漏掉。
 # 项目经 subtitle_sync_executable 调 ffsubsync 命令（subprocess），缺这个脚本对齐功能不可用。
 # 精确拷 ffsubsync 及其 alias（ffs/subsync），不动 ffmpeg/ffprobe/node 等本 stage 已装的二进制。
