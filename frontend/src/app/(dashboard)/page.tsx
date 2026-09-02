@@ -2,7 +2,7 @@
 
 import { Suspense, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { AlertCircle, Plus, RefreshCw } from "lucide-react";
+import { AlertCircle, History, Plus, RefreshCw } from "lucide-react";
 import { Table, TableHeader, TableHead, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -13,6 +13,7 @@ import { TaskCards } from "@/components/task/task-cards";
 import { Pagination } from "@/components/task/pagination";
 import { TaskDetailDialog } from "@/components/task/task-detail-dialog";
 import { CreateTaskWizard } from "@/components/task/create-task-wizard";
+import { MoviePilotRecoveryDialog } from "@/components/task/moviepilot-recovery-dialog";
 import { TaskTableSkeleton, EmptyState } from "@/components/task/task-loading-states";
 import { getTasksStream } from "@/lib/api/client";
 import { getTaskMediaType } from "@/lib/task-media-type";
@@ -27,6 +28,7 @@ function TaskListContent() {
   const { t } = useTranslation("tasks");
   const { tasks, loading, error, filters, fetchTasks, viewMode, selected, toggleSelected, retry, remove, refetchSub } = useTaskStore();
   const [showWizard, setShowWizard] = useState(false);
+  const [showMoviePilotRecovery, setShowMoviePilotRecovery] = useState(false);
   const [detailUuid, setDetailUuid] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
@@ -77,9 +79,10 @@ function TaskListContent() {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-center">
         <h1 className="text-xl font-bold">{t("title")}</h1>
-        <div className="flex gap-2">
+        <div className="flex w-full flex-wrap gap-2 sm:w-auto sm:justify-end">
+          <Button variant="outline" size="sm" onClick={() => setShowMoviePilotRecovery(true)}><History className="h-4 w-4" />{t("moviepilotRecovery")}</Button>
           <Button variant="outline" size="sm" onClick={() => void fetchTasks()}><RefreshCw className="h-4 w-4" />{t("refresh", { ns: "common" })}</Button>
           <Button size="sm" onClick={() => setShowWizard(true)}><Plus className="h-4 w-4" />{t("add")}</Button>
         </div>
@@ -95,6 +98,7 @@ function TaskListContent() {
       ) : <TaskCards tasks={paged} selected={selected} onToggle={toggleSelected} onViewDetail={setDetailUuid} onRetry={(uuid) => void retry(uuid)} onEdit={setDetailUuid} onRefetch={(uuid) => void refetchSub(uuid)} onRemove={(uuid) => void remove(uuid)} />}
       <Pagination page={page} totalPages={totalPages} total={filtered.length} pageSize={pageSize} onPageChange={setPage} />
       <CreateTaskWizard open={showWizard} onOpenChange={setShowWizard} onCreated={() => void fetchTasks()} />
+      <MoviePilotRecoveryDialog open={showMoviePilotRecovery} onOpenChange={setShowMoviePilotRecovery} />
       <TaskDetailDialog uuid={detailUuid} open={detailUuid !== null} onOpenChange={(open) => !open && setDetailUuid(null)} />
     </div>
   );

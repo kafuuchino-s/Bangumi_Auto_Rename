@@ -73,6 +73,7 @@ class TaskQueueManager:
         cus_name: str | None = None,
         cus_season_id: int | None = None,
         use_ai: bool | None = None,
+        source_evidence: dict[str, object] | None = None,
         _is_sub_task: bool = False,
     ) -> str:
         """
@@ -86,6 +87,7 @@ class TaskQueueManager:
             cus_name: 自定义名称（编辑页面）
             cus_season_id: 自定义季度ID（编辑页面）
             use_ai: 是否使用AI（None表示使用全局配置）
+            source_evidence: 可信入队边界附带的只读来源证据
             _is_sub_task: 是否为子任务（由父任务拆分出来的）
 
         Returns:
@@ -101,6 +103,7 @@ class TaskQueueManager:
             cus_name=cus_name,
             cus_season_id=cus_season_id,
             use_ai=use_ai,
+            source_evidence=dict(source_evidence) if source_evidence else None,
             is_sub_task=_is_sub_task,
             status=TaskStatus.PENDING,
             created_at=datetime.now(),
@@ -268,6 +271,7 @@ class TaskQueueManager:
         try:
             # 在线程池中执行实际处理
             result = await asyncio.to_thread(self._execute_rename, task)
+            await asyncio.to_thread(self._persist_source_evidence, task)
 
             if isinstance(result, str):
                 # 返回字符串表示错误
@@ -283,7 +287,10 @@ class TaskQueueManager:
                 persisted_task_id = (
                     getattr(task, "original_uuid", None) or task.task_id
                 )
-                await asyncio.to_thread(self._execute_subtitle_auto_fetch, persisted_task_id)
+                await asyncio.to_thread(
+                    self._execute_subtitle_auto_fetch,
+                    persisted_task_id,
+                )
 
         except Exception as e:
             task.status = TaskStatus.FAILED
@@ -313,8 +320,33 @@ class TaskQueueManager:
             task.cus_name,
             task.cus_season_id,
             _is_sub_task=task.is_sub_task,  # 传递子任务标记
-            _enqueue_task=self.enqueue,
+            _enqueue_task=lambda **kwargs: self.enqueue(
+                source_evidence=task.source_evidence,
+                **kwargs,
+            ),
         )
+
+    @staticmethod
+    def _persist_source_evidence(task: QueuedTask) -> None:
+        if not task.source_evidence:
+            return
+        try:
+            from ..utils.utils import get_task, write_task
+
+            task_uuid = task.original_uuid or task.task_id
+            task_data = get_task(task_uuid)
+            if not isinstance(task_data, dict) or not task_data:
+                logger.warning(
+                    "[队列] 来源证据未落盘，任务记录不存在: "
+                    f"{task_uuid}"
+                )
+                return
+            task_data["source_evidence"] = dict(task.source_evidence)
+            write_task(task_uuid, task_data)
+        except Exception as exc:
+            logger.error(
+                f"[队列] 来源证据落盘失败: {task.task_id}, 错误: {exc}"
+            )
 
     def _execute_subtitle_auto_fetch(self, task_uuid: str) -> None:
         if not bool(cm.get_config("subtitle_auto_fetch_enabled") or False):

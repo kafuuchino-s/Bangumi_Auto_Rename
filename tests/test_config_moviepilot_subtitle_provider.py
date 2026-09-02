@@ -8,9 +8,9 @@ from src.subtitle.providers import (
 )
 
 
-def test_moviepilot_subtitle_config_defaults_are_inactive_and_secret() -> None:
+def test_moviepilot_config_defaults_are_inactive_and_secret() -> None:
     assert CONFIG_DEFAULT["subtitle_auto_fetch_provider"] == "acgrip"
-    assert CONFIG_DEFAULT["subtitle_auto_fetch_moviepilot_api_token"] == ""
+    assert CONFIG_DEFAULT["moviepilot_api_token"] == ""
     assert CONFIG_DEFAULT["subtitle_auto_fetch_moviepilot_save_path"] == ""
 
     specs = spec_by_key()
@@ -20,16 +20,18 @@ def test_moviepilot_subtitle_config_defaults_are_inactive_and_secret() -> None:
         "moviepilot",
         "acgrip_moviepilot",
     ]
-    token_spec = specs["subtitle_auto_fetch_moviepilot_api_token"]
+    token_spec = specs["moviepilot_api_token"]
     assert token_spec["control"] == "secret"
-    assert mask_secrets(
-        {"subtitle_auto_fetch_moviepilot_api_token": "private"}
-    ) == {"subtitle_auto_fetch_moviepilot_api_token": "*******"}
+    assert token_spec["group"] == "moviepilot"
+    assert token_spec["tab"] == "advanced"
+    assert mask_secrets({"moviepilot_api_token": "private"}) == {
+        "moviepilot_api_token": "*******"
+    }
 
 
 def test_provider_factory_builds_moviepilot_and_combined_modes() -> None:
     common = {
-        "subtitle_auto_fetch_moviepilot_api_token": "test-token",
+        "moviepilot_api_token": "test-token",
         "subtitle_auto_fetch_moviepilot_save_path": "H:/Subtitle Staging",
     }
     with cm.temporary_config(

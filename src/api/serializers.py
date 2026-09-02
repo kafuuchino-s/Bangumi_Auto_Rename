@@ -66,9 +66,36 @@ TMDB_MEDIA_TYPE_LABELS: dict[str, str] = {
     "movie": "电影",
 }
 
+_SOURCE_EVIDENCE_FIELDS = (
+    "provider",
+    "history_id",
+    "download_hash",
+    "torrent_name",
+    "torrent_site",
+    "source_path",
+    "local_path",
+    "title",
+    "year",
+    "media_type",
+    "tmdb_id",
+    "seasons",
+    "episodes",
+    "downloaded_at",
+    "completion_evidence",
+)
+
 
 def _as_mapping(value: object) -> Mapping[str, object]:
     return value if isinstance(value, Mapping) else {}
+
+
+def _source_evidence(value: object) -> dict[str, object]:
+    evidence = _as_mapping(value)
+    return {
+        key: evidence[key]
+        for key in _SOURCE_EVIDENCE_FIELDS
+        if key in evidence
+    }
 
 
 def _str(value: object) -> str:
@@ -654,6 +681,8 @@ def build_task_detail(uuid: str) -> dict[str, Any]:
             "mapping_count": mapping_count,
             "mappings": mappings if isinstance(mappings, list) else [],
         },
+        # 可信入队边界保存的只读来源证据；序列化层再次 allowlist。
+        "source_evidence": _source_evidence(task_data.get("source_evidence")),
         # 仅在触发过 auto_fetch 时存在；前端据此条件渲染字幕区块。
         "subtitle_fetch": subtitle_fetch,
         # BGM/TMDB 条目（对齐集数范围）+ 映射明细 + 总大小。
@@ -729,9 +758,19 @@ def mask_secrets(config: Mapping[str, Any]) -> dict[str, Any]:
     return out
 
 
+_HIDDEN_CONFIG_KEYS = {
+    "subtitle_auto_fetch_moviepilot_base_url",
+    "subtitle_auto_fetch_moviepilot_api_token",
+}
+
+
 def get_all_config() -> dict[str, Any]:
-    """读取全部配置（路径转换生效）。"""
-    return {key: cm.get_config(key) for key in cm.config}
+    """读取全部公开配置（路径转换生效）。"""
+    return {
+        key: cm.get_config(key)
+        for key in cm.config
+        if key not in _HIDDEN_CONFIG_KEYS
+    }
 
 
 # --------------------------------------------------------------------------- #

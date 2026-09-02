@@ -38,5 +38,8 @@ class QueuedTask:
     # AI设置（保留字段兼容旧任务数据）
     use_ai: Optional[bool] = None
 
+    # Read-only origin audit attached by trusted ingestion routes.
+    source_evidence: Optional[dict[str, object]] = None
+
     # 是否为子任务（由父任务拆分出来的，不会再拆分）
     is_sub_task: bool = False

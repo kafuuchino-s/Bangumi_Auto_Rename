@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import ntpath
 import re
 from pathlib import Path
@@ -15,6 +16,26 @@ class MoviePilotAPIError(RuntimeError):
 
 class MoviePilotClient:
     """Small authenticated client for MoviePilot's stable v1 API."""
+
+    _DOWNLOAD_HISTORY_FIELDS = (
+        "id",
+        "path",
+        "type",
+        "title",
+        "year",
+        "tmdbid",
+        "seasons",
+        "episodes",
+        "download_hash",
+        "torrent_name",
+        "torrent_site",
+        "date",
+    )
+    _DOWNLOAD_TASK_FIELDS = (
+        "downloader",
+        "hash",
+        "progress",
+    )
 
     _SUBTITLE_FIELDS = (
         "site",
@@ -60,11 +81,108 @@ class MoviePilotClient:
         if self.api_token:
             self.session.headers["X-API-KEY"] = self.api_token
 
+    @classmethod
+    def configured(cls, *, timeout: int = 30) -> "MoviePilotClient":
+        from ..config.config_manager import cm
+
+        return cls(
+            base_url=str(cm.get_config("moviepilot_base_url") or ""),
+            api_token=str(cm.get_config("moviepilot_api_token") or ""),
+            timeout=timeout,
+        )
+
     def list_downloaders(self) -> list[dict[str, Any]]:
         payload = self._request_json("GET", "/api/v1/download/clients")
         if not isinstance(payload, list):
             return []
-        return [dict(item) for item in payload if isinstance(item, Mapping)]
+        return [
+            {key: item[key] for key in ("name", "type") if key in item}
+            for item in payload
+            if isinstance(item, Mapping)
+        ]
+
+    def list_download_history(
+        self,
+        *,
+        page: int = 1,
+        count: int = 100,
+    ) -> list[dict[str, Any]]:
+        payload = self._request_json(
+            "GET",
+            "/api/v1/history/download",
+            params={
+                "page": max(1, int(page)),
+                "count": max(1, min(500, int(count))),
+            },
+        )
+        if isinstance(payload, Mapping):
+            payload = payload.get("data")
+        if not isinstance(payload, list):
+            raise MoviePilotAPIError(
+                "MoviePilot download history returned invalid rows"
+            )
+        return [
+            {
+                key: row[key]
+                for key in self._DOWNLOAD_HISTORY_FIELDS
+                if key in row
+            }
+            for row in payload
+            if isinstance(row, Mapping)
+        ]
+
+    def get_download_task(self, download_hash: str) -> dict[str, Any] | None:
+        normalized_hash = str(download_hash or "").strip().lower()
+        if not normalized_hash:
+            return None
+        payload = self._request_json(
+            "POST",
+            "/api/v1/mcp/tools/call",
+            json={
+                "tool_name": "query_download_tasks",
+                "arguments": {
+                    "hash": normalized_hash,
+                    "include_all_tags": True,
+                },
+            },
+        )
+        if not isinstance(payload, Mapping) or payload.get("success") is False:
+            raise MoviePilotAPIError(
+                "MoviePilot download task lookup failed"
+            )
+        result = payload.get("result")
+        if not isinstance(result, str):
+            return None
+        start = result.find("[")
+        if start < 0:
+            if "未找到" in result or "not found" in result.casefold():
+                return None
+            raise MoviePilotAPIError(
+                "MoviePilot download task lookup returned invalid rows"
+            )
+        try:
+            rows, _ = json.JSONDecoder().raw_decode(result[start:])
+        except (TypeError, ValueError, json.JSONDecodeError) as exc:
+            raise MoviePilotAPIError(
+                "MoviePilot download task lookup returned invalid rows"
+            ) from exc
+        if not isinstance(rows, list):
+            return None
+        for row in rows:
+            if not isinstance(row, Mapping):
+                continue
+            if str(row.get("hash") or "").strip().lower() != normalized_hash:
+                continue
+            return {
+                key: row[key]
+                for key in self._DOWNLOAD_TASK_FIELDS
+                if key in row
+            }
+        if rows:
+            raise MoviePilotAPIError(
+                "MoviePilot download task lookup returned mismatched hash"
+            )
+        return None
 
     def search_subtitles_by_title(
         self,

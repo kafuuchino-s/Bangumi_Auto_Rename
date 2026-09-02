@@ -70,6 +70,7 @@ GRP_AI_ADV = "AI 高级路由"
 GRP_CASE_AGENT = "Case Agent 运维"
 GRP_BGM_TMDB = "BGM→TMDB 产品链路"
 GRP_SUBTITLE_AGENT = "字幕/抓取 Case Agent"
+GRP_MOVIEPILOT = "moviepilot"
 GRP_FETCH_ADV = "抓取高级"
 GRP_RUNTIME = "运行时"
 GRP_CACHE = "元数据缓存"
@@ -94,6 +95,7 @@ ADVANCED_GROUP_ORDER = [
     GRP_CASE_AGENT,
     GRP_BGM_TMDB,
     GRP_SUBTITLE_AGENT,
+    GRP_MOVIEPILOT,
     GRP_FETCH_ADV,
     GRP_RUNTIME,
     GRP_CACHE,
@@ -114,6 +116,7 @@ GROUP_ICON = {
     GRP_CASE_AGENT: "verified_user",
     GRP_BGM_TMDB: "compare_arrows",
     GRP_SUBTITLE_AGENT: "rule",
+    GRP_MOVIEPILOT: "hub",
     GRP_FETCH_ADV: "tune",
     GRP_RUNTIME: "settings",
     GRP_CACHE: "cached",
@@ -346,23 +349,6 @@ FIELD_SPEC: list[Mapping[str, Any]] = [
         "tab": TAB_SUBTITLE,
         "help": "ACGRIP 站点地址，仅在使用镜像/反代时修改。",
         "default_hint": "默认 https://bbs.acgrip.com",
-    },
-    {
-        "key": "subtitle_auto_fetch_moviepilot_base_url",
-        "control": INPUT,
-        "level": LEVEL_ADVANCED,
-        "group": GRP_FETCH_ADV,
-        "tab": TAB_SUBTITLE,
-        "help": "MoviePilot API 地址。Docker 部署通常使用 host.docker.internal 访问宿主机。",
-        "default_hint": "默认 http://host.docker.internal:3333",
-    },
-    {
-        "key": "subtitle_auto_fetch_moviepilot_api_token",
-        "control": SECRET,
-        "level": LEVEL_ADVANCED,
-        "group": GRP_FETCH_ADV,
-        "tab": TAB_SUBTITLE,
-        "help": "MoviePilot API_TOKEN；仅服务端保存，浏览器读取时脱敏。",
     },
     {
         "key": "subtitle_auto_fetch_moviepilot_save_path",
@@ -629,6 +615,24 @@ FIELD_SPEC: list[Mapping[str, Any]] = [
         "select_mode": "file",
         "help": "Fribb anime-list-full.json 本地快照路径。通过 ExtLinker 的 AniDB ID 关联；season/offset 仅是提示。留空表示不使用。",
         "default_hint": "默认 空",
+    },
+    # ============================ MoviePilot ============================ #
+    {
+        "key": "moviepilot_base_url",
+        "control": INPUT,
+        "level": LEVEL_ADVANCED,
+        "group": GRP_MOVIEPILOT,
+        "tab": TAB_ADVANCED,
+        "help": "MoviePilot API 地址。Docker 部署通常使用 host.docker.internal 访问宿主机。",
+        "default_hint": "默认 http://host.docker.internal:3333",
+    },
+    {
+        "key": "moviepilot_api_token",
+        "control": SECRET,
+        "level": LEVEL_ADVANCED,
+        "group": GRP_MOVIEPILOT,
+        "tab": TAB_ADVANCED,
+        "help": "MoviePilot API_TOKEN 具备管理员权限；供字幕与漏单恢复共用，仅服务端保存。",
     },
     # ============================ 运行时 ============================ #
     {

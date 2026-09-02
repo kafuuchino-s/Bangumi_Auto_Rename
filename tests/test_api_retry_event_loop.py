@@ -19,6 +19,7 @@ FastAPI 把同步路由丢进 anyio threadpool 线程执行，该线程无运行
 
 from __future__ import annotations
 
+import json
 import sys
 from pathlib import Path
 
@@ -62,7 +63,17 @@ def tmp_task_dirs(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
 
 def _write_task_file(task_dir: Path, uuid: str, path: str) -> None:
     (task_dir / f"{uuid}.json").write_text(
-        '{"path": "%s", "is_anime": true, "is_movie": null}' % path,
+        json.dumps(
+            {
+                "path": path,
+                "is_anime": True,
+                "is_movie": None,
+                "source_evidence": {
+                    "provider": "moviepilot",
+                    "download_hash": "abc123",
+                },
+            }
+        ),
         encoding="utf-8",
     )
 
@@ -78,6 +89,7 @@ def test_retry_returns_200_and_reenqueues(tmp_task_dirs, monkeypatch):
     def fake_enqueue(self, path, **kwargs):
         captured["path"] = path
         captured["original_uuid"] = kwargs.get("original_uuid")
+        captured["source_evidence"] = kwargs.get("source_evidence")
         return "new-task-id-xyz"
 
     monkeypatch.setattr(
@@ -97,6 +109,10 @@ def test_retry_returns_200_and_reenqueues(tmp_task_dirs, monkeypatch):
     assert body["data"]["task_id"] == "new-task-id-xyz"
     assert captured["path"] == "/media/Anime/Sample"
     assert captured["original_uuid"] == uuid
+    assert captured["source_evidence"] == {
+        "provider": "moviepilot",
+        "download_hash": "abc123",
+    }
     # 入队成功后旧记录被删
     assert not (task_dir / f"{uuid}.json").exists()
 

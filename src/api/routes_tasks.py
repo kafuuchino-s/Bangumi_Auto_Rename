@@ -144,6 +144,11 @@ async def retry_task(uuid: str) -> dict[str, Any]:
         is_anime=task_data.get("is_anime"),
         is_movie=task_data.get("is_movie"),
         original_uuid=uuid,
+        source_evidence=(
+            task_data.get("source_evidence")
+            if isinstance(task_data.get("source_evidence"), dict)
+            else None
+        ),
     )
 
     for p in (TASK_PATH / f"{uuid}.json", RECORD_PATH / f"{uuid}.json"):
@@ -191,6 +196,11 @@ async def edit_task(uuid: str, req: TaskEditRequest) -> dict[str, Any]:
         original_uuid=uuid,
         cus_name=updated.get("name"),
         cus_season_id=updated.get("season_id"),
+        source_evidence=(
+            updated.get("source_evidence")
+            if isinstance(updated.get("source_evidence"), dict)
+            else None
+        ),
     )
     return ok({"task_id": task_id}, result="task_edited")
 

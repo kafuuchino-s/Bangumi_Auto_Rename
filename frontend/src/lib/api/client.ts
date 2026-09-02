@@ -8,6 +8,7 @@ import type {
   FieldSpecEntry,
   LogTailResult,
   ModelDiscoveryResult,
+  MoviePilotRecoveryReport,
   SubtitleRow,
   TaskDetail,
   TaskRow,
@@ -171,6 +172,27 @@ export async function testEmby() {
 export async function testTelegram() {
   return json(
     await fetch(`${BASE}/config/test-telegram`, { method: "POST" })
+  );
+}
+
+export async function testMoviePilot() {
+  return json(
+    await fetch(`${BASE}/config/test-moviepilot`, { method: "POST" })
+  );
+}
+
+// ----------------------- MoviePilot ----------------------- //
+export async function getMoviePilotRecovery(): Promise<MoviePilotRecoveryReport> {
+  return json<MoviePilotRecoveryReport>(
+    await fetch(`${BASE}/moviepilot/recovery`)
+  );
+}
+
+export async function enqueueMoviePilotRecovery(historyId: number) {
+  return json<{ task_id: string; history_id: number }>(
+    await fetch(`${BASE}/moviepilot/recovery/${historyId}/enqueue`, {
+      method: "POST",
+    })
   );
 }
 

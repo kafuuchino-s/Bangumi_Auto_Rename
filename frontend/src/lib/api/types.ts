@@ -82,8 +82,70 @@ export interface TaskDetail {
     confidence: string | null;
     disposition: string;
   }[];
+  source_evidence?: {
+    provider: string;
+    history_id?: number;
+    download_hash?: string;
+    torrent_name?: string;
+    torrent_site?: string;
+    source_path?: string;
+    local_path?: string;
+    title?: string;
+    year?: string;
+    media_type?: string;
+    tmdb_id?: number | null;
+    seasons?: string;
+    episodes?: string;
+    downloaded_at?: string;
+    completion_evidence?: string;
+  };
   total_size_bytes?: number;
   total_size?: string;
+}
+
+export type MoviePilotRecoveryStatus =
+  | "recoverable"
+  | "processed"
+  | "queued"
+  | "downloading"
+  | "status_unavailable"
+  | "unavailable";
+
+export interface MoviePilotRecoveryItem {
+  history_id: number;
+  source_path: string;
+  local_path: string;
+  title: string;
+  year: string;
+  media_type: string;
+  tmdb_id: number | null;
+  seasons: string;
+  episodes: string;
+  download_hash: string;
+  torrent_name: string;
+  torrent_site: string;
+  downloaded_at: string;
+  status: MoviePilotRecoveryStatus;
+  completion_state: "completed" | "history_only" | "downloading" | "unknown";
+  progress?: string;
+  downloader?: string;
+  linked_task_uuid?: string;
+}
+
+export interface MoviePilotRecoveryReport {
+  items: MoviePilotRecoveryItem[];
+  summary: {
+    history_count: number;
+    deduplicated_count: number;
+    shown_count: number;
+    recoverable_count: number;
+    processed_count: number;
+    queued_count: number;
+    downloading_count: number;
+    status_unavailable_count: number;
+    unavailable_count: number;
+  };
+  warnings: Record<string, number>;
 }
 
 export interface SubtitleRow {

@@ -49,15 +49,7 @@ class MoviePilotProvider(SubtitleProvider):
         timeout = int(
             cm.get_config("subtitle_auto_fetch_timeout_seconds") or 30
         )
-        self.client = client or MoviePilotClient(
-            base_url=str(
-                cm.get_config("subtitle_auto_fetch_moviepilot_base_url") or ""
-            ),
-            api_token=str(
-                cm.get_config("subtitle_auto_fetch_moviepilot_api_token") or ""
-            ),
-            timeout=timeout,
-        )
+        self.client = client or MoviePilotClient.configured(timeout=timeout)
         self.save_path = str(
             save_path
             if save_path is not None

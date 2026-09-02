@@ -51,10 +51,18 @@ def test_get_config_masks_secrets():
         assert r.status_code == 200
         config = r.json()["data"]["config"]
         # 密钥类字段若非空应为星号
-        for key in ("ai_api_key", "emby_api_key", "telegram_bot_token", "api_key"):
+        for key in (
+            "ai_api_key",
+            "emby_api_key",
+            "telegram_bot_token",
+            "api_key",
+            "moviepilot_api_token",
+        ):
             v = config.get(key)
             if isinstance(v, str) and v:
                 assert set(v) == {"*"}, f"{key} 未脱敏: {v}"
+        assert "subtitle_auto_fetch_moviepilot_base_url" not in config
+        assert "subtitle_auto_fetch_moviepilot_api_token" not in config
 
 
 def test_discover_models_uses_unsaved_request_config(monkeypatch):

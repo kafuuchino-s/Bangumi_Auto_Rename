@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 from typing import Any
 
@@ -164,6 +165,108 @@ def test_direct_download_error_does_not_include_site_secrets(
         assert "example.test" not in str(exc)
     else:
         raise AssertionError("direct download should fail")
+
+
+def test_download_history_and_task_lookup_are_allowlisted() -> None:
+    history = {
+        "id": 9,
+        "path": "H:/Anime/Series/Title",
+        "type": "电视剧",
+        "title": "Title",
+        "tmdbid": 42,
+        "download_hash": "ABC123",
+        "torrent_name": "Title S01",
+        "date": "2026-09-02 12:00:00",
+        "userid": "private-user",
+        "note": {"cookie": "private"},
+    }
+    task = {
+        "hash": "abc123",
+        "progress": "100.0%",
+        "state": "completed",
+        "content_path": "H:/Anime/Series/Title",
+        "trackers": ["https://tracker.test/secret"],
+    }
+    session = _Session(
+        [
+            [history],
+            {
+                "success": True,
+                "result": "找到下载任务：\n" + json.dumps([task]),
+            },
+        ]
+    )
+    client = MoviePilotClient(
+        base_url="http://moviepilot.test",
+        api_token="token-value",
+        session=session,  # type: ignore[arg-type]
+    )
+
+    rows = client.list_download_history(count=25)
+    live = client.get_download_task("ABC123")
+
+    assert rows == [
+        {
+            "id": 9,
+            "path": "H:/Anime/Series/Title",
+            "type": "电视剧",
+            "title": "Title",
+            "tmdbid": 42,
+            "download_hash": "ABC123",
+            "torrent_name": "Title S01",
+            "date": "2026-09-02 12:00:00",
+        }
+    ]
+    assert live == {
+        "hash": "abc123",
+        "progress": "100.0%",
+    }
+    assert session.calls[0][2]["params"] == {"page": 1, "count": 25}
+    assert session.calls[1][2]["json"]["arguments"]["hash"] == "abc123"
+
+
+def test_downloaders_are_allowlisted() -> None:
+    session = _Session(
+        [[{"name": "qBittorrent", "type": "qbittorrent", "host": "private"}]]
+    )
+    client = MoviePilotClient(
+        base_url="http://moviepilot.test",
+        api_token="token-value",
+        session=session,  # type: ignore[arg-type]
+    )
+
+    assert client.list_downloaders() == [
+        {"name": "qBittorrent", "type": "qbittorrent"}
+    ]
+
+
+def test_download_task_lookup_handles_removed_task() -> None:
+    session = _Session(
+        [{"success": True, "result": "未找到下载任务"}]
+    )
+    client = MoviePilotClient(
+        base_url="http://moviepilot.test",
+        api_token="token-value",
+        session=session,  # type: ignore[arg-type]
+    )
+
+    assert client.get_download_task("abc123") is None
+
+
+def test_download_task_lookup_rejects_ambiguous_non_json_response() -> None:
+    session = _Session([{"success": True, "result": "查询暂时失败"}])
+    client = MoviePilotClient(
+        base_url="http://moviepilot.test",
+        api_token="token-value",
+        session=session,  # type: ignore[arg-type]
+    )
+
+    try:
+        client.get_download_task("abc123")
+    except MoviePilotAPIError as exc:
+        assert "invalid rows" in str(exc)
+    else:
+        raise AssertionError("ambiguous task response should fail closed")
 
 
 def test_title_search_treats_no_subtitles_as_empty() -> None:

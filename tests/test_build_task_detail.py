@@ -25,6 +25,29 @@ def _patch_io(monkeypatch, task: dict | None, record: dict | None, sf_child: dic
     monkeypatch.setattr(serializers, "_load_subtitle_fetch_child", lambda _uuid: sf_child or {})
 
 
+def test_detail_source_evidence_is_allowlisted(monkeypatch):
+    task = {
+        "name": "Title",
+        "source_evidence": {
+            "provider": "moviepilot",
+            "history_id": 9,
+            "download_hash": "abc123",
+            "torrent_site": "Site",
+            "cookie": "must-not-survive",
+        },
+    }
+    _patch_io(monkeypatch, task, {})
+
+    evidence = serializers.build_task_detail("uuid-source")["source_evidence"]
+
+    assert evidence == {
+        "provider": "moviepilot",
+        "history_id": 9,
+        "download_hash": "abc123",
+        "torrent_site": "Site",
+    }
+
+
 def test_detail_ai_section_has_no_confidence(monkeypatch):
     """主链路 ai_confidence 已移除（Pi 时代 dead，永远是 -）。"""
     task = {"name": "x", "pipeline_mode": "local_bangumi_to_tmdb_product", "ai_used": True}

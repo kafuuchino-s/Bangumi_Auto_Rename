@@ -73,6 +73,12 @@ CONFIG_DEFAULT = {
     "subtitle_case_agent_pi_max_turns": 48,  # 兼容保留，Pi native 模式由 wall-clock timeout 约束
     "subtitle_case_agent_pi_timeout_seconds": 300,
     "subtitle_case_agent_pi_command": "",  # 运行命令覆盖（默认走 core sidecar）
+    # MoviePilot 共享连接（字幕与恢复/审计共用）。
+    "moviepilot_base_url": "http://host.docker.internal:3333",
+    "moviepilot_api_token": "",
+    # 隐藏的回滚别名；field spec 仅暴露上面的共享 key。
+    "subtitle_auto_fetch_moviepilot_base_url": "http://host.docker.internal:3333",
+    "subtitle_auto_fetch_moviepilot_api_token": "",
     # 字幕自动抓取配置
     "subtitle_auto_fetch_enabled": False,
     "subtitle_auto_fetch_provider": "acgrip",
@@ -80,8 +86,6 @@ CONFIG_DEFAULT = {
     "subtitle_auto_fetch_timeout_seconds": 30,
     "subtitle_auto_fetch_browser_enabled": False,
     "subtitle_auto_fetch_acgrip_base_url": "https://bbs.acgrip.com",
-    "subtitle_auto_fetch_moviepilot_base_url": "http://host.docker.internal:3333",
-    "subtitle_auto_fetch_moviepilot_api_token": "",
     "subtitle_auto_fetch_moviepilot_save_path": "",
     "subtitle_auto_fetch_preferred_language": "zh-CN",
     "subtitle_auto_fetch_skip_if_embedded_language": True,
@@ -236,7 +240,15 @@ class ConfigManager:
             if self.config.get("subtitle_case_agent_backend") != "pi":
                 self.config["subtitle_case_agent_backend"] = "pi"
 
-
+            # 漏单恢复加入后 MoviePilot 连接改为共享；
+            # 旧键保留供镜像回滚。
+            for new_key, old_key in (
+                ("moviepilot_base_url", "subtitle_auto_fetch_moviepilot_base_url"),
+                ("moviepilot_api_token", "subtitle_auto_fetch_moviepilot_api_token"),
+            ):
+                if new_key not in original_keys and old_key in original_keys:
+                    self.config[new_key] = self.config.get(old_key)
+                self.config[old_key] = self.config.get(new_key)
 
             # 兼容迁移：上一版 webhook 标签白名单 → qBittorrent 分类白名单。
             # 必须检查原始 key 是否存在，避免用户显式保存空新值后被旧值复活。
@@ -408,6 +420,10 @@ class ConfigManager:
 
                 # 设置值（路径直接保存，不做转换）
                 self.config[key] = value
+                if key == "moviepilot_base_url":
+                    self.config["subtitle_auto_fetch_moviepilot_base_url"] = value
+                elif key == "moviepilot_api_token":
+                    self.config["subtitle_auto_fetch_moviepilot_api_token"] = value
                 # 重新写回
                 self.write_config()
                 return True

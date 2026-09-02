@@ -64,6 +64,7 @@ export function TaskDetailDialog({
   };
 
   const basic = detail?.basic;
+  const sourceEvidence = detail?.source_evidence;
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-5xl w-[94vw] max-h-[85vh] overflow-y-auto">
@@ -88,6 +89,35 @@ export function TaskDetailDialog({
               <KV k={t("recognizedTitle")} v={basic?.name} />
               <KV k={t("season")} v={basic?.season_id} />
             </Section>
+
+            {sourceEvidence?.provider ? (
+              <Section title={t("detailSourceEvidence")}>
+                <KV k={t("detailProvider")} v={sourceEvidence.provider} />
+                <KV k={t("moviepilotHistoryId")} v={sourceEvidence.history_id} />
+                <KV k={t("moviepilotRelease")} v={sourceEvidence.torrent_name} />
+                <KV k={t("moviepilotSite")} v={sourceEvidence.torrent_site} />
+                <KV k={t("moviepilotHash")} v={sourceEvidence.download_hash} />
+                <KV k={t("moviepilotSourcePath")} v={sourceEvidence.source_path} />
+                <KV
+                  k={t("moviepilotMediaHint")}
+                  v={[
+                    sourceEvidence.title,
+                    sourceEvidence.media_type,
+                    sourceEvidence.year,
+                    sourceEvidence.seasons,
+                    sourceEvidence.episodes,
+                  ].filter(Boolean).join(" · ")}
+                />
+                <KV k={t("detailTmdb")} v={sourceEvidence.tmdb_id} />
+                <KV k={t("moviepilotDownloadedAt")} v={sourceEvidence.downloaded_at} />
+                <KV
+                  k={t("moviepilotCompletion")}
+                  v={sourceEvidence.completion_evidence
+                    ? t(`moviepilotCompletion_${sourceEvidence.completion_evidence}`)
+                    : undefined}
+                />
+              </Section>
+            ) : null}
 
             {detail.tmdb_subjects?.length ? (
               <Section title={t("detailTmdb")}>

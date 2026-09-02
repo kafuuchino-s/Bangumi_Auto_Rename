@@ -42,6 +42,7 @@ import {
   getFieldSpec,
   testAi,
   testEmby,
+  testMoviePilot,
   testTelegram,
 } from "@/lib/api/client";
 import type { ConfigDict, FieldSpecEntry } from "@/lib/api/types";
@@ -122,6 +123,7 @@ export function SettingsTabContent({ tab }: { tab: string }) {
   const testForGroup = (group: string) => {
     if (group === "ai_recognition") return () => runTest("AI", testAi);
     if (group === "notify_emby") return () => runTest("Emby", testEmby);
+    if (group === "moviepilot") return () => runTest("MoviePilot", testMoviePilot);
     if (group === "notify_telegram") return () => runTest("Telegram", testTelegram);
     return undefined;
   };

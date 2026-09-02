@@ -49,7 +49,8 @@ Bangumi Auto Rename 是一条 **AI-first + strict** 的媒体整理流水线，�
 
 - **Local→Bangumi→TMDB 全链路重命名**：本地包文件 → Case Agent evidence-driven 映射（Bangumi 标题/类型/季集）→ BGM→TMDB 桥接生成 TMDB 目标路径 → 迁移落盘。重复/越界由两个 Verifier 合同校验。
 - **字幕导入**：字幕文件或压缩包 → 解压 → Case Agent 字幕→视频配对 → 落盘到目标目录，可选 `ffsubsync` 时间轴对齐。普通重命名任务中的关联字幕会按「复制」方式跟随视频迁移。
-- **字幕自动抓取**：扫描落地后缺字幕的视频 → Case Agent 选帖/选包（acgrip 站点）→ 下载 → 配对落盘。支持**多季覆盖**（一帖可覆盖多 subject，多季番一次补齐）。
+- **字幕自动抓取**：扫描落地后缺字幕的视频 → Case Agent 从 ACGRIP / MoviePilot 候选中选帖、选包 → 下载 → 配对落盘。支持**多季覆盖**（一帖可覆盖多 subject，多季番一次补齐）。
+- **MoviePilot 漏单恢复**：只读扫描 MoviePilot 下载历史与定向下载器状态，排除 BAR 已处理、已排队、未完成或路径不可用条目；用户确认后才进入 BAR 正常队列。MoviePilot 的 TMDB/季集信息仅作为来源审计，不参与语义映射和落盘路由。
 - **批次收尾通知**：批次结束后统一触发 **Emby 刷新** + **Telegram 汇总通知**（可配置成功/失败触发）。
 
 ## 技术架构
@@ -237,13 +238,21 @@ docker build -t bangumi-auto-rename . \
 - `subtitle_sync_enabled` / `subtitle_sync_mode`（`best_effort` / `strict`）/ `subtitle_sync_executable` / `subtitle_sync_extra_args` / `subtitle_sync_timeout_seconds` / `subtitle_sync_overwrite_policy`
 - 字幕 Case Agent：`subtitle_case_agent_primary_enabled` / `subtitle_case_agent_backend`（默认 `pi`）
 
-#### 字幕自动抓取（acgrip）
+#### 字幕自动抓取（ACGRIP / MoviePilot）
 - 扫描落地后缺字幕的视频 → Case Agent 选帖/选包 → 下载 → 配对落盘
+- 支持 ACGRIP、MoviePilot 或组合候选源；候选选择与字幕映射仍由 BAR Case Agent 完成
 - 支持**多季覆盖**：一帖可覆盖多 subject，多季番可一次补齐
 - 配对基准 = TMDB 落地视频，字幕 Case Agent 按 `video`（合法落点）+ `source_video`（强配对证据）对齐
 
 配置入口：
 - `subtitle_auto_fetch_enabled` / `subtitle_auto_fetch_provider`（默认 `acgrip`）/ `subtitle_auto_fetch_candidate_limit` / `subtitle_auto_fetch_timeout_seconds` / `subtitle_auto_fetch_browser_enabled` / `subtitle_auto_fetch_acgrip_base_url` / `subtitle_auto_fetch_preferred_language`
+- MoviePilot 连接位于配置页 **高级 → MoviePilot**：`moviepilot_base_url` / `moviepilot_api_token`；字幕暂存目录仍使用 `subtitle_auto_fetch_moviepilot_save_path`
+
+#### MoviePilot 漏单恢复
+- 任务页点击 **MP 恢复**，查看 MoviePilot 已完成但 BAR 尚未处理的下载
+- 扫描只读；明确点击“恢复入队”后，服务端按历史 ID 重新校验路径、视频文件、BAR 任务记录和下载器完成状态，再走 BAR 正常任务队列
+- 下载器任务已被删除时，只要 MoviePilot 历史和源视频仍存在，可以“仅历史”状态恢复；下载中、已排队、已处理和路径不可用条目不会入队
+- torrent hash、站点、源路径及 MoviePilot TMDB/季集提示会保存为任务来源证据，不设置 `is_anime` / `is_movie`，不替代 Case Agent 或 TMDB legal graph
 
 #### 依赖说明
 - 使用自动对齐前请确保系统可调用 `ffsubsync`（在 PATH 中，或在配置中填绝对路径）。

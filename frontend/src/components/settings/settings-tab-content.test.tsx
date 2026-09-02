@@ -9,6 +9,7 @@ const api = vi.hoisted(() => ({
   getFieldSpec: vi.fn(),
   testAi: vi.fn(),
   testEmby: vi.fn(),
+  testMoviePilot: vi.fn(),
   testTelegram: vi.fn(),
   updateConfig: vi.fn(),
 }));
@@ -107,22 +108,55 @@ describe("settings interactions", () => {
 
   it("renders field-spec secrets as password inputs", async () => {
     api.getConfig.mockResolvedValue({
-      subtitle_auto_fetch_moviepilot_api_token: "",
+      moviepilot_api_token: "",
     });
     api.getFieldSpec.mockResolvedValue([
       {
-        key: "subtitle_auto_fetch_moviepilot_api_token",
+        key: "moviepilot_api_token",
         control: "secret",
         level: "advanced",
-        group: "fetch_advanced",
-        tab: "subtitle",
+        group: "moviepilot",
+        tab: "advanced",
       },
     ]);
 
-    render(<SettingsTabContent tab="subtitle" />);
+    render(<SettingsTabContent tab="advanced" />);
 
     const input = await screen.findByPlaceholderText("newSecretPlaceholder");
     expect(input).toHaveAttribute("type", "password");
+  });
+
+  it("tests the shared MoviePilot connection from its settings group", async () => {
+    api.getConfig.mockResolvedValue({
+      moviepilot_base_url: "http://moviepilot.test",
+      moviepilot_api_token: "********",
+    });
+    api.getFieldSpec.mockResolvedValue([
+      {
+        key: "moviepilot_base_url",
+        control: "text",
+        level: "advanced",
+        group: "moviepilot",
+        tab: "advanced",
+      },
+      {
+        key: "moviepilot_api_token",
+        control: "secret",
+        level: "advanced",
+        group: "moviepilot",
+        tab: "advanced",
+      },
+    ]);
+    api.testMoviePilot.mockResolvedValue({
+      success: true,
+      message: "connected",
+    });
+
+    render(<SettingsTabContent tab="advanced" />);
+    fireEvent.click(await screen.findByRole("button", { name: "test" }));
+
+    await waitFor(() => expect(api.testMoviePilot).toHaveBeenCalledOnce());
+    expect(toast.success).toHaveBeenCalled();
   });
 
   it("keeps selected title languages in priority order when saving", async () => {

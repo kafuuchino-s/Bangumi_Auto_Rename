@@ -88,6 +88,65 @@ def test_explicit_empty_category_key_does_not_restore_legacy_value(
     assert "allowed_tags" not in persisted
 
 
+def test_moviepilot_connection_keys_migrate_once(tmp_path, monkeypatch):
+    manager, config_path = _load_config_manager_from_data(
+        tmp_path,
+        monkeypatch,
+        {
+            "subtitle_auto_fetch_moviepilot_base_url": "http://mp.test:3333",
+            "subtitle_auto_fetch_moviepilot_api_token": "secret-token",
+        },
+    )
+
+    assert manager.config["moviepilot_base_url"] == "http://mp.test:3333"
+    assert manager.config["moviepilot_api_token"] == "secret-token"
+    assert manager.config["subtitle_auto_fetch_moviepilot_base_url"] == (
+        "http://mp.test:3333"
+    )
+    assert manager.config["subtitle_auto_fetch_moviepilot_api_token"] == (
+        "secret-token"
+    )
+    persisted = json.loads(config_path.read_text(encoding="UTF-8"))
+    assert persisted["moviepilot_base_url"] == "http://mp.test:3333"
+    assert persisted["moviepilot_api_token"] == "secret-token"
+
+
+def test_explicit_moviepilot_connection_keys_win_over_legacy(
+    tmp_path, monkeypatch
+):
+    manager, _ = _load_config_manager_from_data(
+        tmp_path,
+        monkeypatch,
+        {
+            "moviepilot_base_url": "http://new.test:3333",
+            "moviepilot_api_token": "new-token",
+            "subtitle_auto_fetch_moviepilot_base_url": "http://old.test:3333",
+            "subtitle_auto_fetch_moviepilot_api_token": "old-token",
+        },
+    )
+
+    assert manager.config["moviepilot_base_url"] == "http://new.test:3333"
+    assert manager.config["moviepilot_api_token"] == "new-token"
+    assert manager.config["subtitle_auto_fetch_moviepilot_base_url"] == (
+        "http://new.test:3333"
+    )
+    assert manager.config["subtitle_auto_fetch_moviepilot_api_token"] == (
+        "new-token"
+    )
+
+    manager.set_config("moviepilot_base_url", "http://changed.test:3333")
+    manager.set_config("moviepilot_api_token", "changed-token")
+    persisted = json.loads(
+        (tmp_path / "config.json").read_text(encoding="UTF-8")
+    )
+    assert persisted["subtitle_auto_fetch_moviepilot_base_url"] == (
+        "http://changed.test:3333"
+    )
+    assert persisted["subtitle_auto_fetch_moviepilot_api_token"] == (
+        "changed-token"
+    )
+
+
 def test_title_language_order_is_normalized_and_persisted(tmp_path, monkeypatch):
     manager, config_path = _load_config_manager_from_data(
         tmp_path,
