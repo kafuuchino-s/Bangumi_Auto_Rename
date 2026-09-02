@@ -181,10 +181,13 @@ def test_process_accepted_lands_via_pi_selected_package(monkeypatch, tmp_path):
         )
 
     monkeypatch.setattr(fetcher.provider, "download", fake_download)
-    monkeypatch.setattr(
-        fetcher.processor, "process",
-        lambda path, target_task_uuid=None: {"status": "success"},
-    )
+    processor_calls = {}
+
+    def fake_process(path, target_task_uuid=None, allowed_target_videos=None):
+        processor_calls["allowed_target_videos"] = allowed_target_videos
+        return {"status": "success"}
+
+    monkeypatch.setattr(fetcher.processor, "process", fake_process)
 
     result = fetcher.process_task(task_uuid)
 
@@ -195,6 +198,9 @@ def test_process_accepted_lands_via_pi_selected_package(monkeypatch, tmp_path):
     assert result["selections_count"] >= 1
     assert result["selections"][0]["selected_package"]["package_id"] == "batch"
     assert download_calls["package"].package_id == "batch"
+    assert processor_calls["allowed_target_videos"] == [
+        tmp_path / "Series" / "Season 1" / "ep1.mkv"
+    ]
 
 
 # ---------------------------------------------------------------------------
@@ -322,7 +328,7 @@ def test_process_persists_processor_case_agent_status_when_processor_fail_closed
         ),
     )
 
-    def fake_process(path, target_task_uuid=None):
+    def fake_process(path, target_task_uuid=None, allowed_target_videos=None):
         return {
             "status": "need_confirm",
             "case_agent_status": "fail_closed",

@@ -78,7 +78,15 @@ def _build_process_fixture(
         lambda archive_path: extract_dir,
     )
 
-    def _fake_case_agent(*, _uuid, archive_path, subtitle_files, processed_tasks, mapping_only=False):
+    def _fake_case_agent(
+        *,
+        _uuid,
+        archive_path,
+        subtitle_files,
+        processed_tasks,
+        mapping_only=False,
+        allowed_target_keys=None,
+    ):
         from src.subtitle.case_agent import (
             build_subtitle_case_workspace,
             build_subtitle_file_cards,
@@ -123,6 +131,7 @@ def _build_process_fixture(
             confidence="High",
             pipeline_mode="subtitle_case_agent",
             mapping_only=mapping_only,
+            allowed_target_keys=allowed_target_keys,
         )
 
 

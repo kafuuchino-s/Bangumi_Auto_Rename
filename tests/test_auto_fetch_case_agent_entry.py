@@ -256,7 +256,9 @@ def test_process_case_agent_accepted_lands_and_persists_pipeline_mode(
     )
     monkeypatch.setattr(
         fetcher.processor, "process",
-        lambda path, target_task_uuid=None: {"status": "success"},
+        lambda path, target_task_uuid=None, allowed_target_videos=None: {
+            "status": "success"
+        },
     )
 
     result = fetcher.process_task("task-1")
@@ -340,7 +342,7 @@ def test_process_persists_processor_case_agent_status_when_processor_fail_closed
         ),
     )
 
-    def fake_process(path, target_task_uuid=None):
+    def fake_process(path, target_task_uuid=None, allowed_target_videos=None):
         return {
             "status": "need_confirm",
             "case_agent_status": "fail_closed",

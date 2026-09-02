@@ -9,6 +9,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 from src.subtitle.case_agent.models import (
+    CompiledSubtitleMapping,
     CompiledSubtitlePlan,
     CompiledUnmatchedEntry,
 )
@@ -153,3 +154,54 @@ def test_zero_mappings_zero_unmatched_still_error(monkeypatch, tmp_path):
     # 0 mappings + 0 unmatched → error（实现错误）
     assert result["status"] == "error"
     assert "无法建立字幕映射" in (result.get("error") or "")
+
+
+def test_land_plan_only_writes_allowed_target_videos(monkeypatch, tmp_path):
+    processor = SubtitleProcessor()
+    archive = tmp_path / "subs.zip"
+    archive.write_bytes(b"fake")
+    subs = _make_subtitle_files(tmp_path)
+    target_dir = tmp_path / "target"
+    target_dir.mkdir()
+    videos = [target_dir / "Show - S01E01.mkv", target_dir / "Show - S01E02.mkv"]
+    tasks = [
+        {
+            "uuid": "task-1",
+            "title": "Show",
+            "target_dir": str(target_dir),
+            "is_movie": False,
+            "videos": [video.name for video in videos],
+            "video_targets": {},
+        }
+    ]
+    plan = CompiledSubtitlePlan(
+        mappings=[
+            CompiledSubtitleMapping(
+                subtitle_ref=f"SF{index}",
+                subtitle_archive_path=f"sub{index}.ass",
+                target_ref=f"TV{index}",
+                task_uuid="task-1",
+                video=video.name,
+                emby_lang="zh-CN",
+                is_simplified=True,
+            )
+            for index, video in enumerate(videos, start=1)
+        ]
+    )
+    monkeypatch.setattr(processor.extractor, "cleanup", lambda path: None)
+
+    result = processor._land_compiled_plan(
+        _uuid="scope-test",
+        archive_path=archive,
+        subtitle_files=subs,
+        processed_tasks=tasks,
+        compiled_plan=plan,
+        snapshot={},
+        confidence="High",
+        mapping_only=True,
+        allowed_target_keys={processor._normalize_card_path(str(videos[0]))},
+    )
+
+    assert result["status"] == "success"
+    assert result["matched_count"] == 1
+    assert [mapping["video"] for mapping in result["mappings"]] == [videos[0].name]

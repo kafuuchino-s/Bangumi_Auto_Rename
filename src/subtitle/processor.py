@@ -129,6 +129,7 @@ class SubtitleProcessor:
         target_task_uuid: Optional[str] = None,
         *,
         mapping_only: bool = False,
+        allowed_target_videos: Optional[List[Path]] = None,
     ) -> Dict[str, Any]:
         """
         处理字幕压缩包（支持多季度/多任务）——薄入口。
@@ -143,6 +144,8 @@ class SubtitleProcessor:
             mapping_only: True 时 accepted 不落盘到媒体库，直接返回字幕→视频映射
                 产物（mappings/unmatched/compiled_plan）。用于 auto_fetch 映射模式
                 等不碰媒体库的场景。默认 False（生产落盘行为）。
+            allowed_target_videos: 可选落盘白名单。Case Agent 仍映射完整任务，
+                accepted 后只同步和写入这些目标视频。
 
         Returns:
             处理结果字典（status: success | need_confirm | error）
@@ -166,7 +169,14 @@ class SubtitleProcessor:
             return self._error_result(_uuid, resolve_error, archive_path)
 
         logger.info(f"[字幕处理] 读取到 {len(processed_tasks)} 个已处理任务")
-
+        allowed_target_keys = (
+            {
+                self._normalize_card_path(str(path))
+                for path in allowed_target_videos
+            }
+            if allowed_target_videos is not None
+            else None
+        )
 
         # Case Agent 是字幕导入的唯一链路，始终使用 Pi evidence-driven 后端。
         return self._process_case_agent(
@@ -175,6 +185,7 @@ class SubtitleProcessor:
             subtitle_files=subtitle_files,
             processed_tasks=processed_tasks,
             mapping_only=mapping_only,
+            allowed_target_keys=allowed_target_keys,
         )
 
     def process_mapping(
@@ -249,6 +260,7 @@ class SubtitleProcessor:
         subtitle_files: List[ExtractedSubtitle],
         processed_tasks: List[ProcessedTask],
         mapping_only: bool = False,
+        allowed_target_keys: Optional[Set[str]] = None,
     ) -> Dict[str, Any]:
         """Case Agent 主路径：entry → Verifier 合同 → compiled_plan 落盘。
 
@@ -280,6 +292,7 @@ class SubtitleProcessor:
                 if isinstance(snapshot.get("draft"), dict)
                 else "Medium",
                 mapping_only=mapping_only,
+                allowed_target_keys=allowed_target_keys,
             )
 
         if status == "need_confirm":
@@ -331,6 +344,7 @@ class SubtitleProcessor:
         confidence: str,
         pipeline_mode: str = "subtitle_case_agent_primary",
         mapping_only: bool = False,
+        allowed_target_keys: Optional[Set[str]] = None,
     ) -> Dict[str, Any]:
         """用 CompiledSubtitlePlan 生成 Emby 文件名 → ffsubsync → 复制落盘。
 
@@ -384,6 +398,13 @@ class SubtitleProcessor:
             else:
                 target_dir = Path(task["target_dir"])
                 video_path = target_dir / video_name
+
+            if (
+                allowed_target_keys is not None
+                and self._normalize_card_path(str(video_path))
+                not in allowed_target_keys
+            ):
+                continue
 
             emby_lang = compiled.emby_lang
             is_simplified = compiled.is_simplified

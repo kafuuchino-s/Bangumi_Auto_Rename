@@ -447,10 +447,17 @@ class SubtitleAutoFetcher:
                     "reason": download_result.error or download_result.status,
                 }
                 continue
-            processor_result = processor_fn(
-                download_result.downloaded_path,
-                target_task_uuid=task_uuid,
-            )
+            if mapping_only:
+                processor_result = processor_fn(
+                    download_result.downloaded_path,
+                    target_task_uuid=task_uuid,
+                )
+            else:
+                processor_result = processor_fn(
+                    download_result.downloaded_path,
+                    target_task_uuid=task_uuid,
+                    allowed_target_videos=missing_videos,
+                )
             unit_status = str(processor_result.get("status") or "")
             unit_cas = str(processor_result.get("case_agent_status") or "")
             status_label = "success" if unit_status == "success" else "processor_failed"
