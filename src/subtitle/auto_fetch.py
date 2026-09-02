@@ -22,7 +22,11 @@ from .auto_fetch_case_agent import (
 )
 from .extractor import SUBTITLE_EXTENSIONS
 from .processor import SubtitleProcessor
-from .providers import ACGRIPProvider, SubtitleCandidate, SubtitleThreadPackage
+from .providers import (
+    SubtitleCandidate,
+    SubtitleThreadPackage,
+    build_subtitle_provider,
+)
 
 
 _EXPLICIT_SIDE_CONTENT_RE = re.compile(
@@ -41,7 +45,7 @@ _SIDE_CONTENT_LABELS = {
 
 class SubtitleAutoFetcher:
     def __init__(self) -> None:
-        self.provider = ACGRIPProvider()
+        self.provider = build_subtitle_provider()
         self.processor = SubtitleProcessor()
 
     def process_task(self, task_uuid: str) -> Dict[str, Any]:
@@ -230,6 +234,7 @@ class SubtitleAutoFetcher:
         task_context["subtitle_auto_fetch_is_season_zero_tv"] = bool(
             not task_data.get("is_movie") and task_data.get("season_id") == 0
         )
+        self.provider.configure_context(task_context, missing_videos)
 
         # 确定性搜索关键词（方向 A：BGM subject 名优先，不 AI 扩词）。
         # 喂给 Pi workspace 作 KW 事实卡，Pi 在 skill 里决定用哪些搜。
@@ -1111,7 +1116,22 @@ class SubtitleAutoFetcher:
         if task_data:
             task_data["subtitle_fetch_attempted"] = True
             task_data["subtitle_fetch_status"] = result.get("status")
-            task_data["subtitle_fetch_provider"] = "acgrip"
+            selected_sources = {
+                str(selection.get("selected_candidate", {}).get("source") or "")
+                for selection in result.get("selections") or []
+                if isinstance(selection, dict)
+                and isinstance(selection.get("selected_candidate"), dict)
+            }
+            selected_sources.discard("")
+            selected_candidate = result.get("selected_candidate")
+            if isinstance(selected_candidate, dict):
+                source = str(selected_candidate.get("source") or "")
+                if source:
+                    selected_sources.add(source)
+            task_data["subtitle_fetch_provider"] = (
+                ",".join(sorted(selected_sources))
+                or self.provider.provider_id
+            )
             task_data["subtitle_fetch_error"] = result.get("reason")
             task_data["subtitle_fetch_search_keyword"] = result.get("search_keyword")
             task_data["subtitle_fetch_selected_candidate"] = result.get(

@@ -36,7 +36,7 @@ const fieldSpec: FieldSpecEntry[] = [
   },
   {
     key: "ai_api_key",
-    control: "text",
+    control: "secret",
     level: "basic",
     group: "ai_recognition",
     tab: "ai",
@@ -103,6 +103,26 @@ describe("settings interactions", () => {
       }),
     );
     expect(toast.success).toHaveBeenCalledWith("saveSuccess");
+  });
+
+  it("renders field-spec secrets as password inputs", async () => {
+    api.getConfig.mockResolvedValue({
+      subtitle_auto_fetch_moviepilot_api_token: "",
+    });
+    api.getFieldSpec.mockResolvedValue([
+      {
+        key: "subtitle_auto_fetch_moviepilot_api_token",
+        control: "secret",
+        level: "advanced",
+        group: "fetch_advanced",
+        tab: "subtitle",
+      },
+    ]);
+
+    render(<SettingsTabContent tab="subtitle" />);
+
+    const input = await screen.findByPlaceholderText("newSecretPlaceholder");
+    expect(input).toHaveAttribute("type", "password");
   });
 
   it("keeps selected title languages in priority order when saving", async () => {

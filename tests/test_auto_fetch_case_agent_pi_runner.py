@@ -226,6 +226,20 @@ def test_tool_search_candidates_injects_cd_refs(tmp_path):
     assert "CD1" in state.provider_candidates_by_ref
 
 
+def test_tool_search_candidates_dedupes_existing_candidate_across_calls(tmp_path):
+    candidate = _candidate()
+    provider = _FakeProvider({"Foo": [candidate], "Foo Alias": [candidate]})
+    state = AutoFetchCaseToolState(
+        workspace=_workspace(), run_dir=tmp_path, provider=provider
+    )
+
+    state.handle_tool("search_candidates", {"keyword": "Foo"})
+    result = state.handle_tool("search_candidates", {"keyword": "Foo Alias"})
+
+    assert result["candidate_count"] == 0
+    assert state.workspace.candidate_refs == ["CD1"]
+
+
 def test_tool_search_candidates_empty_returns_no_candidates(tmp_path):
     provider = _FakeProvider({"Foo": []})
     state = AutoFetchCaseToolState(workspace=_workspace(), run_dir=tmp_path, provider=provider)
@@ -471,6 +485,33 @@ def test_tool_submit_package_appends_selection_then_submit_complete(tmp_path):
     assert state.final_result["final_action"] == "submit_complete"
     assert state.final_result["selections_count"] == 1
     assert state.final_result["selections"][0]["package_ref"] == "PK1"
+
+
+def test_tool_submit_package_accepts_moviepilot_opaque_locator(tmp_path):
+    package = _make_package("mp1", [])
+    package.links[0].url = "moviepilot://download/candidate-1"
+    candidate = _candidate(packages=[package])
+    candidate.source = "moviepilot"
+    provider = _FakeProvider({"Foo": [candidate]})
+    state = AutoFetchCaseToolState(
+        workspace=_workspace(), run_dir=tmp_path, provider=provider
+    )
+
+    state.handle_tool("search_candidates", {"keyword": "Foo"})
+    state.handle_tool("load_candidate_packages", {"candidate_ref": "CD1"})
+    result = state.handle_tool(
+        "submit_package",
+        {
+            "package_ref": "PK1",
+            "link_url": "moviepilot://download/candidate-1",
+            "reason": "matching MoviePilot subtitle row",
+        },
+    )
+
+    assert result["accepted"] is True
+    assert state.selections[0].download_url == (
+        "moviepilot://download/candidate-1"
+    )
 
 
 def test_tool_submit_complete_rejects_no_selections(tmp_path):

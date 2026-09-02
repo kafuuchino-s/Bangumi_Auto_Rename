@@ -3,7 +3,7 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
 
 @dataclass
@@ -59,6 +59,25 @@ class SubtitleDownloadResult:
 
 
 class SubtitleProvider(ABC):
+    provider_id = "unknown"
+
+    def configure_context(
+        self,
+        task_data: Dict[str, Any],
+        missing_videos: List[Path],
+    ) -> None:
+        """绑定结构化搜索来源需要的任务事实。"""
+
+    def prepare_candidate(
+        self, candidate: SubtitleCandidate
+    ) -> SubtitleCandidate:
+        return candidate
+
+    def load_thread_packages(
+        self, candidate: SubtitleCandidate
+    ) -> SubtitleCandidate:
+        return self.prepare_candidate(candidate)
+
     @abstractmethod
     def search(self, keyword: str, limit: int = 10) -> List[SubtitleCandidate]:
         raise NotImplementedError

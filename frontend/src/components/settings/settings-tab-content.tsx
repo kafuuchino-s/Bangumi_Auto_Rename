@@ -282,8 +282,7 @@ function FieldRow({
   setField: (k: string, v: unknown) => void;
 }) {
   const { t } = useTranslation("settings");
-  const isSecret =
-    entry.key.includes("api_key") || entry.key === "telegram_bot_token";
+  const isSecret = entry.control === "secret";
   const [showSecret, setShowSecret] = useState(false);
 
   // bool_toggle 用 Switch 横向卡片布局（对齐 seiri）

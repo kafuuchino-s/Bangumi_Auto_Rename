@@ -68,6 +68,8 @@ class DownloadRetryExhausted(Exception):
 class ACGRIPProvider(SubtitleProvider):
     """基于 Scrapling 的 ACGRIP 字幕源 provider。"""
 
+    provider_id = "acgrip"
+
     def __init__(self) -> None:
         self.base_url = cm.get_config("subtitle_auto_fetch_acgrip_base_url") or (
             "https://bbs.acgrip.com"

@@ -199,12 +199,16 @@ class AutoFetchCaseToolState:
         searched_kws = kw_list[:_SEARCH_KEYWORD_BATCH_LIMIT]
         remaining_kws = kw_list[_SEARCH_KEYWORD_BATCH_LIMIT:]
 
-        seen_detail_urls: set[str] = set()
+        seen_detail_urls = {
+            candidate.detail_url
+            for candidate in self.workspace.candidates
+            if candidate.detail_url
+        }
         all_new_refs: list[str] = []
         per_keyword: list[dict[str, Any]] = []
 
         # 并发 search（架构加速 A）：多个关键词的 provider.search 是独立 HTTP
-        # 请求，acgrip 无共享可变状态，实测并发 4.9x 加速且无限流。并发上限
+        # 请求；provider 内部负责自身并发安全。并发上限
         # min(词数, _SEARCH_CONCURRENCY) 避免过高并发触发站点限流。
         from concurrent.futures import ThreadPoolExecutor
 
@@ -221,12 +225,9 @@ class AutoFetchCaseToolState:
             for kw, result in ex.map(_search_one, searched_kws):
                 search_kw_results[kw] = result
 
-        # 偶发空结果重试（治 acgrip search 非确定性）：acgrip search.php 偶发
-        # 返回 200 但空结果页（同词串行重试立即命中），并发时更易撞上。对并发
-        # 轮返回 0 命中或异常的词，串行重试 1 次——这是低风险确定性兜底（不改变
-        # Pi 决策语义，只补回被服务端瞬时状态吞掉的真实命中），避免 Pi 据偶发
-        # no_candidates 误判"该 subject 无帖"导致整季漏覆盖（0062 圣战的预兆
-        # 曾因此被漏，实证同词串行稳定 1 命中）。
+        # 偶发空结果重试：来源站搜索可能短暂返回空页；对并发轮返回 0 命中
+        # 或异常的词串行重试 1 次。provider 自身缓存可避免结构化精确搜索重复
+        # 发网请求，不改变 Pi 决策语义。
         retry_kws = [
             kw for kw in searched_kws
             if not search_kw_results.get(kw)
