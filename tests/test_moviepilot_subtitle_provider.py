@@ -1,10 +1,12 @@
 from __future__ import annotations
 
+import json
 import zipfile
+from dataclasses import asdict
 from pathlib import Path
 from typing import Any, Mapping
 
-from src.moviepilot import MoviePilotClient
+from src.moviepilot import MoviePilotAPIError, MoviePilotClient
 from src.subtitle.providers import (
     CombinedSubtitleProvider,
     MoviePilotProvider,
@@ -44,11 +46,16 @@ class _Client:
         *,
         media_rows: list[dict[str, Any]] | None = None,
         title_rows: list[dict[str, Any]] | None = None,
+        direct_enabled: bool = False,
+        direct_fails: bool = False,
     ) -> None:
         self.media_rows = media_rows or []
         self.title_rows = title_rows or []
         self.media_calls: list[tuple[str, dict[str, Any]]] = []
         self.title_calls: list[str] = []
+        self.direct_enabled = direct_enabled
+        self.direct_fails = direct_fails
+        self.direct_calls: list[Mapping[str, Any]] = []
         self.download_calls: list[
             tuple[Mapping[str, Any], int | None, str]
         ] = []
@@ -59,9 +66,33 @@ class _Client:
         self.media_calls.append((media_id, kwargs))
         return list(self.media_rows)
 
-    def search_subtitles_by_title(self, keyword: str) -> list[dict[str, Any]]:
+    def search_subtitles_by_title(
+        self,
+        keyword: str,
+        **_kwargs: Any,
+    ) -> list[dict[str, Any]]:
         self.title_calls.append(keyword)
         return list(self.title_rows)
+
+    def can_download_subtitle_direct(
+        self,
+        subtitle: Mapping[str, Any],
+    ) -> bool:
+        return self.direct_enabled and not bool(subtitle.get("site_proxy"))
+
+    def download_subtitle_direct(
+        self,
+        subtitle: Mapping[str, Any],
+        *,
+        destination_dir: Path,
+    ) -> Path:
+        self.direct_calls.append(subtitle)
+        if self.direct_fails:
+            raise MoviePilotAPIError("direct failed")
+        destination_dir.mkdir(parents=True, exist_ok=True)
+        target = destination_dir / "direct-subtitle.rar"
+        target.write_bytes(b"Rar!\x1a\x07direct")
+        return target
 
     def download_subtitle(
         self,
@@ -121,6 +152,7 @@ def test_provider_uses_exact_media_search_once_and_projects_package(
             "year": None,
             "season": 1,
             "episode": None,
+            "include_download_auth": True,
         },
     )
     assert client.title_calls == []
@@ -177,6 +209,59 @@ def test_provider_does_not_expose_unsupported_download_links(
     provider = _configured_provider(client, tmp_path)
 
     assert provider.search("贫乏神") == []
+
+
+def test_provider_direct_download_keeps_credentials_out_of_candidate(
+    tmp_path: Path,
+) -> None:
+    client = _Client(media_rows=[_row()], direct_enabled=True)
+    provider = _configured_provider(client, tmp_path)
+    candidate = provider.load_thread_packages(provider.search("贫乏神")[0])
+    package = candidate.thread_packages[0]
+
+    visible = json.dumps(asdict(candidate), ensure_ascii=False)
+    assert "must-not-survive" not in visible
+    result = provider.download(
+        candidate,
+        tmp_path / "bar-download",
+        package=package,
+        download_url=package.links[0].url,
+    )
+
+    assert result.status == "success"
+    assert result.downloaded_path == (
+        tmp_path / "bar-download" / "direct-subtitle.rar"
+    )
+    assert client.download_calls == []
+    assert client.direct_calls[0]["site_cookie"] == "must-not-survive"
+    assert client.direct_calls[0]["site_ua"] == "must-not-survive"
+
+
+def test_provider_direct_failure_falls_back_to_sanitized_mp_download(
+    tmp_path: Path,
+) -> None:
+    client = _Client(
+        media_rows=[_row()],
+        direct_enabled=True,
+        direct_fails=True,
+    )
+    provider = _configured_provider(client, tmp_path)
+    candidate = provider.load_thread_packages(provider.search("贫乏神")[0])
+    package = candidate.thread_packages[0]
+
+    result = provider.download(
+        candidate,
+        tmp_path / "bar-download",
+        package=package,
+        download_url=package.links[0].url,
+    )
+
+    assert result.status == "success"
+    assert len(client.direct_calls) == 1
+    assert len(client.download_calls) == 1
+    fallback_payload = client.download_calls[0][0]
+    assert "site_cookie" not in fallback_payload
+    assert "site_ua" not in fallback_payload
 
 
 def test_provider_repackages_multiple_files_and_cleans_unique_staging(

@@ -1,8 +1,9 @@
 from __future__ import annotations
 
+from pathlib import Path
 from typing import Any
 
-from src.moviepilot import MoviePilotClient
+from src.moviepilot import MoviePilotAPIError, MoviePilotClient
 
 
 class _Response:
@@ -71,6 +72,98 @@ def test_media_search_uses_api_key_and_strips_site_credentials() -> None:
     assert "site_cookie" not in rows[0]
     assert "site_ua" not in rows[0]
     assert "site_proxy" not in rows[0]
+
+
+def test_media_search_can_retain_auth_for_private_provider_cache() -> None:
+    row = _subtitle_row()
+    row["site_internal_token"] = "must-stay-private"
+    session = _Session([{"success": True, "data": [row]}])
+    client = MoviePilotClient(
+        base_url="http://moviepilot.test/",
+        api_token="token-value",
+        session=session,  # type: ignore[arg-type]
+    )
+
+    rows = client.search_subtitles_by_media(
+        "tmdb:45968",
+        media_type="tv",
+        include_download_auth=True,
+    )
+
+    assert rows[0]["site_cookie"] == "secret-cookie"
+    assert rows[0]["site_ua"] == "secret-user-agent"
+    assert rows[0]["site_proxy"] is True
+    assert "site_internal_token" not in rows[0]
+
+
+def test_direct_download_uses_site_auth_without_leaking_mp_key(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    captured: dict[str, Any] = {}
+
+    class _DownloadResponse:
+        content = b"Rar!\x1a\x07payload"
+        headers = {
+            "Content-Disposition": 'attachment; filename="bundle.rar"'
+        }
+
+        def raise_for_status(self) -> None:
+            return None
+
+    def fake_get(url: str, **kwargs: Any) -> _DownloadResponse:
+        captured["url"] = url
+        captured.update(kwargs)
+        return _DownloadResponse()
+
+    monkeypatch.setattr("src.moviepilot.client.requests.get", fake_get)
+    client = MoviePilotClient(
+        base_url="http://moviepilot.test",
+        api_token="token-value",
+        session=_Session([]),  # type: ignore[arg-type]
+    )
+    row = _subtitle_row()
+    row["site_proxy"] = False
+
+    target = client.download_subtitle_direct(
+        row,
+        destination_dir=tmp_path,
+    )
+
+    assert target == tmp_path / "bundle.rar"
+    assert target.read_bytes() == b"Rar!\x1a\x07payload"
+    assert captured["url"] == "https://example.test/subtitle.zip"
+    assert captured["headers"]["Cookie"] == "secret-cookie"
+    assert captured["headers"]["User-Agent"] == "secret-user-agent"
+    assert "X-API-KEY" not in captured["headers"]
+    assert list(tmp_path.glob("*.part")) == []
+
+
+def test_direct_download_error_does_not_include_site_secrets(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    def fail_get(*_args: Any, **_kwargs: Any) -> None:
+        raise __import__("requests").ConnectionError(
+            "secret-cookie https://example.test/private"
+        )
+
+    monkeypatch.setattr("src.moviepilot.client.requests.get", fail_get)
+    client = MoviePilotClient(
+        base_url="http://moviepilot.test",
+        api_token="token-value",
+        session=_Session([]),  # type: ignore[arg-type]
+    )
+    row = _subtitle_row()
+    row["site_proxy"] = False
+
+    try:
+        client.download_subtitle_direct(row, destination_dir=tmp_path)
+    except MoviePilotAPIError as exc:
+        assert "secret-cookie" not in str(exc)
+        assert "example.test" not in str(exc)
+    else:
+        raise AssertionError("direct download should fail")
 
 
 def test_title_search_treats_no_subtitles_as_empty() -> None:

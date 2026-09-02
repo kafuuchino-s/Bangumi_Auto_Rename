@@ -186,6 +186,7 @@ class MoviePilotProvider(SubtitleProvider):
     ) -> SubtitleDownloadResult:
         selected_url = download_url or self._package_url(package)
         payload = self._candidate_payload(candidate)
+        download_payload = self._candidate_download_payload(candidate)
         provider_url = self._provider_download_url(candidate)
         if selected_url != provider_url:
             return self._failed_result(
@@ -201,6 +202,28 @@ class MoviePilotProvider(SubtitleProvider):
                 selected_url,
                 "MoviePilot candidate has no download link",
             )
+
+        if self.client.can_download_subtitle_direct(download_payload):
+            try:
+                output = self.client.download_subtitle_direct(
+                    download_payload,
+                    destination_dir=destination_dir,
+                )
+            except MoviePilotAPIError as exc:
+                logger.warning(
+                    "[字幕抓取][MoviePilot] BAR 直下失败，回退 MP: "
+                    f"{type(exc.__cause__ or exc).__name__}"
+                )
+            else:
+                return SubtitleDownloadResult(
+                    candidate=candidate,
+                    downloaded_path=output,
+                    download_url=selected_url,
+                    status="success",
+                    selected_package=package,
+                    download_attempts=1,
+                )
+
         if not self.save_path:
             return self._failed_result(
                 candidate,
@@ -262,6 +285,7 @@ class MoviePilotProvider(SubtitleProvider):
                         year=self._year,
                         season=target.season,
                         episode=target.episode,
+                        include_download_auth=True,
                     )
                 except MoviePilotAPIError as exc:
                     logger.warning(
@@ -289,7 +313,10 @@ class MoviePilotProvider(SubtitleProvider):
         if cached is not None:
             return list(cached)
 
-        found = self.client.search_subtitles_by_title(keyword)
+        found = self.client.search_subtitles_by_title(
+            keyword,
+            include_download_auth=True,
+        )
         tmdb_id = self._targets[0].tmdb_id if self._targets else None
         rows = self._dedupe_rows(
             self._usable_rows([(row, tmdb_id) for row in found])
@@ -313,7 +340,7 @@ class MoviePilotProvider(SubtitleProvider):
             }
             provider_url = f"moviepilot://download/{identity}"
             with self._cache_lock:
-                self._payloads_by_identity[identity] = payload
+                self._payloads_by_identity[identity] = dict(row)
             candidates.append(
                 SubtitleCandidate(
                     title=str(payload.get("title") or "MoviePilot subtitle"),
@@ -389,6 +416,14 @@ class MoviePilotProvider(SubtitleProvider):
         return " | ".join(facts)
 
     def _candidate_payload(self, candidate: SubtitleCandidate) -> dict[str, Any]:
+        return MoviePilotClient.sanitize_subtitle(
+            self._candidate_download_payload(candidate)
+        )
+
+    def _candidate_download_payload(
+        self,
+        candidate: SubtitleCandidate,
+    ) -> dict[str, Any]:
         identity = candidate.metadata.get("moviepilot_identity") or ""
         with self._cache_lock:
             return dict(self._payloads_by_identity.get(identity) or {})
