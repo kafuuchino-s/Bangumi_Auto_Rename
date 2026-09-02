@@ -90,6 +90,10 @@ def test_title_search_treats_no_subtitles_as_empty() -> None:
     )
 
     assert client.search_subtitles_by_title("missing") == []
+    assert session.calls[0][2]["params"] == {
+        "keyword": "missing",
+        "page": 0,
+    }
 
 
 def test_download_posts_sanitized_row_and_returns_saved_files() -> None:

@@ -151,6 +151,34 @@ def test_provider_falls_back_to_title_when_exact_search_is_empty(
     assert client.title_calls == ["贫乏神"]
 
 
+def test_provider_falls_back_to_title_when_exact_links_are_unsupported(
+    tmp_path: Path,
+) -> None:
+    client = _Client(
+        media_rows=[_row(enclosure="javascript:void(0);")],
+        title_rows=[_row(site=10, site_name="猫站")],
+    )
+    provider = _configured_provider(client, tmp_path)
+
+    candidates = provider.search("贫乏神")
+
+    assert len(candidates) == 1
+    assert candidates[0].forum == "猫站"
+    assert client.title_calls == ["贫乏神"]
+
+
+def test_provider_does_not_expose_unsupported_download_links(
+    tmp_path: Path,
+) -> None:
+    client = _Client(
+        media_rows=[_row(enclosure="javascript:void(0);")],
+        title_rows=[_row(enclosure="javascript:void(0);")],
+    )
+    provider = _configured_provider(client, tmp_path)
+
+    assert provider.search("贫乏神") == []
+
+
 def test_provider_repackages_multiple_files_and_cleans_unique_staging(
     tmp_path: Path,
 ) -> None:

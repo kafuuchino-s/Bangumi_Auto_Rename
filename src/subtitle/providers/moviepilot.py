@@ -11,6 +11,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from threading import Lock
 from typing import Any, Dict, List, Mapping, Optional
+from urllib.parse import urlparse
 from uuid import uuid4
 
 from ...config.config_manager import cm
@@ -269,7 +270,14 @@ class MoviePilotProvider(SubtitleProvider):
                     )
                     continue
                 rows.extend((row, target.tmdb_id) for row in found)
-            self._exact_cache = self._dedupe_rows(rows)
+            usable_rows = self._usable_rows(rows)
+            ignored_count = len(rows) - len(usable_rows)
+            if ignored_count:
+                logger.warning(
+                    "[字幕抓取][MoviePilot] 忽略 "
+                    f"{ignored_count} 条下载 API 不支持的字幕链接"
+                )
+            self._exact_cache = self._dedupe_rows(usable_rows)
             return list(self._exact_cache)
 
     def _title_rows(
@@ -283,7 +291,9 @@ class MoviePilotProvider(SubtitleProvider):
 
         found = self.client.search_subtitles_by_title(keyword)
         tmdb_id = self._targets[0].tmdb_id if self._targets else None
-        rows = self._dedupe_rows([(row, tmdb_id) for row in found])
+        rows = self._dedupe_rows(
+            self._usable_rows([(row, tmdb_id) for row in found])
+        )
         with self._cache_lock:
             cached = self._title_cache.setdefault(folded, rows)
         return list(cached)
@@ -318,6 +328,17 @@ class MoviePilotProvider(SubtitleProvider):
                 )
             )
         return candidates
+
+    @staticmethod
+    def _usable_rows(
+        rows: list[tuple[dict[str, Any], int | None]],
+    ) -> list[tuple[dict[str, Any], int | None]]:
+        result: list[tuple[dict[str, Any], int | None]] = []
+        for row in rows:
+            parsed = urlparse(str(row[0].get("enclosure") or ""))
+            if parsed.scheme in {"http", "https"} and parsed.netloc:
+                result.append(row)
+        return result
 
     @classmethod
     def _dedupe_rows(
