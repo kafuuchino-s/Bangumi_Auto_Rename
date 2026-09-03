@@ -4,8 +4,8 @@
 [metadata]
 groups = ["default"]
 strategy = ["inherit_metadata"]
-lock_version = "4.5.0"
-content_hash = "sha256:dc31e3b8df536a38bdce89dad99479f810978aff60eac17b7dbcb50d72726119"
+lock_version = "4.5.1"
+content_hash = "sha256:4bc973534e7a5613c74434b44693141df75eaa444fc99481079bdd995ffa8759"
 
 [[metadata.targets]]
 requires_python = "~=3.10"
@@ -2108,4 +2108,28 @@ files = [
     {file = "webrtcvad_wheels-2.0.14-pp310-pypy310_pp73-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:0be3ac9ab58045ca55a397180634608709bdab1bbc8108c6731745fe4302e5da"},
     {file = "webrtcvad_wheels-2.0.14-pp310-pypy310_pp73-win_amd64.whl", hash = "sha256:805901e521250021f1541b11d20fa48ab9d6227aafb2a8a06b32fba43ec9c8d8"},
     {file = "webrtcvad_wheels-2.0.14.tar.gz", hash = "sha256:5f59c8e291c6ef102d9f39532982fbf26a52ce2de6328382e2654b0960fea397"},
+]
+
+[[package]]
+name = "zhconv-rs"
+version = "0.4.1"
+requires_python = ">=3.9"
+summary = "zhconv as in MediaWiki, 🦀oxidized for more efficiency"
+groups = ["default"]
+files = [
+    {file = "zhconv_rs-0.4.1-cp39-abi3-macosx_10_12_x86_64.whl", hash = "sha256:bd46d150cfa0958f83d13ce244be25b2dff0689d3a03a89bace9e5ceb89754de"},
+    {file = "zhconv_rs-0.4.1-cp39-abi3-macosx_11_0_arm64.whl", hash = "sha256:5531ef6c0437de5df9040dfe79671edc7f77d21a105f8b943e4d74736603e85f"},
+    {file = "zhconv_rs-0.4.1-cp39-abi3-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:f94e561d2dab0ae021e56f409705cace269d4a512fbec78e40eb5a09c1f8e6a8"},
+    {file = "zhconv_rs-0.4.1-cp39-abi3-manylinux_2_17_armv7l.manylinux2014_armv7l.whl", hash = "sha256:1ca9134cb16b0a5c0991e28bf64d718c073d98a3dd810e3607e93e9f55f50c38"},
+    {file = "zhconv_rs-0.4.1-cp39-abi3-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:a5e2eaa32b3b7ed116ffae14ed034b8d71adeb9e725f112d6e65b83d029e1df1"},
+    {file = "zhconv_rs-0.4.1-cp39-abi3-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:76bfa849591d5e3964fd490df0ef925be520b687394001969edbfc76d2946497"},
+    {file = "zhconv_rs-0.4.1-cp39-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:599f82500c928ba9e3be8bbeb246391fe249c90d92a8d1f66d1f98bb37fba06f"},
+    {file = "zhconv_rs-0.4.1-cp39-abi3-manylinux_2_5_i686.manylinux1_i686.whl", hash = "sha256:fb3ca90df105ea69f9edfe84749a104af18c782db699dd15d89db159d04ec27d"},
+    {file = "zhconv_rs-0.4.1-cp39-abi3-musllinux_1_2_aarch64.whl", hash = "sha256:bdef89cb1782e83a1d4759b245f0cfd42201f89ac4b312d9d5270a51a2ce7c07"},
+    {file = "zhconv_rs-0.4.1-cp39-abi3-musllinux_1_2_armv7l.whl", hash = "sha256:0ac45656b80547638117cf7d3f4aef94d931a08f791b9e6d596cac0f8ef6c92f"},
+    {file = "zhconv_rs-0.4.1-cp39-abi3-musllinux_1_2_i686.whl", hash = "sha256:c99d5a94602954bab4e0a7b99e1e832b2190d421e3485a02851116446f4676ea"},
+    {file = "zhconv_rs-0.4.1-cp39-abi3-musllinux_1_2_x86_64.whl", hash = "sha256:d96cfde1b7527f71d2ee6c35cf4f83540d1bf59e806aa854c0e6fcc60d5a0168"},
+    {file = "zhconv_rs-0.4.1-cp39-abi3-win32.whl", hash = "sha256:e034c64f48425688310d43c83328b2d2474a4876c7b9f91b43e7ca409ce8690c"},
+    {file = "zhconv_rs-0.4.1-cp39-abi3-win_amd64.whl", hash = "sha256:63fe642e18d78e8424c30108e1b8ff5cc8c142577eef07a13d411192a5d4926c"},
+    {file = "zhconv_rs-0.4.1.tar.gz", hash = "sha256:7bfdbe3febac446b1475ccf6df28b059588a8328ff5c5ff0dc1dfc85c49b2e03"},
 ]

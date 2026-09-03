@@ -314,7 +314,16 @@ class SubtitleCaseToolState:
                     'unmatched: the subtitle has no confident target; requires a reason; must NOT carry a target_ref.',
                     'needs_more_evidence: still investigating; blocks accepted readiness; must NOT carry a target_ref.',
                 ],
-                'language_policy': 'Use raw language tags (chs/cht/jpn/eng/ko) in the draft; the fixed layer normalizes to Emby codes. Same target video may carry multiple subtitles only if their languages differ.',
+                'language_policy': (
+                    'Use raw language tags (chs/cht/jpn/eng/ko) in the draft. '
+                    'Filename and provider labels are weak hints; '
+                    'content_chinese_script is high-confidence dialogue '
+                    'evidence and must win on conflict. The fixed layer '
+                    'normalizes tags to Emby codes and rejects a mapped '
+                    'Chinese language that contradicts high-confidence '
+                    'content. Same target video may carry multiple subtitles '
+                    'only if their languages differ.'
+                ),
                 'coverage_policy': 'Every subtitle must appear exactly once as map_to_video or unmatched. mappings + unmatched must equal subtitle_count. No needs_more_evidence rows may remain at submit.',
                 'dry_run_only': True,
             },
@@ -416,6 +425,11 @@ def _subtitle_repair_hints(verifier_result: CaseVerifierResult) -> list[str]:
             hints.append(f'map_to_video row for {issue.ref} requires a target_ref (a TV ref).')
         elif code == 'missing_language':
             hints.append(f'map_to_video row for {issue.ref} requires a language tag (chs/cht/jpn/eng/...).')
+        elif code == 'content_language_conflict':
+            hints.append(
+                f'Subtitle {issue.ref} language conflicts with high-confidence '
+                'dialogue content; use chs for simplified or cht for traditional.'
+            )
         elif code == 'duplicate_target_language':
             hints.append(f'Target {issue.ref} already has a subtitle for that language; use a different language or a different target.')
         elif code == 'invalid_target_on_unmatched':

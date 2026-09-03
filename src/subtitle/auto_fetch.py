@@ -18,9 +18,15 @@ from .auto_fetch_case_agent import (
     build_deterministic_keyword_cards,
     build_missing_video_cards,
     build_scan_scope_card,
+    build_selection_key,
     run_auto_fetch_case_agent,
 )
 from .extractor import SUBTITLE_EXTENSIONS
+from .language import (
+    detect_chinese_script,
+    known_language_code,
+    normalize_language,
+)
 from .processor import SubtitleProcessor
 from .providers import (
     SubtitleCandidate,
@@ -41,6 +47,8 @@ _SIDE_CONTENT_LABELS = {
     "special": "Special",
     "specials": "Special",
 }
+_PREFERRED_LANGUAGE_RETRY_LIMIT = 2
+_CHINESE_LANGUAGES = {"zh-CN", "zh-TW"}
 
 
 class SubtitleAutoFetcher:
@@ -180,6 +188,118 @@ class SubtitleAutoFetcher:
         missing_videos: List[Path],
         mapping_only: bool = False,
     ) -> Dict[str, Any]:
+        """Run bounded Agent rounds until requested Chinese script is found."""
+        persist = (
+            self._persist_mapping_status if mapping_only else self._persist_status
+        )
+        preferred_language = normalize_language(
+            str(cm_get("subtitle_auto_fetch_preferred_language", "zh-CN"))
+        )[0]
+        pending_videos = list(missing_videos)
+        rejected_selection_keys: set[str] = set()
+        prior_download_feedback: List[Dict[str, Any]] = []
+        combined: Optional[Dict[str, Any]] = None
+        retry_active = False
+
+        for retry_round in range(_PREFERRED_LANGUAGE_RETRY_LIMIT + 1):
+            round_result = self._execute_fetch_round(
+                task_uuid=task_uuid,
+                task_data=task_data,
+                record_data=record_data,
+                scan_scope=scan_scope,
+                missing_videos=pending_videos,
+                mapping_only=mapping_only,
+                retry_round=retry_round,
+                rejected_selection_keys=rejected_selection_keys,
+                prior_download_feedback=prior_download_feedback,
+                preferred_language=preferred_language,
+            )
+            round_result["language_retry_round"] = retry_round
+            combined = self._merge_fetch_round_results(combined, round_result)
+            content_conflict = self._has_content_language_conflict(round_result)
+            mismatch_videos = self._preferred_language_mismatch_videos(
+                pending_videos,
+                round_result,
+                preferred_language,
+            )
+            preferred_covered = self._mapped_video_names(
+                round_result.get("mappings"), preferred_language
+            )
+
+            if retry_active and not content_conflict:
+                remaining = [
+                    video
+                    for video in pending_videos
+                    if video.name not in preferred_covered
+                ]
+                if not remaining:
+                    combined["status"] = "success"
+                    combined.pop("reason", None)
+                    combined.pop("failure_reason", None)
+                    combined["preferred_language"] = preferred_language
+                    combined["preferred_language_status"] = "satisfied_after_retry"
+                    combined["preferred_language_missing_videos"] = []
+                    combined["language_retry_count"] = retry_round
+                    combined["prior_download_feedback"] = prior_download_feedback
+                    return persist(task_uuid, combined)
+                mismatch_videos = remaining
+
+            if not content_conflict and not mismatch_videos:
+                return persist(task_uuid, combined)
+
+            retry_active = True
+            if content_conflict:
+                mismatch_videos = list(pending_videos)
+            round_feedback = self._build_download_feedback(
+                round_result,
+                preferred_language,
+            )
+            prior_download_feedback.extend(round_feedback)
+            new_keys = {
+                str(item.get("selection_key") or "")
+                for item in round_feedback
+                if str(item.get("selection_key") or "")
+            }
+            rejected_selection_keys.update(new_keys)
+            pending_videos = mismatch_videos
+
+            if (
+                retry_round >= _PREFERRED_LANGUAGE_RETRY_LIMIT
+                or not mismatch_videos
+                or not new_keys
+            ):
+                break
+
+        assert combined is not None
+        combined["status"] = "failed"
+        combined["reason"] = "preferred_language_not_found"
+        combined["failure_reason"] = "preferred_language_not_found"
+        combined["preferred_language"] = preferred_language
+        combined["preferred_language_status"] = "not_found"
+        combined["preferred_language_missing_videos"] = [
+            video.name for video in pending_videos
+        ]
+        combined["language_retry_count"] = min(
+            _PREFERRED_LANGUAGE_RETRY_LIMIT,
+            max(0, len(combined.get("case_agent_rounds") or []) - 1),
+        )
+        combined["prior_download_feedback"] = prior_download_feedback
+        return persist(task_uuid, combined)
+
+    def _execute_fetch_round(
+        self,
+        *,
+        task_uuid: str,
+        task_data: Dict[str, Any],
+        record_data: dict[str, object],
+        scan_scope: Dict[str, Any],
+        missing_videos: List[Path],
+        mapping_only: bool = False,
+        retry_round: int = 0,
+        rejected_selection_keys: set[str] | None = None,
+        prior_download_feedback: Optional[List[Dict[str, Any]]] = None,
+        preferred_language: str = "zh-CN",
+    ) -> Dict[str, Any]:
         """Pi 驱动选帖/选包（process_task / process_task_mapping 共用，对齐重命名链路）。
 
         构造 task_context（含 BGM subject 名）+ workspace（MV/KW 事实卡含 BGM 名）->
@@ -189,14 +309,16 @@ class SubtitleAutoFetcher:
         accepted -> 用 Pi 返回的 provider 对象下载 + processor。
         fail_closed/need_confirm/invalid -> 合格结果不落盘。
         """
-        persist = (
-            self._persist_mapping_status if mapping_only else self._persist_status
-        )
+        def persist(_task_uuid: str, result: Dict[str, Any]) -> Dict[str, Any]:
+            return result
+
         download_root = (
             SUBTITLE_UPLOAD_PATH / "auto_fetch_mapping" / task_uuid
             if mapping_only
             else SUBTITLE_UPLOAD_PATH / "auto_fetch" / task_uuid
         )
+        if retry_round:
+            download_root = download_root / f"language_retry_{retry_round}"
         # processor 配对串行（self.processor 单例，测试 mock 兼容 + 避免 Node sidecar
         # 资源爆炸 + extractor temp_dir 不撞）；下载并发（见 _execute_fetch 阶段1）。
         processor_fn = (
@@ -204,9 +326,14 @@ class SubtitleAutoFetcher:
         )
 
         task_context = dict(task_data)
-        task_context["subtitle_auto_fetch_preferred_language"] = cm_get(
-            "subtitle_auto_fetch_preferred_language", "zh-CN"
+        task_context["subtitle_auto_fetch_preferred_language"] = preferred_language
+        task_context["subtitle_auto_fetch_rejected_selection_keys"] = sorted(
+            rejected_selection_keys or set()
         )
+        task_context["subtitle_auto_fetch_prior_download_feedback"] = list(
+            prior_download_feedback or []
+        )
+        task_context["subtitle_auto_fetch_language_retry_round"] = retry_round
         task_context["subtitle_auto_fetch_search_mode"] = cm_get(
             "subtitle_auto_fetch_search_mode", "auto"
         )
@@ -320,10 +447,11 @@ class SubtitleAutoFetcher:
         selected_summary = entry_result.get("selected_candidate") or {}
 
         # 构造统一 selection 列表：[(candidate_obj, package_obj, language,
-        # bangumi_subject_id, download_url), ...]。download_url 是 Pi 在
+        # bangumi_subject_id, download_url, selection_key), ...]。download_url
+        # 是 Pi 在
         # submit_package(link_url=...) 指定的具体附件（AI-first 附件选择），透传给
         # provider.download 按此 url 下，固定层不打分选附件。
-        fetch_units: List[Tuple[Any, Any, str, int, str]] = []
+        fetch_units: List[Tuple[Any, Any, str, int, str, str]] = []
         if isinstance(selections_raw, list) and selections_raw and isinstance(
             selections_provider_raw, list
         ) and len(selections_provider_raw) == len(selections_raw):
@@ -337,7 +465,21 @@ class SubtitleAutoFetcher:
                 lang = str(sel_dict.get("language") or "")
                 sid = int(sel_dict.get("bangumi_subject_id") or 0)
                 dl_url = str(sel_dict.get("download_url") or "")
-                fetch_units.append((cand_obj, pkg_obj, lang, sid, dl_url))
+                selection_key = str(sel_dict.get("selection_key") or "") or (
+                    build_selection_key(
+                        source=str(getattr(cand_obj, "source", "") or ""),
+                        detail_url=str(
+                            getattr(cand_obj, "detail_url", "") or ""
+                        ),
+                        package_id=str(
+                            getattr(pkg_obj, "package_id", "") or ""
+                        ),
+                        download_url=dl_url,
+                    )
+                )
+                fetch_units.append(
+                    (cand_obj, pkg_obj, lang, sid, dl_url, selection_key)
+                )
         # 兼容旧单 selection：selections 为空时用顶层 selected_candidate/package
         if not fetch_units and selected_candidate is not None:
             sel_summary = selected_summary or {}
@@ -348,6 +490,20 @@ class SubtitleAutoFetcher:
                     str(sel_summary.get("language") or ""),
                     int(sel_summary.get("bangumi_subject_id") or 0),
                     str(sel_summary.get("download_url") or ""),
+                    build_selection_key(
+                        source=str(
+                            getattr(selected_candidate, "source", "") or ""
+                        ),
+                        detail_url=str(
+                            getattr(selected_candidate, "detail_url", "") or ""
+                        ),
+                        package_id=str(
+                            getattr(selected_package, "package_id", "") or ""
+                        ),
+                        download_url=str(
+                            sel_summary.get("download_url") or ""
+                        ),
+                    ),
                 )
             )
 
@@ -370,6 +526,7 @@ class SubtitleAutoFetcher:
         # 逐 selection 下载 + processor 配对，合并 mapping。
         # accepted = ≥1 unit 下载成功 + processor success（有映射）；全部失败才 failed。
         merged_mappings: List[Dict[str, Any]] = []
+        merged_language_mismatches: List[Dict[str, Any]] = []
         merged_unmatched: List[Dict[str, Any]] = []
         merged_no_target: List[Dict[str, Any]] = []
         merged_matched_count = 0
@@ -387,8 +544,10 @@ class SubtitleAutoFetcher:
         concurrency = min(concurrency, len(fetch_units)) if fetch_units else 1
         unit_results: List[Optional[Dict[str, Any]]] = [None] * len(fetch_units)
 
-        def _download_one(idx_unit: Tuple[int, Tuple[Any, Any, str, int, str]]) -> Dict[str, Any]:
-            idx, (cand_obj, pkg_obj, lang, sid, dl_url) = idx_unit
+        def _download_one(
+            idx_unit: Tuple[int, Tuple[Any, Any, str, int, str, str]]
+        ) -> Dict[str, Any]:
+            idx, (cand_obj, pkg_obj, lang, sid, dl_url, selection_key) = idx_unit
             unit_download_dir = (
                 download_root / f"sel_{idx}" if len(fetch_units) > 1 else download_root
             )
@@ -405,6 +564,7 @@ class SubtitleAutoFetcher:
                 "cand_obj": cand_obj,
                 "pkg_obj": resolved_pkg,
                 "lang": lang,
+                "selection_key": selection_key,
                 "download_result": download_result,
             }
 
@@ -432,6 +592,7 @@ class SubtitleAutoFetcher:
             cand_obj = r["cand_obj"]
             pkg_obj = r["pkg_obj"]
             lang = r["lang"]
+            selection_key = r["selection_key"]
             sid = r["sid"]
             download_result = r["download_result"]
             if (
@@ -440,7 +601,8 @@ class SubtitleAutoFetcher:
             ):
                 unit_results[idx] = {
                     "index": idx, "sid": sid, "cand_obj": cand_obj, "pkg_obj": pkg_obj,
-                    "lang": lang, "download_result": download_result,
+                    "lang": lang, "selection_key": selection_key,
+                    "download_result": download_result,
                     "processor_result": None, "unit_status": "",
                     "unit_processor_case_agent_status": "",
                     "status_label": "download_failed",
@@ -453,17 +615,25 @@ class SubtitleAutoFetcher:
                     target_task_uuid=task_uuid,
                 )
             else:
+                processor_kwargs: Dict[str, Any] = {
+                    "target_task_uuid": task_uuid,
+                    "allowed_target_videos": missing_videos,
+                }
+                if retry_round:
+                    processor_kwargs["allowed_emby_languages"] = {
+                        preferred_language
+                    }
                 processor_result = processor_fn(
                     download_result.downloaded_path,
-                    target_task_uuid=task_uuid,
-                    allowed_target_videos=missing_videos,
+                    **processor_kwargs,
                 )
             unit_status = str(processor_result.get("status") or "")
             unit_cas = str(processor_result.get("case_agent_status") or "")
             status_label = "success" if unit_status == "success" else "processor_failed"
             unit_results[idx] = {
                 "index": idx, "sid": sid, "cand_obj": cand_obj, "pkg_obj": pkg_obj,
-                "lang": lang, "download_result": download_result,
+                "lang": lang, "selection_key": selection_key,
+                "download_result": download_result,
                 "processor_result": processor_result, "unit_status": unit_status,
                 "unit_processor_case_agent_status": unit_cas,
                 "status_label": status_label,
@@ -482,6 +652,7 @@ class SubtitleAutoFetcher:
             cand_obj = r["cand_obj"]
             pkg_obj = r["pkg_obj"]
             lang = r["lang"]
+            selection_key = r["selection_key"]
             sid = r["sid"]
             download_result = r["download_result"]
             processor_result = r["processor_result"]
@@ -501,6 +672,7 @@ class SubtitleAutoFetcher:
                     "selected_candidate": self._candidate_to_dict(cand_obj),
                     "selected_package": self._package_to_dict(pkg_obj),
                     "selected_language": lang,
+                    "selection_key": selection_key,
                     "download_url": download_result.download_url,
                     "download_attempts": getattr(
                         download_result, "download_attempts", 1
@@ -511,6 +683,9 @@ class SubtitleAutoFetcher:
                 any_success = True
                 merged_mappings.extend(
                     list(processor_result.get("mappings") or [])
+                )
+                merged_language_mismatches.extend(
+                    list(processor_result.get("language_mismatches") or [])
                 )
                 merged_unmatched.extend(
                     list(processor_result.get("unmatched") or [])
@@ -528,6 +703,7 @@ class SubtitleAutoFetcher:
                     "selected_candidate": self._candidate_to_dict(cand_obj),
                     "selected_package": self._package_to_dict(pkg_obj),
                     "selected_language": lang,
+                    "selection_key": selection_key,
                     "download_url": download_result.download_url,
                     "downloaded_path": str(download_result.downloaded_path),
                     "processor_result": processor_result,
@@ -546,6 +722,7 @@ class SubtitleAutoFetcher:
                     "selected_candidate": self._candidate_to_dict(cand_obj),
                     "selected_package": self._package_to_dict(pkg_obj),
                     "selected_language": lang,
+                    "selection_key": selection_key,
                     "download_url": download_result.download_url,
                     "downloaded_path": str(download_result.downloaded_path),
                     "processor_result": processor_result,
@@ -601,6 +778,7 @@ class SubtitleAutoFetcher:
                     "missing_video_count": len(missing_videos),
                     # 合并的映射产物（多 selection 汇总）
                     "mappings": merged_mappings,
+                    "language_mismatches": merged_language_mismatches,
                     "unmatched": merged_unmatched,
                     "no_target_videos": merged_no_target,
                     "matched_count": merged_matched_count,
@@ -632,11 +810,225 @@ class SubtitleAutoFetcher:
                 "scan_scope_root": scan_scope.get("root"),
                 "missing_video_count": len(missing_videos),
                 "mappings": merged_mappings,
+                "language_mismatches": merged_language_mismatches,
                 "unmatched": merged_unmatched,
                 "no_target_videos": merged_no_target,
                 "matched_count": merged_matched_count,
             },
         )
+
+    @staticmethod
+    def _merge_fetch_round_results(
+        previous: Optional[Dict[str, Any]],
+        current: Dict[str, Any],
+    ) -> Dict[str, Any]:
+        merged = dict(previous or current)
+        round_number = int(current.get("language_retry_round") or 0)
+
+        current_selections = []
+        for selection in current.get("selections") or []:
+            if not isinstance(selection, dict):
+                continue
+            item = dict(selection)
+            item["language_retry_round"] = round_number
+            current_selections.append(item)
+        if previous is None:
+            merged["selections"] = current_selections
+        else:
+            merged["selections"] = list(previous.get("selections") or []) + (
+                current_selections
+            )
+
+        for key in ("mappings", "language_mismatches", "unmatched", "no_target_videos"):
+            values = list(current.get(key) or [])
+            if previous is not None:
+                values = list(previous.get(key) or []) + values
+            if key == "mappings":
+                deduped: List[Dict[str, Any]] = []
+                seen: set[tuple[str, str]] = set()
+                for value in values:
+                    if not isinstance(value, dict):
+                        continue
+                    identity = (
+                        str(value.get("video") or ""),
+                        str(value.get("language") or ""),
+                    )
+                    if identity in seen:
+                        continue
+                    seen.add(identity)
+                    deduped.append(value)
+                values = deduped
+            merged[key] = values
+
+        rounds = list(previous.get("case_agent_rounds") or []) if previous else []
+        rounds.append(
+            {
+                "round": round_number,
+                "status": current.get("status"),
+                "reason": current.get("reason"),
+                "case_agent_status": current.get("case_agent_status"),
+                "case_agent_snapshot": current.get("case_agent_snapshot"),
+            }
+        )
+        merged["case_agent_rounds"] = rounds
+        merged["selections_count"] = len(merged.get("selections") or [])
+        merged["matched_count"] = len(merged.get("mappings") or [])
+        merged["status"] = current.get("status")
+        merged["reason"] = current.get("reason")
+        for key in (
+            "case_agent_status",
+            "case_agent_snapshot",
+            "processor_case_agent_status",
+        ):
+            if current.get(key) is not None:
+                merged[key] = current.get(key)
+        if current.get("failure_reason"):
+            merged["failure_reason"] = current.get("failure_reason")
+        return merged
+
+    @staticmethod
+    def _mapped_video_names(mappings: Any, language: str) -> set[str]:
+        result: set[str] = set()
+        for mapping in mappings if isinstance(mappings, list) else []:
+            if not isinstance(mapping, dict):
+                continue
+            mapped_language = normalize_language(
+                str(mapping.get("language") or "")
+            )[0]
+            if mapped_language != language:
+                continue
+            video = str(mapping.get("video") or "")
+            if video:
+                result.add(Path(video).name)
+        return result
+
+    @classmethod
+    def _preferred_language_mismatch_videos(
+        cls,
+        videos: List[Path],
+        result: Dict[str, Any],
+        preferred_language: str,
+    ) -> List[Path]:
+        if preferred_language not in _CHINESE_LANGUAGES:
+            return []
+        languages_by_video: Dict[str, set[str]] = {}
+        details = list(result.get("mappings") or []) + list(
+            result.get("language_mismatches") or []
+        )
+        for detail in details:
+            if not isinstance(detail, dict):
+                continue
+            video = Path(str(detail.get("video") or "")).name
+            language = normalize_language(
+                str(detail.get("language") or "")
+            )[0]
+            if video:
+                languages_by_video.setdefault(video, set()).add(language)
+        return [
+            video
+            for video in videos
+            if preferred_language not in languages_by_video.get(video.name, set())
+            and bool(
+                languages_by_video.get(video.name, set())
+                & (_CHINESE_LANGUAGES - {preferred_language})
+            )
+        ]
+
+    @staticmethod
+    def _has_content_language_conflict(result: Dict[str, Any]) -> bool:
+        snapshots = [result.get("case_agent_snapshot")]
+        for selection in result.get("selections") or []:
+            if isinstance(selection, dict):
+                processor_result = selection.get("processor_result")
+                if isinstance(processor_result, dict):
+                    snapshots.append(processor_result.get("case_agent_snapshot"))
+        for snapshot in snapshots:
+            if not isinstance(snapshot, dict):
+                continue
+            verifier = snapshot.get("verifier")
+            if not isinstance(verifier, dict):
+                continue
+            for issue in verifier.get("issues") or []:
+                if (
+                    isinstance(issue, dict)
+                    and issue.get("issue_code") == "content_language_conflict"
+                ):
+                    return True
+        return False
+
+    @classmethod
+    def _build_download_feedback(
+        cls,
+        result: Dict[str, Any],
+        preferred_language: str,
+    ) -> List[Dict[str, Any]]:
+        content_conflict = cls._has_content_language_conflict(result)
+        feedback: List[Dict[str, Any]] = []
+        for selection in result.get("selections") or []:
+            if not isinstance(selection, dict):
+                continue
+            candidate = selection.get("selected_candidate") or {}
+            package = selection.get("selected_package") or {}
+            processor_result = selection.get("processor_result") or {}
+            language_details = []
+            if isinstance(processor_result, dict):
+                language_details = list(processor_result.get("mappings") or [])
+                language_details.extend(
+                    list(processor_result.get("language_mismatches") or [])
+                )
+            actual_languages = sorted(
+                {
+                    normalize_language(str(detail.get("language") or ""))[0]
+                    for detail in language_details
+                    if isinstance(detail, dict) and detail.get("language")
+                }
+            )
+            outcome = "preferred_language_not_found"
+            if selection.get("status") == "download_failed":
+                outcome = "download_failed"
+            elif preferred_language in actual_languages:
+                outcome = "preferred_language_found"
+            elif content_conflict:
+                outcome = "content_language_conflict"
+            elif set(actual_languages) & (
+                _CHINESE_LANGUAGES - {preferred_language}
+            ):
+                outcome = "content_language_mismatch"
+            attachment_label = ""
+            if isinstance(package, dict):
+                selected_url = str(selection.get("download_url") or "")
+                for link in package.get("links") or []:
+                    if not isinstance(link, dict):
+                        continue
+                    if str(link.get("url") or "") != selected_url:
+                        continue
+                    attachment_label = str(
+                        link.get("filename_hint") or link.get("label") or ""
+                    )
+                    break
+            feedback.append(
+                {
+                    "selection_key": str(selection.get("selection_key") or ""),
+                    "source": str(candidate.get("source") or "")
+                    if isinstance(candidate, dict)
+                    else "",
+                    "title": str(candidate.get("title") or "")
+                    if isinstance(candidate, dict)
+                    else "",
+                    "package_label": str(
+                        package.get("floor_label")
+                        or package.get("package_id")
+                        or ""
+                    )
+                    if isinstance(package, dict)
+                    else "",
+                    "attachment_label": attachment_label,
+                    "actual_languages": actual_languages,
+                    "preferred_language": preferred_language,
+                    "outcome": outcome,
+                }
+            )
+        return feedback
 
     def _resolve_scan_scope(
         self,
@@ -725,7 +1117,7 @@ class SubtitleAutoFetcher:
         if not series_root.exists() or not series_root.is_dir():
             return []
 
-        # 第一阶段：收集无外挂字幕的候选（外挂判定零成本，先过滤）。
+        # 第一阶段：按下载后正文事实检查外挂是否已满足目标语言。
         candidates: List[Path] = []
         season_dirs = [
             path
@@ -736,7 +1128,7 @@ class SubtitleAutoFetcher:
             for video_path in sorted(season_dir.iterdir()):
                 if not self._is_candidate_video(video_path):
                     continue
-                if self._has_sidecar_subtitle(video_path):
+                if self._has_sidecar_subtitle(video_path, preferred_language):
                     continue
                 candidates.append(video_path)
 
@@ -766,7 +1158,7 @@ class SubtitleAutoFetcher:
                 continue
             if target_paths and video_path.resolve() not in target_paths:
                 continue
-            if self._has_sidecar_subtitle(video_path):
+            if self._has_sidecar_subtitle(video_path, preferred_language):
                 continue
             candidates.append(video_path)
         return self._filter_by_embedded_language(candidates, preferred_language)
@@ -854,12 +1246,60 @@ class SubtitleAutoFetcher:
     def _is_candidate_video(self, video_path: Path) -> bool:
         return video_path.exists() and video_path.suffix.lower() in VIDEO_SUFFIX
 
-    def _has_sidecar_subtitle(self, video_path: Path) -> bool:
+    def _has_sidecar_subtitle(
+        self,
+        video_path: Path,
+        preferred_language: str = "",
+    ) -> bool:
+        normalized_preferred = (
+            normalize_language(preferred_language)[0]
+            if preferred_language
+            else ""
+        )
         for ext in SUBTITLE_EXTENSIONS:
-            matches = list(video_path.parent.glob(f"{video_path.stem}*{ext}"))
-            if matches:
-                return True
+            for subtitle_path in video_path.parent.glob(
+                f"{video_path.stem}*{ext}"
+            ):
+                if not subtitle_path.is_file():
+                    continue
+                if not subtitle_path.name.startswith(f"{video_path.stem}."):
+                    continue
+                if not normalized_preferred:
+                    return True
+                if normalized_preferred in _CHINESE_LANGUAGES:
+                    evidence = detect_chinese_script(subtitle_path)
+                    if evidence.script != "unknown":
+                        actual_language = (
+                            "zh-CN"
+                            if evidence.script == "simplified"
+                            else "zh-TW"
+                        )
+                        if actual_language == normalized_preferred:
+                            return True
+                        continue
+                if (
+                    self._sidecar_filename_language(video_path, subtitle_path)
+                    == normalized_preferred
+                ):
+                    return True
         return False
+
+    @staticmethod
+    def _sidecar_filename_language(
+        video_path: Path,
+        subtitle_path: Path,
+    ) -> str | None:
+        prefix = f"{video_path.stem}."
+        if not subtitle_path.name.startswith(prefix):
+            return None
+        label_text = subtitle_path.name[
+            len(prefix) : -len(subtitle_path.suffix)
+        ]
+        for label in label_text.split("."):
+            language = known_language_code(label)
+            if language:
+                return language
+        return None
 
     def _has_embedded_target_language(
         self, video_path: Path, preferred_language: str
@@ -881,8 +1321,8 @@ class SubtitleAutoFetcher:
     def _has_usable_subtitle(
         self, video_path: Path, preferred_language: str
     ) -> bool:
-        """已有可用字幕：外挂 sidecar 命中（零成本优先）或内嵌目标语言轨命中。"""
-        if self._has_sidecar_subtitle(video_path):
+        """已有可用字幕：外挂正文/标签或内嵌目标语言轨命中。"""
+        if self._has_sidecar_subtitle(video_path, preferred_language):
             return True
         return self._has_embedded_target_language(video_path, preferred_language)
 
@@ -1171,6 +1611,15 @@ class SubtitleAutoFetcher:
                 "case_agent_status"
             )
             task_data["subtitle_fetch_failure_reason"] = result.get("failure_reason")
+            task_data["subtitle_fetch_preferred_language"] = result.get(
+                "preferred_language"
+            )
+            task_data["subtitle_fetch_preferred_language_status"] = result.get(
+                "preferred_language_status"
+            )
+            task_data["subtitle_fetch_language_retry_count"] = result.get(
+                "language_retry_count", 0
+            )
             task_data["subtitle_fetch_processor_case_agent_status"] = result.get(
                 "processor_case_agent_status"
             )

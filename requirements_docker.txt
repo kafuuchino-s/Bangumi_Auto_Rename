@@ -38,6 +38,8 @@ click>=8.1.0
 hachoir>=3.3.0
 rarfile>=4.0
 py7zr>=0.22.0
+# 解压后按对白正文判定简繁，避免站点/文件名错误标签污染 Emby 语言码。
+zhconv-rs>=0.4.1
 # ffsubsync（字幕自动对齐）：纯 Python（numpy/auditok/webrtcvad-wheels/srt/pysubs2 均有 wheel，无系统库缺口），
 # 依赖的 ffprobe 由镜像静态二进制提供。装进镜像使 Docker 版具备完整字幕对齐能力（非残血）；
 # 默认 subtitle_sync_enabled=false（CONFIG_DEFAULT 全局默认安全），用户在 UI 开启即用。

@@ -28,16 +28,6 @@ def normalize_subtitle_archive_path(path: object) -> str:
 
 
 # ---------------------------------------------------------------------------
-# 语言标签
-# ---------------------------------------------------------------------------
-
-# Emby 标准语言码 -> 是否简体（用于决定是否追加 .default）。
-# 与 processor.py::LANGUAGE_MAP 保持同一口径，但这里只保留判定所需的最小集合；
-# 实际归一化仍由 processor 的 LANGUAGE_MAP 完成。
-SIMPLIFIED_CHINESE_CODE = 'zh-CN'
-
-
-# ---------------------------------------------------------------------------
 # 事实卡片（固定层抽取，AI 不可改）
 # ---------------------------------------------------------------------------
 
@@ -51,8 +41,13 @@ class SubtitleFileCard(BaseModel):
     ref: str = ''
     archive_path: str = ''
     filename: str = ''
-    # 语言提示：从文件名后缀提取的原始标签（如 chs/cht/jpn），可为空。
+    # 文件名标签仅作弱提示；正文脚本是固定层的高置信事实。
     language_hint: str = ''
+    content_chinese_script: Literal[
+        'simplified', 'traditional', 'unknown'
+    ] = 'unknown'
+    simplified_evidence_count: int = Field(default=0, ge=0)
+    traditional_evidence_count: int = Field(default=0, ge=0)
 
     @field_validator('archive_path', mode='before')
     @classmethod

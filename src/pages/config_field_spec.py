@@ -283,7 +283,7 @@ FIELD_SPEC: list[Mapping[str, Any]] = [
         "group": GRP_SUBTITLE_FETCH,
         "tab": TAB_SUBTITLE,
         "options": ["zh-CN", "zh-TW"],
-        "help": "优先抓取的字幕语言：简体或繁体。",
+        "help": "目标字幕语言。下载后正文若为相反中文脚本，会改选其他候选；穷尽后仍未满足则报告失败。",
         "default_hint": "默认 zh-CN",
     },
     {

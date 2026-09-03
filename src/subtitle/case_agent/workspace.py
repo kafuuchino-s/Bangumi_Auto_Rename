@@ -50,6 +50,9 @@ class SubtitleCaseWorkspace:
                 'archive_path': card.archive_path,
                 'filename': card.filename,
                 'language_hint': card.language_hint,
+                'content_chinese_script': card.content_chinese_script,
+                'simplified_evidence_count': card.simplified_evidence_count,
+                'traditional_evidence_count': card.traditional_evidence_count,
             }
             for card in self.subtitle_files
         ]

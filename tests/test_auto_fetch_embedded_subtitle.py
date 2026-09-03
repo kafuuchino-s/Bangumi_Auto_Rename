@@ -17,6 +17,22 @@ import pytest
 from src.subtitle.auto_fetch import SubtitleAutoFetcher
 
 
+_SIMPLIFIED = "后台发展软件里面这边还没发现问题"
+_TRADITIONAL = "後臺發展軟體裡面這邊還沒發現問題"
+
+
+def _write_ass(path: Path, dialogue: str) -> None:
+    path.write_text(
+        "[Events]\n"
+        + "".join(
+            "Dialogue: 0,0:00:00.00,0:00:01.00,Default,,0,0,0,,"
+            f"{dialogue}\n"
+            for _ in range(10)
+        ),
+        encoding="utf-8",
+    )
+
+
 # ---------------------------------------------------------------------------
 # helpers
 # ---------------------------------------------------------------------------
@@ -157,6 +173,66 @@ def test_sidecar_short_circuits_probe(monkeypatch, tmp_path):
 
     assert missing == []
     assert probe_calls == [], "有外挂字幕不应触发探轨"
+
+
+def test_wrong_zhcn_filename_with_traditional_body_stays_missing(
+    monkeypatch, tmp_path
+):
+    target = tmp_path / "Series" / "Season 1" / "ep1.mkv"
+    fetcher, _ = _make_fetcher(
+        monkeypatch, tmp_path, record_targets={"a": str(target)}
+    )
+    _write_ass(target.parent / "ep1.zh-CN.default.ass", _TRADITIONAL)
+    _patch_probe(monkeypatch, {})
+
+    missing = fetcher._collect_videos_missing_subtitles(
+        {"type": "task", "root": None},
+        {"a": str(target)},
+    )
+
+    assert [path.name for path in missing] == ["ep1.mkv"]
+
+
+def test_wrong_zhtw_filename_with_simplified_body_satisfies_preference(
+    monkeypatch, tmp_path
+):
+    target = tmp_path / "Series" / "Season 1" / "ep1.mkv"
+    fetcher, _ = _make_fetcher(
+        monkeypatch, tmp_path, record_targets={"a": str(target)}
+    )
+    _write_ass(target.parent / "ep1.zh-TW.ass", _SIMPLIFIED)
+
+    probe_calls = []
+    monkeypatch.setattr(
+        "src.subtitle.auto_fetch._probe_embedded_subtitle_languages",
+        lambda path: probe_calls.append(path) or [],
+    )
+    missing = fetcher._collect_videos_missing_subtitles(
+        {"type": "task", "root": None},
+        {"a": str(target)},
+    )
+
+    assert missing == []
+    assert probe_calls == []
+
+
+def test_sidecar_prefix_does_not_match_another_video(monkeypatch, tmp_path):
+    ep1 = tmp_path / "Series" / "Season 1" / "ep1.mkv"
+    ep10 = tmp_path / "Series" / "Season 1" / "ep10.mkv"
+    fetcher, _ = _make_fetcher(
+        monkeypatch,
+        tmp_path,
+        record_targets={"a": str(ep1), "b": str(ep10)},
+    )
+    _write_ass(ep10.parent / "ep10.zh-CN.default.ass", _SIMPLIFIED)
+    _patch_probe(monkeypatch, {})
+
+    missing = fetcher._collect_videos_missing_subtitles(
+        {"type": "task", "root": None},
+        {"a": str(ep1), "b": str(ep10)},
+    )
+
+    assert [path.name for path in missing] == ["ep1.mkv"]
 
 
 # ---------------------------------------------------------------------------

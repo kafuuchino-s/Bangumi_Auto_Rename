@@ -10,6 +10,7 @@
   （同一视频允许挂多语言字幕，但同语言重复视为冲突。）
 - valid_target：map_to_video 行的 target_ref 必须是固定层暴露的合法 TV* ref，
   且 language 非空。
+- content_language: 高置信字幕正文繁简事实与 draft 中文语言标签不得冲突。
 - accounting：mapped + unmatched + needs == subtitle_count，且 needs == 0 才
   accepted readiness。
 - unknown_ref：subtitle_ref / target_ref 必须在固定层事实集合内。
@@ -24,6 +25,8 @@ from __future__ import annotations
 from collections import Counter, defaultdict
 
 from src.rename.case_agent.models import CaseVerifierResult, VerifierIssue
+
+from ..language import normalize_language
 
 from .mapping_draft import compute_subtitle_mapping_accounting
 from .models import (
@@ -131,6 +134,7 @@ def _collect_issues(
     issues: list[VerifierIssue] = []
 
     subtitle_refs = {card.ref for card in subtitle_files if card.ref}
+    subtitle_by_ref = {card.ref: card for card in subtitle_files if card.ref}
     target_refs = {card.ref for card in target_videos if card.ref}
     subtitle_count = len(subtitle_files)
 
@@ -161,6 +165,32 @@ def _collect_issues(
                 issues.append(_issue(row.subtitle_ref, 'unknown_target_ref', 'target_ref must reference a fixed-layer target video card'))
             if not row.language:
                 issues.append(_issue(row.subtitle_ref, 'missing_language', 'map_to_video rows require a language tag (use chs/cht/jpn/eng etc.)'))
+            else:
+                subtitle_card = subtitle_by_ref.get(row.subtitle_ref)
+                script = (
+                    subtitle_card.content_chinese_script
+                    if subtitle_card is not None
+                    else 'unknown'
+                )
+                emby_lang, is_simplified = normalize_language(row.language)
+                language_matches = (
+                    script == 'unknown'
+                    or (script == 'simplified' and is_simplified)
+                    or (
+                        script == 'traditional'
+                        and emby_lang in {'zh-TW', 'zh-HK'}
+                    )
+                )
+                if not language_matches:
+                    issues.append(
+                        _issue(
+                            row.subtitle_ref,
+                            'content_language_conflict',
+                            f'language "{row.language}" conflicts with high-confidence '
+                            f'{script} Chinese dialogue evidence',
+                            related_refs=[row.subtitle_ref],
+                        )
+                    )
         elif row.disposition == 'unmatched':
             if row.target_ref:
                 issues.append(_issue(row.subtitle_ref, 'invalid_target_on_unmatched', 'unmatched rows must not carry a target_ref'))

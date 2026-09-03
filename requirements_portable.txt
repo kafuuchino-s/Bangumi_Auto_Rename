@@ -41,6 +41,8 @@ click>=8.1.0
 hachoir>=3.3.0
 rarfile>=4.0
 py7zr>=0.22.0
+# 解压后按对白正文判定简繁，避免站点/文件名错误标签污染 Emby 语言码。
+zhconv-rs>=0.4.1
 # ffsubsync（字幕自动对齐）默认 subtitle_sync_enabled=false，不装以省 numpy(70M)+ffsubsync。
 # 需要字幕对齐时另行 pip install ffsubsync。
 # scrapling：装 [fetchers] extra 拿全硬依赖（curl_cffi 非浏览器抓取核心 / playwright import 门槛 / browserforge 指纹）。

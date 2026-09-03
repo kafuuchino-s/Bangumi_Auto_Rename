@@ -6,9 +6,12 @@ evidence-driven mapping and the verifier remains the final contract gate.
 
 from __future__ import annotations
 
+from pathlib import Path
 from typing import Any, Callable, Dict, List, Mapping, Sequence
 
 from src.rename.case_agent.models import CaseVerifierResult
+
+from ..language import detect_chinese_script
 
 from .audit import build_subtitle_case_snapshot
 from .evidence_broker import build_target_video_cards
@@ -35,19 +38,25 @@ def build_subtitle_file_cards(
     """把 extractor 的 ExtractedSubtitle 列表抽成固定层 SubtitleFileCard。
 
     ``subtitle_files`` 元素需有 ``archive_path`` / ``filename`` 属性
-    （``ExtractedSubtitle`` 或同形 SimpleNamespace 均可）。language_hint 从
-    filename 后缀提取（仅作 AI 提示，不参与合同裁决）。
+    （``ExtractedSubtitle`` 或同形 SimpleNamespace 均可）。文件名语言标签只作
+    弱提示；有 ``temp_path`` 时固定层还会从对白正文提取高置信繁简事实。
     """
     cards: list[SubtitleFileCard] = []
     for sub in subtitle_files:
         archive_path = normalize_subtitle_archive_path(getattr(sub, 'archive_path', '') or '')
         filename = str(getattr(sub, 'filename', '') or '') or archive_path.rsplit('/', 1)[-1]
+        evidence = detect_chinese_script(
+            Path(str(getattr(sub, 'temp_path', '') or ''))
+        )
         cards.append(
             SubtitleFileCard(
                 ref='',  # 由 workspace 分配
                 archive_path=archive_path,
                 filename=filename,
                 language_hint=_extract_language_hint(filename),
+                content_chinese_script=evidence.script,
+                simplified_evidence_count=evidence.simplified_count,
+                traditional_evidence_count=evidence.traditional_count,
             )
         )
     return cards

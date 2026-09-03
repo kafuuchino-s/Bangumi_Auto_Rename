@@ -41,6 +41,7 @@ from .models import (
     AutoFetchSelectedCandidate,
     CandidateCard,
     ThreadPackageCard,
+    build_selection_key,
 )
 from .verifier import auto_fetch_repair_hints, verify_auto_fetch_decision
 from .workspace import AutoFetchCaseWorkspace
@@ -583,6 +584,67 @@ class AutoFetchCaseToolState:
             confidence='Medium',
             reason=str(reason or ''),
         )
+        candidate = self.workspace.candidate_by_ref().get(candidate_ref)
+        selection_key = build_selection_key(
+            source=candidate.source if candidate else '',
+            detail_url=candidate.detail_url if candidate else '',
+            package_id=pkg.package_id if pkg else '',
+            download_url=download_url,
+        )
+        rejected_raw = self.task_data.get(
+            'subtitle_auto_fetch_rejected_selection_keys'
+        )
+        rejected_keys = {
+            str(value)
+            for value in (
+                rejected_raw
+                if isinstance(rejected_raw, (list, tuple, set))
+                else []
+            )
+            if str(value)
+        }
+        if selection_key in rejected_keys:
+            issue_code = 'prior_download_language_mismatch'
+            verifier_result = CaseVerifierResult(
+                passed=False,
+                issues=[
+                    VerifierIssue(
+                        ref=package_ref,
+                        issue_code=issue_code,
+                        severity='blocked',
+                        message=(
+                            'This exact candidate/package/link was already '
+                            'downloaded or selected; choose a different '
+                            'candidate, package, or attachment.'
+                        ),
+                        related_refs=[package_ref],
+                    )
+                ],
+                summary=issue_code,
+            )
+            self.decision = decision
+            self.verifier_result = verifier_result
+            self.submit_rejection_count += 1
+            self.last_invalid_submission = {
+                'decision': decision.model_dump(mode='json'),
+                'verifier_result': verifier_result.model_dump(mode='json'),
+                'repair_hints': [
+                    'Choose a different candidate, package, or attachment.'
+                ],
+            }
+            self._write_artifacts(decision, verifier_result)
+            return {
+                'ok': True,
+                'accepted': False,
+                'status': 'invalid',
+                'summary': verifier_result.summary,
+                'repair_hints': [
+                    'Do not resubmit this package/link. Inspect prior_download_'
+                    'feedback and choose another plausible preferred-language '
+                    'candidate or fail closed after alternatives are exhausted.'
+                ],
+                'verifier_result': verifier_result.model_dump(mode='json'),
+            }
         verifier_result = verify_auto_fetch_decision(
             workspace=self.workspace, decision=decision
         )
@@ -604,7 +666,6 @@ class AutoFetchCaseToolState:
                 'repair_hints': auto_fetch_repair_hints(verifier_result),
                 'verifier_result': verifier_result.model_dump(mode='json'),
             }
-        candidate = self.workspace.candidate_by_ref().get(candidate_ref)
         # subject 归属优先用 Pi 在 submit_package 显式声明的 bangumi_subject_id
         # （与 link_url 配合：前篇 link→319390，後篇 link→352905）。Pi 对同 CD 多次
         # submit_candidate 声明不同 subject 时，candidate.bangumi_subject_id 会被
@@ -626,6 +687,7 @@ class AutoFetchCaseToolState:
             title=candidate.title if candidate else '',
             language='',
             download_url=download_url,
+            selection_key=selection_key,
             bangumi_subject_id=selection_sid,
         )
         self.selections.append(selection)
@@ -844,6 +906,9 @@ class AutoFetchCaseToolState:
             'missing_videos': self.workspace.readable_missing_video_cards(),
             'keywords': self.workspace.readable_keyword_cards(),
             'candidates': self.workspace.readable_candidate_cards(),
+            'prior_download_feedback': _prior_download_feedback(
+                self.task_data
+            ),
             'auto_fetch_contract': {
                 'identity_policy': 'candidate_ref / package_ref must use the fixed-layer CD<idx> / PK<idx> short refs. Use search_candidates to load candidates, load_candidate_packages to deep-load packages, inspect_package to read package details.',
                 'final_tools': ['submit_candidate', 'submit_package', 'fail_closed', 'need_confirm'],
@@ -902,6 +967,29 @@ class AutoFetchCaseToolState:
 # ---------------------------------------------------------------------------
 # module-level helpers
 # ---------------------------------------------------------------------------
+
+def _prior_download_feedback(
+    task_data: dict[str, Any],
+) -> list[dict[str, Any]]:
+    raw = task_data.get('subtitle_auto_fetch_prior_download_feedback')
+    if not isinstance(raw, list):
+        return []
+    allowed = {
+        'selection_key',
+        'source',
+        'title',
+        'package_label',
+        'attachment_label',
+        'actual_languages',
+        'preferred_language',
+        'outcome',
+    }
+    return [
+        {key: _json_safe(value) for key, value in item.items() if key in allowed}
+        for item in raw[:10]
+        if isinstance(item, dict)
+    ]
+
 
 def _coerce_string_list(value: Any) -> list[str]:
     """把工具参数里的 list[str] 规范成 list[str]（兼容 None/str/单元素）。"""

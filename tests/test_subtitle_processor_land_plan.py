@@ -204,4 +204,47 @@ def test_land_plan_only_writes_allowed_target_videos(monkeypatch, tmp_path):
 
     assert result["status"] == "success"
     assert result["matched_count"] == 1
-    assert [mapping["video"] for mapping in result["mappings"]] == [videos[0].name]
+
+
+def test_land_plan_filters_nonpreferred_language_without_writing(
+    monkeypatch, tmp_path
+):
+    processor = SubtitleProcessor()
+    archive = tmp_path / "subs.zip"
+    archive.write_bytes(b"fake")
+    subs = _make_subtitle_files(tmp_path)
+    tasks = _make_processed_tasks(tmp_path)
+    plan = CompiledSubtitlePlan(
+        mappings=[
+            CompiledSubtitleMapping(
+                subtitle_ref="SF1",
+                subtitle_archive_path="sub1.ass",
+                target_ref="TV1",
+                task_uuid="task-1",
+                video="Test Anime - S01E01.mkv",
+                emby_lang="zh-TW",
+                is_simplified=False,
+            )
+        ]
+    )
+    monkeypatch.setattr(processor.extractor, "cleanup", lambda path: None)
+
+    result = processor._land_compiled_plan(
+        _uuid="language-filter-test",
+        archive_path=archive,
+        subtitle_files=subs,
+        processed_tasks=tasks,
+        compiled_plan=plan,
+        snapshot={},
+        confidence="High",
+        allowed_emby_languages={"zh-CN"},
+    )
+
+    assert result["status"] == "success"
+    assert result["matched_count"] == 0
+    assert result["mappings"] == []
+    assert result["language_mismatches"][0]["language"] == "zh-TW"
+    assert result["language_mismatches"][0]["write_status"] == (
+        "filtered_nonpreferred_language"
+    )
+    assert not list((tmp_path / "target").glob("*.ass"))

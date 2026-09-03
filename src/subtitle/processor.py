@@ -16,49 +16,8 @@ from ..logger import logger
 from ..rename.trans import Trans
 from ..utils.path import RECORD_PATH, TASK_PATH
 from .extractor import ExtractedSubtitle, SubtitleExtractor
+from .language import normalize_language
 from .syncer import FFsubsyncRunner
-
-# 语言代码映射：字幕组常用标签 -> (Emby标准代码, 是否简体)
-LANGUAGE_MAP: Dict[str, Tuple[str, bool]] = {
-    # 简体中文
-    "chs": ("zh-CN", True),
-    "sc": ("zh-CN", True),
-    "gb": ("zh-CN", True),
-    "简": ("zh-CN", True),
-    "简体": ("zh-CN", True),
-    "简中": ("zh-CN", True),
-    "zh-hans": ("zh-CN", True),
-    "zh-cn": ("zh-CN", True),
-    "cn": ("zh-CN", True),
-    "chinese": ("zh-CN", True),  # 默认简体
-    # 繁体中文
-    "cht": ("zh-TW", False),
-    "tc": ("zh-TW", False),
-    "big5": ("zh-TW", False),
-    "繁": ("zh-TW", False),
-    "繁体": ("zh-TW", False),
-    "繁中": ("zh-TW", False),
-    "zh-hant": ("zh-TW", False),
-    "zh-tw": ("zh-TW", False),
-    "tw": ("zh-TW", False),
-    "zh-hk": ("zh-HK", False),
-    "hk": ("zh-HK", False),
-    # 日语
-    "jp": ("ja", False),
-    "jpn": ("ja", False),
-    "ja": ("ja", False),
-    "japanese": ("ja", False),
-    "日": ("ja", False),
-    "日语": ("ja", False),
-    # 英语
-    "en": ("en", False),
-    "eng": ("en", False),
-    "english": ("en", False),
-    # 韩语
-    "ko": ("ko", False),
-    "kor": ("ko", False),
-    "korean": ("ko", False),
-}
 
 
 class ProcessedTask(TypedDict):
@@ -110,18 +69,7 @@ class SubtitleProcessor:
         Returns:
             (Emby标准语言代码, 是否为简体中文)
         """
-        if not lang:
-            # 未检测到语言标记：归为中文但不指定区域、不加 .default，
-            # 避免日文/英文/未标记字幕被误标简体中文默认被 Emby 优先选中。
-            return ("zh", False)
-
-        lang_lower = lang.lower().strip()
-
-        if lang_lower in LANGUAGE_MAP:
-            return LANGUAGE_MAP[lang_lower]
-
-        # 未知语言，保持原样，不标记为默认
-        return (lang, False)
+        return normalize_language(lang)
 
     def process(
         self,
@@ -130,6 +78,7 @@ class SubtitleProcessor:
         *,
         mapping_only: bool = False,
         allowed_target_videos: Optional[List[Path]] = None,
+        allowed_emby_languages: Optional[Set[str]] = None,
     ) -> Dict[str, Any]:
         """
         处理字幕压缩包（支持多季度/多任务）——薄入口。
@@ -146,6 +95,8 @@ class SubtitleProcessor:
                 等不碰媒体库的场景。默认 False（生产落盘行为）。
             allowed_target_videos: 可选落盘白名单。Case Agent 仍映射完整任务，
                 accepted 后只同步和写入这些目标视频。
+            allowed_emby_languages: 可选落盘语言白名单。只用于自动抓取的
+                下载后偏好语言重选；Case Agent 仍可报告其余实际语言映射。
 
         Returns:
             处理结果字典（status: success | need_confirm | error）
@@ -179,14 +130,17 @@ class SubtitleProcessor:
         )
 
         # Case Agent 是字幕导入的唯一链路，始终使用 Pi evidence-driven 后端。
-        return self._process_case_agent(
-            _uuid=_uuid,
-            archive_path=archive_path,
-            subtitle_files=subtitle_files,
-            processed_tasks=processed_tasks,
-            mapping_only=mapping_only,
-            allowed_target_keys=allowed_target_keys,
-        )
+        case_agent_kwargs: Dict[str, Any] = {
+            "_uuid": _uuid,
+            "archive_path": archive_path,
+            "subtitle_files": subtitle_files,
+            "processed_tasks": processed_tasks,
+            "mapping_only": mapping_only,
+            "allowed_target_keys": allowed_target_keys,
+        }
+        if allowed_emby_languages is not None:
+            case_agent_kwargs["allowed_emby_languages"] = allowed_emby_languages
+        return self._process_case_agent(**case_agent_kwargs)
 
     def process_mapping(
         self,
@@ -261,6 +215,7 @@ class SubtitleProcessor:
         processed_tasks: List[ProcessedTask],
         mapping_only: bool = False,
         allowed_target_keys: Optional[Set[str]] = None,
+        allowed_emby_languages: Optional[Set[str]] = None,
     ) -> Dict[str, Any]:
         """Case Agent 主路径：entry → Verifier 合同 → compiled_plan 落盘。
 
@@ -293,6 +248,7 @@ class SubtitleProcessor:
                 else "Medium",
                 mapping_only=mapping_only,
                 allowed_target_keys=allowed_target_keys,
+                allowed_emby_languages=allowed_emby_languages,
             )
 
         if status == "need_confirm":
@@ -345,6 +301,7 @@ class SubtitleProcessor:
         pipeline_mode: str = "subtitle_case_agent_primary",
         mapping_only: bool = False,
         allowed_target_keys: Optional[Set[str]] = None,
+        allowed_emby_languages: Optional[Set[str]] = None,
     ) -> Dict[str, Any]:
         """用 CompiledSubtitlePlan 生成 Emby 文件名 → ffsubsync → 复制落盘。
 
@@ -366,6 +323,7 @@ class SubtitleProcessor:
 
         file_mapping: Dict[Path, Path] = {}
         mapping_details: List[Dict[str, Any]] = []
+        language_mismatches: List[Dict[str, Any]] = []
         sync_items: List[Dict[str, Any]] = []
 
         matched_task_uuids: Set[str] = set()
@@ -415,8 +373,6 @@ class SubtitleProcessor:
                 target_name = f"{video_stem}.{emby_lang}{subtitle_ext}"
             target_path = target_dir / target_name
 
-            file_mapping[sub.temp_path] = target_path
-            matched_task_uuids.add(compiled.task_uuid)
             mapping_detail = {
                 "subtitle": compiled.subtitle_archive_path,
                 "video": video_name,
@@ -426,6 +382,16 @@ class SubtitleProcessor:
                 "language": emby_lang,
                 "sync_status": "disabled",
             }
+            if (
+                allowed_emby_languages is not None
+                and emby_lang not in allowed_emby_languages
+            ):
+                mapping_detail["write_status"] = "filtered_nonpreferred_language"
+                language_mismatches.append(mapping_detail)
+                continue
+
+            file_mapping[sub.temp_path] = target_path
+            matched_task_uuids.add(compiled.task_uuid)
             mapping_details.append(mapping_detail)
             sync_items.append(
                 {
@@ -441,6 +407,14 @@ class SubtitleProcessor:
             )
 
         if not file_mapping:
+            # A preferred-language retry can accept a valid mapping while fixed
+            # landing policy filters every non-preferred file. Return evidence
+            # without overwriting an earlier fallback subtitle.
+            if language_mismatches:
+                logger.info(
+                    "[字幕处理] 已识别字幕语言不符合本轮落盘偏好，"
+                    f"过滤 {len(language_mismatches)} 个映射"
+                )
             # Case Agent accepted 但 0 mappings：区分两种情况。
             # (a) compiled_plan 有 unmatched（全 no_target_video / 全真不确定）→
             #     合格业务结果（accepted + 0 matched + unmatched 详情），不应报 error。
@@ -448,7 +422,10 @@ class SubtitleProcessor:
             #     movie + S00 Battlogue specials，53 字幕全部 no_target_video，
             #     Case Agent 正确判 accepted，但旧代码这里误判成 error。
             # (b) compiled_plan 既无 mappings 又无 unmatched → 真实现错误 → error。
-            if not getattr(compiled_plan, "unmatched", None):
+            if (
+                not language_mismatches
+                and not getattr(compiled_plan, "unmatched", None)
+            ):
                 self.extractor.cleanup(archive_path)
                 return self._error_result(_uuid, "无法建立字幕映射", archive_path)
             # (a) 走 accepted + 0 matched + unmatched 路径：先算 unmatched 分类，
@@ -464,6 +441,24 @@ class SubtitleProcessor:
             subtitle_files=subtitle_files,
             sub_by_archive=sub_by_archive,
         )
+
+        if not file_mapping and language_mismatches:
+            self.extractor.cleanup(archive_path)
+            return {
+                "status": "success",
+                "uuid": _uuid,
+                "archive_path": str(archive_path),
+                "matched_tasks": [],
+                "matched_count": 0,
+                "total_subtitles": len(subtitle_files),
+                "mappings": [],
+                "language_mismatches": language_mismatches,
+                "unmatched": unmatched_details,
+                "no_target_videos": no_target_details,
+                "pipeline_mode": pipeline_mode,
+                "case_agent_snapshot": snapshot,
+                "confidence": confidence,
+            }
 
         # mapping_only 分叉：不落盘到媒体库，直接返回映射产物。
         # 跳过 ffsubsync + trans_file + 生产 task JSON 写入。cleanup 临时解压目录。
@@ -484,6 +479,7 @@ class SubtitleProcessor:
                 "matched_count": len(file_mapping),
                 "total_subtitles": len(subtitle_files),
                 "mappings": mapping_details,
+                "language_mismatches": language_mismatches,
                 "unmatched": unmatched_details,
                 "no_target_videos": no_target_details,
                 "compiled_plan": compiled_plan_dump,
@@ -564,6 +560,7 @@ class SubtitleProcessor:
             "mappings": mapping_details,
             "sync_summary": sync_summary,
             "unmatched": unmatched_details,
+            "language_mismatches": language_mismatches,
             "no_target_videos": no_target_details,
             "pipeline_mode": pipeline_mode,
             "case_agent_snapshot": snapshot,

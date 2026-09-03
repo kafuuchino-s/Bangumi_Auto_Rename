@@ -10,6 +10,7 @@ dependencies = [
     "hachoir>=3.3.0",
     "rarfile>=4.0",
     "py7zr>=0.22.0",
+    "zhconv-rs>=0.4.1",
     "ffsubsync>=0.4.30",
     "scrapling[fetchers]>=0.4.3",
     "fastapi>=0.115.0",

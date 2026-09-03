@@ -15,6 +15,7 @@ issue/审计载体（轻 submit gate：候选含可下载附件 / 非 font/patch
 
 from __future__ import annotations
 
+import hashlib
 import re
 from typing import ClassVar, Literal
 
@@ -235,6 +236,7 @@ class AutoFetchSelectedCandidate(BaseModel):
     title: str = ''
     language: str = ''
     download_url: str = ''
+    selection_key: str = ''
     # 本选对应的 BGM subject（多季分组审计 + auto_fetch 按.subject 下载）
     bangumi_subject_id: int = 0
     # 原始 provider 对象的 JSON 快照（供 auto_fetch 复用 provider.download）
@@ -252,6 +254,20 @@ _MISSING_VIDEO_REF_RE = re.compile(r'^MV\d+$')
 _CANDIDATE_REF_RE = re.compile(r'^CD\d+$')
 _PACKAGE_REF_RE = re.compile(r'^PK\d+$')
 _KEYWORD_REF_RE = re.compile(r'^KW\d+$')
+
+
+def build_selection_key(
+    *,
+    source: str,
+    detail_url: str,
+    package_id: str,
+    download_url: str,
+) -> str:
+    """Build opaque identity for one candidate/package/link selection."""
+    payload = "\0".join(
+        (source, detail_url, package_id, download_url)
+    ).encode("utf-8")
+    return hashlib.sha256(payload).hexdigest()
 
 
 def is_missing_video_ref(ref: str) -> bool:

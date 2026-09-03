@@ -9,7 +9,7 @@ The final output for this stage is a Python-verifier-accepted subtitle mapping p
 
 The fixed layer presents two flat fact catalogs via `get_subtitle_mapping_context`:
 
-- **subtitle files** (`SF<idx>` short refs): `archive_path`, `filename`, `language_hint` (raw tag extracted from the filename, e.g. `chs`/`cht`/`jpn`/`eng`; may be empty).
+- **subtitle files** (`SF<idx>` short refs): `archive_path`, `filename`, `language_hint` (weak raw tag from filename), and fixed-layer dialogue evidence: `content_chinese_script` (`simplified` / `traditional` / `unknown`) plus simplified/traditional evidence counts.
 - **target videos** (`TV<idx>` short refs): `task_uuid`, `task_title`, `season`, `is_movie`, `video` (the exact landed video filename), `source_video` (the pre-rename local original filename — evidence only, may be empty), `target_dir`, `task_video_count`, `arc_name` / `arc_name_cn` (the BGM-subject arc name of this video's season — Japanese original / Chinese; may be empty on old tasks).
 
 These short refs are the only identifiers the mapping draft may use. Archive paths, task UUIDs, and video filenames are evidence for your reasoning; they are **not** target IDs in the draft. Copy the `SF<idx>` / `TV<idx>` refs exactly.
@@ -59,7 +59,7 @@ These short refs are the only identifiers the mapping draft may use. Archive pat
 - Every subtitle must appear **exactly once** as `map_to_video` or `unmatched`. `rows` count (minus `needs_more_evidence`) must equal subtitle count.
 - A subtitle ref may appear only once (no duplicate source).
 - The same target video may carry multiple subtitles **only if their languages differ** (e.g. one `chs` + one `cht` for bilingual). Same target + same language is a conflict.
-- `map_to_video` rows require a non-empty `language`; empty language is rejected.
+- `map_to_video` rows require a non-empty `language`; empty language is rejected. A high-confidence `content_chinese_script` must agree with the mapped Chinese language; contradictory labels are rejected.
 - `target_ref` must be one of the fixed-layer `TV<idx>` refs; unknown or mis-shaped refs are rejected.
 
 ## Workflow
@@ -73,7 +73,19 @@ These short refs are the only identifiers the mapping draft may use. Archive pat
 
 ## Language inference
 
-Use raw language tags in the draft. If a subtitle filename carries no language tag, infer from the subtitle group / archive convention; for Chinese archives with no tag, default to `chs` (simplified). The fixed layer maps `chs`/`sc`/`gb`→`zh-CN` (default flag), `cht`/`tc`/`big5`→`zh-TW`, `jpn`/`jp`→`ja`, `eng`/`en`→`en`, `ko`/`kor`→`ko`.
+Treat provider and filename language labels as weak hints. When
+`content_chinese_script` is `simplified` or `traditional`, it is
+high-confidence fixed-layer dialogue evidence and wins over a conflicting
+provider label, directory name, or filename tag. Use `chs` for `simplified`
+and `cht` for `traditional`; the verifier rejects contradictory mapped tags.
+`unknown` means the dialogue was short, mixed, unreadable, or non-Chinese and
+does not authorize guessing.
+
+For `unknown`, infer from other visible archive conventions only when clear.
+The fixed layer maps `chs`/`sc`/`gb`→`zh-CN` (default flag),
+`cht`/`tc`/`big5`→`zh-TW`, `jpn`/`jp`→`ja`, `eng`/`en`→`en`, and
+`ko`/`kor`→`ko`. Never trust a provider's Simplified/Traditional label over
+contradictory dialogue-content evidence.
 
 ## fail_closed
 
