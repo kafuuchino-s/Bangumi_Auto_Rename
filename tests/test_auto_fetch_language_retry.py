@@ -28,6 +28,7 @@ def test_content_language_mismatch_selects_different_package(
     candidates = [
         _candidate("wrong-script"),
         _candidate("right-script-partial"),
+        _candidate("unconfirmed-script-rest"),
         _candidate("right-script-rest"),
     ]
     monkeypatch.setattr(
@@ -113,13 +114,51 @@ def test_content_language_mismatch_selects_different_package(
 
     monkeypatch.setattr(fetcher.provider, "download", fake_download)
 
-    def fake_process_mapping(archive_path, target_task_uuid=None):
+    def fake_process_mapping(
+        archive_path,
+        target_task_uuid=None,
+        *,
+        allowed_emby_languages=None,
+    ):
         archive_stem = Path(archive_path).stem
+        language_mismatches = []
         if archive_stem == "wrong-script":
+            assert allowed_emby_languages is None
             pairs = [(target, "zh-TW"), (target2, "zh-TW")]
         elif archive_stem == "right-script-partial":
+            assert allowed_emby_languages == {"zh-CN"}
             pairs = [(target, "zh-CN")]
+            language_mismatches = [
+                {
+                    "subtitle": "episode2.ass",
+                    "video": target2.name,
+                    "target": "episode2.zh-CN.default.ass",
+                    "task_uuid": target_task_uuid,
+                    "language": "zh-CN",
+                    "content_chinese_script": "unknown",
+                    "write_status": (
+                        "filtered_unconfirmed_preferred_language"
+                    ),
+                }
+            ]
+        elif archive_stem == "unconfirmed-script-rest":
+            assert allowed_emby_languages == {"zh-CN"}
+            pairs = []
+            language_mismatches = [
+                {
+                    "subtitle": "episode2.ass",
+                    "video": target2.name,
+                    "target": "episode2.zh-CN.default.ass",
+                    "task_uuid": target_task_uuid,
+                    "language": "zh-CN",
+                    "content_chinese_script": "unknown",
+                    "write_status": (
+                        "filtered_unconfirmed_preferred_language"
+                    ),
+                }
+            ]
         else:
+            assert allowed_emby_languages == {"zh-CN"}
             pairs = [(target2, "zh-CN")]
         return {
             "status": "success",
@@ -132,9 +171,13 @@ def test_content_language_mismatch_selects_different_package(
                     "target": f"episode.{language}.ass",
                     "task_uuid": target_task_uuid,
                     "language": language,
+                    "content_chinese_script": (
+                        "simplified" if language == "zh-CN" else "traditional"
+                    ),
                 }
                 for video, language in pairs
             ],
+            "language_mismatches": language_mismatches,
             "unmatched": [],
             "no_target_videos": [],
         }
@@ -149,17 +192,21 @@ def test_content_language_mismatch_selects_different_package(
 
     assert result["status"] == "success"
     assert result["preferred_language_status"] == "satisfied_after_retry"
-    assert result["language_retry_count"] == 2
+    assert result["language_retry_count"] == 3
     assert [item[0] for item in downloads] == [
         "wrong-script",
         "right-script-partial",
+        "unconfirmed-script-rest",
         "right-script-rest",
     ]
     assert "language_retry_1" in str(downloads[1][1])
     assert "language_retry_2" in str(downloads[2][1])
+    assert "language_retry_3" in str(downloads[3][1])
     assert rounds[0] == []
     assert rounds[1][0]["outcome"] == "content_language_mismatch"
     assert rounds[1][0]["attachment_label"] == "wrong-script.zip"
+    assert rounds[2][-1]["outcome"] == "preferred_language_partial"
+    assert rounds[3][-1]["outcome"] == "preferred_language_unconfirmed"
     assert all(
         "url" not in feedback and "download_url" not in feedback
         for round_feedback in rounds

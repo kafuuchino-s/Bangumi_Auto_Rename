@@ -248,3 +248,87 @@ def test_land_plan_filters_nonpreferred_language_without_writing(
         "filtered_nonpreferred_language"
     )
     assert not list((tmp_path / "target").glob("*.ass"))
+
+
+def test_land_plan_requires_confirmed_chinese_script_during_reselection(
+    monkeypatch, tmp_path
+):
+    processor = SubtitleProcessor()
+    archive = tmp_path / "subs.zip"
+    archive.write_bytes(b"fake")
+    subs = _make_subtitle_files(tmp_path)
+    tasks = _make_processed_tasks(tmp_path)
+    plan = CompiledSubtitlePlan(
+        mappings=[
+            CompiledSubtitleMapping(
+                subtitle_ref="SF1",
+                subtitle_archive_path="sub1.ass",
+                target_ref="TV1",
+                task_uuid="task-1",
+                video="Test Anime - S01E01.mkv",
+                emby_lang="zh-CN",
+                is_simplified=True,
+            )
+        ]
+    )
+    monkeypatch.setattr(processor.extractor, "cleanup", lambda path: None)
+
+    unknown = processor._land_compiled_plan(
+        _uuid="language-confirmation-unknown",
+        archive_path=archive,
+        subtitle_files=subs,
+        processed_tasks=tasks,
+        compiled_plan=plan,
+        snapshot={},
+        confidence="High",
+        mapping_only=True,
+        allowed_emby_languages={"zh-CN"},
+    )
+
+    assert unknown["matched_count"] == 0
+    assert unknown["language_mismatches"][0]["content_chinese_script"] == (
+        "unknown"
+    )
+    assert unknown["language_mismatches"][0]["write_status"] == (
+        "filtered_unconfirmed_preferred_language"
+    )
+
+    subs[0].temp_path.write_text(
+        "[Events]\n"
+        + "".join(
+            "Dialogue: 0,0:00:00.00,0:00:01.00,Default,,0,0,0,,"
+            "后台发展软件里面这边还没发现问题\n"
+            for _ in range(10)
+        ),
+        encoding="utf-8",
+    )
+    tasks[0]["videos"].append("Test Anime - S01E02.mkv")
+    plan.mappings.append(
+        CompiledSubtitleMapping(
+            subtitle_ref="SF2",
+            subtitle_archive_path="sub2.ass",
+            target_ref="TV2",
+            task_uuid="task-1",
+            video="Test Anime - S01E02.mkv",
+            emby_lang="zh-CN",
+            is_simplified=True,
+        )
+    )
+    confirmed = processor._land_compiled_plan(
+        _uuid="language-confirmation-simplified",
+        archive_path=archive,
+        subtitle_files=subs,
+        processed_tasks=tasks,
+        compiled_plan=plan,
+        snapshot={},
+        confidence="High",
+        mapping_only=True,
+        allowed_emby_languages={"zh-CN"},
+    )
+
+    assert confirmed["matched_count"] == 2
+    assert confirmed["mappings"][0]["content_chinese_script"] == "simplified"
+    assert confirmed["mappings"][1]["content_chinese_script"] == "unknown"
+    assert confirmed["mappings"][1]["content_chinese_script_basis"] == (
+        "package_consensus"
+    )

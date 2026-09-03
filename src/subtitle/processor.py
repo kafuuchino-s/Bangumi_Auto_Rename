@@ -16,7 +16,7 @@ from ..logger import logger
 from ..rename.trans import Trans
 from ..utils.path import RECORD_PATH, TASK_PATH
 from .extractor import ExtractedSubtitle, SubtitleExtractor
-from .language import normalize_language
+from .language import detect_chinese_script, normalize_language
 from .syncer import FFsubsyncRunner
 
 
@@ -96,7 +96,8 @@ class SubtitleProcessor:
             allowed_target_videos: 可选落盘白名单。Case Agent 仍映射完整任务，
                 accepted 后只同步和写入这些目标视频。
             allowed_emby_languages: 可选落盘语言白名单。只用于自动抓取的
-                下载后偏好语言重选；Case Agent 仍可报告其余实际语言映射。
+                下载后偏好语言重选；中文还要求正文事实高置信匹配，unknown
+                不得满足重选。Case Agent 仍可报告其余实际语言映射。
 
         Returns:
             处理结果字典（status: success | need_confirm | error）
@@ -146,6 +147,8 @@ class SubtitleProcessor:
         self,
         archive_path: Path,
         target_task_uuid: Optional[str] = None,
+        *,
+        allowed_emby_languages: Optional[Set[str]] = None,
     ) -> Dict[str, Any]:
         """映射模式入口：accepted 不落盘到媒体库，返回字幕→视频映射产物。
 
@@ -155,7 +158,12 @@ class SubtitleProcessor:
         ffsubsync + trans_file 落盘。四态语义不变（accepted/fail_closed/
         need_confirm/invalid）。
         """
-        return self.process(archive_path, target_task_uuid, mapping_only=True)
+        return self.process(
+            archive_path,
+            target_task_uuid,
+            mapping_only=True,
+            allowed_emby_languages=allowed_emby_languages,
+        )
 
     # ------------------------------------------------------------------
     # 目标任务作用域
@@ -327,6 +335,48 @@ class SubtitleProcessor:
         sync_items: List[Dict[str, Any]] = []
 
         matched_task_uuids: Set[str] = set()
+        content_evidence_by_path: Dict[Path, Any] = {}
+        package_scripts: Set[str] = set()
+        if allowed_emby_languages is not None:
+            for compiled in compiled_plan.mappings:
+                if compiled.emby_lang not in allowed_emby_languages:
+                    continue
+                expected_script = {
+                    "zh-CN": "simplified",
+                    "zh-TW": "traditional",
+                    "zh-HK": "traditional",
+                }.get(compiled.emby_lang)
+                if expected_script is None:
+                    continue
+                sub = sub_by_archive.get(
+                    self._normalize_card_path(
+                        compiled.subtitle_archive_path
+                    )
+                )
+                task = task_by_uuid.get(compiled.task_uuid)
+                if sub is None or task is None:
+                    continue
+                video_target = task.get("video_targets", {}).get(
+                    compiled.video
+                )
+                video_path = (
+                    Path(video_target)
+                    if video_target
+                    else Path(task["target_dir"]) / compiled.video
+                )
+                if (
+                    allowed_target_keys is not None
+                    and self._normalize_card_path(str(video_path))
+                    not in allowed_target_keys
+                ):
+                    continue
+                evidence = detect_chinese_script(sub.temp_path)
+                content_evidence_by_path[sub.temp_path] = evidence
+                if evidence.script != "unknown":
+                    package_scripts.add(evidence.script)
+        package_script = (
+            next(iter(package_scripts)) if len(package_scripts) == 1 else ""
+        )
 
         for compiled in compiled_plan.mappings:
             sub = sub_by_archive.get(
@@ -382,13 +432,47 @@ class SubtitleProcessor:
                 "language": emby_lang,
                 "sync_status": "disabled",
             }
-            if (
-                allowed_emby_languages is not None
-                and emby_lang not in allowed_emby_languages
-            ):
-                mapping_detail["write_status"] = "filtered_nonpreferred_language"
-                language_mismatches.append(mapping_detail)
-                continue
+            if allowed_emby_languages is not None:
+                if emby_lang not in allowed_emby_languages:
+                    mapping_detail["write_status"] = (
+                        "filtered_nonpreferred_language"
+                    )
+                    language_mismatches.append(mapping_detail)
+                    continue
+                expected_script = {
+                    "zh-CN": "simplified",
+                    "zh-TW": "traditional",
+                    "zh-HK": "traditional",
+                }.get(emby_lang)
+                if expected_script is not None:
+                    content_evidence = content_evidence_by_path.get(
+                        sub.temp_path
+                    ) or detect_chinese_script(sub.temp_path)
+                    mapping_detail["content_chinese_script"] = (
+                        content_evidence.script
+                    )
+                    mapping_detail["simplified_evidence_count"] = (
+                        content_evidence.simplified_count
+                    )
+                    mapping_detail["traditional_evidence_count"] = (
+                        content_evidence.traditional_count
+                    )
+                    package_confirms_unknown = (
+                        content_evidence.script == "unknown"
+                        and package_script == expected_script
+                    )
+                    if package_confirms_unknown:
+                        mapping_detail["content_chinese_script_basis"] = (
+                            "package_consensus"
+                        )
+                    elif content_evidence.script != expected_script:
+                        mapping_detail["write_status"] = (
+                            "filtered_unconfirmed_preferred_language"
+                            if content_evidence.script == "unknown"
+                            else "filtered_content_language_mismatch"
+                        )
+                        language_mismatches.append(mapping_detail)
+                        continue
 
             file_mapping[sub.temp_path] = target_path
             matched_task_uuids.add(compiled.task_uuid)

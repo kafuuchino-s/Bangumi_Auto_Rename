@@ -743,11 +743,20 @@ let requiredSkillDiscovery = { discovered: [], missing: [] };
 let extensionLoadErrors = [];
 let forcedSkillLoadTelemetry = { attempted: false, succeeded: false, error: "", fallback: false, fallback_succeeded: false, fallback_error: "" };
 
+const recoveryFeedback = Array.isArray(
+  caseInput?.context?.prior_download_feedback,
+)
+  ? caseInput.context.prior_download_feedback
+  : [];
+const recoveryInstruction = recoveryFeedback.length > 0
+  ? `\nThis is preferred-language recovery after ${recoveryFeedback.length} downloaded selection(s) failed or remained unconfirmed. Re-rank ALL remaining candidates across sources; do not follow display order or walk adjacent packages mechanically. Prefer explicit requested-script evidence over unlabeled packages. After two failures from the same candidate title/source, switch candidate/source unless a new attachment has explicit requested-script evidence.`
+  : "";
+
 const instructionText = `
 Complete this subtitle auto fetch case.
 Read the case input JSON at: ${inputPath}
 Use get_auto_fetch_context for the missing video cards (MV<idx>) and scan scope.
-${selectionQuickReference}
+${selectionQuickReference}${recoveryInstruction}
 Search candidates matching the missing videos' title / source_video hint. Inspect candidate arcs; submit the matching candidate + language. Then load packages, inspect the main-episode package, and submit_package. Then call goal_complete.
 If no candidate matches the arc (wrong season / OVA / 特别篇), call fail_closed with a concrete reason. If genuinely uncertain between candidates, call need_confirm.
 Do not use native tools to download, move, copy, link, rename, or inspect old run artifacts for answers.
@@ -758,7 +767,7 @@ Try to finish before ${caseInput.runtime_policy?.suggested_finish_before_seconds
 `.trim();
 
 const goalObjective = `
-Produce an accepted candidate + package selection for fetching a subtitle archive for the missing videos, or fail closed / need confirm for global ambiguity. This is dry-run only (no download inside the agent).
+Produce an accepted candidate + package selection for fetching a subtitle archive for the missing videos, or fail closed / need confirm for global ambiguity. This is dry-run only (no download inside the agent).${recoveryInstruction}
 
 ${ACTION_AGENT_OUTPUT_CONTRACT}
 `.trim();

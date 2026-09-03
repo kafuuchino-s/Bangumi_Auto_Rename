@@ -47,7 +47,7 @@ _SIDE_CONTENT_LABELS = {
     "special": "Special",
     "specials": "Special",
 }
-_PREFERRED_LANGUAGE_RETRY_LIMIT = 2
+_PREFERRED_LANGUAGE_RETRY_LIMIT = 3
 _CHINESE_LANGUAGES = {"zh-CN", "zh-TW"}
 
 
@@ -609,24 +609,19 @@ class SubtitleAutoFetcher:
                     "reason": download_result.error or download_result.status,
                 }
                 continue
-            if mapping_only:
-                processor_result = processor_fn(
-                    download_result.downloaded_path,
-                    target_task_uuid=task_uuid,
-                )
-            else:
-                processor_kwargs: Dict[str, Any] = {
-                    "target_task_uuid": task_uuid,
-                    "allowed_target_videos": missing_videos,
+            processor_kwargs: Dict[str, Any] = {
+                "target_task_uuid": task_uuid,
+            }
+            if retry_round:
+                processor_kwargs["allowed_emby_languages"] = {
+                    preferred_language
                 }
-                if retry_round:
-                    processor_kwargs["allowed_emby_languages"] = {
-                        preferred_language
-                    }
-                processor_result = processor_fn(
-                    download_result.downloaded_path,
-                    **processor_kwargs,
-                )
+            if not mapping_only:
+                processor_kwargs["allowed_target_videos"] = missing_videos
+            processor_result = processor_fn(
+                download_result.downloaded_path,
+                **processor_kwargs,
+            )
             unit_status = str(processor_result.get("status") or "")
             unit_cas = str(processor_result.get("case_agent_status") or "")
             status_label = "success" if unit_status == "success" else "processor_failed"
@@ -976,24 +971,47 @@ class SubtitleAutoFetcher:
                 language_details.extend(
                     list(processor_result.get("language_mismatches") or [])
                 )
-            actual_languages = sorted(
-                {
-                    normalize_language(str(detail.get("language") or ""))[0]
-                    for detail in language_details
-                    if isinstance(detail, dict) and detail.get("language")
-                }
-            )
+            actual_languages: set[str] = set()
+            has_unconfirmed_content = False
+            for detail in language_details:
+                if not isinstance(detail, dict):
+                    continue
+                content_script = str(
+                    detail.get("content_chinese_script") or ""
+                )
+                if content_script == "simplified":
+                    actual_languages.add("zh-CN")
+                    continue
+                if content_script == "traditional":
+                    actual_languages.add("zh-TW")
+                    continue
+                if detail.get("write_status") == (
+                    "filtered_unconfirmed_preferred_language"
+                ):
+                    has_unconfirmed_content = True
+                    continue
+                if detail.get("language"):
+                    actual_languages.add(
+                        normalize_language(str(detail["language"]))[0]
+                    )
+            sorted_actual_languages = sorted(actual_languages)
             outcome = "preferred_language_not_found"
             if selection.get("status") == "download_failed":
                 outcome = "download_failed"
-            elif preferred_language in actual_languages:
-                outcome = "preferred_language_found"
             elif content_conflict:
                 outcome = "content_language_conflict"
-            elif set(actual_languages) & (
+            elif actual_languages & (
                 _CHINESE_LANGUAGES - {preferred_language}
             ):
                 outcome = "content_language_mismatch"
+            elif has_unconfirmed_content:
+                outcome = (
+                    "preferred_language_partial"
+                    if preferred_language in actual_languages
+                    else "preferred_language_unconfirmed"
+                )
+            elif preferred_language in actual_languages:
+                outcome = "preferred_language_found"
             attachment_label = ""
             if isinstance(package, dict):
                 selected_url = str(selection.get("download_url") or "")
@@ -1023,7 +1041,7 @@ class SubtitleAutoFetcher:
                     if isinstance(package, dict)
                     else "",
                     "attachment_label": attachment_label,
-                    "actual_languages": actual_languages,
+                    "actual_languages": sorted_actual_languages,
                     "preferred_language": preferred_language,
                     "outcome": outcome,
                 }
