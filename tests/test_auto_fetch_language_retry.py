@@ -1,12 +1,180 @@
 from pathlib import Path
 from types import SimpleNamespace
 
+from src.subtitle.auto_fetch import SubtitleAutoFetcher
 from src.subtitle.providers import SubtitleCandidate
 from tests.test_auto_fetch_mapping_mode import (
     _patch_pi_runner_with_invoker,
     build_mapping_fetcher,
     make_package,
 )
+
+
+def _write_traditional_ass(path: Path, marker: str = "") -> Path:
+    path.write_text(
+        "[Script Info]\n[Events]\n"
+        + "".join(
+            "Dialogue: 0,0:00:00.00,0:00:01.00,Default,,0,0,0,,"
+            f"後臺發展軟體裡面這邊還沒發現問題{marker}\n"
+            for _ in range(10)
+        ),
+        encoding="utf-8",
+    )
+    return path
+
+
+def test_exhausted_search_converts_unique_traditional_fallback(
+    monkeypatch,
+    tmp_path,
+):
+    fetcher, task_uuid, target = build_mapping_fetcher(monkeypatch, tmp_path)
+    target.parent.mkdir(parents=True)
+    target.write_bytes(b"video")
+    traditional = _write_traditional_ass(
+        target.with_name(f"{target.stem}.zh-TW.ass")
+    )
+    original = traditional.read_bytes()
+
+    monkeypatch.setattr(
+        "src.subtitle.auto_fetch.cm_get",
+        lambda key, default=None: {
+            "subtitle_auto_fetch_preferred_language": "zh-CN",
+            "subtitle_auto_fetch_convert_traditional_fallback": True,
+        }.get(key, default),
+    )
+    monkeypatch.setattr(fetcher, "_persist_status", lambda _uuid, result: result)
+
+    def failed_round(**kwargs):
+        retry_round = kwargs["retry_round"]
+        return {
+            "status": "success",
+            "matched_count": 1,
+            "mappings": [
+                {
+                    "video": target.name,
+                    "language": "zh-TW",
+                }
+            ],
+            "selections": [
+                {
+                    "status": "success",
+                    "selection_key": f"selection-{retry_round}",
+                    "selected_candidate": {
+                        "source": "test",
+                        "title": f"candidate-{retry_round}",
+                    },
+                    "selected_package": {},
+                    "processor_result": {
+                        "mappings": [
+                            {
+                                "video": target.name,
+                                "language": "zh-TW",
+                                "content_chinese_script": "traditional",
+                            }
+                        ]
+                    },
+                }
+            ],
+        }
+
+    monkeypatch.setattr(fetcher, "_execute_fetch_round", failed_round)
+
+    result = fetcher._execute_fetch(
+        task_uuid=task_uuid,
+        task_data={},
+        record_data={},
+        scan_scope={"type": "task", "root": None},
+        missing_videos=[target],
+    )
+    converted = target.with_name(
+        f"{target.stem}.converted.zh-CN.ass"
+    )
+
+    assert result["status"] == "success"
+    assert result["preferred_language_status"] == "converted_fallback"
+    assert result["conversion_fallback"]["converted_count"] == 1
+    assert result["conversion_fallback"]["mappings"][0][
+        "write_status"
+    ] == "converted_fallback_created"
+    assert converted.exists()
+    assert traditional.read_bytes() == original
+    assert not fetcher._has_sidecar_subtitle(target, "zh-CN")
+
+    repeated = fetcher._convert_traditional_fallbacks([target])
+    assert repeated["status"] == "success"
+    assert repeated["mappings"][0]["write_status"] == (
+        "converted_fallback_existing"
+    )
+    assert traditional.read_bytes() == original
+
+
+def test_no_candidate_converts_existing_traditional_when_enabled(
+    monkeypatch,
+    tmp_path,
+):
+    fetcher, task_uuid, target = build_mapping_fetcher(monkeypatch, tmp_path)
+    target.parent.mkdir(parents=True)
+    target.write_bytes(b"video")
+    _write_traditional_ass(target.with_name(f"{target.stem}.zh-TW.ass"))
+    monkeypatch.setattr(
+        "src.subtitle.auto_fetch.cm_get",
+        lambda key, default=None: {
+            "subtitle_auto_fetch_preferred_language": "zh-CN",
+            "subtitle_auto_fetch_convert_traditional_fallback": True,
+        }.get(key, default),
+    )
+    monkeypatch.setattr(fetcher, "_persist_status", lambda _uuid, result: result)
+    monkeypatch.setattr(
+        fetcher,
+        "_execute_fetch_round",
+        lambda **_kwargs: {
+            "status": "skipped",
+            "reason": "pi_fail_closed",
+            "case_agent_status": "fail_closed",
+            "mappings": [],
+            "selections": [],
+        },
+    )
+
+    result = fetcher._execute_fetch(
+        task_uuid=task_uuid,
+        task_data={},
+        record_data={},
+        scan_scope={"type": "task", "root": None},
+        missing_videos=[target],
+    )
+
+    assert result["status"] == "success"
+    assert result["preferred_language_status"] == "converted_fallback"
+    assert result["conversion_fallback"]["converted_count"] == 1
+
+
+def test_conversion_fallback_is_all_or_none_for_ambiguous_sources(
+    monkeypatch,
+    tmp_path,
+):
+    fetcher = SubtitleAutoFetcher()
+    first = tmp_path / "first.mkv"
+    second = tmp_path / "second.mkv"
+    first.write_bytes(b"video")
+    second.write_bytes(b"video")
+    _write_traditional_ass(first.with_name("first.zh-TW.ass"))
+    _write_traditional_ass(second.with_name("second.zh-TW.ass"), "甲")
+    _write_traditional_ass(second.with_name("second.zh.ass"), "乙")
+
+    result = fetcher._convert_traditional_fallbacks([first, second])
+
+    assert result["status"] == "failed"
+    assert result["converted_count"] == 0
+    assert result["issues"] == [
+        {
+            "video": second.name,
+            "reason": "multiple_traditional_sources",
+            "distinct_source_count": 2,
+        }
+    ]
+    assert not first.with_name("first.converted.zh-CN.ass").exists()
+    assert not second.with_name("second.converted.zh-CN.ass").exists()
 
 
 def _candidate(title: str) -> SubtitleCandidate:

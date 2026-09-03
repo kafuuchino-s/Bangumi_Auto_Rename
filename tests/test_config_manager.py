@@ -4,6 +4,7 @@ import json
 import os
 
 from src.config import config_manager
+from src.pages.config_field_spec import spec_by_key
 
 
 def test_write_config_retries_atomic_replace_permission_error(tmp_path, monkeypatch):
@@ -145,6 +146,20 @@ def test_explicit_moviepilot_connection_keys_win_over_legacy(
     assert persisted["subtitle_auto_fetch_moviepilot_api_token"] == (
         "changed-token"
     )
+
+
+def test_subtitle_conversion_fallback_defaults_off_and_is_exposed():
+    assert (
+        config_manager.CONFIG_DEFAULT[
+            "subtitle_auto_fetch_convert_traditional_fallback"
+        ]
+        is False
+    )
+    spec = spec_by_key()[
+        "subtitle_auto_fetch_convert_traditional_fallback"
+    ]
+    assert spec["bool_toggle"] is True
+    assert spec["default_hint"] == "默认 禁用"
 
 
 def test_title_language_order_is_normalized_and_persisted(tmp_path, monkeypatch):

@@ -287,6 +287,17 @@ FIELD_SPEC: list[Mapping[str, Any]] = [
         "default_hint": "默认 zh-CN",
     },
     {
+        "key": "subtitle_auto_fetch_convert_traditional_fallback",
+        "control": TOGGLE,
+        "level": LEVEL_BASIC,
+        "group": GRP_SUBTITLE_FETCH,
+        "tab": TAB_SUBTITLE,
+        "options": ["启用", "禁用"],
+        "help": "仅当目标为 zh-CN 且原生候选穷尽时，将唯一高置信繁体外挂的对白转为简体。保留原轨并标记为转换回退。",
+        "default_hint": "默认 禁用",
+        "bool_toggle": True,
+    },
+    {
         "key": "subtitle_auto_fetch_skip_if_embedded_language",
         "control": TOGGLE,
         "level": LEVEL_BASIC,

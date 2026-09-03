@@ -1,9 +1,11 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import re
 import shutil
 import subprocess
+import uuid
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
@@ -23,6 +25,7 @@ from .auto_fetch_case_agent import (
 )
 from .extractor import SUBTITLE_EXTENSIONS
 from .language import (
+    convert_traditional_subtitle_to_simplified,
     detect_chinese_script,
     known_language_code,
     normalize_language,
@@ -49,6 +52,9 @@ _SIDE_CONTENT_LABELS = {
 }
 _PREFERRED_LANGUAGE_RETRY_LIMIT = 3
 _CHINESE_LANGUAGES = {"zh-CN", "zh-TW"}
+_CONVERTIBLE_SUBTITLE_EXTENSIONS = {".ass", ".ssa", ".srt", ".vtt"}
+_MAX_CONVERTIBLE_SUBTITLE_BYTES = 16 * 1024 * 1024
+_CONVERTED_SIMPLIFIED_MARKER = ".converted.zh-CN"
 
 
 class SubtitleAutoFetcher:
@@ -200,6 +206,14 @@ class SubtitleAutoFetcher:
         prior_download_feedback: List[Dict[str, Any]] = []
         combined: Optional[Dict[str, Any]] = None
         retry_active = False
+        conversion_enabled = bool(
+            not mapping_only
+            and preferred_language == "zh-CN"
+            and cm_get(
+                "subtitle_auto_fetch_convert_traditional_fallback",
+                False,
+            )
+        )
 
         for retry_round in range(_PREFERRED_LANGUAGE_RETRY_LIMIT + 1):
             round_result = self._execute_fetch_round(
@@ -245,6 +259,8 @@ class SubtitleAutoFetcher:
                 mismatch_videos = remaining
 
             if not content_conflict and not mismatch_videos:
+                if conversion_enabled and not preferred_covered:
+                    break
                 return persist(task_uuid, combined)
 
             retry_active = True
@@ -271,6 +287,41 @@ class SubtitleAutoFetcher:
                 break
 
         assert combined is not None
+        if conversion_enabled:
+            conversion_result = self._convert_traditional_fallbacks(
+                pending_videos,
+            )
+            combined["conversion_fallback"] = conversion_result
+            if conversion_result["status"] == "success":
+                converted_mappings = list(
+                    conversion_result.get("mappings") or []
+                )
+                combined["mappings"] = list(
+                    combined.get("mappings") or []
+                ) + converted_mappings
+                combined["matched_count"] = int(
+                    combined.get("matched_count") or 0
+                ) + len(converted_mappings)
+                combined["status"] = "success"
+                combined.pop("reason", None)
+                combined.pop("failure_reason", None)
+                combined["preferred_language"] = preferred_language
+                combined["preferred_language_status"] = (
+                    "converted_fallback"
+                )
+                combined["preferred_language_missing_videos"] = []
+                combined["language_retry_count"] = min(
+                    _PREFERRED_LANGUAGE_RETRY_LIMIT,
+                    max(
+                        0,
+                        len(combined.get("case_agent_rounds") or []) - 1,
+                    ),
+                )
+                combined["prior_download_feedback"] = (
+                    prior_download_feedback
+                )
+                return persist(task_uuid, combined)
+
         combined["status"] = "failed"
         combined["reason"] = "preferred_language_not_found"
         combined["failure_reason"] = "preferred_language_not_found"
@@ -1264,6 +1315,211 @@ class SubtitleAutoFetcher:
     def _is_candidate_video(self, video_path: Path) -> bool:
         return video_path.exists() and video_path.suffix.lower() in VIDEO_SUFFIX
 
+    def _convert_traditional_fallbacks(
+        self,
+        videos: List[Path],
+    ) -> Dict[str, Any]:
+        """Atomically land Simplified copies from unique Traditional sidecars."""
+        prepared: List[Dict[str, Any]] = []
+        mappings: List[Dict[str, Any]] = []
+        issues: List[Dict[str, Any]] = []
+
+        for video in videos:
+            existing = self._existing_converted_fallback(video)
+            if existing is not None:
+                evidence = detect_chinese_script(existing)
+                mappings.append(
+                    {
+                        "video": video.name,
+                        "subtitle": existing.name,
+                        "target": existing.name,
+                        "language": "zh-CN",
+                        "conversion": "traditional_to_simplified",
+                        "write_status": "converted_fallback_existing",
+                        "content_chinese_script": evidence.script,
+                        "simplified_evidence_count": (
+                            evidence.simplified_count
+                        ),
+                        "traditional_evidence_count": (
+                            evidence.traditional_count
+                        ),
+                    }
+                )
+                continue
+
+            sources = self._traditional_sidecars(video)
+            source_groups: Dict[str, List[Path]] = {}
+            for source in sources:
+                try:
+                    digest = hashlib.sha256(source.read_bytes()).hexdigest()
+                except OSError:
+                    continue
+                source_groups.setdefault(digest, []).append(source)
+            if len(source_groups) != 1:
+                issues.append(
+                    {
+                        "video": video.name,
+                        "reason": (
+                            "traditional_source_not_found"
+                            if not source_groups
+                            else "multiple_traditional_sources"
+                        ),
+                        "distinct_source_count": len(source_groups),
+                    }
+                )
+                continue
+
+            source = sorted(next(iter(source_groups.values())))[0]
+            target = video.with_name(
+                f"{video.stem}{_CONVERTED_SIMPLIFIED_MARKER}"
+                f"{source.suffix.lower()}"
+            )
+            staging = target.with_name(
+                f".{target.stem}.{uuid.uuid4().hex}{target.suffix}"
+            )
+            try:
+                conversion = convert_traditional_subtitle_to_simplified(
+                    source,
+                    staging,
+                )
+            except Exception as exc:  # noqa: BLE001
+                if staging.exists():
+                    staging.unlink()
+                issues.append(
+                    {
+                        "video": video.name,
+                        "reason": (
+                            str(exc)
+                            if isinstance(exc, ValueError) and str(exc)
+                            else type(exc).__name__
+                        ),
+                    }
+                )
+                continue
+            prepared.append(
+                {
+                    "video": video,
+                    "source": source,
+                    "target": target,
+                    "staging": staging,
+                    "conversion": conversion,
+                }
+            )
+
+        if issues:
+            for item in prepared:
+                Path(item["staging"]).unlink(missing_ok=True)
+            return {
+                "status": "failed",
+                "attempted_count": len(videos),
+                "converted_count": 0,
+                "issues": issues,
+                "mappings": [],
+            }
+
+        created: List[Path] = []
+        try:
+            if any(Path(item["target"]).exists() for item in prepared):
+                raise FileExistsError("converted_fallback_target_exists")
+            for item in prepared:
+                staging = Path(item["staging"])
+                target = Path(item["target"])
+                staging.replace(target)
+                created.append(target)
+                conversion = item["conversion"]
+                mappings.append(
+                    {
+                        "video": Path(item["video"]).name,
+                        "subtitle": Path(item["source"]).name,
+                        "target": target.name,
+                        "language": "zh-CN",
+                        "conversion": "traditional_to_simplified",
+                        "write_status": "converted_fallback_created",
+                        "content_chinese_script": (
+                            conversion.output_evidence.script
+                        ),
+                        "simplified_evidence_count": (
+                            conversion.output_evidence.simplified_count
+                        ),
+                        "traditional_evidence_count": (
+                            conversion.output_evidence.traditional_count
+                        ),
+                        "dialogue_line_count": (
+                            conversion.dialogue_line_count
+                        ),
+                        "changed_dialogue_line_count": (
+                            conversion.changed_dialogue_line_count
+                        ),
+                    }
+                )
+        except Exception as exc:  # noqa: BLE001
+            for target in created:
+                target.unlink(missing_ok=True)
+            for item in prepared:
+                Path(item["staging"]).unlink(missing_ok=True)
+            return {
+                "status": "failed",
+                "attempted_count": len(videos),
+                "converted_count": 0,
+                "issues": [
+                    {
+                        "reason": (
+                            str(exc)
+                            if isinstance(exc, ValueError) and str(exc)
+                            else type(exc).__name__
+                        ),
+                    }
+                ],
+                "mappings": [],
+            }
+
+        logger.info(
+            "[字幕自动抓取] 原生简体候选已穷尽，"
+            f"繁转简回退完成: {len(mappings)}/{len(videos)}"
+        )
+        return {
+            "status": "success",
+            "attempted_count": len(videos),
+            "converted_count": len(mappings),
+            "issues": [],
+            "mappings": mappings,
+        }
+
+    def _traditional_sidecars(self, video: Path) -> List[Path]:
+        candidates: List[Path] = []
+        for extension in sorted(_CONVERTIBLE_SUBTITLE_EXTENSIONS):
+            for path in video.parent.glob(f"{video.stem}*{extension}"):
+                if not path.is_file():
+                    continue
+                if not path.name.startswith(f"{video.stem}."):
+                    continue
+                if _CONVERTED_SIMPLIFIED_MARKER.lower() in path.name.lower():
+                    continue
+                try:
+                    if (
+                        path.stat().st_size
+                        > _MAX_CONVERTIBLE_SUBTITLE_BYTES
+                    ):
+                        continue
+                except OSError:
+                    continue
+                if detect_chinese_script(path).script == "traditional":
+                    candidates.append(path)
+        return sorted(set(candidates))
+
+    @staticmethod
+    def _existing_converted_fallback(video: Path) -> Path | None:
+        for extension in sorted(_CONVERTIBLE_SUBTITLE_EXTENSIONS):
+            path = video.with_name(
+                f"{video.stem}{_CONVERTED_SIMPLIFIED_MARKER}{extension}"
+            )
+            if (
+                path.is_file()
+                and detect_chinese_script(path).script == "simplified"
+            ):
+                return path
+        return None
+
     def _has_sidecar_subtitle(
         self,
         video_path: Path,
@@ -1284,6 +1540,12 @@ class SubtitleAutoFetcher:
                     continue
                 if not normalized_preferred:
                     return True
+                if (
+                    normalized_preferred == "zh-CN"
+                    and _CONVERTED_SIMPLIFIED_MARKER.lower()
+                    in subtitle_path.name.lower()
+                ):
+                    continue
                 if normalized_preferred in _CHINESE_LANGUAGES:
                     evidence = detect_chinese_script(subtitle_path)
                     if evidence.script != "unknown":
@@ -1637,6 +1899,9 @@ class SubtitleAutoFetcher:
             )
             task_data["subtitle_fetch_language_retry_count"] = result.get(
                 "language_retry_count", 0
+            )
+            task_data["subtitle_fetch_conversion_fallback"] = result.get(
+                "conversion_fallback"
             )
             task_data["subtitle_fetch_processor_case_agent_status"] = result.get(
                 "processor_case_agent_status"

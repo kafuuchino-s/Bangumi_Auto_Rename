@@ -13,7 +13,11 @@ from src.subtitle.case_agent.pi_tools import SubtitleCaseToolState
 from src.subtitle.case_agent.verifier import verify_subtitle_mapping_draft
 from src.subtitle.case_agent.workspace import build_subtitle_case_workspace
 from src.subtitle.extractor import ExtractedSubtitle
-from src.subtitle.language import detect_chinese_script, normalize_language
+from src.subtitle.language import (
+    convert_traditional_subtitle_to_simplified,
+    detect_chinese_script,
+    normalize_language,
+)
 
 
 _SIMPLIFIED = "后台发展软件里面这边还没发现问题"
@@ -201,6 +205,93 @@ def test_pi_tool_returns_content_language_repair_hint(tmp_path):
     )
     assert not result["accepted"]
     assert any("dialogue content" in hint for hint in result["repair_hints"])
+
+
+def test_convert_traditional_ass_preserves_structure_and_foreign_text(
+    tmp_path,
+):
+    source = tmp_path / "episode.zh-TW.ass"
+    destination = tmp_path / "episode.converted.zh-CN.ass"
+    dialogue = _TRADITIONAL * 4
+    source.write_text(
+        "[Script Info]\r\n"
+        "Title: 後臺樣式不應轉換\r\n"
+        "[V4+ Styles]\r\n"
+        "Style: 後臺,Arial,20,&H00FFFFFF\r\n"
+        "[Events]\r\n"
+        "Comment: 0,0:00:00.00,0:00:01.00,Default,,0,0,0,,後臺註解\r\n"
+        "Dialogue: 0,0:00:00.00,0:00:01.00,Default,,0,0,0,,"
+        "{\\bord2}後臺發展\\Nこれは後臺です\r\n"
+        "Dialogue: 0,0:00:01.00,0:00:02.00,Default,,0,0,0,,"
+        "{\\p1}m 0 0 l 10 10 後臺{\\p0}\r\n"
+        + "".join(
+            "Dialogue: 0,0:00:02.00,0:00:03.00,Default,,0,0,0,,"
+            f"{{\\i1}}{dialogue}{{\\i0}}\r\n"
+            for _ in range(10)
+        ),
+        encoding="utf-8",
+        newline="",
+    )
+
+    result = convert_traditional_subtitle_to_simplified(
+        source,
+        destination,
+    )
+    converted = destination.read_text(encoding="utf-8")
+
+    assert result.source_evidence.script == "traditional"
+    assert result.output_evidence.script == "simplified"
+    assert result.dialogue_line_count == 12
+    assert result.changed_dialogue_line_count == 11
+    assert "Title: 後臺樣式不應轉換" in converted
+    assert "Style: 後臺,Arial" in converted
+    assert "後臺註解" in converted
+    assert "{\\p1}m 0 0 l 10 10 後臺{\\p0}" in converted
+    assert "{\\bord2}后台发展\\Nこれは後臺です" in converted
+    assert converted.count("{\\i1}") == 10
+    assert converted.count("{\\i0}") == 10
+    assert len(source.read_text(encoding="utf-8").splitlines()) == len(
+        converted.splitlines()
+    )
+
+
+def test_convert_traditional_srt_only_changes_cue_text(tmp_path):
+    source = tmp_path / "episode.zh-TW.srt"
+    destination = tmp_path / "episode.converted.zh-CN.srt"
+    source.write_text(
+        "1\n00:00:00,000 --> 00:00:01,000\n"
+        + _TRADITIONAL * 10
+        + "\n\n2\n00:00:01,000 --> 00:00:02,000\n"
+        + _TRADITIONAL * 10
+        + "\n\n3\n00:00:02,000 --> 00:00:03,000\n"
+        "これは後臺です\n",
+        encoding="utf-8",
+    )
+
+    result = convert_traditional_subtitle_to_simplified(
+        source,
+        destination,
+    )
+    converted = destination.read_text(encoding="utf-8")
+
+    assert result.output_evidence.script == "simplified"
+    assert "00:00:00,000 --> 00:00:01,000" in converted
+    assert _SIMPLIFIED * 10 in converted
+    assert "これは後臺です" in converted
+
+
+def test_convert_rejects_unconfirmed_source_without_output(tmp_path):
+    source = _write_ass(tmp_path / "episode.zh-TW.ass", _SIMPLIFIED)
+    destination = tmp_path / "episode.converted.zh-CN.ass"
+
+    try:
+        convert_traditional_subtitle_to_simplified(source, destination)
+    except ValueError as exc:
+        assert str(exc) == "source_not_high_confidence_traditional"
+    else:
+        raise AssertionError("unconfirmed source should be rejected")
+
+    assert not destination.exists()
 
 
 def test_normalize_language_preserves_existing_defaults():

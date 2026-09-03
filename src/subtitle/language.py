@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
+import os
 import re
+import tempfile
 from collections import Counter
 from dataclasses import dataclass
 from functools import lru_cache
@@ -56,8 +58,12 @@ _MIN_VARIANT_EVIDENCE = 20
 _MIN_DOMINANCE = 0.75
 _HAN_RE = re.compile(r"[\u3400-\u9fff\uf900-\ufaff]")
 _FOREIGN_SCRIPT_RE = re.compile(r"[\u3040-\u30ff\uac00-\ud7af]")
+_MAX_CONVERSION_BYTES = 16 * 1024 * 1024
 _ASS_TAG_RE = re.compile(r"\{[^{}]*\}")
 _HTML_TAG_RE = re.compile(r"<[^>]+>")
+_PROTECTED_TAG_RE = re.compile(r"(\{[^{}]*\}|<[^>]+>)")
+_ASS_BREAK_RE = re.compile(r"(\\[Nnh])")
+_ASS_DRAWING_RE = re.compile(r"\\p(?:[1-9]\d*)", re.IGNORECASE)
 _TIMESTAMP_RE = re.compile(
     r"^\s*\d{1,2}:\d{2}(?::\d{2})?[,.]\d{2,3}\s*-->"
 )
@@ -69,6 +75,149 @@ class ChineseScriptEvidence:
     script: ChineseScript = "unknown"
     simplified_count: int = 0
     traditional_count: int = 0
+
+
+@dataclass(frozen=True)
+class ChineseSubtitleConversionResult:
+    source_evidence: ChineseScriptEvidence
+    output_evidence: ChineseScriptEvidence
+    dialogue_line_count: int
+    changed_dialogue_line_count: int
+
+
+def convert_traditional_subtitle_to_simplified(
+    source: Path,
+    destination: Path,
+) -> ChineseSubtitleConversionResult:
+    """Convert confirmed Traditional dialogue while preserving structure."""
+    if source.suffix.lower() not in {".ass", ".ssa", ".srt", ".vtt"}:
+        raise ValueError("unsupported_subtitle_format")
+    if destination.exists():
+        raise FileExistsError(destination)
+
+    source_evidence = detect_chinese_script(source)
+    if source_evidence.script != "traditional":
+        raise ValueError("source_not_high_confidence_traditional")
+
+    try:
+        payload = source.read_bytes()
+    except OSError as exc:
+        raise ValueError("source_read_failed") from exc
+    if len(payload) > _MAX_CONVERSION_BYTES:
+        raise ValueError("subtitle_too_large")
+    if not payload or payload.count(b"\x00") > len(payload) // 100:
+        raise ValueError("binary_subtitle_not_supported")
+
+    match = from_bytes(payload).best()
+    if match is None:
+        raise ValueError("subtitle_encoding_unknown")
+    converted, dialogue_count, changed_count = _convert_subtitle_dialogue(
+        str(match),
+        source.suffix.lower(),
+    )
+    if not dialogue_count or not changed_count:
+        raise ValueError("no_convertible_traditional_dialogue")
+
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    fd, temp_name = tempfile.mkstemp(
+        prefix=f".{destination.stem}.",
+        suffix=destination.suffix,
+        dir=str(destination.parent),
+    )
+    temp_path = Path(temp_name)
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8", newline="") as output:
+            output.write(converted)
+            output.flush()
+            os.fsync(output.fileno())
+        output_evidence = detect_chinese_script(temp_path)
+        if output_evidence.script != "simplified":
+            raise ValueError(
+                "converted_content_not_high_confidence_simplified"
+            )
+        os.replace(temp_path, destination)
+    finally:
+        if temp_path.exists():
+            temp_path.unlink()
+
+    return ChineseSubtitleConversionResult(
+        source_evidence=source_evidence,
+        output_evidence=output_evidence,
+        dialogue_line_count=dialogue_count,
+        changed_dialogue_line_count=changed_count,
+    )
+
+
+def _convert_subtitle_dialogue(text: str, suffix: str) -> tuple[str, int, int]:
+    if suffix in {".ass", ".ssa"}:
+        return _convert_ass_dialogue(text)
+    return _convert_timed_text_dialogue(text)
+
+
+def _convert_ass_dialogue(text: str) -> tuple[str, int, int]:
+    output: list[str] = []
+    dialogue_count = 0
+    changed_count = 0
+    for line in text.splitlines(keepends=True):
+        if not line.lstrip().lower().startswith("dialogue:"):
+            output.append(line)
+            continue
+        head, separator, body = line.partition(":")
+        fields = body.split(",", 9)
+        if len(fields) != 10:
+            output.append(line)
+            continue
+        dialogue_count += 1
+        converted_body = _convert_dialogue_text(fields[9])
+        changed_count += converted_body != fields[9]
+        output.append(
+            head + separator + ",".join(fields[:9]) + "," + converted_body
+        )
+    return "".join(output), dialogue_count, changed_count
+
+
+def _convert_timed_text_dialogue(text: str) -> tuple[str, int, int]:
+    output: list[str] = []
+    in_cue = False
+    dialogue_count = 0
+    changed_count = 0
+    for line in text.splitlines(keepends=True):
+        content = line.rstrip("\r\n")
+        ending = line[len(content) :]
+        stripped = content.strip()
+        if not stripped:
+            in_cue = False
+        elif _TIMESTAMP_RE.match(stripped):
+            in_cue = True
+        elif in_cue:
+            dialogue_count += 1
+            converted = _convert_dialogue_text(content)
+            changed_count += converted != content
+            line = converted + ending
+        output.append(line)
+    return "".join(output), dialogue_count, changed_count
+
+
+def _convert_dialogue_text(text: str) -> str:
+    if _ASS_DRAWING_RE.search(text):
+        return text
+    output: list[str] = []
+    for segment in _ASS_BREAK_RE.split(text):
+        if _ASS_BREAK_RE.fullmatch(segment):
+            output.append(segment)
+            continue
+        plain = _PROTECTED_TAG_RE.sub("", segment)
+        if _FOREIGN_SCRIPT_RE.search(plain):
+            output.append(segment)
+            continue
+        parts = _PROTECTED_TAG_RE.split(segment)
+        output.append(
+            "".join(
+                part if index % 2 else zhconv(part, "zh-cn")
+                for index, part in enumerate(parts)
+            )
+        )
+    return "".join(output)
 
 
 def normalize_language(lang: str | None) -> tuple[str, bool]:

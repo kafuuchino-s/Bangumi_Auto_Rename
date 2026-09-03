@@ -88,6 +88,7 @@ CONFIG_DEFAULT = {
     "subtitle_auto_fetch_acgrip_base_url": "https://bbs.acgrip.com",
     "subtitle_auto_fetch_moviepilot_save_path": "",
     "subtitle_auto_fetch_preferred_language": "zh-CN",
+    "subtitle_auto_fetch_convert_traditional_fallback": False,
     "subtitle_auto_fetch_skip_if_embedded_language": True,
     "subtitle_auto_fetch_use_ai_rerank": True,
     "subtitle_auto_fetch_search_mode": "auto",
